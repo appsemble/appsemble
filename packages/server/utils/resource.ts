@@ -11,18 +11,12 @@ import {
 } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
-import { literal, Op, type Order, type WhereOptions } from 'sequelize';
+import { literal, type ModelStatic, Op, type Order, type WhereOptions } from 'sequelize';
 import { type Literal } from 'sequelize/types/utils';
 
 import { type FieldType, odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 import { sendNotification, type SendNotificationOptions } from './sendNotification.js';
-import {
-  App,
-  AppMember,
-  AppSubscription,
-  Resource,
-  ResourceSubscription,
-} from '../models/index.js';
+import { type App, type AppSubscription, getAppDB, type Resource } from '../models/index.js';
 
 export function renameOData(name: string): string {
   switch (name) {
@@ -77,6 +71,7 @@ async function sendSubscriptionNotifications(
   resourceId: number,
   options: SendNotificationOptions,
 ): Promise<void> {
+  const { AppMember, AppSubscription, ResourceSubscription } = await getAppDB(app.id);
   const to = notification.to || [];
   const roles = to.filter((n) => n !== '$author');
   const author = resourceAppMemberId && to.includes('$author');
@@ -90,29 +85,12 @@ async function sendSubscriptionNotifications(
 
   if (roles.length || author) {
     const roleSubscribers = await AppSubscription.findAll({
-      where: { AppId: app.id },
       attributes: ['id', 'auth', 'p256dh', 'endpoint'],
       include: [
         {
           model: AppMember,
           attributes: [],
           required: true,
-          include: [
-            {
-              model: App,
-              attributes: [],
-              where: { id: app.id },
-              through: {
-                attributes: [],
-                where: {
-                  [Op.or]: [
-                    ...(author ? [{ AppMemberId: resourceAppMemberId }] : []),
-                    ...(roles.length ? [{ role: roles }] : []),
-                  ],
-                },
-              },
-            },
-          ],
         },
       ],
     });
@@ -123,7 +101,6 @@ async function sendSubscriptionNotifications(
   if (subscribers) {
     const resourceSubscribers = await AppSubscription.findAll({
       attributes: ['id', 'auth', 'p256dh', 'endpoint'],
-      where: { AppId: app.id },
       include: [
         {
           model: ResourceSubscription,
@@ -210,6 +187,7 @@ export async function processReferenceHooks(
   options: Options,
   context: ParameterizedContext<DefaultState, DefaultContext, any>,
 ): Promise<void> {
+  const { Resource } = await getAppDB(app.id);
   if (!resource) {
     return;
   }
@@ -224,7 +202,7 @@ export async function processReferenceHooks(
         const { triggers } = reference[action];
         const ids = [].concat(resource.data[propertyName]);
         const parents = await Resource.findAll({
-          where: { id: ids, type: reference.resource, AppId: app.id },
+          where: { id: ids, type: reference.resource },
         });
 
         await Promise.all(
@@ -245,6 +223,7 @@ export async function processReferenceTriggers(
   action: 'create' | 'delete' | 'update',
   context: ParameterizedContext<DefaultState, DefaultContext, any>,
 ): Promise<void> {
+  const { Resource } = await getAppDB(app.id);
   const resourceReferences = [];
   for (const [resourceName, resourceDefinition] of Object.entries(app.definition.resources || {})) {
     const [referencedProperty, referenceToParent] =
@@ -267,7 +246,7 @@ export async function processReferenceTriggers(
   const childResources: Record<string, Resource[]> = {};
   const childPromises = resourceReferences.map(async ({ childName, referencedProperty }) => {
     childResources[childName] = await Resource.findAll({
-      where: { type: childName, AppId: app.id, [`data.${referencedProperty}`]: parent.id },
+      where: { type: childName, [`data.${referencedProperty}`]: parent.id },
     });
   });
 
@@ -331,7 +310,10 @@ export function parseQuery({
   $filter,
   $orderby,
   resourceDefinition,
-}: Pick<QueryParams, '$filter' | '$orderby'> & { resourceDefinition: ResourceDefinition }): {
+  tableName,
+}: Pick<QueryParams, '$filter' | '$orderby'> & {
+  resourceDefinition: ResourceDefinition;
+} & { tableName: string }): {
   order: Order;
   query: WhereOptions;
 } {
@@ -354,7 +336,7 @@ export function parseQuery({
           .replaceAll(/(^|\B)\$clonable(\b|$)/g, '__clonable__')
           .replaceAll(/(^|\B)\$seed(\b|$)/g, '__seed__')
           .replaceAll(/(^|\B)\$ephemeral(\b|$)/g, '__ephemeral__'),
-        Resource,
+        tableName,
         renameOData,
       )
     : undefined;
@@ -365,6 +347,7 @@ export function parseQuery({
 
 export async function reseedResourcesRecursively(
   appDefinition: AppDefinition,
+  Resource: ModelStatic<Resource>,
   resourcesToReseed: Resource[],
   reseededResourcesIds: Record<string, number[]> = {},
 ): Promise<Record<string, number[]>> {
@@ -385,6 +368,7 @@ export async function reseedResourcesRecursively(
         if (!updatedReseededResourcesIds[referencedResourceType]) {
           const referencedReseededResourcesIds = await reseedResourcesRecursively(
             appDefinition,
+            Resource,
             referencedResourcesToReseed,
             updatedReseededResourcesIds,
           );

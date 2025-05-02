@@ -153,7 +153,6 @@ describe('createQueryResources', () => {
             and: expect.arrayContaining([
               expect.objectContaining({ mockField: 'mockValue' }),
               expect.objectContaining({
-                AppId: 1,
                 expires: expect.objectContaining({
                   or: expect.arrayContaining([{ gt: expect.any(Date) }, null]),
                 }),
@@ -359,7 +358,6 @@ describe('createCountResources', () => {
             and: expect.arrayContaining([
               expect.objectContaining({ mockField: 'mockValue' }),
               expect.objectContaining({
-                AppId: 1,
                 expires: expect.objectContaining({
                   or: expect.arrayContaining([{ gt: expect.any(Date) }, null]),
                 }),
@@ -487,7 +485,6 @@ describe('createGetResourceById', () => {
           where: expect.objectContaining({
             id: 1,
             type: 'mockResourceType',
-            AppId: 1,
             expires: expect.objectContaining({
               or: expect.arrayContaining([{ gt: expect.any(Date) }, null]),
             }),

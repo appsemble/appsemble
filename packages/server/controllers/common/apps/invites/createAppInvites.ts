@@ -6,7 +6,13 @@ import { getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, AppInvite, AppMember, EmailAuthorization, User } from '../../../../models/index.js';
+import {
+  App,
+  type AppInvite,
+  EmailAuthorization,
+  getAppDB,
+  User,
+} from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
@@ -17,11 +23,9 @@ export async function createAppInvites(ctx: Context): Promise<void> {
     queryParams: { selectedGroupId },
     request: { body },
   } = ctx;
-
   const app = await App.findByPk(appId, {
     attributes: ['id', 'definition', 'path', 'OrganizationId', 'domain'],
   });
-
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   assertKoaCondition(
@@ -47,12 +51,10 @@ export async function createAppInvites(ctx: Context): Promise<void> {
     groupId: selectedGroupId,
   });
 
-  const appMembers = await AppMember.findAll({ where: { AppId: appId }, attributes: ['email'] });
+  const { AppInvite, AppMember } = await getAppDB(appId);
+  const appMembers = await AppMember.findAll({ attributes: ['email'] });
 
-  const appInvites = await AppInvite.findAll({
-    attributes: ['email'],
-    where: { AppId: appId },
-  });
+  const appInvites = await AppInvite.findAll({ attributes: ['email'] });
 
   const memberEmails = new Set(appMembers.flatMap(({ email }) => email));
 
@@ -95,9 +97,8 @@ export async function createAppInvites(ctx: Context): Promise<void> {
       return user
         ? {
             email: user?.primaryEmail ?? invite.email,
-            UserId: user.id,
+            userId: user.id,
             key,
-            AppId: appId,
             role: invite.role,
           }
         : { email: invite.email, role: invite.role, key, AppId: appId };
@@ -106,11 +107,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
 
   await Promise.all(
     result.map(async (invite) => {
-      const user = await User.findOne({
-        where: {
-          primaryEmail: invite.email,
-        },
-      });
+      const user = await User.findOne({ where: { primaryEmail: invite.email } });
 
       const url = new URL('/App-Invite', getAppUrl(app));
       url.searchParams.set('token', invite.key);

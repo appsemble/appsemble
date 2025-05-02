@@ -18,6 +18,7 @@ export function generateResourceQuery(
       $orderby: ctx.queryParams.$orderby,
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       resourceDefinition,
+      tableName: 'Resource',
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -51,7 +52,6 @@ export async function deleteResourcesRecursively(
     attributes: ['id'],
     where: {
       type,
-      AppId: app.id,
       or: [{ seed: true }, { ephemeral: true }],
     },
   };

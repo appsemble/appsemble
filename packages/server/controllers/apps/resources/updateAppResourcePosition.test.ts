@@ -6,11 +6,10 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   App,
   type AppMember,
-  Group,
-  GroupMember,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
+  type Resource,
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -78,28 +77,25 @@ describe('updateResourcePosition', () => {
     });
     appMember = await createTestAppMember(app.id, user.primaryEmail, PredefinedAppRole.Owner);
 
+    const { Resource } = await getAppDB(app.id);
     resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       Position: 4,
     });
 
     await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       Position: 1,
     });
     await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       Position: 2,
     });
     await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       Position: 3,
     });
@@ -260,24 +256,24 @@ describe('updateResourcePosition', () => {
   });
 
   it('should support groups', async () => {
-    const { id: groupId } = await Group.create({ AppId: app.id, name: 'testGroup' });
+    const { Group, GroupMember, Resource } = await getAppDB(app.id);
+    const { id: groupId } = await Group.create({ name: 'testGroup' });
     await GroupMember.create({
       GroupId: groupId,
       AppMemberId: appMember.id,
       role: PredefinedAppRole.Owner,
     });
-    await Resource.destroy({ where: { AppId: app.id, type: 'testResource' }, force: true });
+    await Resource.destroy({ where: { type: 'testResource' }, force: true });
     await Resource.bulkCreate(
       [...Array.from({ length: 5 }).keys()].map((i) => ({
         data: { foo: `bar ${i}` },
-        AppId: app.id,
         type: 'testResource',
         Position: i + 1,
         GroupId: groupId,
       })),
     );
     const resource2 = await Resource.findOne({
-      where: { AppId: app.id, type: 'testResource', GroupId: groupId, Position: { [Op.gt]: 2 } },
+      where: { type: 'testResource', GroupId: groupId, Position: { [Op.gt]: 2 } },
     });
     authorizeAppMember(app, appMember);
     const response = await request.put(

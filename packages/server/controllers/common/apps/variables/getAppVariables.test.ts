@@ -4,7 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppVariable,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -71,15 +71,14 @@ describe('getAppVariables', () => {
   });
 
   it('should get app variables', async () => {
+    const { AppVariable } = await getAppDB(app.id);
     await AppVariable.create({
       name: 'Test variable',
       value: 'Test value',
-      AppId: app.id,
     });
     await AppVariable.create({
       name: 'Test variable 2',
       value: 'Test value 2',
-      AppId: app.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/variables`);

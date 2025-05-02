@@ -9,11 +9,9 @@ import { SignedXml, xpath } from 'xml-crypto';
 
 import {
   App,
-  AppMember,
-  AppSamlAuthorization,
-  AppSamlSecret,
-  SamlLoginRequest,
-  User,
+  type AppMember,
+  type AppSamlAuthorization,
+  getAppDB,
 } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
 import { checkAppSecurityPolicy, handleUniqueAppMemberEmailIndex } from '../../../../utils/auth.js';
@@ -30,7 +28,6 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     },
     user: authSubject,
   } = ctx;
-
   const prompt = (status: SAMLStatus, query?: Record<string, string>): void =>
     ctx.redirect(`/saml/response/${status}${query ? `?${new URLSearchParams(query)}` : ''}`);
 
@@ -52,9 +49,11 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     { isAllowed: false },
   );
 
+  const { AppMember, AppSamlAuthorization, AppSamlSecret, SamlLoginRequest } =
+    await getAppDB(appId);
   const appSamlSecret = await AppSamlSecret.findOne({
     attributes: ['entityId', 'idpCertificate', 'objectIdAttribute'],
-    where: { AppId: appId, id: appSamlSecretId },
+    where: { id: appSamlSecretId },
   });
 
   if (!appSamlSecret) {
@@ -129,7 +128,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
         model: AppSamlSecret,
       },
       {
-        model: User,
+        model: AppMember,
         attributes: ['id', 'primaryEmail'],
       },
     ],
@@ -187,7 +186,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
         'Could not retrieve ObjectID value from incoming secret. Is your app SAML secret configured correctly?.',
       );
       appMember = await AppMember.findOne({
-        where: { AppId: appId, scimExternalId: objectId },
+        where: { scimExternalId: objectId },
         attributes: { exclude: ['picture'] },
       });
       break;
@@ -198,7 +197,6 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
         const role = app.definition.security?.default?.role;
         try {
           appMember = await AppMember.create({
-            AppId: appId,
             role,
             email,
             name,

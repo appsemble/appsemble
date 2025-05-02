@@ -75,7 +75,7 @@ module.exports = {
       },
     },
     {
-      files: ['packages/server/migrations/*'],
+      files: ['packages/server/migrations/**/*'],
       rules: {
         '@typescript-eslint/naming-convention': 'off',
       },

@@ -1,10 +1,15 @@
 import {
   assertKoaCondition,
   handleValidatorResult,
+  logger,
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
+import {
+  type AppDefinition,
+  OrganizationPermission,
+  type ResourceDefinition,
+} from '@appsemble/types';
 import { validateAppDefinition, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
@@ -12,12 +17,11 @@ import { parse } from 'yaml';
 
 import {
   App,
-  AppMember,
   AppReadme,
   AppScreenshot,
   AppSnapshot,
+  getAppDB,
   Organization,
-  Resource,
   transactional,
 } from '../../../models/index.js';
 import {
@@ -74,7 +78,6 @@ export async function patchApp(ctx: Context): Promise<void> {
     },
     user,
   } = ctx;
-
   const result: Partial<App> = {};
 
   const dbApp = await App.findOne({
@@ -107,6 +110,8 @@ export async function patchApp(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, dbApp);
 
+  const { AppMember, Resource, sequelize: appDB } = await getAppDB(appId);
+
   try {
     const permissionsToCheck: OrganizationPermission[] = [];
     if (yaml) {
@@ -131,21 +136,12 @@ export async function patchApp(ctx: Context): Promise<void> {
       );
       result.definition = definition;
       if (definition.cron && definition.security?.cron) {
-        const appMember = await AppMember.findOne({
-          where: {
-            AppId: appId,
-            role: 'cron',
-          },
-        });
+        const appMember = await AppMember.findOne({ where: { role: 'cron' } });
 
         if (!appMember) {
           const identifier = Math.random().toString(36).slice(2);
           const cronEmail = `cron-${identifier}@example.com`;
-          await AppMember.create({
-            email: cronEmail,
-            role: 'cron',
-            AppId: appId,
-          });
+          await AppMember.create({ email: cronEmail, role: 'cron' });
         }
       }
       // Make the actual update
@@ -318,33 +314,41 @@ export async function patchApp(ctx: Context): Promise<void> {
         dbApp.AppSnapshots = [snapshot];
       }
       if (result.definition?.resources) {
-        for (const [key, { enforceOrderingGroupByFields, positioning }] of Object.entries(
-          result.definition.resources,
-        )) {
-          if (positioning) {
-            let group: string[] | undefined;
-            if (enforceOrderingGroupByFields) {
-              createDynamicIndexes(enforceOrderingGroupByFields, appId, key, transaction);
-              group = enforceOrderingGroupByFields.map((field) => `data.${field}`);
-            }
-            const resourcesToUpdate = await Resource.findAll({
-              where: { AppId: appId, type: key },
-              // Reset positions every time the app is updated
-              order: [...(group ?? []), ['Position', 'ASC'], ['updated', 'DESC']],
-              transaction,
-            });
-            await Resource.update(
-              { Position: null },
-              { where: { AppId: appId, type: key }, transaction },
-            );
+        await appDB.transaction(async (appTransaction) => {
+          for (const [key, { enforceOrderingGroupByFields, positioning }] of Object.entries(
+            result.definition?.resources as Record<string, ResourceDefinition>,
+          )) {
+            if (positioning) {
+              let group: string[] | undefined;
+              try {
+                if (enforceOrderingGroupByFields) {
+                  createDynamicIndexes(enforceOrderingGroupByFields, appId, key, appTransaction);
+                  group = enforceOrderingGroupByFields.map((field) => `data.${field}`);
+                }
+                const resourcesToUpdate = await Resource.findAll({
+                  where: { type: key },
+                  // Reset positions every time the app is updated
+                  order: [...(group ?? []), ['Position', 'ASC'], ['updated', 'DESC']],
+                  transaction: appTransaction,
+                });
+                await Resource.update(
+                  { Position: null },
+                  { where: { type: key }, transaction: appTransaction },
+                );
 
-            for (const [i, element] of resourcesToUpdate.entries()) {
-              // If we start with 0, insertion at top becomes impossible unless we move the first
-              // item.
-              await element.update({ Position: (i + 1) * 10 }, { transaction });
+                for (const [i, element] of resourcesToUpdate.entries()) {
+                  // If we start with 0, insertion at top becomes impossible unless we move the
+                  // first item.
+                  await element.update({ Position: (i + 1) * 10 }, { transaction: appTransaction });
+                }
+              } catch (error) {
+                logger.error(error);
+                await appTransaction.rollback();
+                await transaction.rollback();
+              }
             }
           }
-        }
+        });
       }
 
       if (screenshots?.length) {

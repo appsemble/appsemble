@@ -7,7 +7,6 @@ import {
   col,
   fn,
   json,
-  type Model,
   Op,
   type Order,
   where,
@@ -17,8 +16,6 @@ import {
 import { type Col, type Fn, type Json, type Literal, type Where } from 'sequelize/types/utils';
 
 import SchemaObject = OpenAPIV3.SchemaObject;
-
-type PartialModel = Pick<typeof Model, 'tableName'>;
 
 export type FieldType = 'boolean' | 'date' | 'integer' | 'number' | 'string';
 
@@ -103,14 +100,14 @@ const functions: Record<string, MethodConverter> = {
   trim: [[Edm.String], fnFunction('trim')],
 };
 
-function processName(token: Token, model: PartialModel, rename: Rename): Col | Json {
+function processName(token: Token, tableName: string, rename: Rename): Col | Json {
   // OData uses `/` as a path separator, but Sequelize uses `.`.
   // https://sequelize.org/master/manual/other-data-types.html#jsonb--postgresql-only-
   const name = rename(token.raw).replaceAll('/', '.');
-  return name.includes('.') ? json(name) : col(`${model.tableName}.${name}`);
+  return name.includes('.') ? json(name) : col(`${tableName}.${name}`);
 }
 
-function processMethod(token: Token, model: PartialModel, rename: Rename): Fn | Where {
+function processMethod(token: Token, tableName: string, rename: Rename): Fn | Where {
   const { method, parameters } = token.value as { method: string; parameters: Token[] };
 
   if (!has(functions, method)) {
@@ -125,7 +122,7 @@ function processMethod(token: Token, model: PartialModel, rename: Rename): Fn | 
   }
   const parsedParameters = parameters.map((parameter, index) => {
     if (parameter.type === TokenType.FirstMemberExpression) {
-      return processName(parameter, model, rename);
+      return processName(parameter, tableName, rename);
     }
     if (parameter.type === TokenType.Literal) {
       if (parameter.value !== parameterTypes[index]) {
@@ -136,7 +133,7 @@ function processMethod(token: Token, model: PartialModel, rename: Rename): Fn | 
       return processLiteral(parameter);
     }
     if (parameter.type === 'MethodCallExpression') {
-      return processMethod(parameter, model, rename);
+      return processMethod(parameter, tableName, rename);
     }
     throw new TypeError(`${parameter.position}: Unhandled parameter type: ${parameter.type}`);
   });
@@ -144,25 +141,21 @@ function processMethod(token: Token, model: PartialModel, rename: Rename): Fn | 
   return implementation(...parsedParameters);
 }
 
-function processToken(
-  token: Token,
-  model: PartialModel,
-  rename: Rename,
-): WhereOptions | WhereValue {
+function processToken(token: Token, tableName: string, rename: Rename): WhereOptions | WhereValue {
   if (token.type === 'FirstMemberExpression') {
-    return processName(token, model, rename) as WhereValue;
+    return processName(token, tableName, rename) as WhereValue;
   }
   if (token.type === TokenType.MethodCallExpression) {
-    return processMethod(token, model, rename);
+    return processMethod(token, tableName, rename);
   }
   if (token.type === TokenType.ParenExpression) {
-    return processToken(token.value, model, rename);
+    return processToken(token.value, tableName, rename);
   }
   if (operators.has(token.type)) {
     return where(
-      processToken(token.value.left, model, rename),
+      processToken(token.value.left, tableName, rename),
       operators.get(token.type)!,
-      processToken(token.value.right, model, rename),
+      processToken(token.value.right, tableName, rename),
     );
   }
 
@@ -180,17 +173,17 @@ function processToken(
  * - `not`
  *
  * @param token The token to process.
- * @param model The model to do a query for.
+ * @param tableName The name of the table to do a query for.
  * @param rename A rename function.
  * @returns The Sequelize query that matches the given token.
  */
-function processLogicalExpression(token: Token, model: PartialModel, rename: Rename): WhereOptions {
+function processLogicalExpression(token: Token, tableName: string, rename: Rename): WhereOptions {
   if (token.type === TokenType.BoolParenExpression || token.type === TokenType.CommonExpression) {
-    return processLogicalExpression(token.value, model, rename);
+    return processLogicalExpression(token.value, tableName, rename);
   }
 
   if (token.type === TokenType.NotExpression) {
-    return { [Op.not]: processLogicalExpression(token.value, model, rename) };
+    return { [Op.not]: processLogicalExpression(token.value, tableName, rename) };
   }
 
   const op =
@@ -200,11 +193,11 @@ function processLogicalExpression(token: Token, model: PartialModel, rename: Ren
         ? Op.or
         : undefined;
   if (!op) {
-    return processToken(token, model, rename) as WhereOptions;
+    return processToken(token, tableName, rename) as WhereOptions;
   }
   const flatten = (expr: any): WhereOptions => (op in expr ? expr[op] : expr);
-  const left = flatten(processLogicalExpression(token.value.left, model, rename));
-  const right = flatten(processLogicalExpression(token.value.right, model, rename));
+  const left = flatten(processLogicalExpression(token.value.left, tableName, rename));
+  const right = flatten(processLogicalExpression(token.value.right, tableName, rename));
   return { [op]: ([] as WhereOptions[]).concat(left).concat(right) };
 }
 
@@ -212,20 +205,20 @@ function processLogicalExpression(token: Token, model: PartialModel, rename: Ren
  * https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html
  *
  * @param query The OData query to convert to a Sequelize query.
- * @param model The model to do a query for.
+ * @param tableName The name of the table to parse the query for.
  * @param rename A function for renaming incoming property names.
  * @returns The OData filter converted to a Sequelize query.
  */
 export function odataFilterToSequelize(
   query: Token | string,
-  model: PartialModel,
+  tableName: string,
   rename: Rename = defaultRename,
 ): WhereOptions {
   if (!query) {
     return {};
   }
   const ast = typeof query === 'string' ? defaultParser.filter(query) : query;
-  return processLogicalExpression(ast, model, rename);
+  return processLogicalExpression(ast, tableName, rename);
 }
 
 export function odataOrderbyToSequelize(

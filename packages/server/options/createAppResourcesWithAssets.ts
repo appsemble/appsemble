@@ -10,8 +10,7 @@ import { type Resource as ResourceInterface } from '@appsemble/types';
 import { Op } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
-import { App, Asset, transactional } from '../models/index.js';
-import { Resource } from '../models/Resource.js';
+import { App, getAppDB, type Resource } from '../models/index.js';
 import { parseQuery, processHooks, processReferenceHooks } from '../utils/resource.js';
 
 export async function createAppResourcesWithAssets({
@@ -23,10 +22,11 @@ export async function createAppResourcesWithAssets({
   resourceType,
   resources,
 }: CreateAppResourcesWithAssetsParams): Promise<ResourceInterface[]> {
-  const appMember = await getCurrentAppMember({ context });
+  const { Asset, Resource, sequelize } = await getAppDB(app.id!);
+  const appMember = await getCurrentAppMember({ context, app });
 
   let createdResources: Resource[] = [];
-  await transactional(async (transaction) => {
+  await sequelize.transaction(async (transaction) => {
     const resourceDefinition = getResourceDefinition(app.definition, resourceType);
     const { enforceOrderingGroupByFields, positioning } = resourceDefinition;
     createdResources = await Resource.bulkCreate(
@@ -37,6 +37,7 @@ export async function createAppResourcesWithAssets({
               ?.map((item) => `${item} eq '${data[item]}'`)
               .join(' and '),
             resourceDefinition,
+            tableName: 'Resource',
           });
           logger.verbose('Resource query');
           logger.verbose(query);
@@ -45,13 +46,13 @@ export async function createAppResourcesWithAssets({
           const lastPositionResource = await Resource.findOne({
             attributes: ['Position'],
             where: {
-              AppId: app.id,
               type: resourceType,
               GroupId: groupId ?? null,
               Position: { [Op.not]: null },
               ...(query ? { query } : {}),
             },
             order: [['Position', 'DESC']],
+            transaction,
           });
           logger.verbose('Last resource');
           logger.verbose(lastPositionResource);
@@ -64,7 +65,6 @@ export async function createAppResourcesWithAssets({
           );
           // Return the resource object to be created
           return {
-            AppId: app.id,
             GroupId: groupId ?? null,
             type: resourceType,
             data,
@@ -109,7 +109,6 @@ export async function createAppResourcesWithAssets({
         return {
           ...asset,
           ...getCompressedFileMeta(asset),
-          AppId: app.id,
           GroupId: groupId ?? null,
           ResourceId,
           AppMemberId: appMember?.sub,

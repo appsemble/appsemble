@@ -5,8 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  AppMember,
-  GroupMember,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -84,10 +83,10 @@ describe('createGroup', () => {
           },
         },
       });
+      const { AppMember } = await getAppDB(app.id);
       const appMember = await AppMember.create({
         email: user.primaryEmail,
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         role: 'GroupCreator',
       });
       authorizeAppMember(app, appMember);
@@ -118,10 +117,10 @@ describe('createGroup', () => {
           },
         },
       });
+      const { AppMember } = await getAppDB(app.id);
       const appMember = await AppMember.create({
         email: user.primaryEmail,
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         role: 'Invalid',
       });
       authorizeAppMember(app, appMember);
@@ -157,16 +156,15 @@ describe('createGroup', () => {
           },
         },
       });
+      const { AppMember, GroupMember } = await getAppDB(app.id);
       const appMember = await AppMember.create({
         email: user.primaryEmail,
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         role: 'GroupCreator',
       });
       await AppMember.bulkCreate(
         [...Array.from({ length: 5 }).keys()].map((key) => ({
           email: `test${key}@example.com`,
-          AppId: app.id,
           role: PredefinedAppRole.Member,
           demo: true,
         })),

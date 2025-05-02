@@ -5,10 +5,9 @@ import webpush from 'web-push';
 
 import {
   type App,
-  AppMember,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -57,19 +56,17 @@ describe('deleteAppResources', () => {
   });
 
   it('should be able to delete multiple resources', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resourceA = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
     const resourceB = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo Too.' },
     });
     await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo Three.' },
     });
 
@@ -125,19 +122,17 @@ describe('deleteAppResources', () => {
   });
 
   it('should soft-delete resources', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resourceA = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
     const resourceB = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo Too.' },
     });
     await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo Three.' },
     });
 
@@ -159,13 +154,11 @@ describe('deleteAppResources', () => {
     expect(resources).toMatchObject([
       {
         type: 'testResource',
-        AppId: app.id,
         data: { foo: 'I am Foo.' },
         deleted: expect.any(Date),
       },
       {
         type: 'testResource',
-        AppId: app.id,
         data: { foo: 'I am Foo Too.' },
         deleted: expect.any(Date),
       },
@@ -173,10 +166,10 @@ describe('deleteAppResources', () => {
   });
 
   it('should delete large number of resources', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resources = await Resource.bulkCreate(
       Array.from({ length: 1000 }, (unused, i) => ({
         type: 'testResource',
-        AppId: app.id,
         data: { foo: `I am Foo ${i}.` },
       })),
     );
@@ -196,9 +189,9 @@ describe('deleteAppResources', () => {
   }, 60_000);
 
   it('should ignore non-existent resources.', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resourceA = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
@@ -218,34 +211,30 @@ describe('deleteAppResources', () => {
   });
 
   it('should not be able to delete multiple resources if they are referenced by another resource without cascading strategy', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.ResourcesManager,
       timezone: 'Europe/Amsterdam',
     });
     const testResource1 = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
     const testResource2 = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo Too.' },
     });
 
     await Resource.create({
       type: 'testResourceB',
-      AppId: app.id,
       data: { foo: 'I reference Foo.', testResourceId: testResource1.id },
     });
 
     await Resource.create({
       type: 'testResourceB',
-      AppId: app.id,
       data: { foo: 'I reference Foo Two.', testResourceId: testResource2.id },
     });
 
@@ -312,27 +301,24 @@ describe('deleteAppResources', () => {
   });
 
   it('should be able to delete multiple resources if they are referenced by another resource without cascading strategy if the referencing resources are deleted first', async () => {
+    const { Resource } = await getAppDB(app.id);
     const testResource1 = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
     const testResource2 = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo Too.' },
     });
 
     const testResourceB1 = await Resource.create({
       type: 'testResourceB',
-      AppId: app.id,
       data: { foo: 'I reference Foo.', testResourceId: testResource1.id },
     });
 
     const testResourceB2 = await Resource.create({
       type: 'testResourceB',
-      AppId: app.id,
       data: { foo: 'I reference Foo Two.', testResourceId: testResource2.id },
     });
 
@@ -398,27 +384,24 @@ describe('deleteAppResources', () => {
   });
 
   it('should be able to delete multiple resources if they are referenced by another resource with cascading update strategy', async () => {
+    const { Resource } = await getAppDB(app.id);
     const testResource1 = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
     const testResource2 = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo Too.' },
     });
 
     await Resource.create({
       type: 'testResourceC',
-      AppId: app.id,
       data: { foo: 'I reference Foo.', testResourceId: testResource1.id },
     });
 
     await Resource.create({
       type: 'testResourceC',
-      AppId: app.id,
       data: { foo: 'I reference Foo Two.', testResourceId: testResource2.id },
     });
 
@@ -530,27 +513,24 @@ describe('deleteAppResources', () => {
   });
 
   it('should be able to delete multiple resources if they are referenced by another resource with cascading delete strategy', async () => {
+    const { Resource } = await getAppDB(app.id);
     const testResource1 = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
     const testResource2 = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo Too.' },
     });
 
     await Resource.create({
       type: 'testResourceD',
-      AppId: app.id,
       data: { foo: 'I reference Foo.', testResourceId: testResource1.id },
     });
 
     await Resource.create({
       type: 'testResourceD',
-      AppId: app.id,
       data: { foo: 'I reference Foo Two.', testResourceId: testResource2.id },
     });
 

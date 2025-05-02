@@ -113,25 +113,27 @@ export async function createGroup({
 }
 
 export async function deleteGroup({
+  appId,
   clientCredentials,
   id,
   remote,
 }: SharedExistingGroupParams): Promise<void> {
   await authenticate(remote, 'groups:write', clientCredentials);
   logger.info(`Deleting group ${id}`);
-  await axios.delete(`/api/groups/${id}`, { baseURL: remote });
+  await axios.delete(`/api/apps/${appId}/groups/${id}`, { baseURL: remote });
   logger.info(`Successfully deleted group ${id}`);
 }
 
 export async function updateGroup({
   annotations = [],
+  appId,
   id,
   name,
   remote,
 }: UpdateGroupParams): Promise<void> {
   logger.info(`Updating group ${id}`);
   await axios.patch(
-    `/api/groups/${id}`,
+    `/api/apps/${appId}/groups/${id}`,
     {
       name,
       annotations: resolveAnnotations(annotations),
@@ -142,31 +144,33 @@ export async function updateGroup({
 }
 
 export async function inviteMember({
+  appId,
   id,
   remote,
   role,
   user,
 }: InviteGroupMemberParams): Promise<void> {
   logger.info(`Inviting ${user} to group ${id}`);
-  await axios.post(`/api/groups/${id}/invites`, [{ email: user, role }], {
+  await axios.post(`/api/apps/${appId}/groups/${id}/invites`, [{ email: user, role }], {
     baseURL: remote,
   });
   logger.info(`Successfully invited ${user} to group ${id}`);
 }
 
 export async function updateMember({
+  appId,
   id,
   remote,
   role,
   user,
 }: UpdateGroupMemberParams): Promise<void> {
   logger.info(`Updating ${user}’s role in group ${id} to ${role}`);
-  await axios.put(`/api/group-members/${user}/role`, { role }, { baseURL: remote });
+  await axios.put(`/api/apps/${appId}/group-members/${user}/role`, { role }, { baseURL: remote });
   logger.info(`Successfully updated ${user} in group ${id}`);
 }
 
-export async function deleteMember({ id, user }: SharedGroupMemberParams): Promise<void> {
+export async function deleteMember({ appId, id, user }: SharedGroupMemberParams): Promise<void> {
   logger.info(`Deleting ${user} to group ${id}`);
-  await axios.delete(`/api/group-members/${user}?selectedGroupId=${id}`);
+  await axios.delete(`/api/apps/${appId}/group-members/${user}?selectedGroupId=${id}`);
   logger.info(`Successfully deleted ${user} from group ${id}`);
 }

@@ -2,14 +2,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setArgv } from '../../../../../index.js';
-import {
-  App,
-  AppMember,
-  Group,
-  GroupMember,
-  Organization,
-  User,
-} from '../../../../../models/index.js';
+import { App, getAppDB, Organization, User } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { encrypt } from '../../../../../utils/crypto.js';
@@ -53,10 +46,10 @@ describe('getAppScimUsers', () => {
 
   it.todo('should return a SCIM user', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      UserId: user.id,
+      userId: user.id,
       email: 'user@example.com',
-      AppId: app.id,
       role: 'User',
       timezone: 'Europe/Amsterdam',
     });
@@ -101,12 +94,12 @@ describe('getAppScimUsers', () => {
   });
 
   it.todo('should return a SCIM user with manager', async () => {
-    const group = await Group.create({ AppId: app.id, name: 'krbs' });
+    const { AppMember, Group, GroupMember } = await getAppDB(app.id);
+    const group = await Group.create({ name: 'krbs' });
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
     const member = await AppMember.create({
-      UserId: user.id,
+      userId: user.id,
       email: 'user@example.com',
-      AppId: app.id,
       role: 'User',
     });
     await GroupMember.create({ GroupId: group.id, AppMemberId: member.id });
@@ -158,9 +151,9 @@ describe('getAppScimUsers', () => {
 
   it.todo('should return a SCIM user based on querying their username', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      UserId: user.id,
-      AppId: app.id,
+      userId: user.id,
       role: 'User',
       email: 'example@hotmail.com',
     });
@@ -209,10 +202,10 @@ describe('getAppScimUsers', () => {
 
   it.todo('should return empty resources when user is not found', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      UserId: user.id,
+      userId: user.id,
       email: 'user@example.com',
-      AppId: app.id,
       role: 'User',
       timezone: 'Europe/Amsterdam',
     });

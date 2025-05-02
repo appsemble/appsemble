@@ -8,7 +8,7 @@ import { initAxios } from './initAxios.js';
 import { publishResource, updateResource } from './resource.js';
 import { authorizeCLI } from './testUtils.js';
 
-const { App, Organization, OrganizationMember, Resource } = models;
+const { App, Organization, OrganizationMember, getAppDB } = models;
 
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 let user: models.User;
@@ -85,9 +85,8 @@ describe('resource', () => {
         type: 'test',
         seed: false,
       });
-      const resources = await Resource.findAll({
-        where: { AppId: app.id },
-      });
+      const { Resource } = await getAppDB(app.id);
+      const resources = await Resource.findAll();
       expect(resources.map((r) => r.toJSON())).toMatchInlineSnapshot(`
         [
           {
@@ -190,11 +189,11 @@ describe('resource', () => {
         visibility: 'public',
         OrganizationId: organization.id,
       });
+      const { Resource } = await getAppDB(app.id);
       await Resource.bulkCreate([
         {
           id: 1,
           type: 'test',
-          AppId: app.id,
           data: {
             name: 'Hello World',
           },
@@ -202,7 +201,6 @@ describe('resource', () => {
         {
           id: 2,
           type: 'test',
-          AppId: app.id,
           data: {
             name: 'World Hello',
             email: 'hello@example.com',
@@ -211,7 +209,6 @@ describe('resource', () => {
         {
           id: 3,
           type: 'test',
-          AppId: app.id,
           data: {
             name: 'Random name',
             email: 'removed@example.com',
@@ -284,11 +281,11 @@ describe('resource', () => {
         visibility: 'public',
         OrganizationId: organization.id,
       });
+      const { Resource } = await getAppDB(app.id);
       await Resource.bulkCreate([
         {
           id: 1,
           type: 'test',
-          AppId: app.id,
           data: {
             name: 'Hello World',
           },
@@ -296,7 +293,6 @@ describe('resource', () => {
         {
           id: 2,
           type: 'test',
-          AppId: app.id,
           data: {
             name: 'World Hello',
             email: 'hello@example.com',
@@ -345,11 +341,11 @@ describe('resource', () => {
         visibility: 'public',
         OrganizationId: organization.id,
       });
+      const { Resource } = await getAppDB(app.id);
       await Resource.bulkCreate([
         {
           id: 1,
           type: 'test',
-          AppId: app.id,
           data: {
             name: 'Hello World',
           },
@@ -357,7 +353,6 @@ describe('resource', () => {
         {
           id: 2,
           type: 'test',
-          AppId: app.id,
           data: {
             name: 'World Hello',
             email: 'hello@example.com',

@@ -10,11 +10,11 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import {
   App,
-  AppMember,
   AppScreenshot,
   BlockAsset,
   BlockMessages,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -182,12 +182,12 @@ describe('createApp', () => {
       }),
     );
     expect(response.status).toBe(201);
+    const { AppMember } = await getAppDB(response.data.id!);
     const foundMember = (await AppMember.findOne({
-      where: { AppId: response.data.id, role: 'cron' },
+      where: { role: 'cron' },
     }))!;
     expect(foundMember.dataValues).toMatchObject({
       email: expect.stringMatching('cron.*example'),
-      AppId: response.data.id,
       role: 'cron',
     });
   });

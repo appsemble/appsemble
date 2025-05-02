@@ -5,12 +5,9 @@ import webpush from 'web-push';
 
 import {
   type App,
-  AppMember,
-  Group,
-  GroupMember,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -61,9 +58,9 @@ describe('deleteAppResource', () => {
   });
 
   it('should be able to delete an existing resource', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
@@ -107,9 +104,9 @@ describe('deleteAppResource', () => {
   });
 
   it('should soft-delete a resource', async () => {
+    const { Resource } = await getAppDB(app.id);
     const { id } = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
@@ -121,27 +118,25 @@ describe('deleteAppResource', () => {
     const deletedResource = await Resource.findByPk(id, { paranoid: false });
     expect(deletedResource).toMatchObject({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       deleted: expect.any(Date),
     });
   });
 
   it('should delete another group member’s resource', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const group = await Group.create({ name: 'Test Group' });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
 
     const memberA = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
     const memberB = await AppMember.create({
       email: 'userB@example.com',
-      AppId: app.id,
-      UserId: userB.id,
+      userId: userB.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
@@ -159,7 +154,6 @@ describe('deleteAppResource', () => {
 
     const resource = await Resource.create({
       type: 'testResourceGroup',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       AuthorId: memberB.id,
     });
@@ -173,13 +167,13 @@ describe('deleteAppResource', () => {
   });
 
   it('should not delete resources if not part of the same group', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const group = await Group.create({ name: 'Test Group' });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
 
     const memberB = await AppMember.create({
       email: 'userB@example.com',
-      AppId: app.id,
-      UserId: userB.id,
+      userId: userB.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
@@ -191,15 +185,13 @@ describe('deleteAppResource', () => {
     });
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
 
     const resource = await Resource.create({
       type: 'testResourceGroup',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       AuthorId: memberB.id,
     });
@@ -238,9 +230,9 @@ describe('deleteAppResource', () => {
   });
 
   it('should not be possible to delete an existing resource through another resource', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
@@ -278,9 +270,9 @@ describe('deleteAppResource', () => {
   });
 
   it('should not be possible to delete an existing resource through another app', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
@@ -319,8 +311,8 @@ describe('deleteAppResource', () => {
   });
 
   it('should allow organization app editors to delete resources using Studio', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -336,8 +328,8 @@ describe('deleteAppResource', () => {
       role: PredefinedOrganizationRole.Member,
     });
 
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -358,8 +350,8 @@ describe('deleteAppResource', () => {
   });
 
   it('should allow organization app editors to delete resources using client credentials', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -375,8 +367,8 @@ describe('deleteAppResource', () => {
       role: PredefinedOrganizationRole.Member,
     });
 
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -397,15 +389,14 @@ describe('deleteAppResource', () => {
   });
 
   it('should not be able to delete a resource if it is referenced by another resource without cascading strategy', async () => {
+    const { Resource } = await getAppDB(app.id);
     const testResource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
     const testResourceB = await Resource.create({
       type: 'testResourceB',
-      AppId: app.id,
       data: { foo: 'I reference Foo.', testResourceId: testResource.id },
     });
 
@@ -460,15 +451,14 @@ describe('deleteAppResource', () => {
   });
 
   it('should be able to delete a resource if it is referenced by another resource without cascading strategy if the referencing resource is deleted first', async () => {
+    const { Resource } = await getAppDB(app.id);
     const testResource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
     const testResourceB = await Resource.create({
       type: 'testResourceB',
-      AppId: app.id,
       data: { foo: 'I reference Foo.', testResourceId: testResource.id },
     });
 
@@ -521,15 +511,14 @@ describe('deleteAppResource', () => {
   });
 
   it('should be able to delete a resource if it is referenced by another resource with cascading update strategy', async () => {
+    const { Resource } = await getAppDB(app.id);
     const testResource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
     const testResourceC = await Resource.create({
       type: 'testResourceC',
-      AppId: app.id,
       data: { foo: 'I reference Foo.', testResourceId: testResource.id },
     });
 
@@ -592,15 +581,14 @@ describe('deleteAppResource', () => {
   });
 
   it('should be able to delete a resource if it is referenced by another resource with cascading delete strategy', async () => {
+    const { Resource } = await getAppDB(app.id);
     const testResource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
     const testResourceD = await Resource.create({
       type: 'testResourceD',
-      AppId: app.id,
       data: { foo: 'I reference Foo.', testResourceId: testResource.id },
     });
 

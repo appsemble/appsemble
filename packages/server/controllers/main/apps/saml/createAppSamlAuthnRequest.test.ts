@@ -8,10 +8,9 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
-  AppSamlSecret,
+  type AppSamlSecret,
+  getAppDB,
   Organization,
-  SamlLoginRequest,
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -47,8 +46,8 @@ describe('createAuthnRequest', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+    const { AppSamlSecret } = await getAppDB(app.id);
     secret = await AppSamlSecret.create({
-      AppId: app.id,
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: await readFixture('saml/idp-certificate.pem', 'utf8'),
@@ -65,9 +64,9 @@ describe('createAuthnRequest', () => {
   });
 
   it('should generate SAML parameters', async () => {
+    const { AppMember } = await getAppDB(app.id);
     const member = await AppMember.create({
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       email: user.primaryEmail,
       role: PredefinedAppRole.Member,
     });
@@ -96,6 +95,7 @@ describe('createAuthnRequest', () => {
     const inflated = await inflate(Buffer.from(params.SAMLRequest, 'base64'));
     const samlRequest = inflated.toString('utf8');
 
+    const { SamlLoginRequest } = await getAppDB(app.id);
     const loginRequest = (await SamlLoginRequest.findOne())!;
     expect(loginRequest).toMatchObject({
       id: expect.any(String),
@@ -141,9 +141,9 @@ describe('createAuthnRequest', () => {
 
   it('should throw if the SAML secret ID is invalid', async () => {
     authorizeStudio();
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       email: user.primaryEmail,
       role: PredefinedAppRole.Member,
     });

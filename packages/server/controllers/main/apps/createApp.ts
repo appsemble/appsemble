@@ -1,5 +1,4 @@
 import {
-  AppsembleError,
   assertKoaCondition,
   handleValidatorResult,
   updateCompanionContainers,
@@ -12,7 +11,7 @@ import { literal } from 'sequelize';
 import webpush from 'web-push';
 import { parse } from 'yaml';
 
-import { App, AppMember, AppSnapshot, Organization, transactional } from '../../../models/index.js';
+import { App, AppSnapshot, getAppDB, getDB, Organization } from '../../../models/index.js';
 import {
   createAppReadmes,
   createAppScreenshots,
@@ -127,75 +126,79 @@ export async function createApp(ctx: Context): Promise<void> {
 
     await setAppPath(ctx, result, path);
 
-    let record: App;
+    const db = getDB();
+    const transaction = await db.transaction();
     try {
-      let rec: App | undefined;
-      await transactional(async (transaction) => {
-        rec = await App.create(result, { transaction });
+      const app = await App.create(result);
 
-        rec.AppSnapshots = [await AppSnapshot.create({ AppId: rec.id, yaml }, { transaction })];
+      app.AppSnapshots = [await AppSnapshot.create({ AppId: app.id, yaml }, { transaction })];
 
-        rec.AppScreenshots = screenshots?.length
-          ? await createAppScreenshots(rec.id, screenshots, transaction, ctx)
-          : [];
+      app.AppScreenshots = screenshots?.length
+        ? await createAppScreenshots(app.id, screenshots, transaction, ctx)
+        : [];
 
-        rec.AppReadmes = readmes?.length
-          ? await createAppReadmes(rec.id, readmes, transaction)
-          : [];
+      app.AppReadmes = readmes?.length ? await createAppReadmes(app.id, readmes, transaction) : [];
 
-        if (rec.definition.resources) {
-          Object.entries(rec.definition.resources ?? {}).map(
+      const { AppMember, sequelize } = await getAppDB(app.id);
+      const appTransaction = await sequelize.transaction();
+
+      try {
+        if (app.definition.resources) {
+          Object.entries(app.definition.resources ?? {}).map(
             ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
               if (positioning && enforceOrderingGroupByFields) {
                 createDynamicIndexes(
                   enforceOrderingGroupByFields,
-                  rec!.id,
+                  app.id,
                   resourceType,
-                  transaction,
+                  appTransaction,
                 );
               }
             },
           );
         }
 
-        if (dryRun === 'true') {
-          // Manually calling `await transaction.rollback()` causes an error
-          // when the transaction goes out of scope.
-          throw new AppsembleError('Dry run');
+        if (app.definition.cron && app.definition.security?.cron) {
+          const identifier = Math.random().toString(36).slice(2);
+          const cronEmail = `cron-${identifier}@example.com`;
+          await AppMember.create(
+            { role: 'cron', email: cronEmail },
+            { transaction: appTransaction },
+          );
         }
-      });
-      record = rec!;
-      if (record.definition.cron && record.definition.security?.cron) {
-        const identifier = Math.random().toString(36).slice(2);
-        const cronEmail = `cron-${identifier}@example.com`;
-        record.AppMembers = [
-          await AppMember.create({ AppId: record.id, role: 'cron', email: cronEmail }),
-        ];
+      } catch (error) {
+        await appTransaction.rollback();
+        await transaction.rollback();
+        throw error;
+      }
+
+      const containerDefinitions = app.containers;
+
+      if (containerDefinitions && containerDefinitions.length > 0) {
+        await updateCompanionContainers(
+          containerDefinitions,
+          app.path,
+          String(app.id),
+          app.registry,
+        );
+      }
+
+      app.Organization = organization;
+
+      if (dryRun === 'true') {
+        await appTransaction.rollback();
+        await transaction.rollback();
+        await app.destroy({ force: true });
+        ctx.status = 204;
+      } else {
+        await appTransaction.commit();
+        await transaction.commit();
+        ctx.body = app.toJSON();
+        ctx.status = 201;
       }
     } catch (error: unknown) {
-      // AppsembleError is only thrown when dryRun is set, meaning it’s only used to test
-      if (error instanceof AppsembleError) {
-        ctx.status = 204;
-        return;
-      }
-
-      throw error;
+      handleAppValidationError(ctx, error as Error, result);
     }
-
-    const containerDefinitions = record.containers;
-
-    if (containerDefinitions && containerDefinitions.length > 0) {
-      await updateCompanionContainers(
-        containerDefinitions,
-        record.path,
-        String(record.id),
-        record.registry,
-      );
-    }
-
-    record.Organization = organization;
-    ctx.body = record.toJSON();
-    ctx.status = 201;
   } catch (error: unknown) {
     // @ts-expect-error Messed up
     handleAppValidationError(ctx, error as Error, result);

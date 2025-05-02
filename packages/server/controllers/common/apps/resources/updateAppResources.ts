@@ -11,7 +11,7 @@ import {
 import { type Resource as ResourceInterface } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { App, Asset, Resource, ResourceVersion, transactional } from '../../../../models/index.js';
+import { App, getAppDB, type Resource } from '../../../../models/index.js';
 import { getCurrentAppMember } from '../../../../options/index.js';
 import { options } from '../../../../options/options.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
@@ -22,11 +22,12 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     pathParams: { appId, resourceType },
     queryParams: { selectedGroupId },
   } = ctx;
-
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'id'],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
+
+  const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(appId);
 
   await checkAuthSubjectAppPermissions({
     context: ctx,
@@ -35,7 +36,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     groupId: selectedGroupId,
   });
 
-  const appMember = await getCurrentAppMember({ context: ctx });
+  const appMember = await getCurrentAppMember({ context: ctx, app: app.toJSON() });
 
   const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
@@ -59,7 +60,6 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     where: {
       id: resourcesPayload.map((resource) => Number(resource.id)),
       type: resourceType,
-      AppId: appId,
       GroupId: selectedGroupId ?? null,
     },
     include: [
@@ -89,7 +89,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
   }
 
   let updatedResources: Resource[];
-  await transactional(async (transaction) => {
+  await sequelize.transaction(async (transaction) => {
     updatedResources = await Promise.all(
       processedResources.map(async ({ $author, $created, $editor, $updated, id, ...data }) => {
         const [, [resource]] = await Resource.update(
@@ -114,9 +114,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
       );
     } else if (unusedAssetIds.length) {
       await Asset.destroy({
-        where: {
-          id: unusedAssetIds,
-        },
+        where: { id: unusedAssetIds },
         transaction,
       });
 
@@ -131,7 +129,6 @@ export async function updateAppResources(ctx: Context): Promise<void> {
           return {
             ...asset,
             ...getCompressedFileMeta(asset),
-            AppId: app.id,
             GroupId: selectedGroupId ?? null,
             ResourceId,
             AppMemberId: appMember?.sub,

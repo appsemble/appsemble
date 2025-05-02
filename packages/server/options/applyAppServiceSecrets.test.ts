@@ -6,7 +6,7 @@ import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axi
 import Koa, { type ParameterizedContext } from 'koa';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, AppMember, AppServiceSecret, Organization, type User } from '../models/index.js';
+import { App, getAppDB, Organization, type User } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
@@ -136,10 +136,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should not apply secret if unauthorized', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     server.context.user = undefined;
@@ -150,7 +150,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
       secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -186,10 +185,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should not apply secrets when no urls matched', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -200,7 +199,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
       secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -264,10 +262,10 @@ describe('applyAppServiceSecrets', () => {
         ],
       },
     } as Partial<App>);
+    const { AppMember, AppServiceSecret } = await getAppDB(appWithoutSecurity.id);
     await AppMember.create({
       email: user.primaryEmail,
-      AppId: appWithoutSecurity.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     await AppServiceSecret.create({
@@ -276,7 +274,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
       secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: appWithoutSecurity.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -342,20 +339,19 @@ describe('applyAppServiceSecrets', () => {
         ],
       },
     } as Partial<App>);
+    const { AppMember, AppServiceSecret } = await getAppDB(appWithoutSecurity.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: appWithoutSecurity.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app, member);
+    authorizeAppMember(appWithoutSecurity, member);
     await AppServiceSecret.create({
       name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
       secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: appWithoutSecurity.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -395,10 +391,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with HTTP basic authentication', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const appMember = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, appMember);
@@ -409,7 +405,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
       secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -448,13 +443,13 @@ describe('applyAppServiceSecrets', () => {
 
   it('should apply public secrets even if the app member is not authenticated', async () => {
     const publicPassword = encrypt('Strong_Password-123', argv.aesSecret);
+    const { AppServiceSecret } = await getAppDB(app.id);
     await AppServiceSecret.create({
       name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
       secret: publicPassword,
-      AppId: app.id,
       public: true,
     });
 
@@ -493,10 +488,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should not authenticate request action with HTTP basic authentication when Authorization header already specified', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -507,7 +502,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
       secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
     });
 
     await AppServiceSecret.create({
@@ -516,7 +510,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'http-basic',
       identifier: 'not_john_doe',
       secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -554,10 +547,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with client certificate', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -572,7 +565,6 @@ describe('applyAppServiceSecrets', () => {
         argv.aesSecret,
       ),
       ca: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -619,10 +611,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should not authenticate request action with client certificate when httpsAgent already present', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -636,7 +628,6 @@ describe('applyAppServiceSecrets', () => {
         '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
         argv.aesSecret,
       ),
-      AppId: app.id,
     });
     await AppServiceSecret.create({
       name: 'Test service',
@@ -647,7 +638,6 @@ describe('applyAppServiceSecrets', () => {
         '-----BEGIN PRIVATE KEY-----\nTEST1\n-----END PRIVATE KEY-----',
         argv.aesSecret,
       ),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -690,10 +680,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with client credentials', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -709,7 +699,6 @@ describe('applyAppServiceSecrets', () => {
       tokenUrl,
       accessToken: encrypt('test', argv.aesSecret),
       expiresAt: 6 * 1e5,
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -759,10 +748,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should not authenticate request action with client credentials when Authorization header already specified', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -773,7 +762,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
       secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
     });
 
     await AppServiceSecret.create({
@@ -785,7 +773,6 @@ describe('applyAppServiceSecrets', () => {
       tokenUrl: `${proxiedRequest.defaults.baseURL}oauth/token`,
       accessToken: encrypt('abcd', argv.aesSecret),
       expiresAt: 6 * 1e5,
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -823,10 +810,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with cookie', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -837,7 +824,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'cookie',
       identifier: 'cookie',
       secret: encrypt('secret', argv.aesSecret),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -873,10 +859,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with 2 cookies', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -887,7 +873,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'cookie',
       identifier: 'cookie',
       secret: encrypt('secret', argv.aesSecret),
-      AppId: app.id,
     });
     await AppServiceSecret.create({
       name: 'Test service',
@@ -895,7 +880,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'cookie',
       identifier: 'another-cookie',
       secret: encrypt('another-secret', argv.aesSecret),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -933,10 +917,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with custom header', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -947,7 +931,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'custom-header',
       identifier: 'custom-header',
       secret: encrypt('secret', argv.aesSecret),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -983,10 +966,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should not authenticate request action with header authorization', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -997,7 +980,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
       secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
     });
     await AppServiceSecret.create({
       name: 'Test service',
@@ -1005,7 +987,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'custom-header',
       identifier: 'Authorization',
       secret: encrypt('secret', argv.aesSecret),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -1043,10 +1024,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with query secret', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -1057,7 +1038,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'query-parameter',
       identifier: 'authKey',
       secret: encrypt('key', argv.aesSecret),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -1095,10 +1075,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with 2 query secrets', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -1109,7 +1089,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'query-parameter',
       identifier: 'authKey',
       secret: encrypt('key', argv.aesSecret),
-      AppId: app.id,
     });
     await AppServiceSecret.create({
       name: 'Test service',
@@ -1117,7 +1096,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'query-parameter',
       identifier: 'anotherOne',
       secret: encrypt('w', argv.aesSecret),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
@@ -1156,10 +1134,10 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with multiple authentication methods', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Admin',
     });
     authorizeAppMember(app, member);
@@ -1170,7 +1148,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
       secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
     });
     await AppServiceSecret.create({
       name: 'Test service',
@@ -1181,7 +1158,6 @@ describe('applyAppServiceSecrets', () => {
         '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
         argv.aesSecret,
       ),
-      AppId: app.id,
     });
     await AppServiceSecret.create({
       name: 'Test service',
@@ -1189,7 +1165,6 @@ describe('applyAppServiceSecrets', () => {
       authenticationMethod: 'query-parameter',
       identifier: 'authKey',
       secret: encrypt('key', argv.aesSecret),
-      AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;

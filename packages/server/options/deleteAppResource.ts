@@ -1,6 +1,6 @@
 import { type DeleteAppResourceParams } from '@appsemble/node-utils';
 
-import { App, Resource } from '../models/index.js';
+import { App, getAppDB } from '../models/index.js';
 import {
   processHooks,
   processReferenceHooks,
@@ -15,14 +15,11 @@ export async function deleteAppResource({
   type,
   whereOptions,
 }: DeleteAppResourceParams): Promise<void> {
-  const persistedApp = (await App.findOne({
-    where: {
-      id: app.id,
-    },
-  }))!;
+  const { Resource } = await getAppDB(app.id!);
+  const persistedApp = (await App.findOne({ where: { id: app.id } }))!;
 
   const resource = await Resource.findOne({
-    where: { id, type, AppId: app.id, ...whereOptions },
+    where: { id, type, ...whereOptions },
   });
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type

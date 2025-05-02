@@ -8,8 +8,9 @@ import { type OpenAPIV3 } from 'openapi-types';
 
 import {
   type App,
-  AppMember,
+  type AppMember,
   EmailAuthorization,
+  getAppDB,
   OAuth2ClientCredentials,
   User,
 } from '../../models/index.js';
@@ -61,9 +62,9 @@ export async function createTestAppMember(
   email = 'test@example.com',
   role = PredefinedAppRole.Member,
 ): Promise<AppMember> {
+  const { AppMember } = await getAppDB(appId);
   const password = await hash('testpassword', 10);
   testAppMember = await AppMember.create({
-    AppId: appId,
     email,
     password,
     role,

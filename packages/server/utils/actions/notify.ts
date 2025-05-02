@@ -3,7 +3,7 @@ import { type NotifyActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 
 import { type ServerActionParameters } from './index.js';
-import { AppSubscription } from '../../models/index.js';
+import { getAppDB } from '../../models/index.js';
 import { sendNotification } from '../sendNotification.js';
 
 export async function notify({
@@ -13,6 +13,7 @@ export async function notify({
   data,
   options,
 }: ServerActionParameters<NotifyActionDefinition>): Promise<any> {
+  const { AppSubscription } = await getAppDB(app.id);
   const remapperContext = await getRemapperContext(
     app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
@@ -22,29 +23,16 @@ export async function notify({
 
   const to = remap(action.to, data, remapperContext) as string;
 
-  await app?.reload({
-    attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'],
-    include: [
-      to === 'all'
-        ? {
-            model: AppSubscription,
-            attributes: ['id', 'auth', 'p256dh', 'endpoint'],
-          }
-        : {
-            model: AppSubscription,
-            attributes: ['id', 'auth', 'p256dh', 'endpoint'],
-            required: false,
-            where: {
-              UserId: to,
-            },
-          },
-    ],
+  await app?.reload({ attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'] });
+  const appSubscriptions = await AppSubscription.findAll({
+    attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+    ...(to === 'all' ? {} : { where: { AppMemberId: to } }),
   });
 
   const title = remap(action.title, data, remapperContext) as string;
   const body = remap(action.body, data, remapperContext) as string;
 
-  for (const subscription of app.AppSubscriptions) {
+  for (const subscription of appSubscriptions) {
     sendNotification(app, subscription, { title, body });
   }
   return data;

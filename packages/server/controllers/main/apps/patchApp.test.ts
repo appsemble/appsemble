@@ -6,11 +6,10 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -173,11 +172,11 @@ describe('patchApp', () => {
       OrganizationId: organization.id,
     });
 
+    const { Resource } = await getAppDB(app.id);
     await Resource.bulkCreate(
       Array.from(Array.from({ length: 10 }).keys()).map((entry) => ({
         type: 'testResource',
         data: { foo: `bar ${entry}` },
-        AppId: app.id,
       })),
     );
     authorizeStudio(user);
@@ -209,7 +208,6 @@ describe('patchApp', () => {
       await Resource.findAll({
         attributes: ['id', 'Position', 'type'],
         where: {
-          AppId: app.id,
           type: 'testResource',
         },
       })
@@ -245,11 +243,11 @@ describe('patchApp', () => {
       OrganizationId: organization.id,
     });
 
+    const { Resource } = await getAppDB(app.id);
     await Resource.bulkCreate(
       Array.from(Array.from({ length: 10 }).keys()).map((entry) => ({
         type: 'testResource',
         data: { foo: `bar ${entry}`, numericFoo: entry % 2 === 0 ? 0 : entry },
-        AppId: app.id,
         Position: (entry + 1) * 10,
       })),
     );
@@ -284,7 +282,6 @@ describe('patchApp', () => {
       await Resource.findAll({
         attributes: ['id', 'data', 'Position', 'type'],
         where: {
-          AppId: app.id,
           type: 'testResource',
         },
         order: [['Position', 'ASC']],
@@ -1488,7 +1485,8 @@ describe('patchApp', () => {
       { raw: true },
     );
     authorizeStudio();
-    const member = await AppMember.findOne({ where: { AppId: app.id, role: 'cron' } });
+    const { AppMember } = await getAppDB(app.id);
+    const member = await AppMember.findOne({ where: { role: 'cron' } });
     expect(member).toBeNull();
     const response = await request.patch(
       `/api/apps/${app.id}`,
@@ -1513,9 +1511,8 @@ describe('patchApp', () => {
       }),
     );
     expect(response.status).toBe(200);
-    const foundMember = (await AppMember.findOne({ where: { AppId: app.id, role: 'cron' } }))!;
+    const foundMember = (await AppMember.findOne({ where: { role: 'cron' } }))!;
     expect(foundMember.dataValues).toMatchObject({
-      AppId: app.id,
       role: 'cron',
       email: expect.stringMatching('cron.*example'),
     });
@@ -1817,8 +1814,6 @@ describe('patchApp', () => {
         "enableSelfRegistration": true,
         "enableUnsecuredServiceSecrets": false,
         "googleAnalyticsID": null,
-        "hasClonableAssets": undefined,
-        "hasClonableResources": undefined,
         "hasIcon": false,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",

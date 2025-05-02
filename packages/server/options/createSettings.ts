@@ -5,14 +5,7 @@ import {
 import { parseBlockName } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
-import {
-  App,
-  AppOAuth2Secret,
-  AppSamlSecret,
-  AppSnapshot,
-  BlockAsset,
-  BlockVersion,
-} from '../models/index.js';
+import { App, AppSnapshot, BlockAsset, BlockVersion, getAppDB } from '../models/index.js';
 import { createGtagCode } from '../utils/render.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
@@ -23,6 +16,7 @@ export async function createSettings({
   identifiableBlocks,
   languages,
 }: CreateSettingsParams): Promise<[digest: string, script: string]> {
+  const { AppOAuth2Secret, AppSamlSecret } = await getAppDB(app.id!);
   const blockManifests = await BlockVersion.findAll({
     attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
     include: [
@@ -67,14 +61,6 @@ export async function createSettings({
     where: { id: app.id },
     include: [
       {
-        attributes: ['icon', 'id', 'name'],
-        model: AppOAuth2Secret,
-      },
-      {
-        attributes: ['icon', 'id', 'name'],
-        model: AppSamlSecret,
-      },
-      {
         attributes: ['id'],
         order: [['created', 'DESC']],
         limit: 1,
@@ -82,6 +68,9 @@ export async function createSettings({
       },
     ],
   }))!;
+
+  const appOAuth2Secrets = await AppOAuth2Secret.findAll({ attributes: ['icon', 'id', 'name'] });
+  const appSamlSecrets = await AppSamlSecret.findAll({ attributes: ['icon', 'id', 'name'] });
 
   const { sentryDsn, sentryEnvironment } = getSentryClientSettings(
     hostname,
@@ -107,13 +96,13 @@ export async function createSettings({
       id: persistedApp.id,
       languages,
       logins: [
-        ...persistedApp.AppOAuth2Secrets.map(({ icon, id, name }) => ({
+        ...appOAuth2Secrets.map(({ icon, id, name }) => ({
           icon,
           id,
           name,
           type: 'oauth2',
         })),
-        ...persistedApp.AppSamlSecrets.map(({ icon, id, name }) => ({
+        ...appSamlSecrets.map(({ icon, id, name }) => ({
           icon,
           id,
           name,

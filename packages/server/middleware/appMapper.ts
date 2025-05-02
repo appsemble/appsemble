@@ -2,7 +2,7 @@ import { isIP } from 'node:net';
 
 import { type Middleware } from 'koa';
 
-import { AppCollection } from '../models/AppCollection.js';
+import { AppCollection } from '../models/main/AppCollection.js';
 import { argv } from '../utils/argv.js';
 
 export function appMapper(platformMiddleware: Middleware, appMiddleware: Middleware): Middleware {

@@ -2,18 +2,14 @@ import { assertKoaCondition, deleteS3File } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { App, Asset } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function deleteAppAsset(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, assetId },
   } = ctx;
-
-  const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
-  });
-
+  const app = await App.findByPk(appId, { attributes: ['OrganizationId'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
@@ -25,10 +21,10 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
     ],
   });
 
+  const { Asset } = await getAppDB(appId);
   const asset = await Asset.findOne({
     attributes: ['id', 'name'],
     where: {
-      AppId: appId,
       id: assetId,
       ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
     },

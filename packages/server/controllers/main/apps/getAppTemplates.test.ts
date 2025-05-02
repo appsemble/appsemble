@@ -4,17 +4,11 @@ import { parse } from 'yaml';
 
 import {
   App,
-  AppBlockStyle,
   AppMessages,
-  AppOAuth2Secret,
-  AppSamlSecret,
-  AppServiceSecret,
   AppSnapshot,
-  AppVariable,
-  Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
@@ -86,15 +80,24 @@ describe('getAppTemplates', () => {
       path: 'test-template-3',
       visibility: 'private',
     });
-    await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'foo' }, clonable: true });
-    await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'bar' } });
+    const {
+      AppBlockStyle,
+      AppOAuth2Secret,
+      AppSamlSecret,
+      AppServiceSecret,
+      AppVariable,
+      Asset,
+      Resource,
+    } = await getAppDB(t2.id);
+    await Resource.create({ type: 'test', data: { name: 'foo' }, clonable: true });
+    await Resource.create({ type: 'test', data: { name: 'bar' } });
     await Asset.create({
-      AppId: t2.id,
       name: 'test-clonable',
       data: Buffer.from('test'),
       clonable: true,
     });
-    await Asset.create({ AppId: t2.id, name: 'test', data: Buffer.from('test') });
+
+    await Asset.create({ name: 'test', data: Buffer.from('test') });
     await AppMessages.create({
       AppId: t2.id,
       language: 'nl-nl',
@@ -108,12 +111,10 @@ describe('getAppTemplates', () => {
       },
     });
     await AppVariable.create({
-      AppId: t2.id,
       name: 'test',
       value: 'test',
     });
     await AppOAuth2Secret.create({
-      AppId: t2.id,
       name: 'test',
       authorizationUrl: 'authorizationUrl',
       tokenUrl: 'tokenUrl',
@@ -125,7 +126,6 @@ describe('getAppTemplates', () => {
       scope: 'scope',
     });
     await AppSamlSecret.create({
-      AppId: t2.id,
       name: 'test',
       idpCertificate: 'idpCertificate',
       entityId: 'entityId',
@@ -138,7 +138,6 @@ describe('getAppTemplates', () => {
       nameAttribute: 'nameAttribute',
     });
     await AppServiceSecret.create({
-      AppId: t2.id,
       name: 'test',
       urlPatterns: 'urlPatterns',
       authenticationMethod: 'custom-header',
@@ -146,13 +145,10 @@ describe('getAppTemplates', () => {
       secret: Buffer.from('secret'),
       tokenUrl: 'tokenUrl',
     });
-    t2.AppBlockStyles = [
-      await AppBlockStyle.create({
-        AppId: t2.id,
-        block: '@appsemble/test',
-        style: 'a { color: red; }',
-      }),
-    ];
+    await AppBlockStyle.create({
+      block: '@appsemble/test',
+      style: 'a { color: red; }',
+    });
 
     // Make sure the latest snapshot is used.
     const snapshot1 = await AppSnapshot.create({

@@ -4,7 +4,7 @@ import { getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, AppMember } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { getAppMemberInfo } from '../../../../utils/appMember.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
@@ -13,7 +13,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
     pathParams: { appId },
     queryParams: { roles, selectedGroupId },
   } = ctx;
-
+  const { AppMember } = await getAppDB(appId);
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId', 'definition', 'demoMode'],
   });
@@ -39,12 +39,11 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
 
   const appMembers = await AppMember.findAll({
     where: {
-      AppId: appId,
       demo: false,
       ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
     },
     order: [['role', 'ASC']],
   });
 
-  ctx.body = appMembers.map((appMember) => getAppMemberInfo(appMember));
+  ctx.body = appMembers.map((appMember) => getAppMemberInfo(appId, appMember));
 }

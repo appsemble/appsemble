@@ -7,7 +7,7 @@ import {
 } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, Asset, Resource, ResourceVersion, transactional } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { getCurrentAppMember } from '../../../../options/index.js';
 import { checkAppPermissions } from '../../../../utils/authorization.js';
 
@@ -17,14 +17,14 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     queryParams: { selectedGroupId },
     user: authSubject,
   } = ctx;
-
+  const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(appId);
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'id'],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const resource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType, AppId: appId, GroupId: selectedGroupId ?? null },
+    where: { id: resourceId, type: resourceType, GroupId: selectedGroupId ?? null },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
   });
 
@@ -41,16 +41,14 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     groupId: selectedGroupId,
   });
 
-  const appMember = await getCurrentAppMember({ context: ctx });
+  const appMember = await getCurrentAppMember({ context: ctx, app: app.toJSON() });
 
   const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
   const appAssets = await Asset.findAll({
     attributes: ['id', 'name', 'ResourceId'],
-    where: { AppId: appId, GroupId: selectedGroupId ?? null },
+    where: { GroupId: selectedGroupId ?? null },
   });
-
-  assertKoaCondition(resource != null, ctx, 404, 'Resource not found');
 
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
     ctx,
@@ -68,7 +66,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     ...patchData
   } = updatedResource as Record<string, unknown>;
 
-  await transactional((transaction) => {
+  await sequelize.transaction((transaction) => {
     const oldData = resource.data;
     const data = { ...oldData, ...patchData };
     const previousEditorId = resource.EditorId;
@@ -82,7 +80,6 @@ export async function patchAppResource(ctx: Context): Promise<void> {
           preparedAssets.map((asset) => ({
             ...asset,
             ...getCompressedFileMeta(asset),
-            AppId: app.id,
             GroupId: selectedGroupId ?? null,
             ResourceId: resource.id,
             AppMemberId: appMember?.sub,

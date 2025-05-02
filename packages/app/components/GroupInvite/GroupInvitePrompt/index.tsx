@@ -13,7 +13,7 @@ import { FormattedMessage } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import { apiUrl } from '../../../utils/settings.js';
+import { apiUrl, appId } from '../../../utils/settings.js';
 import { useAppMember } from '../../AppMemberProvider/index.js';
 import { AppBar } from '../../TitleBar/index.js';
 
@@ -34,11 +34,13 @@ export function GroupInvitePrompt(): ReactNode {
     data: invite,
     error: inviteError,
     loading,
-  } = useData<GroupInviteType>(`${apiUrl}/api/group-invites/${token}`);
+  } = useData<GroupInviteType>(`${apiUrl}/api/apps/${appId}/group-invites/${token}`);
 
   const decline = useCallback(async () => {
     try {
-      await axios.post(`${apiUrl}/api/group-invites/${token}/respond`, { response: false });
+      await axios.post(`${apiUrl}/api/apps/${appId}/group-invites/${token}/respond`, {
+        response: false,
+      });
 
       setDeclined(true);
     } catch (error_) {
@@ -48,7 +50,9 @@ export function GroupInvitePrompt(): ReactNode {
 
   const accept = useCallback(async () => {
     try {
-      await axios.post(`${apiUrl}/api/group-invites/${token}/respond`, { response: true });
+      await axios.post(`${apiUrl}/api/apps/${appId}/group-invites/${token}/respond`, {
+        response: true,
+      });
 
       // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       const group = { id: invite.groupId, name: invite.groupName, role: invite.role };

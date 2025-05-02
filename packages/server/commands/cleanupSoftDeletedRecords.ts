@@ -3,15 +3,7 @@ import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import {
-  App,
-  Asset,
-  initDB,
-  Organization,
-  Resource,
-  transactional,
-  User,
-} from '../models/index.js';
+import { App, getAppDB, initDB, Organization, transactional, User } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
@@ -53,6 +45,34 @@ export async function handler(): Promise<void> {
       transaction,
     };
     const deletedAtParsed = new Date(deletedAt).toLocaleString();
+
+    const apps = await App.findAll({ attributes: ['id'], transaction });
+    await Promise.all(
+      apps.map(async (app) => {
+        const { Asset, Resource, sequelize } = await getAppDB(app.id);
+        try {
+          await sequelize.transaction(async (appTransaction) => {
+            logger.info(`Deleting resources soft deleted before ${deletedAtParsed}`);
+            const deletedResources = await Resource.destroy({
+              ...deleteQuery,
+              transaction: appTransaction,
+            });
+            logger.info(`Successfully deleted ${deletedResources} resources from app ${app.id}.`);
+
+            logger.info(`Deleting assets soft deleted before ${deletedAtParsed}`);
+            const deletedAssets = await Asset.destroy({
+              ...deleteQuery,
+              transaction: appTransaction,
+            });
+            logger.info(`Successfully deleted ${deletedAssets} assets from app ${app.id}.`);
+          });
+        } catch (error) {
+          logger.error(error);
+          await transaction.rollback();
+        }
+      }),
+    );
+
     logger.info(`Deleting apps soft deleted before ${deletedAtParsed}`);
     const deletedApps = await App.destroy(deleteQuery);
     logger.info(`Successfully deleted ${deletedApps} apps.`);
@@ -60,14 +80,6 @@ export async function handler(): Promise<void> {
     logger.info(`Deleting organizations soft deleted before ${deletedAtParsed}`);
     const deletedOrganizations = await Organization.destroy(deleteQuery);
     logger.info(`Successfully deleted ${deletedOrganizations} organizations.`);
-
-    logger.info(`Deleting resources soft deleted before ${deletedAtParsed}`);
-    const deletedResources = await Resource.destroy(deleteQuery);
-    logger.info(`Successfully deleted ${deletedResources} resources.`);
-
-    logger.info(`Deleting assets soft deleted before ${deletedAtParsed}`);
-    const deletedAssets = await Asset.destroy(deleteQuery);
-    logger.info(`Successfully deleted ${deletedAssets} assets.`);
 
     logger.info(`Deleting users soft deleted before ${deletedAtParsed}`);
     const deletedUsers = await User.destroy(deleteQuery);

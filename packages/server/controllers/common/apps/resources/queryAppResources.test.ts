@@ -9,12 +9,9 @@ import webpush from 'web-push';
 
 import {
   type App,
-  AppMember,
-  Group,
-  GroupMember,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -65,17 +62,16 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to fetch all resources of a type', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
     });
-    await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
+    await Resource.create({ type: 'testResourceB', data: { bar: 'baz' } });
 
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
@@ -102,13 +98,12 @@ describe('queryAppResources', () => {
   });
 
   it('should be possible to filter properties using $select', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar', bar: 'foo', fooz: 'baz', baz: 'fooz' },
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
     });
@@ -140,24 +135,22 @@ describe('queryAppResources', () => {
   describe('verifyAppRole', () => {
     // The same logic gets applies to query, get, create, update, and delete.
     it('should return normally on secured actions if user is authenticated and has sufficient roles', async () => {
+      const { AppMember, Resource } = await getAppDB(app.id);
       const member = await AppMember.create({
         email: user.primaryEmail,
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         role: PredefinedAppRole.ResourcesManager,
         timezone: 'Europe/Amsterdam',
       });
       await Resource.create({
-        AppId: app.id,
         type: 'testResourceB',
         data: { foo: 'bar' },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'testResourceB',
         data: { foo: 'baz' },
       });
-      await Resource.create({ AppId: app.id, type: 'testResource', data: { bar: 'baz' } });
+      await Resource.create({ type: 'testResource', data: { bar: 'baz' } });
 
       authorizeAppMember(app, member);
       const response = await request.get(`/api/apps/${app.id}/resources/testResourceB`);
@@ -184,16 +177,15 @@ describe('queryAppResources', () => {
     });
 
     it('should return normally on secured actions if user is the resource author', async () => {
+      const { AppMember, Resource } = await getAppDB(app.id);
       const member = await AppMember.create({
         email: user.primaryEmail,
         timezone: 'Europe/Amsterdam',
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         name: user.name,
         role: 'Reader',
       });
       await Resource.create({
-        AppId: app.id,
         type: 'testResourceAuthorOnly',
         data: { foo: 'bar' },
         AuthorId: member.id,
@@ -242,10 +234,10 @@ describe('queryAppResources', () => {
     });
 
     it('should throw a 403 on secured actions if user is authenticated and has insufficient roles', async () => {
+      const { AppMember } = await getAppDB(app.id);
       const member = await AppMember.create({
         email: user.primaryEmail,
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         role: PredefinedAppRole.Member,
         timezone: 'Europe/Amsterdam',
       });
@@ -267,13 +259,12 @@ describe('queryAppResources', () => {
   });
 
   it('should trim spaces in $select properties', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar', bar: 'foo', fooz: 'baz', baz: 'fooz' },
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
     });
@@ -301,13 +292,12 @@ describe('queryAppResources', () => {
   });
 
   it('should ignore unknown properties in $select', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar', bar: 'foo', fooz: 'baz', baz: 'fooz' },
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
     });
@@ -329,8 +319,8 @@ describe('queryAppResources', () => {
   });
 
   it('should be possible to query resources without credentials with the guest role', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceNone',
       data: { bar: 'bar' },
     });
@@ -354,36 +344,33 @@ describe('queryAppResources', () => {
   });
 
   it('should be possible to query resources as author', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const memberA = await AppMember.create({
       email: user.primaryEmail,
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       name: user.name,
       role: 'Reader',
     });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const memberB = await AppMember.create({
       email: 'userB@example.com',
-      AppId: app.id,
-      UserId: userB.id,
+      userId: userB.id,
       role: PredefinedAppRole.ResourcesManager,
       timezone: 'Europe/Amsterdam',
     });
 
     await Resource.create({
-      AppId: app.id,
       AuthorId: memberA.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
     await Resource.create({
-      AppId: app.id,
       AuthorId: memberB.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'baz' },
     });
-    await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
+    await Resource.create({ type: 'testResourceB', data: { bar: 'baz' } });
 
     authorizeAppMember(app, memberA);
     const response = await request.get(
@@ -413,30 +400,28 @@ describe('queryAppResources', () => {
   });
 
   it('should only fetch resources from group members', async () => {
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
     const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     const memberA = await AppMember.create({
       email: user.primaryEmail,
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       name: user.name,
       role: PredefinedAppRole.Owner,
     });
     const memberB = await AppMember.create({
       email: 'userB@example.com',
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: userB.id,
+      userId: userB.id,
       name: userB.name,
       role: PredefinedAppRole.Member,
     });
     const memberC = await AppMember.create({
       email: 'userC@example.com',
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: userC.id,
+      userId: userC.id,
       name: userC.name,
       role: PredefinedAppRole.Member,
     });
@@ -452,21 +437,18 @@ describe('queryAppResources', () => {
     });
 
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceGroup',
       data: { foo: 'bar' },
       AuthorId: memberA.id,
       GroupId: group.id,
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceGroup',
       data: { foo: 'baz' },
       AuthorId: memberB.id,
       GroupId: group.id,
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceGroup',
       data: { foo: 'foo' },
       AuthorId: memberC.id,
@@ -517,12 +499,12 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to limit the amount of resources', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
-    await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'baz' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'baz' } });
     authorizeStudio();
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource?$top=1`);
@@ -543,17 +525,16 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to sort fetched resources', async () => {
+    const { Resource } = await getAppDB(app.id);
     vi.useRealTimers();
     vi.useFakeTimers();
     vi.setSystemTime(0);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
     vi.advanceTimersByTime(20e3);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
     });
@@ -656,20 +637,18 @@ describe('queryAppResources', () => {
     vi.useRealTimers();
     vi.useFakeTimers();
     vi.setSystemTime(0);
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { number: 9 },
     });
     vi.advanceTimersByTime(20e3);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { number: 9.1 },
     });
     vi.advanceTimersByTime(20e3);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { number: 9.2 },
     });
@@ -735,8 +714,8 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to sort fetched resources by an integer field', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { integer: 9 },
     });
@@ -745,7 +724,6 @@ describe('queryAppResources', () => {
     vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { integer: 10 },
     });
@@ -799,8 +777,8 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to sort fetched resources by a boolean field', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { boolean: false },
     });
@@ -809,7 +787,6 @@ describe('queryAppResources', () => {
     vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { boolean: true },
     });
@@ -863,8 +840,8 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to sort fetched resources by an enum field', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { enum: 'A' },
     });
@@ -873,7 +850,6 @@ describe('queryAppResources', () => {
     vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { enum: 'B' },
     });
@@ -930,26 +906,23 @@ describe('queryAppResources', () => {
     vi.useRealTimers();
     vi.useFakeTimers();
     vi.setSystemTime(0);
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { date: '2023-05-14' },
     });
     vi.advanceTimersByTime(20e3);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { date: '2024-04-14' },
     });
     vi.advanceTimersByTime(20e3);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { date: '2024-04-15' },
     });
     vi.advanceTimersByTime(20e3);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { date: '2024-05-14' },
     });
@@ -1027,12 +1000,12 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to filter fields when fetching resources', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
     });
-    await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'bar' } });
     authorizeStudio();
 
     const response = await request.get(
@@ -1055,12 +1028,12 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to filter fields with special characters when fetching resources', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo\'s " \\%&+?^/' },
     });
-    await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'bar' } });
     authorizeStudio();
 
     const response = await request.get(
@@ -1083,12 +1056,12 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to filter multiple fields when fetching resources', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
     });
-    await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar', bar: 2 } });
+    await Resource.create({ type: 'testResource', data: { foo: 'bar', bar: 2 } });
     authorizeStudio();
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
@@ -1113,30 +1086,27 @@ describe('queryAppResources', () => {
 
   it('should be able to filter by author', async () => {
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const { AppMember, Resource } = await getAppDB(app.id);
     const memberA = await AppMember.create({
       email: user.primaryEmail,
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       name: user.name,
       role: PredefinedAppRole.Member,
     });
     const memberB = await AppMember.create({
       email: 'userB@example.com',
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: userB.id,
+      userId: userB.id,
       name: userB.name,
       role: PredefinedAppRole.Member,
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
       AuthorId: memberA.id,
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar', bar: 2 },
       AuthorId: memberB.id,
@@ -1171,8 +1141,8 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to combine multiple functions when fetching resources', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
     });
@@ -1181,7 +1151,6 @@ describe('queryAppResources', () => {
     vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar', bar: 2 },
     });
@@ -1215,16 +1184,15 @@ describe('queryAppResources', () => {
   });
 
   it('should return the resource authors if it has them', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       name: user.name,
       role: PredefinedAppRole.Member,
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
       AuthorId: member.id,
@@ -1319,8 +1287,8 @@ describe('queryAppResources', () => {
   });
 
   it('should allow organization app editors to query resources using Studio', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -1347,8 +1315,8 @@ describe('queryAppResources', () => {
       role: PredefinedOrganizationRole.Member,
     });
 
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -1367,8 +1335,8 @@ describe('queryAppResources', () => {
   });
 
   it('should allow organization app editors to query resources using client credentials', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -1394,8 +1362,8 @@ describe('queryAppResources', () => {
       role: PredefinedOrganizationRole.Member,
     });
 
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -1414,8 +1382,8 @@ describe('queryAppResources', () => {
   });
 
   it('should make actions private by default', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testPrivateResource',
       data: { foo: 'bar' },
     });
@@ -1433,22 +1401,20 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to fetch a resource view', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
     });
-    await Resource.create({ AppId: app.id, type: 'testResource', data: { bar: 'baz' } });
+    await Resource.create({ type: 'testResource', data: { bar: 'baz' } });
 
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.Owner,
       timezone: 'Europe/Amsterdam',
     });
@@ -1479,17 +1445,16 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to fetch a public resource', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
     });
-    await Resource.create({ AppId: app.id, type: 'testResource', data: { bar: 'baz' } });
+    await Resource.create({ type: 'testResource', data: { bar: 'baz' } });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
@@ -1521,10 +1486,10 @@ describe('queryAppResources', () => {
   });
 
   it('should return 404 for non-existing resource views', async () => {
+    const { AppMember } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.ResourcesManager,
       timezone: 'Europe/Amsterdam',
     });
@@ -1563,10 +1528,10 @@ describe('queryAppResources', () => {
   });
 
   it('should check for the correct role when using resource views', async () => {
+    const { AppMember } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedOrganizationRole.Member,
       timezone: 'Europe/Amsterdam',
     });
@@ -1589,9 +1554,9 @@ describe('queryAppResources', () => {
 
   it('should return clonable field if app is a template app', async () => {
     app.update({ template: true });
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'bar' },
     });
 

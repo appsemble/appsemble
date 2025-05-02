@@ -1,6 +1,6 @@
 import { type Transaction } from 'sequelize';
 
-import { getDB } from '../models/index.js';
+import { getAppDB } from '../models/index.js';
 
 export async function createDynamicIndexes(
   enforceOrderingGroupByFields: string[],
@@ -8,20 +8,20 @@ export async function createDynamicIndexes(
   resourceType: string,
   transaction?: Transaction,
 ): Promise<void> {
-  const db = getDB();
+  const { sequelize } = await getAppDB(appId);
   const queries = enforceOrderingGroupByFields
     .map(
       (field) => `
 CREATE UNIQUE INDEX IF NOT EXISTS
-"UniquePosition${resourceType}${field}WithGroupIDAppID${appId}"
-on "Resource"(type, "AppId", "Position", (data->>'${field}'), "GroupId", ephemeral)
+"UniquePosition${resourceType}${field}WithGroupID"
+on "Resource"(type, "Position", (data->>'${field}'), "GroupId", ephemeral)
 WHERE "GroupId" IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS
-"UniquePosition${resourceType}${field}WithNULLGroupIDAppID${appId}"
-on "Resource"(type, "AppId", "Position", (data->>'${field}'), ephemeral)
+"UniquePosition${resourceType}${field}WithNULLGroupID"
+on "Resource"(type, "Position", (data->>'${field}'), ephemeral)
 WHERE "GroupId" IS NULL;
 `,
     )
     .join('\n');
-  await db.query(queries, { transaction });
+  await sequelize.query(queries, { transaction });
 }

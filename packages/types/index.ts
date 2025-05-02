@@ -2480,16 +2480,6 @@ export interface App {
   };
 
   /**
-   * Whether the app has clonable resources.
-   */
-  hasClonableResources?: boolean;
-
-  /**
-   * Whether the app has clonable assets.
-   */
-  hasClonableAssets?: boolean;
-
-  /**
    * A list of URLs to app screenshots
    */
   screenshotUrls?: string[];

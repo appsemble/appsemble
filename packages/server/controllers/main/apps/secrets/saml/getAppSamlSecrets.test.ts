@@ -2,12 +2,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  App,
-  AppSamlSecret,
-  Organization,
-  OrganizationMember,
-} from '../../../../../models/index.js';
+import { App, getAppDB, Organization, OrganizationMember } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
@@ -52,8 +47,8 @@ describe('getAppSamlSecrets', () => {
 
   it('should get SAML secrets for an app', async () => {
     authorizeStudio();
+    const { AppSamlSecret } = await getAppDB(app.id);
     await AppSamlSecret.create({
-      AppId: app.id,
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
@@ -91,6 +86,7 @@ describe('getAppSamlSecrets', () => {
 
   it('should only include SAML secrets for the specified app', async () => {
     authorizeStudio();
+    const { AppSamlSecret } = await getAppDB(app.id);
     const otherApp = await App.create({
       OrganizationId: organization.id,
       vapidPublicKey: '',
@@ -98,7 +94,6 @@ describe('getAppSamlSecrets', () => {
       definition: {},
     });
     await AppSamlSecret.create({
-      AppId: app.id,
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
@@ -108,8 +103,8 @@ describe('getAppSamlSecrets', () => {
       spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
-    await AppSamlSecret.create({
-      AppId: otherApp.id,
+    const { AppSamlSecret: OtherAppSamlSecret } = await getAppDB(otherApp.id);
+    await OtherAppSamlSecret.create({
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: '-----BEGIN CERTIFICATE-----\nOTHER_IDP\n-----END CERTIFICATE-----',

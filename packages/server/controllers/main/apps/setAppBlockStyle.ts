@@ -3,7 +3,7 @@ import { OrganizationPermission } from '@appsemble/types';
 import { StyleValidationError, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 
-import { App, AppBlockStyle, BlockVersion } from '../../../models/index.js';
+import { App, BlockVersion, getAppDB } from '../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 
@@ -35,14 +35,14 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
       requiredPermissions: [OrganizationPermission.UpdateAppSettings],
     });
 
+    const { AppBlockStyle } = await getAppDB(appId);
     await (css.length
       ? AppBlockStyle.upsert({
           style: css,
-          AppId: appId,
           block: `@${block.OrganizationId}/${block.name}`,
         })
       : AppBlockStyle.destroy({
-          where: { AppId: appId, block: `@${block.OrganizationId}/${block.name}` },
+          where: { block: `@${block.OrganizationId}/${block.name}` },
         }));
 
     ctx.status = 204;
