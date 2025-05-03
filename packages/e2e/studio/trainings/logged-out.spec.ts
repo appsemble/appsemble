@@ -23,6 +23,9 @@ test('should show banner if user is not logged in', async ({ page }) => {
 });
 
 test('should have all trainings unlocked if user is not logged in', async ({ page }) => {
+  // Wait for initialization since locator.all() does not wait for elements to be visible
+  await page.getByTestId('rf__node-introduction').waitFor({ state: 'visible' });
+
   const statusCircles = await page.getByTestId('status-circle').all();
   expect(statusCircles.length).toBeGreaterThan(0);
   for (const statusCircle of statusCircles) {
