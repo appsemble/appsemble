@@ -3,9 +3,9 @@ set -e
 
 npm ci
 
-. scripts/seed-account.sh
-
 npm run appsemble -- config set remote "$APPSEMBLE_REMOTE"
+
+. scripts/seed-account.sh
 
 npm run appsemble -- organization create appsemble \
   --description "The open source low-code app building platform" \

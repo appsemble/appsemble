@@ -172,15 +172,11 @@ services:
       timeout: 2s
       retries: 5
     links:
-      - 'appsemble:controller.appsemble.appsemble'
       - 'appsemble:empty.appsemble.appsemble'
       - 'appsemble:holidays.appsemble.appsemble'
       - 'appsemble:notes.appsemble.appsemble'
       - 'appsemble:person.appsemble.appsemble'
-      - 'appsemble:remappers.appsemble.appsemble'
-      - 'appsemble:soundboard.appsemble.appsemble'
       - 'appsemble:survey.appsemble.appsemble'
-      - 'appsemble:triggers.appsemble.appsemble'
       - 'appsemble:unlittered.appsemble.appsemble'
 
 volumes:
