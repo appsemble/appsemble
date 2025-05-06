@@ -39,14 +39,14 @@ export function validateFile(
 
       if (
         Requirement.MinLength in requirement &&
-        requirement.minLength > (value as File[]).length
+        remap(requirement.minLength, values) > (value as File[]).length
       ) {
         return true;
       }
 
       if (
         Requirement.MaxLength in requirement &&
-        requirement.maxLength < (value as File[]).length
+        remap(requirement.maxLength, values) < (value as File[]).length
       ) {
         return true;
       }

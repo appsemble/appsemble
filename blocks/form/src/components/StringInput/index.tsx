@@ -3,6 +3,7 @@ import { InputField, TextAreaField } from '@appsemble/preact-components';
 import { has } from '@appsemble/utils';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
+import { useMemo } from 'preact/hooks';
 
 import { type InputProps, type StringField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
@@ -20,6 +21,7 @@ export function StringInput({
   error,
   errorLinkRef,
   field,
+  fieldsetEntryValues = {},
   formValues,
   name,
   onChange,
@@ -50,6 +52,11 @@ export function StringInput({
     value = unknownValue as string;
   }
 
+  const remapperValues = useMemo(
+    () => ({ formValues, fieldsetEntryValues }),
+    [formValues, fieldsetEntryValues],
+  );
+
   const remappedLabel = utils.remap(label, value) ?? name;
   const commonProps = {
     className: classNames('appsemble-string', className),
@@ -58,8 +65,8 @@ export function StringInput({
     help: utils.remap(help, value) as string,
     icon,
     label: remappedLabel as string,
-    maxLength: getMaxLength(field),
-    minLength: getMinLength(field),
+    maxLength: getMaxLength(field, utils, remapperValues),
+    minLength: getMinLength(field, utils, remapperValues),
     name,
     onChange,
     optionalLabel: utils.formatMessage('optionalLabel'),
