@@ -122,6 +122,7 @@ export function EnumInput({
     }
 
     if ('remapper' in field) {
+      setOptions(utils.remap(field.remapper, { formValues, fieldsetEntryValues }) as Choice[]);
       return;
     }
 
