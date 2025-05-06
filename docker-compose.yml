@@ -1,5 +1,3 @@
-version: '3.3'
-
 services:
   # A persistent database for local development.
   postgres-dev:
