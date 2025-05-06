@@ -678,6 +678,52 @@ describe('createAppResource', () => {
     `);
   });
 
+  it('should support custom delimiter for text/csv', async () => {
+    authorizeStudio();
+    const response = await request.post(
+      `/api/apps/${app.id}/resources/testResource`,
+      stripIndent(`
+        foo;bar;integer;boolean;number;object;array\r
+        a;b;42;true;3.14;{};[]\r
+        A;B;1337;false;9.8;{};[]\r
+      `)
+        .replace(/^\s+/, '')
+        .replaceAll(/ +$/g, ''),
+      { headers: { 'content-type': 'text/csv' }, params: { delimiter: ';' } },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "array": [],
+          "bar": "b",
+          "boolean": true,
+          "foo": "a",
+          "id": 1,
+          "integer": 42,
+          "number": 3.14,
+          "object": {},
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "array": [],
+          "bar": "B",
+          "boolean": false,
+          "foo": "A",
+          "id": 2,
+          "integer": 1337,
+          "number": 9.8,
+          "object": {},
+        },
+      ]
+    `);
+  });
+
   it("should assign the user's AppMember account to the resource", async () => {
     const member = await AppMember.create({
       email: user.primaryEmail,
