@@ -159,12 +159,20 @@ export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => 
  * Get the absolute minimum length of a field.
  *
  * @param field The field to check.
+ * @param utils The Appsemble SDK utils.
+ * @param values The values of all form fields.
  * @returns The minimum length of the field.
  */
-export function getMinLength(field: FieldWithRequirements): number | undefined {
-  const minLengths = field.requirements?.map((r) => r.minLength).filter(Number.isFinite);
+export function getMinLength(
+  field: FieldWithRequirements,
+  utils?: BlockUtils,
+  values?: Values,
+): number | undefined {
+  const minLengths = field.requirements
+    ?.map((r) => r.minLength)
+    .filter((ml) => Number.isFinite(utils?.remap(ml, values)));
   if (minLengths?.length) {
-    return Math.max(...minLengths);
+    return Math.max(...minLengths.map((ml) => utils?.remap(ml, values) as number));
   }
 }
 
@@ -172,12 +180,20 @@ export function getMinLength(field: FieldWithRequirements): number | undefined {
  * Get the absolute maximum length of a field.
  *
  * @param field The field to check.
+ * @param utils The Appsemble SDK utils.
+ * @param values The values of all form fields.
  * @returns The maximum length of the field.
  */
-export function getMaxLength(field: FieldWithRequirements): number | undefined {
-  const maxLengths = field.requirements?.map((r) => r.maxLength).filter(Number.isFinite);
+export function getMaxLength(
+  field: FieldWithRequirements,
+  utils?: BlockUtils,
+  values?: Values,
+): number | undefined {
+  const maxLengths = field.requirements
+    ?.map((r) => r.maxLength)
+    .filter((ml) => Number.isFinite(utils?.remap(ml, values)));
   if (maxLengths?.length) {
-    return Math.min(...maxLengths);
+    return Math.min(...maxLengths.map((ml) => utils?.remap(ml, values) as number));
   }
 }
 

@@ -46,14 +46,14 @@ export function validateString(
 
     if (
       Requirement.MaxLength in requirement &&
-      (value == null || value.length > requirement.maxLength)
+      (value == null || value.length > remap(requirement.maxLength, values))
     ) {
       return true;
     }
 
     if (
       Requirement.MinLength in requirement &&
-      (value == null || value.length < requirement.minLength)
+      (value == null || value.length < remap(requirement.minLength, values))
     ) {
       return true;
     }

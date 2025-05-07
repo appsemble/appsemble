@@ -2,7 +2,13 @@ import { useBlock } from '@appsemble/preact';
 import { Button, FormButtons } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type JSX, type VNode } from 'preact';
-import { type Dispatch, type MutableRef, type StateUpdater, useCallback } from 'preact/hooks';
+import {
+  type Dispatch,
+  type MutableRef,
+  type StateUpdater,
+  useCallback,
+  useMemo,
+} from 'preact/hooks';
 
 import styles from './index.module.css';
 import {
@@ -42,6 +48,7 @@ export function Fieldset({
   error,
   errorLinkRef,
   field,
+  fieldsetEntryValues = {},
   formDataLoading,
   formValues,
   name,
@@ -54,8 +61,14 @@ export function Fieldset({
   const { utils } = useBlock();
   const localValues = getValueByNameSequence(name, formValues) as Values[];
   const errors = error as FieldError[];
-  const minLength = getMinLength(field);
-  const maxLength = getMaxLength(field);
+
+  const remapperValues = useMemo(
+    () => ({ formValues, fieldsetEntryValues }),
+    [formValues, fieldsetEntryValues],
+  );
+
+  const minLength = getMinLength(field, utils, remapperValues);
+  const maxLength = getMaxLength(field, utils, remapperValues);
 
   const changeArray = useCallback(
     (localName: string, val: Values) => {

@@ -134,17 +134,13 @@ export interface RegexRequirement extends BaseRequirement {
 interface LengthRequirement extends BaseRequirement {
   /**
    * The minimum length.
-   *
-   * @minimum 1
    */
-  minLength?: number;
+  minLength?: Remapper;
 
   /**
    * The maximum length.
-   *
-   * @minimum 1
    */
-  maxLength?: number;
+  maxLength?: Remapper;
 }
 
 /**

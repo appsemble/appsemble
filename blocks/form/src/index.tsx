@@ -71,7 +71,7 @@ bootstrap(
     const [triedToSubmit, setTriedToSubmit] = useState<boolean>(false);
     const [longSubmission, setLongSubmission] = useState<boolean>(false);
     const [thumbnails, setThumbnails] = useState<(File | string)[]>([]);
-    const [fieldsReady, setFieldsReady] = useState<Record<Field['name'], boolean>>();
+    const [fieldsReady, setFieldsReady] = useState<Record<Field['name'], boolean>>({});
 
     useEffect(() => {
       const newFieldsReady: Record<Field['name'], boolean> = {};

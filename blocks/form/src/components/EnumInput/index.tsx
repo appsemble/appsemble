@@ -10,7 +10,7 @@ import {
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { type ChangeEvent } from 'preact/compat';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
 import { type Choice, type EnumField, type InputProps } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
@@ -27,19 +27,24 @@ export function EnumInput({
   disabled,
   errorLinkRef,
   field,
-  fieldsetEntryValues,
+  fieldsetEntryValues = {},
   formValues,
   name,
   onChange,
   readOnly,
 }: EnumInputProps): VNode {
   const { actions, events, utils } = useBlock();
+  const remapperValues = useMemo(
+    () => ({ formValues, fieldsetEntryValues }),
+    [formValues, fieldsetEntryValues],
+  );
+
   const [loading, setLoading] = useState('action' in field || 'event' in field);
   const [options, setOptions] = useState(
     'action' in field || 'event' in field
       ? []
       : 'remapper' in field
-        ? (utils.remap(field.remapper, { formValues, fieldsetEntryValues }) as Choice[])
+        ? (utils.remap(field.remapper, remapperValues) as Choice[])
         : field.enum,
   );
   const [error, setError] = useState<string>(null);
@@ -53,7 +58,7 @@ export function EnumInput({
   const { icon, inline, label, onSelect, placeholder, tag } = field;
   const value = getValueByNameSequence(name, formValues);
 
-  const required = isRequired(field, utils, formValues);
+  const required = isRequired(field, utils, remapperValues);
 
   const applyFilter = useCallback((): void => {
     const filteredOptions = originalOptions.filter((choice) =>
@@ -82,7 +87,7 @@ export function EnumInput({
     }
 
     if ('remapper' in field) {
-      setOptions(utils.remap(field.remapper, { formValues, fieldsetEntryValues }) as Choice[]);
+      setOptions(utils.remap(field.remapper, remapperValues) as Choice[]);
       if ('filter' in field) {
         if (field.filter) {
           applyFilter();
@@ -122,6 +127,7 @@ export function EnumInput({
     }
 
     if ('remapper' in field) {
+      setOptions(utils.remap(field.remapper, remapperValues) as Choice[]);
       return;
     }
 
@@ -151,7 +157,7 @@ export function EnumInput({
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
-  }, [actions, events, field, fieldsetEntryValues, formValues, utils]);
+  }, [actions, events, field, fieldsetEntryValues, formValues, remapperValues, utils]);
 
   const filterChange = useCallback((e: ChangeEvent<HTMLInputElement>, input: string): void => {
     setInputValue(input);
