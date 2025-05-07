@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.2-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.3)] - 2025-05-07
+
+### Changed
+
+- Block(`form`): Support remappers in `minLength` and `maxLength` requirements.
+- Studio: Preview button no longer gets disabled when there are unsaved changes.
+
+### Fixed
+
+- Block(`form`): Add default value for fieldsReady.
+- Block(`form`): Properly handle the remapped show property of fieldset fields.
+- Block(`form`): Properly reset options in enum fields based on form state.
+- E2e: Wait until training chapters are loaded to prevent test flakiness.
+- Server: Use the default language of the app for app and group invites.
+
 ## \[[0.32.2-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.2)] - 2025-04-28
 
 ### Changed

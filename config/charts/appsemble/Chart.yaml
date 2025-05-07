@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.2-test.2
-appVersion: 0.32.2-test.2
+version: 0.32.2-test.3
+appVersion: 0.32.2-test.3
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,20 +33,20 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: changed
-      description: "Node-utils: Support null values for binary strings in resources."
+      description: "Block(form): Support remappers in minLength and maxLength requirements."
+    - kind: changed
+      description: "Studio: Preview button no longer gets disabled when there are
+        unsaved changes."
     - kind: fixed
-      description: "Block(form): Don't remove thumbnails when removing an image from
-        the file input."
+      description: "Block(form): Add default value for fieldsReady."
     - kind: fixed
-      description: "Block(form): Start the markdown editor as interactive."
+      description: "Block(form): Properly handle the remapped show property of fieldset fields."
     - kind: fixed
-      description: "Block(form): Start videos muted in file inputs, handle first frame
-        capture only once."
+      description: "Block(form): Properly reset options in enum fields based on form state."
     - kind: fixed
-      description: "Block(form): Wait for file input fields to load before allowing
-        the form to be submitted."
+      description: "E2e: Wait until training chapters are loaded to prevent test flakiness."
     - kind: fixed
-      description: "Block(list): Refetch image on value change."
+      description: "Server: Use the default language of the app for app and group invites."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

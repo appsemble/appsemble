@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/node-utils",
-  "version": "0.32.2-test.2",
+  "version": "0.32.2-test.3",
   "description": "NodeJS utilities used by Appsemble internally.",
   "keywords": [
     "app",
@@ -40,8 +40,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.32.2-test.2",
-    "@appsemble/utils": "0.32.2-test.2",
+    "@appsemble/types": "0.32.2-test.3",
+    "@appsemble/utils": "0.32.2-test.3",
     "@formatjs/fast-memoize": "^2.0.0",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@kubernetes/client-node": "^0.22.2",
