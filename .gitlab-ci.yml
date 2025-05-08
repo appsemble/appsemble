@@ -406,6 +406,7 @@ e2e apps obligatory:
       - PROJECT:
           - 'appsemble/apps/sittard-geleen'
           - 'appsemble/apps/restaurants'
+          - 'appsemble/apps/minjus'
   trigger:
     project: $PROJECT
     strategy: depend
@@ -429,7 +430,6 @@ e2e apps manual:
     matrix:
       - PROJECT:
           - 'appsemble/apps/template'
-          - 'appsemble/apps/sittard-geleen'
           - 'appsemble/apps/eindhoven'
           - 'appsemble/apps/amersfoort'
           - 'appsemble/apps/sounding-bodies'
