@@ -24,16 +24,23 @@ export const xWwwFormUrlencodedParser: Parser<unknown> = async (
   return parse(String(buffer));
 };
 
-export const csvParser: Parser<unknown[]> = (body) =>
+export const csvParser: Parser<unknown[]> = (body, mediaTypeObject, options, ctx) =>
   new Promise((resolve, reject) => {
     body.pipe(
-      parseCSV({ bom: true, columns: true }, (error, records) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(records);
-        }
-      }),
+      parseCSV(
+        {
+          bom: true,
+          columns: true,
+          delimiter: ctx.queryParams?.delimiter?.replace(/\\t/g, '\t') ?? ',',
+        },
+        (error, records) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(records);
+          }
+        },
+      ),
     );
   });
 

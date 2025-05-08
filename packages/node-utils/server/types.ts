@@ -129,6 +129,7 @@ declare module 'koas-parameters' {
     demo: boolean;
     selectedGroupId: number;
     $own: boolean;
+    delimiter?: string;
   }
 }
 
