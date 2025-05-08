@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.2-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.4)] - 2025-05-08
+
+### Added
+
+- Node-utils: Support for custom delimiters when importing resources from CSV files.
+
 ## \[[0.32.2-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.3)] - 2025-05-07
 
 ### Changed

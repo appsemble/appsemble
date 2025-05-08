@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.2-test.3
-appVersion: 0.32.2-test.3
+version: 0.32.2-test.4
+appVersion: 0.32.2-test.4
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,21 +32,9 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: changed
-      description: "Block(form): Support remappers in minLength and maxLength requirements."
-    - kind: changed
-      description: "Studio: Preview button no longer gets disabled when there are
-        unsaved changes."
-    - kind: fixed
-      description: "Block(form): Add default value for fieldsReady."
-    - kind: fixed
-      description: "Block(form): Properly handle the remapped show property of fieldset fields."
-    - kind: fixed
-      description: "Block(form): Properly reset options in enum fields based on form state."
-    - kind: fixed
-      description: "E2e: Wait until training chapters are loaded to prevent test flakiness."
-    - kind: fixed
-      description: "Server: Use the default language of the app for app and group invites."
+    - kind: added
+      description: "Node-utils: Support for custom delimiters when importing resources
+        from CSV files."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
