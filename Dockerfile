@@ -7,7 +7,7 @@ WORKDIR /app
 # (those dependencies should be versioned by the container's distro repos anyways, debian updates
 # packages roughly once every two months, and if playwright needs new packages we run that command
 # below again anyways)
-RUN --mount=type=bind,rw,target=/root/.npm npx playwright@^1.0.0 install-deps
+RUN --mount=type=bind,rw,target=/root/.npm npx playwright@1.51.1 install-deps
 
 COPY package-lock.json package-lock.json
 COPY package.json package.json

@@ -210,17 +210,54 @@ The end 2 end tests are run using
 [![](https://avatars.githubusercontent.com/u/89237858?s=16) Playwright](https://playwright.dev).
 They reside in [`packages/e2e`](packages/e2e).
 
-End 2 end tests can be run locally using the `docker-compose-e2e-local.yaml` file by running
-`docker compose --file docker-compose-e2e-local.yaml up -d` and `. scripts/e2e.sh` without local
-files getting modified (except e2e test results).
+End 2 end tests can be run locally by installing playwright with:
 
-On Windows you can run the e2e script with wsl or Git bash by navigating to the appsemble directory
-and running `bash scripts/e2e.sh`.
+```shell
+npx playwright install
+```
 
-You can delete the docker containers and their volumes by running
-`docker compose --file docker-compose-e2e-local.yaml down -v`.
+preparing the packages so they can be used by our e2e tests with:
 
-`docker-compose-e2e-ci.yaml` is used in CI because there we don't care about modifying local files.
+```shell
+npm --workspace @appsemble/types run prepack
+npm --workspace @appsemble/utils run prepack
+```
+
+and running:
+
+```shell
+npm --workspace @appsemble/e2e run e2e
+```
+
+> **Note**
+>
+> You need to set up your local environment by
+>
+> - running appsemble locally
+> - creating an account
+> - creating the appsemble organization
+> - publishing blocka
+> - publishing apps
+>
+> You can check how this is done in the docs or by referencing the e2e job in the .gitlab-ci.yaml
+> file
+
+> **Note**
+>
+> You need to export the `BOT_ACCOUNT_EMAIL` and `BOT_ACCOUNT_PASSWORD` environment variables in the
+> terminal where you are running the tests from, matching an existing account in your local
+> environment
+
+After that you can delete the files generated from prepack with:
+
+```shell
+rm -f packages/types/**/*.{d.ts,js,js.map}
+rm -f packages/utils/**/*.{d.ts,js,js.map}
+```
+
+> **Note**
+>
+> Be careful not to delete more things than needed like vitest.config.js files
 
 ### Local CI
 
