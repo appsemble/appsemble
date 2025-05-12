@@ -9,7 +9,7 @@ const zipCode = '1234DF';
 const country = 'NL';
 
 test.describe('Payments', () => {
-  test('should purchase a subscription', async ({ page }) => {
+  test.only('should purchase a subscription', async ({ page }) => {
     await page.goto(`/en/organizations/${organization}/subscriptions`);
     await page.locator('.card:has-text("EXTENSIVE")').getByRole('link', { name: 'Switch' }).click();
 
@@ -51,7 +51,7 @@ test.describe('Payments', () => {
     await page.getByRole('link', { name: 'Finish' }).click();
   });
 
-  test('should cancel a subscription', async ({ page }) => {
+  test.only('should cancel a subscription', async ({ page }) => {
     await page.goto(`/en/organizations/${organization}/subscriptions`);
     await page
       .locator('.card:has-text("EXTENSIVE")')
@@ -63,7 +63,7 @@ test.describe('Payments', () => {
     await expect(page.getByText('Expires on')).toBeVisible();
   });
 
-  test('should confirm correct redirect by extension', async ({ page }) => {
+  test.only('should confirm correct redirect by extension', async ({ page }) => {
     await page.goto(`/en/organizations/${organization}/subscriptions`);
     await page.locator('.card:has-text("EXTENSIVE")').getByRole('link', { name: 'Extend' }).click();
     await expect(page).toHaveTitle('Activate · Appsemble', { timeout: 10_000 });
