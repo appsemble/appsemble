@@ -8,6 +8,7 @@ import { argv } from '../utils/argv.js';
 
 export function stripeMiddleware(): compose.Middleware<ParameterizedContext> {
   return async (ctx, next) => {
+    console.log('stripe vars', argv.stripeApiKey, argv.stripeSecret)
     const stripe = new Stripe(argv.stripeApiKey);
     const rawBody = await getRawBody(ctx.req);
     try {
