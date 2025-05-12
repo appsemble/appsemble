@@ -28,8 +28,10 @@ export async function chargeOrganizationSubscriptions(
   existingMailer?: Mailer | null,
   existingPayments?: Payments,
 ): Promise<void> {
+  logger.info('script started');
   const chargeDaysInAdvance = 14;
   const chargeSubscriptions = await getExpiringOrganizationSubscriptions(chargeDaysInAdvance);
+  logger.info('charge subscriptions:', chargeSubscriptions);
   const notifySubscriptions = await getExpiringOrganizationSubscriptions(chargeDaysInAdvance + 2);
   const payments = existingPayments || getPaymentObject(PaymentProvider.Stripe);
   const mailer = existingMailer || new Mailer(argv);
@@ -122,6 +124,7 @@ export async function chargeOrganizationSubscriptions(
 }
 
 export async function handler(): Promise<void> {
+  logger.info('start of subscription charging');
   let db: Sequelize;
   try {
     db = initDB({
@@ -142,4 +145,5 @@ export async function handler(): Promise<void> {
   logger.info('Charged subscriptions and failed payments and sent email notifications.');
 
   await db.close();
+  process.exit();
 }

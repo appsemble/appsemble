@@ -160,11 +160,8 @@ spec:
             {{- end }}
             {{- with .Values.stripeSecret}}
             - name: STRIPE_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . | quote }}
-                  key: stripe-secret
-            {{- end}}
+              value: {{ . | quote }}
+            {{- end }}
             {{- with .Values.adminApiSecret }}
             - name: ADMIN_API_SECRET
               valueFrom:

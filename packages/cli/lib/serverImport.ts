@@ -18,6 +18,7 @@ ${PROMPT} ${COMMAND} @appsemble/server
  */
 export async function serverImport<
   T extends
+    | 'chargeOrganizationSubscriptions'
     | 'checkDownMigrations'
     | 'checkMigrations'
     | 'cleanupDemoAppMembers'

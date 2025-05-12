@@ -1,0 +1,112 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "appsemble.fullname" . }}-charge-organization-subscriptions
+  labels:
+    {{ include "appsemble.labels" . }}
+spec:
+  schedule: "0 * * * *" # Run every day at 12:00:00
+  successfulJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            {{ include "appsemble.gitlab" . | indent 12 }}
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: {{ include "appsemble.fullname" . }}-cronjob-charge-organization-subscriptions
+              image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                readOnlyRootFilesystem: true
+              args:
+                - charge-organization-subscriptions
+                - -vv
+              env:
+{{ include "appsemble.postgres" . | indent 16 }}
+{{ include "appsemble.s3" . | indent 16 }}
+                {{- with .Values.stripeApiKey }}
+                - name: STRIPE_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: stripe-api-key
+                {{- end }}
+                {{- with .Values.stripeSecret}}
+                - name: STRIPE_SECRET
+                  value: {{ . | quote }}
+                {{- end }}
+                {{- if hasPrefix "review-" (include "appsemble.fullname" .) }}
+                - name: SMTP_HOST
+                  value: "{{ include "appsemble.fullname" . }}-mailpit-smtp"
+                {{- else }}
+                - name: SMTP_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.smtpSecret  | quote }}
+                      key: host
+                {{- end }}
+                {{- with .Values.smtpSecret }}
+                - name: SMTP_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: port
+                - name: SMTP_SECURE
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: secure
+                - name: SMTP_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: user
+                - name: SMTP_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: pass
+                - name: SMTP_FROM
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: from
+                {{- end }}
+                {{- with .Values.imapSecret }}
+                - name: IMAP_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: imap-host
+                - name: IMAP_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: imap-port
+                - name: IMAP_SECURE
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: imap-secure
+                - name: IMAP_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: imap-user
+                - name: IMAP_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: imap-pass
+                - name: IMAP_COPY_TO_SENT_FOLDER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: imap-copy-to-sent-folder
+                {{- end }}
+{{ end }}
