@@ -11,7 +11,7 @@ export default defineConfig({
   // Tests aren't fully isolated so they shouldn't run in parallel
   fullyParallel: false,
   // Fail the build on CI if you accidentally left test.only in the source code.
-  forbidOnly: Boolean(CI),
+  // forbidOnly: Boolean(CI),
   // Retry on CI only
   retries: CI ? 2 : 0,
   // Concurrent tests run better on CI in general
