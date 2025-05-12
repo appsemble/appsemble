@@ -1,5 +1,7 @@
 import { setupSentry } from '@appsemble/web-utils';
 import '@fortawesome/fontawesome-free/css/all.css';
+import countries from 'i18n-iso-countries';
+import enLocale from 'i18n-iso-countries/langs/en.json' with { type: 'json' };
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
@@ -9,6 +11,8 @@ import './index.css';
 import { sentryDsn, sentryEnvironment } from './utils/settings.js';
 
 setupSentry(sentryDsn, sentryEnvironment);
+
+countries.registerLocale(enLocale);
 
 // See https://github.com/remix-run/react-router/issues/9422#issuecomment-1302564759
 const router = createBrowserRouter([

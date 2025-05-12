@@ -33,6 +33,7 @@ export * from './training.js';
 export * from './quota.js';
 export * from './permissions.js';
 export * from './roles.js';
+export * from './subscriptionPlans.js';
 
 // XXX: consider not re-exporting from here
 export type { AppMemberInfo };
@@ -161,6 +162,50 @@ export interface TokenResponse {
   refresh_token?: string;
 
   token_type: 'bearer';
+}
+
+/**
+ * A type to represent different subscription plans.
+ */
+export enum SubscriptionPlanType {
+  Free = 'free',
+  Basic = 'basic',
+  Standard = 'standard',
+  Extensive = 'extensive',
+  Enterprise = 'enterprise',
+}
+
+/**
+ * A type to represent different payment statuses for invoice.
+ */
+export enum InvoiceStatus {
+  Paid = 'paid',
+  Pending = 'pending',
+  Retry = 'retry',
+  Failed = 'failed',
+}
+
+/**
+ * A type to represent different payment providers.
+ */
+export enum PaymentProvider {
+  Stripe = 'stripe',
+}
+
+/**
+ * A type to represent different payment methods.
+ */
+export enum PaymentMethod {
+  Debit = 'sepa_debit',
+  Card = 'card',
+}
+
+/**
+ * A type to represent different subscription renewal periods.
+ */
+export enum SubscriptionRenewalPeriod {
+  Month = 'month',
+  Year = 'year',
 }
 
 /**
@@ -484,6 +529,88 @@ export interface Organization {
    * The URL at which the organization’s icon can be found.
    */
   iconUrl: string;
+
+  /**
+   * The preferred payment provider of the organization.
+   */
+  preferredPaymentProvider: PaymentProvider;
+
+  /**
+   * The vat id number of the organization.
+   */
+  vatIdNumber: string;
+
+  /**
+   * The street name of the organization.
+   */
+  streetName: string;
+
+  /**
+   * The house number of the organization.
+   */
+  houseNumber: string;
+
+  /**
+   * The city of the organization.
+   */
+  city: string;
+
+  /**
+   * The zip code of the organization.
+   */
+  zipCode: string;
+
+  /**
+   * The country code of the organization.
+   */
+  countryCode: string;
+
+  /**
+   * The reference to be shown on invoices of the organization.
+   */
+  invoiceReference: string;
+}
+
+/**
+ * A subscription owned by an organization.
+ */
+export interface OrganizationSubscription {
+  /**
+   * The ID of the subscription.
+   */
+  id: number;
+
+  /**
+   * The status of the subscription.
+   */
+  cancelled: boolean;
+
+  /**
+   * The reason for cancelling the subscription.
+   */
+  cancellationReason: string;
+
+  /**
+   * The date until which the subscription has been paid for.
+   */
+  expirationDate: string;
+
+  /**
+   * The associated subscription plan.
+   */
+  subscriptionPlan: SubscriptionPlanType;
+
+  /**
+   * The associated renewal period plan.
+   */
+  renewalPeriod: SubscriptionRenewalPeriod;
+
+  /**
+   * The ID of the organization that owns the subscription.
+   *
+   * This typically is prepended with an `@`
+   */
+  organizationId: string;
 }
 
 /**

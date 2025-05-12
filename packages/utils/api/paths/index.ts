@@ -129,8 +129,13 @@ import { pathItems as organizationsOrganizationIdInvites } from './organizations
 import { pathItems as organizationsOrganizationIdMembersMemberIdRole } from './organizations/organizationId/members/memberId/role.js';
 import { pathItems as organizationsOrganizationIdMembersMemberId } from './organizations/organizationId/members/memberId.js';
 import { pathItems as organizationsOrganizationIdMembers } from './organizations/organizationId/members.js';
+import { pathItems as organizationsOrganizationIdOrganizationSubscriptionPrice } from './organizations/organizationId/organizationSubscriptionPrice.js';
+import { pathItems as organizationsOrganizationIdOrganizationSubscription } from './organizations/organizationId/subscription.js';
 import { pathItems as organizationsOrganizationId } from './organizations/organizationId.js';
 import { pathItems as organizations } from './organizations.js';
+import { pathItems as organizationSubscriptionsOrganizationSubscriptionId } from './organizationSubscriptions/organizationSubscriptionId.js';
+import { pathItems as acceptPayment } from './payments/acceptPayment.js';
+import { pathItems as sendInvoice } from './payments/payment.js';
 import { pathItems as ssl } from './ssl.js';
 import { pathItems as timezones } from './timezones.js';
 import { pathItems as completedTrainings } from './trainings/completedTrainings.js';
@@ -279,6 +284,8 @@ export const paths = {
   '/api/blocks': blocks,
   '/api/containers/{appId}/logs/{container}': containersAppIdLogsContainer,
   '/api/health': health,
+  '/api/payments/send-invoice': sendInvoice,
+  '/api/payments/accept-payment': acceptPayment,
   '/api/messages/{language}': messagesLanguage,
   '/api/messages': messages,
   '/api/organization-invites/{token}/respond': organizationInvitesTokenRespond,
@@ -295,8 +302,14 @@ export const paths = {
   '/api/organizations/{organizationId}/members/{organizationMemberId}':
     organizationsOrganizationIdMembersMemberId,
   '/api/organizations/{organizationId}/members': organizationsOrganizationIdMembers,
+  '/api/organizations/{organizationId}/subscription':
+    organizationsOrganizationIdOrganizationSubscription,
+  '/api/organizations/{organizationId}/subscription/price':
+    organizationsOrganizationIdOrganizationSubscriptionPrice,
   '/api/organizations/{organizationId}': organizationsOrganizationId,
   '/api/organizations': organizations,
+  '/api/organization-subscriptions/{organizationSubscriptionId}':
+    organizationSubscriptionsOrganizationSubscriptionId,
   '/api/ssl': ssl,
   '/api/apps/{appId}/group-invites/{token}/respond': groupInvitesTokenRespond,
   '/api/apps/{appId}/group-invites/{token}': groupInvitesToken,

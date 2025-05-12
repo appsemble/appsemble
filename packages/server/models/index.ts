@@ -68,6 +68,9 @@ import {
   createSamlLoginRequestModel,
   type SamlLoginRequestGlobal as SamlLoginRequest,
 } from './apps/SamlLoginRequest.js';
+import { Coupon } from './Coupon.js';
+import { Invoice } from './Invoice.js';
+import { InvoiceTransaction } from './InvoiceTransaction.js';
 import { App } from './main/App.js';
 import { AppCollection } from './main/AppCollection.js';
 import { AppCollectionApp } from './main/AppCollectionApp.js';
@@ -92,6 +95,7 @@ import { Theme } from './main/Theme.js';
 import { Training } from './main/Training.js';
 import { TrainingCompleted } from './main/TrainingCompleted.js';
 import { User } from './main/User.js';
+import { OrganizationSubscription } from './OrganizationSubscription.js';
 import { migrations } from '../migrations/apps/index.js';
 import { argv } from '../utils/argv.js';
 import { decrypt } from '../utils/crypto.js';
@@ -137,6 +141,7 @@ export {
   BlockAsset,
   BlockMessages,
   BlockVersion,
+  Coupon,
   EmailAuthorization,
   Meta,
   type OAuth2AuthorizationCode,
@@ -147,6 +152,9 @@ export {
   OrganizationMember,
   ResetPasswordToken,
   type ResourceVersion,
+  OrganizationSubscription,
+  Invoice,
+  InvoiceTransaction,
   type ResourceSubscription,
   type Group,
   type GroupInvite,
@@ -193,6 +201,10 @@ export function initDB({
       BlockAsset,
       BlockMessages,
       BlockVersion,
+      Coupon,
+      OrganizationSubscription,
+      Invoice,
+      InvoiceTransaction,
       EmailAuthorization,
       Meta,
       OAuth2ClientCredentials,

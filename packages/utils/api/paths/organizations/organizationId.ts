@@ -34,6 +34,30 @@ export const pathItems: OpenAPIV3.PathItemObject = {
               website: {
                 $ref: '#/components/schemas/Organization/properties/website',
               },
+              preferredPaymentProvider: {
+                $ref: '#/components/schemas/Organization/properties/preferredPaymentProvider',
+              },
+              vatIdNumber: {
+                $ref: '#/components/schemas/Organization/properties/vatIdNumber',
+              },
+              streetName: {
+                $ref: '#/components/schemas/Organization/properties/streetName',
+              },
+              houseNumber: {
+                $ref: '#/components/schemas/Organization/properties/houseNumber',
+              },
+              city: {
+                $ref: '#/components/schemas/Organization/properties/city',
+              },
+              zipCode: {
+                $ref: '#/components/schemas/Organization/properties/zipCode',
+              },
+              countryCode: {
+                $ref: '#/components/schemas/Organization/properties/countryCode',
+              },
+              invoiceReference: {
+                $ref: '#/components/schemas/Organization/properties/invoiceReference',
+              },
               icon: {
                 type: 'string',
                 format: 'binary',

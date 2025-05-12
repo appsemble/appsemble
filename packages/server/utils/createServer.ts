@@ -27,7 +27,7 @@ import { type Configuration } from 'webpack';
 import { argv } from './argv.js';
 import { Mailer } from './email/Mailer.js';
 import * as controllers from '../controllers/index.js';
-import { appMapper, authentication } from '../middleware/index.js';
+import { appMapper, authentication, stripeMiddleware } from '../middleware/index.js';
 import { appRouter, studioRouter } from '../routes/index.js';
 
 interface CreateServerOptions {
@@ -114,6 +114,7 @@ export async function createServer({
             /\/apps\/\d+\/auth\/oauth2\/token/.test(ctx.path),
           cors(),
         ),
+        conditional((ctx) => ctx.path === '/api/payments/accept-payment', stripeMiddleware()),
         koas(api(version, argv), [
           specHandler(),
           swaggerUI({ url: '/api-explorer' }),

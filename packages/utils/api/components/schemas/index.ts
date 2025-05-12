@@ -16,6 +16,7 @@ export * from './OrganizationMember.js';
 export * from './OAuth2AuthorizationCode.js';
 export * from './OAuth2ClientCredentials.js';
 export * from './Organization.js';
+export * from './OrganizationSubscription.js';
 export * from './Rating.js';
 export * from './Resource.js';
 export * from './ResourceSubscription.js';

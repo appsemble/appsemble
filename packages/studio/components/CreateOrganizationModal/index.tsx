@@ -1,17 +1,20 @@
 import {
   FileUpload,
+  type MinimalHTMLElement,
   ModalCard,
   Select,
+  SelectField,
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
   SimpleModalFooter,
   type Toggle,
 } from '@appsemble/react-components';
-import { type Organization, PredefinedOrganizationRole } from '@appsemble/types';
+import { type Organization, PaymentProvider, PredefinedOrganizationRole } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactNode, useCallback } from 'react';
+import countries from 'i18n-iso-countries';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -88,6 +91,14 @@ const defaults = {
   website: '',
   websiteProtocol: 'https',
   icon: null as File,
+  preferredPaymentProvider: PaymentProvider.Stripe,
+  vatIdNumber: '',
+  streetName: '',
+  houseNumber: '',
+  city: '',
+  zipCode: '',
+  countryCode: '',
+  invoiceReference: '',
 };
 
 /**
@@ -113,15 +124,48 @@ export function CreateOrganizationModal({
   title,
 }: CreateOrganizationModalProps): ReactNode {
   const { organizations, setOrganizations } = useUser();
+  const [country, setCountry] = useState<string>('');
+  const countryNames = countries.getNames('en');
+
+  const changeCountry = useCallback(
+    (event: ChangeEvent<MinimalHTMLElement>) => {
+      setCountry(event.target.value);
+    },
+    [setCountry],
+  );
 
   const submitOrganization = useCallback(
-    async ({ description, email, icon, id, name, website, websiteProtocol }: typeof defaults) => {
+    async ({
+      city,
+      countryCode,
+      description,
+      email,
+      houseNumber,
+      icon,
+      id,
+      invoiceReference,
+      name,
+      preferredPaymentProvider,
+      streetName,
+      vatIdNumber,
+      website,
+      websiteProtocol,
+      zipCode,
+    }: typeof defaults) => {
       const formData = new FormData();
       formData.set('id', normalize(id));
       formData.set('name', name);
       formData.set('description', description);
       formData.set('email', email);
       formData.set('website', website ? `${websiteProtocol}://${website}` : '');
+      formData.set('preferredPaymentProvider', preferredPaymentProvider);
+      formData.set('vatIdNumber', vatIdNumber);
+      formData.set('invoiceReference', invoiceReference);
+      formData.set('streetName', streetName);
+      formData.set('houseNumber', houseNumber);
+      formData.set('city', city);
+      formData.set('zipCode', zipCode);
+      formData.set('countryCode', countryCode);
 
       if (icon) {
         formData.set('icon', icon);
@@ -217,6 +261,72 @@ export function CreateOrganizationModal({
         label={<FormattedMessage {...messages.logo} />}
         name="icon"
         preview={<IconPreview organization={{ iconUrl: null } as Organization} />}
+      />
+      <SimpleFormField
+        component={SelectField}
+        disabled={disabled}
+        help={<FormattedMessage {...messages.descriptionPreferredPaymentProvider} />}
+        icon="info"
+        label={<FormattedMessage {...messages.preferredPaymentProvider} />}
+        name="preferredPaymentProvider"
+      >
+        <option value={PaymentProvider.Stripe}>Stripe</option>
+      </SimpleFormField>
+      <SimpleFormField
+        component={SelectField}
+        help={<FormattedMessage {...messages.descriptionCountry} />}
+        label={<FormattedMessage {...messages.country} />}
+        name="countryCode"
+        onChange={changeCountry}
+      >
+        <option value="">
+          <FormattedMessage {...messages.selectCountry} />
+        </option>
+        {Object.entries(countryNames).map(([code, name]) => (
+          <option key={code} value={code}>
+            {name}
+          </option>
+        ))}
+      </SimpleFormField>
+      {country === 'NL' ? null : (
+        <SimpleFormField
+          disabled={disabled}
+          help={<FormattedMessage {...messages.descriptionVatIdNumber} />}
+          icon="info"
+          label={<FormattedMessage {...messages.vatIdNumber} />}
+          name="vatIdNumber"
+        />
+      )}
+      <SimpleFormField
+        help={<FormattedMessage {...messages.descriptionStreetName} />}
+        label={<FormattedMessage {...messages.streetName} />}
+        maxLength={20}
+        name="streetName"
+      />
+      <SimpleFormField
+        help={<FormattedMessage {...messages.descriptionHouseNumber} />}
+        label={<FormattedMessage {...messages.houseNumber} />}
+        maxLength={20}
+        name="houseNumber"
+      />
+      <SimpleFormField
+        help={<FormattedMessage {...messages.descriptionCity} />}
+        label={<FormattedMessage {...messages.city} />}
+        maxLength={20}
+        name="city"
+      />
+      <SimpleFormField
+        help={<FormattedMessage {...messages.descriptionZipCode} />}
+        label={<FormattedMessage {...messages.zipCode} />}
+        maxLength={20}
+        name="zipCode"
+      />
+      <SimpleFormField
+        disabled={disabled}
+        help={<FormattedMessage {...messages.descriptionInvoiceReference} />}
+        icon="info"
+        label={<FormattedMessage {...messages.invoiceReference} />}
+        name="invoiceReference"
       />
     </ModalCard>
   );

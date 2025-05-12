@@ -151,6 +151,20 @@ spec:
                   name: {{ . | quote }}
                   key: imap-copy-to-sent-folder
             {{- end }}
+            {{- with .Values.stripeApiKey }}
+            - name: STRIPE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: stripe-api-key
+            {{- end }}
+            {{- with .Values.stripeSecret}}
+            - name: STRIPE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: stripe-secret
+            {{- end}}
             {{- with .Values.adminApiSecret }}
             - name: ADMIN_API_SECRET
               valueFrom:

@@ -149,5 +149,11 @@ module.exports = {
         'jest-formatting/padding-around-test-blocks': 'error',
       },
     },
+    {
+      files: ['packages/server/utils/payments/stripe/**', 'packages/utils/api/paths/payments/**'],
+      rules: {
+        '@typescript-eslint/naming-convention': 'off',
+      },
+    },
   ],
 };

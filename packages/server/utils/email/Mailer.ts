@@ -233,6 +233,7 @@ export class Mailer {
   async sendTranslatedEmail({
     app,
     appId,
+    attachments = [],
     emailName,
     from = 'Appsemble',
     locale = defaultLocale,
@@ -241,6 +242,7 @@ export class Mailer {
   }: {
     to: Recipient;
     appId?: number;
+    attachments?: object[];
     from?: string;
     emailName: string;
     values: Record<string, FormatXMLElementFn<string, string[] | string> | PrimitiveType>;
@@ -350,6 +352,7 @@ export class Mailer {
       html,
       text,
       app: app ? { ...app, id: app.id ?? appId } : undefined,
+      attachments,
     };
 
     await this.sendEmail(email);

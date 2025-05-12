@@ -171,6 +171,24 @@ export interface Argv {
   sslCert: string;
 
   // //////////////////////////////////////////////////////////////////////////////////////////// //
+  // Stripe                                                                                       //
+  // //////////////////////////////////////////////////////////////////////////////////////////// //
+  /**
+   * The Stripe API key to use.
+   */
+  stripeApiKey: string;
+
+  /**
+   * The Stripe secret to use for verifying incoming requests.
+   */
+  stripeSecret: string;
+
+  /**
+   * Whether to update recorded Stripe responses used for tests.
+   */
+  updateStripeResponses: boolean;
+
+  // //////////////////////////////////////////////////////////////////////////////////////////// //
   // SMTP                                                                                         //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   /**
@@ -459,6 +477,11 @@ const defaults: Argv = {
   sslKey: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sslCert: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  stripeApiKey: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  stripeSecret: undefined,
+  updateStripeResponses: false,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpFrom: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)

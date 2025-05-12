@@ -1,2 +1,3 @@
 # Helm templates aren’t valid YAML files, so they can’t be formatted.
 /config/charts/*/templates
+/packages/server/stripe-responses

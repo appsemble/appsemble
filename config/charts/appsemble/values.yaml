@@ -58,6 +58,10 @@ oauthSecret: null
 
 secretSecret: appsemble
 
+stripeApiKey: stripe-api-key
+
+stripeSecret: stripe-secret
+
 cronjob:
   jobsHistoryLimit: 3
 

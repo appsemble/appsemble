@@ -1,6 +1,6 @@
 import { createFixtureStream, readFixture } from '@appsemble/node-utils';
 import { createServer, createTestUser, models, setArgv } from '@appsemble/server';
-import { PredefinedOrganizationRole } from '@appsemble/types';
+import { PaymentProvider, PredefinedOrganizationRole } from '@appsemble/types';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -43,6 +43,14 @@ describe('organization', () => {
         email: 'test@example.com',
         icon: createFixtureStream('apps/tux.png'),
         website: 'https://example.com',
+        preferredPaymentProvider: PaymentProvider.Stripe,
+        vatIdNumber: 'number123123',
+        streetName: 'street',
+        houseNumber: '123',
+        city: 'city',
+        zipCode: 'zip',
+        countryCode: 'NL',
+        invoiceReference: 'employee',
       });
       const organization = await Organization.findOne();
       expect(organization).toMatchObject({
@@ -52,6 +60,16 @@ describe('organization', () => {
         id: 'test',
         name: 'Test',
         website: 'https://example.com',
+        preferredPaymentProvider: 'stripe',
+        vatIdNumber: 'number123123',
+        streetName: 'street',
+        houseNumber: '123',
+        city: 'city',
+        zipCode: 'zip',
+        countryCode: 'NL',
+        invoiceReference: 'employee',
+        stripeCustomerId: null,
+        updated: expect.any(Date),
       });
     });
 
@@ -71,6 +89,14 @@ describe('organization', () => {
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           icon: null,
           website: 'https://example.com',
+          preferredPaymentProvider: PaymentProvider.Stripe,
+          vatIdNumber: 'number123123',
+          streetName: 'street',
+          houseNumber: '123',
+          city: 'city',
+          zipCode: 'zip',
+          countryCode: 'NL',
+          invoiceReference: 'employee',
         }),
       ).rejects.toThrow('Request failed with status code 409');
       vi.useFakeTimers();
@@ -98,6 +124,14 @@ describe('organization', () => {
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         website: null,
         icon: createFixtureStream('apps/tux.png'),
+        preferredPaymentProvider: PaymentProvider.Stripe,
+        vatIdNumber: 'number123',
+        streetName: 'street2',
+        houseNumber: '1234',
+        city: 'city2',
+        zipCode: 'zip2',
+        countryCode: 'BE',
+        invoiceReference: 'employee2',
       });
       await organization.reload();
       expect(organization.dataValues).toMatchInlineSnapshot(
@@ -108,15 +142,24 @@ describe('organization', () => {
         },
         `
       {
+        "city": "city2",
+        "countryCode": "BE",
         "created": Any<Date>,
         "deleted": null,
         "description": "Description Changed",
         "email": "test@example.com",
+        "houseNumber": "1234",
         "icon": Any<Buffer>,
         "id": "test",
+        "invoiceReference": "employee2",
         "name": "Test changed",
+        "preferredPaymentProvider": "stripe",
+        "streetName": "street2",
+        "stripeCustomerId": null,
         "updated": Any<Date>,
+        "vatIdNumber": "number123",
         "website": null,
+        "zipCode": "zip2",
       }
     `,
       );
@@ -145,6 +188,13 @@ describe('organization', () => {
           website: null,
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           icon: null,
+          vatIdNumber: null,
+          streetName: null,
+          houseNumber: null,
+          city: null,
+          zipCode: null,
+          countryCode: null,
+          invoiceReference: null,
         }),
       ).rejects.toThrow('Request failed with status code 404');
     });
@@ -170,6 +220,13 @@ describe('organization', () => {
           website: null,
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           icon: null,
+          vatIdNumber: null,
+          streetName: null,
+          houseNumber: null,
+          city: null,
+          zipCode: null,
+          countryCode: null,
+          invoiceReference: null,
         }),
       ).rejects.toThrow('Request failed with status code 401');
     });
@@ -186,6 +243,13 @@ describe('organization', () => {
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         icon: null,
         website: 'https://example.com',
+        vatIdNumber: null,
+        streetName: 'street',
+        houseNumber: '123',
+        city: 'city',
+        zipCode: 'zip',
+        countryCode: 'NL',
+        invoiceReference: null,
       });
       const organization = await Organization.findOne();
       expect(organization).toMatchObject({
@@ -195,6 +259,12 @@ describe('organization', () => {
         email: 'test@example.com',
         icon: null,
         website: 'https://example.com',
+        preferredPaymentProvider: 'stripe',
+        streetName: 'street',
+        houseNumber: '123',
+        city: 'city',
+        zipCode: 'zip',
+        countryCode: 'NL',
       });
     });
 
@@ -219,10 +289,18 @@ describe('organization', () => {
         website: null,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         icon: null,
+        vatIdNumber: null,
+        streetName: null,
+        houseNumber: null,
+        city: null,
+        zipCode: null,
+        countryCode: null,
+        invoiceReference: null,
       });
       expect(organization).toMatchObject({
         id: 'test',
         name: 'Test',
+        preferredPaymentProvider: 'stripe',
       });
       await organization.reload();
       expect(organization).toMatchObject({
@@ -252,6 +330,13 @@ describe('organization', () => {
           website: 'https://www.example.com',
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           icon: null,
+          vatIdNumber: null,
+          streetName: null,
+          houseNumber: null,
+          city: null,
+          zipCode: null,
+          countryCode: null,
+          invoiceReference: null,
         }),
       ).rejects.toThrow('Request failed with status code 403');
       expect(organization).toMatchObject({

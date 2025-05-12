@@ -38,6 +38,10 @@ uncategorize/categorize
 unconfigure/reconfigure
 validator
 workspace/mare
+IBAN
+KNAB
+RABO
+sepa
 
 # Technical slang and libraries
 .editorconfig
