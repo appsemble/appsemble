@@ -438,6 +438,8 @@ e2e node:
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
     E2E_HOST: 'http://appsemble:9999'
+    STRIPE_API_KEY: $STRIPE_API_KEY
+    STRIPE_SECRET: $STRIPE_SECRET
   services:
     - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
       alias: database
