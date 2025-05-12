@@ -2,6 +2,9 @@ import { hash } from 'bcrypt';
 import pg from 'pg';
 import { type Argv } from 'yargs';
 
+const { DATABASE_HOST, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_PORT, DATABASE_USER } =
+  process.env;
+
 export const command = 'seed-account';
 export const description = 'Seed a user and an account with specified credentials.';
 
@@ -56,7 +59,13 @@ export async function handler({
   password,
   timezone,
 }: Args): Promise<void> {
-  const client = new pg.Client();
+  const client = new pg.Client({
+    database: DATABASE_NAME,
+    host: DATABASE_HOST,
+    port: DATABASE_PORT ? Number(DATABASE_PORT) : undefined,
+    user: DATABASE_USER,
+    password: DATABASE_PASSWORD,
+  });
   await client.connect();
 
   const hashedPassword = await hash(password, 10);

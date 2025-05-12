@@ -345,42 +345,160 @@ container_scanning:
     CS_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
 
 validate-snippets:
-  interruptible: true
   stage: test
-  extends: .docker
+  interruptible: true
   needs:
     - build docker image
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_COMMIT_TAG
   variables:
-    APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+    FF_NETWORK_PER_BUILD: 'true'
+    DATABASE_HOST: database
+    DATABASE_PORT: 5432
+    DATABASE_NAME: appsemble
+    DATABASE_USER: admin
+    DATABASE_PASSWORD: password
+  services:
+    - name: postgres:15
+      alias: database
+      variables:
+        POSTGRES_DB: appsemble
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: password
+
+    - name: minio/minio:latest
+      alias: minio
+      entrypoint: ['sh', '-c', 'minio server /data']
+      variables:
+        MINIO_ROOT_USER: admin
+        MINIO_ROOT_PASSWORD: password
+
+    - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+      alias: appsemble
+      variables:
+        SECRET: secret
+        AES_SECRET: secret
+        HOST: 'http://appsemble:9999'
+        REMOTE: 'https://appsemble.app'
+        DATABASE_HOST: database
+        DATABASE_PORT: 5432
+        DATABASE_NAME: appsemble
+        DATABASE_USER: admin
+        DATABASE_PASSWORD: password
+        S3_HOST: minio
+        S3_SECURE: false
+        S3_ACCESS_KEY: admin
+        S3_SECRET_KEY: password
+        migrateTo: next
   script:
-    - docker compose --file docker-compose-e2e-ci.yaml up -d
-    - . scripts/validate-snippets.sh
-  after_script:
-    - docker compose --file docker-compose-e2e-ci.yaml down --volumes
+    - npm ci
+    - npm run scripts seed-account --
+      --name $BOT_ACCOUNT_NAME
+      --email $BOT_ACCOUNT_EMAIL
+      --password $BOT_ACCOUNT_PASSWORD
+      --timezone Europe/Amsterdam
+      --clientCredentials $APPSEMBLE_CLIENT_CREDENTIALS
+    - npm run appsemble -- config set remote 'http://appsemble:9999'
+    - npm run appsemble -- organization create appsemble
+      --description "The open source low-code app building platform"
+      --email support@appsemble.com
+      --icon packages/server/assets/appsemble.png
+      --name Appsemble
+      --website https://appsemble.com
+    - npm run appsemble -- block publish 'blocks/*'
+    - npm run scripts -- validate-docs --organization appsemble --remote 'http://appsemble:9999' -vv
 
 ###################################################################################################
 #  End 2 End Stage                                                                               #
 ###################################################################################################
 
 e2e:
-  interruptible: true
   stage: end 2 end
-  extends: .docker
+  image: mcr.microsoft.com/playwright:v1.51.1-jammy
+  interruptible: true
   needs:
     - build docker image
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_COMMIT_TAG
   variables:
-    APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+    FF_NETWORK_PER_BUILD: 'true'
+    DATABASE_HOST: database
+    DATABASE_PORT: 5432
+    DATABASE_NAME: appsemble
+    DATABASE_USER: admin
+    DATABASE_PASSWORD: password
+    E2E_HOST: 'http://appsemble:9999'
+  services:
+    - name: postgres:15
+      alias: database
+      variables:
+        POSTGRES_DB: appsemble
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: password
+
+    - name: minio/minio:latest
+      alias: minio
+      entrypoint: ['sh', '-c', 'minio server /data']
+      variables:
+        MINIO_ROOT_USER: admin
+        MINIO_ROOT_PASSWORD: password
+
+    - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+      alias: appsemble
+      variables:
+        SECRET: secret
+        AES_SECRET: secret
+        HOST: 'http://appsemble:9999'
+        REMOTE: 'https://appsemble.app'
+        DATABASE_HOST: database
+        DATABASE_PORT: 5432
+        DATABASE_NAME: appsemble
+        DATABASE_USER: admin
+        DATABASE_PASSWORD: password
+        S3_HOST: minio
+        S3_SECURE: false
+        S3_ACCESS_KEY: admin
+        S3_SECRET_KEY: password
+        migrateTo: next
+  before_script:
+    - apt-get update && apt-get install -y curl dnsutils
+    - |
+      echo "Aliasing app domains to appsemble..."
+      APPSEMBLE_IP=$(getent hosts appsemble | awk '{ print $1 }')
+      for APP_NAME in ./apps/*/; do
+        APP_NAME=$(basename "$APP_NAME")
+        CUSTOM_ALIAS="${APP_NAME}.appsemble.appsemble"
+        echo "$APPSEMBLE_IP $CUSTOM_ALIAS" >> /etc/hosts
+        echo "Added alias: $CUSTOM_ALIAS -> $APPSEMBLE_IP"
+      done
   script:
-    - docker compose --file docker-compose-e2e-ci.yaml up -d
-    - . scripts/e2e.sh
-  after_script:
-    - docker compose --file docker-compose-e2e-ci.yaml down --volumes
+    - npm ci
+    - npm run scripts seed-account --
+      --name $BOT_ACCOUNT_NAME
+      --email $BOT_ACCOUNT_EMAIL
+      --password $BOT_ACCOUNT_PASSWORD
+      --timezone Europe/Amsterdam
+      --clientCredentials $APPSEMBLE_CLIENT_CREDENTIALS
+    - npm run appsemble -- config set context e2e
+    - npm run appsemble -- config set remote 'http://appsemble:9999'
+    - npm run appsemble -- organization create appsemble
+      --description "The open source low-code app building platform"
+      --email support@appsemble.com
+      --icon packages/server/assets/appsemble.png
+      --name Appsemble
+      --website https://appsemble.com
+    - npm run appsemble -- block publish 'blocks/*'
+    - npm run appsemble -- app publish 'apps/empty' --modify-context
+    - npm run appsemble -- app publish 'apps/holidays' --modify-context
+    - npm run appsemble -- app publish 'apps/notes' --modify-context
+    - npm run appsemble -- app publish 'apps/person' --modify-context
+    - npm run appsemble -- app publish 'apps/survey' --modify-context
+    - npm run appsemble -- app publish 'apps/unlittered' --modify-context
+    - npm --workspace @appsemble/types run prepack
+    - npm --workspace @appsemble/utils run prepack
+    - npm --workspace @appsemble/e2e run e2e -- --max-failures 6
   artifacts:
     expose_as: Playwright videos
     when: always
