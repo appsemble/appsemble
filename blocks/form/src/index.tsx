@@ -153,11 +153,11 @@ bootstrap(
     }, []);
 
     useEffect(() => {
-      events.emit.change(values);
-
       if (!lastChanged) {
         return;
       }
+
+      events.emit.change({ values, lastChanged });
 
       // Filter requirements whose dependencies haven’t changed and whose dependencies are valid.
       const pendingRequirements = requirements?.filter(
@@ -379,10 +379,6 @@ bootstrap(
       },
       [actions, defaultValues, requirements, utils],
     );
-
-    useEffect(() => {
-      events.emit.change(values);
-    }, [events, values]);
 
     const debouncedRequest = useMemo(
       () =>
