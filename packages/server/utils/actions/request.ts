@@ -72,5 +72,48 @@ export async function request({
   });
   const response = await axios(newAxiosConfig);
 
-  return response.data;
+  let responseBody = response.data;
+  // Check if it's safe to represent the response as a string (i.e. not a binary file)
+  if (responseBody instanceof Buffer) {
+    // Convert to ArrayBuffer instead
+    responseBody = responseBody.buffer.slice(
+      responseBody.byteOffset,
+      responseBody.byteOffset + responseBody.byteLength,
+    );
+  }
+  if (responseBody instanceof ArrayBuffer) {
+    try {
+      const view = new Uint8Array(responseBody);
+      const text = new TextDecoder('utf8').decode(responseBody);
+      const arrayBuffer = new TextEncoder().encode(text);
+      responseBody =
+        arrayBuffer.byteLength === responseBody.byteLength &&
+        arrayBuffer.every((byte, index) => byte === view[index])
+          ? text
+          : new Blob([responseBody], { type: response.headers['content-type'] });
+    } catch {
+      responseBody = new Blob([responseBody], { type: response.headers['content-type'] });
+    }
+  }
+
+  if (
+    typeof responseBody === 'string' &&
+    /^application\/json/.test(response.headers['content-type'])
+  ) {
+    try {
+      responseBody = JSON.parse(responseBody);
+    } catch {
+      // Do nothing
+    }
+  }
+
+  if (
+    typeof responseBody === 'string' &&
+    /^(application|text)\/(.+\+)?xml/.test(response.headers['content-type'])
+  ) {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
+    responseBody = xmlToJson(responseBody, schema);
+  }
+  return responseBody;
 }
