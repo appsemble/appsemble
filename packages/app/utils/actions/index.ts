@@ -14,6 +14,7 @@ import {
 } from './appMember.js';
 import { condition } from './condition.js';
 import { controller } from './controller.js';
+import { csvParser } from './csvParse.js';
 import { dialog } from './dialog.js';
 import { download } from './download.js';
 import { each } from './each.js';
@@ -127,4 +128,5 @@ export const actionCreators: ActionCreators = {
   'app.member.logout': appMemberLogout,
   'app.member.query': appMemberQuery,
   'app.member.delete': appMemberDelete,
+  'csv.parse': csvParser,
 };

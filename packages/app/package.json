@@ -54,6 +54,7 @@
     "axios": "^1.0.0",
     "axios-mock-adapter": "^1.0.0",
     "classnames": "^2.0.0",
+    "csv-parse": "^5.0.0",
     "events": "^3.0.0",
     "idb": "^7.0.0",
     "intl-messageformat": "^10.0.0",

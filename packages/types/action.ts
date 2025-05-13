@@ -68,6 +68,7 @@ export type Action =
   | BaseAction<'app.member.role.update'>
   | BaseAction<'condition'>
   | BaseAction<'controller'>
+  | BaseAction<'csv.parse'>
   | BaseAction<'dialog.error'>
   | BaseAction<'dialog.ok'>
   | BaseAction<'dialog'>
