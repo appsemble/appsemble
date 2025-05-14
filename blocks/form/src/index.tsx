@@ -153,11 +153,11 @@ bootstrap(
     }, []);
 
     useEffect(() => {
+      events.emit.change({ values, lastChanged });
+
       if (!lastChanged) {
         return;
       }
-
-      events.emit.change({ values, lastChanged });
 
       // Filter requirements whose dependencies haven’t changed and whose dependencies are valid.
       const pendingRequirements = requirements?.filter(
