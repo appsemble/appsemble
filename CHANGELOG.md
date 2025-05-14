@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.2-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.6)] - 2025-05-14
+
+### Fixed
+
+- Block(`form`): Emit form change on initial render as well.
+
 ## \[[0.32.2-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.5)] - 2025-05-14
 
 ### Fixed
