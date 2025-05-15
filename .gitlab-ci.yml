@@ -15,8 +15,6 @@ stages:
 variables:
   BACKUPS_LOCATION: hetzner-s3:appsemble/backups
   PROD_BACKUP_NAME: appsemble_prod_backup
-  STRIPE_API_KEY_REASSIGN: $STRIPE_API_KEY
-  STRIPE_SECRET_REASSIGN: $STRIPE_SECRET
 
 workflow:
   rules:
