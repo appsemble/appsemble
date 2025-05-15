@@ -7,10 +7,11 @@ import {
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
+import { defaultLocale } from '@appsemble/utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 
-import { App, AppMember } from '../../../../models/index.js';
+import { App, AppMember, AppMessages } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
 import { parseAppMemberProperties } from '../../../../utils/appMember.js';
 import { checkAppSecurityPolicy } from '../../../../utils/auth.js';
@@ -44,6 +45,13 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       'enableSelfRegistration',
       'demoMode',
     ],
+    include: {
+      model: AppMessages,
+      required: false,
+      where: {
+        language: locale ?? defaultLocale,
+      },
+    },
   });
 
   assertKoaCondition(app != null, ctx, 404, 'App could not be found.');
@@ -125,7 +133,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       locale,
       values: {
         link: (text) => `[${text}](${url})`,
-        appName: app.definition.name,
+        appName: app.AppMessages?.[0]?.messages?.app?.name ?? app.definition.name,
         name: name || 'null',
       },
       app,
