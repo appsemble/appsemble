@@ -118,7 +118,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     throw error;
   }
 
-  const url = new URL('/Verify', getAppUrl(app));
+  const url = new URL(`/${locale ?? defaultLocale}/Verify`, getAppUrl(app));
   url.searchParams.set('token', key);
 
   // This is purposely not awaited, so failure won’t make the request fail. If this fails, the user
