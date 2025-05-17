@@ -33,7 +33,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   const replyContainer = useRef<HTMLDivElement>();
   const { actions, parameters, theme, utils } = useBlock();
   const [message, setMessage] = useState('');
-  const [replies, setReplies] = useState<unknown[]>(null);
+  const [replies, setReplies] = useState<unknown[]>([]);
   const [valid, setValid] = useState(false);
   const [marker, setMarker] = useState<DivIcon | Icon>(null);
 
@@ -106,8 +106,10 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         setMessage('');
         setReplies([...replies, result]);
 
-        // Scroll to the bottom of the reply container
-        replyContainer.current.scrollTop = replyContainer.current.scrollHeight;
+        if (replyContainer?.current) {
+          // Scroll to the bottom of the reply container
+          replyContainer.current.scrollTop = replyContainer.current.scrollHeight;
+        }
       } catch {
         utils.showMessage(utils.formatMessage('replyErrorMessage'));
       }
@@ -121,8 +123,8 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   const picture = utils.remap(parameters.picture, content);
   const pictures = utils.remap(parameters.pictures, content);
   const description = utils.remap(parameters.description, content);
-  const latitude = utils.remap(parameters.marker.latitude, content);
-  const longitude = utils.remap(parameters.marker.longitude, content);
+  const latitude = utils.remap(parameters.marker?.latitude, content);
+  const longitude = utils.remap(parameters.marker?.longitude, content);
 
   if (parameters.pictureBase?.endsWith('/')) {
     parameters.pictureBase = parameters.pictureBase.slice(0, -1);
@@ -217,11 +219,11 @@ export function Card({ content, onUpdate }: CardProps): VNode {
               {replies.map((reply: any) => {
                 const author =
                   utils.remap(
-                    parameters?.reply.author ?? [{ prop: '$author' }, { prop: 'name' }],
+                    parameters?.reply?.author ?? [{ prop: '$author' }, { prop: 'name' }],
                     reply,
                   ) || utils.formatMessage('anonymousLabel');
                 const replyContent = utils.remap(
-                  parameters?.reply.content ?? [{ prop: 'content' }],
+                  parameters?.reply?.content ?? [{ prop: 'content' }],
                   reply,
                 );
 
