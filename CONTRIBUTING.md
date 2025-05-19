@@ -165,10 +165,11 @@ After adding a new permission to the `OrganizationPermission` enum in
 `packages/types/permissions.ts` add the permission and it’s description to
 `packages/studio/pages/organizations/messages.ts`.
 
-After adding a new permission to the `AppPermission` enum in `packages/types/permissions.ts`, add a
-corresponding one to the `OrganizationPermission` enum and map them in the
-`appOrganizationPermissionMapping` object. Then add the permissions to the relevant roles at
-`packages/types/roles.ts`.
+After adding a new permission to the `AppPermission` enum in
+`./packages/lang-sdk/types/permission.ts`, add a corresponding one to the `OrganizationPermission`
+enum and map them in the `appOrganizationPermissionMapping` object at
+`packages/types/permissions.ts`. Then add the permissions to the relevant roles at
+`packages/lang-sdk/types/roles.ts` and `packages/types/roles.ts`.
 
 ### Testing
 

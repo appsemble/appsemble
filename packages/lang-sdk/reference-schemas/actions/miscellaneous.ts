@@ -1,25 +1,25 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { AnalyticsActionDefinition } from '../../schemas/AnalyticsActionDefinition.js';
-import { ConditionActionDefinition } from '../../schemas/ConditionActionDefinition.js';
-import { ControllerActionDefinition } from '../../schemas/ControllerActionDefinition.js';
-import { CsvParseActionDefinition } from '../../schemas/CsvParseActionDefinition.js';
-import { DialogActionDefinition } from '../../schemas/DialogActionDefinition.js';
-import { DialogErrorActionDefinition } from '../../schemas/DialogErrorActionDefinition.js';
-import { DialogOkActionDefinition } from '../../schemas/DialogOkActionDefinition.js';
-import { DownloadActionDefinition } from '../../schemas/DownloadActionDefinition.js';
-import { EachActionDefinition } from '../../schemas/EachActionDefinition.js';
-import { EmailActionDefinition } from '../../schemas/EmailActionDefinition.js';
-import { EventActionDefinition } from '../../schemas/EventActionDefinition.js';
-import { LogActionDefinition } from '../../schemas/LogActionDefinition.js';
-import { MatchActionDefinition } from '../../schemas/MatchActionDefinition.js';
-import { MessageActionDefinition } from '../../schemas/MessageActionDefinition.js';
-import { NoopActionDefinition } from '../../schemas/NoopActionDefinition.js';
-import { NotifyActionDefinition } from '../../schemas/NotifyActionDefinition.js';
-import { RequestActionDefinition } from '../../schemas/RequestActionDefinition.js';
-import { ShareActionDefinition } from '../../schemas/ShareActionDefinition.js';
-import { StaticActionDefinition } from '../../schemas/StaticActionDefinition.js';
-import { ThrowActionDefinition } from '../../schemas/ThrowActionDefinition.js';
+import { AnalyticsActionDefinition } from '../../schemas/actions/AnalyticsActionDefinition.js';
+import { ConditionActionDefinition } from '../../schemas/actions/ConditionActionDefinition.js';
+import { ControllerActionDefinition } from '../../schemas/actions/ControllerActionDefinition.js';
+import { CsvParseActionDefinition } from '../../schemas/actions/CsvParseActionDefinition.js';
+import { DialogActionDefinition } from '../../schemas/actions/DialogActionDefinition.js';
+import { DialogErrorActionDefinition } from '../../schemas/actions/DialogErrorActionDefinition.js';
+import { DialogOkActionDefinition } from '../../schemas/actions/DialogOkActionDefinition.js';
+import { DownloadActionDefinition } from '../../schemas/actions/DownloadActionDefinition.js';
+import { EachActionDefinition } from '../../schemas/actions/EachActionDefinition.js';
+import { EmailActionDefinition } from '../../schemas/actions/EmailActionDefinition.js';
+import { EventActionDefinition } from '../../schemas/actions/EventActionDefinition.js';
+import { LogActionDefinition } from '../../schemas/actions/LogActionDefinition.js';
+import { MatchActionDefinition } from '../../schemas/actions/MatchActionDefinition.js';
+import { MessageActionDefinition } from '../../schemas/actions/MessageActionDefinition.js';
+import { NoopActionDefinition } from '../../schemas/actions/NoopActionDefinition.js';
+import { NotifyActionDefinition } from '../../schemas/actions/NotifyActionDefinition.js';
+import { RequestActionDefinition } from '../../schemas/actions/RequestActionDefinition.js';
+import { ShareActionDefinition } from '../../schemas/actions/ShareActionDefinition.js';
+import { StaticActionDefinition } from '../../schemas/actions/StaticActionDefinition.js';
+import { ThrowActionDefinition } from '../../schemas/actions/ThrowActionDefinition.js';
 
 export const miscellaneousActions: Record<string, OpenAPIV3.SchemaObject> = {
   analytics: AnalyticsActionDefinition,

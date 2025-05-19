@@ -1,5 +1,6 @@
+import { type AppRole } from '@appsemble/lang-sdk';
 import { Loader } from '@appsemble/react-components';
-import { type AppMemberGroup, type AppMemberInfo, type AppRole } from '@appsemble/types';
+import { type AppMemberGroup, type AppMemberInfo } from '@appsemble/types';
 import { setUser as setSentryUser } from '@sentry/browser';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';

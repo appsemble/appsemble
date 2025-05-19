@@ -1,5 +1,9 @@
-import { getAppPossibleGuestPermissions, getAppRoles } from '@appsemble/lang-sdk';
-import { type AppRole, type CustomAppPermission } from '@appsemble/types';
+import {
+  type AppRole,
+  type CustomAppPermission,
+  getAppPossibleGuestPermissions,
+  getAppRoles,
+} from '@appsemble/lang-sdk';
 import { type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 

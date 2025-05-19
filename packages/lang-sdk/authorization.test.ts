@@ -1,9 +1,3 @@
-import {
-  type AppDefinition,
-  AppPermission,
-  PredefinedAppRole,
-  type Security,
-} from '@appsemble/types';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -16,6 +10,12 @@ import {
   getAppRolesByPermissions,
   getGuestAppPermissions,
 } from './authorization.js';
+import {
+  type AppDefinition,
+  AppPermission,
+  PredefinedAppRole,
+  type Security,
+} from './types/index.js';
 
 describe('getAppRolePermissions', () => {
   it('should return permissions for an app role', () => {

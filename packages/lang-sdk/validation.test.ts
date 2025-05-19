@@ -1,3 +1,6 @@
+import { ValidationError } from 'jsonschema';
+import { describe, expect, it } from 'vitest';
+
 import {
   type AppDefinition,
   type BasicPageDefinition,
@@ -6,10 +9,7 @@ import {
   type FlowPageDefinition,
   predefinedAppRoles,
   type Security,
-} from '@appsemble/types';
-import { ValidationError } from 'jsonschema';
-import { describe, expect, it } from 'vitest';
-
+} from './types/index.js';
 import { validateAppDefinition } from './validation.js';
 
 function createTestApp(): AppDefinition {
@@ -2203,7 +2203,7 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
       new ValidationError(
-        'there is no-one in the app, who has permissions to use this action',
+        'there is no one in the app who has permissions to use this action',
         'resource.get',
         undefined,
         ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'resource'],
@@ -2229,7 +2229,7 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
       new ValidationError(
-        'there is no-one in the app, who has permissions to use this action',
+        'there is no one in the app who has permissions to use this action',
         'resource.get',
         undefined,
         ['controller', 'actions', 'onWhatever', 'resource'],

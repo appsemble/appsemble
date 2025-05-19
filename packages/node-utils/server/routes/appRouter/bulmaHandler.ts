@@ -1,8 +1,7 @@
 import { createRequire } from 'node:module';
 
+import { baseTheme, type Theme as ThemeType } from '@appsemble/lang-sdk';
 import { bulmaVersion, logger, type Options } from '@appsemble/node-utils';
-import { type Theme as ThemeType } from '@appsemble/types';
-import { baseTheme } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 import { renderSync } from 'sass';
 import stripBom from 'strip-bom';

@@ -1,4 +1,3 @@
-export * from './baseTheme.js';
 export * from './asciiLogo.js';
 export * from './date.js';
 export * from './fonts.js';

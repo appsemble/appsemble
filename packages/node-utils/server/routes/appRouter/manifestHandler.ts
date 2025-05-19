@@ -1,5 +1,6 @@
+import { baseTheme } from '@appsemble/lang-sdk';
 import { assertKoaCondition, type Options } from '@appsemble/node-utils';
-import { baseTheme, normalize } from '@appsemble/utils';
+import { normalize } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 import { extension } from 'mime-types';
 

@@ -1,10 +1,10 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { FlowBackActionDefinition } from '../../schemas/FlowBackActionDefinition.js';
-import { FlowCancelActionDefinition } from '../../schemas/FlowCancelActionDefinition.js';
-import { FlowFinishActionDefinition } from '../../schemas/FlowFinishActionDefinition.js';
-import { FlowNextActionDefinition } from '../../schemas/FlowNextActionDefinition.js';
-import { FlowToActionDefinition } from '../../schemas/FlowToActionDefinition.js';
+import { FlowBackActionDefinition } from '../../schemas/actions/FlowBackActionDefinition.js';
+import { FlowCancelActionDefinition } from '../../schemas/actions/FlowCancelActionDefinition.js';
+import { FlowFinishActionDefinition } from '../../schemas/actions/FlowFinishActionDefinition.js';
+import { FlowNextActionDefinition } from '../../schemas/actions/FlowNextActionDefinition.js';
+import { FlowToActionDefinition } from '../../schemas/actions/FlowToActionDefinition.js';
 
 export const flowActions: Record<string, OpenAPIV3.SchemaObject> = {
   'flow.next': FlowNextActionDefinition,

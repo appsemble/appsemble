@@ -1,8 +1,13 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
-import { BaseValidatorFactory, schemas, validateAppDefinition } from '@appsemble/lang-sdk';
+import {
+  type AppDefinition as AppDefinitionType,
+  BaseValidatorFactory,
+  schemas,
+  validateAppDefinition,
+} from '@appsemble/lang-sdk';
 import { logger } from '@appsemble/node-utils';
-import { type AppDefinition as AppDefinitionType } from '@appsemble/types';
+import {} from '@appsemble/types';
 import { type Validator } from 'jsonschema';
 import { type Sequelize, type Transaction } from 'sequelize';
 import { type Document, parseDocument, stringify, type YAMLMap } from 'yaml';

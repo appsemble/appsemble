@@ -1,7 +1,8 @@
 import { readFile } from 'node:fs/promises';
 
+import { type ResourceDefinition } from '@appsemble/lang-sdk';
 import { AppsembleError, logger, readData } from '@appsemble/node-utils';
-import { type Resource, type ResourceDefinition } from '@appsemble/types';
+import { type Resource } from '@appsemble/types';
 import axios from 'axios';
 
 interface UpdateResourceParams {

@@ -1,4 +1,5 @@
-import { type App, type ResourceDefinition } from '@appsemble/types';
+import { type ResourceDefinition } from '@appsemble/lang-sdk';
+import { type App } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { throwKoaError } from '../../koa.js';

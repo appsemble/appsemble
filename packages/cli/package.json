@@ -46,6 +46,7 @@
   "dependencies": {
     "@appsemble/node-utils": "0.33.6",
     "@appsemble/types": "0.33.6",
+    "@appsemble/lang-sdk": "0.33.6",
     "@appsemble/utils": "0.33.6",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@koa/cors": "^5.0.0",

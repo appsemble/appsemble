@@ -1,8 +1,8 @@
-import { type Remappers, type UserInfo } from '@appsemble/types';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { stringify } from 'yaml';
 
 import { type RemapperContext } from './remap.js';
+import { type AppMemberInfo, type Remappers } from './types/index.js';
 
 export interface RemapperExample {
   input: unknown;
@@ -987,7 +987,7 @@ export function schemaExample(
 export function createExampleContext(
   url: URL,
   lang: string,
-  userInfo?: UserInfo,
+  userInfo?: AppMemberInfo,
   history?: [],
 ): RemapperContext {
   return {

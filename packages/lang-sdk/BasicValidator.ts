@@ -223,13 +223,12 @@ export class BlockInstanceValidator {
         action: () => true,
         'event-listener': () => true,
         'event-emitter': () => true,
-      }
+      },
     }).build();
   }
 
-  validate(instance: unknown): ValidatorResult {
-
-  }
+  // @ts-expect-error TODO: later
+  validate(instance: unknown): ValidatorResult {}
 }
 
 export class AppValidator {

@@ -1,4 +1,4 @@
-import { getAppBlocks, noop, normalize } from '@appsemble/lang-sdk';
+import { type AppDefinition, getAppBlocks, noop, normalize } from '@appsemble/lang-sdk';
 import {
   Button,
   useBeforeUnload,
@@ -8,7 +8,7 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { type App, type AppDefinition } from '@appsemble/types';
+import { type App } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';

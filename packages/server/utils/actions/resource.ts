@@ -1,4 +1,15 @@
-import { defaultLocale, remap } from '@appsemble/lang-sdk';
+import {
+  defaultLocale,
+  remap,
+  type ResourceCreateActionDefinition,
+  type ResourceDeleteActionDefinition,
+  type ResourceDeleteAllActionDefinition,
+  type ResourceDeleteBulkActionDefinition,
+  type ResourceGetActionDefinition,
+  type ResourcePatchActionDefinition,
+  type ResourceQueryActionDefinition,
+  type ResourceUpdateActionDefinition,
+} from '@appsemble/lang-sdk';
 import {
   getCompressedFileMeta,
   getRemapperContext,
@@ -8,16 +19,6 @@ import {
   serializeServerResource,
   uploadAssets,
 } from '@appsemble/node-utils';
-import {
-  type ResourceCreateActionDefinition,
-  type ResourceDeleteActionDefinition,
-  type ResourceDeleteAllActionDefinition,
-  type ResourceDeleteBulkActionDefinition,
-  type ResourceGetActionDefinition,
-  type ResourcePatchActionDefinition,
-  type ResourceQueryActionDefinition,
-  type ResourceUpdateActionDefinition,
-} from '@appsemble/types';
 import { serializeResource } from '@appsemble/utils';
 import { Op } from 'sequelize';
 

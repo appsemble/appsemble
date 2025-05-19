@@ -1,8 +1,8 @@
 import { randomBytes } from 'node:crypto';
 
-import { remap } from '@appsemble/lang-sdk';
+import { remap, type Remapper } from '@appsemble/lang-sdk';
 import { AppsembleError, basicAuth, throwKoaError } from '@appsemble/node-utils';
-import { type Remapper, type TokenResponse, type UserInfo } from '@appsemble/types';
+import { type TokenResponse, type UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import { addMinutes } from 'date-fns';
 import jwt from 'jsonwebtoken';

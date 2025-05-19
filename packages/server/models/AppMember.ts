@@ -1,5 +1,5 @@
+import { type AppMemberPropertyDefinition } from '@appsemble/lang-sdk';
 import { AppMemberPropertiesError, AppsembleError } from '@appsemble/node-utils';
-import { type AppMemberPropertyDefinition } from '@appsemble/types';
 import { Validator } from 'jsonschema';
 import { has } from 'lodash-es';
 import { type OpenAPIV3 } from 'openapi-types';

@@ -1,6 +1,7 @@
 import {
   createExampleContext,
   examples,
+  PredefinedAppRole,
   remap,
   type RemapperContext,
   type RemapperExampleKeys,
@@ -198,7 +199,12 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
 
   const context: RemapperContext = useMemo(() => {
     const url = new URL(window.origin);
-    return createExampleContext(url, lang, userInfo);
+    return createExampleContext(url, lang, {
+      ...userInfo,
+      demo: false,
+      // TODO: this enum might not work
+      role: PredefinedAppRole.Member,
+    });
   }, [lang, userInfo]);
 
   const [jsonError, setJsonError] = useState(false);

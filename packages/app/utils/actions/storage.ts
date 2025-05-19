@@ -1,4 +1,4 @@
-import { type StorageType } from '@appsemble/types';
+import { type StorageType } from '@appsemble/lang-sdk';
 import { Mutex } from 'async-mutex';
 import { type IDBPDatabase, openDB } from 'idb';
 

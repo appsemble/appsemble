@@ -1,10 +1,10 @@
+import { AppPermission } from '@appsemble/lang-sdk';
 import {
   AppMemberPropertiesError,
   assertKoaCondition,
   logger,
   throwKoaError,
 } from '@appsemble/node-utils';
-import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { AppMember } from '../../../models/index.js';

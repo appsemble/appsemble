@@ -1,10 +1,10 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { GroupMemberDeleteActionDefinition } from '../../schemas/GroupMemberDeleteActionDefinition.js';
-import { GroupMemberInviteActionDefinition } from '../../schemas/GroupMemberInviteActionDefinition.js';
-import { GroupMemberQueryActionDefinition } from '../../schemas/GroupMemberQueryActionDefinition.js';
-import { GroupMemberRoleUpdateActionDefinition } from '../../schemas/GroupMemberRoleUpdateActionDefinition.js';
-import { GroupQueryActionDefinition } from '../../schemas/GroupQueryActionDefinition.js';
+import { GroupMemberDeleteActionDefinition } from '../../schemas/actions/GroupMemberDeleteActionDefinition.js';
+import { GroupMemberInviteActionDefinition } from '../../schemas/actions/GroupMemberInviteActionDefinition.js';
+import { GroupMemberQueryActionDefinition } from '../../schemas/actions/GroupMemberQueryActionDefinition.js';
+import { GroupMemberRoleUpdateActionDefinition } from '../../schemas/actions/GroupMemberRoleUpdateActionDefinition.js';
+import { GroupQueryActionDefinition } from '../../schemas/actions/GroupQueryActionDefinition.js';
 
 export const groupActions: Record<string, OpenAPIV3.SchemaObject> = {
   'group.query': GroupQueryActionDefinition,

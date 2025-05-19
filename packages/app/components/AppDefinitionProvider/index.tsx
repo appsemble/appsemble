@@ -1,9 +1,6 @@
+import { type AppDefinition } from '@appsemble/lang-sdk';
 import { useEventListener } from '@appsemble/react-components';
-import {
-  type AppDefinition,
-  type BlockManifest,
-  type ProjectImplementations,
-} from '@appsemble/types';
+import { type BlockManifest, type ProjectImplementations } from '@appsemble/types';
 import {
   createContext,
   type ReactNode,

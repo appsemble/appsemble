@@ -1,5 +1,5 @@
+import { type BlockDefinition, type PageDefinition } from '@appsemble/lang-sdk';
 import { Button, Confirmation, useConfirmation, useMessages } from '@appsemble/react-components';
-import { type BlockDefinition, type PageDefinition } from '@appsemble/types';
 import {
   type ChangeEvent,
   type MutableRefObject,

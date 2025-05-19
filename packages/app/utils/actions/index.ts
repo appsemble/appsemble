@@ -1,4 +1,4 @@
-import { type Action, type ActionDefinition } from '@appsemble/types';
+import { type Action, type ActionDefinition } from '@appsemble/lang-sdk';
 
 import { analytics } from './analytics.js';
 import {

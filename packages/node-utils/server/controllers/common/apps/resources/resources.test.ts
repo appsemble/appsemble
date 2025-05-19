@@ -1,14 +1,16 @@
-import { remap } from '@appsemble/lang-sdk';
+import {
+  type AppDefinition,
+  remap,
+  type ResourceDefinition,
+  type ResourceView,
+} from '@appsemble/lang-sdk';
 import {
   type App,
   type AppConfigEntry,
-  type AppDefinition,
   type AppMemberInfo,
   type AppMessages,
   type Asset,
   type Resource,
-  type ResourceDefinition,
-  type ResourceView,
 } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';

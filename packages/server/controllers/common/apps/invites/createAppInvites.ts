@@ -1,8 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
-import { getAppRoles } from '@appsemble/lang-sdk';
+import { AppPermission, getAppRoles } from '@appsemble/lang-sdk';
 import { assertKoaCondition } from '@appsemble/node-utils';
-import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 

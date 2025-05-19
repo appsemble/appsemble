@@ -1,5 +1,6 @@
-import { defaultLocale } from '@appsemble/utils';
 import { type OpenAPIV3 } from 'openapi-types';
+
+import { defaultLocale } from '../constants/locale.js';
 
 export const AppDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',

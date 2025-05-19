@@ -1,4 +1,4 @@
-import { ActionError } from '@appsemble/types';
+import { ActionError } from '@appsemble/lang-sdk';
 import { type IDBPDatabase } from 'idb';
 import { beforeEach, describe, expect, it } from 'vitest';
 

@@ -1,5 +1,5 @@
+import { type EmailActionDefinition } from '@appsemble/lang-sdk';
 import { version } from '@appsemble/node-utils';
-import { type EmailActionDefinition } from '@appsemble/types';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { type ParameterizedContext } from 'koa';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

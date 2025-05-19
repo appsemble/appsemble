@@ -1,17 +1,20 @@
 import { type EventEmitter } from 'events';
 
-import { type AppConfigEntryGetter, type MessageGetter } from '@appsemble/lang-sdk';
-import { type ShowMessage } from '@appsemble/react-components';
 import {
   type ActionDefinition,
+  type AppConfigEntryGetter,
   type AppDefinition,
+  type BlockDefinition,
+  type MessageGetter,
+  type Remapper,
+} from '@appsemble/lang-sdk';
+import { type ShowMessage } from '@appsemble/react-components';
+import {
   type AppMemberGroup,
   type AppMemberInfo,
-  type BlockDefinition,
   type BlockManifest,
   type Group,
   type ProjectImplementations,
-  type Remapper,
   type ResourceSubscribableAction,
   type UserInfo,
 } from '@appsemble/types';

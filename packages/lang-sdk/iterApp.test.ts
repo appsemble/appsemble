@@ -1,13 +1,13 @@
+import { describe, expect, it, vi } from 'vitest';
+
+import { iterAction, iterApp, iterBlock, iterBlockList, iterPage } from './iterApp.js';
 import {
   type ActionDefinition,
   type AppDefinition,
   type BasicPageDefinition,
   type BlockDefinition,
   type PageDefinition,
-} from '@appsemble/types';
-import { describe, expect, it, vi } from 'vitest';
-
-import { iterAction, iterApp, iterBlock, iterBlockList, iterPage } from './iterApp.js';
+} from './types/index.js';
 
 describe('iterAction', () => {
   it('should call the appropriate callbacks', () => {

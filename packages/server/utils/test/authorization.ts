@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
-import { PredefinedAppRole, type TokenResponse } from '@appsemble/types';
+import { PredefinedAppRole } from '@appsemble/lang-sdk';
+import { type TokenResponse } from '@appsemble/types';
 import { api } from '@appsemble/utils';
 import { request } from 'axios-test-instance';
 import { hash } from 'bcrypt';

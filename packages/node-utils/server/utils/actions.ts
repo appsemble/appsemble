@@ -1,4 +1,11 @@
-import { defaultLocale, remap } from '@appsemble/lang-sdk';
+import {
+  type ActionDefinition,
+  defaultLocale,
+  type EmailActionDefinition,
+  type NotifyActionDefinition,
+  remap,
+  type RequestLikeActionDefinition,
+} from '@appsemble/lang-sdk';
 import {
   assertKoaCondition,
   createFormData,
@@ -14,13 +21,7 @@ import {
   version,
   waitForPodReadiness,
 } from '@appsemble/node-utils';
-import {
-  type ActionDefinition,
-  type App,
-  type EmailActionDefinition,
-  type NotifyActionDefinition,
-  type RequestLikeActionDefinition,
-} from '@appsemble/types';
+import { type App } from '@appsemble/types';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { type Context, type Middleware } from 'koa';
 import { get, mapValues, pick } from 'lodash-es';

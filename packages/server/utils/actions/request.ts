@@ -1,10 +1,11 @@
-import { defaultLocale, remap } from '@appsemble/lang-sdk';
-import { getRemapperContext } from '@appsemble/node-utils';
 import {
+  defaultLocale,
+  remap,
   type Remapper,
   type RequestLikeActionDefinition,
   type ResourceQueryActionDefinition,
-} from '@appsemble/types';
+} from '@appsemble/lang-sdk';
+import { getRemapperContext } from '@appsemble/node-utils';
 import { formatRequestAction } from '@appsemble/utils';
 import axios from 'axios';
 

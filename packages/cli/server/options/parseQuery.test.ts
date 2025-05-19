@@ -1,4 +1,4 @@
-import { type ResourceDefinition } from '@appsemble/types';
+import { type ResourceDefinition } from '@appsemble/lang-sdk';
 import { describe, expect, it } from 'vitest';
 
 import { parseQuery } from './parseQuery.js';

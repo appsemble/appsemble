@@ -1,14 +1,9 @@
-import {
-  type AppConfigEntry,
-  type AppMemberInfo,
-  type AppMessages,
-  type Remapper,
-} from '@appsemble/types';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createExampleContext, examples } from './examples.js';
-import { remap } from './remap.js';
+import { type AppConfigEntryValue, remap } from './remap.js';
+import { type AppMemberInfo, type Remapper } from './types/index.js';
 
 /**
  * Stub the console types, since we don’t want to use dom or node types here.
@@ -40,8 +35,13 @@ interface TestCase {
   input: any;
   mappers: Remapper;
   expected: any;
-  messages?: AppMessages['messages'];
-  variables?: AppConfigEntry[];
+  messages?: {
+    core: Record<string, string>;
+    app: Record<string, string>;
+    messageIds: Record<string, string>;
+    blocks: Record<string, Record<string, Record<string, string>>>;
+  };
+  variables?: { id: number; value: AppConfigEntryValue; name: string }[];
   appMemberInfo?: AppMemberInfo;
   context?: Record<string, any>;
   history?: unknown[];

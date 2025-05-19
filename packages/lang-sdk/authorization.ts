@@ -10,7 +10,7 @@ import {
   type PredefinedAppRole,
   predefinedAppRolePermissions,
   type Security,
-} from '@appsemble/types';
+} from './types/index.js';
 
 function checkAppPermissions(
   acquiredPermissions: CustomAppPermission[],

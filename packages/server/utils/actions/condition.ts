@@ -1,6 +1,5 @@
-import { defaultLocale, remap } from '@appsemble/lang-sdk';
+import { type ConditionActionDefinition, defaultLocale, remap } from '@appsemble/lang-sdk';
 import { getRemapperContext } from '@appsemble/node-utils';
-import { type ConditionActionDefinition } from '@appsemble/types';
 
 import { actions, type ServerActionParameters } from './index.js';
 import { handleAction } from '../action.js';

@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@appsemble/types": "0.33.6",
+    "@appsemble/lang-sdk": "0.33.6",
     "@odata/parser": "^0.2.14",
     "axios": "^1.0.0",
     "cron-parser": "^4.0.0",

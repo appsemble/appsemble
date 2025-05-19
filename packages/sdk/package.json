@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@appsemble/types": "0.33.6",
+    "@appsemble/lang-sdk": "0.33.6",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "type-fest": "^4.0.0"
   },

@@ -1,4 +1,4 @@
-import { ActionError } from '@appsemble/types';
+import { ActionError } from '@appsemble/lang-sdk';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
 import { type ShowDialogParams } from '../../types.js';

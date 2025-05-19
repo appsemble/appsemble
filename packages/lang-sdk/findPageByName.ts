@@ -1,4 +1,4 @@
-import { type PageDefinition } from '@appsemble/types';
+import { type PageDefinition } from './types/index.js';
 
 export function findPageByName(pages: PageDefinition[], name: string): PageDefinition | undefined {
   for (const page of pages) {

@@ -1,18 +1,3 @@
-import {
-  type AppDefinition,
-  type AppMemberCurrentPatchAction,
-  type AppMemberPropertiesPatchAction,
-  type AppMemberRegisterAction,
-  type BlockManifest,
-  type CustomAppPermission,
-  type PageDefinition,
-  PredefinedAppRole,
-  predefinedAppRolePermissions,
-  type ProjectImplementations,
-  type Remapper,
-  type ResourceGetActionDefinition,
-  type RoleDefinition,
-} from '@appsemble/types';
 import cronParser from 'cron-parser';
 import { type Schema, ValidationError, Validator, type ValidatorResult } from 'jsonschema';
 import languageTags from 'language-tags';
@@ -35,6 +20,21 @@ import {
 import { iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
+import {
+  type AppDefinition,
+  type AppMemberCurrentPatchAction,
+  type AppMemberPropertiesPatchAction,
+  type AppMemberRegisterAction,
+  type BlockManifest,
+  type CustomAppPermission,
+  type PageDefinition,
+  PredefinedAppRole,
+  predefinedAppRolePermissions,
+  type ProjectImplementations,
+  type Remapper,
+  type ResourceGetActionDefinition,
+  type RoleDefinition,
+} from './types/index.js';
 
 // TODO: change when MR ready
 const MR_READY = false;
@@ -288,7 +288,7 @@ function validateController(
 
   iterApp(definition, {
     onController(controller, path) {
-      // TODO: aaargh stop this BS
+      // TODO: Google what an early return/guard statement is. Never ever forget it.
       const actionParameters = new Set<string>();
 
       if (controller.actions) {
@@ -1286,7 +1286,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
             allPermissions.push(...allRolePermissions);
           }
 
-          // TODO: pure dogshit
+          // TODO: repeats way too much, code not self-explanatory at all
           if (
             !allPermissions.some((permission) => {
               if (resourcePermissionPattern.test(permission)) {
@@ -1336,7 +1336,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
           ) {
             report(
               action.type,
-              'there is no-one in the app, who has permissions to use this action',
+              'there is no one in the app who has permissions to use this action',
               [...path, 'resource'],
             );
             return;

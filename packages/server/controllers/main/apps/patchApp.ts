@@ -1,11 +1,11 @@
-import { AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
+import { type AppDefinition, AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
   assertKoaCondition,
   handleValidatorResult,
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
+import { OrganizationPermission } from '@appsemble/types';
 import { validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';

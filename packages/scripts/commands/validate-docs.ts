@@ -1,10 +1,9 @@
 import { readFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 
-import { allActions } from '@appsemble/lang-sdk';
-import { AppsembleError, authenticate, logger, opendirSafe } from '@appsemble/node-utils';
 import {
   type ActionDefinition,
+  allActions,
   type AppDefinition,
   type AppMemberPropertyDefinition,
   type BasicPageDefinition,
@@ -24,7 +23,8 @@ import {
   type ResourcePatchActionDefinition,
   type ResourceQueryActionDefinition,
   type ResourceUpdateActionDefinition,
-} from '@appsemble/types';
+} from '@appsemble/lang-sdk';
+import { AppsembleError, authenticate, logger, opendirSafe } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
 import { type Code, type Heading, type Root, type Text } from 'mdast';

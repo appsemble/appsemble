@@ -1,6 +1,9 @@
-import { type RemapperContext, type ServerActionName } from '@appsemble/lang-sdk';
+import {
+  type ActionDefinition,
+  type RemapperContext,
+  type ServerActionName,
+} from '@appsemble/lang-sdk';
 import { type Options } from '@appsemble/node-utils';
-import { type ActionDefinition } from '@appsemble/types';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 
 import { appMemberQuery } from './appMember.js';

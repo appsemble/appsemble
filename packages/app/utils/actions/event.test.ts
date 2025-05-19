@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { ActionError } from '@appsemble/types';
+import { ActionError } from '@appsemble/lang-sdk';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createTestAction } from '../makeActions.js';

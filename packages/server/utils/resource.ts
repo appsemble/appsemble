@@ -1,15 +1,16 @@
-import { defaultLocale, remap } from '@appsemble/lang-sdk';
+import {
+  type AppDefinition,
+  defaultLocale,
+  type NotificationDefinition,
+  remap,
+  type ResourceDefinition,
+} from '@appsemble/lang-sdk';
 import {
   getRemapperContext,
   type Options,
   type QueryParams,
   throwKoaError,
 } from '@appsemble/node-utils';
-import {
-  type AppDefinition,
-  type NotificationDefinition,
-  type ResourceDefinition,
-} from '@appsemble/types';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 import { literal, Op, type Order, type WhereOptions } from 'sequelize';
 import { type Literal } from 'sequelize/types/utils';

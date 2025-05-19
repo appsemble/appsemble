@@ -1,8 +1,6 @@
-import { schemas } from '@appsemble/lang-sdk';
-import { type ActionDefinition } from '@appsemble/types';
 import { type OpenAPIV3 } from 'openapi-types';
 
-// Import { schemas } from './index.js';
+import { schemas } from './index.js';
 
 type NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
 type ReferenceObject = OpenAPIV3.ReferenceObject;
@@ -20,5 +18,3 @@ export const allActions = new Set(
     })
     .filter((x) => x !== undefined),
 );
-
-export type ActionName = ActionDefinition['type'];

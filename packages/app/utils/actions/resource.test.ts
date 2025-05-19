@@ -1,4 +1,4 @@
-import { type AppDefinition } from '@appsemble/types';
+import { type AppDefinition } from '@appsemble/lang-sdk';
 import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';

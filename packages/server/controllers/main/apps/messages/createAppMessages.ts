@@ -1,10 +1,7 @@
-import { AppMessageValidationError, validateMessages } from '@appsemble/lang-sdk';
+import { type AppDefinition } from '@appsemble/lang-sdk';
 import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
-import {
-  type AppDefinition,
-  type AppsembleMessages,
-  OrganizationPermission,
-} from '@appsemble/types';
+import { type AppsembleMessages, OrganizationPermission } from '@appsemble/types';
+import { AppMessageValidationError, validateMessages } from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
 

@@ -1,5 +1,6 @@
-import { defaultLocale, has, remap, type RemapperContext } from '@appsemble/lang-sdk';
+import { defaultLocale, remap, type RemapperContext } from '@appsemble/lang-sdk';
 import { logger } from '@appsemble/node-utils';
+import { has } from '@appsemble/utils';
 import { IntlMessageFormat } from 'intl-messageformat';
 
 import { actions, type ServerActionParameters } from './actions/index.js';

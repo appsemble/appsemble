@@ -1,5 +1,10 @@
-import { remap } from '@appsemble/lang-sdk';
-import { type Action, type ActionDefinition, ActionError, type ActionType } from '@appsemble/types';
+import {
+  type Action,
+  type ActionDefinition,
+  ActionError,
+  type ActionType,
+  remap,
+} from '@appsemble/lang-sdk';
 import { defaultLocale, has } from '@appsemble/utils';
 import { addBreadcrumb } from '@sentry/browser';
 import { IntlMessageFormat } from 'intl-messageformat';

@@ -1,5 +1,5 @@
 import { BasePageDefinition } from './BasePageDefinition.js';
-import { extendJSONSchema } from './utils.js';
+import { extendJSONSchema } from './utils/extendJSONSchema.js';
 
 export const LoopPageDefinition = extendJSONSchema(BasePageDefinition, {
   type: 'object',

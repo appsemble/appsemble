@@ -1,5 +1,4 @@
-import { getAppInheritedRoles } from '@appsemble/lang-sdk';
-import { type AppDefinition, type AppRole } from '@appsemble/types';
+import { type AppDefinition, type AppRole, getAppInheritedRoles } from '@appsemble/lang-sdk';
 
 export function getDefaultPageName(
   isLoggedIn: boolean,

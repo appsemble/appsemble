@@ -3,7 +3,7 @@ import { mkdir, readdir, rm, stat } from 'node:fs/promises';
 import { basename, dirname, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
 
-import { extractAppMessages, has, normalizeBlockName } from '@appsemble/lang-sdk';
+import { type AppDefinition, normalizeBlockName } from '@appsemble/lang-sdk';
 import {
   applyAppVariant,
   AppsembleError,
@@ -16,7 +16,6 @@ import {
 import {
   type App,
   type AppConfigEntryDefinition,
-  type AppDefinition,
   type AppLock,
   type AppOAuth2Secret,
   type AppsembleContext,
@@ -31,6 +30,7 @@ import {
   type ValueFromProcess,
   type WritableAppSamlSecret,
 } from '@appsemble/types';
+import { extractAppMessages, has } from '@appsemble/utils';
 import axios from 'axios';
 import { type BuildResult } from 'esbuild';
 import fg from 'fast-glob';

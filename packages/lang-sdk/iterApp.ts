@@ -4,7 +4,7 @@ import {
   type BlockDefinition,
   type ControllerDefinition,
   type PageDefinition,
-} from '@appsemble/types';
+} from './types/index.js';
 
 export type Prefix = (number | string)[];
 

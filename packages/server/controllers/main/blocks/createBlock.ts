@@ -1,4 +1,8 @@
-import { BlockExampleValidator, BlockParamSchemaValidator } from '@appsemble/lang-sdk';
+import {
+  type BlockDefinition,
+  BlockExampleValidator,
+  BlockParamSchemaValidator,
+} from '@appsemble/lang-sdk';
 import {
   assertKoaCondition,
   handleValidatorResult,
@@ -6,7 +10,7 @@ import {
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { type BlockDefinition, OrganizationPermission } from '@appsemble/types';
+import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import semver from 'semver';
 import { DatabaseError, literal, UniqueConstraintError } from 'sequelize';

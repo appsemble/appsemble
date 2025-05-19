@@ -1,18 +1,14 @@
 import {
+  type AppDefinition,
   type IdentifiableBlock,
   iterApp,
   normalizeBlockName,
   type Prefix,
   stripBlockName,
+  type Theme,
   validateAppDefinition,
 } from '@appsemble/lang-sdk';
-import {
-  type ActionType,
-  type AppDefinition,
-  type BlockManifest,
-  type EventType,
-  type Theme,
-} from '@appsemble/types';
+import { type ActionType, type BlockManifest, type EventType } from '@appsemble/types';
 import {
   type editor,
   type IRange,

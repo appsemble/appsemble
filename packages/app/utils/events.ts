@@ -1,7 +1,8 @@
 import { type EventEmitter } from 'events';
 
+import { type BlockDefinition } from '@appsemble/lang-sdk';
 import { type Events } from '@appsemble/sdk';
-import { type BlockDefinition, type ProjectManifest } from '@appsemble/types';
+import { type ProjectManifest } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import { addBreadcrumb } from '@sentry/browser';
 

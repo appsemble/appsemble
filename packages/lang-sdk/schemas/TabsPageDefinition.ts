@@ -1,5 +1,5 @@
 import { BasePageDefinition } from './BasePageDefinition.js';
-import { extendJSONSchema } from './utils.js';
+import { extendJSONSchema } from './utils/extendJSONSchema.js';
 
 export const TabsPageDefinition = extendJSONSchema(BasePageDefinition, {
   type: 'object',

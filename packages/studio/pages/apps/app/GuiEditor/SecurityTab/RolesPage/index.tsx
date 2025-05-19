@@ -1,3 +1,4 @@
+import { type BasicPageDefinition } from '@appsemble/lang-sdk';
 import {
   Button,
   CardFooterButton,
@@ -6,7 +7,6 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import { type BasicPageDefinition } from '@appsemble/types';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 

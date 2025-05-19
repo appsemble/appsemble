@@ -1,4 +1,4 @@
-import { type EachActionDefinition } from '@appsemble/types';
+import { type EachActionDefinition } from '@appsemble/lang-sdk';
 
 import { actions, type ServerActionParameters } from './index.js';
 import { handleAction } from '../action.js';

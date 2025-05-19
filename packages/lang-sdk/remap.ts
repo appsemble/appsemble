@@ -1,11 +1,3 @@
-import {
-  type AppMemberInfo,
-  type ArrayRemapper,
-  type Remapper,
-  type Remappers,
-  type SubstringCaseType,
-  type ValueFromProcess,
-} from '@appsemble/types';
 import { filter, literalValues, param } from '@odata/parser';
 import { addMilliseconds, format, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
@@ -17,6 +9,12 @@ import parseDuration from 'parse-duration';
 import { getDuration, processLocation } from './ics.js';
 import { mapValues } from './mapValues.js';
 import { has, stripNullValues } from './miscellaneous.js';
+import {
+  type AppMemberInfo,
+  type ArrayRemapper,
+  type Remapper,
+  type Remappers,
+} from './types/index.js';
 
 /**
  * Stub the console types, since we don’t want to use dom or node types here.
@@ -57,7 +55,8 @@ export interface IntlMessage {
  */
 export type MessageGetter = (msg: IntlMessage) => IntlMessageFormat;
 
-export type AppConfigEntryGetter = (name: string) => ValueFromProcess;
+export type AppConfigEntryValue = boolean | number | string | undefined;
+export type AppConfigEntryGetter = (name: string) => AppConfigEntryValue;
 
 export interface RemapperContext {
   /**

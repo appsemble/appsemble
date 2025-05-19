@@ -1,4 +1,5 @@
-import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
+import { PredefinedAppRole } from '@appsemble/lang-sdk';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';

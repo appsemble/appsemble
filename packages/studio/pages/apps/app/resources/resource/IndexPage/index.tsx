@@ -1,4 +1,4 @@
-import { generateDataFromSchema, has } from '@appsemble/lang-sdk';
+import { generateDataFromSchema } from '@appsemble/lang-sdk';
 import {
   Button,
   Checkbox,
@@ -17,7 +17,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type Resource } from '@appsemble/types';
-import { serializeResource } from '@appsemble/utils';
+import { has, serializeResource } from '@appsemble/utils';
 import { download } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';

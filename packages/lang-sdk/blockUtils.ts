@@ -1,7 +1,6 @@
-import { type AppDefinition, type BlockDefinition } from '@appsemble/types';
-
 import { blockNamePattern } from './constants/index.js';
 import { iterApp } from './iterApp.js';
+import { type AppDefinition, type BlockDefinition } from './types/index.js';
 
 export type IdentifiableBlock = Pick<BlockDefinition, 'type' | 'version'>;
 
