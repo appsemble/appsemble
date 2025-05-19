@@ -822,6 +822,7 @@ review:
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
+      --set "minio.persistence.size=1Gi"
       --set "minio.fullnameOverride=review-$CI_MERGE_REQUEST_IID-minio"
       --set "minio.ingress.hostname=console.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
