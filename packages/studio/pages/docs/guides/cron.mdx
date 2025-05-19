@@ -13,12 +13,16 @@ about upcoming events.
 - [Schedule](#schedule)
 - [Action](#action)
 - [Security](#security)
-- [Example](#example)
+- [Logs](#logs)
 
 ## Schedule
 
 The format for the schedule is based on the `cron` format, to see this in action head over to
 [Crontab guru](https://crontab.guru/).
+
+> **Note**: Cron job schedules are checked every `5` minutes. This means that if you schedule a job
+> to run at `14:01` it will instead run at `14:05`. Keep this in mind when scheduling your jobs to
+> make sure they don't run later than you intended.
 
 **Cron format**
 
@@ -39,12 +43,17 @@ _Extra options:_
 - **(day of week)`L`**: the last occurrence of the specified week day for the month in progress.
 - **(day of month)`L`**: last day of the month.
 
-> Note: the current implementation of cron jobs runs jobs from the past five minutes every five
-> minutes. This means that running the job at e.g. 14:01 will not run it at 14:01, but at about
-> 14:05. It’s recommended to specify a cron job to run more than 5 minutes before it’s supposed to
-> finish to be certain that a job is scheduled on time. Let’s say you want the job to finish before
-> 14:00, then it’s recommended to be scheduled between `51 13 * * *` and `54 13 * * *` as other jobs
-> may run first.
+Cron jobs are defined at the top level of the app definition with the
+[cron](../reference/app.mdx#-app-definition-cron) property.
+
+```yaml copy validate cron-snippet
+cron:
+  everyDayAt10:
+    schedule: '* 10 * * *' # Quotes are required if the first character starts with `*`
+    action:
+      type: resource.query
+      resource: person
+```
 
 ## Actions
 
@@ -53,7 +62,7 @@ be used in older apps, but will run a `noop` action instead. The actions also wo
 different e.g. the actions are not run by the user, so retrieving user information with the
 [user](../remappers/data.mdx#user) remapper won’t work the same.
 
-> Note: We do not recommend using resource actions with resources that have properties in binary
+> **Note**: We do not recommend using resource actions with resources that have properties in binary
 > format, as assets are currently unsupported.
 
 Supported (server-side) actions:
@@ -68,7 +77,9 @@ Supported (server-side) actions:
 
 ## Security
 
-Cron jobs that contain request action and need [service secrets](../guides/services.md) to be applied for the outgoing request need the cron field to be defined with permissions being an empty array in the [security definition](../app/security.mdx#security-definition) of the app.
+Cron jobs that contain request action and need [service secrets](../guides/services.md) to be
+applied for the outgoing request need the cron field to be defined with permissions being an empty
+array in the [security definition](../app/security.mdx#security-definition) of the app.
 
 ```yaml security definition cron
 security:
@@ -76,16 +87,8 @@ security:
     permissions: []
 ```
 
-## Example
+## Logs
 
-Cron jobs are defined at the top level of the app definition with the
-[cron](../reference/app.mdx#-app-definition-cron) property.
-
-```yaml copy validate cron-snippet
-cron:
-  everyDayAt10:
-    schedule: '* 10 * * *' # Quotes are required if the first character starts with `*`
-    action:
-      type: resource.query
-      resource: person
-```
+In a deployed instance of Appsemble, cronjobs are run in a seperate Kubernetes pod. Logs for the job
+will be found in that pod, not in the main Appsemble pod. To debug the cronjob, we recommend running
+the action in a part of the app that's easier to reproduce.
