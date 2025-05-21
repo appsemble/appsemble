@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.2-test.7](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.7)] - 2025-05-21
+
+### Fixed
+
+- App: Translate app name on the title bar of the reset password page.
+- Server: Fix app name not being translated in the app emails.
+
 ## \[[0.32.2-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.6)] - 2025-05-14
 
 ### Fixed
