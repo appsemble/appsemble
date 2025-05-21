@@ -46,7 +46,7 @@
     "yaml": "^2.0.0"
   },
   "devDependencies": {
-    "@types/inquirer": "^9.0.0"
+    "@types/inquirer": "9.0.7"
   },
   "engines": {
     "node": ">=20"

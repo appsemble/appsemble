@@ -104,14 +104,14 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@types/busboy": "^1.5.4",
-    "@types/css-tree": "^2.0.0",
-    "@types/koa-compress": "^4.0.0",
-    "@types/koa-range": "^0.3.0",
-    "@types/type-is": "^1.6.6",
-    "axios-mock-adapter": "^1.0.0",
-    "axios-test-instance": "^7.0.0",
-    "vitest": "^2.0.0"
+    "@types/busboy": "1.5.4",
+    "@types/css-tree": "2.3.10",
+    "@types/koa-compress": "4.0.6",
+    "@types/koa-range": "0.3.5",
+    "@types/type-is": "1.6.7",
+    "axios-mock-adapter": "1.22.0",
+    "axios-test-instance": "7.0.0",
+    "vitest": "2.1.9"
   },
   "peerDependencies": {
     "prettier": "^3"

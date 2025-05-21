@@ -6,7 +6,7 @@ networks:
 services:
   postgres:
     container_name: postgres
-    image: postgres:15
+    image: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
     networks: [pipeline]
     environment:
       POSTGRES_DB: appsemble
@@ -17,7 +17,7 @@ services:
 
   helm:
     container_name: helm
-    image: dtzar/helm-kubectl:3
+    image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
     networks: [pipeline]
     tty: true
     stdin_open: true

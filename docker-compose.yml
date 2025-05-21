@@ -1,7 +1,7 @@
 services:
   # A persistent database for local development.
   postgres-dev:
-    image: postgres:15
+    image: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
     restart: always
     environment:
       POSTGRES_DB: appsemble
@@ -12,7 +12,7 @@ services:
 
   # A database using tmpfs for faster test runs.
   postgres-test:
-    image: postgres:14
+    image: postgres:14@sha256:e7e9c0b3470ebff1b693f3a0a3302eb02505e62d67fc1b42c86c2811b4c6e451
     restart: always
     environment:
       POSTGRES_DB: appsemble
@@ -24,7 +24,7 @@ services:
       - /var/lib/postgresql/data
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4@sha256:bd71932cb1ef94719e783f0eed42c227bc67877a7c7e076c7092738711e5f4d4
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: info@appsemble.com
@@ -34,7 +34,7 @@ services:
 
   # MinIO service for assets
   minio:
-    image: minio/minio:latest
+    image: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
     restart: always
     environment:
       MINIO_ROOT_USER: admin
@@ -48,7 +48,7 @@ services:
 
   # MinIO test service for assets
   minio-test:
-    image: minio/minio:latest
+    image: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
     restart: always
     environment:
       MINIO_ROOT_USER: admin

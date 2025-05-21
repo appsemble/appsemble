@@ -1,5 +1,5 @@
 default:
-  image: node:20.18-bookworm-slim
+  image: node:20.18-bookworm-slim@sha256:ffc11dbf16dd0abcbb7b837410601b4d5592db2d03741e13a4a5336ab74d7ccb
 
 stages:
   - cleanup
@@ -35,8 +35,8 @@ workflow:
 .docker:
   interruptible: true
   services:
-    - docker:dind
-  image: docker
+    - docker:dind@sha256:1e9d444274b295261e49f96635f3d56a615cb3ae2021204160f8ac3cdf8f3b58
+  image: docker@sha256:1e9d444274b295261e49f96635f3d56a615cb3ae2021204160f8ac3cdf8f3b58
   dependencies: []
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
@@ -158,7 +158,7 @@ pack:
 
 # Package the Helm chart
 helm package:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
   stage: build
   needs: []
   script:
@@ -193,7 +193,7 @@ eslint:
 
 # Lint Helm charts.
 helm lint:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
   stage: test
   needs: []
   script:
@@ -201,7 +201,7 @@ helm lint:
 
 # Lint shell scripts
 shellcheck:
-  image: koalaman/shellcheck-alpine
+  image: koalaman/shellcheck-alpine@sha256:71e5a217c94204e164da3a89cc83ac0212dc06549f37af61b298273036bbab6f
   stage: test
   needs: []
   script:
@@ -240,8 +240,8 @@ stylelint:
 test node:
   extends: .npm
   services:
-    - postgres:15
-    - name: minio/minio:latest
+    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+    - name: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
       alias: minio
       command: ['server', '/data']
       variables:
@@ -287,7 +287,7 @@ check migrations:
   stage: test
   interruptible: true
   services:
-    - postgres:15
+    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
@@ -303,7 +303,7 @@ check down migrations:
   stage: test
   interruptible: true
   services:
-    - postgres:15
+    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
@@ -319,7 +319,7 @@ fuzz migrations:
   stage: test
   interruptible: true
   services:
-    - postgres:15
+    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
@@ -360,14 +360,14 @@ validate-snippets:
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
   services:
-    - name: postgres:15
+    - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
       alias: database
       variables:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
 
-    - name: minio/minio:latest
+    - name: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
@@ -415,7 +415,7 @@ validate-snippets:
 
 e2e:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.51.1-jammy
+  image: mcr.microsoft.com/playwright:v1.51.1-jammy@sha256:79da45705a7c3f147c435ac6d0beeddf2e132f53263cb27bed90beafbb2e552b
   interruptible: true
   needs:
     - build docker image
@@ -431,14 +431,14 @@ e2e:
     DATABASE_PASSWORD: password
     E2E_HOST: 'http://appsemble:9999'
   services:
-    - name: postgres:15
+    - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
       alias: database
       variables:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
 
-    - name: minio/minio:latest
+    - name: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
@@ -631,7 +631,7 @@ publish docker:
 
 # Publish the Helm chart to https://charts.appsemble.com
 publish helm:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
   needs:
     - helm package
   stage: publish
@@ -690,7 +690,7 @@ publish npm:
 sentry release:
   needs: []
   image:
-    name: getsentry/sentry-cli:2
+    name: getsentry/sentry-cli:2@sha256:2a60d341709d8ae040b842556c66f98443cc6d59101cab751f9811f3a1df9362
     entrypoint: [/bin/sh, -c]
   stage: publish
   rules:
@@ -763,7 +763,7 @@ update dependencies:
 
 # Deploy the Docker image for a branch to a review environment.
 review:
-  image: dtzar/helm-kubectl:3.16.0
+  image: dtzar/helm-kubectl:3.16.0@sha256:3d0876a8a4159fddfb381fcccf23c774bcfcd4b4ffdbb80c1a5c10c1eb23de54
   stage: deploy
   needs:
     - build docker image
@@ -832,7 +832,7 @@ review:
 
 # Stop a review environment.
 stop review:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
   dependencies: []
   stage: deploy
   rules:
@@ -854,7 +854,7 @@ stop review:
 
 # Deploy the Docker image for main to the staging environment.
 staging:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
   stage: deploy
   needs:
     - build docker image
@@ -934,7 +934,7 @@ staging:
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
 
 production:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
   stage: deploy
   needs:
     - publish docker
@@ -1128,7 +1128,7 @@ provision production:
 
 backup production data:
   stage: backup
-  image: postgres:15-alpine
+  image: postgres:15-alpine@sha256:5402d0a13eab398c7c38f1b90af081d7f9e5977606ed869cecdb661403f6586a
   tags:
     - sole-occupant
   rules:
@@ -1153,7 +1153,7 @@ backup production data:
 
 # Stop and cleanup all review environments.
 cleanup review environments:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
   dependencies: []
   stage: cleanup
   rules:

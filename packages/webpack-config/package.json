@@ -53,7 +53,7 @@
     "webpack": "^5.0.0"
   },
   "devDependencies": {
-    "@types/case-sensitive-paths-webpack-plugin": "^2.0.0"
+    "@types/case-sensitive-paths-webpack-plugin": "2.1.9"
   },
   "peerDependencies": {
     "typescript": "^5"
