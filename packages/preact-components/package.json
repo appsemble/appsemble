@@ -48,8 +48,8 @@
     "preact": "^10.0.0"
   },
   "devDependencies": {
-    "@testing-library/preact": "^3.0.0",
-    "@testing-library/user-event": "^14.0.0",
-    "vitest": "^2.0.0"
+    "@testing-library/preact": "3.2.4",
+    "@testing-library/user-event": "14.6.1",
+    "vitest": "2.1.9"
   }
 }

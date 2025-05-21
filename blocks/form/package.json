@@ -43,6 +43,6 @@
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
-    "vitest": "^2.0.0"
+    "vitest": "2.1.9"
   }
 }
