@@ -1,5 +1,5 @@
 {
   "blockedBy": "data-transformation",
   "title": "Basic app",
-  "trainingOrder": []
+  "trainingOrder": ["app-setup", "inventory"]
 }
