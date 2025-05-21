@@ -11,6 +11,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
+import { AppBar } from '../TitleBar/index.js';
 
 export function ResetPassword(): ReactNode {
   useMeta(messages.title);
@@ -24,6 +25,7 @@ export function ResetPassword(): ReactNode {
 
   return (
     <Content padding>
+      <AppBar />
       <Title>
         <FormattedMessage {...messages.title} />
       </Title>
