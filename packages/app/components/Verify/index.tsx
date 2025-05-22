@@ -7,6 +7,7 @@ import { Link, useParams } from 'react-router-dom';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
+import { AppBar } from '../TitleBar/index.js';
 
 export function Verify(): ReactNode {
   useMeta(messages.title);
@@ -36,25 +37,31 @@ export function Verify(): ReactNode {
 
   if (success) {
     return (
-      <div className={`container px-3 py-3 ${styles.root}`}>
-        <Message color="success">
-          <FormattedMessage {...messages.requestSuccess} />
+      <>
+        <AppBar />
+        <div className={`container px-3 py-3 ${styles.root}`}>
+          <Message color="success">
+            <FormattedMessage {...messages.requestSuccess} />
+          </Message>
+          <Link className="button is-primary" to={`/${lang}`}>
+            <FormattedMessage {...messages.returnToApp} />
+          </Link>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <AppBar />
+      <div className={`container ${styles.root}`}>
+        <Message color="danger">
+          <FormattedMessage {...messages.requestFailed} />
         </Message>
         <Link className="button is-primary" to={`/${lang}`}>
           <FormattedMessage {...messages.returnToApp} />
         </Link>
       </div>
-    );
-  }
-
-  return (
-    <div className={`container ${styles.root}`}>
-      <Message color="danger">
-        <FormattedMessage {...messages.requestFailed} />
-      </Message>
-      <Link className="button is-primary" to={`/${lang}`}>
-        <FormattedMessage {...messages.returnToApp} />
-      </Link>
-    </div>
+    </>
   );
 }

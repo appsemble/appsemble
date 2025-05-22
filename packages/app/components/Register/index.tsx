@@ -13,6 +13,7 @@ import { useParams } from 'react-router-dom';
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
+import { AppBar } from '../TitleBar/index.js';
 
 export function Register(): ReactNode {
   useMeta(messages.register);
@@ -47,6 +48,7 @@ export function Register(): ReactNode {
 
   return (
     <Content padding>
+      <AppBar />
       <RegisterForm onRegister={onRegister} />
     </Content>
   );

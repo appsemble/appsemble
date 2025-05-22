@@ -40,6 +40,7 @@ export function Login(): ReactNode {
   if (!logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin && !development) {
     return (
       <Content padding>
+        <AppBar />
         <Message color="danger">
           <FormattedMessage
             {...messages.permissionError}

@@ -25,6 +25,7 @@ import { apiUrl } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { AppBar } from '../TitleBar/index.js';
 
 interface AppInviteFormProps {
   readonly password: string;
@@ -86,6 +87,7 @@ export function AppInvite(): ReactNode {
   if (inviteError) {
     return (
       <Content padding>
+        <AppBar />
         <Message color="danger">
           {inviteError.response?.status === 404 ? (
             <FormattedMessage {...messages.notFound} />
@@ -100,6 +102,7 @@ export function AppInvite(): ReactNode {
   if (accepted || declined) {
     return (
       <Content padding>
+        <AppBar />
         <Message color="success">
           <FormattedMessage
             {...(accepted ? messages.accepted : messages.declined)}
@@ -113,6 +116,7 @@ export function AppInvite(): ReactNode {
   if (appMemberInfo) {
     return (
       <Content padding>
+        <AppBar />
         <Message color="danger">
           <FormattedMessage
             {...messages.alreadyMember}
@@ -128,6 +132,7 @@ export function AppInvite(): ReactNode {
 
   return (
     <Content padding>
+      <AppBar />
       <p className="content has-text-centered">
         <FormattedMessage
           {...messages.description}
