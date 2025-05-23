@@ -1,5 +1,6 @@
 import { bootstrap, FormattedMessage, useBlock } from '@appsemble/preact';
 import { Icon, Loader, Message } from '@appsemble/preact-components';
+import { polyfill } from 'mobile-drag-drop/index.js';
 import { type VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
@@ -7,6 +8,14 @@ import { CollapsibleListComponent } from './components/CollapsibleList/index.js'
 import { ListItem } from './components/ListItem/index.js';
 import styles from './index.module.css';
 import { type Item } from '../block.js';
+
+const addMobileDragandDropPolyfill = (): void => {
+  polyfill();
+
+  // Adding touchmove listener for iOS Safari support
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  window.addEventListener('touchmove', () => {}, { passive: false });
+};
 
 bootstrap(
   ({
@@ -27,6 +36,8 @@ bootstrap(
     const {
       actions: { onDrop },
     } = useBlock();
+
+    addMobileDragandDropPolyfill();
 
     const renderItems = useCallback(
       (items: Item[], spaced?: boolean): VNode => {
@@ -83,6 +94,7 @@ bootstrap(
                 }
                 onDragOver={(e) => e.preventDefault()}
                 onDragStart={() => handleDragStart(index)}
+                onTouchStart={() => handleDragStart(index)}
               >
                 <div className="is-flex is-align-items-center">
                   {}
