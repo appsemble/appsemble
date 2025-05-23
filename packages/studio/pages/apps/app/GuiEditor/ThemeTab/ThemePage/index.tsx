@@ -3,11 +3,11 @@ import {
   type BasicPageDefinition,
   type FlowPageDefinition,
   type FontDefinition,
+  googleFonts,
   type TabsPageDefinition,
   type Theme,
 } from '@appsemble/lang-sdk';
 import { IconButton } from '@appsemble/react-components';
-import { googleFonts } from '@appsemble/utils';
 import { type MutableRefObject, type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { type Document, type Node, type ParsedNode, type YAMLMap } from 'yaml';

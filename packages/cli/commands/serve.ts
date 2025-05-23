@@ -5,7 +5,6 @@ import { basename, extname, join, parse } from 'node:path';
 import { Readable } from 'node:stream';
 
 import {
-  asciiLogo,
   getAppBlocks,
   getAppRoles,
   type IdentifiableBlock,
@@ -44,6 +43,7 @@ import { makeProjectPayload } from '../lib/project.js';
 import { setArgv } from '../server/argv.js';
 import { setAppName } from '../server/db/methods.js';
 import { Resource } from '../server/models/Resource.js';
+import { asciiLogo } from '@appsemble/utils';
 
 export interface ServeArguments {
   remote: string;
