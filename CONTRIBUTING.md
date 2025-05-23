@@ -236,7 +236,7 @@ npm --workspace @appsemble/e2e run e2e
 > - running appsemble locally
 > - creating an account
 > - creating the appsemble organization
-> - publishing blocka
+> - publishing blocks
 > - publishing apps
 >
 > You can check how this is done in the docs or by referencing the e2e job in the .gitlab-ci.yaml
@@ -258,6 +258,11 @@ rm -f packages/utils/**/*.{d.ts,js,js.map}
 > **Note**
 >
 > Be careful not to delete more things than needed like vitest.config.js files
+
+##### Implementation details
+
+The end-to-end tests have more specific implementation details that aren't worth mentioning here.
+These can be found in the [README](/packages/e2e/README.md).
 
 ### Local CI
 
