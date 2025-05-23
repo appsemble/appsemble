@@ -8,7 +8,6 @@ export * from './bulma.js';
 export * from './container.js';
 export * from './core.js';
 export * from './http.js';
-export * from './index.js';
 export * from './layout.js';
 export * from './permission.js';
 export * from './remapper.js';

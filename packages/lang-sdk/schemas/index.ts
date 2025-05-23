@@ -98,7 +98,6 @@ export * from './json/JSONSchemaRoot.js';
 export * from './json/JSONSchemaString.js';
 export * from './ControllerDefinition.js';
 export * from './EventsDefinition.js';
-export * from './index.js';
 export * from './LoopPageActionsDefinition.js';
 export * from './ResourceDefinition.js';
 export * from './ResourceHooksDefinition.js';
