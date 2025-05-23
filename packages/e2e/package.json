@@ -7,6 +7,7 @@
     "app",
     "apps",
     "appsemble",
+    "e2e",
     "framework",
     "low-code",
     "lowcode"
@@ -21,7 +22,18 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
+  "exports": {
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "**/*.d.ts",
+    "**/*.js"
+  ],
   "scripts": {
+    "prepack": "tsc --noEmit false",
     "e2e": "playwright test",
     "codegen": "playwright codegen",
     "test": "vitest"
@@ -32,7 +44,6 @@
     "jwt-decode": "^4.0.0",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@playwright/test": "1.51.1",
-    "axios": "^1.0.0",
     "bulma": "=0.9.3",
     "strip-indent": "^4.0.0"
   },

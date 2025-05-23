@@ -7,14 +7,14 @@ const { CI, CI_MERGE_REQUEST_IID, E2E_HOST } = process.env;
  */
 export default defineConfig({
   testMatch: '**/*.spec.ts',
-  // Run tests in files in parallel
-  fullyParallel: true,
+  // Tests aren't fully isolated so they shouldn't run in parallel
+  fullyParallel: false,
   // Fail the build on CI if you accidentally left test.only in the source code.
   forbidOnly: Boolean(CI),
   // Retry on CI only
   retries: CI ? 2 : 0,
-  // Opt out of parallel tests on CI.
-  workers: CI ? 1 : undefined,
+  // A lot of tests depend on the same pre-seeded apps, so more workers can introduce flakiness.
+  workers: 1,
   // Reporter to use. See https://playwright.dev/docs/test-reporters
   reporter: [['junit', { outputFile: 'results.xml' }]],
   // Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions.

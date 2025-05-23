@@ -146,6 +146,7 @@ pack:
     - npm --pack-destination build --workspace @appsemble/webpack-config pack
     - npm --pack-destination build --workspace @appsemble/cli pack
     - npm --pack-destination build --workspace @appsemble/tsconfig pack
+    - npm --pack-destination build --workspace @appsemble/e2e pack
     - npm --pack-destination build --workspace appsemble pack
     - npm --pack-destination build --workspace create-appsemble pack
     - npm run scripts -- validate-packaged-exports build/*
