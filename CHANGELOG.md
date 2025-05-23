@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.2-test.8](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.8)] - 2025-05-23
+
+### Fixed
+
+- Block(`feed`): No longer throws an error when you haven't defined a `latitude` and `longtitude`
+  even though you didn't define a `marker`.
+
 ## \[[0.32.2-test.7](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.7)] - 2025-05-21
 
 ### Fixed

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.2-test.7
-appVersion: 0.32.2-test.7
+version: 0.32.2-test.8
+appVersion: 0.32.2-test.8
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,9 +33,8 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: fixed
-      description: "App: Translate app name on the title bar of the reset password page."
-    - kind: fixed
-      description: "Server: Fix app name not being translated in the app emails."
+      description: "Block(feed): No longer throws an error when you haven't defined a
+        latitude and longtitude even though you didn't define a marker."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
