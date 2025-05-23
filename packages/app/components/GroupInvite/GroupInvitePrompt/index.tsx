@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { messages } from './messages.js';
 import { apiUrl } from '../../../utils/settings.js';
 import { useAppMember } from '../../AppMemberProvider/index.js';
+import { AppBar } from '../../TitleBar/index.js';
 
 export function GroupInvitePrompt(): ReactNode {
   const query = useQuery();
@@ -77,12 +78,18 @@ export function GroupInvitePrompt(): ReactNode {
   ]);
 
   if (loading) {
-    return <Loader />;
+    return (
+      <>
+        <AppBar />
+        <Loader />
+      </>
+    );
   }
 
   if (inviteError) {
     return (
       <Content padding>
+        <AppBar />
         <Message color="danger">
           {inviteError.response?.status === 404 ? (
             <FormattedMessage {...messages.notFound} />
@@ -97,6 +104,7 @@ export function GroupInvitePrompt(): ReactNode {
   if (accepted) {
     return (
       <Content padding>
+        <AppBar />
         <Message color="success">
           <FormattedMessage
             {...messages.accepted}
@@ -111,6 +119,7 @@ export function GroupInvitePrompt(): ReactNode {
   if (declined) {
     return (
       <Content padding>
+        <AppBar />
         <Message color="success">
           <FormattedMessage
             {...messages.declined}
@@ -124,6 +133,7 @@ export function GroupInvitePrompt(): ReactNode {
 
   return (
     <Content padding>
+      <AppBar />
       <p className="content has-text-centered">
         {appMemberInfo.name == null ? (
           <FormattedMessage
