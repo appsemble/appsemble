@@ -500,7 +500,7 @@ e2e:
     - npm run appsemble -- app publish 'apps/survey' --modify-context
     - npm run appsemble -- app publish 'apps/unlittered' --modify-context
     - npm --workspace @appsemble/types run prepack
-    - npm --workspace @appsemble/utils run prepack
+    - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/e2e run e2e -- --max-failures 6
   artifacts:
     expose_as: Playwright videos
