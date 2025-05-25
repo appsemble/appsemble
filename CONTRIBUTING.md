@@ -264,6 +264,80 @@ rm -f packages/utils/**/*.{d.ts,js,js.map}
 The end-to-end tests have more specific implementation details that aren't worth mentioning here.
 These can be found in the [README](/packages/e2e/README.md).
 
+##### Best practices
+
+Building end 2 end tests that are stable and pass consistently is not easy. Some best practices are
+collected here that may help you build your end 2 end tests:
+
+- Appsemble has it's own [e2e package](/packages/e2e/README.md) that exports fixtures which cover
+  Appsemble functionality. These can be imported for use in your own app's e2e tests.
+  - If you're missing a fixture that covers Appsemble functionality, feel free to add them to the
+    main e2e package instead of your own project. This can then be used by other projects, and will
+    be supported through changes of the Appsemble core.
+- If you're waiting for data to load but end up with empty lists, it might be because a block has a
+  bug that only manifests if the user clicks inhumanely fast, like in the end 2 end tests.
+- If you need to pass on secrets into a service container as part of an e2e test in CI, it's
+  [not going to work](https://docs.gitlab.com/ci/variables/#in-service-containers). So far, we only
+  run these tests locally.
+- When waiting for data, wait for the actual resource to have loaded fully from the network.
+- Use
+  [user-facing locators instead of raw locators](https://playwright.dev/docs/best-practices#prefer-user-facing-attributes-to-xpath-or-css-selectors)
+  to improve readability and robustness
+- [Locators](https://playwright.dev/docs/locators) auto wait and retry before running, so it's
+  rarely necessary to add a `waitFor`
+- Use `request` over `fetch` or `axios`. `request` is fully logged in the trace viewer and
+  automatically includes things like the `baseURL`.
+- In the artifacts of the e2e CI job you can find the trace of an individual test in the 1st retry.
+  You can run this trace locally or upload it in https://trace.playwright.dev/ to see exactly what
+  happened in the CI job. Great for figuring out why something works locally but not in CI.
+- Don't use conditions in your test and try not to have them in your functions/fixtures either.
+  These make it difficult to track what the flow of the test should be. Instead it's usually better
+  to just make a new test / fixture.
+- Keep tests small to make them easier to understand and work with. Split functionality into a
+  fixture when possible.
+- If your test is big, you can use [test.step](https://playwright.dev/docs/api/class-test#test-step)
+  to mark each step of the test, making it easier to see why it failed
+- Logging on the respective page and/or actions helps a lot with debugging if you're working on e2e
+  tests locally. You can view the page's console logs using: `page.on('console', console.log)`.
+  - This can be filtered further by removing warnings or errors by checking the message type:
+    ```js
+    page.on('console', (message) => {
+      if (message.type() === 'log') {
+        console.log('custom prefix', message);
+      }
+    });
+    ```
+- When testing a specific app you might need to test the flows of different app members with
+  different roles. We generally have 3 ways of approaching this:
+
+  1. **(CI only)** Seed app member accounts with roles before running the test (see
+     [Restaurants](https://gitlab.com/appsemble/apps/restaurants/-/blob/main/.gitlab-ci.yml?ref_type=heads#L155))
+  2. Publish the app in **demo** mode so you can freely create new app members and change their
+     roles in the tests themselves
+  3. Log into the app with a studio user account and use the `changeAppMemberRole` fixture from the
+     `@appsemble/e2e` package to change the app member's role
+
+  These methods all have their own advantages and disadvantages. When facing this issue, it's good
+  to determine yourself which of these works best for your project.
+
+- If you are intercepting a request, make sure the target URL is specific enough so it won't get
+  intercepted in a place you didn't intend.
+- Utilize [global setup projects](https://playwright.dev/docs/test-global-setup-teardown) to run
+  setup steps before the tests run.
+  - These steps are included in the HTML report and trace viewer and allow you to use fixtures
+  - You can use this to log in once and store the authenticated state. When
+    [set up properly](https://gitlab.com/appsemble/appsemble/-/blob/main/packages/e2e/setup/auth.setup.ts?ref_type=heads)
+    each test will then start already logged in, skipping the login step.
+- Make sure your tests are as isolated as possible. This improves reproducibility, makes debugging
+  easier and prevents cascading failures. If you're working on an app's e2e tests, this can be done
+  by:
+  - Deleting created resources/assets/app members/groups at the end of a test
+  - **(Not possible with multiple workers)** Reseeding the app in a `beforeEach` hook
+  - In the case of using multiple workers, it's best to create an app for each runner as it's easier
+    to keep tests isolated
+- Finally, Playwright has a list of best practices that are really useful:
+  https://playwright.dev/docs/best-practices
+
 ### Local CI
 
 When changes are pushed to a merge request branch, Appsemble runs a CI pipeline in GitLab. The first
