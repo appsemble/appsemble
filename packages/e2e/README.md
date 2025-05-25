@@ -53,6 +53,11 @@ setup('authenticate', async ({ loginUser }) => {
 });
 ```
 
+## Contributing
+
+When writing end-to-end tests, have a look at the
+[best practices](../../CONTRIBUTING.md#best-practices) to help you write solid tests.
+
 ## License
 
 [LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.32.2-test.8/LICENSE.md) ©
