@@ -1,5 +1,6 @@
 import {
   type AppDefinition,
+  AppValidator,
   type IdentifiableBlock,
   iterApp,
   normalizeBlockName,
@@ -25,6 +26,8 @@ import {
   type Node,
   parseDocument,
 } from 'yaml';
+
+const appValidator = new AppValidator();
 
 const blockMap = new Map<string, Promise<BlockManifest>>();
 
@@ -216,7 +219,13 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
     if (!doc) {
       return;
     }
-    const { errors } = await validateAppDefinition(definition, getCachedBlockVersions);
+    const validatorResult = appValidator.validateApp(definition);
+    const { errors } = await validateAppDefinition(
+      definition,
+      getCachedBlockVersions,
+      undefined,
+      validatorResult,
+    );
 
     return errors.map((error) => {
       const node = doc.getIn(error.path, true);
