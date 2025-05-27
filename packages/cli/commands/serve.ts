@@ -29,6 +29,7 @@ import {
   type Asset,
   type BlockManifest,
 } from '@appsemble/types';
+import { asciiLogo } from '@appsemble/utils';
 import axios from 'axios';
 import csvToJson from 'csvtojson';
 import FormData from 'form-data';
@@ -43,7 +44,6 @@ import { makeProjectPayload } from '../lib/project.js';
 import { setArgv } from '../server/argv.js';
 import { setAppName } from '../server/db/methods.js';
 import { Resource } from '../server/models/Resource.js';
-import { asciiLogo } from '@appsemble/utils';
 
 export interface ServeArguments {
   remote: string;

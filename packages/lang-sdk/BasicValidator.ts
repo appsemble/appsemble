@@ -5,6 +5,7 @@ import {
   Validator,
   type ValidatorResult,
 } from 'jsonschema';
+import { type JsonObject } from 'type-fest';
 
 import { schemas as allSchemas } from './index.js';
 import { escapeJsonPointer } from './jsonPointer.js';
@@ -146,11 +147,17 @@ interface BlockParamInstanceValidatorOptions {
 export class BlockParamInstanceValidator {
   private validator: Validator;
 
+  private emitterNames: string[] = [];
+
+  private listenerNames: string[] = [];
+
   constructor({
     actions = [],
     emitters = [],
     listeners = [],
   }: BlockParamInstanceValidatorOptions = {}) {
+    this.emitterNames = emitters;
+    this.listenerNames = listeners;
     this.validator = new BaseValidatorFactory({
       // TODO: this may not be so reasonable. Limit these schemas.
       schemas: allSchemas,
@@ -168,7 +175,7 @@ export class BlockParamInstanceValidator {
   }
 
   // TODO: validate actions and listeners too, somehow
-  validateParametersInstance(instance: unknown, schema: Schema): ValidatorResult {
+  validateParametersInstance(instance: JsonObject, schema: Schema): [ValidatorResult, Set<string>] {
     const actionFormat = this.validator.customFormats.action;
     const listenerFormat = this.validator.customFormats['event-listener'];
     const emitterFormat = this.validator.customFormats['event-emitter'];
@@ -178,7 +185,13 @@ export class BlockParamInstanceValidator {
       actionsReferenced.add(property);
       return actionFormat(property);
     };
-    return this.validator.validate(instance, schema, BaseValidatorFactory.defaultOptions);
+    this.validator.customFormats['event-listener'] = (property) =>
+      listenerFormat(property) && this.listenerNames.includes(property);
+    this.validator.customFormats['event-emitter'] = (property) =>
+      emitterFormat(property) && this.emitterNames.includes(property);
+
+    const result = this.validator.validate(instance, schema, BaseValidatorFactory.defaultOptions);
+    return [result, actionsReferenced];
   }
 }
 
@@ -207,28 +220,6 @@ export class BlockParamSchemaValidator {
       BaseValidatorFactory.defaultOptions,
     );
   }
-}
-
-// TODO: complete
-export class BlockInstanceValidator {
-  private validator: Validator;
-
-  constructor() {
-    this.validator = new BaseValidatorFactory({
-      schemas: allSchemas,
-      customFormats: {
-        ...BaseValidatorFactory.defaultCustomFormats,
-        fontawesome: () => true,
-        remapper: () => true,
-        action: () => true,
-        'event-listener': () => true,
-        'event-emitter': () => true,
-      },
-    }).build();
-  }
-
-  // @ts-expect-error TODO: later
-  validate(instance: unknown): ValidatorResult {}
 }
 
 export class AppValidator {

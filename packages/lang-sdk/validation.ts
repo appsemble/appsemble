@@ -11,12 +11,7 @@ import {
 } from './authorization.js';
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { findPageByName } from './findPageByName.js';
-import {
-  AppValidator,
-  BlockParamInstanceValidator,
-  normalize,
-  partialNormalized,
-} from './index.js';
+import { BlockParamInstanceValidator, normalize, partialNormalized } from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
@@ -35,9 +30,6 @@ import {
   type ResourceGetActionDefinition,
   type RoleDefinition,
 } from './types/index.js';
-
-// TODO: change when MR ready
-const MR_READY = false;
 
 type Report = (instance: unknown, message: string, path: (number | string)[]) => void;
 
@@ -296,7 +288,8 @@ function validateController(
           for (const [key, action] of Object.entries(controller.actions)) {
             if (
               action.type in
-              // XXX: What is this doing here? Hardcoded?
+              // TODO: What is this doing here? Hardcoded? Make a central place for FE-only actions,
+              // like we have for server actions
               [
                 'link',
                 'link.back',
@@ -373,45 +366,28 @@ function validateBlocks(
         report(block.type, 'is not a known block type', [...path, 'type']);
         return;
       }
-      // TODO: get rid of this thing
-      const actionParameters = new Set<string>();
       const version = versions.get(block.version);
       if (!version) {
         report(block.version, 'is not a known version for this block type', [...path, 'version']);
         return;
       }
 
-      if (version.parameters) {
-        let result: ValidatorResult;
-        if (MR_READY) {
-          const paramValidator = new BlockParamInstanceValidator({
-            actions: Object.keys(block.actions ?? {}),
-            emitters: Object.keys(block.events?.emit ?? {}),
-            listeners: Object.keys(block.events?.listen ?? {}),
-          });
-          result = paramValidator.validateParametersInstance(
-            block.parameters || {},
-            version.parameters,
-          );
-        } else {
-          const validator = new Validator();
-
-          validator.customFormats.fontawesome = () => true;
-          validator.customFormats.remapper = () => true;
-          validator.customFormats.action = (property) => {
-            actionParameters.add(property);
-            return has(block.actions, property);
-          };
-          validator.customFormats['event-listener'] = (property) =>
-            has(block.events?.listen, property);
-          validator.customFormats['event-emitter'] = (property) =>
-            has(block.events?.emit, property);
-
-          result = validator.validate(block.parameters || {}, version.parameters, {
-            nestedErrors: true,
-          });
+      const validateBlockParams = (): { actionsReferenced: Set<string> } => {
+        if (!version.parameters) {
+          if (block.parameters) {
+            report(block.parameters, 'is not allowed on this block type', [...path, 'parameters']);
+          }
+          return { actionsReferenced: new Set() };
         }
-
+        const paramValidator = new BlockParamInstanceValidator({
+          actions: Object.keys(block.actions ?? {}),
+          emitters: Object.keys(block.events?.emit ?? {}),
+          listeners: Object.keys(block.events?.listen ?? {}),
+        });
+        const [result, actionsReferenced] = paramValidator.validateParametersInstance(
+          block.parameters || {},
+          version.parameters,
+        );
         if ('parameters' in block) {
           for (const error of result.errors) {
             report(error.instance, error.message, [...path, 'parameters', ...error.path]);
@@ -419,31 +395,35 @@ function validateBlocks(
         } else if (!result.valid) {
           report(block, 'requires property "parameters"', path);
         }
-      } else if (block.parameters) {
-        report(block.parameters, 'is not allowed on this block type', [...path, 'parameters']);
-      }
+        return { actionsReferenced };
+      };
 
-      // TODO: bad nesting
-      if (block.actions) {
-        if (version.actions) {
-          for (const [key, action] of Object.entries(block.actions)) {
-            if (version.actions.$any) {
-              // XXX: What is this
-              if (actionParameters.has(key)) {
-                continue;
-              }
-
-              if (!has(version.actions, key) && !version.wildcardActions) {
-                report(action, 'is unused', [...path, 'actions', key]);
-              }
-            } else if (!has(version.actions, key)) {
+      const validateBlockActions = (actionsReferenced: Set<string>): void => {
+        if (!block.actions) {
+          return;
+        }
+        if (!version.actions) {
+          report(block.actions, 'is not allowed on this block', [...path, 'actions']);
+          return;
+        }
+        for (const [key, action] of Object.entries(block.actions)) {
+          if (!version.actions.$any) {
+            if (!has(version.actions, key)) {
               report(action, 'is an unknown action for this block', [...path, 'actions', key]);
             }
+            continue;
           }
-        } else {
-          report(block.actions, 'is not allowed on this block', [...path, 'actions']);
+          if (actionsReferenced.has(key)) {
+            continue;
+          }
+          if (!has(version.actions, key) && !version.wildcardActions) {
+            report(action, 'is unused', [...path, 'actions', key]);
+          }
         }
-      }
+      };
+
+      const { actionsReferenced } = validateBlockParams();
+      validateBlockActions(actionsReferenced);
 
       if (!block.events) {
         return;
@@ -1683,17 +1663,9 @@ export async function validateAppDefinition(
   validatorResult?: ValidatorResult,
 ): Promise<ValidatorResult> {
   let result = validatorResult;
-  // TODO: this is exactly where issue 1854 happens, if there is no openApi context,
-  // the default validator doesn't know about the things over at https://gitlab.com/remcohaszing/koas/-/blob/main/packages/koas-core/src/validation.ts
-  // and its validator
   if (!result) {
-    if (MR_READY) {
-      const validator = new AppValidator();
-      result = validator.validateApp(definition);
-    } else {
-      const validator = new Validator();
-      result = validator.validate(definition, {});
-    }
+    const validator = new Validator();
+    result = validator.validate(definition, {});
   }
 
   if (!definition) {
