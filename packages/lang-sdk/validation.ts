@@ -271,7 +271,7 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
 
 function validateController(
   definition: AppDefinition,
-  controllerImplementations: ProjectImplementations,
+  controllerImplementations: ProjectImplementations | undefined,
   report: Report,
 ): void {
   if (!definition.controller || !controllerImplementations) {
@@ -385,7 +385,7 @@ function validateBlocks(
           listeners: Object.keys(block.events?.listen ?? {}),
         });
         const [result, actionsReferenced] = paramValidator.validateParametersInstance(
-          block.parameters || {},
+          block.parameters ?? {},
           version.parameters,
         );
         if ('parameters' in block) {
@@ -1689,9 +1689,6 @@ export async function validateAppDefinition(
   };
 
   try {
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
-    // @ts-ignore 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
     validateController(definition, controllerImplementations, report);
     validateCronJobs(definition, report);
     validateDefaultPage(definition, report);
