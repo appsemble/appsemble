@@ -159,8 +159,7 @@ export class BlockParamInstanceValidator {
     this.emitterNames = emitters;
     this.listenerNames = listeners;
     this.validator = new BaseValidatorFactory({
-      // TODO: this may not be so reasonable. Limit these schemas.
-      schemas: allSchemas,
+      schemas: {},
       customFormats: {
         ...BaseValidatorFactory.defaultCustomFormats,
         // TODO: validate more
@@ -174,7 +173,6 @@ export class BlockParamInstanceValidator {
     }).build();
   }
 
-  // TODO: validate actions and listeners too, somehow
   validateParametersInstance(instance: JsonObject, schema: Schema): [ValidatorResult, Set<string>] {
     const actionFormat = this.validator.customFormats.action;
     const listenerFormat = this.validator.customFormats['event-listener'];
@@ -190,7 +188,10 @@ export class BlockParamInstanceValidator {
     this.validator.customFormats['event-emitter'] = (property) =>
       emitterFormat(property) && this.emitterNames.includes(property);
 
-    const result = this.validator.validate(instance, schema, BaseValidatorFactory.defaultOptions);
+    const result = this.validator.validate(instance, schema, {
+      ...BaseValidatorFactory.defaultOptions,
+      base: undefined,
+    });
     return [result, actionsReferenced];
   }
 }
