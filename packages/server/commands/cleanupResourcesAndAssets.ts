@@ -1,4 +1,4 @@
-import { deleteS3Files, logger } from '@appsemble/node-utils';
+import { deleteS3Files, initS3Client, logger } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
@@ -31,6 +31,19 @@ export async function handler(): Promise<void> {
     });
   } catch (error: unknown) {
     handleDBError(error as Error);
+  }
+
+  try {
+    initS3Client({
+      endPoint: argv.s3Host,
+      port: argv.s3Port,
+      useSSL: argv.s3Secure,
+      accessKey: argv.s3AccessKey,
+      secretKey: argv.s3SecretKey,
+    });
+  } catch (error: unknown) {
+    logger.warn(`S3Error: ${error}`);
+    logger.warn('Features related to file uploads will not work correctly!');
   }
 
   const demoAssetsToDestroy = await Asset.findAll({
