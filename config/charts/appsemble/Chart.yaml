@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.2-test.8
-appVersion: 0.32.2-test.8
+version: 0.32.2-test.9
+appVersion: 0.32.2-test.9
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,10 +31,9 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: fixed
-      description: "Block(feed): No longer throws an error when you haven't defined a
-        latitude and longtitude even though you didn't define a marker."
+  artifacthub.io/changes: |
+    - kind: changed
+      description: "E2e: Publicize e2e package."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

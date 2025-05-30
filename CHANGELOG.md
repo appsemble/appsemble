@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.2-test.9](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.9)] - 2025-05-30
+
+### Changed
+
+- E2e: Publicize e2e package.
+
 ## \[[0.32.2-test.8](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.8)] - 2025-05-23
 
 ### Fixed
