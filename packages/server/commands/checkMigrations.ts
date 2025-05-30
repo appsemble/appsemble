@@ -6,7 +6,7 @@ import { databaseBuilder } from './builder/database.js';
 import { migrations as appMigrations } from '../migrations/apps/index.js';
 import { migrations } from '../migrations/main/index.js';
 import { getAppDB } from '../models/index.js';
-import { migrate } from '../utils/migrate.js';
+import { logDBDebugInstructions, migrate } from '../utils/migrate.js';
 import { apply, handleDiff } from '../utils/migrateDiff.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 import { setupTestDatabase } from '../utils/test/testSchema.js';
@@ -21,10 +21,9 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler(): Promise<void> {
   let db: Sequelize;
-  let dbName: string;
 
   try {
-    [db, dbName] = await setupTestDatabase('appsemble_check_migrations');
+    [db] = await setupTestDatabase('appsemble_check_migrations');
   } catch (error: unknown) {
     handleDBError(error as Error);
   }
@@ -40,9 +39,7 @@ export async function handler(): Promise<void> {
 
   if (counts.tables + counts.enums > 0) {
     logger.error('Models and migrations are out of sync');
-    logger.info(`Use the following command to connect to the test database for further debugging:
-
-psql postgres://admin:password@localhost:54321/${dbName}`);
+    logDBDebugInstructions(db);
     process.exit(1);
   }
 
@@ -66,9 +63,7 @@ psql postgres://admin:password@localhost:54321/${dbName}`);
     const appCounts = handleDiff(fromAppMigrations, fromAppModels, 'migrations', 'models');
     if (appCounts.tables + appCounts.enums > 0) {
       logger.error('Models and migrations are out of sync');
-      logger.info(`Use the following command to connect to the test database for further debugging:
-
-psql postgres://admin:password@localhost:54321/${appDB.getDatabaseName()}`);
+      logDBDebugInstructions(appDB);
       process.exit(1);
     }
   } catch (error: unknown) {
