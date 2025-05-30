@@ -297,13 +297,13 @@ export async function initAppDB(appId: number, rootDB?: RootSequelize): Promise<
     throw new Error('initAppDB() was called multiple times within the same context.');
   }
 
-  const app = await App.findByPk(appId);
+  const mainDB = rootDB ?? getDB();
+
+  const app = await mainDB.models.App.findByPk(appId);
 
   if (!app) {
     throw new Error('App not found');
   }
-
-  const mainDB = rootDB ?? getDB();
 
   try {
     const [[{ exists }]] = (await mainDB.query(

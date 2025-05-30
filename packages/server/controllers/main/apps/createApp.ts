@@ -1,4 +1,5 @@
 import {
+  AppsembleError,
   assertKoaCondition,
   handleValidatorResult,
   updateCompanionContainers,
@@ -11,7 +12,7 @@ import { literal } from 'sequelize';
 import webpush from 'web-push';
 import { parse } from 'yaml';
 
-import { App, AppSnapshot, getAppDB, getDB, Organization } from '../../../models/index.js';
+import { App, AppSnapshot, getAppDB, Organization, transactional } from '../../../models/index.js';
 import {
   createAppReadmes,
   createAppScreenshots,
@@ -126,30 +127,49 @@ export async function createApp(ctx: Context): Promise<void> {
 
     await setAppPath(ctx, result, path);
 
-    const db = getDB();
-    const transaction = await db.transaction();
+    let createdApp: App;
     try {
-      const app = await App.create(result);
+      createdApp = await transactional(async (transaction) => {
+        const app = await App.create(result, { transaction });
 
-      app.AppSnapshots = [await AppSnapshot.create({ AppId: app.id, yaml }, { transaction })];
+        app.AppSnapshots = [await AppSnapshot.create({ AppId: app.id, yaml }, { transaction })];
 
-      app.AppScreenshots = screenshots?.length
-        ? await createAppScreenshots(app.id, screenshots, transaction, ctx)
-        : [];
+        app.AppScreenshots = screenshots?.length
+          ? await createAppScreenshots(app.id, screenshots, transaction, ctx)
+          : [];
 
-      app.AppReadmes = readmes?.length ? await createAppReadmes(app.id, readmes, transaction) : [];
+        app.AppReadmes = readmes?.length
+          ? await createAppReadmes(app.id, readmes, transaction)
+          : [];
 
-      const { AppMember, sequelize } = await getAppDB(app.id);
-      const appTransaction = await sequelize.transaction();
+        if (dryRun === 'true') {
+          // Manually calling `await transaction.rollback()` causes an error
+          // when the transaction goes out of scope.
+          throw new AppsembleError('Dry run');
+        }
 
-      try {
-        if (app.definition.resources) {
-          Object.entries(app.definition.resources ?? {}).map(
+        return app;
+      });
+    } catch (error: unknown) {
+      // AppsembleError is only thrown when dryRun is set, meaning it’s only used to test
+      if (error instanceof AppsembleError) {
+        ctx.status = 204;
+        return;
+      }
+
+      throw error;
+    }
+
+    const { AppMember, sequelize: appDB } = await getAppDB(createdApp.id);
+    try {
+      await appDB.transaction(async (appTransaction) => {
+        if (createdApp.definition.resources) {
+          Object.entries(createdApp.definition.resources ?? {}).map(
             ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
               if (positioning && enforceOrderingGroupByFields) {
                 createDynamicIndexes(
                   enforceOrderingGroupByFields,
-                  app.id,
+                  createdApp.id,
                   resourceType,
                   appTransaction,
                 );
@@ -158,7 +178,7 @@ export async function createApp(ctx: Context): Promise<void> {
           );
         }
 
-        if (app.definition.cron && app.definition.security?.cron) {
+        if (createdApp.definition.cron && createdApp.definition.security?.cron) {
           const identifier = Math.random().toString(36).slice(2);
           const cronEmail = `cron-${identifier}@example.com`;
           await AppMember.create(
@@ -166,39 +186,36 @@ export async function createApp(ctx: Context): Promise<void> {
             { transaction: appTransaction },
           );
         }
-      } catch (error) {
-        await appTransaction.rollback();
-        await transaction.rollback();
-        throw error;
-      }
 
-      const containerDefinitions = app.containers;
-
-      if (containerDefinitions && containerDefinitions.length > 0) {
-        await updateCompanionContainers(
-          containerDefinitions,
-          app.path,
-          String(app.id),
-          app.registry,
-        );
-      }
-
-      app.Organization = organization;
-
-      if (dryRun === 'true') {
-        await appTransaction.rollback();
-        await transaction.rollback();
-        await app.destroy({ force: true });
+        if (dryRun === 'true') {
+          throw new AppsembleError('Dry run');
+        }
+      });
+    } catch (error) {
+      // AppsembleError is only thrown when dryRun is set, meaning it’s only used to test
+      if (error instanceof AppsembleError) {
+        await App.destroy({ where: { id: createdApp.id }, force: true });
         ctx.status = 204;
-      } else {
-        await appTransaction.commit();
-        await transaction.commit();
-        ctx.body = app.toJSON();
-        ctx.status = 201;
+        return;
       }
-    } catch (error: unknown) {
-      handleAppValidationError(ctx, error as Error, result);
+
+      throw error;
     }
+
+    const containerDefinitions = createdApp.containers;
+
+    if (containerDefinitions && containerDefinitions.length > 0) {
+      await updateCompanionContainers(
+        containerDefinitions,
+        createdApp.path,
+        String(createdApp.id),
+        createdApp.registry,
+      );
+    }
+
+    createdApp.Organization = organization;
+    ctx.body = createdApp.toJSON();
+    ctx.status = 201;
   } catch (error: unknown) {
     // @ts-expect-error Messed up
     handleAppValidationError(ctx, error as Error, result);
