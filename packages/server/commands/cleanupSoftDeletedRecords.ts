@@ -47,7 +47,7 @@ export async function handler(): Promise<void> {
     };
     const deletedAtParsed = new Date(deletedAt).toLocaleString();
 
-    const apps = await App.findAll({ attributes: ['id'], transaction });
+    const apps = await App.findAll({ attributes: ['id'] });
     await Promise.all(
       apps.map(async (app) => {
         const { Asset, Resource, sequelize } = await getAppDB(app.id);
