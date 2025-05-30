@@ -6,7 +6,7 @@ import { databaseBuilder } from './builder/database.js';
 import { migrations as appMigrations } from '../migrations/apps/index.js';
 import { migrations } from '../migrations/main/index.js';
 import { getAppDB } from '../models/index.js';
-import { migrate } from '../utils/migrate.js';
+import { logDBDebugInstructions, migrate } from '../utils/migrate.js';
 import { apply, handleDiff } from '../utils/migrateDiff.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 import { setupTestDatabase } from '../utils/test/testSchema.js';
@@ -21,10 +21,9 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler(): Promise<void> {
   let db: Sequelize;
-  let dbName: string;
 
   try {
-    [db, dbName] = await setupTestDatabase('appsemble_check_down_migrations');
+    [db] = await setupTestDatabase('appsemble_check_down_migrations');
   } catch (error: unknown) {
     handleDBError(error as Error);
   }
@@ -53,9 +52,7 @@ export async function handler(): Promise<void> {
       logger.error(
         `Down migration ${migration.key} out of sync with up migration from ${migrations[index - 1].key}`,
       );
-      logger.info(`For further debugging use the following command, to connect to the database:
-
-  psql postgres://admin:password@localhost:54321/${dbName}`);
+      logDBDebugInstructions(db);
       process.exit(1);
     }
   }
@@ -94,9 +91,7 @@ export async function handler(): Promise<void> {
         logger.error(
           `Down migration ${migration.key} out of sync with up migration from ${appMigrations[index - 1].key}`,
         );
-        logger.info(`For further debugging use the following command, to connect to the database:
-
-  psql postgres://admin:password@localhost:54321/${appDB.getDatabaseName()}`);
+        logDBDebugInstructions(appDB);
         process.exit(1);
       }
     }

@@ -108,3 +108,10 @@ export async function migrate(
     }
   }
 }
+
+export function logDBDebugInstructions(db: Sequelize): void {
+  const { host, password, port, username } = db.config;
+  logger.info(`Use the following command to connect to the test database for further debugging:
+
+psql postgres://${username}:${password}@${host}:${port}/${db.getDatabaseName()}`);
+}
