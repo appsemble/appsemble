@@ -21,7 +21,7 @@ bootstrap(
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
-    const [currentLine, setCurrentLine] = useState(-1);
+    const [currentLine, setCurrentLine] = useState(null);
     const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
     const {
       actions: { onDrop },
@@ -60,6 +60,14 @@ bootstrap(
 
         return (
           <ul className={spaced ? 'py-4 px-5' : 'pb-4'}>
+            {onDrop.type !== 'noop' && (
+              // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+              <div className={styles.dividerContainer} onDragEnter={() => setCurrentLine(-1)}>
+                <div
+                  className={`${styles.divider} ${currentLine === -1 ? styles.dividerDragEnter : ''}`}
+                />
+              </div>
+            )}
             {itemList.map((item, index) => (
               // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
               <li
@@ -67,9 +75,11 @@ bootstrap(
                 key={item.id ?? index}
                 onDragEnd={() => {
                   handleDrop(currentLine);
-                  setCurrentLine(-1);
+                  setCurrentLine(null);
                 }}
-                onDragEnter={() => setCurrentLine((prev) => (prev === index ? prev : index))}
+                onDragEnter={() =>
+                  setCurrentLine((prev: number | null) => (prev === index ? prev : index))
+                }
                 onDragOver={(e) => e.preventDefault()}
                 onDragStart={() => handleDragStart(index)}
               >
