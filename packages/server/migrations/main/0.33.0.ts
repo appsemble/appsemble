@@ -5,22 +5,24 @@ import { getAppDB } from '../../models/index.js';
 
 export const key = '0.33.0';
 
+const BATCH_SIZE = 100;
+
 const appTables = [
-  { name: 'AppBlockStyle' },
-  { name: 'AppInvite', mapUsers: true },
+  { name: 'AppBlockStyle', orderby: 'block' },
+  { name: 'AppInvite', mapUsers: true, orderby: 'email' },
   { name: 'AppMember', mapUsers: true },
   { name: 'AppOAuth2Secret' },
   { name: 'AppSamlSecret' },
-  { name: 'AppOAuth2Authorization', through: 'AppMember' },
-  { name: 'AppSamlAuthorization', through: 'AppMember' },
+  { name: 'AppOAuth2Authorization', through: 'AppMember', orderby: 'sub' },
+  { name: 'AppSamlAuthorization', through: 'AppMember', orderby: 'nameId' },
   { name: 'SamlLoginRequest', through: 'AppSamlSecret' },
   { name: 'AppServiceSecret' },
   { name: 'AppSubscription' },
   { name: 'AppVariable' },
   { name: 'AppWebhookSecret' },
-  { name: 'OAuth2AuthorizationCode' },
+  { name: 'OAuth2AuthorizationCode', orderby: 'code' },
   { name: 'Group' },
-  { name: 'GroupInvite', through: 'Group' },
+  { name: 'GroupInvite', through: 'Group', orderby: 'email' },
   { name: 'GroupMember', through: 'Group' },
   { name: 'Resource' },
   { name: 'ResourceSubscription', through: 'Resource' },
@@ -28,9 +30,12 @@ const appTables = [
   { name: 'Asset' },
 ];
 
-function serializeValue(value: any): Date | any | string | null {
+function serializeValue(value: any): Buffer | Date | string | null {
   if (value == null) {
     return null;
+  }
+  if (Buffer.isBuffer(value)) {
+    return value;
   }
   if (Array.isArray(value)) {
     return JSON.stringify(value);
@@ -50,34 +55,119 @@ async function copyToAppDB(
   appTransaction: Transaction,
   mapUsers = false,
   through?: string,
+  orderby = 'id',
 ): Promise<void> {
   logger.info(`Copying "${tableName}" records from main db to app-${appId} db`);
-  const query = through
-    ? `SELECT "${tableName}".* FROM "${tableName}"
-       JOIN "${through}" ON "${through}Id" = "${through}"."id"
-       WHERE "${through}"."AppId" = :appId`
-    : `SELECT * FROM "${tableName}" WHERE "AppId" = :appId`;
 
-  const rows: { AppId: number; UserId?: string }[] = await mainDB.query(query, {
-    replacements: { appId },
-    type: QueryTypes.SELECT,
-    transaction,
-  });
-  if (Array.isArray(rows) && rows.length > 0) {
-    await appDB.getQueryInterface().bulkInsert(
-      tableName,
-      rows.map(({ AppId, UserId, ...rest }) => {
-        const values = Object.fromEntries(
-          Object.entries(rest).map(([name, value]) => [name, serializeValue(value)]),
-        );
-        return {
-          ...values,
-          ...(mapUsers ? { userId: UserId } : {}),
-        };
-      }),
-      { transaction: appTransaction },
-    );
-    logger.info(`Copied ${rows.length} "${tableName}" records for app ${appId}`);
+  let existingAppMemberIds = new Set<string>();
+  if (['Asset', 'Resource', 'GroupMember'].includes(tableName)) {
+    const [existingAppMembers] = await appDB.query('select "id" from "AppMember"', {
+      transaction: appTransaction,
+    });
+
+    existingAppMemberIds = new Set((existingAppMembers as { id: string }[]).map((am) => am.id));
+  }
+
+  let batchSize = BATCH_SIZE;
+
+  // Some apps have large resources
+  if (tableName === 'Resource') {
+    batchSize = 10;
+  }
+
+  let offset = 0;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    // Deliberately not selecting "picture" from "AppMember"
+    // It's BLOB and causes JavaScript to run out of memory
+    const batchQuery = through
+      ? `SELECT "${tableName}".* FROM "${tableName}"
+       JOIN "${through}" ON "${through}Id" = "${through}"."id"
+       WHERE "${through}"."AppId" = :appId
+       ORDER BY "${tableName}"."${orderby}"
+       OFFSET :offset LIMIT :limit`
+      : `SELECT ${tableName === 'AppMember' ? '"id", "role", "email", "emailVerified", "name", "password", "emailKey", "resetKey", "consent", "properties", "scimExternalId", "scimActive", "locale", "timezone", "demo", "created", "updated", "AppId", "UserId"' : '*'} FROM "${tableName}"
+       WHERE "AppId" = :appId
+       ORDER BY "${orderby}"
+       OFFSET :offset LIMIT :limit`;
+
+    const batch = await mainDB.query(batchQuery, {
+      replacements: { appId, offset, limit: batchSize },
+      type: QueryTypes.SELECT,
+      transaction,
+    });
+
+    if (batch.length === 0) {
+      break;
+    }
+
+    let preparedRows = batch as { AppId: number; UserId?: string }[];
+
+    if (tableName === 'Resource') {
+      preparedRows = (
+        preparedRows as { AppId: number; AuthorId: string | null; EditorId: string | null }[]
+      ).map((row) => {
+        const preparedRow = row;
+        if (row.AuthorId && !existingAppMemberIds.has(row.AuthorId)) {
+          logger.warn(
+            `Author ${row.AuthorId} is missing from app ${appId} app members. Setting resource AuthorId to NULL`,
+          );
+          preparedRow.AuthorId = null;
+        }
+        if (row.EditorId && !existingAppMemberIds.has(row.EditorId)) {
+          logger.warn(
+            `Editor ${row.EditorId} is missing from app ${appId} app members. Setting resource EditorId to NULL`,
+          );
+          preparedRow.EditorId = null;
+        }
+        return preparedRow;
+      });
+    }
+
+    if (tableName === 'Asset' || tableName === 'GroupMember') {
+      preparedRows = (preparedRows as { AppId: number; AppMemberId: string | null }[]).map(
+        (row) => {
+          const preparedRow = row;
+          if (row.AppMemberId && !existingAppMemberIds.has(row.AppMemberId)) {
+            logger.warn(
+              `AppMember ${row.AppMemberId} is missing from app ${appId} app members. Setting asset AppMemberId to NULL`,
+            );
+            preparedRow.AppMemberId = null;
+          }
+          return preparedRow;
+        },
+      );
+    }
+
+    if (tableName === 'GroupMember') {
+      preparedRows = (preparedRows as { AppId: number; AppMemberId: string | null }[]).filter(
+        (row) => {
+          if (row.AppMemberId == null) {
+            logger.warn('AppMemberId on GroupMember record cannot be null. Not inserting row');
+            return false;
+          }
+          return true;
+        },
+      );
+    }
+
+    if (Array.isArray(preparedRows) && preparedRows.length > 0) {
+      await appDB.getQueryInterface().bulkInsert(
+        tableName,
+        preparedRows.map(({ AppId, UserId, ...rest }) => {
+          const values = Object.fromEntries(
+            Object.entries(rest).map(([name, value]) => [name, serializeValue(value)]),
+          );
+          return {
+            ...values,
+            ...(mapUsers ? { userId: UserId } : {}),
+          };
+        }),
+        { transaction: appTransaction },
+      );
+    }
+
+    offset += batchSize;
   }
 }
 
@@ -97,7 +187,6 @@ async function deleteFromMainDB(
     : `DELETE FROM "${tableName}" WHERE "AppId" = :appId`;
 
   await mainDB.query(query, { replacements: { appId }, transaction });
-  logger.info(`Deleted "${tableName}" records from main db for app ${appId}`);
 }
 
 async function copyToMainDB(
@@ -109,28 +198,55 @@ async function copyToMainDB(
   appTransaction: Transaction,
   mapUsers = false,
   through = false,
+  orderby = 'id',
 ): Promise<void> {
   logger.info(`Copying "${tableName}" records from app-${appId} db to main db`);
-  const rows: { userId?: string }[] = await appDB.query(`SELECT * FROM "${tableName}"`, {
-    type: QueryTypes.SELECT,
-    transaction: appTransaction,
-  });
-  if (rows.length > 0) {
-    await mainDB.getQueryInterface().bulkInsert(
-      tableName,
-      rows.map(({ userId, ...rest }) => {
-        const values = Object.fromEntries(
-          Object.entries(rest).map(([name, value]) => [name, serializeValue(value)]),
-        );
-        return {
-          ...values,
-          ...(through ? {} : { AppId: appId }),
-          ...(mapUsers ? { UserId: userId } : {}),
-        };
-      }),
-      { transaction },
+
+  let batchSize = BATCH_SIZE;
+
+  // Some apps have large resources
+  if (tableName === 'Resource') {
+    batchSize = 10;
+  }
+
+  let offset = 0;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const batch: { userId?: string }[] = await appDB.query(
+      // Deliberately not selecting "picture" from "AppMember"
+      // It's BLOB and causes JavaScript to run out of memory
+      `SELECT ${tableName === 'AppMember' ? '"id", "role", "email", "emailVerified", "name", "password", "emailKey", "resetKey", "consent", "properties", "scimExternalId", "scimActive", "locale", "timezone", "demo", "created", "updated", "userId"' : '*'} FROM "${tableName}"
+       ORDER BY "${orderby}"
+       OFFSET :offset LIMIT :limit`,
+      {
+        replacements: { appId, offset, limit: batchSize },
+        type: QueryTypes.SELECT,
+        transaction: appTransaction,
+      },
     );
-    logger.info(`Copied ${rows.length} "${tableName}" records for app ${appId}`);
+
+    if (batch.length === 0) {
+      break;
+    }
+
+    if (batch.length > 0) {
+      await mainDB.getQueryInterface().bulkInsert(
+        tableName,
+        batch.map(({ userId, ...rest }) => {
+          const values = Object.fromEntries(
+            Object.entries(rest).map(([name, value]) => [name, serializeValue(value)]),
+          );
+          return {
+            ...values,
+            ...(through ? {} : { AppId: appId }),
+            ...(mapUsers ? { UserId: userId } : {}),
+          };
+        }),
+        { transaction },
+      );
+    }
+
+    offset += batchSize;
   }
 }
 
@@ -142,7 +258,6 @@ async function deleteFromAppDB(
 ): Promise<void> {
   logger.info(`Deleting "${tableName}" records from app-${appId} db `);
   await appDB.query(`DELETE FROM "${tableName}"`, { transaction: appTransaction });
-  logger.info(`Deleted"${tableName}" records from app-${appId} db `);
 }
 
 /*
@@ -153,15 +268,28 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   const queryInterface = db.getQueryInterface();
 
   logger.info('Migrate app data to app databases');
-  const [apps] = await queryInterface.sequelize.query('SELECT "id" from "App"', { transaction });
+  const [apps] = await queryInterface.sequelize.query(
+    'SELECT "id" FROM "App" WHERE "deleted" IS NULL ORDER BY "id"',
+    { transaction },
+  );
 
   for (const app of apps as { id: number }[]) {
     const { sequelize: appDB } = await getAppDB(app.id, db);
 
     const appTransaction = await appDB.transaction();
     try {
-      for (const { mapUsers, name, through } of appTables) {
-        await copyToAppDB(db, appDB, app.id, name, transaction, appTransaction, mapUsers, through);
+      for (const { mapUsers, name, orderby, through } of appTables) {
+        await copyToAppDB(
+          db,
+          appDB,
+          app.id,
+          name,
+          transaction,
+          appTransaction,
+          mapUsers,
+          through,
+          orderby,
+        );
       }
 
       for (const { name, through } of appTables) {
@@ -169,6 +297,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       }
 
       await appTransaction.commit();
+      await appDB.close();
     } catch (error) {
       await appTransaction.rollback();
       await transaction.rollback();
@@ -555,6 +684,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   });
   await queryInterface.addIndex('Resource', ['data'], {
     name: 'resourceDataIndex',
+    using: 'GIN',
     transaction,
   });
   await queryInterface.createTable(
@@ -571,7 +701,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
         allowNull: false,
         defaultValue: false,
       },
-      data: { type: DataTypes.BLOB },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
       deleted: { type: DataTypes.DATE },
@@ -590,12 +719,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       GroupId: {
         type: DataTypes.INTEGER,
         references: { model: 'Group', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-      },
-      OriginalId: {
-        type: DataTypes.STRING,
-        references: { model: 'Asset', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
@@ -781,14 +904,19 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     { transaction },
   );
 
-  const [apps] = await queryInterface.sequelize.query('SELECT "id" FROM "App"', { transaction });
+  const [apps] = await queryInterface.sequelize.query(
+    'SELECT "id" FROM "App" WHERE "deleted" IS NULL ORDER BY "id"',
+    {
+      transaction,
+    },
+  );
 
   for (const app of apps as { id: number }[]) {
     const { sequelize: appDB } = await getAppDB(app.id, db);
 
     const appTransaction = await appDB.transaction();
     try {
-      for (const { mapUsers, name, through } of appTables) {
+      for (const { mapUsers, name, orderby, through } of appTables) {
         await copyToMainDB(
           db,
           appDB,
@@ -798,6 +926,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
           appTransaction,
           mapUsers,
           Boolean(through),
+          orderby,
         );
       }
 
@@ -806,6 +935,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       }
 
       await appTransaction.commit();
+      await appDB.close();
     } catch (error) {
       await appTransaction.rollback();
       await transaction.rollback();

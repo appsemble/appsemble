@@ -15,7 +15,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { type AppMember, type AppModels, type Asset, type Group, type Resource } from '../index.js';
+import { type AppMember, type AppModels, type Group, type Resource } from '../index.js';
 
 export class AssetGlobal extends Model {
   id!: string;
@@ -38,25 +38,17 @@ export class AssetGlobal extends Model {
 
   deleted?: Date;
 
-  data?: Buffer;
-
   GroupId?: number;
 
   AppMemberId?: string;
 
   ResourceId?: number;
 
-  OriginalId?: string;
-
   Group?: Awaited<Group>;
 
   AppMember?: Awaited<AppMember>;
 
   Resource?: Awaited<Resource>;
-
-  Original?: Awaited<Asset>;
-
-  Compressed?: Awaited<Asset>;
 }
 
 export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
@@ -114,10 +106,6 @@ export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
     @DeletedAt
     deleted?: Date;
 
-    // TODO remove in 0.32.1
-    @Column(DataType.BLOB)
-    data?: Buffer;
-
     @AllowNull(true)
     @Index({ name: 'UniqueAssetWithGroupId', unique: true })
     @Column(DataType.INTEGER)
@@ -128,10 +116,6 @@ export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
 
     @Column(DataType.INTEGER)
     ResourceId?: number;
-
-    // TODO remove in 0.32.1
-    @Column(DataType.STRING)
-    OriginalId?: string;
 
     static associate(models: AppModels): void {
       Asset.belongsTo(models.Group, {
@@ -148,18 +132,6 @@ export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
         foreignKey: 'ResourceId',
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
-      });
-      Asset.belongsTo(models.Asset, {
-        foreignKey: 'OriginalId',
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
-        as: 'Original',
-      });
-      Asset.hasOne(models.Asset, {
-        foreignKey: 'OriginalId',
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
-        as: 'Compressed',
       });
     }
 

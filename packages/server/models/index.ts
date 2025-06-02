@@ -299,7 +299,7 @@ export async function initAppDB(appId: number, rootDB?: RootSequelize): Promise<
 
   const mainDB = rootDB ?? getDB();
 
-  const app = await mainDB.models.App.findByPk(appId);
+  const app = await mainDB.models.App.findOne({ where: { id: appId } });
 
   if (!app) {
     throw new Error('App not found');

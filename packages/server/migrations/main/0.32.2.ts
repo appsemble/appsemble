@@ -29,15 +29,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   const queryInterface = db.getQueryInterface();
 
   logger.info('Add column `data` to `Asset` table');
-  await queryInterface.addColumn(
-    'Asset',
-    'data',
-    {
-      type: DataTypes.BLOB,
-      allowNull: false,
-    },
-    { transaction },
-  );
+  await queryInterface.addColumn('Asset', 'data', { type: DataTypes.BLOB }, { transaction });
 
   logger.info('Add column `OriginalId` to `Asset` table');
   await queryInterface.addColumn(
@@ -46,10 +38,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     {
       type: DataTypes.STRING,
       allowNull: true,
-      references: {
-        model: 'Asset',
-        key: 'id',
-      },
+      references: { model: 'Asset', key: 'id' },
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
