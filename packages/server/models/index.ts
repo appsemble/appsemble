@@ -289,10 +289,6 @@ export interface AppDB extends AppModels {
 const appDBs: Record<number, AppDB | null> = {};
 
 export async function initAppDB(appId: number, rootDB?: RootSequelize): Promise<void> {
-  if (!appId) {
-    throw new Error('Missing app id');
-  }
-
   if (appDBs[appId]) {
     throw new Error('initAppDB() was called multiple times within the same context.');
   }
@@ -370,10 +366,6 @@ export async function initAppDB(appId: number, rootDB?: RootSequelize): Promise<
 }
 
 export async function getAppDB(appId: number, rootDB?: RootSequelize): Promise<AppDB> {
-  if (!appId) {
-    throw new Error('Missing app id');
-  }
-
   if (appDBs[appId] == null) {
     await initAppDB(appId, rootDB);
   }
