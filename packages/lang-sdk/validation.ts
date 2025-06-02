@@ -58,22 +58,22 @@ export function isAppLink(link: Remapper | string[] | string): boolean {
 }
 
 function validateJSONSchema(schema: Schema, prefix: Prefix, report: Report): void {
-  // TODO: bad nesting
-  if (schema.type === 'object') {
-    if ('properties' in schema) {
-      if (Array.isArray(schema.required)) {
-        for (const [index, name] of schema.required.entries()) {
-          if (!has(schema.properties, name)) {
-            report(name, 'is not defined in properties', [...prefix, 'required', index]);
-          }
-        }
+  if (schema.type !== 'object') {
+    return;
+  }
+  if (!('properties' in schema)) {
+    report(schema, 'is missing properties', prefix);
+    return;
+  }
+  if (Array.isArray(schema.required)) {
+    for (const [index, name] of schema.required.entries()) {
+      if (!has(schema.properties, name)) {
+        report(name, 'is not defined in properties', [...prefix, 'required', index]);
       }
-      for (const [key, propertySchema] of Object.entries(schema.properties ?? {})) {
-        validateJSONSchema(propertySchema, [...prefix, 'properties', key], report);
-      }
-    } else {
-      report(schema, 'is missing properties', prefix);
     }
+  }
+  for (const [key, propertySchema] of Object.entries(schema.properties ?? {})) {
+    validateJSONSchema(propertySchema, [...prefix, 'properties', key], report);
   }
 }
 
@@ -150,7 +150,7 @@ function validateMembersSchema(definition: AppDefinition, report: Report): void 
   }
 }
 
-// TODO: Very not good nesting
+// XXX: Very not good nesting
 function validateResourceSchemas(definition: AppDefinition, report: Report): void {
   if (!definition.resources) {
     return;
@@ -446,7 +446,7 @@ function validateBlocks(
   });
 }
 
-// TODO: very redundant code
+// XXX: very repetitive code
 function validatePermissions(
   appDefinition: AppDefinition,
   permissions: CustomAppPermission[],
@@ -1435,7 +1435,6 @@ function validateEvents(
   blockVersions: Map<string, Map<string, BlockManifest>>,
   report: Report,
 ): void {
-  // XXX: what is this a map of?
   const indexMap = new Map<
     number | string,
     {
@@ -1508,11 +1507,11 @@ function validateEvents(
     },
 
     onAction(action, path) {
-      // TODO: really doesn't belong here,at all
       if (action.type === 'dialog') {
         for (const block of action.blocks) {
           const versions = blockVersions.get(normalizeBlockName(block.type));
           const version = versions?.get(block.version);
+          // XXX: what does this have to do with validating events?
           if (version?.layout === 'float') {
             report(
               block.version,
@@ -1596,13 +1595,7 @@ function validateEvents(
   indexMap.delete('controller');
 
   for (const [name, prefixes] of controllerEvents.emitters.entries()) {
-    // TODO: you call this !Array.prototype.some
-    let found = false;
-    for (const { listeners } of indexMap.values()) {
-      if (listeners.has(name)) {
-        found = true;
-      }
-    }
+    const found = [...indexMap.values()].some(({ listeners }) => listeners.has(name));
     if (!found) {
       for (const prefix of prefixes) {
         report(name, 'does not match any listeners', prefix);
@@ -1611,12 +1604,7 @@ function validateEvents(
   }
 
   for (const [name, prefixes] of controllerEvents.listeners.entries()) {
-    let found = false;
-    for (const { emitters } of indexMap.values()) {
-      if (emitters.has(name)) {
-        found = true;
-      }
-    }
+    const found = [...indexMap.values()].some(({ emitters }) => emitters.has(name));
     if (!found) {
       for (const prefix of prefixes) {
         report(name, 'does not match any emitters', prefix);

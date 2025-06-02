@@ -202,7 +202,6 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
     return createExampleContext(url, lang, {
       ...userInfo,
       demo: false,
-      // TODO: this enum might not work
       role: PredefinedAppRole.Member,
     });
   }, [lang, userInfo]);

@@ -7,7 +7,7 @@ import {
 } from 'jsonschema';
 import { type JsonObject } from 'type-fest';
 
-import { schemas as allSchemas } from './index.js';
+import { schemas as allSchemas, type BlockDefinition } from './index.js';
 import { escapeJsonPointer } from './jsonPointer.js';
 import { has } from './miscellaneous.js';
 
@@ -74,7 +74,7 @@ export class BlockExampleValidator {
     }).build();
   }
 
-  validate(example: any): ValidatorResult {
+  validate(example: BlockDefinition): ValidatorResult {
     const { required, ...blockSchema } = structuredClone(allSchemas!.BlockDefinition) as Schema;
 
     delete blockSchema.properties?.name;
@@ -84,7 +84,6 @@ export class BlockExampleValidator {
 
     delete actionsSchema?.additionalProperties;
     if (example.actions) {
-      // TODO: do we handle `$any` appropriately here?
       actionsSchema.properties = Object.fromEntries(
         Object.keys(example.actions).map((key) => [
           key,
@@ -126,8 +125,6 @@ export class BlockExampleValidator {
             };
       }
     }
-
-    // TODO: do we validate example parameters properly?
 
     const validationResult = this.validator.validate(
       example,
@@ -201,7 +198,6 @@ export class BlockParamSchemaValidator {
 
   constructor() {
     this.validator = new BaseValidatorFactory({
-      // TODO: this may not be so reasonable. Limit these schemas.
       schemas: allSchemas,
       customFormats: {
         ...BaseValidatorFactory.defaultCustomFormats,

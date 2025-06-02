@@ -359,8 +359,6 @@ export interface LogActionDefinition extends BaseActionDefinition<'log'> {
    *
    * @default `info`.
    */
-  // TODO: remove comment
-  // level?: LogAction['level'];
   level?: 'error' | 'info' | 'warn';
 }
 

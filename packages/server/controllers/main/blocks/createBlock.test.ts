@@ -260,7 +260,7 @@ English (\`en\`) messages are required.
 
     expect(response).toMatchObject({
       status: 400,
-      data: { message: 'Action “$foo” does match /^[a-z]\\w*$/' },
+      data: { message: 'Action “$foo” does not match /^[a-z]\\w*$/' },
     });
   });
 

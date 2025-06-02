@@ -1,6 +1,7 @@
 import {
   type ActionType,
   type AppDefinition,
+  type AppMemberInfo,
   type AppRole,
   type BlockManifest,
   type EventType,
@@ -33,6 +34,7 @@ export * from './permissions.js';
 export * from './roles.js';
 
 // XXX: consider not re-exporting from here
+export type { AppMemberInfo };
 export type { ProjectImplementations, BlockManifest, ProjectManifest, ActionType, EventType };
 
 /**
@@ -89,30 +91,16 @@ export interface BaseUserInfo {
   zoneinfo?: string;
 }
 
+const assertAppMemberInfoIsBaseUserInfo: AppMemberInfo extends BaseUserInfo ? true : false = true;
+// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+assertAppMemberInfoIsBaseUserInfo;
+
 export interface UserInfo extends BaseUserInfo {
   /**
    * If the user is subscribed to the newsletter
    */
   subscribed?: boolean;
   hasPassword?: boolean;
-}
-
-// TODO: do we really export from here?
-export interface AppMemberInfo extends BaseUserInfo {
-  /**
-   * The role of the app member.
-   */
-  role: AppRole;
-
-  /**
-   * The end-user's additional properties
-   */
-  properties?: Record<string, any>;
-
-  /**
-   * Whether this app member is used for demonstration purposes
-   */
-  demo: boolean;
 }
 
 export interface SSOConfiguration {

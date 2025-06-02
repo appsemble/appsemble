@@ -42,7 +42,7 @@ export async function createBlock(ctx: Context): Promise<void> {
         actionKeyRegex.test(key) || key === '$any',
         ctx,
         400,
-        `Action “${key}” does match /${actionKeyRegex.source}/`,
+        `Action “${key}” does not match /${actionKeyRegex.source}/`,
       );
     }
   }
