@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
+import { DataTypes, Op, type Sequelize, type Transaction } from 'sequelize';
 
 export const key = '0.35.0';
 
@@ -39,13 +39,11 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
-  await queryInterface.sequelize.query(
-    `
-    CREATE UNIQUE INDEX "AppInvite_UserId_key"
-    ON "AppInvite" ("userId");
-  `,
-    { transaction },
-  );
+  await queryInterface.addIndex('AppInvite', ['userId'], {
+    name: 'AppInvite_UserId_key',
+    unique: true,
+    transaction,
+  });
   await queryInterface.createTable(
     'AppMember',
     {
@@ -71,20 +69,16 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
-  await queryInterface.sequelize.query(
-    `
-    CREATE UNIQUE INDEX "UniqueAppMemberEmailIndex"
-    ON "AppMember" (email);
-  `,
-    { transaction },
-  );
-  await queryInterface.sequelize.query(
-    `
-    CREATE UNIQUE INDEX "UniqueAppMemberUserIndex"
-    ON "AppMember" ("userId");
-  `,
-    { transaction },
-  );
+  await queryInterface.addIndex('AppMember', ['email'], {
+    name: 'UniqueAppMemberEmailIndex',
+    unique: true,
+    transaction,
+  });
+  await queryInterface.addIndex('AppMember', ['userId'], {
+    name: 'UniqueAppMemberUserIndex',
+    unique: true,
+    transaction,
+  });
   await queryInterface.createTable(
     'AppOAuth2Secret',
     {
@@ -230,13 +224,11 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
-  await queryInterface.sequelize.query(
-    `
-    CREATE UNIQUE INDEX "UniqueNameIndex"
-    ON "AppVariable" (name);
-  `,
-    { transaction },
-  );
+  await queryInterface.addIndex('AppVariable', ['name'], {
+    name: 'UniqueNameIndex',
+    unique: true,
+    transaction,
+  });
   await queryInterface.createTable(
     'AppWebhookSecret',
     {
@@ -296,20 +288,15 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
-  await queryInterface.sequelize.query(
-    `
-      CREATE INDEX "resourceTypeComposite"
-        ON "Resource" (type, expires, "GroupId");
-    `,
-    { transaction },
-  );
-  await queryInterface.sequelize.query(
-    `
-      CREATE INDEX "resourceDataIndex"
-        ON "Resource" (data);
-    `,
-    { transaction },
-  );
+  await queryInterface.addIndex('Resource', ['type', 'expires', 'GroupId'], {
+    name: 'resourceTypeComposite',
+    transaction,
+  });
+  await queryInterface.addIndex('Resource', ['data'], {
+    name: 'resourceDataIndex',
+    using: 'GIN',
+    transaction,
+  });
   await queryInterface.createTable(
     'Asset',
     {
@@ -324,7 +311,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         allowNull: false,
         defaultValue: false,
       },
-      data: { type: DataTypes.BLOB },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
       deleted: { type: DataTypes.DATE },
@@ -346,38 +332,25 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      OriginalId: {
-        type: DataTypes.STRING,
-        references: { model: 'Asset', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
-      },
     },
     { transaction },
   );
-  await queryInterface.sequelize.query(
-    `
-      CREATE INDEX "assetNameIndex"
-        ON "Asset" (name);
-    `,
-    { transaction },
-  );
-  await queryInterface.sequelize.query(
-    `
-    CREATE UNIQUE INDEX "UniqueAssetWithGroupId"
-    ON "Asset" (name, ephemeral, "GroupId")
-    WHERE "GroupId" IS NOT NULL;
-  `,
-    { transaction },
-  );
-  await queryInterface.sequelize.query(
-    `
-    CREATE UNIQUE INDEX "UniqueAssetWithNullGroupId"
-    ON "Asset" (name, ephemeral)
-    WHERE "GroupId" IS NULL;
-  `,
-    { transaction },
-  );
+  await queryInterface.addIndex('Asset', ['name'], {
+    name: 'assetNameIndex',
+    transaction,
+  });
+  await queryInterface.addIndex('Asset', ['name', 'ephemeral', 'GroupId'], {
+    name: 'UniqueAssetWithGroupId',
+    unique: true,
+    where: { GroupId: { [Op.not]: null } },
+    transaction,
+  });
+  await queryInterface.addIndex('Asset', ['name', 'ephemeral'], {
+    name: 'UniqueAssetWithNullGroupId',
+    unique: true,
+    where: { GroupId: null },
+    transaction,
+  });
   await queryInterface.createTable(
     'GroupInvite',
     {

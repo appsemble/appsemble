@@ -46,10 +46,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     {
       type: DataTypes.STRING,
       allowNull: true,
-      references: {
-        model: 'Asset',
-        key: 'id',
-      },
+      references: { model: 'Asset', key: 'id' },
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
