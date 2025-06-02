@@ -9,7 +9,7 @@ import { ListItem } from './components/ListItem/index.js';
 import styles from './index.module.css';
 import { type Item } from '../block.js';
 
-const addMobileDragandDropPolyfill = (): void => {
+const addMobileDragAndDropPolyfill = (): void => {
   polyfill();
 
   // Adding touchmove listener for iOS Safari support
@@ -37,7 +37,7 @@ bootstrap(
       actions: { onDrop },
     } = useBlock();
 
-    addMobileDragandDropPolyfill();
+    addMobileDragAndDropPolyfill();
 
     const renderItems = useCallback(
       (items: Item[], spaced?: boolean): VNode => {
