@@ -1,6 +1,6 @@
 import { type JsonObject } from 'type-fest';
 
-import { type ActionDefinition } from './action.js';
+import { type ActionDefinition } from './actionDefinition.js';
 import { type Remapper } from './remapper.js';
 import { type ViewRole } from './roles.js';
 import { type Theme } from './theme.js';

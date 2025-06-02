@@ -1,7 +1,7 @@
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { type ActionDefinition } from './action.js';
+import { type ActionDefinition } from './actionDefinition.js';
 import { type BlockDefinition, type ControllerDefinition } from './block.js';
 import { type CompanionContainerDefinition } from './container.js';
 import { type LayoutPosition, type Navigation } from './layout.js';

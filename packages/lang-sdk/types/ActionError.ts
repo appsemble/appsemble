@@ -1,4 +1,4 @@
-import { type ActionDefinition } from './action.js';
+import { type ActionDefinition } from './actionDefinition.js';
 
 export interface ActionErrorOptions<D extends ActionDefinition> {
   /**

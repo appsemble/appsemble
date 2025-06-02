@@ -1,6 +1,6 @@
 import { type Schema } from 'jsonschema';
 
-export * from './action2.js';
+export * from './actionDefinition.js';
 export * from './ActionError.js';
 export * from './action.js';
 export * from './block.js';
