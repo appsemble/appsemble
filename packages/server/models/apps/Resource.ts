@@ -362,13 +362,13 @@ export function createResourceModel(sequelize: Sequelize): typeof ResourceGlobal
         onDelete: 'CASCADE',
       });
       Resource.belongsTo(models.AppMember, {
-        foreignKey: 'AuthorId',
+        foreignKey: { name: 'AuthorId', allowNull: true },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
         as: 'Author',
       });
       Resource.belongsTo(models.AppMember, {
-        foreignKey: 'EditorId',
+        foreignKey: { name: 'EditorId', allowNull: true },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
         as: 'Editor',
