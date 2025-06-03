@@ -30,6 +30,7 @@ export const actions = {
   analytics: noop,
   condition,
   controller: noop,
+  'csv.parse': noop,
   dialog: noop,
   'dialog.error': noop,
   'dialog.ok': noop,

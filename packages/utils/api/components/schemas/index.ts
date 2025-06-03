@@ -149,3 +149,4 @@ export * from './PageActionsDefinition.js';
 export * from './FilterParametersDefinition.js';
 export * from './WebhookDefinition.js';
 export * from './AppWebhookSecret.js';
+export * from './CsvParseActionDefinition.js';

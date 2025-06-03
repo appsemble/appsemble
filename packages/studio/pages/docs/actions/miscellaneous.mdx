@@ -14,6 +14,7 @@ miscellaneous supported actions.
 - [`analytics`](#analytics)
 - [`condition`](#condition)
 - [`controller`](#controller)
+- [`csv.parse`](#csvparse)
 - [`download`](#download)
 - [`dialog`](#dialog)
 - [`dialog.ok`](#dialogok)
@@ -116,6 +117,37 @@ blocks:
       onSubmit:
         type: controller
         handler: calculate
+```
+
+### csv.parse<Side name="csv.parse" />
+
+<ActionRef action={actions['csv.parse']} />
+
+This action is used to parse a CSV file on the client side. This is useful in remapping the data on
+the client side before sending it to the server side. Here is an example of this action being used
+to rename a field.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: form
+    version: 0.32.2-test.9
+    parameters:
+      fields:
+        - name: csv
+          type: file
+          label: { static: CSV }
+    actions:
+      onSubmit:
+        type: csv.parse
+        file: { prop: csv }
+        delimiter: { static: '#>' }
+        remapAfter:
+          array.map:
+            - object.from:
+                foo: { prop: bar }
+        onSuccess:
+          type: request
+          url: https://example.net/
 ```
 
 ### download<Side name="download" />

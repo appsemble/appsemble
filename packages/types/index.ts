@@ -1909,6 +1909,18 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
     body: Remapper;
   };
 
+export interface CsvParserActionDefinition extends BaseActionDefinition<'csv.parse'> {
+  /**
+   * The value to return.
+   */
+  file: Remapper;
+
+  /**
+   * Delimiter
+   */
+  delimiter?: Remapper;
+}
+
 export type ActionDefinition =
   | AnalyticsAction
   | AppMemberCurrentPatchAction
@@ -1933,6 +1945,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'throw'>
   | ConditionActionDefinition
   | ControllerActionDefinition
+  | CsvParserActionDefinition
   | DialogActionDefinition
   | DownloadActionDefinition
   | EachActionDefinition

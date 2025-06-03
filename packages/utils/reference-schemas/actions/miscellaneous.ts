@@ -3,6 +3,7 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { AnalyticsActionDefinition } from '../../api/components/schemas/AnalyticsActionDefinition.js';
 import { ConditionActionDefinition } from '../../api/components/schemas/ConditionActionDefinition.js';
 import { ControllerActionDefinition } from '../../api/components/schemas/ControllerActionDefinition.js';
+import { CsvParseActionDefinition } from '../../api/components/schemas/CsvParseActionDefinition.js';
 import { DialogActionDefinition } from '../../api/components/schemas/DialogActionDefinition.js';
 import { DialogErrorActionDefinition } from '../../api/components/schemas/DialogErrorActionDefinition.js';
 import { DialogOkActionDefinition } from '../../api/components/schemas/DialogOkActionDefinition.js';
@@ -24,6 +25,7 @@ export const miscellaneousActions: Record<string, OpenAPIV3.SchemaObject> = {
   analytics: AnalyticsActionDefinition,
   condition: ConditionActionDefinition,
   controller: ControllerActionDefinition,
+  'csv.parse': CsvParseActionDefinition,
   download: DownloadActionDefinition,
   dialog: DialogActionDefinition,
   'dialog.ok': DialogOkActionDefinition,
