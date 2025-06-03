@@ -20,6 +20,7 @@ export async function getCurrentAppMemberGroups(ctx: Context): Promise<void> {
         model: GroupMember,
         where: { AppMemberId: authSubject!.id },
         required: true,
+        as: 'Members',
       },
     ],
   });

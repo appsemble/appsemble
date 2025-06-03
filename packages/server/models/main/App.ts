@@ -1,4 +1,5 @@
 import { type AppDefinition, type CompanionContainerDefinition } from '@appsemble/lang-sdk';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 import {
   type AppLock,
   type AppsembleMessages,
@@ -10,6 +11,7 @@ import { omit } from 'lodash-es';
 import {
   AllowNull,
   AutoIncrement,
+  BeforeCreate,
   BelongsTo,
   Column,
   CreatedAt,
@@ -19,6 +21,8 @@ import {
   ForeignKey,
   HasMany,
   Index,
+  Max,
+  Min,
   Model,
   PrimaryKey,
   Table,
@@ -27,6 +31,8 @@ import {
 import { stringify } from 'yaml';
 
 import { resolveIconUrl } from '../../utils/app.js';
+import { argv } from '../../utils/argv.js';
+import { encrypt } from '../../utils/crypto.js';
 import {
   AppMessages,
   AppRating,
@@ -194,6 +200,23 @@ export class App extends Model {
   @Column(DataType.BOOLEAN)
   skipGroupInvites!: boolean;
 
+  @Column(DataType.STRING)
+  dbName!: string;
+
+  @Column(DataType.STRING)
+  dbHost!: string;
+
+  @Min(1)
+  @Max(65_535)
+  @Column(DataType.INTEGER)
+  dbPort!: number;
+
+  @Column(DataType.STRING)
+  dbUser!: string;
+
+  @Column(DataType.BLOB)
+  dbPassword!: Buffer;
+
   @UpdatedAt
   updated!: Date;
 
@@ -237,6 +260,89 @@ export class App extends Model {
   hasMaskableIcon?: boolean;
 
   messages?: AppsembleMessages;
+
+  @BeforeCreate
+  static beforeCreateHook(instance: App): void {
+    if (!instance.dbHost) {
+      let dbHost;
+      if (argv.databaseHost) {
+        logger.info('Using database host argv');
+        dbHost = argv.databaseHost;
+      } else if (process.env.DATABASE_HOST) {
+        logger.warn('Missing database host argv, using process.env');
+        dbHost = process.env.DATABASE_HOST;
+      } else {
+        logger.warn('Missing database host env variable, using default');
+        dbHost = 'localhost';
+      }
+      // eslint-disable-next-line no-param-reassign
+      instance.dbHost = dbHost;
+    }
+
+    if (!instance.dbPort) {
+      let dbPort;
+      if (argv.databasePort) {
+        logger.info('Using database port argv');
+        dbPort = argv.databasePort;
+      } else if (process.env.DATABASE_PORT) {
+        logger.warn('Missing database port argv, using process.env');
+        dbPort = Number(process.env.DATABASE_PORT);
+      } else {
+        logger.warn('Missing database port env variable, using default');
+        dbPort = 54_321;
+      }
+      // eslint-disable-next-line no-param-reassign
+      instance.dbPort = dbPort;
+    }
+
+    if (!instance.dbUser) {
+      let dbUser;
+      if (argv.databaseUser) {
+        logger.info('Using database user argv');
+        dbUser = argv.databaseUser;
+      } else if (process.env.DATABASE_USER) {
+        logger.warn('Missing database user argv, using process.env');
+        dbUser = process.env.DATABASE_USER;
+      } else {
+        logger.warn('Missing database user env variable, using default');
+        dbUser = 'admin';
+      }
+      // eslint-disable-next-line no-param-reassign
+      instance.dbUser = dbUser;
+    }
+
+    if (!instance.dbPassword) {
+      if (!argv.databasePassword && process.env.NODE_ENV === 'production') {
+        throw new AppsembleError(
+          'Missing database password env variable. This is insecure and should be allowed only in development!',
+        );
+      }
+
+      if (!argv.aesSecret && process.env.NODE_ENV === 'production') {
+        throw new AppsembleError(
+          'Missing aes secret env variable. This is insecure and should be allowed only in development!',
+        );
+      }
+
+      let dbPassword;
+      if (argv.databasePassword) {
+        logger.info('Using database password argv');
+        dbPassword = argv.databasePassword;
+      } else if (process.env.DATABASE_PASSWORD) {
+        logger.warn('Missing database password argv, using process.env');
+        dbPassword = process.env.DATABASE_PASSWORD;
+      } else {
+        logger.warn('Missing database password env variable, using default');
+        dbPassword = 'password';
+      }
+
+      // eslint-disable-next-line no-param-reassign
+      instance.dbPassword = encrypt(
+        dbPassword,
+        argv.aesSecret || 'Local Appsemble development AES secret',
+      );
+    }
+  }
 
   /**
    * Normalizes an app record for consistent return values.

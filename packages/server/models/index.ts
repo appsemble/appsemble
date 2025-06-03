@@ -94,8 +94,9 @@ import { TrainingCompleted } from './main/TrainingCompleted.js';
 import { User } from './main/User.js';
 import { migrations } from '../migrations/apps/index.js';
 import { argv } from '../utils/argv.js';
+import { decrypt } from '../utils/crypto.js';
 import { migrate } from '../utils/migrate.js';
-import { logSQL } from '../utils/sqlUtils.js';
+import { handleDBError, logSQL } from '../utils/sqlUtils.js';
 
 let db: Sequelize;
 const schemas: Record<string, Sequelize> = {};
@@ -288,86 +289,104 @@ export interface AppDB extends AppModels {
 
 const appDBs: Record<number, AppDB | null> = {};
 
-export async function initAppDB(appId: number, rootDB?: RootSequelize): Promise<void> {
-  if (appDBs[appId]) {
+export async function initAppDB(
+  appId: number,
+  rootDB?: RootSequelize,
+  transaction?: Transaction,
+  replace?: boolean,
+): Promise<void> {
+  const mainDB = rootDB ?? getDB();
+
+  if (appDBs[appId] && !replace) {
     throw new Error('initAppDB() was called multiple times within the same context.');
   }
 
-  const mainDB = rootDB ?? getDB();
-
-  const app = await mainDB.models.App.findOne({ where: { id: appId } });
+  const app = (await mainDB.models.App.findOne({ where: { id: appId }, transaction })) as App;
 
   if (!app) {
     throw new Error('App not found');
   }
 
+  const appDBName = app.dbName || `app-${app.id}`;
+
+  if (app.dbHost === (argv.databaseHost || process.env.DATABASE_HOST || 'localhost')) {
+    try {
+      const [[{ exists }]] = (await mainDB.query(
+        `SELECT EXISTS (SELECT FROM pg_database WHERE datname = '${appDBName}');`,
+      )) as { exists: boolean }[][];
+      if (!exists) {
+        await mainDB.query(`CREATE DATABASE "${appDBName}"`);
+      }
+    } catch (err) {
+      logger.error(err);
+    }
+  }
+
+  let appDB;
   try {
-    const [[{ exists }]] = (await mainDB.query(
-      `SELECT EXISTS (SELECT FROM pg_database WHERE datname = 'app-${appId}');`,
-    )) as { exists: boolean }[][];
-    if (!exists) {
-      await mainDB.query(`CREATE DATABASE "app-${appId}"`);
+    appDB = new Sequelize({
+      database: appDBName,
+      host: app.dbHost,
+      port: app.dbPort,
+      password: decrypt(app.dbPassword, argv.aesSecret || 'Local Appsemble development AES secret'),
+      username: app.dbUser,
+      ssl: false,
+      logging: logSQL,
+      dialect: 'postgres',
+    });
+
+    const models: AppModels = {
+      AppBlockStyle: createAppBlockStyleModel(appDB),
+      AppInvite: createAppInviteModel(appDB),
+      AppMember: createAppMemberModel(appDB),
+      Meta: createAppMetaModel(appDB),
+      AppOAuth2Authorization: createAppOAuth2AuthorizationModel(appDB),
+      AppOAuth2Secret: createAppOAuth2SecretModel(appDB),
+      AppSamlAuthorization: createAppSamlAuthorizationModel(appDB),
+      AppSamlSecret: createAppSamlSecretModel(appDB),
+      AppServiceSecret: createAppServiceSecretModel(appDB),
+      AppSubscription: createAppSubscriptionModel(appDB),
+      AppVariable: createAppVariableModel(appDB),
+      AppWebhookSecret: createAppWebhookSecretModel(appDB),
+      Asset: createAssetModel(appDB),
+      Group: createGroupModel(appDB),
+      GroupInvite: createGroupInviteModel(appDB),
+      GroupMember: createGroupMemberModel(appDB),
+      OAuth2AuthorizationCode: createOAuth2AuthorizationCodeModel(appDB),
+      Resource: createResourceModel(appDB),
+      ResourceSubscription: createResourceSubscriptionModel(appDB),
+      ResourceVersion: createResourceVersionModel(appDB),
+      SamlLoginRequest: createSamlLoginRequestModel(appDB),
+    };
+
+    for (const model of Object.values(models)) {
+      if (typeof model.associate === 'function') {
+        model.associate(models);
+      }
+      if (typeof model.addHooks === 'function') {
+        model.addHooks(models, app.toJSON());
+      }
     }
-  } catch (err) {
-    logger.error(err);
+
+    await migrate(appDB, argv.migrateTo ?? 'next', migrations);
+
+    appDBs[appId] = {
+      sequelize: appDB,
+      ...models,
+    };
+  } catch (error) {
+    handleDBError(error as Error);
   }
-
-  // TODO get app db params from the fetched app
-  const sequelize = new Sequelize({
-    database: `app-${appId}`,
-    host: mainDB.config.host ?? 'localhost',
-    port: Number(mainDB.config.port ?? 5432),
-    password: mainDB.config.password ?? 'password',
-    username: mainDB.config.username ?? 'admin',
-    ssl: false,
-    logging: logSQL,
-    dialect: 'postgres',
-  });
-
-  const models: AppModels = {
-    AppBlockStyle: createAppBlockStyleModel(sequelize),
-    AppInvite: createAppInviteModel(sequelize),
-    AppMember: createAppMemberModel(sequelize),
-    Meta: createAppMetaModel(sequelize),
-    AppOAuth2Authorization: createAppOAuth2AuthorizationModel(sequelize),
-    AppOAuth2Secret: createAppOAuth2SecretModel(sequelize),
-    AppSamlAuthorization: createAppSamlAuthorizationModel(sequelize),
-    AppSamlSecret: createAppSamlSecretModel(sequelize),
-    AppServiceSecret: createAppServiceSecretModel(sequelize),
-    AppSubscription: createAppSubscriptionModel(sequelize),
-    AppVariable: createAppVariableModel(sequelize),
-    AppWebhookSecret: createAppWebhookSecretModel(sequelize),
-    Asset: createAssetModel(sequelize),
-    Group: createGroupModel(sequelize),
-    GroupInvite: createGroupInviteModel(sequelize),
-    GroupMember: createGroupMemberModel(sequelize),
-    OAuth2AuthorizationCode: createOAuth2AuthorizationCodeModel(sequelize),
-    Resource: createResourceModel(sequelize),
-    ResourceSubscription: createResourceSubscriptionModel(sequelize),
-    ResourceVersion: createResourceVersionModel(sequelize),
-    SamlLoginRequest: createSamlLoginRequestModel(sequelize),
-  };
-
-  for (const model of Object.values(models)) {
-    if (typeof model.associate === 'function') {
-      model.associate(models);
-    }
-    if (typeof model.addHooks === 'function') {
-      model.addHooks(models, app.toJSON());
-    }
-  }
-
-  await migrate(sequelize, argv.migrateTo ?? 'next', migrations);
-
-  appDBs[appId] = {
-    sequelize,
-    ...models,
-  };
 }
 
-export async function getAppDB(appId: number, rootDB?: RootSequelize): Promise<AppDB> {
-  if (appDBs[appId] == null) {
-    await initAppDB(appId, rootDB);
+export async function getAppDB(
+  appId: number,
+  rootDB?: RootSequelize,
+  transaction?: Transaction,
+  replace?: boolean,
+): Promise<AppDB> {
+  if (appDBs[appId] == null || replace === true) {
+    await initAppDB(appId, rootDB, transaction, replace);
   }
 
   return appDBs[appId]!;

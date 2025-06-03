@@ -27,6 +27,11 @@ interface UpdateAppArguments extends BaseArguments {
   sentryDsn: string;
   sentryEnvironment: string;
   googleAnalyticsId: string;
+  dbName: string;
+  dbHost: string;
+  dbPort: number;
+  dbUser: string;
+  dbPassword: string;
 }
 
 export const command = 'update <paths...>';
@@ -110,6 +115,22 @@ export function builder(yargs: Argv): Argv<any> {
     .option('sentry-environment', {
       describe: 'The environment for the custom Sentry DSN for the app.',
       implies: ['sentry-dsn'],
+    })
+    .option('db-name', {
+      describe: 'The name of the external app database.',
+    })
+    .option('db-host', {
+      describe: 'The host of the external app database.',
+    })
+    .option('db-port', {
+      describe: 'The port of the external app database.',
+      type: 'number',
+    })
+    .option('db-user', {
+      describe: 'The user of the external app database.',
+    })
+    .option('db-password', {
+      describe: 'The password of the external app database.',
     });
 }
 

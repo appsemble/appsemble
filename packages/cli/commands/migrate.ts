@@ -19,7 +19,6 @@ export function builder(yargs: Argv): Argv<any> {
     .option('database-port', {
       desc: 'The port of the database to connect to.',
       type: 'number',
-      default: 5432,
     })
     .option('database-ssl', {
       desc: 'Use SSL to connect to the database.',

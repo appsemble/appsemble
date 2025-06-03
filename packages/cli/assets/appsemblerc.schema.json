@@ -187,6 +187,22 @@
           "members": {
             "type": "boolean",
             "description": "Whether to publish seed members from `members/index.json` after publishing the app.\n\nIf members is specified, this will override --members passed on the command line."
+          },
+          "dbName": {
+            "type": "string",
+            "description": "The name of the external app database."
+          },
+          "dbHost": {
+            "type": "string",
+            "description": "The host of the external app database."
+          },
+          "dbPort": {
+            "type": "integer",
+            "description": "The port of the external app database."
+          },
+          "dbUser": {
+            "type": "string",
+            "description": "The user of the external app database."
           }
         }
       }
