@@ -1,4 +1,5 @@
 import {
+  AppsembleError,
   assertKoaCondition,
   handleValidatorResult,
   logger,
@@ -45,6 +46,11 @@ export async function patchApp(ctx: Context): Promise<void> {
         controllerCode,
         controllerImplementations,
         coreStyle,
+        dbHost,
+        dbName,
+        dbPassword,
+        dbPort,
+        dbUser,
         demoMode,
         displayAppMemberName,
         displayInstallationPrompt,
@@ -110,7 +116,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, dbApp);
 
-  const { AppMember, Resource, sequelize: appDB } = await getAppDB(appId);
+  const { AppMember, Resource: OldResource, sequelize: oldAppDB } = await getAppDB(appId);
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  let Resource = OldResource;
+  let appDB = oldAppDB;
 
   try {
     const permissionsToCheck: OrganizationPermission[] = [];
@@ -267,6 +276,34 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.iconBackground = iconBackground;
     }
 
+    if (dbName) {
+      result.dbName = dbName;
+    }
+
+    if (dbHost) {
+      result.dbHost = dbHost;
+    }
+
+    if (dbPort) {
+      result.dbPort = dbPort;
+    }
+
+    if (dbUser) {
+      result.dbUser = dbUser;
+    }
+
+    if (dbPassword) {
+      if (!argv.aesSecret && process.env.NODE_ENV === 'production') {
+        throw new AppsembleError(
+          'Missing aes secret env variable. This is insecure and should be allowed only in development!',
+        );
+      }
+      result.dbPassword = encrypt(
+        dbPassword,
+        argv.aesSecret || 'Local Appsemble development AES secret',
+      );
+    }
+
     result.controllerCode = ['', undefined].includes(controllerCode) ? null : controllerCode;
     result.controllerImplementations = ['', undefined].includes(controllerImplementations)
       ? null
@@ -313,6 +350,17 @@ export async function patchApp(ctx: Context): Promise<void> {
         );
         dbApp.AppSnapshots = [snapshot];
       }
+
+      const { Resource: NewAppResource, sequelize: newAppDB } = await getAppDB(
+        appId,
+        undefined,
+        transaction,
+        true,
+      );
+
+      Resource = NewAppResource;
+      appDB = newAppDB;
+
       if (result.definition?.resources) {
         await appDB.transaction(async (appTransaction) => {
           for (const [key, { enforceOrderingGroupByFields, positioning }] of Object.entries(

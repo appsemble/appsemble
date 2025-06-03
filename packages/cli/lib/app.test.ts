@@ -1,7 +1,14 @@
 import { writeFile } from 'node:fs/promises';
 
 import { getS3FileBuffer, readFixture, resolveFixture } from '@appsemble/node-utils';
-import { createServer, createTestUser, models, setArgv } from '@appsemble/server';
+import {
+  createServer,
+  createTestDBWithUser,
+  createTestUser,
+  decrypt,
+  models,
+  setArgv,
+} from '@appsemble/server';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { ISODateTimePattern } from '@appsemble/utils';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
@@ -427,6 +434,10 @@ describe('app', () => {
         'apps:write resources:write assets:write',
         testApp,
       );
+      const dbUser = 'app-admin';
+      const dbPassword = 'app-password';
+      const dbName = 'app-db';
+      const appDB = await createTestDBWithUser({ dbUser, dbPassword, dbName });
       await publishApp({
         path: resolveFixture('apps/test'),
         organization: organization.id,
@@ -437,6 +448,10 @@ describe('app', () => {
         iconBackground: '#ffffff',
         // Define context
         context: 'test',
+        // Provide db params
+        // Need to be dynamic in tests because we create a database to connect to
+        ...appDB,
+        dbPassword,
       });
       vi.useFakeTimers();
       const app = (await App.findOne())!;
@@ -538,6 +553,8 @@ describe('app', () => {
         }
       `,
       );
+      expect(app.get()).toStrictEqual(expect.objectContaining(appDB));
+      expect(decrypt(app.dbPassword, argv.aesSecret)).toBe(dbPassword);
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
       const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
@@ -1948,55 +1965,50 @@ describe('app', () => {
       ).rejects.toThrow('is not a known block type');
       vi.useFakeTimers();
       await app.reload();
-      expect(app.dataValues).toMatchInlineSnapshot(`
+      expect(app).toMatchInlineSnapshot(`
         {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
-          "containers": null,
+          "OrganizationName": undefined,
           "controllerCode": null,
           "controllerImplementations": null,
-          "coreStyle": null,
-          "created": 1970-01-01T00:00:00.000Z,
+          "coreStyle": undefined,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
-          "deleted": null,
           "demoMode": false,
           "displayAppMemberName": false,
           "displayInstallationPrompt": false,
           "domain": null,
-          "emailHost": null,
           "emailName": null,
-          "emailPassword": null,
-          "emailPort": 587,
-          "emailSecure": true,
-          "emailUser": null,
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "icon": null,
-          "iconBackground": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
           "id": 1,
           "locked": "unlocked",
-          "maskableIcon": null,
+          "messages": undefined,
           "path": "test-app",
-          "registry": null,
-          "scimEnabled": false,
-          "scimToken": null,
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
           "sentryDsn": null,
           "sentryEnvironment": null,
-          "sharedStyle": null,
+          "sharedStyle": undefined,
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
-          "sslCertificate": null,
-          "sslKey": null,
           "template": false,
-          "updated": 1970-01-01T00:00:00.000Z,
-          "vapidPrivateKey": "b",
-          "vapidPublicKey": "a",
           "visibility": "public",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        ",
         }
       `);
     });
@@ -2037,55 +2049,50 @@ describe('app', () => {
       expect(app.dataValues).toStrictEqual(
         expect.objectContaining({ ...app.dataValues, ...patches }),
       );
-      expect(app.dataValues).toMatchInlineSnapshot(`
+      expect(app).toMatchInlineSnapshot(`
         {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
-          "containers": null,
+          "OrganizationName": undefined,
           "controllerCode": null,
           "controllerImplementations": null,
-          "coreStyle": null,
-          "created": 1970-01-01T00:00:00.000Z,
+          "coreStyle": undefined,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
-          "deleted": null,
           "demoMode": true,
           "displayAppMemberName": false,
           "displayInstallationPrompt": false,
           "domain": null,
-          "emailHost": null,
           "emailName": null,
-          "emailPassword": null,
-          "emailPort": 587,
-          "emailSecure": true,
-          "emailUser": null,
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "icon": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
           "iconBackground": "#FFFFFF",
+          "iconUrl": null,
           "id": 1,
           "locked": "fullLock",
-          "maskableIcon": null,
+          "messages": undefined,
           "path": "updated-path",
-          "registry": null,
-          "scimEnabled": false,
-          "scimToken": null,
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
           "sentryDsn": null,
           "sentryEnvironment": null,
-          "sharedStyle": null,
+          "sharedStyle": undefined,
           "showAppDefinition": true,
           "showAppsembleLogin": true,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
-          "sslCertificate": null,
-          "sslKey": null,
           "template": true,
-          "updated": 1970-01-01T00:00:00.000Z,
-          "vapidPrivateKey": "b",
-          "vapidPublicKey": "a",
           "visibility": "private",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        ",
         }
       `);
     });

@@ -14,12 +14,18 @@ import {
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
+import { decrypt, encrypt } from '../../../utils/crypto.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
+import { createTestDBWithUser } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;
 
-const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
+const argv = {
+  host: 'http://localhost',
+  secret: 'test',
+  aesSecret: 'testSecret',
+};
 
 describe('patchApp', () => {
   beforeAll(async () => {
@@ -1935,5 +1941,47 @@ describe('patchApp', () => {
       ",
       }
     `);
+  });
+
+  it('should use passed database parameters if present', async () => {
+    vi.useRealTimers();
+    const dbUser = 'app-admin';
+    const dbPassword = 'app-password';
+    const dbName = 'app-db';
+    const appDB = await createTestDBWithUser({ dbUser, dbPassword, dbName });
+    const app = await App.create(
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        ...appDB,
+        dbPassword: encrypt(dbPassword, argv.aesSecret),
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const patchedDBUser = 'patched-app-admin';
+    const patchedDBPassword = 'patched-app-password';
+    const patchedDBName = 'patched-app-db';
+    const patchedAppDB = await createTestDBWithUser({
+      dbUser: patchedDBUser,
+      dbPassword: patchedDBPassword,
+      dbName: patchedDBName,
+    });
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        ...patchedAppDB,
+        dbPassword: patchedDBPassword,
+      }),
+    );
+    const updatedApp = await App.findByPk(response.data.id, {
+      attributes: ['dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword'],
+    });
+    expect(updatedApp?.get()).toStrictEqual(expect.objectContaining(patchedAppDB));
+    expect(decrypt(updatedApp!.dbPassword, argv.aesSecret)).toBe(patchedDBPassword);
   });
 });

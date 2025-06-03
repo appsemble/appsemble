@@ -21,7 +21,9 @@ import {
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
+import { decrypt } from '../../../utils/crypto.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
+import { createTestDBWithUser } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;
@@ -2466,5 +2468,125 @@ describe('createApp', () => {
       }
     `);
     expect(appCount).toBe(0);
+  });
+
+  it('should use argv for database parameters if present', async () => {
+    const databaseName = process.env.DATABASE_NAME || 'appsemble';
+    const databaseHost = process.env.DATABASE_HOST || 'localhost';
+    const databasePort = Number(process.env.DATABASE_PORT) || 54_321;
+    const databaseUser = process.env.DATABASE_USER || 'admin';
+    const databasePassword = process.env.DATABASE_PASSWORD || 'password';
+    setArgv({
+      ...argv,
+      databaseName,
+      databaseHost,
+      databasePort,
+      databaseUser,
+      databasePassword,
+    });
+    authorizeStudio();
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    const app = await App.findByPk(response.data.id, {
+      attributes: ['dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword'],
+    });
+    expect(app?.get()).toStrictEqual(
+      expect.objectContaining({
+        dbName: null,
+        dbHost: databaseHost,
+        dbPort: databasePort,
+        dbUser: databaseUser,
+      }),
+    );
+    expect(decrypt(app!.dbPassword, 'testSecret')).toBe(databasePassword);
+  });
+
+  it('should fallback to process.env for database parameters if argv not present', async () => {
+    const databaseName = process.env.DATABASE_NAME || 'appsemble';
+    const databaseHost = process.env.DATABASE_HOST || 'localhost';
+    const databasePort = Number(process.env.DATABASE_PORT) || 54_321;
+    const databaseUser = process.env.DATABASE_USER || 'admin';
+    const databasePassword = process.env.DATABASE_PASSWORD || 'password';
+
+    process.env.DATABASE_NAME = databaseName;
+    process.env.DATABASE_HOST = databaseHost;
+    process.env.DATABASE_PORT = String(databasePort);
+    process.env.DATABASE_USER = databaseUser;
+    process.env.DATABASE_PASSWORD = databasePassword;
+    authorizeStudio();
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    const app = await App.findByPk(response.data.id, {
+      attributes: ['dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword'],
+    });
+    expect(app?.get()).toStrictEqual(
+      expect.objectContaining({
+        dbName: null,
+        dbHost: databaseHost,
+        dbPort: databasePort,
+        dbUser: databaseUser,
+      }),
+    );
+    expect(decrypt(app!.dbPassword, 'testSecret')).toBe(databasePassword);
+  });
+
+  it('should use passed database parameters if present', async () => {
+    vi.useRealTimers();
+    authorizeStudio();
+    const dbUser = 'app-admin';
+    const dbPassword = 'app-password';
+    const dbName = 'app-db';
+    const appDB = await createTestDBWithUser({ dbUser, dbPassword, dbName });
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+        ...appDB,
+        dbPassword,
+      }),
+    );
+    const app = await App.findByPk(response.data.id, {
+      attributes: ['dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword'],
+    });
+    expect(app?.get()).toStrictEqual(expect.objectContaining(appDB));
+    expect(decrypt(app!.dbPassword, 'testSecret')).toBe(dbPassword);
   });
 });

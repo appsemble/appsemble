@@ -241,7 +241,8 @@ stylelint:
 test node:
   extends: .npm
   services:
-    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+    - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+      alias: postgres
     - name: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
       alias: minio
       command: ['server', '/data']
@@ -252,7 +253,11 @@ test node:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+    DATABASE_NAME: testAppsemble
+    DATABASE_HOST: postgres
+    DATABASE_PORT: 5432
+    DATABASE_USER: admin
+    DATABASE_PASSWORD: password
     S3_HOST: 'minio'
     S3_PORT: 9000
   stage: test
@@ -288,15 +293,15 @@ check migrations:
   stage: test
   interruptible: true
   services:
-    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+    - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+      alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
-    - npm run appsemble -- check-migrations
+    - npm run appsemble -- check-migrations --database-name testAppsemble --database-host postgres --database-port 5432 --database-user admin --database-password password
 
 # Check down migrations
 check down migrations:
@@ -304,15 +309,15 @@ check down migrations:
   stage: test
   interruptible: true
   services:
-    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+    - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+      alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
-    - npm run appsemble -- check-down-migrations
+    - npm run appsemble -- check-down-migrations --database-name testAppsemble --database-host postgres --database-port 5432 --database-user admin --database-password password
 
 # Fuzz test migrations for anomalous up and down migration failures
 fuzz migrations:
@@ -320,14 +325,14 @@ fuzz migrations:
   stage: test
   interruptible: true
   services:
-    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+    - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+      alias: postgres
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
-    - npm run appsemble -- fuzz-migrations
+    - npm run appsemble -- fuzz-migrations --database-name testAppsemble --database-host postgres --database-port 5432 --database-user admin --database-password password
 
 include:
   # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Container-Scanning.gitlab-ci.yml
