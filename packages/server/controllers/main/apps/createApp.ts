@@ -25,8 +25,10 @@ import {
   handleAppValidationError,
   setAppPath,
 } from '../../../utils/app.js';
+import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
+import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 
 export async function createApp(ctx: Context): Promise<void> {
@@ -37,6 +39,11 @@ export async function createApp(ctx: Context): Promise<void> {
         controllerCode,
         controllerImplementations,
         coreStyle,
+        dbHost,
+        dbName,
+        dbPassword,
+        dbPort,
+        dbUser,
         demoMode,
         domain,
         googleAnalyticsID,
@@ -115,7 +122,24 @@ export async function createApp(ctx: Context): Promise<void> {
       controllerImplementations,
       displayAppMemberName: false,
       displayInstallationPrompt: false,
+      dbName,
+      dbHost,
+      dbPort,
+      dbUser,
     };
+
+    if (dbPassword) {
+      if (!argv.aesSecret && process.env.NODE_ENV === 'production') {
+        throw new AppsembleError(
+          'Missing aes secret env variable. This is insecure and should be allowed only in development!',
+        );
+      }
+      result.dbPassword = encrypt(
+        dbPassword,
+        argv.aesSecret || 'Local Appsemble development AES secret',
+      );
+    }
+
     result.containers = definition.containers;
     result.registry = definition.registry;
     if (icon) {
@@ -152,8 +176,7 @@ export async function createApp(ctx: Context): Promise<void> {
         return app;
       });
     } catch (error: unknown) {
-      // AppsembleError is only thrown when dryRun is set, meaning it’s only used to test
-      if (error instanceof AppsembleError) {
+      if (error instanceof AppsembleError && error.message === 'Dry run') {
         ctx.status = 204;
         return;
       }

@@ -7,7 +7,7 @@ import {
   setFixtureBase,
   setLogLevel,
 } from '@appsemble/node-utils';
-import { models, rootDB, setupTestDatabase } from '@appsemble/server';
+import { getRootDB, models, setupTestDatabase } from '@appsemble/server';
 import { type Sequelize } from 'sequelize';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { afterAll, afterEach, beforeAll, beforeEach, vi } from 'vitest';
@@ -45,5 +45,5 @@ afterAll(() => {
   testDB.close();
   // We need to drop the test database from the root database
   // testDB.drop() doesn't actually delete the database
-  rootDB.query(`DROP DATABASE ${testDB.getDatabaseName()}`);
+  getRootDB().query(`DROP DATABASE ${testDB.getDatabaseName()}`);
 });

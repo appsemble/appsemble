@@ -43,12 +43,13 @@ export async function handler(): Promise<void> {
     process.exit(1);
   }
 
-  await db.query(
-    'INSERT INTO "Organization" ("id", "created", "updated") VALUES (\'appsemble\', NOW(), NOW())',
-  );
-  await db.query(
-    'INSERT INTO "App" ("id", "definition", "vapidPublicKey", "vapidPrivateKey", "OrganizationId", "created", "updated") VALUES (1, \'{}\', \'\', \'\', \'appsemble\', NOW(), NOW())',
-  );
+  await db.models.Organization.create({ id: 'appsemble' });
+  await db.models.App.create({
+    OrganizationId: 'appsemble',
+    definition: {},
+    vapidPublicKey: '',
+    vapidPrivateKey: '',
+  });
 
   try {
     const { sequelize: appDB } = await getAppDB(1);

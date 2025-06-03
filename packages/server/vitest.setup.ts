@@ -16,7 +16,7 @@ import { type Sequelize } from 'sequelize';
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from 'vitest';
 
 import { dropAndCloseAllAppDBs } from './models/index.js';
-import { rootDB, setupTestDatabase } from './utils/test/testSchema.js';
+import { getRootDB, setupTestDatabase } from './utils/test/testSchema.js';
 
 interface CustomMatchers<R = unknown> {
   toMatchImageSnapshot: () => R;
@@ -63,7 +63,7 @@ afterAll(() => {
   testDB.close();
   // We need to drop the test database from the root database
   // testDB.drop() doesn't actually delete the database
-  rootDB.query(`DROP DATABASE ${testDB.getDatabaseName()}`);
+  getRootDB().query(`DROP DATABASE ${testDB.getDatabaseName()}`);
 });
 
 setResponseTransformer(
