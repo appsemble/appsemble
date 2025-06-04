@@ -41,7 +41,7 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
   }
 
   if (properties) {
-    result.properties = parseAppMemberProperties(properties);
+    result.properties = { ...appMember.properties, ...parseAppMemberProperties(properties) };
   }
 
   if (locale) {
