@@ -1,25 +1,26 @@
 # App setup
 
 In this training you will combine the knowledge you gained in the previous chapters and apply them
-to create a basic app. This chapter will guide you through creating your own bicycle store.
+to create a basic app. As a good basic app, we will guide you through creating your own bicycle
+store.
 
-To start off, first create your app by going to the [App store](/en/apps) and clicking 'Create new
+To start off, first create your app by going to the [App store](/apps) and clicking 'Create new
 App'. Choose a nice name for your bicycle store, fill in the required information and click 'Create'
 
 > **Note:** For this app we recommend using the 'Empty' template
 
 ## Pages
 
+**Inventory**
+
+Managers are able to see the inventory of bicycles. They can add new bicycles to the inventory so
+they can be sold later.
+
 **Sell bicycle**
 
 Employees will be able to see a selection of bicycles. They can sell these bicycles to customers by
 noting down their information. Once the bike is sold, it's number is subtracted from the total
 bicycle count.
-
-**Inventory**
-
-Managers are able to see the inventory of bicycles. They can add new bicycles to the inventory and
-manage the stock of existing bicycles.
 
 **Sale history**
 
@@ -29,15 +30,15 @@ Managers and employees can see a history of all bicycle sales.
 
 **bicycles**
 
-As a bicycle store we need a way to track what bicycles are in the inventory. In your store you have
-a big collection of bicycles. To keep a digital record of your collection, it's a good idea to keep
-the following fields:
+As a bicycle store we need a way to track what bicycles are in the inventory. We can do this by
+creating a resource where each bicycle gets added as an individual entry. To keep track of what
+bikes we have, how many there are and what they look like, we can use the following properties:
 
 - `type`: The type of bicycle to store.
 - `stock`: How many bicycles of this type are in the inventory.
 - `image`: An image of what the bicycle looks like to help employees identify the bike.
 
-Your bicycle resource should look like this:
+Your `bicycle` resource should look like this:
 
 ```yaml copy
 bicycles:
@@ -61,8 +62,8 @@ bicycles:
 
 **saleHistory**
 
-We also want a record of all sales that happened for administration purposes. The following fields
-should help keep an organized and well-informed sales history:
+We also want a record of all sales that happened for administration purposes. The following
+properties should help keep an organized and well-informed sales history:
 
 - `bicycle`: The type of bicycle that was sold.
 - `saleDate`: When the bicycle was sold.
@@ -140,8 +141,8 @@ resources:
 As stated at the start we'll have two types of users: **employees** and **managers**. Employees sell
 bicycles while managers manage the store's inventory.
 
-While you could already define what permissions each role has, this is difficult to do correctly
-right away. I prefer to keep it empty and add permissions as is needed while working on the app.
+While you could already define what permissions each role has, this is difficult to fully plan out
+ahead of time. Instead, you can leave this empty and add permissions once you need them.
 
 > **Tip**: Typing out clear descriptions helps you and other maintaineres understand what each role
 > is responsible for.
@@ -166,10 +167,11 @@ security:
 ## Theme
 
 It's good to choose a nice color palette that makes your app stand out from the rest while keeping
-semantics. I've chosen this palette, but feel free to experiment with colors and find one that fits
-your tastes better.
+semantics. You could leave this blank to use the default Appsemble theme, or create your own.
 
-```yaml
+For this app we're using the following theme:
+
+```yaml copy
 theme:
   primaryColor: '#4357AD'
   successColor: '#48A9A6'
