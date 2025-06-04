@@ -1,6 +1,7 @@
 import { type SendNotificationsParams } from '@appsemble/node-utils';
+import { getAppRoles } from '@appsemble/utils';
 
-import { App, AppSubscription } from '../models/index.js';
+import { App, AppMember, AppSubscription } from '../models/index.js';
 import { sendNotification } from '../utils/sendNotification.js';
 
 export async function sendNotifications({
@@ -9,6 +10,12 @@ export async function sendNotifications({
   title,
   to,
 }: SendNotificationsParams): Promise<void> {
+  const appRoles = getAppRoles(app.definition.security);
+  const toValidRoles = Array.isArray(to)
+    ? to.filter((item) => appRoles.includes(item))
+    : appRoles.includes(to)
+      ? [to]
+      : [];
   const persistedApp = (await App.findByPk(app.id, {
     attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'],
     include: [
@@ -17,14 +24,28 @@ export async function sendNotifications({
             model: AppSubscription,
             attributes: ['id', 'auth', 'p256dh', 'endpoint'],
           }
-        : {
-            model: AppSubscription,
-            attributes: ['id', 'auth', 'p256dh', 'endpoint'],
-            required: false,
-            where: {
-              AppMemberId: to,
+        : appRoles.includes(to) || toValidRoles.length
+          ? {
+              model: AppSubscription,
+              attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+              required: false,
+              include: [
+                {
+                  model: AppMember,
+                  where: {
+                    role: toValidRoles,
+                  },
+                },
+              ],
+            }
+          : {
+              model: AppSubscription,
+              attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+              required: false,
+              where: {
+                AppMemberId: to,
+              },
             },
-          },
     ],
   }))!;
 
