@@ -47,7 +47,7 @@ const allow = [
 export function AppPreview({ app, iframeRef, onIframeLoad }: AppPreviewProps): ReactNode {
   const { formatMessage } = useIntl();
 
-  const appDomain = `${app.path}.${app.OrganizationId}.${window.location.hostname}`;
+  const appDomain = app.domain || `${app.path}.${app.OrganizationId}.${window.location.hostname}`;
   const sslStatus = useSSLStatus(appDomain);
 
   const src = getAppUrl(app.OrganizationId, app.path);
