@@ -510,16 +510,34 @@ that contains the content called `index.md`.
 
 1. Create a new folder in the root of the `trainings` directory with a unique name.
 2. In the new folder, create a `properties.json` file containing the following JSON:
-
-```json
-{
-  "blockedBy": null,
-  "title": "Example chapter",
-  "trainingOrder": []
-}
-```
-
+   ```json
+   {
+     "blockedBy": null,
+     "title": "Example chapter",
+     "trainingOrder": []
+   }
+   ```
 3. Create at least one training in the chapter for it to be considered valid.
+
+#### Define node positions
+
+Define where the chapter gets placed and how they're connected to the other chapters in
+[nodePositions.ts](./packages/studio/components/TrainingTree/nodePositions.ts).
+
+1. Set the X and Y positions that define where the chapter gets placed in the training tree
+   ```ts
+   export const chapterNodes = [
+     // ...
+     { id: 'new-chapter', position: { x: 100, y: 200 } },
+   ];
+   ```
+2. Set the connections between chapters that are blocking/getting blocked
+   ```ts
+   export const chapterEdges = [
+     // ...
+     { from: 'blocking-chapter', to: 'blocked-chapter' },
+   ];
+   ```
 
 ## Releasing
 
