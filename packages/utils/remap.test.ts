@@ -981,6 +981,50 @@ describe('type', () => {
   });
 });
 
+describe('array.contains', () => {
+  runTests({
+    'return false is the input is not of type string': {
+      input: { foo: 'bar' },
+      mappers: { 'array.contains': 'foo' },
+      expected: false,
+    },
+    'return true for a nested array if found': {
+      input: [3, 4, [5, 6], 7, 8],
+      mappers: { 'array.contains': { 'array.from': [5, 6] } },
+      expected: true,
+    },
+    'return true if the input contains the object': {
+      input: [
+        { firstName: 'John', lastName: 'Doe' },
+        { firstName: 'Jane', lastName: 'Smith' },
+        { firstName: 'John', lastName: 'Smith' },
+        { firstName: 'Jane', lastName: 'Doe' },
+      ],
+      mappers: {
+        'array.contains': { 'object.from': { firstName: 'John', lastName: 'Doe' } },
+      },
+      expected: true,
+    },
+    'return true if the input contains the provided input': {
+      input: [5, 6, true, false, 'string'],
+      mappers: { 'array.contains': { static: false } },
+      expected: true,
+    },
+    'return false if the input does not contains the provided input': {
+      input: [
+        { firstName: 'John', lastName: 'Doe' },
+        { firstName: 'Jane', lastName: 'Smith' },
+        { firstName: 'John', lastName: 'Smith' },
+        { firstName: 'Jane', lastName: 'Doe' },
+      ],
+      mappers: {
+        'array.contains': { 'object.from': { firstName: 'John' } },
+      },
+      expected: false,
+    },
+  });
+});
+
 describe('array.map', () => {
   runTests({
     'apply remappers to each array item': {
@@ -1494,6 +1538,26 @@ describe('omit.history', () => {
       history: [{ rescue: 'monke', nested: { happy: 'monke', safe: 'monke' } }],
       mappers: [{ 'omit.history': { index: 0, keys: [['nested', 'nonexistent']] } }],
       expected: { input: 'data', rescue: 'monke', nested: { happy: 'monke', safe: 'monke' } },
+    },
+  });
+});
+
+describe('string.contains', () => {
+  runTests({
+    'it should return false if the input is not of type string': {
+      input: 1234,
+      mappers: { 'string.contains': '123' },
+      expected: false,
+    },
+    'it should return false if the input does not contain the provided string': {
+      input: '23456',
+      mappers: { 'string.contains': '123' },
+      expected: false,
+    },
+    'it should return true if the input is not of type string': {
+      input: '1234',
+      mappers: { 'string.contains': '123' },
+      expected: true,
     },
   });
 });
