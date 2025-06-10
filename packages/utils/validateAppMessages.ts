@@ -34,8 +34,16 @@ export function validateMessages(messages: AppsembleMessages, app: AppDefinition
   }
   if (messages.app) {
     Object.keys(messages.app).map((key) => {
-      const match = /^(pages\.[\dA-Za-z-]+(\..+)?)\.blocks\.\d+.+/.exec(key);
-      if ((!has(extractedMessages?.app, key) || typeof messages.app[key] !== 'string') && !match) {
+      const blockMatch = /^(pages\.[\dA-Za-z-]+(\..+)?)\.blocks\.\d+.+/.exec(key);
+      const emailMatch =
+        /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|welcome)\.(body|subject)/.exec(
+          key,
+        );
+      if (
+        (!has(extractedMessages?.app, key) || typeof messages.app[key] !== 'string') &&
+        !blockMatch &&
+        !emailMatch
+      ) {
         throw new AppMessageValidationError(`Invalid key ${key}`);
       }
     });
