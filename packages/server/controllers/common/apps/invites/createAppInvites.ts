@@ -116,6 +116,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
       url.searchParams.set('token', invite.key);
 
       return mailer.sendTranslatedEmail({
+        appId,
         to: {
           ...(user ? { name: user.name } : {}),
           email: invite.email,

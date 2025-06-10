@@ -192,6 +192,7 @@ describe('createGroupInvites', () => {
     `);
 
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      appId: app.id,
       emailName: 'groupInvite',
       to: {
         email: 'newuser@example.com',
@@ -253,6 +254,7 @@ describe('createGroupInvites', () => {
     `);
 
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      appId: app.id,
       emailName: 'groupInvite',
       to: {
         email: 'newuser@example.com',
@@ -321,6 +323,7 @@ describe('createGroupInvites', () => {
     `);
 
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      appId: app.id,
       emailName: 'groupInvite',
       to: {
         email: 'newuser@example.com',
@@ -391,6 +394,7 @@ describe('createGroupInvites', () => {
     `);
 
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      appId: app.id,
       emailName: 'groupInvite',
       to: {
         email: 'newuser@example.com',

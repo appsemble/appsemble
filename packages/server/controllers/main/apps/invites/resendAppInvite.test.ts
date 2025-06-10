@@ -81,6 +81,7 @@ describe('resendAppInvite', () => {
 
     expect(response).toMatchObject({ status: 204 });
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      appId: app.id,
       emailName: 'appInvite',
       to: {
         email: 'test@example.com',
@@ -111,6 +112,7 @@ describe('resendAppInvite', () => {
 
     expect(response).toMatchObject({ status: 204 });
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      appId: app.id,
       emailName: 'appInvite',
       to: {
         email: 'test@example.com',
@@ -148,6 +150,7 @@ describe('resendAppInvite', () => {
 
     expect(response).toMatchObject({ status: 204 });
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      appId: app.id,
       emailName: 'appInvite',
       to: {
         email: newUser.primaryEmail,
@@ -188,6 +191,7 @@ describe('resendAppInvite', () => {
 
     expect(response).toMatchObject({ status: 204 });
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      appId: app.id,
       emailName: 'appInvite',
       to: {
         email: newUser.primaryEmail,

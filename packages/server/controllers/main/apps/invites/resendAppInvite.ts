@@ -46,6 +46,7 @@ export async function resendAppInvite(ctx: Context): Promise<void> {
 
   try {
     await mailer.sendTranslatedEmail({
+      appId,
       to: {
         ...(existingAppInvite.User ? { name: existingAppInvite.User.name } : {}),
         email,
