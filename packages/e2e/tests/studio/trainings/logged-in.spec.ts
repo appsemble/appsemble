@@ -1,6 +1,6 @@
 import { type TrainingStatus } from '@appsemble/types';
 
-import { expect, test } from '../../../fixtures/index.js';
+import { expect, test } from '../../../index.js';
 
 test.beforeEach(async ({ page, resetTrainingProgress }) => {
   await resetTrainingProgress();
@@ -48,4 +48,66 @@ test('should unlock next chapter once blocking chapter is completed', async ({ p
   for (const { name, status } of nodeStatus) {
     await expect(page.getByTestId(name)).toHaveChapterStatus(status);
   }
+});
+
+test('should unlock all blocked chapters once blocker is completed', async ({
+  completeTraining,
+  page,
+}) => {
+  await expect(page.getByTestId('rf__node-data-transformation')).toHaveChapterStatus('blocked');
+  await expect(page.getByTestId('rf__node-styling-apps')).toHaveChapterStatus('blocked');
+
+  const prerequisiteTrainings = [
+    'what-is-appsemble',
+    'get-familiar-with-the-studio',
+    'app-structure',
+    'what-is-a-page',
+    'what-is-a-block',
+    'simple-app',
+    'events',
+    'actions',
+    'what-is-a-resource',
+    'storing-resource-entry',
+    'fetching-resources',
+  ];
+  for (const trainingId of prerequisiteTrainings) {
+    await completeTraining(trainingId);
+  }
+  await page.reload();
+
+  await expect(page.getByTestId('rf__node-data-transformation')).toHaveChapterStatus('available');
+  await expect(page.getByTestId('rf__node-styling-apps')).toHaveChapterStatus('available');
+});
+
+test('should unlock chapter that is blocked by multiple chapters when they are all completed', async ({
+  completeTraining,
+  page,
+}) => {
+  await expect(page.getByTestId('rf__node-basic-app')).toHaveChapterStatus('blocked');
+
+  const prerequisiteTrainings = [
+    'what-is-appsemble',
+    'get-familiar-with-the-studio',
+    'app-structure',
+    'what-is-a-page',
+    'what-is-a-block',
+    'simple-app',
+    'events',
+    'actions',
+    'what-is-a-resource',
+    'storing-resource-entry',
+    'fetching-resources',
+    'what-are-remappers',
+    'remapper-chaining',
+    'remapper-history',
+    'styling-options',
+    'bulma-theming',
+    'custom-css',
+  ];
+  for (const trainingId of prerequisiteTrainings) {
+    await completeTraining(trainingId);
+  }
+  await page.reload();
+
+  await expect(page.getByTestId('rf__node-basic-app')).toHaveChapterStatus('available');
 });

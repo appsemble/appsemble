@@ -5,22 +5,35 @@ export interface TrainingFixtures {
    * Resets the user's training progress
    */
   resetTrainingProgress: () => Promise<void>;
+
+  /**
+   * Set the given training to 'complete' on the server for the currently logged in user
+   *
+   * @param trainingId ID of the training to complete
+   */
+  completeTraining: (trainingId: string) => Promise<void>;
 }
 
 export const test = base.extend<TrainingFixtures>({
-  async resetTrainingProgress({ baseURL, context }, use) {
+  async resetTrainingProgress({ request }, use) {
     await use(async () => {
-      const accessToken = (await context.storageState()).origins[0].localStorage[0].value;
-      expect(accessToken).not.toBeNull();
-
-      const { status } = await fetch(`${baseURL}/api/trainings/completed`, {
-        method: 'DELETE',
+      const response = await request.delete('/api/trainings/completed', {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
         },
       });
-      expect(status).toBe(204);
+      expect(response.status()).toBe(204);
+    });
+  },
+
+  async completeTraining({ request }, use) {
+    await use(async (trainingId) => {
+      const response = await request.post(`/api/trainings/completed/${trainingId}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+        },
+      });
+      expect(response.status()).toBe(201);
     });
   },
 });

@@ -2,6 +2,9 @@ import { type ComponentType } from 'react';
 
 export type TrainingStatus = 'available' | 'blocked' | 'completed' | 'in progress';
 
+/**
+ * Training chapter after it's been processed. This gets used in the training tree itself.
+ */
 export interface TrainingChapter {
   /**
    * ID of the chapter.
@@ -19,9 +22,10 @@ export interface TrainingChapter {
   trainings: Training[];
 
   /**
-   * The ID of the chapter that has to be completed before this one can be accessed.
+   * The ID of the chapter that has to be completed before this one can be accessed. Can also be an
+   * array if multiple chapters block this one.
    */
-  blockedBy?: string;
+  blockedBy?: string[] | string;
 
   /**
    * The status of the chapter
@@ -29,6 +33,9 @@ export interface TrainingChapter {
   status: TrainingStatus;
 }
 
+/**
+ * Properties of an individual training module.
+ */
 export interface Training {
   /**
    * Id of the training.
@@ -56,11 +63,15 @@ export interface Training {
   status: TrainingStatus;
 }
 
+/**
+ * Properties of a training chapter as defined in the project files.
+ */
 export interface TrainingChapterProperties {
   /**
-   * The ID of the chapter that has to be completed before this one can be accessed.
+   * The ID of the chapter that has to be completed before this one can be accessed. Can also be an
+   * array if multiple chapters block this one.
    */
-  blockedBy: string;
+  blockedBy: string[] | string;
 
   /**
    * Title of the chapter
