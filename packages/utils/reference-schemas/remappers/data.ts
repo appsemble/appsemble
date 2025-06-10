@@ -291,7 +291,7 @@ ${schemaExample('static', { exclude: ['input'] })}
 `,
   },
   translate: {
-    type: 'string',
+    $ref: '#/components/schemas/RemapperDefinition',
     description: `> **Note:** This is explained much more in depth at [Translating](/docs/guides/translating)
 
 This remapper allows you to easily add translations to your app. To make this remapper work, replace

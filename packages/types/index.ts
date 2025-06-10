@@ -867,7 +867,7 @@ export interface Remappers {
    *
    * This does not support parameters, for more nuanced translations use `string.format`.
    */
-  translate: string;
+  translate: Remapper;
 
   container: string;
 

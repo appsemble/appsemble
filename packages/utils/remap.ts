@@ -828,8 +828,12 @@ const mapperImplementations: MapperImplementations = {
   },
 
   translate(messageId, input, context) {
-    const message = context.getMessage({ id: messageId });
-    return message.format() || `{${messageId}}`;
+    const remappedId = remap(messageId, input, context);
+    if (typeof remappedId !== 'string') {
+      return null;
+    }
+    const message = context.getMessage({ id: remappedId });
+    return message.format() || `{${remappedId}}`;
   },
 
   'app.member': (property, input, context) => context.appMemberInfo?.[property],

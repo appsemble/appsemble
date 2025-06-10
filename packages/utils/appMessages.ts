@@ -72,7 +72,8 @@ export function extractAppMessages(
       }
     },
     onAction(action) {
-      Object.assign(messages.messageIds, findMessageIds(action.remap));
+      Object.assign(messages.messageIds, findMessageIds(action.remapBefore));
+      Object.assign(messages.messageIds, findMessageIds(action.remapAfter));
 
       switch (action.type) {
         case 'condition':
