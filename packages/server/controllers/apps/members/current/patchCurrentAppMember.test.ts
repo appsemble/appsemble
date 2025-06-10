@@ -87,6 +87,30 @@ describe('patchCurrentAppMember', () => {
     expect(appMember.email).toBe('test@example.com');
   });
 
+  it('should not over write the app member properties', async () => {
+    await appMember.update({
+      properties: {
+        foo: 'bar',
+      },
+    });
+
+    authorizeAppMember(app);
+    const { status } = await request.patch<AppMemberInfo>(
+      `/api/apps/${app.id}/members/current`,
+      createFormData({
+        properties: {
+          hello: 'world',
+        },
+      }),
+    );
+    expect(status).toBe(200);
+    await appMember.reload();
+    expect(appMember.properties).toMatchObject({
+      foo: 'bar',
+      hello: 'world',
+    });
+  });
+
   it('should allow for updating the profile picture', async () => {
     authorizeAppMember(app);
 
