@@ -3674,6 +3674,7 @@ image can either be url or uploaded image",
             "format": "remapper",
           },
           "rounded": {
+            "default": false,
             "description": "Is image rounded.",
             "type": "boolean",
           },
@@ -3878,10 +3879,12 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "display": {
-            "const": "slider",
-            "description": "How to display the numeric field.
-
-By default a \`number\` input field is displayed.",
+            "default": "number",
+            "description": "How to display the numeric field.",
+            "enum": [
+              "number",
+              "slider",
+            ],
             "type": "string",
           },
           "help": {
@@ -5179,6 +5182,7 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "type": "boolean",
       },
       "hideSubmitButton": {
+        "default": false,
         "description": "Whether the submit button should not be visible, useful when the only field is an enum and
 **onSelect** is defined",
         "format": "remapper",
@@ -5189,6 +5193,7 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "type": "number",
       },
       "previous": {
+        "default": false,
         "description": "Whether the previous button should be shown.",
         "type": "boolean",
       },
@@ -5200,6 +5205,7 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "type": "array",
       },
       "skipInitialLoad": {
+        "default": false,
         "description": "By default the form block will wait until event data is received.
 
 By setting this to \`true\`, this won’t happen.",
