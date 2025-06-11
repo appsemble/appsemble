@@ -322,6 +322,8 @@ collected here that may help you build your end 2 end tests:
 
 - If you are intercepting a request, make sure the target URL is specific enough so it won't get
   intercepted in a place you didn't intend.
+- If you are intercepting a request, make sure you do it before the request action is called during the test. 
+  Otherwise it won't be caught.
 - Utilize [global setup projects](https://playwright.dev/docs/test-global-setup-teardown) to run
   setup steps before the tests run.
   - These steps are included in the HTML report and trace viewer and allow you to use fixtures
