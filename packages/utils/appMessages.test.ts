@@ -108,7 +108,7 @@ describe('extractAppMessages', () => {
     expect(result).toMatchObject({ messageIds: { foo: '' }, app: { 'pages.page': 'Page' } });
   });
 
-  it('should extract action remap', () => {
+  it('should extract action remapBefore and remapAfter', () => {
     const result = extractAppMessages({
       name: 'Test app',
       defaultPage: '',
@@ -122,14 +122,14 @@ describe('extractAppMessages', () => {
               actions: {
                 onClick: {
                   type: 'noop',
-                  remap: { 'string.format': { messageId: 'onClickMessageId' } },
+                  remapBefore: { 'string.format': { messageId: 'onClickMessageId' } },
                   onError: {
                     type: 'noop',
-                    remap: { 'string.format': { messageId: 'onErrorMessageId' } },
+                    remapBefore: { 'string.format': { messageId: 'onErrorMessageId' } },
                   },
                   onSuccess: {
                     type: 'noop',
-                    remap: { 'string.format': { messageId: 'onSuccessMessageId' } },
+                    remapAfter: { 'string.format': { messageId: 'onSuccessMessageId' } },
                   },
                 },
               },

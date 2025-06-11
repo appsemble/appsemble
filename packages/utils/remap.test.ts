@@ -1740,6 +1740,36 @@ describe('translate', () => {
         },
       },
     },
+    'return null if the remapped result is not of type string': {
+      input: { foo: { bar: 'hello' } },
+      mappers: {
+        translate: { prop: 'foo' },
+      },
+      expected: null,
+      messages: {
+        core: {},
+        app: {},
+        blocks: {},
+        messageIds: {
+          foo: '',
+        },
+      },
+    },
+    'allow translating dynamically': {
+      input: { bar: 'foo' },
+      mappers: {
+        translate: { prop: 'bar' },
+      },
+      expected: 'Bar',
+      messages: {
+        core: {},
+        app: {},
+        blocks: {},
+        messageIds: {
+          foo: 'Bar',
+        },
+      },
+    },
     'handle untranslated multilingual messages': {
       input: null,
       mappers: {

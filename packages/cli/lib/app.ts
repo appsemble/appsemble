@@ -851,6 +851,12 @@ export async function writeAppMessages(
         return [key, ''];
       }),
     );
+    const unusedMessages = Object.fromEntries(
+      Object.entries(oldMessages.messageIds ?? {}).filter(
+        ([key, value]) => !Object.hasOwn(newMessageIds, key) && value !== '',
+      ),
+    );
+    Object.assign(newMessageIds, unusedMessages);
 
     const newAppMessages = Object.fromEntries(
       Object.keys(extractedMessages.app).map((key) => {
