@@ -106,6 +106,16 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
       },
     ],
   },
+  'array.contains': {
+    input: [1, 2, 3, 4, 5],
+    remapper: { 'array.contains': { static: 6 } },
+    result: false,
+  },
+  'string.contains': {
+    input: 'Input string',
+    remapper: { 'string.contains': 'string' },
+    result: true,
+  },
   len: {
     input: 'string',
     remapper: { len: null },

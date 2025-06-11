@@ -737,6 +737,18 @@ export interface Remappers {
   'random.string': { choice: string; length: number };
 
   /**
+   * This remapper return true if the provided item is in the input array.
+   *
+   */
+  'array.contains': Remapper;
+
+  /**
+   * This remapper return true if the provided string is a substring of the input string.
+   *
+   */
+  'string.contains': string;
+
+  /**
    * This remapper returns the length of the input array or a string, this remapper
    * doesn't require array to be in the context unlike `{ array: length }` remapper.
    */

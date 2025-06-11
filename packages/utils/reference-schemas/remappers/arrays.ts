@@ -290,4 +290,11 @@ Say for example that each person has some pets. We could get an array of all pet
 ${schemaExample('array.flatten', { input: 'pretty', exclude: ['remapper'] })}
 `,
   },
+  'array.contains': {
+    $ref: '#/components/schemas/RemapperDefinition',
+    description: `
+Checks if the input array includes the provided item.
+${schemaExample('array.contains')}
+`,
+  },
 };

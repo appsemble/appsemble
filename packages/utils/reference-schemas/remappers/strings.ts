@@ -85,4 +85,11 @@ Uses RegEx to find a value in a string and replace it with a given value.
 ${schemaExample('string.replace')}
 `,
   },
+  'string.contains': {
+    type: 'string',
+    description: `
+Checks if the provided string is a substring of the input string.
+${schemaExample('string.contains')}
+`,
+  },
 };

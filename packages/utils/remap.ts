@@ -157,6 +157,16 @@ function isEqualArray(a: unknown[], b: unknown[]): boolean {
   return a.every((val, i) => val === b[i]);
 }
 
+function isEqualObject(a: Record<string, any>, b: Record<string, any>): boolean {
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  if (aKeys.length !== bKeys.length) {
+    return false;
+  }
+
+  return aKeys.every((key) => bKeys.includes(key) && equal(a[key], b[key]));
+}
+
 function isNumber(a: unknown): boolean {
   return a !== undefined && a != null && a !== '' && !Number.isNaN(Number(a));
 }
@@ -493,6 +503,19 @@ const mapperImplementations: MapperImplementations = {
       }),
     ) ?? [],
 
+  'array.contains'(mapper, input, context) {
+    if (!Array.isArray(input)) {
+      return false;
+    }
+    const remapped = remap(mapper, input, context);
+    if (isPlainObject(remapped)) {
+      return input.some((item) => isEqualObject(item, remapped ?? {}));
+    }
+    if (Array.isArray(remapped)) {
+      return input.some((item) => isEqualArray(item, remapped));
+    }
+    return input.includes(remapped);
+  },
   'array.unique'(mapper, input, context) {
     if (!Array.isArray(input)) {
       return input;
@@ -765,6 +788,13 @@ const mapperImplementations: MapperImplementations = {
       return String(input).toUpperCase();
     }
     return input;
+  },
+
+  'string.contains'(stringToCheck: string, input) {
+    if (!(typeof input === 'string')) {
+      return false;
+    }
+    return input.includes(stringToCheck);
   },
 
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
