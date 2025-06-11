@@ -1109,9 +1109,9 @@ export interface NumberField extends AbstractField, InlineField {
   /**
    * How to display the numeric field.
    *
-   * By default a `number` input field is displayed.
+   * @default number
    */
-  display?: 'slider';
+  display?: 'number' | 'slider';
 
   /**
    * If `display` is set to `slider`, these labels are displayed evenly spaced below the slider.
