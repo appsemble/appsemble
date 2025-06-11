@@ -1,8 +1,8 @@
 {
   "private": true,
   "dependencies": {
-    "@appsemble/cli": "0.32.2-test.9",
-    "@appsemble/webpack-config": "0.32.2-test.9",
+    "@appsemble/cli": "0.32.2",
+    "@appsemble/webpack-config": "0.32.2",
     "eslint": "^8.0.0",
     "eslint-config-remcohaszing": "^10.0.0",
     "eslint-formatter-gitlab": "^5.0.0",

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/image",
-  "version": "0.32.2-test.9",
+  "version": "0.32.2",
   "private": true,
   "description": "A block that can be used to display an image.",
   "homepage": "https://appsemble.app",
@@ -17,10 +17,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.32.2-test.9",
-    "@appsemble/preact-components": "0.32.2-test.9",
-    "@appsemble/sdk": "0.32.2-test.9",
-    "@appsemble/utils": "0.32.2-test.9",
+    "@appsemble/preact": "0.32.2",
+    "@appsemble/preact-components": "0.32.2",
+    "@appsemble/sdk": "0.32.2",
+    "@appsemble/utils": "0.32.2",
     "preact": "^10.0.0"
   }
 }

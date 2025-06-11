@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.2](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2)] - 2025-06-11
+
+### Added
+
+- App: Add new action **csv.parse** to parse csv files on the front-end.
+- Server: Allow notifying specific roles in `to` field of the **notify** action.
+- Utils: Add new remappers `array.contains` and `string.contains`.
+
+### Fixed
+
+- E2e: Fixed package not being set to public.
+- Server: App member patch should not over write existing properties.
+
 ## \[[0.32.2-test.9](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.9)] - 2025-05-30
 
 ### Changed
