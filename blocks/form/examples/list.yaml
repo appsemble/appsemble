@@ -1,0 +1,18 @@
+parameters:
+  fields:
+    - label: species
+      type: list
+      name: type
+      list:
+        - label: Snake
+          value: snake
+        - label: Cat
+          value: cat
+        - label: Dog
+          value: dog
+        - label: Rabbit
+          value: rabbit
+        - label: Unicorn
+          value: unicorn
+      requirements:
+        - required: true

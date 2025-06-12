@@ -144,7 +144,7 @@ describe('extractAppMessages', () => {
     });
   });
 
-  it('should extract condition action if', () => {
+  it('should extract condition action if then and else', () => {
     const result = extractAppMessages({
       name: 'Test app',
       defaultPage: '',
@@ -159,8 +159,8 @@ describe('extractAppMessages', () => {
                 onClick: {
                   type: 'condition',
                   if: { translate: 'ifCondition' },
-                  then: { type: 'noop' },
-                  else: { type: 'noop' },
+                  then: { type: 'message', body: { translate: 'thenCondition' } },
+                  else: { type: 'message', body: { translate: 'elseCondition' } },
                 },
               },
             },
@@ -169,7 +169,7 @@ describe('extractAppMessages', () => {
       ],
     });
     expect(result).toMatchObject({
-      messageIds: { ifCondition: '' },
+      messageIds: { ifCondition: '', thenCondition: '', elseCondition: '' },
       app: { 'pages.page': 'Page' },
     });
   });
