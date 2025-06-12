@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.3-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.32.3-test.0)] - 2025-06-12
+
+### Fixed
+
+- Block(`form`): List input not outputting the data in right format.
+
 ## \[[0.32.2](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2)] - 2025-06-11
 
 ### Added

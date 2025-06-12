@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.2
-appVersion: 0.32.2
+version: 0.32.3-test.0
+appVersion: 0.32.3-test.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,16 +32,8 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "App: Add new action csv.parse to parse csv files on the front-end."
-    - kind: added
-      description: "Server: Allow notifying specific roles in to field of the notify action."
-    - kind: added
-      description: "Utils: Add new remappers array.contains and string.contains."
     - kind: fixed
-      description: "E2e: Fixed package not being set to public."
-    - kind: fixed
-      description: "Server: App member patch should not over write existing properties."
+      description: "Block(form): List input not outputting the data in right format."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
