@@ -18,6 +18,7 @@ bootstrap(
   }) => {
     const [data, setData] = useState<Item[]>([]);
     const [groupedData, setGroupedData] = useState<Record<string, Item[]>>({});
+    const [leftoverData, setLeftoverData] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
@@ -149,13 +150,17 @@ bootstrap(
     useEffect(() => {
       if (data != null) {
         const newGroupedData: Record<string, Item[]> = {};
+        const newLeftoverData: Item[] = [];
         for (const entry of data) {
           const groupName = entry[groupBy];
           if (groupName && typeof groupName === 'string') {
             newGroupedData[groupName] = [...(newGroupedData[groupName] ?? []), entry];
+          } else {
+            newLeftoverData.push(entry);
           }
         }
         setGroupedData(newGroupedData);
+        setLeftoverData(newLeftoverData);
       }
     }, [data, groupBy]);
 
@@ -227,6 +232,7 @@ bootstrap(
     return groupBy ? (
       collapsible ? (
         <div>
+          {leftoverData.length ? renderItems(leftoverData) : null}
           {Object.entries(groupedData).length
             ? Object.entries(groupedData).map(([key, value], index) => (
                 <CollapsibleListComponent
@@ -242,12 +248,15 @@ bootstrap(
       ) : (
         <div>
           {Object.entries(groupedData).length ? (
-            Object.entries(groupedData).map(([key, value]) => (
-              <div key={key}>
-                <div className={styles.title}>{key}</div>
-                {renderItems(value)}
-              </div>
-            ))
+            <>
+              {leftoverData.length ? renderItems(leftoverData) : null}
+              {Object.entries(groupedData).map(([key, value]) => (
+                <div key={key}>
+                  <div className={styles.title}>{key}</div>
+                  {renderItems(value)}
+                </div>
+              ))}
+            </>
           ) : (
             <>
               <div className={styles.title}>{title}</div>

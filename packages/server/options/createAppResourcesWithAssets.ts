@@ -4,6 +4,7 @@ import {
   type CreateAppResourcesWithAssetsParams,
   getCompressedFileMeta,
   getResourceDefinition,
+  logger,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 import { Op } from 'sequelize';
@@ -37,6 +38,8 @@ export async function createAppResourcesWithAssets({
               .join(' and '),
             resourceDefinition,
           });
+          logger.verbose('Resource query');
+          logger.verbose(query);
 
           // Fetch the last position resource
           const lastPositionResource = await Resource.findOne({
@@ -50,7 +53,15 @@ export async function createAppResourcesWithAssets({
             },
             order: [['Position', 'DESC']],
           });
+          logger.verbose('Last resource');
+          logger.verbose(lastPositionResource);
 
+          logger.verbose('Next position');
+          logger.verbose(
+            positioning
+              ? Number.parseFloat(String(lastPositionResource?.Position ?? 0)) + 10
+              : null,
+          );
           // Return the resource object to be created
           return {
             AppId: app.id,
