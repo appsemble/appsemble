@@ -78,6 +78,8 @@ export function extractAppMessages(
       switch (action.type) {
         case 'condition':
           Object.assign(messages.messageIds, findMessageIds(action.if));
+          Object.assign(messages.messageIds, findMessageIds(action.then));
+          Object.assign(messages.messageIds, findMessageIds(action.else));
           break;
         case 'dialog':
           Object.assign(messages.messageIds, findMessageIds(action.title));
