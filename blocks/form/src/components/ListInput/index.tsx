@@ -124,12 +124,12 @@ export function ListInput({
           ? prevSelected.filter((selectedValue) => selectedValue !== val)
           : [...prevSelected, val];
 
-        onChange(event, newSelectedList);
+        onChange(field.name, newSelectedList);
 
         return newSelectedList;
       });
     },
-    [onChange],
+    [field.name, onChange],
   );
 
   useEffect(() => {
