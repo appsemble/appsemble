@@ -15,6 +15,7 @@ export function BulletPoints({
   field: {
     bulletType = 'none',
     bullets: { description, heading },
+    hide,
     label,
     value,
   },
@@ -25,7 +26,7 @@ export function BulletPoints({
 
   const remappedLabel = utils.remap(label, data);
   const remappedValue = utils.remap(value, data);
-  const hide = utils.remap(value, data);
+  const remappedHide = utils.remap(hide, data);
 
   useEffect(() => {
     if (listRef.current) {
@@ -33,7 +34,7 @@ export function BulletPoints({
     }
   }, [bulletType]);
 
-  return hide ? null : (
+  return remappedHide ? null : (
     <div className="appsemble-group">
       {isPreactChild(remappedLabel) ? <h5 className="title is-5">{remappedLabel}</h5> : null}
       {Array.isArray(remappedValue) ? (
