@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.3-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.32.3-test.1)] - 2025-06-13
+
+### Fixed
+
+- Block(`detail-viewer`): Fix hiding bullet points.
+- Block(`list`): Render leftover list items on top of grouped items.
+
 ## \[[0.32.3-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.32.3-test.0)] - 2025-06-12
 
 ### Fixed
