@@ -573,7 +573,7 @@ export async function reconcileDNS({ dryRun = true } = {}): Promise<void> {
   const appDomainCertificates = new Map<string, { sslKey: string; sslCertificate: string }>();
   for await (const { domain, sslCertificate, sslKey } of iterTable(App, {
     attributes: ['domain', 'sslKey', 'sslCertificate'],
-    where: { [Op.and]: [{ domain: { [Op.not]: undefined } }, { domain: { [Op.not]: '' } }] },
+    where: { domain: { [Op.not]: '' } },
   })) {
     appDomains.add(domain!);
     if (sslCertificate && sslKey) {
@@ -584,7 +584,7 @@ export async function reconcileDNS({ dryRun = true } = {}): Promise<void> {
   const appCollectionDomains = new Set<string>();
   for await (const { domain } of iterTable(AppCollection, {
     attributes: ['domain'],
-    where: { [Op.and]: [{ domain: { [Op.not]: undefined } }, { domain: { [Op.not]: '' } }] },
+    where: { domain: { [Op.not]: '' } },
   })) {
     appCollectionDomains.add(domain!);
     if (!domain!.startsWith('www.')) {
