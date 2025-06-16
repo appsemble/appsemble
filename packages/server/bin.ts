@@ -12,6 +12,7 @@ import * as fuzzMigrations from './commands/fuzzMigrations.js';
 import * as health from './commands/health.js';
 import * as migrate from './commands/migrate.js';
 import * as migrateAppDefinitions from './commands/migrateAppDefinitions.js';
+import * as reconcile from './commands/reconcileDNS.js';
 import * as restore from './commands/restore.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
@@ -53,6 +54,7 @@ const parser = yargs()
     configureSentry,
   ])
   .command(cleanup as CommandModule)
+  .command(reconcile as CommandModule)
   .command(cleanupResourcesAndAssets as CommandModule)
   .command(cleanupDemoAppMembers as CommandModule)
   .command(checkMigrations as CommandModule)

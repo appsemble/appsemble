@@ -47,6 +47,10 @@ export async function restoreDNS(): Promise<void> {
   await getImplementation()?.restoreDNS();
 }
 
+export async function reconcileDNS({ dryRun = true } = {}): Promise<void> {
+  await getImplementation()?.reconcileDNS({ dryRun });
+}
+
 /**
  * Get the SSL status for all given domain names.
  *
