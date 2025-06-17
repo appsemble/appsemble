@@ -79,7 +79,8 @@ export async function syncBlock({
         { transaction },
       );
 
-      const promises = block.files.map(async (filename) => {
+      // Use callbacks to defer firing the request and not overload the server
+      const promises = block.files.map((filename) => async () => {
         const { data: content, headers } = await axios.get(`${blockUrl}/asset`, {
           params: { filename },
           responseType: 'arraybuffer',
@@ -90,7 +91,7 @@ export async function syncBlock({
 
       if (block.languages) {
         promises.push(
-          ...block.languages.map(async (language) => {
+          ...block.languages.map((language) => async () => {
             const { data: messages } = await axios.get(`${blockUrl}/messages/${language}`);
             await BlockMessages.create({ BlockVersionId, language, messages }, { transaction });
           }),
@@ -99,7 +100,7 @@ export async function syncBlock({
 
       // Intentionally not using Promise.all here to not overload the server with requests
       for (const promise of promises) {
-        await promise;
+        await promise();
       }
     });
     logger.info(`Synchronized block from ${blockUrl}`);
