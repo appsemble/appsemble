@@ -1,9 +1,10 @@
 import { randomBytes } from 'node:crypto';
 
 import { assertKoaCondition, logger } from '@appsemble/node-utils';
+import { defaultLocale } from '@appsemble/utils';
 import { type Context } from 'koa';
 
-import { App, AppMember } from '../../../../models/index.js';
+import { App, AppMember, AppMessages } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
 
 export async function requestAppMemberPasswordReset(ctx: Context): Promise<void> {
@@ -15,6 +16,7 @@ export async function requestAppMemberPasswordReset(ctx: Context): Promise<void>
 
   const app = await App.findByPk(appId, {
     attributes: [
+      'id',
       'definition',
       'domain',
       'path',
@@ -40,6 +42,16 @@ export async function requestAppMemberPasswordReset(ctx: Context): Promise<void>
   });
 
   if (appMember) {
+    await app.reload({
+      include: {
+        model: AppMessages,
+        attributes: ['messages'],
+        required: false,
+        where: {
+          language: appMember.locale ?? defaultLocale,
+        },
+      },
+    });
     const resetKey = randomBytes(40).toString('hex');
 
     const url = new URL('/Edit-Password', getAppUrl(app));
@@ -56,7 +68,7 @@ export async function requestAppMemberPasswordReset(ctx: Context): Promise<void>
         locale: appMember.locale,
         values: {
           link: (text) => `[${text}](${url})`,
-          appName: app.definition.name,
+          appName: app.AppMessages?.[0]?.messages?.app?.name ?? app.definition.name,
           name: appMember.name || 'null',
         },
         app,
