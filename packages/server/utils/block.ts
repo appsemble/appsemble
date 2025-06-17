@@ -97,7 +97,10 @@ export async function syncBlock({
         );
       }
 
-      await Promise.all(promises);
+      // Intentionally not using Promise.all here to not overload the server with requests
+      for (const promise of promises) {
+        await promise;
+      }
     });
     logger.info(`Synchronized block from ${blockUrl}`);
     return block;
