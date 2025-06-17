@@ -68,10 +68,14 @@ export function GroupPage(): ReactNode {
 
   const onMemberInvited = useCallback(
     (newInvites: AppInvite[]) => {
-      setInvites([...invites, ...newInvites]);
+      if (app.skipGroupInvites) {
+        setMembers([...members, ...(newInvites as GroupMember[])]);
+      } else {
+        setInvites([...invites, ...newInvites]);
+      }
       addMembersModal.disable();
     },
-    [addMembersModal, invites, setInvites],
+    [addMembersModal, app.skipGroupInvites, invites, members, setInvites, setMembers],
   );
 
   const onEditMember = useCallback(

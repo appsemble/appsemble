@@ -88,6 +88,7 @@ export function SettingsPage(): ReactNode {
       showAppDefinition: app.showAppDefinition,
       displayAppMemberName: app.displayAppMemberName || false,
       displayInstallationPrompt: app.displayInstallationPrompt || false,
+      skipGroupInvites: app.skipGroupInvites || false,
     }),
     [app],
   );
@@ -105,6 +106,7 @@ export function SettingsPage(): ReactNode {
     form.set('showAppDefinition', String(values.showAppDefinition));
     form.set('displayAppMemberName', String(values.displayAppMemberName));
     form.set('displayInstallationPrompt', String(values.displayInstallationPrompt));
+    form.set('skipGroupInvites', String(values.skipGroupInvites));
     if (values.icon !== app.iconUrl) {
       form.set('icon', values.icon);
     }
@@ -213,6 +215,13 @@ export function SettingsPage(): ReactNode {
             help={<FormattedMessage {...messages.displayInstallationPromptDescription} />}
             label={<FormattedMessage {...messages.displayInstallationPromptLabel} />}
             name="displayInstallationPrompt"
+          />
+          <SimpleFormField
+            component={CheckboxField}
+            disabled={app.locked !== 'unlocked'}
+            help={<FormattedMessage {...messages.skipGroupInvitesDescription} />}
+            label={<FormattedMessage {...messages.skipGroupInvitesLabel} />}
+            name="skipGroupInvites"
           />
           <SimpleFormField
             addonLeft={

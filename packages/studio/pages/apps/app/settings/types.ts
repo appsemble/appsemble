@@ -15,4 +15,5 @@ export interface FormValues {
   showAppDefinition: boolean;
   displayAppMemberName: boolean;
   displayInstallationPrompt: boolean;
+  skipGroupInvites: boolean;
 }

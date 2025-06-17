@@ -66,6 +66,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         showAppDefinition,
         showAppsembleLogin,
         showAppsembleOAuth2Login,
+        skipGroupInvites,
         template,
         visibility,
         yaml,
@@ -232,6 +233,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (displayInstallationPrompt !== undefined) {
       result.displayInstallationPrompt = displayInstallationPrompt;
+    }
+
+    if (skipGroupInvites !== undefined) {
+      result.skipGroupInvites = skipGroupInvites;
     }
 
     if (showAppsembleOAuth2Login !== undefined) {

@@ -201,6 +201,10 @@ export class App extends Model {
   @Column(DataType.STRING)
   registry?: string;
 
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  skipGroupInvites!: boolean;
+
   @UpdatedAt
   updated!: Date;
 
@@ -348,6 +352,7 @@ export class App extends Model {
       demoMode: this.demoMode,
       controllerCode: this.controllerCode,
       controllerImplementations: this.controllerImplementations,
+      skipGroupInvites: this.skipGroupInvites,
     };
 
     return omit(result, omittedValues) as AppType;

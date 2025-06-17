@@ -2558,6 +2558,13 @@ export interface App {
    * Whether the app should be used in demo mode.
    */
   demoMode: boolean;
+
+  /**
+   * Whether to skip sending group invite emails when adding group members.
+   *
+   * If set to true, group members are added directly to the group.
+   */
+  skipGroupInvites?: boolean;
 }
 
 /**

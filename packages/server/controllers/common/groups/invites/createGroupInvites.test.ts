@@ -409,4 +409,103 @@ describe('createGroupInvites', () => {
       },
     });
   });
+
+  it('should throw for non existent app members if skipGroupInvites is set in the app', async () => {
+    await app.update({
+      skipGroupInvites: true,
+      definition: {
+        ...app.definition,
+        defaultLanguage: 'nl',
+        security: {
+          ...app.definition.security,
+          roles: {
+            GroupMember: {
+              permissions: ['$group:member:invite'],
+            },
+          },
+          groups: {
+            ...app.definition.security,
+            join: 'invite',
+            invite: ['GroupMember'],
+          },
+        },
+      },
+    });
+
+    await appMember.update({ role: PredefinedAppRole.GroupsManager });
+
+    vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
+    const group = await Group.create({ name: 'A', AppId: app.id });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'Manager' });
+    const response = await request.post(`/api/groups/${group.id}/invites`, [
+      {
+        email: 'newuser@example.com',
+        role: 'GroupMember',
+      },
+    ]);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "newuser@example.com is not a member of the app",
+        "statusCode": 400,
+      }
+    `);
+
+    expect(server.context.mailer.sendTranslatedEmail).not.toHaveBeenCalled();
+  });
+
+  it('should skip sending emails if skipGroupInvites is set in the app', async () => {
+    await app.update({
+      skipGroupInvites: true,
+      definition: {
+        ...app.definition,
+        defaultLanguage: 'nl',
+        security: {
+          ...app.definition.security,
+          roles: {
+            GroupMember: {
+              permissions: ['$group:member:invite'],
+            },
+          },
+          groups: {
+            ...app.definition.security,
+            join: 'invite',
+            invite: ['GroupMember'],
+          },
+        },
+      },
+    });
+
+    await AppMember.create({
+      email: 'existent-member@example.com',
+      AppId: app.id,
+      role: 'Reader',
+    });
+
+    await appMember.update({ role: PredefinedAppRole.GroupsManager });
+
+    vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
+    const group = await Group.create({ name: 'A', AppId: app.id });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'Manager' });
+    const response = await request.post(`/api/groups/${group.id}/invites`, [
+      {
+        email: 'existent-member@example.com',
+        role: 'GroupMember',
+      },
+    ]);
+
+    expect(response.data).toStrictEqual([
+      expect.objectContaining({
+        email: 'existent-member@example.com',
+        role: 'GroupMember',
+        id: expect.any(String),
+      }),
+    ]);
+
+    expect(server.context.mailer.sendTranslatedEmail).not.toHaveBeenCalled();
+  });
 });
