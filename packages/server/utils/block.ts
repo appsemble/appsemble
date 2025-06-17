@@ -134,7 +134,11 @@ export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<Blo
     const unknownBlocks = uniqueBlocks.filter(
       (block) => !knownIdentifiers.has(`@${block.OrganizationId}/${block.name}@${block.version}`),
     );
-    const syncedBlocks = await Promise.all(unknownBlocks.map(syncBlock));
+    // Intentionally not using Promise.all here to not overload the server with requests
+    const syncedBlocks: (BlockManifest | undefined)[] = [];
+    for (const unknownBlock of unknownBlocks) {
+      syncedBlocks.push(await syncBlock(unknownBlock));
+    }
     result.push(...syncedBlocks.filter((block) => block !== undefined));
   }
 
