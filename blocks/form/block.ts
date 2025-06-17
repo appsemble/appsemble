@@ -948,6 +948,13 @@ export interface AbstractSelectionField extends AbstractField, InlineField {
    * @default false
    */
   allowRemovalFromModal?: boolean;
+
+  /**
+   * An action that is fired when a choice is removed.
+   *
+   * @format action
+   */
+  onRemoveChoice?: string;
 }
 
 export interface EventSelectionField extends AbstractSelectionField {

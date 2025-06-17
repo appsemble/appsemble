@@ -35,7 +35,7 @@ export function SelectionInput({
   onChange,
   readOnly,
 }: SelectionInputProps): VNode {
-  const { events, utils } = useBlock();
+  const { actions, events, utils } = useBlock();
   const {
     allowRemovalFromModal = false,
     disableSearch = false,
@@ -92,6 +92,9 @@ export function SelectionInput({
   };
 
   const deselectOption = (id: number | string): void => {
+    if (field.onRemoveChoice) {
+      actions[field.onRemoveChoice](selectedOptions.find((option) => option.id === id));
+    }
     onChange(
       name,
       selectedOptions.filter((selectedOption) => selectedOption.id !== id),

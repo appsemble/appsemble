@@ -629,6 +629,9 @@ const mapperImplementations: MapperImplementations = {
   prop(prop, obj, context) {
     let result: any = obj;
 
+    if (prop === 'itemsToAdd') {
+      console.info(obj);
+    }
     if (result == null) {
       return result;
     }
