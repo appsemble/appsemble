@@ -111,6 +111,7 @@ describe('getAppById', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
       }
@@ -197,6 +198,7 @@ describe('getAppById', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
       }
@@ -252,6 +254,7 @@ describe('getAppById', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
       }
@@ -310,6 +313,7 @@ describe('getAppById', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
       }
@@ -364,6 +368,7 @@ describe('getAppById', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
       }
@@ -418,6 +423,7 @@ describe('getAppById', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -475,6 +481,7 @@ describe('getAppById', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App

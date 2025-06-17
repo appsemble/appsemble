@@ -179,6 +179,7 @@ describe('app', () => {
           "showAppDefinition": true,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "template": false,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -354,6 +355,7 @@ describe('app', () => {
           "showAppDefinition": true,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "template": false,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -523,6 +525,7 @@ describe('app', () => {
           "showAppDefinition": true,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "template": true,
           "visibility": "public",
           "yaml": "name: Test App
@@ -693,6 +696,7 @@ describe('app', () => {
           "showAppDefinition": true,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "template": false,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -1048,6 +1052,7 @@ describe('app', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "template": false,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -1216,6 +1221,7 @@ describe('app', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "template": false,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -1386,6 +1392,7 @@ describe('app', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "template": true,
           "visibility": "public",
           "yaml": "name: Test App
@@ -1558,6 +1565,7 @@ describe('app', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "template": false,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -1863,6 +1871,7 @@ describe('app', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "template": false,
           "visibility": "public",
           "yaml": "name: Test App
@@ -1941,6 +1950,7 @@ describe('app', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "template": false,
           "visibility": "public",
           "yaml": "name: Test App
@@ -2015,6 +2025,7 @@ describe('app', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "sslCertificate": null,
           "sslKey": null,
           "template": false,
@@ -2103,6 +2114,7 @@ describe('app', () => {
           "showAppDefinition": true,
           "showAppsembleLogin": true,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "sslCertificate": null,
           "sslKey": null,
           "template": true,

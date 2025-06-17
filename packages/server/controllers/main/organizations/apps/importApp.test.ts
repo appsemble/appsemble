@@ -345,6 +345,7 @@ describe('importApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -468,6 +469,7 @@ describe('importApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
