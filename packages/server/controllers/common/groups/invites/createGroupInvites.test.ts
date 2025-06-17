@@ -480,7 +480,7 @@ describe('createGroupInvites', () => {
       },
     });
 
-    await AppMember.create({
+    const am = await AppMember.create({
       email: 'existent-member@example.com',
       AppId: app.id,
       role: 'Reader',
@@ -505,6 +505,14 @@ describe('createGroupInvites', () => {
         id: expect.any(String),
       }),
     ]);
+
+    expect(await GroupMember.findOne({ where: { id: response.data[0].id } })).toStrictEqual(
+      expect.objectContaining({
+        GroupId: 1,
+        AppMemberId: am.id,
+        role: 'GroupMember',
+      }),
+    );
 
     expect(server.context.mailer.sendTranslatedEmail).not.toHaveBeenCalled();
   });
