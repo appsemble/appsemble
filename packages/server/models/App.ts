@@ -201,6 +201,7 @@ export class App extends Model {
   @Column(DataType.STRING)
   registry?: string;
 
+  @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
   skipGroupInvites!: boolean;
