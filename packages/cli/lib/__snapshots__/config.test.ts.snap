@@ -2821,6 +2821,11 @@ Fields are combined in order if set to true.",
             "description": "The name used when storing this field.",
             "type": "string",
           },
+          "onRemoveChoice": {
+            "description": "An action that is fired when a choice is removed.",
+            "format": "action",
+            "type": "string",
+          },
           "placeholder": {
             "description": "The placeholder to display when the field is empty.",
             "format": "remapper",
@@ -4616,6 +4621,11 @@ Fields are combined in order if set to true.",
           },
           "name": {
             "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "onRemoveChoice": {
+            "description": "An action that is fired when a choice is removed.",
+            "format": "action",
             "type": "string",
           },
           "placeholder": {
