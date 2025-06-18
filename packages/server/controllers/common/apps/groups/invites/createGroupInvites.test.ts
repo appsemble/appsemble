@@ -439,9 +439,10 @@ describe('createGroupInvites', () => {
     await appMember.update({ role: PredefinedAppRole.GroupsManager });
 
     vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
+    const { Group, GroupMember } = await getAppDB(app.id);
     const group = await Group.create({ name: 'A', AppId: app.id });
     await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'Manager' });
-    const response = await request.post(`/api/groups/${group.id}/invites`, [
+    const response = await request.post(`/api/apps/${app.id}/groups/${group.id}/invites`, [
       {
         email: 'newuser@example.com',
         role: 'GroupMember',
@@ -483,6 +484,7 @@ describe('createGroupInvites', () => {
         },
       },
     });
+    const { AppMember, Group, GroupMember } = await getAppDB(app.id);
 
     const am = await AppMember.create({
       email: 'existent-member@example.com',
@@ -495,7 +497,7 @@ describe('createGroupInvites', () => {
     vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
     const group = await Group.create({ name: 'A', AppId: app.id });
     await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'Manager' });
-    const response = await request.post(`/api/groups/${group.id}/invites`, [
+    const response = await request.post(`/api/apps/${app.id}/groups/${group.id}/invites`, [
       {
         email: 'existent-member@example.com',
         role: 'GroupMember',
