@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.3](https://gitlab.com/appsemble/appsemble/-/releases/0.32.3)] - 2025-06-18
+
+### Added
+
+- Block(`form`): Add action support in the selection input field for removing existing items.
+- Server: Support adding group members directly without sending a confirmation email.
+
+### Fixed
+
+- Server: Translate app name in reset password emails.
+
 ## \[[0.32.3-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.32.3-test.1)] - 2025-06-13
 
 ### Fixed

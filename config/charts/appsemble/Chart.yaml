@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.3-test.1
-appVersion: 0.32.3-test.1
+version: 0.32.3
+appVersion: 0.32.3
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,10 +32,14 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "Block(form): Add action support in the selection input field for
+        removing existing items."
+    - kind: added
+      description: "Server: Support adding group members directly without sending a
+        confirmation email."
     - kind: fixed
-      description: "Block(detail-viewer): Fix hiding bullet points."
-    - kind: fixed
-      description: "Block(list): Render leftover list items on top of grouped items."
+      description: "Server: Translate app name in reset password emails."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
