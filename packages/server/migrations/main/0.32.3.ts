@@ -34,7 +34,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
 /**
  * Summary:
- * - Remove database config columns to `App` table
+ * - Remove database config columns from `App` table
  */
 
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
