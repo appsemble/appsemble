@@ -105,10 +105,7 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
   const userMap = new Map(auths.map((auth) => [auth.email, auth.User]));
 
   if (app.skipGroupInvites) {
-    const appMembers = await AppMember.findAll({
-      where: { AppId: app.id },
-      attributes: ['id', 'email'],
-    });
+    const appMembers = await AppMember.findAll({ attributes: ['id', 'email'] });
     const appMemberEmails = new Set(appMembers.flatMap((member) => member.email));
 
     for (const newInvite of newInvites) {
