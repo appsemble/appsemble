@@ -142,6 +142,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "private",
         "yaml": "
@@ -445,6 +446,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -597,6 +599,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -657,6 +660,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -717,6 +721,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -782,6 +787,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1444,6 +1450,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1717,6 +1724,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1766,6 +1774,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1827,6 +1836,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1875,6 +1885,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1921,6 +1932,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App

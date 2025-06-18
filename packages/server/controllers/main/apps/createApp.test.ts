@@ -137,6 +137,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "
@@ -308,6 +309,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "
@@ -512,6 +514,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "
@@ -578,6 +581,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "
@@ -644,6 +648,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "
@@ -710,6 +715,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "
@@ -782,6 +788,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "
@@ -868,6 +875,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "
@@ -1459,6 +1467,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "
@@ -1550,6 +1559,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "
@@ -1636,6 +1646,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "skipGroupInvites": false,
         "template": false,
         "visibility": "unlisted",
         "yaml": "
@@ -2179,6 +2190,7 @@ describe('createApp', () => {
           "showAppDefinition": true,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "skipGroupInvites": false,
           "template": false,
           "visibility": "unlisted",
           "yaml": "

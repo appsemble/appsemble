@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaCondition } from '@appsemble/node-utils';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { AppPermission } from '@appsemble/types';
 import { getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -30,7 +30,7 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
   assertKoaCondition(group != null, ctx, 400, `Group ${groupId} does not exist`);
 
   const app = await App.findByPk(group.AppId, {
-    attributes: ['id', 'definition', 'path', 'OrganizationId', 'domain'],
+    attributes: ['id', 'definition', 'path', 'OrganizationId', 'domain', 'skipGroupInvites'],
   });
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
@@ -107,6 +107,35 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
   });
 
   const userMap = new Map(auths.map((auth) => [auth.email, auth.User]));
+
+  if (app.skipGroupInvites) {
+    const appMembers = await AppMember.findAll({
+      where: { AppId: app.id },
+      attributes: ['id', 'email'],
+    });
+    const appMemberEmails = new Set(appMembers.flatMap((member) => member.email));
+
+    for (const newInvite of newInvites) {
+      if (!appMemberEmails.has(newInvite.email)) {
+        throwKoaError(ctx, 400, `${newInvite.email} is not a member of the app`);
+      }
+    }
+
+    const results: { id: string; email: string; role: string }[] = [];
+    for (const newInvite of newInvites) {
+      const appMember = appMembers.find((member) => member.email === newInvite.email);
+      const created = await GroupMember.create({
+        AppMemberId: appMember!.id,
+        GroupId: groupId,
+        role: newInvite.role,
+      });
+      results.push({ id: created.id, email: appMember!.email, role: newInvite.role });
+    }
+
+    ctx.body = results;
+    ctx.status = 200;
+    return;
+  }
 
   const result = await GroupInvite.bulkCreate(
     pendingInvites.map((invite) => {

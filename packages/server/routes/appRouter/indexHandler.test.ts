@@ -302,6 +302,7 @@ describe('indexHandler', () => {
             "showAppDefinition": false,
             "showAppsembleLogin": false,
             "showAppsembleOAuth2Login": true,
+            "skipGroupInvites": false,
             "template": false,
             "visibility": "unlisted",
             "yaml": "name: Test App

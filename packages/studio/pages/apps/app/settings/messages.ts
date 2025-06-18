@@ -240,4 +240,12 @@ export const messages = defineMessages({
     id: 'studio.L5Cie6',
     defaultMessage: 'Whether to display installation prompts to the users of the app',
   },
+  skipGroupInvitesLabel: {
+    id: 'studio.vIs3fn',
+    defaultMessage: 'Skip Group Invites',
+  },
+  skipGroupInvitesDescription: {
+    id: 'studio.UGq/Er',
+    defaultMessage: 'Whether to skip sending group invite emails and add group members directly',
+  },
 });
