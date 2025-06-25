@@ -378,17 +378,18 @@ pages:
       - type: list
         version: 0.33.0
         parameters:
+          itemDefinition:
+            header:
+              title: { prop: title }
+            footer:
+              dropdown:
+                icon: ellipsis-vertical
+                options:
+                  - label: Edit
+                    onClick: onEdit
+                  - label: Delete
+                    onClick: onDelete
           appendData: true
-          fields:
-            - value: { prop: title }
-              label: { translate: title }
-          dropdown:
-            icon: ellipsis-vertical
-            options:
-              - label: Edit
-                onClick: onEdit
-              - label: Delete
-                onClick: onDelete
         events:
           listen:
             data: notes

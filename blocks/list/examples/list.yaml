@@ -1,13 +1,15 @@
 parameters:
-  header: { prop: name }
-  icon: fontawesomeIcon
-  image:
-    file: photos
-    rounded: true
-    alignment: header
-    size: 64
-  fields:
-    - value: { prop: value }
+  itemDefinition:
+    header:
+      icon: fontawesomeIcon
+      title: { prop: name }
+    content:
+      image:
+        file: photos
+        rounded: true
+        size: 64
+      fields:
+        - value: { prop: value }
 actions:
   onClick:
     type: link
