@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/data-notifier",
-  "version": "0.32.3",
+  "version": "0.33.0",
   "private": true,
   "description": "A block that notifies the user if new data is available.",
   "homepage": "https://appsemble.app",
@@ -17,7 +17,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.32.3",
+    "@appsemble/sdk": "0.33.0",
     "fast-deep-equal": "^3.0.0",
     "mini-jsx": "^4.0.0"
   }

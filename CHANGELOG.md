@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.33.0](https://gitlab.com/appsemble/appsemble/-/releases/0.33.0)] - 2025-06-25
+
+### Added
+
+- Preact-components: Support icon class name in the dropdown component.
+- Studio: Allow a training chapter to be blocked by multiple chapters.
+
+### Changed
+
+- Block(`list`): Support defining header, content and footer separately. Mutually exclude images and
+  icons, buttons and dropdowns in headers and footers.
+- Types: Allow array of strings in `TrainingChapter` and `TrainingChapterProperties` types'
+  `blockedBy` properties.
+
 ## \[[0.32.3](https://gitlab.com/appsemble/appsemble/-/releases/0.32.3)] - 2025-06-18
 
 ### Added
