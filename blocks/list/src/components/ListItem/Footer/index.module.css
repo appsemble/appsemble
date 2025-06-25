@@ -3,8 +3,7 @@
 }
 
 .footerContent {
+  color: hsl(0deg 0% 0%);
   font-size: 14px !important;
-  color: #000;
-  opacity: 50%;
+  opacity: 0.5;
 }
-
