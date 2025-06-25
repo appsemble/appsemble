@@ -1,4 +1,4 @@
-import { Icon } from '@appsemble/react-components';
+import { Icon } from '@appsemble/preact-components';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type ComponentChild, type ComponentChildren, type VNode } from 'preact';
