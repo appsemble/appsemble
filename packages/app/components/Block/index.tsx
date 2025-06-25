@@ -65,6 +65,8 @@ interface BlockProps {
   readonly prefixIndex: string;
 }
 
+const MOBILE_BREAKPOINT = 768;
+
 /**
  * Render a block on a page.
  *
@@ -114,6 +116,18 @@ export function Block({
 
   const blockName = normalizeBlockName(block.type);
   const manifest = blockManifests.find((m) => m.name === blockName && m.version === block.version);
+
+  const [isMobile, setIsMobile] = useState<boolean | undefined>();
+
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const onChange = (): void => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    mql.addEventListener('change', onChange);
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
 
   useEffect(
     () => () => {
@@ -196,6 +210,7 @@ export function Block({
       menu(items, header) {
         setBlockMenu({ items, header, path: prefix });
       },
+      isMobile: Boolean(isMobile),
     };
 
     (async () => {
@@ -270,6 +285,7 @@ export function Block({
     setAppMemberInfo,
     appMemberInfoRef,
     appMemberSelectedGroup,
+    isMobile,
   ]);
 
   // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)

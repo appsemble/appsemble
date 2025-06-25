@@ -1,0 +1,10 @@
+.footerWrapper {
+  width: 100%;
+}
+
+.footerContent {
+  font-size: 14px !important;
+  color: #000;
+  opacity: 50%;
+}
+

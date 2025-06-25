@@ -1,4 +1,5 @@
 import { useBlock } from '@appsemble/preact';
+import { type BulmaSize } from '@appsemble/types';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
@@ -22,7 +23,7 @@ interface IconProps {
   /**
    * The size modifier for the container of the icon.
    */
-  readonly size?: 'large' | 'medium' | 'small';
+  readonly size?: BulmaSize;
 }
 
 const iconSizeMap: { medium: 'lg'; large: '2x' } = { medium: 'lg', large: '2x' };
