@@ -5120,16 +5120,6 @@ Commonly used with a filter.",
       "Button": {
         "additionalProperties": false,
         "properties": {
-          "alignment": {
-            "default": "top-right",
-            "description": "How the button should be aligned.",
-            "enum": [
-              "bottom-right",
-              "field",
-              "top-right",
-            ],
-            "type": "string",
-          },
           "color": {
             "$ref": "#/definitions/BulmaColor",
             "default": "primary",
@@ -5148,7 +5138,9 @@ By default buttons only take up as much space as needed.",
             "type": "boolean",
           },
           "icon": {
-            "description": "An optional FontAwesome icon to display inside of the button.",
+            "description": "An FontAwesome icon to display inside of the button.
+
+This is the only thing visible on mobile so it's required",
             "format": "fontawesome",
             "type": "string",
           },
@@ -5189,20 +5181,74 @@ Describe what the button does. This helps with accessibility for people using sc
             "format": "remapper",
           },
         },
+        "required": [
+          "icon",
+        ],
+        "type": "object",
+      },
+      "Content": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/ContentWithFields",
+          },
+          {
+            "$ref": "#/definitions/ContentWithImage",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "fields": {
+                "description": "A list of fields to display between the header and the footer.",
+                "items": {
+                  "$ref": "#/definitions/Field",
+                },
+                "type": "array",
+              },
+              "image": {
+                "$ref": "#/definitions/Image",
+                "description": "The image to be shown on the left of the fields in the list item content.",
+              },
+            },
+            "required": [
+              "fields",
+              "image",
+            ],
+            "type": "object",
+          },
+        ],
+      },
+      "ContentWithFields": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "A list of fields to display between the header and the footer.",
+            "items": {
+              "$ref": "#/definitions/Field",
+            },
+            "type": "array",
+          },
+        },
+        "required": [
+          "fields",
+        ],
+        "type": "object",
+      },
+      "ContentWithImage": {
+        "additionalProperties": false,
+        "properties": {
+          "image": {
+            "$ref": "#/definitions/Image",
+            "description": "The image to be shown on the left of the fields in the list item content.",
+          },
+        },
+        "required": [
+          "image",
+        ],
         "type": "object",
       },
       "Dropdown": {
         "additionalProperties": false,
         "properties": {
-          "alignment": {
-            "default": "bottom-right",
-            "description": "How the dropdown should be aligned.",
-            "enum": [
-              "bottom-right",
-              "top-right",
-            ],
-            "type": "string",
-          },
           "icon": {
             "description": "The icon to show in the dropdown button.",
             "format": "fontawesome",
@@ -5275,18 +5321,873 @@ No value will be rendered if undefined.",
         },
         "type": "object",
       },
+      "Footer": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/FooterWithButton",
+          },
+          {
+            "$ref": "#/definitions/FooterWithContent",
+          },
+          {
+            "$ref": "#/definitions/FooterWithDropdown",
+          },
+          {
+            "$ref": "#/definitions/FooterWithToggleButton",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "button": {
+                "$ref": "#/definitions/Button",
+                "description": "The definition of the contents and styling of the button in the footer.
+
+Cannot be set in combination with toggleButton or dropdown.",
+              },
+              "content": {
+                "description": "The content to be shown in the footer",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "button",
+              "content",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "content": {
+                "description": "The content to be shown in the footer",
+                "format": "remapper",
+              },
+              "dropdown": {
+                "$ref": "#/definitions/Dropdown",
+                "description": "The definition of the contents and styling of the dropdown in the footer.
+
+Cannot be set in combination with button or toggleButton.",
+              },
+            },
+            "required": [
+              "content",
+              "dropdown",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "content": {
+                "description": "The content to be shown in the footer",
+                "format": "remapper",
+              },
+              "toggleButton": {
+                "$ref": "#/definitions/ToggleButton",
+                "description": "The definition of the contents and styling of the toggle button in the footer.
+
+Cannot be set in combination with button or dropdown.",
+              },
+            },
+            "required": [
+              "content",
+              "toggleButton",
+            ],
+            "type": "object",
+          },
+        ],
+      },
+      "FooterWithButton": {
+        "additionalProperties": false,
+        "properties": {
+          "button": {
+            "$ref": "#/definitions/Button",
+            "description": "The definition of the contents and styling of the button in the footer.
+
+Cannot be set in combination with toggleButton or dropdown.",
+          },
+        },
+        "required": [
+          "button",
+        ],
+        "type": "object",
+      },
+      "FooterWithContent": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "description": "The content to be shown in the footer",
+            "format": "remapper",
+          },
+        },
+        "required": [
+          "content",
+        ],
+        "type": "object",
+      },
+      "FooterWithDropdown": {
+        "additionalProperties": false,
+        "properties": {
+          "dropdown": {
+            "$ref": "#/definitions/Dropdown",
+            "description": "The definition of the contents and styling of the dropdown in the footer.
+
+Cannot be set in combination with button or toggleButton.",
+          },
+        },
+        "required": [
+          "dropdown",
+        ],
+        "type": "object",
+      },
+      "FooterWithToggleButton": {
+        "additionalProperties": false,
+        "properties": {
+          "toggleButton": {
+            "$ref": "#/definitions/ToggleButton",
+            "description": "The definition of the contents and styling of the toggle button in the footer.
+
+Cannot be set in combination with button or dropdown.",
+          },
+        },
+        "required": [
+          "toggleButton",
+        ],
+        "type": "object",
+      },
+      "Header": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/HeaderWithAssetIcon",
+          },
+          {
+            "$ref": "#/definitions/HeaderWithButton",
+          },
+          {
+            "$ref": "#/definitions/HeaderWithDropdown",
+          },
+          {
+            "$ref": "#/definitions/HeaderWithIcon",
+          },
+          {
+            "$ref": "#/definitions/HeaderWithImage",
+          },
+          {
+            "$ref": "#/definitions/HeaderWithTitles",
+          },
+          {
+            "$ref": "#/definitions/HeaderWithToggleButton",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "button": {
+                "$ref": "#/definitions/Button",
+                "description": "The definition of the contents and styling of the button in the header.
+
+Cannot be set in combination with toggleButton or dropdown.",
+              },
+              "showAssetIcon": {
+                "const": true,
+                "description": "If this is set, the list header will try to fetch an asset with id equal to the header title.
+
+If such an asset is found, an icon with its mimetype will be shown in the header before the titles.",
+                "type": "boolean",
+              },
+            },
+            "required": [
+              "button",
+              "showAssetIcon",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "button": {
+                "$ref": "#/definitions/Button",
+                "description": "The definition of the contents and styling of the button in the header.
+
+Cannot be set in combination with toggleButton or dropdown.",
+              },
+              "showAssetIcon": {
+                "const": true,
+                "description": "If this is set, the list header will try to fetch an asset with id equal to the header title.
+
+If such an asset is found, an icon with its mimetype will be shown in the header before the titles.",
+                "type": "boolean",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "button",
+              "showAssetIcon",
+              "title",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "dropdown": {
+                "$ref": "#/definitions/Dropdown",
+                "description": "The definition of the contents and styling of the dropdown in the header.
+
+Cannot be set in combination with button or toggleButton.",
+              },
+              "showAssetIcon": {
+                "const": true,
+                "description": "If this is set, the list header will try to fetch an asset with id equal to the header title.
+
+If such an asset is found, an icon with its mimetype will be shown in the header before the titles.",
+                "type": "boolean",
+              },
+            },
+            "required": [
+              "dropdown",
+              "showAssetIcon",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "dropdown": {
+                "$ref": "#/definitions/Dropdown",
+                "description": "The definition of the contents and styling of the dropdown in the header.
+
+Cannot be set in combination with button or toggleButton.",
+              },
+              "showAssetIcon": {
+                "const": true,
+                "description": "If this is set, the list header will try to fetch an asset with id equal to the header title.
+
+If such an asset is found, an icon with its mimetype will be shown in the header before the titles.",
+                "type": "boolean",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "dropdown",
+              "showAssetIcon",
+              "title",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "showAssetIcon": {
+                "const": true,
+                "description": "If this is set, the list header will try to fetch an asset with id equal to the header title.
+
+If such an asset is found, an icon with its mimetype will be shown in the header before the titles.",
+                "type": "boolean",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "showAssetIcon",
+              "title",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "button": {
+                "$ref": "#/definitions/Button",
+                "description": "The definition of the contents and styling of the button in the header.
+
+Cannot be set in combination with toggleButton or dropdown.",
+              },
+              "icon": {
+                "description": "The icon that is shown in the header before the titles.
+
+Cannot be set in combination with image.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+            },
+            "required": [
+              "button",
+              "icon",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "button": {
+                "$ref": "#/definitions/Button",
+                "description": "The definition of the contents and styling of the button in the header.
+
+Cannot be set in combination with toggleButton or dropdown.",
+              },
+              "icon": {
+                "description": "The icon that is shown in the header before the titles.
+
+Cannot be set in combination with image.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "button",
+              "icon",
+              "title",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "button": {
+                "$ref": "#/definitions/Button",
+                "description": "The definition of the contents and styling of the button in the header.
+
+Cannot be set in combination with toggleButton or dropdown.",
+              },
+              "image": {
+                "$ref": "#/definitions/Image",
+                "description": "The image that is shown in the header before the titles.
+
+This can be either a full image path or an asset id.
+
+Cannot be set in combination with icon.",
+              },
+            },
+            "required": [
+              "button",
+              "image",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "button": {
+                "$ref": "#/definitions/Button",
+                "description": "The definition of the contents and styling of the button in the header.
+
+Cannot be set in combination with toggleButton or dropdown.",
+              },
+              "image": {
+                "$ref": "#/definitions/Image",
+                "description": "The image that is shown in the header before the titles.
+
+This can be either a full image path or an asset id.
+
+Cannot be set in combination with icon.",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "button",
+              "image",
+              "title",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "button": {
+                "$ref": "#/definitions/Button",
+                "description": "The definition of the contents and styling of the button in the header.
+
+Cannot be set in combination with toggleButton or dropdown.",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "button",
+              "title",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "dropdown": {
+                "$ref": "#/definitions/Dropdown",
+                "description": "The definition of the contents and styling of the dropdown in the header.
+
+Cannot be set in combination with button or toggleButton.",
+              },
+              "icon": {
+                "description": "The icon that is shown in the header before the titles.
+
+Cannot be set in combination with image.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+            },
+            "required": [
+              "dropdown",
+              "icon",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "dropdown": {
+                "$ref": "#/definitions/Dropdown",
+                "description": "The definition of the contents and styling of the dropdown in the header.
+
+Cannot be set in combination with button or toggleButton.",
+              },
+              "icon": {
+                "description": "The icon that is shown in the header before the titles.
+
+Cannot be set in combination with image.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "dropdown",
+              "icon",
+              "title",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "dropdown": {
+                "$ref": "#/definitions/Dropdown",
+                "description": "The definition of the contents and styling of the dropdown in the header.
+
+Cannot be set in combination with button or toggleButton.",
+              },
+              "image": {
+                "$ref": "#/definitions/Image",
+                "description": "The image that is shown in the header before the titles.
+
+This can be either a full image path or an asset id.
+
+Cannot be set in combination with icon.",
+              },
+            },
+            "required": [
+              "dropdown",
+              "image",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "dropdown": {
+                "$ref": "#/definitions/Dropdown",
+                "description": "The definition of the contents and styling of the dropdown in the header.
+
+Cannot be set in combination with button or toggleButton.",
+              },
+              "image": {
+                "$ref": "#/definitions/Image",
+                "description": "The image that is shown in the header before the titles.
+
+This can be either a full image path or an asset id.
+
+Cannot be set in combination with icon.",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "dropdown",
+              "image",
+              "title",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "dropdown": {
+                "$ref": "#/definitions/Dropdown",
+                "description": "The definition of the contents and styling of the dropdown in the header.
+
+Cannot be set in combination with button or toggleButton.",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "dropdown",
+              "title",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "icon": {
+                "description": "The icon that is shown in the header before the titles.
+
+Cannot be set in combination with image.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "icon",
+              "title",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "icon": {
+                "description": "The icon that is shown in the header before the titles.
+
+Cannot be set in combination with image.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+              "toggleButton": {
+                "$ref": "#/definitions/ToggleButton",
+                "description": "The definition of the contents and styling of the toggle button in the header.
+
+Cannot be set in combination with button or dropdown.",
+              },
+            },
+            "required": [
+              "icon",
+              "title",
+              "toggleButton",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "icon": {
+                "description": "The icon that is shown in the header before the titles.
+
+Cannot be set in combination with image.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "toggleButton": {
+                "$ref": "#/definitions/ToggleButton",
+                "description": "The definition of the contents and styling of the toggle button in the header.
+
+Cannot be set in combination with button or dropdown.",
+              },
+            },
+            "required": [
+              "icon",
+              "toggleButton",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "image": {
+                "$ref": "#/definitions/Image",
+                "description": "The image that is shown in the header before the titles.
+
+This can be either a full image path or an asset id.
+
+Cannot be set in combination with icon.",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "image",
+              "title",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "image": {
+                "$ref": "#/definitions/Image",
+                "description": "The image that is shown in the header before the titles.
+
+This can be either a full image path or an asset id.
+
+Cannot be set in combination with icon.",
+              },
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+              "toggleButton": {
+                "$ref": "#/definitions/ToggleButton",
+                "description": "The definition of the contents and styling of the toggle button in the header.
+
+Cannot be set in combination with button or dropdown.",
+              },
+            },
+            "required": [
+              "image",
+              "title",
+              "toggleButton",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "image": {
+                "$ref": "#/definitions/Image",
+                "description": "The image that is shown in the header before the titles.
+
+This can be either a full image path or an asset id.
+
+Cannot be set in combination with icon.",
+              },
+              "toggleButton": {
+                "$ref": "#/definitions/ToggleButton",
+                "description": "The definition of the contents and styling of the toggle button in the header.
+
+Cannot be set in combination with button or dropdown.",
+              },
+            },
+            "required": [
+              "image",
+              "toggleButton",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "subtitle": {
+                "description": "The subtitle of the list item",
+                "format": "remapper",
+              },
+              "title": {
+                "description": "The title of the list item",
+                "format": "remapper",
+              },
+              "toggleButton": {
+                "$ref": "#/definitions/ToggleButton",
+                "description": "The definition of the contents and styling of the toggle button in the header.
+
+Cannot be set in combination with button or dropdown.",
+              },
+            },
+            "required": [
+              "title",
+              "toggleButton",
+            ],
+            "type": "object",
+          },
+        ],
+      },
+      "HeaderWithAssetIcon": {
+        "additionalProperties": false,
+        "properties": {
+          "showAssetIcon": {
+            "const": true,
+            "description": "If this is set, the list header will try to fetch an asset with id equal to the header title.
+
+If such an asset is found, an icon with its mimetype will be shown in the header before the titles.",
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "showAssetIcon",
+        ],
+        "type": "object",
+      },
+      "HeaderWithButton": {
+        "additionalProperties": false,
+        "properties": {
+          "button": {
+            "$ref": "#/definitions/Button",
+            "description": "The definition of the contents and styling of the button in the header.
+
+Cannot be set in combination with toggleButton or dropdown.",
+          },
+        },
+        "required": [
+          "button",
+        ],
+        "type": "object",
+      },
+      "HeaderWithDropdown": {
+        "additionalProperties": false,
+        "properties": {
+          "dropdown": {
+            "$ref": "#/definitions/Dropdown",
+            "description": "The definition of the contents and styling of the dropdown in the header.
+
+Cannot be set in combination with button or toggleButton.",
+          },
+        },
+        "required": [
+          "dropdown",
+        ],
+        "type": "object",
+      },
+      "HeaderWithIcon": {
+        "additionalProperties": false,
+        "properties": {
+          "icon": {
+            "description": "The icon that is shown in the header before the titles.
+
+Cannot be set in combination with image.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+        },
+        "required": [
+          "icon",
+        ],
+        "type": "object",
+      },
+      "HeaderWithImage": {
+        "additionalProperties": false,
+        "properties": {
+          "image": {
+            "$ref": "#/definitions/Image",
+            "description": "The image that is shown in the header before the titles.
+
+This can be either a full image path or an asset id.
+
+Cannot be set in combination with icon.",
+          },
+        },
+        "required": [
+          "image",
+        ],
+        "type": "object",
+      },
+      "HeaderWithTitles": {
+        "additionalProperties": false,
+        "properties": {
+          "subtitle": {
+            "description": "The subtitle of the list item",
+            "format": "remapper",
+          },
+          "title": {
+            "description": "The title of the list item",
+            "format": "remapper",
+          },
+        },
+        "required": [
+          "title",
+        ],
+        "type": "object",
+      },
+      "HeaderWithToggleButton": {
+        "additionalProperties": false,
+        "properties": {
+          "toggleButton": {
+            "$ref": "#/definitions/ToggleButton",
+            "description": "The definition of the contents and styling of the toggle button in the header.
+
+Cannot be set in combination with button or dropdown.",
+          },
+        },
+        "required": [
+          "toggleButton",
+        ],
+        "type": "object",
+      },
       "Image": {
         "additionalProperties": false,
         "properties": {
-          "alignment": {
-            "default": "default",
-            "description": "The alignment of the text content.",
-            "enum": [
-              "default",
-              "header",
-            ],
-            "type": "string",
-          },
           "alt": {
             "description": "The alt text of the image.",
             "format": "remapper",
@@ -5332,6 +6233,24 @@ image can either be url or uploaded image",
         ],
         "type": "object",
       },
+      "ItemDefinition": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/definitions/Content",
+            "description": "Optional content for the list item",
+          },
+          "footer": {
+            "$ref": "#/definitions/Footer",
+            "description": "Optional footer for the list item",
+          },
+          "header": {
+            "$ref": "#/definitions/Header",
+            "description": "Optional header for the list item",
+          },
+        },
+        "type": "object",
+      },
       "ToggleButton": {
         "additionalProperties": false,
         "properties": {
@@ -5367,36 +6286,15 @@ image can either be url or uploaded image",
 If not defined, received data will be treated as an array.",
         "type": "string",
       },
-      "button": {
-        "$ref": "#/definitions/Button",
-        "description": "The definition of the contents and styling of the button.",
-      },
       "collapsible": {
         "description": "Whether the list or the grouped lists should be collapsible.
 
 Will show the title in the collapse button if this is true.",
         "type": "boolean",
       },
-      "dropdown": {
-        "$ref": "#/definitions/Dropdown",
-        "description": "The definition of the contents and styling of the dropdown.",
-      },
-      "fields": {
-        "description": "A list of fields to display.",
-        "items": {
-          "$ref": "#/definitions/Field",
-        },
-        "type": "array",
-      },
       "groupBy": {
         "description": "The property based on which the list should be split into multiple lists.",
         "type": "string",
-      },
-      "header": {
-        "description": "The header text to display above the list of fields.
-
-Will not render if undefined.",
-        "format": "remapper",
       },
       "hideOnNoData": {
         "description": "Whether the list should be hidden if there is no data.
@@ -5404,22 +6302,8 @@ Will not render if undefined.",
 Will not hide if undefined.",
         "type": "boolean",
       },
-      "icon": {
-        "description": "The icon that displays in front of the header.
-
-Will not render if undefined.",
-        "format": "fontawesome",
-        "type": "string",
-      },
-      "image": {
-        "$ref": "#/definitions/Image",
-        "description": "The image that is shown to the left of the list item.
-
-This can be either a full image path or an asset id.",
-      },
-      "imageInline": {
-        "description": "Nests image on the left inside the inline block.",
-        "type": "boolean",
+      "itemDefinition": {
+        "$ref": "#/definitions/ItemDefinition",
       },
       "startCollapsed": {
         "description": "Whether the list should start in a collapsed state.
@@ -5431,11 +6315,10 @@ Will only apply to the first list in grouped lists.",
         "description": "The title to display above the list.",
         "format": "remapper",
       },
-      "toggleButton": {
-        "$ref": "#/definitions/ToggleButton",
-        "description": "The definition of the contents and styling of the toggle button.",
-      },
     },
+    "required": [
+      "itemDefinition",
+    ],
     "type": "object",
   },
 }
