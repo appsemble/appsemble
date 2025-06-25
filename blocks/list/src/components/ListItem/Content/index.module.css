@@ -1,5 +1,5 @@
 .item {
-  background-color: hsl(0deg 0% 96%);
+  background-color: transparent;
   border: none;
   border-radius: 4px;
   color: inherit;
@@ -15,10 +15,6 @@
 .fieldWrapper {
   align-items: flex-start;
   flex-direction: column;
-}
-
-.dropdown {
-  align-self: flex-end;
 }
 
 .itemField {

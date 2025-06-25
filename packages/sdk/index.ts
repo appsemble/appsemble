@@ -217,6 +217,11 @@ export interface BlockUtils extends Utils {
    * @param header A header that can be used to separate from other block menus.
    */
   menu: (items: MenuItem[], header?: string) => void;
+
+  /**
+   * @returns Whether the current user is using a mobile device.
+   */
+  isMobile: boolean;
 }
 
 export interface Events {

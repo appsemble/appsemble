@@ -71,7 +71,7 @@ bootstrap(
         };
 
         return (
-          <ul className={spaced ? 'py-4 px-5' : 'pb-4'}>
+          <ul className={spaced ? 'py-4 px-4' : 'pb-4 px-4'}>
             {onDrop.type !== 'noop' && (
               // eslint-disable-next-line jsx-a11y/no-static-element-interactions
               <div className={styles.dividerContainer} onDragEnter={() => setCurrentLine(-1)}>
@@ -101,7 +101,7 @@ bootstrap(
                   {onDrop.type === 'noop' ? null : (
                     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                     <div
-                      className={String(styles.isMovable)}
+                      className={`${String(styles.isMovable)} is-hidden-mobile`}
                       onMouseEnter={() => setIsDragging(true)}
                       onMouseLeave={() => setIsDragging(false)}
                     >
@@ -130,7 +130,7 @@ bootstrap(
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={() => handleDrop(itemList.length)}
               >
-                <ListItem index={itemList.length} item={{ Position: null }} preventClick />
+                <ListItem index={itemList.length} item={{ Position: null }} />
               </li>
             )}
           </ul>

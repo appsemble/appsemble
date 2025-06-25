@@ -1,5 +1,5 @@
 .item {
-  background-color: hsl(0deg 0% 96%);
+  background-color: transparent;
   border: none;
   border-radius: 4px;
   color: inherit;
@@ -24,8 +24,11 @@
 }
 
 .headerWrapper {
-  align-items: center;
   justify-content: space-between;
+}
+
+.title {
+  font-weight: bold;
 }
 
 .dropdown {

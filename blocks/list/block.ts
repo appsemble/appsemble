@@ -37,13 +37,6 @@ export interface Item {
 
 export interface Button {
   /**
-   * How the button should be aligned.
-   *
-   * @default 'top-right'
-   */
-  alignment?: 'bottom-right' | 'field' | 'top-right';
-
-  /**
    * The color of the button.
    *
    * @default "primary"
@@ -70,9 +63,11 @@ export interface Button {
   label?: Remapper;
 
   /**
-   * An optional FontAwesome icon to display inside of the button.
+   * An FontAwesome icon to display inside of the button.
+   *
+   * This is the only thing visible on mobile so it's required
    */
-  icon?: IconName;
+  icon: IconName;
 
   /**
    * When set to true, the ‘light’ set of Bulma colors are used.
@@ -150,13 +145,6 @@ export interface Dropdown {
    * @minItems 1
    */
   options: DropdownOption[];
-
-  /**
-   * How the dropdown should be aligned.
-   *
-   * @default 'bottom-right'
-   */
-  alignment?: 'bottom-right' | 'top-right';
 }
 
 export interface DropdownOption {
@@ -199,13 +187,6 @@ export interface Image {
   rounded?: boolean;
 
   /**
-   * The alignment of the text content.
-   *
-   * @default 'default'
-   */
-  alignment?: 'default' | 'header';
-
-  /**
    * The image is scaled with bulma sizes.
    *
    * @default 48
@@ -218,6 +199,182 @@ export interface Image {
    * @default square
    */
   aspectRatio?: '4:3' | '9:16' | '16:9' | 'square';
+}
+
+interface HeaderWithTitles {
+  /**
+   * The title of the list item
+   */
+  title: Remapper;
+
+  /**
+   * The subtitle of the list item
+   */
+  subtitle?: Remapper;
+}
+
+interface HeaderWithImage {
+  /**
+   * The image that is shown in the header before the titles.
+   *
+   * This can be either a full image path or an asset id.
+   *
+   * Cannot be set in combination with icon.
+   */
+  image: Image;
+}
+
+interface HeaderWithIcon {
+  /**
+   * The icon that is shown in the header before the titles.
+   *
+   * Cannot be set in combination with image.
+   */
+  icon: IconName;
+}
+
+interface HeaderWithAssetIcon {
+  /**
+   * If this is set, the list header will try to fetch an asset with id equal to the header title.
+   *
+   * If such an asset is found,
+   * an icon with its mimetype will be shown in the header before the titles.
+   */
+  showAssetIcon: true;
+}
+
+interface HeaderWithButton {
+  /**
+   * The definition of the contents and styling of the button in the header.
+   *
+   * Cannot be set in combination with toggleButton or dropdown.
+   */
+  button: Button;
+}
+
+interface HeaderWithToggleButton {
+  /**
+   * The definition of the contents and styling of the toggle button in the header.
+   *
+   * Cannot be set in combination with button or dropdown.
+   */
+  toggleButton: ToggleButton;
+}
+
+interface HeaderWithDropdown {
+  /**
+   * The definition of the contents and styling of the dropdown in the header.
+   *
+   * Cannot be set in combination with button or toggleButton.
+   */
+  dropdown: Dropdown;
+}
+
+type Header =
+  | HeaderWithAssetIcon
+  | HeaderWithButton
+  | HeaderWithDropdown
+  | HeaderWithIcon
+  | HeaderWithImage
+  | HeaderWithTitles
+  | HeaderWithToggleButton
+  | (HeaderWithAssetIcon & HeaderWithButton)
+  | (HeaderWithAssetIcon & HeaderWithButton & HeaderWithTitles)
+  | (HeaderWithAssetIcon & HeaderWithDropdown)
+  | (HeaderWithAssetIcon & HeaderWithDropdown & HeaderWithTitles)
+  | (HeaderWithAssetIcon & HeaderWithTitles)
+  | (HeaderWithButton & HeaderWithIcon)
+  | (HeaderWithButton & HeaderWithIcon & HeaderWithTitles)
+  | (HeaderWithButton & HeaderWithImage)
+  | (HeaderWithButton & HeaderWithImage & HeaderWithTitles)
+  | (HeaderWithButton & HeaderWithTitles)
+  | (HeaderWithDropdown & HeaderWithIcon)
+  | (HeaderWithDropdown & HeaderWithIcon & HeaderWithTitles)
+  | (HeaderWithDropdown & HeaderWithImage)
+  | (HeaderWithDropdown & HeaderWithImage & HeaderWithTitles)
+  | (HeaderWithDropdown & HeaderWithTitles)
+  | (HeaderWithIcon & HeaderWithTitles)
+  | (HeaderWithIcon & HeaderWithTitles & HeaderWithToggleButton)
+  | (HeaderWithIcon & HeaderWithToggleButton)
+  | (HeaderWithImage & HeaderWithTitles)
+  | (HeaderWithImage & HeaderWithTitles & HeaderWithToggleButton)
+  | (HeaderWithImage & HeaderWithToggleButton)
+  | (HeaderWithTitles & HeaderWithToggleButton);
+
+interface ContentWithFields {
+  /**
+   * A list of fields to display between the header and the footer.
+   */
+  fields: Field[];
+}
+
+interface ContentWithImage {
+  /**
+   * The image to be shown on the left of the fields in the list item content.
+   */
+  image: Image;
+}
+
+type Content = ContentWithFields | ContentWithImage | (ContentWithFields & ContentWithImage);
+
+interface FooterWithContent {
+  /**
+   * The content to be shown in the footer
+   */
+  content: Remapper;
+}
+
+interface FooterWithButton {
+  /**
+   * The definition of the contents and styling of the button in the footer.
+   *
+   * Cannot be set in combination with toggleButton or dropdown.
+   */
+  button: Button;
+}
+
+interface FooterWithToggleButton {
+  /**
+   * The definition of the contents and styling of the toggle button in the footer.
+   *
+   * Cannot be set in combination with button or dropdown.
+   */
+  toggleButton: ToggleButton;
+}
+
+interface FooterWithDropdown {
+  /**
+   * The definition of the contents and styling of the dropdown in the footer.
+   *
+   * Cannot be set in combination with button or toggleButton.
+   */
+  dropdown: Dropdown;
+}
+
+type Footer =
+  | FooterWithButton
+  | FooterWithContent
+  | FooterWithDropdown
+  | FooterWithToggleButton
+  | (FooterWithButton & FooterWithContent)
+  | (FooterWithContent & FooterWithDropdown)
+  | (FooterWithContent & FooterWithToggleButton);
+
+interface ItemDefinition {
+  /**
+   * Optional header for the list item
+   */
+  header?: Header;
+
+  /**
+   * Optional content for the list item
+   */
+  content?: Content;
+
+  /**
+   * Optional footer for the list item
+   */
+  footer?: Footer;
 }
 
 declare module '@appsemble/sdk' {
@@ -265,19 +422,7 @@ declare module '@appsemble/sdk' {
      */
     hideOnNoData?: boolean;
 
-    /**
-     * The header text to display above the list of fields.
-     *
-     * Will not render if undefined.
-     */
-    header?: Remapper;
-
-    /**
-     * The icon that displays in front of the header.
-     *
-     * Will not render if undefined.
-     */
-    icon?: IconName;
+    itemDefinition: ItemDefinition;
 
     /**
      * An optional name of the field that contains the data.
@@ -285,38 +430,6 @@ declare module '@appsemble/sdk' {
      * If not defined, received data will be treated as an array.
      */
     base?: string;
-
-    /**
-     * A list of fields to display.
-     */
-    fields?: Field[];
-
-    /**
-     * The image that is shown to the left of the list item.
-     *
-     * This can be either a full image path or an asset id.
-     */
-    image?: Image;
-
-    /**
-     * Nests image on the left inside the inline block.
-     */
-    imageInline?: boolean;
-
-    /**
-     * The definition of the contents and styling of the button.
-     */
-    button?: Button;
-
-    /**
-     * The definition of the contents and styling of the toggle button.
-     */
-    toggleButton?: ToggleButton;
-
-    /**
-     * The definition of the contents and styling of the dropdown.
-     */
-    dropdown?: Dropdown;
 
     /**
      * Whether items should be appended at the end of the list instead of replace the existing ones

@@ -33,7 +33,12 @@ export function DropdownComponent({ field, index, item, record }: DropdownCompon
   } = useBlock();
 
   return (
-    <Dropdown icon={field.icon} label={remap(field.label, item, { index }) as string}>
+    <Dropdown
+      asButton={false}
+      icon={field.icon}
+      iconClassName="is-justify-content-end is-align-items-end"
+      label={remap(field.label, item, { index }) as string}
+    >
       {field.options.map((option, i) => {
         const label = remap(option.label, item, { index });
 
