@@ -1,31 +1,32 @@
 parameters:
-  image:
-    size: 128
-    alignment: default
-    file: { prop: file }
-  header: { prop: name }
-  fields:
-    - value: { prop: description }
-  toggleButton:
-    value: { prop: boolean }
-    trueButton:
-      icon: check
-      alignment: top-corner
-      rounded: true
-      color: success
-    falseButton:
-      label: Read
-      alignment: top-corner
-      rounded: true
-      color: primary
-  dropdown:
-    icon: ellipsis-vertical
-    alignment: bottom-right
-    options:
-      - label: Yellow
-        onClick: testClick
-      - label: Blue
-        onClick: testClick
+  itemDefinition:
+    header:
+      title: { prop: name }
+      toggleButton:
+        value: { prop: boolean }
+        trueButton:
+          icon: check
+          rounded: true
+          color: success
+        falseButton:
+          label: Read
+          rounded: true
+          color: primary
+    content:
+      image:
+        size: 128
+        alignment: default
+        file: { prop: file }
+      fields:
+        - value: { prop: description }
+    footer:
+      dropdown:
+        icon: ellipsis-vertical
+        options:
+          - label: Yellow
+            onClick: testClick
+          - label: Blue
+            onClick: testClick
 actions:
   testClick:
     type: link

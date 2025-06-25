@@ -127,16 +127,19 @@ pages:
           listen:
             data: dailyBugleEmployees
         parameters:
-          header: [{ prop: firstName }, { string.case: upper }]
-          fields:
-            - label: Description
-              value:
-                string.format:
-                  template: '{firstName} {lastName} is an employee of the {department} department!'
-                  values:
-                    firstName: { prop: firstName }
-                    lastName: { prop: lastName }
-                    department: { prop: department }
+          itemDefinition:
+            header:
+              title: [{ prop: firstName }, { string.case: upper }]
+            content:
+              fields:
+                - label: Description
+                  value:
+                    string.format:
+                      template: '{firstName} {lastName} is an employee of the {department} department!'
+                      values:
+                        firstName: { prop: firstName }
+                        lastName: { prop: lastName }
+                        department: { prop: department }
 
       # string.case
       - type: markdown

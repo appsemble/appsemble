@@ -85,28 +85,32 @@ pages:
             type: resource.query
             resource: bicycles
       - type: list
-        version: 0.32.1
+        version: 0.33.0
         events:
           listen:
             data: bicycleInventory
         parameters:
+          itemDefinition:
+            header:
+              title: { prop: type }
+            content:
+              image:
+                file: { prop: image }
+                alt:
+                  string.format:
+                    template: '{type} image'
+                    values:
+                      type: { prop: type }
+              fields:
+                - label: Bicycles left
+                  value: { prop: stock }
+            footer:
+              button:
+                label: Sell
+                onClick: sellBicycle
+                disabled:
+                  lt: [ { prop: stock }, 1 ]
           title: Rent out bicycles
-          header: { prop: type }
-          image:
-            file: { prop: image }
-            alt:
-              string.format:
-                template: '{type} image'
-                values:
-                  type: { prop: type }
-          fields:
-            - label: Bicycles left
-              value: { prop: stock }
-          button:
-            label: Sell
-            onClick: sellBicycle
-            disabled:
-              lt: [{ prop: stock }, 1]
         actions:
           sellBicycle:
             type: dialog
