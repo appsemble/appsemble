@@ -47,6 +47,9 @@ function checkTabPagePermissions(
   appDefinition: AppDefinition,
   appMemberViewRoles: AppRole[],
 ): boolean {
+  if (pageDefinition.roles) {
+    return checkAppMemberViewRoles(pageDefinition.roles, appMemberViewRoles);
+  }
   if (Array.isArray(pageDefinition.tabs)) {
     return pageDefinition.tabs.some((tab) => {
       const tabRoles = tab.roles || [];
