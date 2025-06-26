@@ -135,7 +135,8 @@ pages:
                 - label: Description
                   value:
                     string.format:
-                      template: '{firstName} {lastName} is an employee of the {department} department!'
+                      template:
+                        '{firstName} {lastName} is an employee of the {department} department!'
                       values:
                         firstName: { prop: firstName }
                         lastName: { prop: lastName }
