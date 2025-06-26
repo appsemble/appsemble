@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.33.0
-appVersion: 0.33.0
+version: 0.33.1
+appVersion: 0.33.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,18 +31,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Preact-components: Support icon class name in the dropdown component."
-    - kind: added
-      description: "Studio: Allow a training chapter to be blocked by multiple chapters."
-    - kind: changed
-      description: "Block(list): Support defining header, content and footer
-        separately. Mutually exclude images and icons, buttons and dropdowns in
-        headers and footers."
-    - kind: changed
-      description: "Types: Allow array of strings in TrainingChapter and
-        TrainingChapterProperties types' blockedBy properties."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
