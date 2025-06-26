@@ -103,7 +103,15 @@ export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps
             <Image field={header.image} index={index} isVisible={isVisible} item={item} />
           ) : null}
         </div>
-        {actions.onClick.type === 'link' ? (
+        {'showAssetIcon' in header && assetIcon && 'title' in header ? (
+          <a
+            className={`${styles.item} has-text-left is-block`}
+            download
+            href={asset(remap(header.title, item) as string)}
+          >
+            {headerHTML}
+          </a>
+        ) : actions.onClick.type === 'link' ? (
           <a className={`${styles.item} has-text-left is-block`} href={actions.onClick.href(item)}>
             {headerHTML}
           </a>
