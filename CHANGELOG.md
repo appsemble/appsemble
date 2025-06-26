@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.33.2](https://gitlab.com/appsemble/appsemble/-/releases/0.33.2)] - 2025-06-26
+
+### Added
+
+- Block(`list`): Allow downloading assets by clicking on the asset name or icon.
+
+### Changed
+
+- Block(`filter`): Support dynamic values in enum options for enum and list filters.
+
+### Fixed
+
+- Block(`list`): Fix header styles with icons and images.
+- App: Tabs page security roles not working for the entire page.
+- Server: Fix server side `notify` action.
+
 ## \[[0.33.1](https://gitlab.com/appsemble/appsemble/-/releases/0.33.1)] - 2025-06-26
 
 ## \[[0.33.0](https://gitlab.com/appsemble/appsemble/-/releases/0.33.0)] - 2025-06-25
