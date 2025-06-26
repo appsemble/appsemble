@@ -29,8 +29,13 @@ export function toOData(fields: Field[], values: FilterValues): string {
           }
           return filters.join(' and ');
         }
-        case 'enum':
+        case 'enum': {
+          const splitValues = (value as string).split(', ');
+          if (splitValues.length > 1) {
+            return String(splitValues.map((item) => `${field.name} eq '${item}'`).join(' or '));
+          }
           return `${field.name} eq '${value}'`;
+        }
         case 'list': {
           const listValue = (value as string).split(', ');
           return String(listValue.map((val) => `contains(${field.name}, '${val}')`).join(' or '));

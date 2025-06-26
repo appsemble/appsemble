@@ -38,6 +38,22 @@ describe('toOData', () => {
       filter: { test: 'value 3' },
       expected: "test eq 'value 3'",
     },
+    'return appropriate oData query if the input is separated by ", "': {
+      input: [
+        {
+          name: 'test',
+          type: 'enum',
+          defaultValue: 'value 1',
+          enum: [
+            { value: 'value 1' },
+            { value: 'value 2' },
+            { value: 'value 3, value 4, value 5' },
+          ],
+        },
+      ],
+      filter: { test: 'value 3, value 4, value 5' },
+      expected: "test eq 'value 3' or test eq 'value 4' or test eq 'value 5'",
+    },
     'return oData query for list field': {
       input: [
         {

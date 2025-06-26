@@ -1640,7 +1640,7 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
           },
           "value": {
             "description": "The value that gets submitted when filtering.",
-            "type": "string",
+            "format": "remapper",
           },
         },
         "type": "object",

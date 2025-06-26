@@ -94,20 +94,23 @@ export function ListFieldComponent({
           onSubmit={(event) => event.preventDefault()}
           ref={ref}
         >
-          {field.list.map(({ label, value: val }) => (
-            <div className={styles.option} key={val}>
-              <input
-                checked={selected.includes(val)}
-                id={val.replaceAll(' ', '-')}
-                name={val.replaceAll(' ', '-')}
-                type="checkbox"
-                value={val}
-              />
-              <label htmlFor={val.replaceAll(' ', '-')}>
-                {(utils.remap(label, {}) as string) || val}
-              </label>
-            </div>
-          ))}
+          {field.list.map(({ label, value: val }) => {
+            const remappedValue = utils.remap(val, {}) as string;
+            return (
+              <div className={styles.option} key={remappedValue}>
+                <input
+                  checked={selected.includes(remappedValue)}
+                  id={remappedValue.replaceAll(' ', '-')}
+                  name={remappedValue.replaceAll(' ', '-')}
+                  type="checkbox"
+                  value={remappedValue}
+                />
+                <label htmlFor={remappedValue.replaceAll(' ', '-')}>
+                  {(utils.remap(label, {}) as string) || val}
+                </label>
+              </div>
+            );
+          })}
         </Form>
       ) : null}
       <div className={styles.chips}>

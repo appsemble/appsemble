@@ -5,7 +5,7 @@ export interface EnumOption {
   /**
    * The value that gets submitted when filtering.
    */
-  value?: string;
+  value?: Remapper;
 
   /**
    * User facing label describing the option.

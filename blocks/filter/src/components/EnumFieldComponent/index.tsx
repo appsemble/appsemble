@@ -22,11 +22,19 @@ export function EnumFieldComponent({
       onChange={onChange}
       value={value}
     >
-      {field.enum.map(({ label, value: val }) => (
-        <Option key={val} value={val}>
-          {(utils.remap(label, {}) as string) || val}
-        </Option>
-      ))}
+      {field.enum.map(({ label, value: val }) => {
+        const remappedValue = utils.remap(val, {});
+        return (
+          <Option
+            key={val}
+            value={
+              Array.isArray(remappedValue) ? remappedValue.join(', ') : (remappedValue as string)
+            }
+          >
+            {(utils.remap(label, {}) as string) || (remappedValue as string)}
+          </Option>
+        );
+      })}
     </Select>
   );
 }
