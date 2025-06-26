@@ -56,7 +56,7 @@ export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps
   }, [header, item, remap]);
 
   const headerHTML = (
-    <div>
+    <div className="is-flex is-justify-content-space-between is-align-items-center">
       {'icon' in header && isPreactChild(header.icon) ? <Icon icon={header.icon} /> : null}
       {'showAssetIcon' in header && assetIcon && isPreactChild(assetIcon) ? (
         <Icon icon={assetIcon as IconName} size="large" />

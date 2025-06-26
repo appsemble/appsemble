@@ -8,19 +8,9 @@
   font-size: 100%;
   height: 100%;
   line-height: 1.15;
+  padding: 0;
   position: relative;
   width: 100%;
-}
-
-.header {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.header > * {
-  display: inline;
 }
 
 .headerWrapper {
