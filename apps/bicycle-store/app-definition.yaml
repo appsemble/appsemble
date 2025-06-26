@@ -109,7 +109,7 @@ pages:
                 label: Sell
                 onClick: sellBicycle
                 disabled:
-                  lt: [ { prop: stock }, 1 ]
+                  lt: [{ prop: stock }, 1]
           title: Rent out bicycles
         actions:
           sellBicycle:
