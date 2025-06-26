@@ -3,6 +3,7 @@ import { type ActionDefinition } from '@appsemble/types';
 import { type RemapperContext, type ServerActionName } from '@appsemble/utils';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 
+import { appMemberQuery } from './appMember.js';
 import { condition } from './condition.js';
 import { each } from './each.js';
 import { email } from './email.js';
@@ -89,7 +90,7 @@ export const actions = {
   'app.member.properties.patch': noop,
   'app.member.current.patch': noop,
   'app.member.delete': noop,
-  'app.member.query': noop,
+  'app.member.query': appMemberQuery,
 };
 
 // https://stackoverflow.com/a/53808212
