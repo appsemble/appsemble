@@ -1796,6 +1796,12 @@ By setting this to true, an exact match is used.",
       },
     },
     "properties": {
+      "defaultFilter": {
+        "description": "A default filter that should be applied by default for every request,
+
+Use with the \`string.format\` remapper for powerful filteration.",
+        "format": "remapper",
+      },
       "fields": {
         "description": "A list of fields the user is allowed to search on.",
         "items": {
