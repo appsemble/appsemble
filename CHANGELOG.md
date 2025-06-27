@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.33.3](https://gitlab.com/appsemble/appsemble/-/releases/0.33.3)] - 2025-06-27
+
+### Added
+
+- Block(`filter`): New parameter `defaultFilter` which allows you to define a default filter for
+  every request.
+- Server: Support the `app.member.query` action on the server.
+
+### Fixed
+
+- App: Count blocks filtered by app roles towards block prefix indexes.
+
 ## \[[0.33.2](https://gitlab.com/appsemble/appsemble/-/releases/0.33.2)] - 2025-06-26
 
 ### Added

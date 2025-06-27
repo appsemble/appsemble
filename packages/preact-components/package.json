@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact-components",
-  "version": "0.33.2",
+  "version": "0.33.3",
   "private": true,
   "description": "Reusable Preact components for internal use",
   "keywords": [
@@ -32,9 +32,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.33.2",
-    "@appsemble/types": "0.33.2",
-    "@appsemble/web-utils": "0.33.2",
+    "@appsemble/preact": "0.33.3",
+    "@appsemble/types": "0.33.3",
+    "@appsemble/web-utils": "0.33.3",
     "@creativebulma/bulma-tagsinput": "^1.0.0",
     "@types/creativebulma__bulma-tagsinput": "^1.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",

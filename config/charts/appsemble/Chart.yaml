@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.33.2
-appVersion: 0.33.2
+version: 0.33.3
+appVersion: 0.33.3
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,17 +33,12 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(list): Allow downloading assets by clicking on the asset
-        name or icon."
-    - kind: changed
-      description: "Block(filter): Support dynamic values in enum options for enum and
-        list filters."
+      description: "Block(filter): New parameter defaultFilter which allows you to
+        define a default filter for every request."
+    - kind: added
+      description: "Server: Support the app.member.query action on the server."
     - kind: fixed
-      description: "Block(list): Fix header styles with icons and images."
-    - kind: fixed
-      description: "App: Tabs page security roles not working for the entire page."
-    - kind: fixed
-      description: "Server: Fix server side notify action."
+      description: "App: Count blocks filtered by app roles towards block prefix indexes."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
