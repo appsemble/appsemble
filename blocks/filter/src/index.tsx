@@ -13,7 +13,7 @@ bootstrap(
   ({
     actions,
     events,
-    parameters: { fields, fullscreen, hideButton, highlight = [], icon },
+    parameters: { defaultFilter, fields, fullscreen, hideButton, highlight = [], icon },
     ready,
     utils,
   }) => {
@@ -42,14 +42,17 @@ bootstrap(
       async (submitValues: FilterValues) => {
         setLoading(true);
         try {
-          const data = await actions.onLoad({ $filter: toOData(fields, submitValues) });
+          const defaultFilterString = utils.remap(defaultFilter, {}) as string;
+          const data = await actions.onLoad({
+            $filter: toOData(fields, submitValues, defaultFilterString),
+          });
           events.emit.filtered(data);
         } catch (error: unknown) {
           events.emit.filtered(null, error as any);
         }
         setLoading(false);
       },
-      [actions, events, fields],
+      [actions, defaultFilter, events, fields, utils],
     );
 
     const onChange = useCallback(
@@ -92,7 +95,10 @@ bootstrap(
     useEffect(() => {
       const refresh = async (): Promise<void> => {
         try {
-          const data = await actions.onLoad({ $filter: toOData(fields, values) });
+          const defaultFilterString = utils.remap(defaultFilter, {}) as string;
+          const data = await actions.onLoad({
+            $filter: toOData(fields, values, defaultFilterString),
+          });
           events.emit.refreshed(data);
         } catch (error: unknown) {
           events.emit.refreshed(null, error as any);
@@ -102,7 +108,7 @@ bootstrap(
       events.on.refresh(refresh);
 
       return () => events.off.refresh(refresh);
-    }, [actions, events, fields, values]);
+    }, [actions, defaultFilter, events, fields, utils, values]);
 
     useEffect(ready, [ready]);
 

@@ -7,6 +7,7 @@ interface TestCase {
   input: Field[];
   filter: FilterValues;
   expected: string;
+  defaultFilter?: string;
 }
 
 describe('toOData', () => {
@@ -115,10 +116,51 @@ describe('toOData', () => {
       },
       expected: "(contains(tolower(test 1),'search')) and (test 2 eq 'true')",
     },
+    'support default filters': {
+      input: [
+        {
+          name: 'test 1',
+          type: 'string',
+          defaultValue: '',
+        },
+        {
+          name: 'test 2',
+          type: 'boolean',
+          defaultValue: false,
+        },
+      ],
+      filter: {
+        'test 1': 'search',
+        'test 2': true,
+      },
+      defaultFilter: "defaultFilter eq 'default filter'",
+      expected:
+        "(contains(tolower(test 1),'search')) and (test 2 eq 'true') and (defaultFilter eq 'default filter')",
+    },
+    'default filter as standalone filter should work': {
+      input: [
+        {
+          name: 'test 1',
+          type: 'string',
+          defaultValue: '',
+        },
+        {
+          name: 'test 2',
+          type: 'boolean',
+          defaultValue: false,
+        },
+      ],
+      filter: {},
+      defaultFilter: "defaultFilter eq 'default filter'",
+      expected: "defaultFilter eq 'default filter'",
+    },
   };
 
-  it.each(Object.entries(testCases))('should %s', (d, { expected, filter, input }) => {
-    const query = toOData(input, filter);
-    expect(query).toBe(expected);
-  });
+  it.each(Object.entries(testCases))(
+    'should %s',
+    (d, { defaultFilter, expected, filter, input }) => {
+      const query = toOData(input, filter, defaultFilter);
+      expect(query).toBe(expected);
+    },
+  );
 });
