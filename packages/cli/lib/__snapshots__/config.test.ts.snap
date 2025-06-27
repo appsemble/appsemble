@@ -1799,7 +1799,7 @@ By setting this to true, an exact match is used.",
       "defaultFilter": {
         "description": "A default filter that should be applied by default for every request,
 
-Use with the \`string.format\` remapper for powerful filteration.",
+Use with the \`string.format\` remapper for extensive filtering.",
         "format": "remapper",
       },
       "fields": {
