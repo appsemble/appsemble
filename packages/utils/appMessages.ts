@@ -23,7 +23,7 @@ export function findMessageIds(obj: unknown): Record<string, string> {
     if (key === 'string.format' && typeof value?.messageId === 'string') {
       return { [value.messageId]: value.template ?? '', ...findMessageIds(value.values) };
     }
-    if (key === 'translate') {
+    if (key === 'translate' && typeof value === 'string') {
       return { [value]: '' };
     }
   }
