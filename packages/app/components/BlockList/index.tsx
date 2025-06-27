@@ -81,28 +81,30 @@ export function BlockList({
 
   const blockList = useMemo(
     () =>
-      blocks
-        .filter((block) =>
-          checkBlockPermissions(block, appDefinition, appMemberRole, appMemberSelectedGroup),
-        )
-        .map<[BlockDefinition, number]>((block, index) => [block, index]),
+      blocks.map<[BlockDefinition, number, boolean]>((block, index) => [
+        block,
+        index,
+        checkBlockPermissions(block, appDefinition, appMemberRole, appMemberSelectedGroup),
+      ]),
     [blocks, appDefinition, appMemberRole, appMemberSelectedGroup],
   );
 
-  const blockStatus = useRef(blockList.map(() => false));
+  const visibleBlocks = useMemo(() => blockList.filter(([, , visible]) => visible), [blockList]);
+
+  const blockStatus = useRef(visibleBlocks.map(() => false));
 
   const [isLoading, setIsLoading] = useState(true);
   const resolvePageReady = useRef<Function>();
 
   const ready = useCallback(
     (block: BlockDefinition) => {
-      blockStatus.current[blockList.findIndex(([b]) => b === block)] = true;
+      blockStatus.current[visibleBlocks.findIndex(([b]) => b === block)] = true;
       if (blockStatus.current.every(Boolean)) {
         setIsLoading(false);
         resolvePageReady.current?.();
       }
     },
-    [blockList],
+    [visibleBlocks],
   );
 
   useEffect(() => {
@@ -111,7 +113,7 @@ export function BlockList({
         resolvePageReady.current = resolve;
       }),
     );
-  }, [blockList]);
+  }, [visibleBlocks]);
 
   useEffect(() => {
     if (!appControllerCode || !appControllerImplementations) {
@@ -213,28 +215,30 @@ export function BlockList({
   return (
     <>
       {isLoading ? <Loader /> : null}
-      {blockList.map(([block, index]) => (
-        <Block
-          // As long as blocks are in a static list, using the index as a key should be fine.
-          appStorage={appStorage}
-          block={block}
-          data={data}
-          ee={ee}
-          extraCreators={extraCreators}
-          flowActions={flowActions}
-          key={`${prefix}.${index}-${revision}`}
-          pageDefinition={pageDefinition}
-          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-          pageReady={pageReady}
-          prefix={`${prefix}.${index}`}
-          prefixIndex={`${prefixIndex}.${index}`}
-          ready={ready}
-          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-          remap={remap}
-          showDialog={showDialog}
-          showShareDialog={showShareDialog}
-        />
-      ))}
+      {blockList.map(([block, index, visible]) =>
+        visible ? (
+          <Block
+            // As long as blocks are in a static list, using the index as a key should be fine.
+            appStorage={appStorage}
+            block={block}
+            data={data}
+            ee={ee}
+            extraCreators={extraCreators}
+            flowActions={flowActions}
+            key={`${prefix}.${index}-${revision}`}
+            pageDefinition={pageDefinition}
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+            pageReady={pageReady}
+            prefix={`${prefix}.${index}`}
+            prefixIndex={`${prefixIndex}.${index}`}
+            ready={ready}
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+            remap={remap}
+            showDialog={showDialog}
+            showShareDialog={showShareDialog}
+          />
+        ) : null,
+      )}
     </>
   );
 }
