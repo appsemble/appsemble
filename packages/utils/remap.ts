@@ -889,9 +889,9 @@ const mapperImplementations: MapperImplementations = {
       const remapped = remap(value, input, context);
       const remappedDefined = remapped === undefined ? null : remapped;
       const literal =
-        type === 'String' && value != null
+        type === 'String' && remapped != null
           ? literalValues[type](
-              (remappedDefined as string).replaceAll("'", "''").replaceAll('\\', '\\\\'),
+              String(remappedDefined).replaceAll("'", "''").replaceAll('\\', '\\\\'),
             )
           : literalValues[type === 'Number' ? 'Decimal' : type](remappedDefined as never);
 
