@@ -5,13 +5,13 @@ import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, AppMember } from '../../../../models/index.js';
-import { getAppMemberInfo } from '../../../../utils/appMember.js';
+import { getAppMemberInfo, parseMemberFilterQuery } from '../../../../utils/appMember.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
 export async function queryAppMembers(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
-    queryParams: { roles, selectedGroupId },
+    queryParams: { $filter: parsedFilter, roles, selectedGroupId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -37,11 +37,16 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
     assertKoaCondition(passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
   }
 
+  const filter = parseMemberFilterQuery(parsedFilter ?? '');
+  const commonFilters = {
+    AppId: appId,
+    demo: false,
+    ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
+  };
+
   const appMembers = await AppMember.findAll({
     where: {
-      AppId: appId,
-      demo: false,
-      ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
+      ...(parsedFilter ? { [Op.and]: [filter, commonFilters] } : commonFilters),
     },
     order: [['role', 'ASC']],
   });

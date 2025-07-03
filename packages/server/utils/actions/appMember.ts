@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { AppMember } from '../../models/index.js';
-import { getAppMemberInfo } from '../appMember.js';
+import { getAppMemberInfo, parseMemberFilterQuery } from '../appMember.js';
 
 export async function appMemberQuery({
   action,
@@ -15,11 +15,19 @@ export async function appMemberQuery({
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const remappedRoles = (remap(action.roles ?? [], data, internalContext) || []) as AppRole[];
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
+  const query = (remap(action.query ?? '', data, internalContext) ?? {}) as { $filter?: string };
+  const parsedFilter = parseMemberFilterQuery(query.$filter ?? '');
+  const commonFilters = {
+    AppId: app.id,
+    demo: false,
+    ...(remappedRoles.length ? { role: { [Op.in]: remappedRoles } } : {}),
+  };
+
   const appMembers = await AppMember.findAll({
     where: {
-      AppId: app.id,
-      demo: false,
-      ...(remappedRoles.length ? { role: { [Op.in]: remappedRoles } } : {}),
+      ...(query.$filter ? { [Op.and]: [parsedFilter, commonFilters] } : commonFilters),
     },
   });
   return appMembers.map((appMember) => getAppMemberInfo(appMember));

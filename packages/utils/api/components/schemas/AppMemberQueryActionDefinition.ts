@@ -16,5 +16,9 @@ Does nothing if the app member isn’t logged in.`,
       $ref: '#/components/schemas/RemapperDefinition',
       description: 'The roles of the app members that would be fetched.',
     },
+    query: {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: 'Additional filters to fetch members based on properties and other fields',
+    },
   },
 });

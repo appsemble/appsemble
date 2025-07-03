@@ -1673,6 +1673,12 @@ export interface AppMemberQueryAction extends BaseActionDefinition<'app.member.q
    * The roles of the users to fetch.
    */
   roles?: Remapper;
+
+  /**
+   * Additional filters to fetch members based on properties and other fields.
+   *
+   */
+  query?: Remapper;
 }
 
 export interface AppMemberRoleUpdateAction extends BaseActionDefinition<'app.member.role.update'> {

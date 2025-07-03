@@ -131,8 +131,11 @@ export const appMemberQuery: ActionCreator<'app.member.query'> = ({
     const roles = remap(definition.roles ?? null, data);
     const selectedGroupId = getAppMemberSelectedGroup()?.id;
     const url = `${apiUrl}/api/apps/${appId}/${appMemberInfo.demo ? 'demo-' : ''}members?roles=${roles || []}${selectedGroupId ? `&selectedGroupId=${selectedGroupId}` : ''}`;
+    const query = remap(definition.query ?? null, data);
 
-    const { data: response } = await axios.get<AppMemberInfo[]>(url);
+    const { data: response } = await axios.get<AppMemberInfo[]>(url, {
+      params: query,
+    });
 
     return response;
   },
