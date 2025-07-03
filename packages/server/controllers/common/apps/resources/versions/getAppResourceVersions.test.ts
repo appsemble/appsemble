@@ -178,6 +178,7 @@ describe('getAppResourceVersions', () => {
         },
         {
           "author": {
+            "email": "test@example.com",
             "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
             "name": "Test User",
           },
