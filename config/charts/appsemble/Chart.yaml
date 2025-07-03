@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.33.3
-appVersion: 0.33.3
+version: 0.33.4
+appVersion: 0.33.4
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,12 +33,22 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(filter): New parameter defaultFilter which allows you to
-        define a default filter for every request."
+      description: "App: Add new option query to app.member.query action, which allows
+        filtering using oData standard."
     - kind: added
-      description: "Server: Support the app.member.query action on the server."
+      description: "Server: Add new option query to app.member.query action, which
+        allows filtering using oData standard."
+    - kind: changed
+      description: "Block(list): New styling for collapsible lists."
     - kind: fixed
-      description: "App: Count blocks filtered by app roles towards block prefix indexes."
+      description: "Block(form): Handle form submission errors better."
+    - kind: fixed
+      description: "Server: Dynamic resource indexes are now created correctly."
+    - kind: fixed
+      description: "Server: Show all app member emails in resource history."
+    - kind: fixed
+      description: "Utils: The filter.from remapper now correctly casts to string for
+        String entries and works with remappers that resolve to null."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.33.4](https://gitlab.com/appsemble/appsemble/-/releases/0.33.4)] - 2025-07-03
+
+### Added
+
+- App: Add new option `query` to `app.member.query` action, which allows filtering using oData
+  standard.
+- Server: Add new option `query` to `app.member.query` action, which allows filtering using oData
+  standard.
+
+### Changed
+
+- Block(`list`): New styling for collapsible lists.
+
+### Fixed
+
+- Block(`form`): Handle form submission errors better.
+- Server: Dynamic resource indexes are now created correctly.
+- Server: Show all app member emails in resource history.
+- Utils: The `filter.from` remapper now correctly casts to string for `String` entries and works
+  with remappers that resolve to null.
+
 ## \[[0.33.3](https://gitlab.com/appsemble/appsemble/-/releases/0.33.3)] - 2025-06-27
 
 ### Added
