@@ -63,6 +63,11 @@ export interface ResourceAuthor {
    * The display name of the user.
    */
   name?: string;
+
+  /**
+   * The email of the user.
+   */
+  email?: string;
 }
 
 export interface ResourceGroup {

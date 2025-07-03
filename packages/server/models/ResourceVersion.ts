@@ -48,7 +48,9 @@ export class ResourceVersion extends Model {
     return {
       created: this.created.toISOString(),
       data: this.data,
-      author: this.AppMember ? { id: this.AppMember.id, name: this.AppMember.name } : undefined,
+      author: this.AppMember
+        ? { id: this.AppMember.id, name: this.AppMember.name, email: this.AppMember.email }
+        : undefined,
     };
   }
 }
