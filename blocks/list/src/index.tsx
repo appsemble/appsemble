@@ -71,7 +71,7 @@ bootstrap(
         };
 
         return (
-          <ul className={spaced ? 'py-4 px-4' : 'pb-4 px-4'}>
+          <ul className={spaced ? 'py-4' : 'pb-4'}>
             {onDrop.type !== 'noop' && (
               // eslint-disable-next-line jsx-a11y/no-static-element-interactions
               <div className={styles.dividerContainer} onDragEnter={() => setCurrentLine(-1)}>
@@ -243,7 +243,7 @@ bootstrap(
 
     return groupBy ? (
       collapsible ? (
-        <div>
+        <div className="px-4">
           {leftoverData.length ? renderItems(leftoverData) : null}
           {Object.entries(groupedData).length
             ? Object.entries(groupedData).map(([key, value], index) => (
@@ -258,7 +258,7 @@ bootstrap(
             : renderFirstList()}
         </div>
       ) : (
-        <div>
+        <div className="px-4">
           {Object.entries(groupedData).length ? (
             <>
               {leftoverData.length ? renderItems(leftoverData) : null}
@@ -270,18 +270,18 @@ bootstrap(
               ))}
             </>
           ) : (
-            <>
+            <div className="px-4">
               <div className={styles.title}>{title}</div>
               {renderItems(data)}
-            </>
+            </div>
           )}
         </div>
       )
     ) : (
-      <>
+      <div className="px-4">
         {title && !collapsible ? <div className={styles.title}>{title}</div> : null}
         {collapsible ? renderFirstList() : renderItems(data, true)}
-      </>
+      </div>
     );
   },
 );

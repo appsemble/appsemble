@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Icon } from '@appsemble/preact-components';
+import { Button } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { useState } from 'preact/hooks';
@@ -22,6 +22,7 @@ export function CollapsibleListComponent({
 }: CollapsibleListComponentProps): VNode {
   const {
     parameters: { startCollapsed },
+    utils: { isMobile },
   } = useBlock();
 
   const [collapsed, setCollapsed] = useState(index === 0 ? startCollapsed : true);
@@ -32,17 +33,20 @@ export function CollapsibleListComponent({
 
   return (
     <>
-      <button
+      <div
         className={classNames(
           styles['toggle-button'],
           title ? 'is-justify-content-space-between' : 'is-justify-content-flex-end',
+          'py-2 pl-3 pr-2',
         )}
-        onClick={toggleCollapsed}
-        type="button"
       >
         {title ? <span className={styles.title}>{title}</span> : null}
-        <Icon icon={collapsed ? 'caret-down' : 'caret-up'} />
-      </button>
+        <Button
+          className={classNames(`is-${isMobile ? 'small' : 'normal'} is-rounded is-primary`)}
+          icon={collapsed ? 'chevron-down' : 'chevron-up'}
+          onClick={toggleCollapsed}
+        />
+      </div>
       {collapsed ? null : renderItems(items)}
     </>
   );
