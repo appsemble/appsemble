@@ -85,7 +85,7 @@ pages:
       primaryColor: '#FF0000' # Red
     blocks:
       - type: action-button
-        version: 0.33.4
+        version: 0.33.5
         parameters:
           icon: plus
         theme:

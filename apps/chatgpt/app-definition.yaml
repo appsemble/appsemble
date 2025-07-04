@@ -6,7 +6,7 @@ pages:
   - name: Chat
     blocks:
       - type: form
-        version: 0.33.4
+        version: 0.33.5
         parameters:
           fields:
             - type: string
@@ -35,7 +35,7 @@ pages:
               type: event
               event: response
       - type: openai
-        version: 0.33.4
+        version: 0.33.5
         events:
           listen:
             response: response

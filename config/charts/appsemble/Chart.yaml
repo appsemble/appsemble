@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.33.4
-appVersion: 0.33.4
+version: 0.33.5
+appVersion: 0.33.5
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,23 +32,11 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "App: Add new option query to app.member.query action, which allows
-        filtering using oData standard."
-    - kind: added
-      description: "Server: Add new option query to app.member.query action, which
-        allows filtering using oData standard."
-    - kind: changed
-      description: "Block(list): New styling for collapsible lists."
     - kind: fixed
-      description: "Block(form): Handle form submission errors better."
+      description: "Server: Server actions not working as expected with the history remapper."
     - kind: fixed
-      description: "Server: Dynamic resource indexes are now created correctly."
-    - kind: fixed
-      description: "Server: Show all app member emails in resource history."
-    - kind: fixed
-      description: "Utils: The filter.from remapper now correctly casts to string for
-        String entries and works with remappers that resolve to null."
+      description: "Server: app.member.query action not applying roles correctly in
+        the sequelize query."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

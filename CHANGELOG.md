@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.33.5](https://gitlab.com/appsemble/appsemble/-/releases/0.33.5)] - 2025-07-04
+
+### Fixed
+
+- Server: Server actions not working as expected with the history remapper.
+- Server: `app.member.query` action not applying roles correctly in the sequelize query.
+
 ## \[[0.33.4](https://gitlab.com/appsemble/appsemble/-/releases/0.33.4)] - 2025-07-03
 
 ### Added

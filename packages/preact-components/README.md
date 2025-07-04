@@ -1,8 +1,8 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.33.4/config/assets/logo.svg) Appsemble Preact Components
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.33.5/config/assets/logo.svg) Appsemble Preact Components
 
 > Reusable Preact components
 
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.33.4/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.33.4)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.33.5/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.33.5)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -17,5 +17,5 @@ repository.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.33.4/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.33.5/LICENSE.md) ©
 [Appsemble](https://appsemble.com)
