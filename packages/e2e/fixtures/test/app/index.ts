@@ -1,4 +1,4 @@
-import { type App } from '@appsemble/types';
+import { type App, type CreateAppOptions, type PatchAppOptions } from '@appsemble/types';
 import { test as base } from '@playwright/test';
 import stripIndent from 'strip-indent';
 
@@ -6,9 +6,21 @@ import { expect } from '../../expect/index.js';
 
 export interface AppFixtures {
   /**
-   * Create an app.
+   * Create a new app for the given organization with the provided options
+   *
+   * @param organizationId ID of the organization to create the app for
+   * @param options Options to create the app with
+   * @returns The created app
    */
-  createApp: (organization: string, yaml: string) => Promise<App>;
+  createApp: (organizationId: string, yaml: string, options?: CreateAppOptions) => Promise<App>;
+
+  /**
+   * Patches the given app with the provided options
+   *
+   * @param appId ID of the app to patch
+   * @param options What to patch in the app
+   */
+  patchApp: (appId: number, options: PatchAppOptions) => Promise<App>;
 
   /**
    * Set the role of the user.
@@ -31,19 +43,51 @@ export interface AppFixtures {
 
 export const test = base.extend<AppFixtures>({
   async createApp({ request }, use) {
-    await use(async (organization, yaml) => {
+    await use(async (organizationId, yaml, options) => {
       const formData = new FormData();
 
-      formData.append('OrganizationId', organization.toLowerCase());
+      formData.append('OrganizationId', organizationId);
       formData.append('yaml', stripIndent(yaml));
 
+      if (options) {
+        for (const [option, value] of Object.entries(options)) {
+          if (value !== undefined) {
+            formData.append(option, String(value));
+          }
+        }
+      }
+
       const response = await request.post('/api/apps', {
-        data: formData,
+        multipart: formData,
         headers: {
           Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
         },
       });
       expect(response.status()).toBe(201);
+
+      const app = (await response.json()) as App;
+      expect(app).not.toBeNull();
+      return app;
+    });
+  },
+
+  async patchApp({ request }, use) {
+    await use(async (appId, options) => {
+      const formData = new FormData();
+
+      for (const [option, value] of Object.entries(options)) {
+        if (value !== undefined) {
+          formData.append(option, String(value));
+        }
+      }
+
+      const response = await request.patch(`/api/apps/${appId}`, {
+        multipart: formData,
+        headers: {
+          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+        },
+      });
+      expect(response.status()).toBe(200);
 
       const app = (await response.json()) as App;
       expect(app).not.toBeNull();

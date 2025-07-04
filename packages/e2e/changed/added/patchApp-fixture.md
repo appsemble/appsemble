@@ -1,0 +1,1 @@
+Added `patchApp` fixture

@@ -22,6 +22,7 @@ export * from './author.js';
 export * from './bulma.js';
 export * from './appCollection.js';
 export * from './cli.js';
+export * from './e2e.js';
 export * from './snapshot.js';
 export * from './resource.js';
 export * from './saml.js';
