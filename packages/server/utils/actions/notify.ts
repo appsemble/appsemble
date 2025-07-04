@@ -9,6 +9,7 @@ export async function notify({
   app,
   context,
   data,
+  internalContext,
   options,
 }: ServerActionParameters<NotifyActionDefinition>): Promise<any> {
   const { sendNotifications } = options;
@@ -19,6 +20,10 @@ export async function notify({
     options,
     context,
   );
+
+  Object.assign(remapperContext, {
+    history: internalContext?.history ?? [],
+  });
 
   const to = remap(action.to, data, remapperContext) as string;
   const title = remap(action.title, data, remapperContext) as string;

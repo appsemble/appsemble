@@ -22,7 +22,9 @@ export async function appMemberQuery({
   const commonFilters = {
     AppId: app.id,
     demo: false,
-    ...(remappedRoles.length ? { role: { [Op.in]: remappedRoles } } : {}),
+    ...(remappedRoles.length
+      ? { role: { [Op.in]: Array.isArray(remappedRoles) ? remappedRoles : [remappedRoles] } }
+      : {}),
   };
 
   const appMembers = await AppMember.findAll({
