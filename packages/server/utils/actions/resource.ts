@@ -80,6 +80,11 @@ export async function get({
     options,
     context,
   );
+
+  Object.assign(remapperContext, {
+    history: internalContext?.history ?? [],
+  });
+
   return remap(resourceDefinition.views?.[view].remap ?? null, parsedResource, remapperContext);
 }
 
@@ -133,6 +138,10 @@ export async function query({
     options,
     context,
   );
+  Object.assign(remapperContext, {
+    history: internalContext?.history ?? [],
+  });
+
   return mappedResources.map((resource) =>
     remap(resourceDefinition.views?.[view].remap ?? null, resource, remapperContext),
   );
