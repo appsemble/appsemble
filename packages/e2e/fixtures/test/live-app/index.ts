@@ -17,6 +17,17 @@ export interface LiveAppFixtures {
   loginAppAppsembleOAuth: () => Promise<void>;
 
   /**
+   * Logs into an app using the 'Appsemble Login' flow with the provided App Member credentials
+   *
+   * > **Warning:** Expects the test to be at the login screen of an app that has the "Display
+   * Appsemble login method" option enabled.
+   *
+   * @param email Email of the App Member to log in as
+   * @param password Password of the App Member to log in as
+   */
+  loginAppAppsembleLogin: (email: string, password: string) => Promise<void>;
+
+  /**
    * Gives the app consent to perform actions on the app member's behalf
    *
    * This makes it so the consent screen doesn't pop up when trying to log in
@@ -53,7 +64,23 @@ export const test = base.extend<LiveAppFixtures>({
 
       await page.getByTestId('login-with-appsemble').click();
 
+      if (!redirect) {
+        return;
+      }
+
       await page.waitForURL(`**${redirect}`);
+    });
+  },
+
+  async loginAppAppsembleLogin({ page }, use) {
+    await use(async (email, password) => {
+      await page.waitForURL('**/Login**');
+
+      await page.getByTestId('email').fill(email);
+      await page.getByTestId('password').fill(password);
+      await page.getByTestId('login').click();
+
+      await expect(page.getByText('Login failed')).toBeHidden();
     });
   },
 
