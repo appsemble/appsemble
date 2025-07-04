@@ -1,4 +1,4 @@
-import { test as base } from '@playwright/test';
+import { test as base, expect } from '@playwright/test';
 
 export interface DemoAppFixtures {
   /**
@@ -9,16 +9,18 @@ export interface DemoAppFixtures {
   reseedDemoApp: (appId: number) => Promise<void>;
 
   /**
-   * Login to an Appsemble demo app.
+   * Creates a new demo account with the given role and logs into the app with that account.
    *
-   * @param role The role to login in as.
+   * > **Warning**: Expects you to be in the login screen of a demo app
+   *
+   * @param role The role to of the account to create
    */
-  loginDemoApp: (role: string) => Promise<void>;
+  createAndLoginDemoAppMember: (role: string) => Promise<void>;
 }
 
 export const test = base.extend<DemoAppFixtures>({
   async reseedDemoApp({ browser }, use) {
-    await use(async (appId: number) => {
+    await use(async (appId) => {
       const page = await browser.newPage();
 
       await page.goto(`/en/apps/${appId}/-/`);
@@ -29,13 +31,12 @@ export const test = base.extend<DemoAppFixtures>({
     });
   },
 
-  async loginDemoApp({ page }, use) {
-    await use(async (role: string) => {
-      const btn = page.getByTestId('create-account');
-      if (await btn.isVisible()) {
-        await page.getByTestId('app-role').selectOption(role);
-        await btn.click();
-      }
+  async createAndLoginDemoAppMember({ page }, use) {
+    await use(async (role) => {
+      await page.getByTestId('app-role').selectOption(role);
+      await page.getByTestId('create-account').click();
+
+      await expect(page.getByText('Login failed')).toBeHidden();
     });
   },
 });
