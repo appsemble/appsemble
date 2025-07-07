@@ -5,7 +5,8 @@ export function mapKeysRecursively(obj: any): any {
     return obj;
   }
 
-  if (obj.attribute && obj.comparator && obj.logic) {
+  // eslint-disable-next-line eqeqeq
+  if (obj.attribute && obj.comparator && (obj.logic || obj.logic === null)) {
     return obj;
   }
 
