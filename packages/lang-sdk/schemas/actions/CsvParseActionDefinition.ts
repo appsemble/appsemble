@@ -1,5 +1,5 @@
 import { BaseActionDefinition } from './BaseActionDefinition.js';
-import { extendJSONSchema } from './utils.js';
+import { extendJSONSchema } from '../utils/extendJSONSchema.js';
 
 export const CsvParseActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',
