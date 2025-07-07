@@ -11,7 +11,6 @@ export * from './serverActions.js';
 export * from './allActions.js';
 export * from './appMembers.js';
 export * from './examples.js';
-export * from './noop.js';
 export * from './string.js';
 export * from './jsonschema.js';
 export * as referenceSchemas from './reference-schemas/index.js';

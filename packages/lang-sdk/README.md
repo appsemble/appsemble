@@ -20,10 +20,98 @@ npm install @appsemble/lang-sdk
 
 ## Usage
 
-<!-- TODO: edit -->
-<!-- This packages contains utilities that are shared between Appsemble packages. It’s **not** -->
-<!-- recommended to use this package outside of the Appsemble mono repository. Backwards compatibility is -->
-<!-- not guaranteed. -->
+This package provides utilities and tools for working with the language DSL used in Appsemble.
+
+## Exports
+
+### 1. **Validators**
+
+- `AppValidator`
+- `BlockExampleValidator`
+- `BlockParamInstanceValidator`
+- `BlockParamSchemaValidator`
+- `RemapperValidator`
+- `BaseValidatorFactory`
+
+### 2. **Constants and Patterns**
+
+- `blockNamePattern`
+- `domainPattern`
+- `googleAnalyticsIDPattern`
+- `hexColor`
+- `ISODateTimePattern`
+- `jwtPattern`
+- `uuid4Pattern`
+
+### 3. **Utilities**
+
+- `normalize`
+- `normalizeBlockName`
+- `stripBlockName`
+- `combineSchemas`
+- `generateDataFromSchema`
+- `remap`
+- `createExampleContext`
+- `prefixBlockURL`
+- `getAppBlocks`
+- `camelToHyphen`
+- `decodeJSONRef`
+- `normalized`
+- `parseBlockName`
+- `partialNormalized`
+- `partialSemver`
+- `toUpperCase`
+
+### 4. **Iterators**
+
+- `iterApp`
+- `iterPage`
+- `iterBlock`
+- `iterBlockList`
+- `iterAction`
+- `iterController`
+- `iterJSONSchema`
+
+### 5. **Authorization**
+
+- `getAppRoles`
+- `getAppRolePermissions`
+- `getGuestAppPermissions`
+- `checkAppRoleAppPermissions`
+- `checkGuestAppPermissions`
+- `getAppPossiblePermissions`
+- `getAppPossibleGuestPermissions`
+- `getAppRolesByPermissions`
+- `getAppInheritedRoles`
+- `PredefinedAppRole`
+- `predefinedAppRolePermissions`
+- `predefinedAppRoles`
+
+### 6. **Miscellaneous**
+
+- `findPageByName`
+- `examples`
+- `noop`
+- `schemaExample`
+
+### 7. **Schemas**
+
+- `schemas`
+- `referenceSchemas`
+
+### 8. **Other**
+
+- `ActionError`
+- `allActions`
+- `AppPermission`
+- `assignAppMemberProperties`
+- `baseTheme`
+- `defaultLocale`
+- `googleFonts`
+- `isAppLink`
+- `serverActions`
+- `validateAppDefinition`
+- `referenceSchemas`
 
 ## License
 
