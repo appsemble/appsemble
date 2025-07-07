@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { shouldShowMenu } from '../../utils/layout.js';
+import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -44,6 +45,13 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
         ) : null}
         <div className="navbar-brand is-inline-flex is-flex-grow-1">
           <h2 className="navbar-item title is-4">{!hideName && (children || appName)}</h2>
+          {(definition.layout?.logo?.position || 'navbar') === 'navbar' ? (
+            <img
+              alt="app-logo"
+              className={styles.logo}
+              src={`${apiUrl}/api/apps/${appId}/assets/${definition.layout?.logo?.asset || 'logo'}`}
+            />
+          ) : null}
         </div>
         {demoMode ? (
           <div className="tag is-rounded is-warning mx-1 my-1">

@@ -43,5 +43,18 @@ If set to \`navigation\`, it will only be visible if \`login\` is also visible i
 If this is omitted, a collapsable side navigation menu will be rendered on the left.
 `,
     },
+    logo: {
+      type: 'object',
+      description: 'The settings of the app logo.',
+      additionalProperties: false,
+      properties: {
+        position: {
+          enum: ['navbar', 'hidden'],
+          default: 'navbar',
+          description: 'The location of the app logo.',
+        },
+        asset: { type: 'string' },
+      },
+    },
   },
 };
