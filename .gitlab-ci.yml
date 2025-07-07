@@ -463,6 +463,7 @@ e2e:
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
         migrateTo: next
+        E2E: true
   before_script:
     - apt-get update && apt-get install -y curl dnsutils
     - |

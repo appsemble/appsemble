@@ -1,3 +1,4 @@
+import { ModalCard } from '@appsemble/react-components';
 import { type ResourceSubscribableAction } from '@appsemble/types';
 import { urlB64ToUint8Array } from '@appsemble/web-utils';
 import axios from 'axios';
@@ -10,9 +11,11 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { FormattedMessage } from 'react-intl';
 
+import { messages } from './messages.js';
 import { type Permission, type ServiceWorkerRegistrationContextType } from '../../types.js';
-import { apiUrl, appId, vapidPublicKey } from '../../utils/settings.js';
+import { apiUrl, appId, e2e, vapidPublicKey } from '../../utils/settings.js';
 
 interface ServiceWorkerRegistrationProviderProps {
   readonly children: ReactNode;
@@ -32,11 +35,13 @@ export function ServiceWorkerRegistrationProvider({
 }: ServiceWorkerRegistrationProviderProps): ReactNode {
   const [permission, setPermission] = useState<Permission>(window.Notification?.permission);
   const [subscription, setSubscription] = useState<PushSubscription | null>();
+  const [serviceWorkerError, setServiceWorkerError] = useState<Error | null>(null);
 
   useEffect(() => {
     serviceWorkerRegistrationPromise
       .then((registration) => registration?.pushManager?.getSubscription())
-      .then(setSubscription);
+      .then(setSubscription)
+      .catch((error) => setServiceWorkerError(error));
   }, [serviceWorkerRegistrationPromise]);
 
   const requestPermission = useCallback(async () => {
@@ -115,6 +120,20 @@ export function ServiceWorkerRegistrationProvider({
     [permission, requestPermission, subscribe, subscription, unsubscribe],
   );
 
-  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  const clearServiceWorkerError = useCallback(
+    () => setServiceWorkerError(null),
+    [setServiceWorkerError],
+  );
+
+  return (
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+    <Context.Provider value={value}>
+      {serviceWorkerError && !e2e ? (
+        <ModalCard isActive={Boolean(serviceWorkerError)} onClose={clearServiceWorkerError}>
+          <FormattedMessage {...messages.error} />
+        </ModalCard>
+      ) : null}
+      {children}
+    </Context.Provider>
+  );
 }
