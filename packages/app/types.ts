@@ -94,6 +94,7 @@ declare global {
       snapshotId?: number;
       displayAppMemberName?: boolean;
       displayInstallationPrompt?: boolean;
+      e2e?: boolean;
     };
   }
 }

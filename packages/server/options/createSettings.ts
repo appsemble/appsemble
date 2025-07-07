@@ -133,6 +133,7 @@ export async function createSettings({
       sentryDsn,
       sentryEnvironment,
       appUpdated: persistedApp.updated.toISOString(),
+      e2e: process.env.E2E,
     },
     app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : undefined,
   );

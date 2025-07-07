@@ -15,7 +15,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import { type Permission, type ServiceWorkerRegistrationContextType } from '../../types.js';
-import { apiUrl, appId, vapidPublicKey } from '../../utils/settings.js';
+import { apiUrl, appId, e2e, vapidPublicKey } from '../../utils/settings.js';
 
 interface ServiceWorkerRegistrationProviderProps {
   readonly children: ReactNode;
@@ -128,7 +128,7 @@ export function ServiceWorkerRegistrationProvider({
   return (
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     <Context.Provider value={value}>
-      {serviceWorkerError ? (
+      {serviceWorkerError && !e2e ? (
         <ModalCard isActive={Boolean(serviceWorkerError)} onClose={clearServiceWorkerError}>
           <FormattedMessage {...messages.error} />
         </ModalCard>
