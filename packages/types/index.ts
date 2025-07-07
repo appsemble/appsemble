@@ -2209,6 +2209,22 @@ export type PageDefinition =
   | LoopPageDefinition
   | TabsPageDefinition;
 
+interface AppLogo {
+  /**
+   * The location of the logo
+   *
+   * @default navbar
+   */
+  position?: 'hidden' | 'navbar';
+
+  /**
+   * The id or name of the app asset to use for the logo
+   *
+   * @default logo
+   */
+  asset?: string;
+}
+
 export interface AppDefinition {
   /**
    * The name of the app.
@@ -2287,6 +2303,11 @@ export interface AppDefinition {
      * @default 'left-menu'
      */
     navigation?: Navigation;
+
+    /**
+     * The settings for displaying the app logo.
+     */
+    logo?: AppLogo;
   };
 
   /**

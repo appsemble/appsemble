@@ -137,6 +137,7 @@ export async function publishResource({
             definition?.references ?? {},
           )) {
             resourceWithReferences[referencedProperty] =
+              resourceWithReferences[referencedProperty] ||
               publishedResourcesIds[resourceReference.resource]?.[
                 Number(resource[`$${resourceReference.resource}`] ?? -1)
               ];
