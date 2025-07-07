@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.33.5
-appVersion: 0.33.5
+version: 0.33.6
+appVersion: 0.33.6
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,11 +32,17 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "App: Add support for app logos for all apps."
     - kind: fixed
-      description: "Server: Server actions not working as expected with the history remapper."
+      description: "App: Handle service worker error."
     - kind: fixed
-      description: "Server: app.member.query action not applying roles correctly in
-        the sequelize query."
+      description: "Cli: Use the referencing property if it's present instead of the
+        dynamic $ one when publishing seed resources."
+    - kind: fixed
+      description: "Server: Assets' uniqueness now only applies to not deleted assets."
+    - kind: fixed
+      description: "Server: Generate correct query for is null and is not null queries."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

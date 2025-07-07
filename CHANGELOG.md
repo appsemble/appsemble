@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.33.6](https://gitlab.com/appsemble/appsemble/-/releases/0.33.6)] - 2025-07-07
+
+### Added
+
+- App: Add support for app logos for all apps.
+
+### Fixed
+
+- App: Handle service worker error.
+- Cli: Use the referencing property if it's present instead of the dynamic `$` one when publishing
+  seed resources.
+- Server: Assets' uniqueness now only applies to not deleted assets.
+- Server: Generate correct query for `is null` and `is not null` queries.
+
 ## \[[0.33.5](https://gitlab.com/appsemble/appsemble/-/releases/0.33.5)] - 2025-07-04
 
 ### Fixed
