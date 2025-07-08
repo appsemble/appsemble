@@ -168,10 +168,10 @@ export const paths = {
   '/api/apps/{appId}/app-members/{appMemberId}/role': appsAppIdAppMembersAppMemberIdRole,
   '/api/apps/{appId}/app-members/{appMemberId}': appsAppIdAppMembersAppMemberId,
   '/api/apps/{appId}/actions/{path}': appsAppIdActionsPath,
-  // XXX: Temporary workaround until this is fixed in Koas
-  // See https://gitlab.com/remcohaszing/koas/-/issues/2
   '/api/apps/{appId}/clonable-assets': appsAppIdClonableAssets,
   '/api/apps/{appId}/clonable-resources': appsAppIdClonableResources,
+  // XXX: Temporary workaround until this is fixed in Koas
+  // See https://gitlab.com/remcohaszing/koas/-/issues/2
   '/api/apps/{appId}/assets/\\$count': appsAppIdAssets$Count,
   '/api/apps/{appId}/assets/{assetId}': appsAppIdAssetsAssetId,
   '/api/apps/{appId}/assets': appsAppIdAssets,
