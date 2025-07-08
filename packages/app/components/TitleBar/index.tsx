@@ -45,7 +45,7 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
         ) : null}
         <div className="navbar-brand is-inline-flex is-flex-grow-1">
           <h2 className="navbar-item title is-4">{!hideName && (children || appName)}</h2>
-          {(definition.layout?.logo?.position || 'navbar') === 'navbar' ? (
+          {(definition.layout?.logo?.position || 'hidden') === 'navbar' ? (
             <img
               alt="app-logo"
               className={styles.logo}
