@@ -1,6 +1,6 @@
+import { type PageDefinition } from '@appsemble/lang-sdk';
 import { SideMenuProvider } from '@appsemble/react-components';
 import { type MenuItem } from '@appsemble/sdk';
-import { type PageDefinition } from '@appsemble/types';
 import { noop } from '@appsemble/utils';
 import {
   createContext,

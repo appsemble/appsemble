@@ -1,4 +1,4 @@
-import { remap } from '@appsemble/utils';
+import { remap } from '@appsemble/lang-sdk';
 import { describe, expect, it } from 'vitest';
 
 import { validateRadio } from './validateRadio.js';

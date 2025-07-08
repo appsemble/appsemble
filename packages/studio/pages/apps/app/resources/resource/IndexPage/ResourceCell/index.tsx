@@ -7,6 +7,7 @@ import { FormattedDate, FormattedMessage, FormattedNumber } from 'react-intl';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
+// XXX: unify this with webhook/resource upload logic
 const validator = new Validator();
 const firstLineRegex = /^(.*)\n?/;
 const whitespaceRegex = /^\s+$/;

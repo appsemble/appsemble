@@ -1,4 +1,4 @@
-import { AppPermission } from '@appsemble/types';
+import { AppPermission } from '@appsemble/lang-sdk';
 import { type Context, type Middleware } from 'koa';
 
 import { assertKoaCondition } from '../../../../../koa.js';

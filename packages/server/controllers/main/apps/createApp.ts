@@ -1,12 +1,18 @@
 import {
+  type AppDefinition,
+  AppValidator,
+  normalize,
+  validateAppDefinition,
+} from '@appsemble/lang-sdk';
+import {
   AppsembleError,
   assertKoaCondition,
   handleValidatorResult,
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
-import { normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 import webpush from 'web-push';
@@ -25,7 +31,6 @@ import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 
 export async function createApp(ctx: Context): Promise<void> {
   const {
-    openApi,
     request: {
       body: {
         OrganizationId,
@@ -70,13 +75,9 @@ export async function createApp(ctx: Context): Promise<void> {
   try {
     const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
 
-    handleValidatorResult(
-      ctx,
-      openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
-        throw: false,
-      }),
-      'App validation failed',
-    );
+    const appValidator = new AppValidator();
+
+    handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
 
     handleValidatorResult(
       ctx,

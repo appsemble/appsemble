@@ -1,4 +1,4 @@
-import { ActionError } from '@appsemble/types';
+import { ActionError } from '@appsemble/lang-sdk';
 import { describe, expect, it } from 'vitest';
 
 import { createTestAction } from '../makeActions.js';

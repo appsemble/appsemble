@@ -1,8 +1,8 @@
+import { parseBlockName } from '@appsemble/lang-sdk';
 import {
   type CreateSettingsParams,
   createSettings as createUtilsSettings,
 } from '@appsemble/node-utils';
-import { parseBlockName } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import {

@@ -1,5 +1,6 @@
+// TODO: don't depend on this, declare your own type
+import { type Remapper } from '@appsemble/lang-sdk';
 import { useBlock } from '@appsemble/preact';
-import { type Remapper } from '@appsemble/types';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';

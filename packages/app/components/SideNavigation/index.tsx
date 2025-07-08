@@ -1,3 +1,4 @@
+import { normalize, type PageDefinition, remap } from '@appsemble/lang-sdk';
 import {
   Button,
   CollapsibleMenuSection,
@@ -5,8 +6,6 @@ import {
   MenuItem,
   MenuSection,
 } from '@appsemble/react-components';
-import { type PageDefinition } from '@appsemble/types';
-import { normalize, remap } from '@appsemble/utils';
 import { Fragment, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -59,7 +58,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
       getVariable,
       appMemberInfo,
       context: { name },
-      locale: lang,
+      locale: lang!,
     }),
     [getMessage, getVariable, lang, appMemberInfo],
   );
@@ -71,10 +70,9 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
         defaultMessage: page.name,
       }).format() as string;
       const remapperContext = createRemapperContext(name);
-      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-      // (strictNullChecks)
-      // eslint-disable-next-line prettier/prettier
-      const navName = page.navTitle ? (remap(page.navTitle, null, remapperContext) as string) : name;
+      const navName = page.navTitle
+        ? (remap(page.navTitle, null, remapperContext) as string)
+        : name;
       return [name, navName];
     },
     [getAppMessage, createRemapperContext],
@@ -101,10 +99,9 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
           return (
             <MenuItem
               count={
-                // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-                // (strictNullChecks)
-                // eslint-disable-next-line prettier/prettier
-                page.badgeCount ? (remap(page.badgeCount, null, createRemapperContext(name)) as number) : undefined
+                page.badgeCount
+                  ? (remap(page.badgeCount, null, createRemapperContext(name)) as number)
+                  : undefined
               }
               icon={page.icon}
               key={page.name}

@@ -1,9 +1,5 @@
-import {
-  type AppDefinition,
-  type AppMemberGroup,
-  type AppRole,
-  type PageDefinition,
-} from '@appsemble/types';
+import { type AppDefinition, type AppRole, type PageDefinition } from '@appsemble/lang-sdk';
+import { type AppMemberGroup } from '@appsemble/types';
 
 import { checkPagePermissions } from './authorization.js';
 

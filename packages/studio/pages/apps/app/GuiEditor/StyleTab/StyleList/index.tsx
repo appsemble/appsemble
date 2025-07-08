@@ -1,9 +1,9 @@
-import { Button } from '@appsemble/react-components';
 import {
   type BasicPageDefinition,
   type FlowPageDefinition,
   type TabsPageDefinition,
-} from '@appsemble/types';
+} from '@appsemble/lang-sdk';
+import { Button } from '@appsemble/react-components';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useState } from 'react';
 import { type Document, type ParsedNode, type YAMLMap, type YAMLSeq } from 'yaml';

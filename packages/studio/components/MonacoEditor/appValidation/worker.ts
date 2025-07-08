@@ -1,18 +1,15 @@
 import {
-  type ActionType,
   type AppDefinition,
-  type BlockManifest,
-  type EventType,
-  type Theme,
-} from '@appsemble/types';
-import {
+  AppValidator,
   type IdentifiableBlock,
   iterApp,
   normalizeBlockName,
   type Prefix,
   stripBlockName,
+  type Theme,
   validateAppDefinition,
-} from '@appsemble/utils';
+} from '@appsemble/lang-sdk';
+import { type ActionType, type BlockManifest, type EventType } from '@appsemble/types';
 import {
   type editor,
   type IRange,
@@ -29,6 +26,8 @@ import {
   type Node,
   parseDocument,
 } from 'yaml';
+
+const appValidator = new AppValidator();
 
 const blockMap = new Map<string, Promise<BlockManifest>>();
 
@@ -220,7 +219,13 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
     if (!doc) {
       return;
     }
-    const { errors } = await validateAppDefinition(definition, getCachedBlockVersions);
+    const validatorResult = appValidator.validateApp(definition);
+    const { errors } = await validateAppDefinition(
+      definition,
+      getCachedBlockVersions,
+      undefined,
+      validatorResult,
+    );
 
     return errors.map((error) => {
       const node = doc.getIn(error.path, true);

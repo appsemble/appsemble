@@ -1,5 +1,6 @@
+// TODO: don't depend on this, declare your own type
+import { type Theme } from '@appsemble/lang-sdk';
 import { type BlockProps, withBlock } from '@appsemble/preact';
-import { type Theme } from '@appsemble/types';
 import {
   CircleMarker,
   type DivIcon,

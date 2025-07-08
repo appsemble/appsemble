@@ -1,12 +1,13 @@
-import { IconButton } from '@appsemble/react-components';
 import {
+  baseTheme,
   type BasicPageDefinition,
   type FlowPageDefinition,
   type FontDefinition,
+  googleFonts,
   type TabsPageDefinition,
   type Theme,
-} from '@appsemble/types';
-import { baseTheme, googleFonts } from '@appsemble/utils';
+} from '@appsemble/lang-sdk';
+import { IconButton } from '@appsemble/react-components';
 import { type MutableRefObject, type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { type Document, type Node, type ParsedNode, type YAMLMap } from 'yaml';

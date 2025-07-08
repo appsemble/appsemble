@@ -1,6 +1,11 @@
-import { type AppDefinition, type AppsembleMessages, type BlockDefinition } from '@appsemble/types';
+import {
+  type AppDefinition,
+  type BlockDefinition,
+  iterApp,
+  type Prefix,
+} from '@appsemble/lang-sdk';
+import { type AppsembleMessages } from '@appsemble/types';
 
-import { iterApp, type Prefix } from './index.js';
 import { normalize } from './normalize.js';
 
 /**

@@ -34,6 +34,7 @@
     "@appsemble/node-utils": "0.33.6",
     "@appsemble/types": "0.33.6",
     "@appsemble/utils": "0.33.6",
+    "@appsemble/lang-sdk": "0.33.6",
     "@appsemble/webpack-core": "0.33.6",
     "@formatjs/cli-lib": "^6.0.0",
     "@types/fs-extra": "^11.0.0",

@@ -1,6 +1,10 @@
+import {
+  type AppRole,
+  type CustomAppPermission,
+  getAppPossiblePermissions,
+  type RoleDefinition,
+} from '@appsemble/lang-sdk';
 import { Button, useMessages } from '@appsemble/react-components';
-import { type AppRole, type CustomAppPermission, type RoleDefinition } from '@appsemble/types';
-import { getAppPossiblePermissions } from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 

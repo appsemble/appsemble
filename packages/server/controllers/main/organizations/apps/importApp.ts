@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 
+import { AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
   AppsembleError,
   assertKoaCondition,
@@ -14,7 +15,7 @@ import {
   uploadS3File,
 } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
-import { normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
+import { normalize, validateStyle } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { lookup } from 'mime-types';
@@ -45,7 +46,6 @@ import { processHooks, processReferenceHooks } from '../../../../utils/resource.
 
 export async function importApp(ctx: Context): Promise<void> {
   const {
-    openApi,
     pathParams: { organizationId },
     request: { body: importFile },
   } = ctx;
@@ -71,13 +71,9 @@ export async function importApp(ctx: Context): Promise<void> {
     const yaml = await definitionFile.async('text');
     const theme = zip.folder('theme');
     const definition = parse(yaml, { maxAliasCount: 10_000 });
-    handleValidatorResult(
-      ctx,
-      openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
-        throw: false,
-      }),
-      'App validation failed',
-    );
+
+    const appValidator = new AppValidator();
+    handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
     handleValidatorResult(
       ctx,
       await validateAppDefinition(definition, getBlockVersions),

@@ -1,6 +1,6 @@
+import { type ActionError } from '@appsemble/lang-sdk';
 import { bootstrap } from '@appsemble/preact';
 import { Button, Form, FormButtons, Message } from '@appsemble/preact-components';
-import { type ActionError } from '@appsemble/types';
 import { identity } from '@appsemble/utils';
 import classNames from 'classnames';
 import { recursive } from 'merge';

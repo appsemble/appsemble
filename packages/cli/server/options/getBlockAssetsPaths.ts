@@ -1,5 +1,5 @@
+import { prefixBlockURL } from '@appsemble/lang-sdk';
 import { type GetBlocksAssetsPathsParams } from '@appsemble/node-utils';
-import { prefixBlockURL } from '@appsemble/utils';
 
 export function getBlocksAssetsPaths({ context }: GetBlocksAssetsPathsParams): Promise<string[]> {
   const { appBlocks } = context;

@@ -1,4 +1,4 @@
-import { PredefinedAppRole } from '@appsemble/types';
+import { PredefinedAppRole } from '@appsemble/lang-sdk';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';

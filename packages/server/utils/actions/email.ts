@@ -1,6 +1,5 @@
+import { defaultLocale, type EmailActionDefinition, remap } from '@appsemble/lang-sdk';
 import { getRemapperContext, getS3FileBuffer, throwKoaError } from '@appsemble/node-utils';
-import { type EmailActionDefinition } from '@appsemble/types';
-import { defaultLocale, remap } from '@appsemble/utils';
 import { extension } from 'mime-types';
 import { type SendMailOptions } from 'nodemailer';
 

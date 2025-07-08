@@ -140,6 +140,7 @@ pack:
     - mkdir build/
     - npm --pack-destination build --workspace @appsemble/types pack
     - npm --pack-destination build --workspace @appsemble/sdk pack
+    - npm --pack-destination build --workspace @appsemble/lang-sdk pack
     - npm --pack-destination build --workspace @appsemble/preact pack
     - npm --pack-destination build --workspace @appsemble/utils pack
     - npm --pack-destination build --workspace @appsemble/node-utils pack
@@ -499,7 +500,7 @@ e2e:
     - npm run appsemble -- app publish 'apps/survey' --modify-context
     - npm run appsemble -- app publish 'apps/unlittered' --modify-context
     - npm --workspace @appsemble/types run prepack
-    - npm --workspace @appsemble/utils run prepack
+    - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/e2e run e2e -- --max-failures 6
   artifacts:
     expose_as: Playwright videos

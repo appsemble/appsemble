@@ -1,4 +1,4 @@
-import { type BaseActionDefinition } from '@appsemble/types';
+import { type BaseActionDefinition } from '@appsemble/lang-sdk';
 
 import { type ServerActionParameters } from './index.js';
 

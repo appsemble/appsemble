@@ -1,6 +1,6 @@
+import { parseBlockName } from '@appsemble/lang-sdk';
 import { Loader, useData } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
-import { parseBlockName } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 

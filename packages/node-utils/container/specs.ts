@@ -1,10 +1,10 @@
+import { type CompanionContainerDefinition } from '@appsemble/lang-sdk';
 import {
   formatEnv,
   logger,
   resourceDefaults,
   validateContainerResources,
 } from '@appsemble/node-utils';
-import { type CompanionContainerDefinition } from '@appsemble/types';
 import {
   type V1Deployment,
   type V1DeploymentSpec,

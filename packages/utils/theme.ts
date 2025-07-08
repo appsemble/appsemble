@@ -1,6 +1,4 @@
-import { type Theme } from '@appsemble/types';
-
-import { baseTheme } from './constants/index.js';
+import { baseTheme, type Theme } from '@appsemble/lang-sdk';
 
 /**
  * Declare URLSearchParams in way that’s compatible between `dom` lib and `node` types.

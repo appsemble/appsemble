@@ -1,9 +1,6 @@
+import { type ResourceHooks } from '@appsemble/lang-sdk';
 import { CheckboxField, FormComponent, Loader, useMessages } from '@appsemble/react-components';
-import {
-  type ResourceHooks,
-  resourceSubscribableAction,
-  type SubscriptionResponse,
-} from '@appsemble/types';
+import { resourceSubscribableAction, type SubscriptionResponse } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useEffect, useState } from 'react';

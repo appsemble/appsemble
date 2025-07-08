@@ -1,5 +1,10 @@
+import {
+  camelToHyphen,
+  defaultLocale,
+  examples,
+  type RemapperExampleKeys,
+} from '@appsemble/lang-sdk';
 import { Title } from '@appsemble/react-components';
-import { camelToHyphen, defaultLocale, examples, type RemapperExampleKeys } from '@appsemble/utils';
 import { type OpenAPIV3 } from 'openapi-types';
 import { Fragment, type ReactNode } from 'react';
 

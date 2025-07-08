@@ -1,4 +1,13 @@
 import {
+  createExampleContext,
+  examples,
+  PredefinedAppRole,
+  remap,
+  type RemapperContext,
+  type RemapperExampleKeys,
+  RemapperValidator,
+} from '@appsemble/lang-sdk';
+import {
   applyRefs,
   Button,
   FileUpload,
@@ -6,16 +15,7 @@ import {
   Select,
   useToggle,
 } from '@appsemble/react-components';
-import {
-  createExampleContext,
-  examples,
-  remap,
-  type RemapperContext,
-  type RemapperExampleKeys,
-  schemas,
-} from '@appsemble/utils';
 import classNames from 'classnames';
-import { Validator } from 'jsonschema';
 import { editor, type IDisposable } from 'monaco-editor/esm/vs/editor/editor.api.js';
 // Required for syntax highlighting in the Playground input and output editors
 import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
@@ -199,7 +199,11 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
 
   const context: RemapperContext = useMemo(() => {
     const url = new URL(window.origin);
-    return createExampleContext(url, lang, userInfo);
+    return createExampleContext(url, lang, {
+      ...userInfo,
+      demo: false,
+      role: PredefinedAppRole.Member,
+    });
   }, [lang, userInfo]);
 
   const [jsonError, setJsonError] = useState(false);
@@ -256,14 +260,9 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
       setJsonError(false);
       const parsedRemapper = parse(remapper);
       setYamlError(null);
-      const validator = new Validator();
-      Object.entries(schemas).map(([path, schema]) =>
-        validator.addSchema(schema, `/#/components/schemas/${path}`),
-      );
+      const validator = new RemapperValidator();
       // TODO: consider using a service worker to offload the work from the main thread
-      const result = validator.validate(parsedRemapper, schemas.RemapperDefinition, {
-        nestedErrors: true,
-      });
+      const result = validator.validateRemapper(parsedRemapper);
 
       if (result.errors.length) {
         setRemapperErrorMessages(() => {

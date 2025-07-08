@@ -1,3 +1,4 @@
+import { defaultLocale, stripBlockName } from '@appsemble/lang-sdk';
 import {
   Content,
   Icon,
@@ -10,7 +11,6 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
-import { defaultLocale, stripBlockName } from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useNavigate, useParams } from 'react-router-dom';

@@ -2,8 +2,9 @@ import { existsSync } from 'node:fs';
 import { readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
 
+import { defaultLocale, type RemapperContext } from '@appsemble/lang-sdk';
 import { type App, type AppsembleMessages } from '@appsemble/types';
-import { defaultLocale, has, objectCache, type RemapperContext } from '@appsemble/utils';
+import { has, objectCache } from '@appsemble/utils';
 import { memoize } from '@formatjs/fast-memoize';
 import { type CssNode, generate, parse, walk } from 'css-tree';
 import { copy, ensureDir } from 'fs-extra';

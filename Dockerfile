@@ -25,6 +25,7 @@ COPY . .
 RUN npm run scripts -- build
 RUN npm --workspace @appsemble/types run prepack
 RUN npm --workspace @appsemble/sdk run prepack
+RUN npm --workspace @appsemble/lang-sdk run prepack
 RUN npm --workspace @appsemble/utils run prepack
 RUN npm --workspace @appsemble/node-utils run prepack
 RUN npm --workspace @appsemble/server run prepack
@@ -34,6 +35,7 @@ FROM node:20.18-bookworm-slim@sha256:ffc11dbf16dd0abcbb7b837410601b4d5592db2d037
 WORKDIR /app
 COPY --from=build /app/packages/node-utils packages/node-utils
 COPY --from=build /app/packages/sdk packages/sdk
+COPY --from=build /app/packages/lang-sdk packages/lang-sdk
 COPY --from=build /app/packages/server packages/server
 COPY --from=build /app/packages/types packages/types
 COPY --from=build /app/packages/utils packages/utils

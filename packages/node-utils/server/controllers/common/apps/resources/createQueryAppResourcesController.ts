@@ -1,10 +1,10 @@
+import { defaultLocale, remap } from '@appsemble/lang-sdk';
 import {
   type FindOptions,
   getRemapperContext,
   getResourceDefinition,
   type Options,
 } from '@appsemble/node-utils';
-import { defaultLocale, remap } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 
 import { generateResourceQuery } from '../../../../utils/resources.js';

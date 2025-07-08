@@ -5,6 +5,7 @@ import { inspect } from 'node:util';
 
 import { AppsembleError, logger, opendirSafe, readData } from '@appsemble/node-utils';
 import {
+  type BlockManifest,
   type ProjectBuildConfig,
   type ProjectImplementations,
   type ProjectManifest,
@@ -56,16 +57,17 @@ export async function makeProjectPayload(
 
   const form = new FormData();
 
-  const gatheredData = {} as ProjectManifest;
+  const gatheredData = {} as BlockManifest;
 
-  const { description, layout, longDescription, name, version, visibility } = buildConfig;
+  const { description, layout, longDescription, name, version, visibility, wildcardActions } =
+    buildConfig;
 
   const { actions, events, messages, parameters } = getProjectImplementations(buildConfig);
 
   const files = await readdir(dir);
   const icon = files.find((entry) => entry.match(/^icon\.(png|svg)$/));
 
-  function append(field: keyof ProjectManifest, value: any): void {
+  function append(field: keyof BlockManifest, value: any): void {
     if (value) {
       const serialized = typeof value === 'string' ? value : JSON.stringify(value);
       logger.verbose(`Using ${field}: ${inspect(value, { colors: true, depth: 20 })}`);
@@ -89,6 +91,7 @@ export async function makeProjectPayload(
   append('name', name);
   append('parameters', parameters);
   append('version', version);
+  append('wildcardActions', wildcardActions);
 
   if (icon) {
     const iconPath = join(dir, icon);

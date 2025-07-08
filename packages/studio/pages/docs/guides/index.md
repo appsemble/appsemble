@@ -40,4 +40,6 @@ continue on this basic app to add more advanced features.
 - [Storage](storage.md)
 - [Theming](theming.md)
 - [TLS](tls.md)
+- [Video Thumbnails Generation](video-thumbnails.md)
+- [Webhooks](webhooks.md)
 - [YAML syntax](yaml-syntax.mdx)

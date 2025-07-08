@@ -1,5 +1,5 @@
 import { RemapperRef } from './RemapperRef/index.js';
-import { conditionalRemappers } from '../../../../utils/reference-schemas/remappers/index.js';
+import { referenceSchemas } from '@appsemble/lang-sdk';
 
 # Conditions
 
@@ -40,4 +40,4 @@ time without nesting a ton of if-statements inside each other.
 
 ## Remappers
 
-<RemapperRef remappers={conditionalRemappers} />
+<RemapperRef remappers={referenceSchemas.conditionalRemappers} />

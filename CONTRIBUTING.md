@@ -165,10 +165,11 @@ After adding a new permission to the `OrganizationPermission` enum in
 `packages/types/permissions.ts` add the permission and it’s description to
 `packages/studio/pages/organizations/messages.ts`.
 
-After adding a new permission to the `AppPermission` enum in `packages/types/permissions.ts`, add a
-corresponding one to the `OrganizationPermission` enum and map them in the
-`appOrganizationPermissionMapping` object. Then add the permissions to the relevant roles at
-`packages/types/roles.ts`.
+After adding a new permission to the `AppPermission` enum in
+`./packages/lang-sdk/types/permission.ts`, add a corresponding one to the `OrganizationPermission`
+enum and map them in the `appOrganizationPermissionMapping` object at
+`packages/types/permissions.ts`. Then add the permissions to the relevant roles at
+`packages/lang-sdk/types/roles.ts` and `packages/types/roles.ts`.
 
 ### Testing
 
@@ -322,8 +323,8 @@ collected here that may help you build your end 2 end tests:
 
 - If you are intercepting a request, make sure the target URL is specific enough so it won't get
   intercepted in a place you didn't intend.
-- If you are intercepting a request, make sure you do it before the request action is called during the test. 
-  Otherwise it won't be caught.
+- If you are intercepting a request, make sure you do it before the request action is called during
+  the test. Otherwise it won't be caught.
 - Utilize [global setup projects](https://playwright.dev/docs/test-global-setup-teardown) to run
   setup steps before the tests run.
   - These steps are included in the HTML report and trace viewer and allow you to use fixtures

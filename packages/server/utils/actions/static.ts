@@ -1,4 +1,4 @@
-import { type StaticActionDefinition } from '@appsemble/types';
+import { type StaticActionDefinition } from '@appsemble/lang-sdk';
 
 import { type ServerActionParameters } from './index.js';
 

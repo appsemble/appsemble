@@ -41,6 +41,7 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
     }
   }
 
+  // XXX: unify with resource upload logic
   handleValidatorResult(
     ctx,
     openApi!.validate(body || {}, parsedSchema, {

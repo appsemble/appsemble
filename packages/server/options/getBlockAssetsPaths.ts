@@ -1,5 +1,5 @@
+import { parseBlockName, prefixBlockURL } from '@appsemble/lang-sdk';
 import { type GetBlocksAssetsPathsParams } from '@appsemble/node-utils';
-import { parseBlockName, prefixBlockURL } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { BlockAsset, BlockVersion } from '../models/index.js';
@@ -20,6 +20,8 @@ export async function getBlocksAssetsPaths({
     ],
     where: {
       [Op.or]: identifiableBlocks.map(({ type, version }) => {
+        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // @ts-ignore-error 2488
         const [OrganizationId, name] = parseBlockName(type);
         return { name, OrganizationId, version };
       }),

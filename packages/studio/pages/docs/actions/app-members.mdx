@@ -1,6 +1,6 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
 import { ActionRef } from './ActionRef/index.tsx';
-import { appMemberActions as actions } from '../../../../utils/reference-schemas/actions/appMember.ts';
+import { referenceSchemas } from '@appsemble/lang-sdk';
 
 # App Member
 
@@ -34,7 +34,7 @@ security:
 
 ### app.member.register<Side name="app.member.register" />
 
-<ActionRef action={actions['app.member.register']} />
+<ActionRef action={referenceSchemas.appMemberActions['app.member.register']} />
 
 The `properties` property is used to denote any custom properties associated with the app member.
 All the values for properties are converted into strings.
@@ -80,7 +80,7 @@ blocks:
 
 ### app.member.invite<Side name="app.member.invite" />
 
-<ActionRef action={actions['app.member.invite']} />
+<ActionRef action={referenceSchemas.appMemberActions['app.member.invite']} />
 
 The `role` property must exist in the roles property of the app's security definition or in the
 predefined app roles in the system - `Member`, `MembersManager`, `GroupMembersManager`,
@@ -113,7 +113,7 @@ blocks:
 
 ### app.member.login<Side name="app.member.login" />
 
-<ActionRef action={actions['app.member.login']} />
+<ActionRef action={referenceSchemas.appMemberActions['app.member.login']} />
 
 The `email` and `password` properties are similar to those used at the time of registering. Here is
 an example of this action in use.
@@ -148,7 +148,7 @@ blocks:
 
 ### app.member.logout<Side name="app.member.logout" />
 
-<ActionRef action={actions['app.member.logout']} />
+<ActionRef action={referenceSchemas.appMemberActions['app.member.logout']} />
 
 Here is an example of this action in use.
 
@@ -167,7 +167,7 @@ blocks:
 
 ### app.member.query<Side name="app.member.query" />
 
-<ActionRef action={actions['app.member.query']} />
+<ActionRef action={referenceSchemas.appMemberActions['app.member.query']} />
 
 This action requires the `$member:query` app permission. For more information check out
 [security](../app/security.md#permissions). Below is an example of this action being used to fetch
@@ -187,7 +187,7 @@ blocks:
 
 ### app.member.current.patch<Side name="app.member.current.patch" />
 
-<ActionRef action={actions['app.member.current.patch']} />
+<ActionRef action={referenceSchemas.appMemberActions['app.member.current.patch']} />
 
 All the values for the properties are converted into strings. Here is an example of this action in
 use.
@@ -213,7 +213,7 @@ blocks:
 
 ### app.member.role.update<Side name="app.member.role.update" />
 
-<ActionRef action={actions['app.member.role.update']} />
+<ActionRef action={referenceSchemas.appMemberActions['app.member.role.update']} />
 
 This action requires the `$member:role:update` app permission. For more information check out
 [security](../app/security.md#permissions). Here is an example of this action in use.
@@ -239,7 +239,7 @@ blocks:
 
 ### app.member.properties.patch<Side name="app.member.properties.patch" />
 
-<ActionRef action={actions['app.member.properties.patch']} />
+<ActionRef action={referenceSchemas.appMemberActions['app.member.properties.patch']} />
 
 All the values for properties are converted into strings. This action requires the
 `$member:properties:patch` app permission. For more information check out
@@ -268,7 +268,7 @@ blocks:
 
 ### app.member.delete<Side name="app.member.delete" />
 
-<ActionRef action={actions['app.member.delete']} />
+<ActionRef action={referenceSchemas.appMemberActions['app.member.delete']} />
 
 This action requires the `$member:delete` app permission. For more information check out
 [security](../app/security.md#permissions). Here is an example of this action in use.

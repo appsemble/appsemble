@@ -1,5 +1,6 @@
+import { type AppRole } from '@appsemble/lang-sdk';
 import { AppsembleError, authenticate, logger } from '@appsemble/node-utils';
-import { type AppRole, type Group } from '@appsemble/types';
+import { type Group } from '@appsemble/types';
 import axios from 'axios';
 
 interface SharedGroupParams {

@@ -1,5 +1,5 @@
+import { assignAppMemberProperties } from '@appsemble/lang-sdk';
 import { type AppMemberInfo } from '@appsemble/types';
-import { assignAppMemberProperties } from '@appsemble/utils';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 

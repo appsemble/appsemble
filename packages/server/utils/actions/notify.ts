@@ -1,6 +1,5 @@
+import { defaultLocale, type NotifyActionDefinition, remap } from '@appsemble/lang-sdk';
 import { getRemapperContext } from '@appsemble/node-utils';
-import { type NotifyActionDefinition } from '@appsemble/types';
-import { defaultLocale, remap } from '@appsemble/utils';
 
 import { type ServerActionParameters } from './index.js';
 

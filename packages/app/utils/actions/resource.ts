@@ -1,4 +1,4 @@
-import { type Remapper } from '@appsemble/types';
+import { type Remapper } from '@appsemble/lang-sdk';
 import axios from 'axios';
 
 import { type ActionCreator } from './index.js';

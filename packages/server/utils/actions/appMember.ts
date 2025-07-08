@@ -1,5 +1,4 @@
-import { type AppMemberQueryAction, type AppRole } from '@appsemble/types';
-import { remap } from '@appsemble/utils';
+import { type AppMemberQueryAction, remap } from '@appsemble/lang-sdk';
 import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';

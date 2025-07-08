@@ -1,6 +1,6 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
 import { ActionRef } from './ActionRef/index.tsx';
-import { flowActions as actions } from '../../../../utils/reference-schemas/actions/flow.ts';
+import { referenceSchemas } from '@appsemble/lang-sdk';
 
 # Flow
 
@@ -55,7 +55,7 @@ To use flow actions, you need a flow page:
 
 ### flow.next<Side name="flow.next" />
 
-<ActionRef action={actions['flow.next']} />
+<ActionRef action={referenceSchemas.flowActions['flow.next']} />
 
 Here is an example of this action being used.
 
@@ -75,7 +75,7 @@ blocks:
 
 ### flow.finish<Side name="flow.finish" />
 
-<ActionRef action={actions['flow.finish']} />
+<ActionRef action={referenceSchemas.flowActions['flow.finish']} />
 
 Here is an example of this action being used.
 
@@ -95,7 +95,7 @@ blocks:
 
 ### flow.back<Side name="flow.back" />
 
-<ActionRef action={actions['flow.back']} />
+<ActionRef action={referenceSchemas.flowActions['flow.back']} />
 
 Here is an example of this action being used.
 
@@ -115,7 +115,7 @@ blocks:
 
 ### flow.cancel<Side name="flow.cancel" />
 
-<ActionRef action={actions['flow.cancel']} />
+<ActionRef action={referenceSchemas.flowActions['flow.cancel']} />
 
 Here is an example of how to use this action.
 
@@ -132,7 +132,7 @@ blocks:
 
 ### flow.to<Side name="flow.to" />
 
-<ActionRef action={actions['flow.to']} />
+<ActionRef action={referenceSchemas.flowActions['flow.to']} />
 
 Here is how you can use this action in your app.
 

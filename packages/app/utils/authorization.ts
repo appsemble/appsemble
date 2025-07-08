@@ -1,14 +1,14 @@
 import {
   type AppDefinition,
-  type AppMemberGroup,
   type AppRole,
   type BlockDefinition,
+  getAppInheritedRoles,
   type PageDefinition,
   type Security,
   type TabsPageDefinition,
   type ViewRole,
-} from '@appsemble/types';
-import { getAppInheritedRoles } from '@appsemble/utils';
+} from '@appsemble/lang-sdk';
+import { type AppMemberGroup } from '@appsemble/types';
 
 const defaultAllowedPages = new Set(['Login', 'Register']);
 

@@ -92,7 +92,11 @@ A long description for the app.
 The long description will be rendered on the app details page. Markdown content is supported.
 `,
     },
-    definition: { $ref: '#/components/schemas/AppDefinition' },
+    definition: {
+      type: 'object',
+      additionalProperties: true,
+      description: 'An app definition describes what an Appsemble app looks like.',
+    },
     screenshotUrls: {
       type: 'array',
       description: 'A list of URLs referencing app screenshots',

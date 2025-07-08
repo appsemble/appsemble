@@ -34,6 +34,7 @@
     "@appsemble/react-components": "0.33.6",
     "@appsemble/sdk": "0.33.6",
     "@appsemble/types": "0.33.6",
+    "@appsemble/lang-sdk": "0.33.6",
     "@appsemble/utils": "0.33.6",
     "@appsemble/web-utils": "0.33.6",
     "@browser-logos/chrome": "^2.0.0",

@@ -1,13 +1,13 @@
 import { type EventEmitter } from 'events';
 
-import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
 import {
   ActionError,
   type BlockDefinition,
   type PageDefinition,
-  type ProjectImplementations,
   type Remapper,
-} from '@appsemble/types';
+} from '@appsemble/lang-sdk';
+import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
+import { type ProjectImplementations } from '@appsemble/types';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 

@@ -1,4 +1,4 @@
-import { camelToHyphen, defaultLocale } from '@appsemble/utils';
+import { camelToHyphen, defaultLocale } from '@appsemble/lang-sdk';
 import { type Schema as JSONSchema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
 import { type ReactNode } from 'react';
