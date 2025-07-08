@@ -9,12 +9,13 @@ import {
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
+  useData,
   useLocationString,
 } from '@appsemble/react-components';
 import { type App, OrganizationPermission, type Template } from '@appsemble/types';
 import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -40,8 +41,8 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
   const redirect = useLocationString();
   const { hash } = useLocation();
   const { organizations, userInfo } = useUser();
-  const [hasClonableResources, setHasClonableResources] = useState<boolean>(false);
-  const [hasClonableAssets, setHasClonableAssets] = useState<boolean>(false);
+  const { data: hasClonableResources } = useData<boolean>(`/api/apps/${app.id}/clonable-resources`);
+  const { data: hasClonableAssets } = useData<boolean>(`/api/apps/${app.id}/clonable-assets`);
 
   const createOrganizations =
     organizations?.filter((org) =>
@@ -61,15 +62,6 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
     }),
     [app, organizationId],
   );
-
-  useEffect(() => {
-    (async () => {
-      const resourcesResult = await axios.get(`/api/apps/${app.id}/clonable-resources`);
-      setHasClonableResources(resourcesResult.data);
-      const assetsResult = await axios.get(`/api/apps/${app.id}/clonable-assets`);
-      setHasClonableAssets(assetsResult.data);
-    })();
-  }, [app.id]);
 
   const cloneApp = useCallback(
     async (values: Template) => {
