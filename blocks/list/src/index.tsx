@@ -245,17 +245,15 @@ bootstrap(
       collapsible ? (
         <div className="px-4">
           {leftoverData.length ? renderItems(leftoverData) : null}
-          {Object.entries(groupedData).length
-            ? Object.entries(groupedData).map(([key, value], index) => (
-                <CollapsibleListComponent
-                  index={index}
-                  items={value}
-                  key={key}
-                  renderItems={renderItems}
-                  title={key}
-                />
-              ))
-            : renderFirstList()}
+          {Object.entries(groupedData).map(([key, value], index) => (
+            <CollapsibleListComponent
+              index={index}
+              items={value}
+              key={key}
+              renderItems={renderItems}
+              title={key}
+            />
+          ))}
         </div>
       ) : (
         <div className="px-4">
