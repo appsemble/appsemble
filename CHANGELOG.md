@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.33.7](https://gitlab.com/appsemble/appsemble/-/releases/0.33.7)] - 2025-07-09
+
+### Changed
+
+- App: Hide the app logo from the title bar by default.
+
+### Fixed
+
+- Block(`list`): Items outside a group are now rendered only once.
+- Lang-sdk: App validation fails for resource actions that are used only in cron job.
+
 ## \[[0.33.6](https://gitlab.com/appsemble/appsemble/-/releases/0.33.6)] - 2025-07-07
 
 ### Added
