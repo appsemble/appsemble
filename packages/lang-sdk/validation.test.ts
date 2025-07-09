@@ -2383,6 +2383,23 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should not throw if an action is used only in a cron', async () => {
+    const app = createTestApp();
+    Object.assign(app.security ?? {}, { cron: { permissions: ['$resource:person:create'] } });
+    app.cron = {
+      everyDayAtTwelve: {
+        schedule: '* 12 * * *',
+        action: {
+          type: 'resource.create',
+          resource: 'person',
+        },
+      },
+    };
+
+    const results = await validateAppDefinition(app, () => []);
+    expect(results.valid).toBe(true);
+  });
+
   it('should report if there is a cron security definition but cron is not defined', async () => {
     const app = createTestApp();
     app.security = {
