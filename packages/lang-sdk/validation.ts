@@ -1257,6 +1257,10 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
           const allPermissions = definition.security.guest?.permissions || [];
 
+          if (definition.security?.cron) {
+            allPermissions.push(...(definition.security.cron.permissions ?? []));
+          }
+
           if (definition.security.roles) {
             const allRolePermissions = getAppRolePermissions(
               definition.security,
