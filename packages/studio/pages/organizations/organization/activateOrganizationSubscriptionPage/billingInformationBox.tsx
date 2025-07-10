@@ -54,10 +54,10 @@ export function BillingInformationBox({
       houseNumber: organization.houseNumber || '',
       city: organization.city || '',
       zipCode: organization.zipCode || '',
-      countryCode: country,
-      name: organization.name || '',
+      countryCode: organization.countryCode,
+      name: organization.name || organization.id || '',
     }),
-    [organization, country],
+    [organization],
   );
 
   const changeCountry = useCallback(
@@ -81,7 +81,11 @@ export function BillingInformationBox({
     }: typeof defaultValues) => {
       const formData = new FormData();
       formData.set('email', email);
-      formData.set('vatIdNumber', vatIdNumber);
+      if (country === 'NL') {
+        formData.set('vatIdNumber', '');
+      } else {
+        formData.set('vatIdNumber', vatIdNumber);
+      }
       formData.set('invoiceReference', invoiceReference);
       formData.set('streetName', streetName);
       formData.set('houseNumber', houseNumber);
@@ -127,7 +131,7 @@ export function BillingInformationBox({
       }
       nextStep();
     },
-    [defaultValues, nextStep, organization, setOrganizations, onChangeOrganization],
+    [defaultValues, nextStep, organization, setOrganizations, onChangeOrganization, country],
   );
 
   return (

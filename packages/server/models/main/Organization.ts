@@ -3,6 +3,7 @@ import { PaymentProvider, SubscriptionPlanType } from '@appsemble/types';
 import {
   AfterBulkCreate,
   AfterCreate,
+  AllowNull,
   BelongsToMany,
   Column,
   CreatedAt,
@@ -55,6 +56,7 @@ export class Organization extends Model {
   @Column(DataType.ENUM(PaymentProvider.Stripe))
   preferredPaymentProvider?: PaymentProvider;
 
+  @AllowNull(true)
   @Column(DataType.STRING)
   vatIdNumber?: string;
 

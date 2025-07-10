@@ -1,6 +1,6 @@
-import { expect, test } from '../../fixtures/test/index.js';
+import { expect, test } from '../../../index.js';
 
-const organization = 'appsemble';
+const organization = 'Appsemble';
 const email = 'test+test_mode@test.com';
 const streetName = 'street one';
 const houseNumber = '12a';
@@ -12,7 +12,7 @@ test.describe('Payments', () => {
   const { CI } = process.env;
 
   test('should cancel a subscription', async ({ page }) => {
-    await page.goto(`/en/organizations/${organization}/subscriptions`);
+    await page.goto(`/en/organizations/${organization.toLowerCase()}/subscriptions`);
     await page
       .locator('.card:has-text("STANDARD")')
       .getByRole('button', { name: 'Cancel' })
@@ -29,13 +29,13 @@ test.describe('Payments', () => {
   });
 
   (CI ? test.skip : test)('should confirm correct redirect by extension', async ({ page }) => {
-    await page.goto(`/en/organizations/${organization}/subscriptions`);
+    await page.goto(`/en/organizations/${organization.toLowerCase()}/subscriptions`);
     await page.locator('.card:has-text("STANDARD")').getByRole('link', { name: 'Extend' }).click();
     await expect(page).toHaveTitle('Activate · Appsemble', { timeout: 10_000 });
   });
 
   test('should purchase a subscription', async ({ page }) => {
-    await page.goto(`/en/organizations/${organization}/subscriptions`);
+    await page.goto(`/en/organizations/${organization.toLowerCase()}/subscriptions`);
     await page.locator('.card:has-text("EXTENSIVE")').getByRole('link', { name: 'Switch' }).click();
 
     await expect(page.getByText('Select type of')).toBeVisible();

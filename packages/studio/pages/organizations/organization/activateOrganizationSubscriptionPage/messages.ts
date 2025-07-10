@@ -259,4 +259,8 @@ export const messages = defineMessages({
       'Something went wrong regarding your purchase and payment could not be collected.',
     id: 'studio.ZJUdgS',
   },
+  incorrectVatId: {
+    defaultMessage: 'Please double check the provided VAT id on "Billing information" page.',
+    id: 'studio.sw/YAo',
+  },
 });

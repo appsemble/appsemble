@@ -135,6 +135,19 @@ Configure the environment variables for Appsemble to connect with the Minio inst
 
 
 {{/*
+Configure the environment variable for Appsemble to authenticate incoming Stripe webhooks.
+*/}}
+{{- define "appsemble.stripeSecret" -}}
+{{- with .Values.stripeSecret }}
+- name: STRIPE_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ . | quote }}
+      key: "stripe-secret"
+{{- end }}
+{{- end }}
+
+{{/*
 Configure the environment variables for Sentry.
 */}}
 {{- define "appsemble.sentry" -}}

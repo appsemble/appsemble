@@ -785,6 +785,27 @@ review:
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
+    # Stripe webhook setup
+    - kubectl delete secret stripe-api-key || true
+    - kubectl create secret generic stripe-api-key --from-literal=stripe-api-key="$STRIPE_API_KEY"
+    - apk add --no-cache curl jq tar
+    - LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
+    - URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
+    - curl -L -o stripe.tar.gz "$URL"
+    - tar -xvf stripe.tar.gz
+    - mv stripe /usr/local/bin/
+    - kubectl delete secret stripe-secret || true
+    - stripe -v
+    - |
+      kubectl create secret generic stripe-secret --from-literal=stripe-secret="$(stripe webhook_endpoints create \
+        --url https://$CI_MERGE_REQUEST_IID.appsemble.review/api/payments/accept-payment \
+        --enabled-events checkout.session.async_payment_failed \
+        --enabled-events checkout.session.async_payment_succeeded \
+        --enabled-events checkout.session.completed \
+        --enabled-events invoice.paid \
+        --enabled-events invoice.payment_failed \
+        --enabled-events invoice.payment_succeeded \
+        --api-key "$STRIPE_API_KEY" | jq -r '.secret')"
     # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --debug
@@ -824,6 +845,7 @@ review:
       --set "minio.apiIngress.hostname=api.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "stripeSecret=$STRIPE_SECRET"
 
 # Stop a review environment.
 stop review:

@@ -123,7 +123,13 @@ export function SubscriptionInformationBox({
     setIsLoading(true);
     checkout();
   };
-
+  if (!subscriptionPrice?.basePrice && includeVat) {
+    return (
+      <div className="box is-flex is-justify-content-space-between">
+        <FormattedMessage {...messages.incorrectVatId} />
+      </div>
+    );
+  }
   return (
     <>
       <div className="box is-flex is-justify-content-space-between">
@@ -132,8 +138,8 @@ export function SubscriptionInformationBox({
         <span className="has-text-right">
           €{' '}
           {subscriptionPrice?.basePrice?.includes('.')
-            ? subscriptionPrice.basePrice
-            : `${subscriptionPrice.basePrice}.-`}
+            ? subscriptionPrice.basePrice || 0
+            : `${subscriptionPrice.basePrice || 0}.-`}
           p/m
         </span>
       </div>
@@ -188,7 +194,7 @@ export function SubscriptionInformationBox({
           <div className="mt-5">
             <Button
               color="primary"
-              disabled={isLoading}
+              disabled={isLoading || !subscriptionPrice?.basePrice}
               icon="chevron-right"
               iconPosition="right"
               onClick={submit}
@@ -247,8 +253,8 @@ export function SubscriptionInformationBox({
                 <div className="is-flex is-flex-direction-column is-align-items-flex-end  ">
                   <span className="is-flex is-align-items-flex-end">
                     {subscriptionPrice?.basePrice?.includes('.')
-                      ? subscriptionPrice.basePrice
-                      : `${subscriptionPrice.basePrice}.-`}
+                      ? subscriptionPrice.basePrice || 0
+                      : `${subscriptionPrice.basePrice || 0}.-`}
                   </span>
                   <span className="is-flex is-align-items-flex-end">
                     -{' '}
@@ -258,8 +264,8 @@ export function SubscriptionInformationBox({
                   </span>
                   <span className="is-flex is-align-items-flex-end has-text-weight-bold mt-2">
                     {subscriptionPrice?.priceWithCoupon?.includes('.')
-                      ? subscriptionPrice?.priceWithCoupon
-                      : `${subscriptionPrice?.priceWithCoupon}.-`}
+                      ? subscriptionPrice?.priceWithCoupon || 0
+                      : `${subscriptionPrice?.priceWithCoupon || 0}.-`}
                   </span>
                 </div>
               </div>

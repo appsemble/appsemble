@@ -62,6 +62,11 @@ export async function patchOrganization(ctx: Context): Promise<void> {
     result.preferredPaymentProvider = preferredPaymentProvider || null;
   }
 
+  if (countryCode !== undefined) {
+    result.countryCode = countryCode || null;
+    result.vatIdNumber = undefined;
+  }
+
   if (vatIdNumber !== undefined) {
     result.vatIdNumber = vatIdNumber || null;
   }
@@ -80,10 +85,6 @@ export async function patchOrganization(ctx: Context): Promise<void> {
 
   if (zipCode !== undefined) {
     result.zipCode = zipCode || null;
-  }
-
-  if (countryCode !== undefined) {
-    result.countryCode = countryCode || null;
   }
 
   if (invoiceReference !== undefined) {
