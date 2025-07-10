@@ -222,3 +222,7 @@ mdel
 beforeinstallprompt
 bfcache
 togg
+IBAN
+KNAB
+RABO
+sepa
