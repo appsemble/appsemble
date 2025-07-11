@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.33.7/config/assets/logo.svg) Appsemble SDK
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.33.8/config/assets/logo.svg) Appsemble SDK
 
 > Build your own blocks
 
 [![npm](https://img.shields.io/npm/v/@appsemble/sdk)](https://www.npmjs.com/package/@appsemble/sdk)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.33.7/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.33.7)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.33.8/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.33.8)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -153,5 +153,5 @@ declare module '@appsemble/sdk' {
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.33.7/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.33.8/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

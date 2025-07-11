@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.33.7",
+  "version": "0.33.8",
   "description": "Utility functions used in Appsemble internally",
   "keywords": [
     "app",
@@ -39,8 +39,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.33.7",
-    "@appsemble/lang-sdk": "0.33.7",
+    "@appsemble/types": "0.33.8",
+    "@appsemble/lang-sdk": "0.33.8",
     "@odata/parser": "^0.2.14",
     "axios": "^1.0.0",
     "cron-parser": "^4.0.0",
