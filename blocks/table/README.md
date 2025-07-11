@@ -8,4 +8,4 @@ within the table. This is `0` by default.
 
 ### Images
 
-![Table screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.33.8/config/assets/table.png)
+![Table screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.33.9/config/assets/table.png)

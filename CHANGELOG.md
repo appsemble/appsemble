@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.33.9](https://gitlab.com/appsemble/appsemble/-/releases/0.33.9)] - 2025-07-11
+
+### Fixed
+
+- Block(`form`): Fieldset now correctly handles undefined arrays.
+
 ## \[[0.33.8](https://gitlab.com/appsemble/appsemble/-/releases/0.33.8)] - 2025-07-11
 
 ## \[[0.33.7](https://gitlab.com/appsemble/appsemble/-/releases/0.33.7)] - 2025-07-09

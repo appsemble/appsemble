@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/node-utils",
-  "version": "0.33.8",
+  "version": "0.33.9",
   "description": "NodeJS utilities used by Appsemble internally.",
   "keywords": [
     "app",
@@ -40,9 +40,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.33.8",
-    "@appsemble/utils": "0.33.8",
-    "@appsemble/lang-sdk": "0.33.8",
+    "@appsemble/types": "0.33.9",
+    "@appsemble/utils": "0.33.9",
+    "@appsemble/lang-sdk": "0.33.9",
     "@formatjs/fast-memoize": "^2.0.0",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@kubernetes/client-node": "^0.22.2",

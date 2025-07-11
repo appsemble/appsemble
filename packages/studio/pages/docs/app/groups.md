@@ -131,7 +131,7 @@ pages:
       - Manager
     blocks:
       - type: form
-        version: 0.33.8
+        version: 0.33.9
         actions:
           onSubmit:
             type: resource.create
@@ -154,7 +154,7 @@ pages:
       - GroupMember
     blocks:
       - type: action-button
-        version: 0.33.8
+        version: 0.33.9
         parameters:
           icon: plus
         roles:
@@ -169,7 +169,7 @@ pages:
       - Player
     blocks:
       - type: form
-        version: 0.33.8
+        version: 0.33.9
         actions:
           onSubmit:
             type: resource.create
@@ -192,7 +192,7 @@ pages:
       - Manager
     blocks:
       - type: action-button
-        version: 0.33.8
+        version: 0.33.9
         parameters:
           icon: plus
         roles:
@@ -205,7 +205,7 @@ pages:
   - name: About
     blocks:
       - type: html
-        version: 0.33.8
+        version: 0.33.9
         parameters:
           placeholders:
             summary: This is the groups app
