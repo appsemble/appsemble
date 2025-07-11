@@ -519,6 +519,48 @@ _Test App_
       vi.useRealTimers();
     });
 
+    it('should support cc and bcc for emails', async () => {
+      mailer.transport = {
+        sendMail: vi.fn(),
+      } as Partial<Transporter> as Transporter;
+      const mockedLock: Partial<MailboxLockObject> = {
+        release: vi.fn(),
+      };
+      const mockedFlow: Partial<ImapFlow> = {
+        connect: vi.fn(),
+        getMailboxLock: vi.fn().mockResolvedValue(mockedLock),
+        append:
+          vi.fn<
+            (path: string, content: string, flags: string[]) => ReturnType<ImapFlow['append']>
+          >(),
+        logout: vi.fn(),
+      };
+      vi.spyOn(mailer, 'createImapFlow').mockReturnValue(mockedFlow as ImapFlow);
+      vi.spyOn(mailer, 'copyToSentFolder');
+      vi.setSystemTime(0);
+      await mailer.sendEmail({
+        to: 'Me <test@example.com>',
+        cc: 'test+cc@example.com',
+        bcc: 'test+bcc@example.com',
+        from: 'test@example.com',
+        subject: 'Test',
+        text: 'Test',
+        html: '<p>Test</p>',
+        attachments: [],
+      });
+      expect(mailer.transport.sendMail).toHaveBeenCalledWith({
+        to: 'Me <test@example.com>',
+        from: 'test@example.com <test@example.com>',
+        cc: 'test+cc@example.com',
+        bcc: 'test+bcc@example.com',
+        subject: 'Test',
+        text: 'Test',
+        html: '<p>Test</p>',
+        attachments: [],
+      });
+      expect(mailer.copyToSentFolder).toHaveBeenCalledOnce();
+    });
+
     it('should copy the email to the sent folder', async () => {
       mailer.transport = {
         sendMail: vi.fn(),

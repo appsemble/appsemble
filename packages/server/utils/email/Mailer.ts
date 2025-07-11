@@ -492,6 +492,8 @@ export class Mailer {
     if (transport) {
       try {
         await transport.sendMail({
+          ...(cc ? { cc } : {}),
+          ...(bcc ? { bcc } : {}),
           html,
           from: fromHeader,
           subject,
@@ -512,6 +514,8 @@ export class Mailer {
     if (argv.imapCopyToSentFolder) {
       // https://stackoverflow.com/a/50310199
       const message = await new MailComposer({
+        ...(cc ? { cc } : {}),
+        ...(bcc ? { bcc } : {}),
         html,
         from: fromHeader,
         subject,
