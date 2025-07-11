@@ -23,7 +23,7 @@ export function generateDefaultValidity(
 
     if (field.type === 'fieldset') {
       validity[field.name] = field.repeated
-        ? (value as []).map((d: unknown, index: number) =>
+        ? ((value as []) || []).map((d: unknown, index: number) =>
             generateDefaultValidity(
               field.fields,
               data,
