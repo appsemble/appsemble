@@ -118,7 +118,6 @@ export function SettingsPage(): ReactNode {
     if (values.maskableIcon) {
       form.set('maskableIcon', values.maskableIcon);
     }
-
     const { data } = await axios.patch<App>(`/api/apps/${app.id}`, form);
     push({ color: 'success', body: formatMessage(messages.updateSuccess) });
     setApp(data);
@@ -187,7 +186,15 @@ export function SettingsPage(): ReactNode {
     <>
       <Content fullwidth>
         <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
-          <SimpleFormError>{() => <FormattedMessage {...messages.updateError} />}</SimpleFormError>
+          <SimpleFormError>
+            {({ error }) =>
+              axios.isAxiosError(error) && error.response?.status === 403 ? (
+                <FormattedMessage {...messages.updateFailAppLimit} />
+              ) : (
+                <FormattedMessage {...messages.updateError} />
+              )
+            }
+          </SimpleFormError>
           <IconTool disabled={app.locked !== 'unlocked'} />
           <SimpleFormField
             component={SelectField}

@@ -10,6 +10,11 @@ export interface SubscriptionPlan {
   price: string;
 
   /**
+   * Amount of apps the user can publish.
+   */
+  appLimit: number;
+
+  /**
    * How many notifications we allow organizations on this plan to send daily
    * from our SMTP server. Unlimited with their custom server.
    */
@@ -46,6 +51,7 @@ export const freePlan: SubscriptionPlan = {
   blocks: 'Appsemble supported basic blocks',
   backend: 'Standard Appsemble backend',
   price: '0',
+  appLimit: 3,
   dailyNotifications: 50,
   persistentStorage: 1,
   customContainers: false,
@@ -57,6 +63,7 @@ export const basicPlan: SubscriptionPlan = {
   blocks: 'Appsemble supported basic blocks',
   backend: 'Standard Appsemble backend',
   price: '5',
+  appLimit: Number.POSITIVE_INFINITY,
   dailyNotifications: 50,
   persistentStorage: 1,
   customContainers: false,
@@ -68,6 +75,7 @@ export const standardPlan: SubscriptionPlan = {
   blocks: 'Appsemble supported basic blocks',
   backend: 'Standard Appsemble backend',
   price: '25',
+  appLimit: Number.POSITIVE_INFINITY,
   dailyNotifications: 5000,
   persistentStorage: 50,
   customContainers: false,
@@ -79,6 +87,7 @@ export const extensivePlan: SubscriptionPlan = {
   blocks: '3rd party building blocks',
   backend: 'Standard Appsemble backend',
   price: '50',
+  appLimit: Number.POSITIVE_INFINITY,
   dailyNotifications: Number.POSITIVE_INFINITY,
   persistentStorage: 200,
   customContainers: true,
@@ -90,6 +99,7 @@ export const enterprisePlan: SubscriptionPlan = {
   blocks: '3rd party building blocks',
   backend: 'Hosting of custom backends',
   price: '100',
+  appLimit: Number.POSITIVE_INFINITY,
   dailyNotifications: Number.POSITIVE_INFINITY,
   persistentStorage: 500,
   customContainers: true,
