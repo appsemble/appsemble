@@ -108,7 +108,7 @@ export async function query({
   const resourceDefinition = getResourceDefinition(app.definition, action.resource, context, view);
 
   const parsed = parseQuery({ ...queryParams, resourceDefinition });
-  const include = queryParams?.$select?.split(',').map((s) => s.trim());
+  const include = queryParams?.$select?.split?.(',').map((s) => s.trim());
 
   const resources = await Resource.findAll({
     include: [
