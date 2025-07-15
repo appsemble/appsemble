@@ -39,10 +39,34 @@ export function ServiceWorkerRegistrationProvider({
 
   useEffect(() => {
     serviceWorkerRegistrationPromise
-      .then((registration) => registration?.pushManager?.getSubscription())
+      .then((registration) => {
+        registration.update();
+
+        // eslint-disable-next-line no-param-reassign
+        registration.onupdatefound = () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.onstatechange = () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New service worker is available and waiting
+                // eslint-disable-next-line unicorn/require-post-message-target-origin
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+              }
+            };
+          }
+        };
+
+        return registration.pushManager?.getSubscription();
+      })
       .then(setSubscription)
       .catch((error) => setServiceWorkerError(error));
   }, [serviceWorkerRegistrationPromise]);
+
+  useEffect(() => {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+  }, []);
 
   const requestPermission = useCallback(async () => {
     if (window.Notification?.permission === 'default') {
