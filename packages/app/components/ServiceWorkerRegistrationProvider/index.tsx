@@ -89,7 +89,7 @@ export function ServiceWorkerRegistrationProvider({
 
   // Refresh when the new SW takes control
   useEffect(() => {
-    navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
+    navigator.serviceWorker?.addEventListener('controllerchange', () => window.location.reload());
   }, []);
 
   const update = useCallback(() => {
