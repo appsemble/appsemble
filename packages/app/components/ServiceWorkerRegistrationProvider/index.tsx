@@ -1,4 +1,4 @@
-import { ModalCard } from '@appsemble/react-components';
+import { CardFooterButton, ModalCard } from '@appsemble/react-components';
 import { type ResourceSubscribableAction } from '@appsemble/types';
 import { urlB64ToUint8Array } from '@appsemble/web-utils';
 import axios from 'axios';
@@ -36,11 +36,23 @@ export function ServiceWorkerRegistrationProvider({
   const [permission, setPermission] = useState<Permission>(window.Notification?.permission);
   const [subscription, setSubscription] = useState<PushSubscription | null>();
   const [serviceWorkerError, setServiceWorkerError] = useState<Error | null>(null);
+  const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
+  const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
 
   useEffect(() => {
     serviceWorkerRegistrationPromise
       .then((registration) => {
+        if (!registration) {
+          return;
+        }
+
         registration.update();
+
+        // If a worker is already waiting, trigger the update prompt
+        if (registration.waiting && navigator.serviceWorker.controller) {
+          setWaitingWorker(registration.waiting);
+          setShouldUpdate(true);
+        }
 
         // eslint-disable-next-line no-param-reassign
         registration.onupdatefound = () => {
@@ -49,8 +61,8 @@ export function ServiceWorkerRegistrationProvider({
             newWorker.onstatechange = () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // New service worker is available and waiting
-                // eslint-disable-next-line unicorn/require-post-message-target-origin
-                newWorker.postMessage({ type: 'SKIP_WAITING' });
+                setWaitingWorker(newWorker);
+                setShouldUpdate(true);
               }
             };
           }
@@ -62,10 +74,35 @@ export function ServiceWorkerRegistrationProvider({
       .catch((error) => setServiceWorkerError(error));
   }, [serviceWorkerRegistrationPromise]);
 
+  // Poll for updates every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      serviceWorkerRegistrationPromise.then((reg) => {
+        reg?.update();
+      });
+    }, 5 * 60_000);
+    return () => clearInterval(interval);
+  }, [serviceWorkerRegistrationPromise]);
+
+  // Refresh when the new SW takes control
   useEffect(() => {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       window.location.reload();
     });
+  }, []);
+
+  const onUpdateConfirm = useCallback(() => {
+    if (waitingWorker) {
+      // eslint-disable-next-line unicorn/require-post-message-target-origin
+      waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+      setShouldUpdate(false);
+      setWaitingWorker(null);
+    }
+  }, [waitingWorker]);
+
+  const onUpdateCancel = useCallback(() => {
+    setWaitingWorker(null);
+    setShouldUpdate(false);
   }, []);
 
   const requestPermission = useCallback(async () => {
@@ -155,6 +192,24 @@ export function ServiceWorkerRegistrationProvider({
       {serviceWorkerError && !e2e ? (
         <ModalCard isActive={Boolean(serviceWorkerError)} onClose={clearServiceWorkerError}>
           <FormattedMessage {...messages.error} />
+        </ModalCard>
+      ) : null}
+      {shouldUpdate ? (
+        <ModalCard
+          footer={
+            <>
+              <CardFooterButton onClick={onUpdateCancel}>
+                <FormattedMessage {...messages.cancel} />
+              </CardFooterButton>
+              <CardFooterButton color="primary" onClick={onUpdateConfirm}>
+                <FormattedMessage {...messages.confirm} />
+              </CardFooterButton>
+            </>
+          }
+          isActive={shouldUpdate}
+          onClose={() => setShouldUpdate(false)}
+        >
+          <FormattedMessage {...messages.updateAvailable} />
         </ModalCard>
       ) : null}
       {children}
