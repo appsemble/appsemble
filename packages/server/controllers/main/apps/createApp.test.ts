@@ -1,7 +1,11 @@
 import { getRandomValues } from 'node:crypto';
 
 import { createFixtureStream, createFormData } from '@appsemble/node-utils';
-import { type App as AppType, PredefinedOrganizationRole } from '@appsemble/types';
+import {
+  type App as AppType,
+  PredefinedOrganizationRole,
+  SubscriptionPlanType,
+} from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
@@ -17,6 +21,7 @@ import {
   getAppDB,
   Organization,
   OrganizationMember,
+  OrganizationSubscription,
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -2600,5 +2605,105 @@ describe('createApp', () => {
     });
     expect(app?.get()).toStrictEqual(expect.objectContaining(appDB));
     expect(decrypt(app!.dbPassword, 'testSecret')).toBe(dbPassword);
+  });
+
+  it('should not create a new app using a template when app limit is reached', async () => {
+    authorizeStudio();
+    await App.create(
+      {
+        definition: { name: 'Test App 1', defaultPage: 'Test Page' },
+        path: 'test-app-1',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        definition: { name: 'Test App 2', defaultPage: 'Test Page' },
+        path: 'test-app-2',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-3',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        yaml: stripIndent(`
+          name: test app 4
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+        visibility: 'public',
+      }),
+    );
+
+    expect(response.status).toBe(403);
+  });
+
+  it('should create a new app using a template when default app limit is reached but a subscription is active', async () => {
+    authorizeStudio();
+    const subscription = await OrganizationSubscription.findOne({
+      where: { OrganizationId: 'testorganization' },
+    });
+    expect(subscription).not.toBeNull();
+    subscription!.subscriptionPlan = SubscriptionPlanType.Basic;
+    subscription!.save();
+    const apps = await App.findAll({ where: { OrganizationId: 'testorganization' } });
+    for (const app of apps) {
+      app.visibility = 'public';
+      await app.save();
+    }
+    await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-3',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: 'testorganization',
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        yaml: stripIndent(`
+          name: test app 4
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+        visbility: 'public',
+      }),
+      { params: { dryRun: true } },
+    );
+
+    expect(response.status).toBe(204);
   });
 });

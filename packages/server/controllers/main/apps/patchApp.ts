@@ -133,7 +133,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       where: { OrganizationId: dbApp.OrganizationId },
     });
     const appCount = appList.filter((app) => app.visibility === 'public').length;
-    assertKoaCondition(appCount >= subscriptionPlan.appLimit, ctx, 403, 'App limit reached.');
+    assertKoaCondition(appCount < subscriptionPlan.appLimit, ctx, 403, 'App limit reached.');
   }
 
   try {

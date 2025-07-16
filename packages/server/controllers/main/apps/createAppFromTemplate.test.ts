@@ -3,6 +3,7 @@ import {
   type AppConfigEntry,
   type AppMessages as AppMessagesType,
   type App as AppType,
+  SubscriptionPlanType,
 } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -15,6 +16,7 @@ import {
   getAppDB,
   Organization,
   OrganizationMember,
+  OrganizationSubscription,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
@@ -523,5 +525,69 @@ describe('createAppFromTemplate', () => {
       statusCode: 403,
       message: 'User is not a member of this organization.',
     });
+  });
+
+  it('should not create a new app using a template when app limit is reached', async () => {
+    authorizeStudio();
+    const apps = await App.findAll({ where: { OrganizationId: 'testorganization' } });
+    for (const app of apps) {
+      app.visibility = 'public';
+      await app.save();
+    }
+    await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-3',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: 'testorganization',
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const response = await request.post<AppType>('/api/app-templates', {
+      templateId: templates[0].id,
+      name: 'Test app 2',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      visibility: 'public',
+    });
+
+    expect(response.status).toBe(403);
+  });
+
+  it('should create a new app using a template when default app limit is reached but a subscription is active', async () => {
+    authorizeStudio();
+    const subscription = await OrganizationSubscription.findOne({
+      where: { OrganizationId: 'testorganization' },
+    });
+    expect(subscription).not.toBeNull();
+    subscription!.subscriptionPlan = SubscriptionPlanType.Basic;
+    subscription!.save();
+    const apps = await App.findAll({ where: { OrganizationId: 'testorganization' } });
+    for (const app of apps) {
+      app.visibility = 'public';
+      await app.save();
+    }
+    await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-3',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: 'testorganization',
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const response = await request.post<AppType>('/api/app-templates', {
+      templateId: templates[0].id,
+      name: 'Test app 2',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      visibility: 'public',
+    });
+
+    expect(response.status).toBe(201);
   });
 });
