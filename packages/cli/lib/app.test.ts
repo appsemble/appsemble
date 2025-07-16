@@ -107,8 +107,7 @@ describe('app', () => {
           $created: expect.stringMatching(ISODateTimePattern),
           $updated: expect.stringMatching(ISODateTimePattern),
           iconUrl: expect.any(String),
-        },
-        `
+        }, `
         {
           "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
           "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
@@ -181,6 +180,7 @@ describe('app', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
         defaultPage: Test Page
@@ -200,8 +200,7 @@ describe('app', () => {
                 version: 0.0.0
         ",
         }
-      `,
-      );
+      `);
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
       const appBlockStyle = (await AppBlockStyle.findOne())!;
@@ -283,8 +282,7 @@ describe('app', () => {
           $created: expect.stringMatching(ISODateTimePattern),
           $updated: expect.stringMatching(ISODateTimePattern),
           iconUrl: expect.any(String),
-        },
-        `
+        }, `
         {
           "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
           "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
@@ -357,6 +355,7 @@ describe('app', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
         defaultPage: Test Page
@@ -376,8 +375,7 @@ describe('app', () => {
                 version: 0.0.0
         ",
         }
-      `,
-      );
+      `);
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
       const appBlockStyle = (await AppBlockStyle.findOne())!;
@@ -453,8 +451,7 @@ describe('app', () => {
           $created: expect.stringMatching(ISODateTimePattern),
           $updated: expect.stringMatching(ISODateTimePattern),
           iconUrl: expect.any(String),
-        },
-        `
+        }, `
         {
           "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
           "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
@@ -527,6 +524,7 @@ describe('app', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": true,
+          "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
         defaultPage: Test Page
@@ -546,8 +544,7 @@ describe('app', () => {
                 version: 0.0.0
         ",
         }
-      `,
-      );
+      `);
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
       const appBlockStyle = (await AppBlockStyle.findOne())!;
@@ -630,8 +627,7 @@ describe('app', () => {
           $created: expect.stringMatching(ISODateTimePattern),
           $updated: expect.stringMatching(ISODateTimePattern),
           iconUrl: expect.any(String),
-        },
-        `
+        }, `
         {
           "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
           "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
@@ -698,6 +694,7 @@ describe('app', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
         defaultPage: Test Page
@@ -717,8 +714,7 @@ describe('app', () => {
                 version: 0.0.0
         ",
         }
-      `,
-      );
+      `);
       expect(app.icon).toStrictEqual(await readFixture('apps/test/variants/tux/icon.png'));
       expect(app.maskableIcon).toStrictEqual(
         await readFixture('apps/test/variants/tux/maskable-icon.png'),
@@ -980,8 +976,7 @@ describe('app', () => {
           $created: expect.stringMatching(ISODateTimePattern),
           $updated: expect.stringMatching(ISODateTimePattern),
           iconUrl: expect.any(String),
-        },
-        `
+        }, `
         {
           "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
           "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
@@ -1054,6 +1049,7 @@ describe('app', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
         defaultPage: Test Page
@@ -1073,8 +1069,7 @@ describe('app', () => {
                 version: 0.0.0
         ",
         }
-      `,
-      );
+      `);
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
       const appBlockStyle = (await AppBlockStyle.findOne())!;
@@ -1149,8 +1144,7 @@ describe('app', () => {
           $created: expect.stringMatching(ISODateTimePattern),
           $updated: expect.stringMatching(ISODateTimePattern),
           iconUrl: expect.any(String),
-        },
-        `
+        }, `
         {
           "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
           "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
@@ -1223,6 +1217,7 @@ describe('app', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
         defaultPage: Test Page
@@ -1242,8 +1237,7 @@ describe('app', () => {
                 version: 0.0.0
         ",
         }
-      `,
-      );
+      `);
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
       const appBlockStyle = (await AppBlockStyle.findOne())!;
@@ -1320,8 +1314,7 @@ describe('app', () => {
           $created: expect.stringMatching(ISODateTimePattern),
           $updated: expect.stringMatching(ISODateTimePattern),
           iconUrl: expect.any(String),
-        },
-        `
+        }, `
         {
           "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
           "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
@@ -1394,6 +1387,7 @@ describe('app', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": true,
+          "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
         defaultPage: Test Page
@@ -1413,8 +1407,7 @@ describe('app', () => {
                 version: 0.0.0
         ",
         }
-      `,
-      );
+      `);
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
       const appBlockStyle = (await AppBlockStyle.findOne())!;
@@ -1499,8 +1492,7 @@ describe('app', () => {
           $created: expect.stringMatching(ISODateTimePattern),
           $updated: expect.stringMatching(ISODateTimePattern),
           iconUrl: expect.any(String),
-        },
-        `
+        }, `
         {
           "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
           "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
@@ -1567,6 +1559,7 @@ describe('app', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
         defaultPage: Test Page
@@ -1586,8 +1579,7 @@ describe('app', () => {
                 version: 0.0.0
         ",
         }
-      `,
-      );
+      `);
       expect(app.icon).toStrictEqual(await readFixture('apps/test/variants/tux/icon.png'));
       expect(app.maskableIcon).toStrictEqual(
         await readFixture('apps/test/variants/tux/maskable-icon.png'),
@@ -1873,6 +1865,7 @@ describe('app', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
         defaultPage: Test Page
@@ -1952,6 +1945,7 @@ describe('app', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
         defaultPage: Test Page

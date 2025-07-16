@@ -200,6 +200,7 @@ describe('getAppById', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": 2,
         "visibility": "unlisted",
       }
     `);

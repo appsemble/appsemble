@@ -144,6 +144,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": 1,
         "visibility": "private",
         "yaml": "
       name: Foobar
@@ -448,6 +449,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -601,6 +603,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -662,6 +665,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -723,6 +727,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -789,6 +794,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1452,6 +1458,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1726,6 +1733,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1776,6 +1784,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1838,6 +1847,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1887,6 +1897,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1934,6 +1945,7 @@ describe('patchApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
