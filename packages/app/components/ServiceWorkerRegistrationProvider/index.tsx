@@ -74,13 +74,16 @@ export function ServiceWorkerRegistrationProvider({
       .catch((error) => setServiceWorkerError(error));
   }, [serviceWorkerRegistrationPromise]);
 
-  // Poll for updates every 5 minutes
+  // Poll for updates every day
   useEffect(() => {
-    const interval = setInterval(() => {
-      serviceWorkerRegistrationPromise.then((reg) => {
-        reg?.update();
-      });
-    }, 5 * 60_000);
+    const interval = setInterval(
+      () => {
+        serviceWorkerRegistrationPromise.then((reg) => {
+          reg?.update();
+        });
+      },
+      24 * 60 * 60_000,
+    );
     return () => clearInterval(interval);
   }, [serviceWorkerRegistrationPromise]);
 
@@ -90,6 +93,12 @@ export function ServiceWorkerRegistrationProvider({
       window.location.reload();
     });
   }, []);
+
+  const update = useCallback(() => {
+    serviceWorkerRegistrationPromise.then((reg) => {
+      reg?.update();
+    });
+  }, [serviceWorkerRegistrationPromise]);
 
   const onUpdateConfirm = useCallback(() => {
     if (waitingWorker) {
@@ -177,8 +186,9 @@ export function ServiceWorkerRegistrationProvider({
       requestPermission,
       permission,
       unsubscribe,
+      update,
     }),
-    [permission, requestPermission, subscribe, subscription, unsubscribe],
+    [permission, requestPermission, subscribe, subscription, unsubscribe, update],
   );
 
   const clearServiceWorkerError = useCallback(
