@@ -11,14 +11,21 @@ import {
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/types';
+import { getSubscriptionPlanByName, OrganizationPermission } from '@appsemble/types';
 import { validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 import webpush from 'web-push';
 import { parse } from 'yaml';
 
-import { App, AppSnapshot, getAppDB, Organization, transactional } from '../../../models/index.js';
+import {
+  App,
+  AppSnapshot,
+  getAppDB,
+  Organization,
+  OrganizationSubscription,
+  transactional,
+} from '../../../models/index.js';
 import {
   createAppReadmes,
   createAppScreenshots,
@@ -78,6 +85,19 @@ export async function createApp(ctx: Context): Promise<void> {
     organizationId: OrganizationId,
     requiredPermissions: [OrganizationPermission.CreateApps],
   });
+
+  if (visibility === 'public') {
+    const subscription = await OrganizationSubscription.findOne({
+      where: { OrganizationId: organization.id },
+    });
+    assertKoaCondition(subscription != null, ctx, 404, 'Subscription not found');
+    const subscriptionPlan = getSubscriptionPlanByName(String(subscription!.subscriptionPlan!));
+    const appList = await App.findAll({
+      where: { OrganizationId: organization.id },
+    });
+    const appCount = appList.filter((app) => app.visibility === 'public').length;
+    assertKoaCondition(appCount < subscriptionPlan.appLimit, ctx, 403, 'App limit reached.');
+  }
 
   try {
     const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;

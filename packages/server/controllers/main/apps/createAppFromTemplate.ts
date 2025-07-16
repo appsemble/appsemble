@@ -6,7 +6,7 @@ import {
   updateCompanionContainers,
   uploadS3File,
 } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/types';
+import { getSubscriptionPlanByName, OrganizationPermission } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
@@ -20,6 +20,7 @@ import {
   AppScreenshot,
   AppSnapshot,
   getAppDB,
+  OrganizationSubscription,
 } from '../../../models/index.js';
 import { setAppPath } from '../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
@@ -95,6 +96,19 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       organizationId: template.OrganizationId,
       requiredPermissions: [OrganizationPermission.QueryApps],
     });
+  }
+
+  if (visibility === 'public') {
+    const subscription = await OrganizationSubscription.findOne({
+      where: { OrganizationId: organizationId },
+    });
+    assertKoaCondition(subscription != null, ctx, 404, 'Subscription not found');
+    const subscriptionPlan = getSubscriptionPlanByName(String(subscription!.subscriptionPlan!));
+    const appList = await App.findAll({
+      where: { OrganizationId: organizationId },
+    });
+    const appCount = appList.filter((app) => app.visibility === 'public').length;
+    assertKoaCondition(appCount < subscriptionPlan.appLimit, ctx, 403, 'App limit reached.');
   }
 
   const path = name ? normalize(name) : normalize(template.definition.name);

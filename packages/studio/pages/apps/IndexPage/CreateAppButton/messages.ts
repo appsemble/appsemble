@@ -27,6 +27,11 @@ export const messages = defineMessages({
     id: 'studio.o1JSKz',
     defaultMessage: 'Something went wrong when creating this app.',
   },
+  createFailAppLimit: {
+    id: 'studio.PJYOrg',
+    defaultMessage:
+      'Creation failed due to reaching the limit for publishing apps please upgrade your subscription or delist another app.',
+  },
   name: {
     id: 'studio.HAlOn1',
     defaultMessage: 'Name',
