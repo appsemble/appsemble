@@ -78,9 +78,9 @@ export function ServiceWorkerRegistrationProvider({
   useEffect(() => {
     const interval = setInterval(
       () => {
-        serviceWorkerRegistrationPromise.then((reg) => {
-          reg?.update();
-        });
+        serviceWorkerRegistrationPromise
+          .then((reg) => reg?.update())
+          .catch((error) => setServiceWorkerError(error));
       },
       24 * 60 * 60_000,
     );
@@ -89,15 +89,13 @@ export function ServiceWorkerRegistrationProvider({
 
   // Refresh when the new SW takes control
   useEffect(() => {
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload();
-    });
+    navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
   }, []);
 
   const update = useCallback(() => {
-    serviceWorkerRegistrationPromise.then((reg) => {
-      reg?.update();
-    });
+    serviceWorkerRegistrationPromise
+      .then((reg) => reg?.update())
+      .catch((error) => setServiceWorkerError(error));
   }, [serviceWorkerRegistrationPromise]);
 
   const onUpdateConfirm = useCallback(() => {
