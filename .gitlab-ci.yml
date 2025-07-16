@@ -893,6 +893,10 @@ staging:
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=staging-appsemble-mailpit-smtp" -addext "subjectAltName=DNS:staging-appsemble-mailpit-smtp"
     - kubectl create secret tls staging-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
+    - kubectl delete secret stripe-secret || true
+    - kubectl delete secret stripe-api-key || true
+    - kubectl create secret generic stripe-secret --from-literal=stripe-secret="$STRIPE_SECRET"
+    - kubectl create secret generic stripe-api-key --from-literal=stripe-api-key="$STRIPE_API_KEY"
     - helm install staging ./public/appsemble-*.tgz
       --atomic
       --timeout 30m0s
@@ -992,6 +996,10 @@ production:
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=appsemble-mailpit-smtp" -addext "subjectAltName=DNS:appsemble-mailpit-smtp"
     - kubectl create secret tls appsemble-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
+    - kubectl delete secret stripe-secret || true
+    - kubectl delete secret stripe-api-key || true
+    - kubectl create secret generic stripe-secret --from-literal=stripe-secret="$STRIPE_SECRET_PROD"
+    - kubectl create secret generic stripe-api-key --from-literal=stripe-api-key="$STRIPE_API_KEY_PROD"
     - kubectl rollout restart deployment appsemble-mailpit || true
     - helm upgrade appsemble appsemble/appsemble
       --debug
