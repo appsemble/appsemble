@@ -1,4 +1,5 @@
-import { type AppMemberQueryAction, remap } from '@appsemble/lang-sdk';
+import { type AppMemberQueryAction, type AppRole, defaultLocale, remap } from '@appsemble/lang-sdk';
+import { getRemapperContext } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
@@ -8,15 +9,22 @@ import { getAppMemberInfo, parseMemberFilterQuery } from '../appMember.js';
 export async function appMemberQuery({
   action,
   app,
+  context,
   data,
   internalContext,
+  options,
 }: ServerActionParameters<AppMemberQueryAction>): Promise<unknown> {
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  const remappedRoles = (remap(action.roles ?? [], data, internalContext) || []) as AppRole[];
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  const query = (remap(action.query ?? '', data, internalContext) ?? {}) as { $filter?: string };
+  const remapperContext = await getRemapperContext(
+    app.toJSON(),
+    app.definition.defaultLanguage || defaultLocale,
+    options,
+    context,
+  );
+  Object.assign(remapperContext, {
+    history: internalContext?.history ?? [],
+  });
+  const remappedRoles = (remap(action.roles ?? null, data, remapperContext) || []) as AppRole[];
+  const query = (remap(action.query ?? '', data, remapperContext) ?? {}) as { $filter?: string };
   const parsedFilter = parseMemberFilterQuery(query.$filter ?? '');
   const commonFilters = {
     AppId: app.id,
