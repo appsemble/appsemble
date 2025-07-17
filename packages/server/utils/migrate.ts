@@ -26,7 +26,7 @@ async function handleMigration(
       await migration[type](t, db);
     });
   } catch (error) {
-    const Meta = db.models.Meta as ModelStatic<MetaType>;
+    const Meta = (db.models.Meta ?? db.models.AppMeta) as ModelStatic<MetaType>;
     const [meta] = await Meta.findAll();
     const prefix = type === 'up' ? 'Upgrade to' : 'Downgrade from';
     if (!meta) {
