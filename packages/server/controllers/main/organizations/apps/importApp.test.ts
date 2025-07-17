@@ -1,5 +1,6 @@
+import { type AppDefinition } from '@appsemble/lang-sdk';
 import { getS3FileBuffer, readFixture } from '@appsemble/node-utils';
-import { type AppDefinition, PredefinedOrganizationRole } from '@appsemble/types';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import JSZip from 'jszip';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -343,6 +344,7 @@ describe('importApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": 1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -467,6 +469,7 @@ describe('importApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": 1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page

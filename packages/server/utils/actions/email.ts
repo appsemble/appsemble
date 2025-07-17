@@ -1,6 +1,5 @@
+import { defaultLocale, type EmailActionDefinition, remap } from '@appsemble/lang-sdk';
 import { getRemapperContext, getS3FileBuffer, throwKoaError } from '@appsemble/node-utils';
-import { type EmailActionDefinition } from '@appsemble/types';
-import { defaultLocale, remap } from '@appsemble/utils';
 import { extension } from 'mime-types';
 import { type SendMailOptions } from 'nodemailer';
 
@@ -48,6 +47,7 @@ export async function email({
   app,
   context,
   data,
+  internalContext,
   mailer,
   options,
 }: ServerActionParameters<EmailActionDefinition>): Promise<any> {
@@ -59,6 +59,9 @@ export async function email({
     context,
   );
 
+  Object.assign(remapperContext, {
+    history: internalContext?.history ?? [],
+  });
   const to = remap(action.to ?? null, data, remapperContext) as string;
   const from =
     (remap(action.from ?? null, data, remapperContext) as string) || app.emailName || 'Appsemble';

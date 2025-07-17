@@ -1,6 +1,5 @@
+import { normalize, type PageDefinition, remap, type RemapperContext } from '@appsemble/lang-sdk';
 import { Button, Icon } from '@appsemble/react-components';
-import { type PageDefinition } from '@appsemble/types';
-import { normalize, remap } from '@appsemble/utils';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { NavLink, useParams } from 'react-router-dom';
@@ -56,12 +55,11 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
               getVariable,
               appMemberInfo,
               context: { name },
-              locale: lang,
-            };
-            // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-            // (strictNullChecks)
-            // eslint-disable-next-line prettier/prettier
-            const navName = page.navTitle ? (remap(page.navTitle, null, remapperContext) as ReactNode) : name;
+              locale: lang!,
+            } satisfies RemapperContext;
+            const navName = page.navTitle
+              ? (remap(page.navTitle, null, remapperContext) as ReactNode)
+              : name;
 
             // @ts-expect-error 2345 argument of type is not assignable to parameter of type
             // (strictNullChecks)

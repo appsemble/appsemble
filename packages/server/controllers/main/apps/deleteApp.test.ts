@@ -70,9 +70,7 @@ describe('deleteApp', () => {
 
   it('should delete an app', async () => {
     authorizeStudio();
-    const {
-      data: { id },
-    } = await request.post<AppType>(
+    const response1 = await request.post<AppType>(
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
@@ -87,10 +85,37 @@ describe('deleteApp', () => {
         `),
       }),
     );
+    const {
+      data: { id },
+    } = response1;
 
-    const response = await request.delete(`/api/apps/${id}`);
+    expect(response1).toMatchObject({
+      status: 201,
+      data: {
+        id,
+        OrganizationId: organization.id,
+        OrganizationName: organization.name,
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    });
 
-    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    const response2 = await request.delete(`/api/apps/${id}`);
+
+    expect(response2).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should delete an app via the CLI command.', async () => {

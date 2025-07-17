@@ -1,5 +1,5 @@
+import { getAppRoles } from '@appsemble/lang-sdk';
 import { type SendNotificationsParams } from '@appsemble/node-utils';
-import { getAppRoles } from '@appsemble/utils';
 
 import { App, getAppDB } from '../models/index.js';
 import { sendNotification } from '../utils/sendNotification.js';

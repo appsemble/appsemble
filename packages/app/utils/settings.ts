@@ -9,6 +9,7 @@ export const {
   development,
   displayAppMemberName,
   displayInstallationPrompt,
+  e2e,
   enableSelfRegistration,
   id: appId,
   languages,

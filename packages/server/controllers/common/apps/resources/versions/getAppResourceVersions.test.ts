@@ -1,4 +1,5 @@
-import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
+import { PredefinedAppRole } from '@appsemble/lang-sdk';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -175,6 +176,7 @@ describe('getAppResourceVersions', () => {
         },
         {
           "author": {
+            "email": "test@example.com",
             "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
             "name": "Test User",
           },

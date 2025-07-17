@@ -1,16 +1,19 @@
-import { assertKoaCondition } from '@appsemble/node-utils';
 import {
+  type AppPermission,
   type AppRole,
-  type CustomAppPermission,
-  type OrganizationPermission,
-  type PredefinedOrganizationRole,
-} from '@appsemble/types';
-import {
   checkAppRoleAppPermissions,
   checkGuestAppPermissions,
-  checkOrganizationRoleAppPermissions,
-  checkOrganizationRoleOrganizationPermissions,
-} from '@appsemble/utils';
+  type CustomAppPermission,
+  type CustomAppResourcePermission,
+} from '@appsemble/lang-sdk';
+import { assertKoaCondition } from '@appsemble/node-utils';
+import {
+  appOrganizationPermissionMapping,
+  type OrganizationPermission,
+  type PredefinedOrganizationRole,
+  predefinedOrganizationRolePermissions,
+} from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import {
@@ -161,6 +164,34 @@ export async function checkAppMemberAppPermissions({
     403,
     'App member does not have sufficient app permissions.',
   );
+}
+
+function checkOrganizationRoleAppPermissions(
+  organizationRole: PredefinedOrganizationRole,
+  requiredPermissions: CustomAppPermission[],
+): boolean {
+  if (!organizationRole) {
+    return false;
+  }
+
+  const organizationRolePermissions = predefinedOrganizationRolePermissions[organizationRole];
+
+  return requiredPermissions.every((p) => {
+    let mappedPermission = appOrganizationPermissionMapping[p as AppPermission];
+
+    if (!mappedPermission) {
+      const customAppPermission = p as string;
+
+      if (customAppPermission.startsWith('$resource')) {
+        mappedPermission =
+          appOrganizationPermissionMapping[
+            (p as CustomAppResourcePermission).replace(/:[^:]*:/, ':all:') as AppPermission
+          ];
+      }
+    }
+
+    return organizationRolePermissions.includes(mappedPermission);
+  });
 }
 
 export async function checkUserAppPermissions({

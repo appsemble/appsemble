@@ -14,6 +14,7 @@ const order = [
   'storing-data',
   'data-transformation',
   'styling-apps',
+  'basic-app',
 ];
 
 function bumpByOrder(a: string, b: string): number {

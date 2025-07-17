@@ -1,5 +1,5 @@
+import { type ResourceDefinition } from '@appsemble/lang-sdk';
 import { Edm, processLiteral } from '@appsemble/node-utils';
-import { type ResourceDefinition } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import { defaultParser, type Token, TokenType } from '@odata/parser';
 import { OpenAPIV3 } from 'openapi-types';

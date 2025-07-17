@@ -1,4 +1,4 @@
-import { type BlockVersionsGetter } from '@appsemble/utils';
+import { type BlockVersionsGetter } from '@appsemble/lang-sdk';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { registerMarkerDataProvider } from 'monaco-marker-data-provider';
 import { createWorkerManager } from 'monaco-worker-manager';

@@ -1,5 +1,5 @@
 import { RemapperRef } from './RemapperRef/index.js';
-import { historyRemappers } from '../../../../utils/reference-schemas/remappers/index.js';
+import { referenceSchemas } from '@appsemble/lang-sdk';
 
 # History
 
@@ -77,4 +77,4 @@ Still returns the old object, no matter how many actions have appeared in betwee
 
 ## Remappers
 
-<RemapperRef remappers={historyRemappers} />
+<RemapperRef remappers={referenceSchemas.historyRemappers} />

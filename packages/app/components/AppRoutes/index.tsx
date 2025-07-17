@@ -1,5 +1,5 @@
+import { normalize } from '@appsemble/lang-sdk';
 import { MetaProvider } from '@appsemble/react-components';
-import { normalize } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 

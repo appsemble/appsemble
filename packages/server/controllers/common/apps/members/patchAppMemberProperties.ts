@@ -1,5 +1,10 @@
-import { AppMemberPropertiesError, assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
-import { AppPermission } from '@appsemble/types';
+import { AppPermission } from '@appsemble/lang-sdk';
+import {
+  AppMemberPropertiesError,
+  assertKoaCondition,
+  logger,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../models/index.js';
@@ -49,6 +54,7 @@ export async function patchAppMemberProperties(ctx: Context): Promise<void> {
     ctx.body = getAppMemberInfo(appId, updatedAppMember);
   } catch (error: any) {
     if (error instanceof AppMemberPropertiesError) {
+      logger.error(error);
       throwKoaError(ctx, 400, error.message);
     }
     throw error;

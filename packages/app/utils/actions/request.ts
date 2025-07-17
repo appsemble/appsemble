@@ -1,4 +1,4 @@
-import { type HTTPMethods } from '@appsemble/types';
+import { type HTTPMethods } from '@appsemble/lang-sdk';
 import { formatRequestAction, serializeResource } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 

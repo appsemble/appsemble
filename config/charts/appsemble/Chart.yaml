@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.3
-appVersion: 0.32.3
+version: 0.33.11
+appVersion: 0.33.11
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,13 +33,13 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Add action support in the selection input field for
-        removing existing items."
+      description: "App: Auto update apps when a new version is available."
     - kind: added
-      description: "Server: Support adding group members directly without sending a
-        confirmation email."
+      description: "App: Clicking on the logo in the navbar takes you to the default page."
+    - kind: changed
+      description: "App: Render the logo on the left side of header text."
     - kind: fixed
-      description: "Server: Translate app name in reset password emails."
+      description: "Server: Fix updating an app with resource positions unique index."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

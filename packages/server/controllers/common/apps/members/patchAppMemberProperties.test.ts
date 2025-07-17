@@ -1,5 +1,6 @@
+import { PredefinedAppRole } from '@appsemble/lang-sdk';
 import { createFormData } from '@appsemble/node-utils';
-import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';

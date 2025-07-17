@@ -1,6 +1,11 @@
-import { type AppDefinition, type AppsembleMessages, type BlockDefinition } from '@appsemble/types';
+import {
+  type AppDefinition,
+  type BlockDefinition,
+  iterApp,
+  type Prefix,
+} from '@appsemble/lang-sdk';
+import { type AppsembleMessages } from '@appsemble/types';
 
-import { iterApp, type Prefix } from './index.js';
 import { normalize } from './normalize.js';
 
 /**
@@ -23,7 +28,7 @@ export function findMessageIds(obj: unknown): Record<string, string> {
     if (key === 'string.format' && typeof value?.messageId === 'string') {
       return { [value.messageId]: value.template ?? '', ...findMessageIds(value.values) };
     }
-    if (key === 'translate') {
+    if (key === 'translate' && typeof value === 'string') {
       return { [value]: '' };
     }
   }

@@ -1,5 +1,11 @@
-import { type Remapper, type SubPageDefinition } from '@appsemble/types';
-import { findPageByName, isAppLink, normalize, partialNormalized } from '@appsemble/utils';
+import {
+  findPageByName,
+  isAppLink,
+  normalize,
+  partialNormalized,
+  type Remapper,
+  type SubPageDefinition,
+} from '@appsemble/lang-sdk';
 
 import { type ActionCreator } from './index.js';
 

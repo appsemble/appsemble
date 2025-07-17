@@ -1,11 +1,10 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import { type AppDefinition, type CompanionContainerDefinition } from '@appsemble/lang-sdk';
 import {
-  type AppDefinition,
   type AppLock,
   type AppsembleMessages,
   type App as AppType,
   type AppVisibility,
-  type CompanionContainerDefinition,
   type ProjectImplementations,
 } from '@appsemble/types';
 import { omit } from 'lodash-es';
@@ -410,6 +409,7 @@ export class App extends Model {
       controllerCode: this.controllerCode,
       controllerImplementations: this.controllerImplementations,
       skipGroupInvites: this.skipGroupInvites,
+      version: (this.AppSnapshots || [{ id: -1 }]).at(-1)?.id,
     };
 
     return omit(result, omittedValues) as AppType;

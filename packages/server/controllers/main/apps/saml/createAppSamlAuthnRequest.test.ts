@@ -1,8 +1,9 @@
 import { promisify } from 'node:util';
 import { inflateRaw } from 'node:zlib';
 
+import { PredefinedAppRole } from '@appsemble/lang-sdk';
 import { readFixture } from '@appsemble/node-utils';
-import { PredefinedAppRole, type SAMLRedirectResponse } from '@appsemble/types';
+import { type SAMLRedirectResponse } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 

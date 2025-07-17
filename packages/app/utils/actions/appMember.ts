@@ -1,5 +1,5 @@
+import { assignAppMemberProperties } from '@appsemble/lang-sdk';
 import { type AppMemberInfo } from '@appsemble/types';
-import { assignAppMemberProperties } from '@appsemble/utils';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 
@@ -131,8 +131,11 @@ export const appMemberQuery: ActionCreator<'app.member.query'> = ({
     const roles = remap(definition.roles ?? null, data);
     const selectedGroupId = getAppMemberSelectedGroup()?.id;
     const url = `${apiUrl}/api/apps/${appId}/${appMemberInfo.demo ? 'demo-' : ''}members?roles=${roles || []}${selectedGroupId ? `&selectedGroupId=${selectedGroupId}` : ''}`;
+    const query = remap(definition.query ?? null, data);
 
-    const { data: response } = await axios.get<AppMemberInfo[]>(url);
+    const { data: response } = await axios.get<AppMemberInfo[]>(url, {
+      params: query,
+    });
 
     return response;
   },

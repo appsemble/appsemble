@@ -1,8 +1,8 @@
-import { type AppDefinition, type AppsembleMessages } from '@appsemble/types';
+import { type AppDefinition, normalizeBlockName } from '@appsemble/lang-sdk';
+import { type AppsembleMessages } from '@appsemble/types';
 
 import { extractAppMessages } from './appMessages.js';
-import { normalizeBlockName } from './blockUtils.js';
-import { has } from './has.js';
+import { has } from './miscellaneous.js';
 
 export class AppMessageValidationError extends Error {
   constructor(message: string) {

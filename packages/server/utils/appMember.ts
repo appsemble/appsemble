@@ -3,9 +3,11 @@ import {
   type Group as GroupType,
   type SSOConfiguration,
 } from '@appsemble/types';
+import { type WhereOptions } from 'sequelize';
 
 import { argv } from './argv.js';
 import { getGravatarUrl } from './gravatar.js';
+import { odataFilterToSequelize } from './odata.js';
 import { type AppMember, getAppDB } from '../models/index.js';
 
 export function getAppMemberPicture(appId: number, appMember: AppMember): string {
@@ -106,4 +108,26 @@ export function getAppMemberSSO(appMember: AppMember): SSOConfiguration[] {
   }
 
   return sso;
+}
+
+function renameMemberOData(name: string): string {
+  switch (name) {
+    case '__created__':
+      return 'created';
+    case '__updated__':
+      return 'updated';
+    case 'id':
+    case 'email':
+    case 'name':
+    case 'locale':
+    case 'role':
+    case 'timezone':
+      return name;
+    default:
+      return `properties.${name}`;
+  }
+}
+
+export function parseMemberFilterQuery(filter: string): WhereOptions {
+  return odataFilterToSequelize(filter ?? '', AppMember, renameMemberOData);
 }

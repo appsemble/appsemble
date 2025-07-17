@@ -1,5 +1,6 @@
 import { bootstrap, FormattedMessage, useBlock } from '@appsemble/preact';
 import { Icon, Loader, Message } from '@appsemble/preact-components';
+import { polyfill } from 'mobile-drag-drop/index.js';
 import { type VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
@@ -7,6 +8,14 @@ import { CollapsibleListComponent } from './components/CollapsibleList/index.js'
 import { ListItem } from './components/ListItem/index.js';
 import styles from './index.module.css';
 import { type Item } from '../block.js';
+
+const addMobileDragAndDropPolyfill = (): void => {
+  polyfill();
+
+  // Adding touchmove listener for iOS Safari support
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  window.addEventListener('touchmove', () => {}, { passive: false });
+};
 
 bootstrap(
   ({
@@ -27,6 +36,8 @@ bootstrap(
     const {
       actions: { onDrop },
     } = useBlock();
+
+    addMobileDragAndDropPolyfill();
 
     const renderItems = useCallback(
       (items: Item[], spaced?: boolean): VNode => {
@@ -60,7 +71,7 @@ bootstrap(
         };
 
         return (
-          <ul className={spaced ? 'py-4 px-5' : 'pb-4'}>
+          <ul className={spaced ? 'py-4' : 'pb-4'}>
             {onDrop.type !== 'noop' && (
               // eslint-disable-next-line jsx-a11y/no-static-element-interactions
               <div className={styles.dividerContainer} onDragEnter={() => setCurrentLine(-1)}>
@@ -83,13 +94,14 @@ bootstrap(
                 }
                 onDragOver={(e) => e.preventDefault()}
                 onDragStart={() => handleDragStart(index)}
+                onTouchStart={() => handleDragStart(index)}
               >
                 <div className="is-flex is-align-items-center">
                   {}
                   {onDrop.type === 'noop' ? null : (
                     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                     <div
-                      className={String(styles.isMovable)}
+                      className={`${String(styles.isMovable)} is-hidden-mobile`}
                       onMouseEnter={() => setIsDragging(true)}
                       onMouseLeave={() => setIsDragging(false)}
                     >
@@ -118,7 +130,7 @@ bootstrap(
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={() => handleDrop(itemList.length)}
               >
-                <ListItem index={itemList.length} item={{ Position: null }} preventClick />
+                <ListItem index={itemList.length} item={{ Position: null }} />
               </li>
             )}
           </ul>
@@ -231,22 +243,20 @@ bootstrap(
 
     return groupBy ? (
       collapsible ? (
-        <div>
+        <div className="px-4">
           {leftoverData.length ? renderItems(leftoverData) : null}
-          {Object.entries(groupedData).length
-            ? Object.entries(groupedData).map(([key, value], index) => (
-                <CollapsibleListComponent
-                  index={index}
-                  items={value}
-                  key={key}
-                  renderItems={renderItems}
-                  title={key}
-                />
-              ))
-            : renderFirstList()}
+          {Object.entries(groupedData).map(([key, value], index) => (
+            <CollapsibleListComponent
+              index={index}
+              items={value}
+              key={key}
+              renderItems={renderItems}
+              title={key}
+            />
+          ))}
         </div>
       ) : (
-        <div>
+        <div className="px-4">
           {Object.entries(groupedData).length ? (
             <>
               {leftoverData.length ? renderItems(leftoverData) : null}
@@ -258,18 +268,18 @@ bootstrap(
               ))}
             </>
           ) : (
-            <>
+            <div className="px-4">
               <div className={styles.title}>{title}</div>
               {renderItems(data)}
-            </>
+            </div>
           )}
         </div>
       )
     ) : (
-      <>
+      <div className="px-4">
         {title && !collapsible ? <div className={styles.title}>{title}</div> : null}
         {collapsible ? renderFirstList() : renderItems(data, true)}
-      </>
+      </div>
     );
   },
 );

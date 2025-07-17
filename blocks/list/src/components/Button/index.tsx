@@ -39,7 +39,7 @@ export function ButtonComponent({
 }: ButtonComponentProps): VNode {
   const {
     actions,
-    utils: { remap },
+    utils: { isMobile, remap },
   } = useBlock();
 
   const disabled = useMemo(
@@ -47,7 +47,7 @@ export function ButtonComponent({
     [field.disabled, index, item, remap],
   );
   const action = actions[field.onClick];
-  const className = classNames('button', `is-${size}`, {
+  const className = classNames('button', `is-${isMobile ? 'small' : size}`, {
     'is-rounded': rounded,
     'is-fullwidth': fullwidth,
     [`is-${color}`]: color,
@@ -59,8 +59,8 @@ export function ButtonComponent({
 
   const content = (
     <Fragment>
-      {icon ? <Icon className="px-5" icon={icon} /> : null}
-      {label ? <span>{remap(label, item, { index }) as string}</span> : null}
+      {icon ? <Icon icon={icon} size={isMobile ? 'small' : size} /> : null}
+      {label && !isMobile ? <span>{remap(label, item, { index }) as string}</span> : null}
     </Fragment>
   );
 
@@ -74,7 +74,7 @@ export function ButtonComponent({
 
   return (
     <button
-      className={`${className} mt-3`}
+      className={className}
       disabled={disabled}
       onClick={onClick}
       title={remappedTitle}

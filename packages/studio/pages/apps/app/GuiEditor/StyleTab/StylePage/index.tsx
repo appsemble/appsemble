@@ -1,9 +1,9 @@
-import { Button, Input, TextArea } from '@appsemble/react-components';
 import {
   type BasicPageDefinition,
   type FlowPageDefinition,
   type TabsPageDefinition,
-} from '@appsemble/types';
+} from '@appsemble/lang-sdk';
+import { Button, Input, TextArea } from '@appsemble/react-components';
 import { type MutableRefObject, type ReactNode, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { type Document, type Node, type ParsedNode } from 'yaml';

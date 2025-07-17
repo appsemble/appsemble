@@ -1,5 +1,5 @@
 import { RemapperRef } from './RemapperRef/index.js';
-import { dataRemappers } from '../../../../utils/reference-schemas/remappers/index.js';
+import { referenceSchemas } from '@appsemble/lang-sdk';
 
 # Data
 
@@ -31,4 +31,4 @@ user’s locale to change what they see, for example.
 
 ## Remappers
 
-<RemapperRef remappers={dataRemappers} />
+<RemapperRef remappers={referenceSchemas.dataRemappers} />

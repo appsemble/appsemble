@@ -119,6 +119,7 @@ describe('queryApps', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "public",
         },
         {
@@ -154,6 +155,7 @@ describe('queryApps', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "public",
         },
       ]
@@ -234,6 +236,7 @@ describe('queryApps', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "public",
         },
       ]
@@ -334,6 +337,7 @@ describe('queryApps', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "public",
         },
         {
@@ -373,6 +377,7 @@ describe('queryApps', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "public",
         },
         {
@@ -408,6 +413,7 @@ describe('queryApps', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "public",
         },
       ]

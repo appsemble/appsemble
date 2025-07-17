@@ -1,4 +1,4 @@
-import { type Remapper, type RequestLikeActionDefinition } from '@appsemble/types';
+import { type Remapper, type RequestLikeActionDefinition } from '@appsemble/lang-sdk';
 import { type RawAxiosRequestConfig } from 'axios';
 
 export function formatRequestAction(

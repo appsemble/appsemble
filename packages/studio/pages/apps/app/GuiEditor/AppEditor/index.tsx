@@ -1,6 +1,6 @@
+import { normalizeBlockName } from '@appsemble/lang-sdk';
 import { Loader, useData } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
-import { normalizeBlockName } from '@appsemble/utils';
 import { type MutableRefObject, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { type Document, type Node, type ParsedNode, type YAMLMap, type YAMLSeq } from 'yaml';

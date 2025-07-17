@@ -1,8 +1,10 @@
+import { Icon } from '@appsemble/preact-components';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type ComponentChild, type ComponentChildren, type VNode } from 'preact';
 import { useCallback, useRef } from 'preact/hooks';
 
+import styles from './index.module.css';
 import { Button, useClickOutside, useToggle } from '../index.js';
 
 interface DropdownProps {
@@ -19,6 +21,11 @@ interface DropdownProps {
   readonly className?: string;
 
   /**
+   * An optional class name to add to the icon element.
+   */
+  readonly iconClassName?: string;
+
+  /**
    * The label to render on the menu toggle button.
    */
   readonly label: ComponentChild;
@@ -27,12 +34,26 @@ interface DropdownProps {
    * The icon to display next to the label.
    */
   readonly icon?: IconName;
+
+  /**
+   * Whether to render the dropdown trigger as a button.
+   *
+   * @default true
+   */
+  readonly asButton?: boolean;
 }
 
 /**
  * Render an aria compliant Bulma dropdown menu.
  */
-export function Dropdown({ children, className, icon, label }: DropdownProps): VNode {
+export function Dropdown({
+  asButton = true,
+  children,
+  className,
+  icon,
+  iconClassName,
+  label,
+}: DropdownProps): VNode {
   const ref = useRef<HTMLDivElement>();
   const { disable, enabled, toggle } = useToggle();
 
@@ -54,12 +75,19 @@ export function Dropdown({ children, className, icon, label }: DropdownProps): V
       ref={ref}
     >
       <div className="dropdown-trigger">
-        <Button aria-haspopup icon={icon} onClick={toggle} onKeyDown={onKeyDown}>
-          {label}
-        </Button>
+        {asButton ? (
+          <Button aria-haspopup icon={icon} onClick={toggle} onKeyDown={onKeyDown}>
+            {label}
+          </Button>
+        ) : (
+          // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
+          <div aria-haspopup onClick={toggle} onKeyDown={onKeyDown} role="button" tabIndex={-1}>
+            <Icon className={iconClassName} icon={icon} />
+          </div>
+        )}
       </div>
       <div
-        className="dropdown-menu"
+        className={classNames('dropdown-menu', styles['dropdown-menu'])}
         data-testid="dropdown-menu"
         onClick={toggle}
         onKeyDown={onKeyDown}

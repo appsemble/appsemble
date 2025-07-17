@@ -1,5 +1,6 @@
+import { type BlockDefinition } from '@appsemble/lang-sdk';
 import { useMessages } from '@appsemble/react-components';
-import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import classNames from 'classnames';
 import { type MutableRefObject, type ReactNode, useCallback, useState } from 'react';
 import { type JsonObject } from 'type-fest';

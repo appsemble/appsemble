@@ -1,5 +1,5 @@
 name: Remappers
-description: This app contains every Remapper currently in Appsemble as of (0.32.3)
+description: This app contains every Remapper currently in Appsemble as of (0.33.11)
 defaultPage: Introduction
 security:
   default:
@@ -38,7 +38,7 @@ resources:
           type: string
 
 anchors:
-  - &block-version 0.32.3
+  - &block-version 0.33.11
 
 pages:
   - name: Introduction
@@ -127,16 +127,20 @@ pages:
           listen:
             data: dailyBugleEmployees
         parameters:
-          header: [{ prop: firstName }, { string.case: upper }]
-          fields:
-            - label: Description
-              value:
-                string.format:
-                  template: '{firstName} {lastName} is an employee of the {department} department!'
-                  values:
-                    firstName: { prop: firstName }
-                    lastName: { prop: lastName }
-                    department: { prop: department }
+          itemDefinition:
+            header:
+              title: [{ prop: firstName }, { string.case: upper }]
+            content:
+              fields:
+                - label: Description
+                  value:
+                    string.format:
+                      template:
+                        '{firstName} {lastName} is an employee of the {department} department!'
+                      values:
+                        firstName: { prop: firstName }
+                        lastName: { prop: lastName }
+                        department: { prop: department }
 
       # string.case
       - type: markdown

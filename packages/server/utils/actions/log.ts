@@ -1,5 +1,5 @@
+import { type LogActionDefinition } from '@appsemble/lang-sdk';
 import { logger } from '@appsemble/node-utils';
-import { type LogActionDefinition } from '@appsemble/types';
 
 import { type ServerActionParameters } from './index.js';
 

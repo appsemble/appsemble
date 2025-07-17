@@ -2,7 +2,7 @@ import {
   type BasicPageDefinition,
   type FlowPageDefinition,
   type TabsPageDefinition,
-} from '@appsemble/types';
+} from '@appsemble/lang-sdk';
 import { type ReactNode, useCallback, useState } from 'react';
 import { type Document, type ParsedNode, type YAMLMap, type YAMLSeq } from 'yaml';
 

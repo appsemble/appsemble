@@ -1,9 +1,9 @@
-import { logger } from '@appsemble/node-utils';
 import {
   type ContainerEnvVar,
   type ContainerResourceProps,
   type ContainerResources,
-} from '@appsemble/types';
+} from '@appsemble/lang-sdk';
+import { logger } from '@appsemble/node-utils';
 import {
   AppsV1Api,
   CoreV1Api,

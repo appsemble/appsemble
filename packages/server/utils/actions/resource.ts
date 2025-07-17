@@ -1,13 +1,6 @@
 import {
-  getCompressedFileMeta,
-  getRemapperContext,
-  getResourceDefinition,
-  processResourceBody,
-  type QueryParams,
-  serializeServerResource,
-  uploadAssets,
-} from '@appsemble/node-utils';
-import {
+  defaultLocale,
+  remap,
   type ResourceCreateActionDefinition,
   type ResourceDeleteActionDefinition,
   type ResourceDeleteAllActionDefinition,
@@ -16,8 +9,17 @@ import {
   type ResourcePatchActionDefinition,
   type ResourceQueryActionDefinition,
   type ResourceUpdateActionDefinition,
-} from '@appsemble/types';
-import { defaultLocale, remap, serializeResource } from '@appsemble/utils';
+} from '@appsemble/lang-sdk';
+import {
+  getCompressedFileMeta,
+  getRemapperContext,
+  getResourceDefinition,
+  processResourceBody,
+  type QueryParams,
+  serializeServerResource,
+  uploadAssets,
+} from '@appsemble/node-utils';
+import { serializeResource } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
@@ -80,6 +82,11 @@ export async function get({
     options,
     context,
   );
+
+  Object.assign(remapperContext, {
+    history: internalContext?.history ?? [],
+  });
+
   return remap(resourceDefinition.views?.[view].remap ?? null, parsedResource, remapperContext);
 }
 
@@ -102,7 +109,7 @@ export async function query({
   const resourceDefinition = getResourceDefinition(app.definition, action.resource, context, view);
 
   const parsed = parseQuery({ ...queryParams, resourceDefinition, tableName: 'Resource' });
-  const include = queryParams?.$select?.split(',').map((s) => s.trim());
+  const include = queryParams?.$select?.split?.(',').map((s) => s.trim());
 
   const resources = await Resource.findAll({
     include: [
@@ -133,6 +140,10 @@ export async function query({
     options,
     context,
   );
+  Object.assign(remapperContext, {
+    history: internalContext?.history ?? [],
+  });
+
   return mappedResources.map((resource) =>
     remap(resourceDefinition.views?.[view].remap ?? null, resource, remapperContext),
   );

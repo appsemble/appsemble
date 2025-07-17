@@ -1,14 +1,16 @@
 import { type EventEmitter } from 'events';
 
-import { Title, useMessages } from '@appsemble/react-components';
-import { type BlockUtils } from '@appsemble/sdk';
 import {
   ActionError,
   type BlockDefinition,
+  normalizeBlockName,
   type PageDefinition,
+  prefixBlockURL,
   type Remapper,
-} from '@appsemble/types';
-import { createThemeURL, mergeThemes, normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
+} from '@appsemble/lang-sdk';
+import { Title, useMessages } from '@appsemble/react-components';
+import { type BlockUtils } from '@appsemble/sdk';
+import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
@@ -65,6 +67,8 @@ interface BlockProps {
   readonly prefixIndex: string;
 }
 
+const MOBILE_BREAKPOINT = 768;
+
 /**
  * Render a block on a page.
  *
@@ -114,6 +118,18 @@ export function Block({
 
   const blockName = normalizeBlockName(block.type);
   const manifest = blockManifests.find((m) => m.name === blockName && m.version === block.version);
+
+  const [isMobile, setIsMobile] = useState<boolean | undefined>();
+
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const onChange = (): void => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    mql.addEventListener('change', onChange);
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
 
   useEffect(
     () => () => {
@@ -196,6 +212,7 @@ export function Block({
       menu(items, header) {
         setBlockMenu({ items, header, path: prefix });
       },
+      isMobile: Boolean(isMobile),
     };
 
     (async () => {
@@ -270,6 +287,7 @@ export function Block({
     setAppMemberInfo,
     appMemberInfoRef,
     appMemberSelectedGroup,
+    isMobile,
   ]);
 
   // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)

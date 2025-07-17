@@ -1,7 +1,7 @@
 import { createReadStream } from 'node:fs';
 
+import { normalize } from '@appsemble/lang-sdk';
 import { logger } from '@appsemble/node-utils';
-import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import FormData from 'form-data';
 

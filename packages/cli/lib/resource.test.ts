@@ -1,6 +1,7 @@
+import { type ResourceDefinition } from '@appsemble/lang-sdk';
 import { resolveFixture } from '@appsemble/node-utils';
 import { createServer, createTestUser, models, setArgv } from '@appsemble/server';
-import { PredefinedOrganizationRole, type ResourceDefinition } from '@appsemble/types';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 

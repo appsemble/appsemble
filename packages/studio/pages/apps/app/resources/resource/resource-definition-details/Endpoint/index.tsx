@@ -1,5 +1,5 @@
+import { generateDataFromSchema, getAppRolesByPermissions } from '@appsemble/lang-sdk';
 import { Title } from '@appsemble/react-components';
-import { generateDataFromSchema, getAppRolesByPermissions } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';

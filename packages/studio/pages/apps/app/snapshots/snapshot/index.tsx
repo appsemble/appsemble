@@ -1,3 +1,4 @@
+import { type AppDefinition } from '@appsemble/lang-sdk';
 import {
   Button,
   useConfirmation,
@@ -5,7 +6,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type AppDefinition, type Snapshot } from '@appsemble/types';
+import { type Snapshot } from '@appsemble/types';
 import axios from 'axios';
 import { lazy, type ReactNode, Suspense, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

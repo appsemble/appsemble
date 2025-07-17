@@ -1,3 +1,4 @@
+import { type ResourceDefinition } from '@appsemble/lang-sdk';
 import {
   Button,
   CheckboxField,
@@ -12,7 +13,6 @@ import {
   useSideMenuState,
   useToggle,
 } from '@appsemble/react-components';
-import { type ResourceDefinition } from '@appsemble/types';
 import { randomString } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import equal from 'fast-deep-equal';

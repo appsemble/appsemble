@@ -1,3 +1,4 @@
+import { assignAppMemberProperties, getAppRoles } from '@appsemble/lang-sdk';
 import {
   AsyncButton,
   AsyncSelect,
@@ -12,7 +13,6 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type AppMemberInfo } from '@appsemble/types';
-import { assignAppMemberProperties, getAppRoles } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

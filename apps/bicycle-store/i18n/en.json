@@ -1,0 +1,13 @@
+{
+  "app": {
+    "app.roles.employee": "employee",
+    "app.roles.employee.description": "Regular employees of the store. They can sell bicycles.",
+    "app.roles.manager": "manager",
+    "app.roles.manager.description": "Managers of the store. They are in charge of overseeing the store and can add/remove bicycle types to the inventory.",
+    "description": "Website for employees to manage and and sell bicycles",
+    "name": "Bicycle Store",
+    "pages.inventory": "Inventory",
+    "pages.sale-history": "Sale history",
+    "pages.sell-bicycle": "Sell bicycle"
+  }
+}

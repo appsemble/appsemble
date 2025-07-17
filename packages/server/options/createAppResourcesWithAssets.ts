@@ -34,7 +34,7 @@ export async function createAppResourcesWithAssets({
         resources.map(async ({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }) => {
           const { query } = parseQuery({
             $filter: enforceOrderingGroupByFields
-              ?.map((item) => `${item} eq '${data[item]}'`)
+              ?.map((item) => `${item} eq ${data[item] ? `'${data[item]}'` : null}`)
               .join(' and '),
             resourceDefinition,
             tableName: 'Resource',

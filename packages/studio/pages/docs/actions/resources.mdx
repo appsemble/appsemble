@@ -1,6 +1,6 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
 import { ActionRef } from './ActionRef/index.tsx';
-import { resourceActions as actions } from '../../../../utils/reference-schemas/actions/resources.ts';
+import { referenceSchemas } from '@appsemble/lang-sdk';
 
 # Resources
 
@@ -59,7 +59,7 @@ Supported resource actions are as below:
 
 ### resource.get<Side name="resource.get" />
 
-<ActionRef action={actions['resource.get']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.get']} />
 
 This action is used to fetch a single resource. Id can be specified explicitly using the parameter
 `id` or appsemble can infer it from the data passed to the action function, explicitly defined id is
@@ -73,7 +73,7 @@ fetch the `person` resource.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.32.3
+    version: 0.33.11
     actions:
       onLoad:
         type: resource.get
@@ -82,7 +82,7 @@ blocks:
 
 ### resource.history.get<Side name="resource.history.get" />
 
-<ActionRef action={actions['resource.history.get']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.history.get']} />
 
 This action is used to fetch the history of a single resource. The `history` attribute of the
 resource should be set to true for this action to work. This action requires at least one of the app
@@ -93,7 +93,7 @@ example of how you can use this action to fetch the `person` resource.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.32.3
+    version: 0.33.11
     actions:
       onLoad:
         type: resource.history.get
@@ -102,7 +102,7 @@ blocks:
 
 ### resource.update.positions<Side name="resource.update.positions" />
 
-<ActionRef action={actions['resource.update.positions']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.update.positions']} />
 
 This action is used to update the positions of a single resource. This only works with the
 [list block](/blocks/@appsemble/list)
@@ -124,7 +124,7 @@ Here is an example of how you can use this action to update the positions of a r
 ```yaml
 blocks:
   - type: list
-    version: 0.32.3-test.8
+    version: 0.33.11-test.8
     actions:
       onDrop:
         type: resource.update.positions
@@ -139,7 +139,7 @@ blocks:
 
 ### resource.query<Side name="resource.query" />
 
-<ActionRef action={actions['resource.query']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.query']} />
 
 This action is used to fetch all the resources. This action requires at least one of the app
 permissions `$resource:all:query`, `$resource:all:own:query`, `$resource:all:query:<view-name>`,
@@ -151,7 +151,7 @@ fetch all `person` resources.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.32.3
+    version: 0.33.11
     actions:
       onLoad:
         type: resource.query
@@ -160,7 +160,7 @@ blocks:
 
 ### resource.count<Side name="resource.count" />
 
-<ActionRef action={actions['resource.count']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.count']} />
 
 This action is used to count the number of resources a `resource.query` action would return. This
 action requires at least one of the app permissions `$resource:all:query` or
@@ -171,7 +171,7 @@ fetch the number of resources.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.32.3
+    version: 0.33.11
     actions:
       onLoad:
         type: resource.count
@@ -180,7 +180,7 @@ blocks:
 
 ### resource.create<Side name="resource.create" />
 
-<ActionRef action={actions['resource.create']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.create']} />
 
 This action is used to create new resources. This action requires at least one of the app
 permissions `$resource:all:create` or `$resource:<resource-name>:create`, depending on the context.
@@ -190,7 +190,7 @@ you can use this action to create a new resource of type person.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.3
+    version: 0.33.11
     actions:
       onSubmit:
         type: resource.create
@@ -200,7 +200,7 @@ blocks:
 
 ### resource.update<Side name="resource.update" />
 
-<ActionRef action={actions['resource.update']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.update']} />
 
 This action is used to replace some resource’s data with a completely new set of values. This action
 requires at least one of the app permissions `$resource:all:update`, `$resource:all:own:update`,
@@ -211,7 +211,7 @@ example of how you can use this action to update an existing resource of type pe
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       fields:
         - type: string
@@ -236,7 +236,7 @@ blocks:
 
 ### resource.patch<Side name="resource.patch" />
 
-<ActionRef action={actions['resource.patch']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.patch']} />
 
 This action is used to partially update a resource with new data. Id can be specified explicitly
 using the parameter `id` or appsemble can infer it from the data passed to the action function,
@@ -249,7 +249,7 @@ resource of type person using this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       fields:
         - type: string
@@ -265,7 +265,7 @@ blocks:
 
 ### resource.delete<Side name="resource.delete" />
 
-<ActionRef action={actions['resource.delete']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.delete']} />
 
 This action is used to delete a resource from the database. This action requires at least one of the
 app permissions `$resource:all:delete`, `$resource:all:own:delete`,
@@ -276,7 +276,7 @@ person resource, you can use the following block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -295,7 +295,7 @@ blocks:
 
 ### resource.delete.all<Side name="resource.delete.all" />
 
-<ActionRef action={actions['resource.delete.all']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.delete.all']} />
 
 This action is used to delete all resources of certain type from the database. This action requires
 at least one of the app permissions `$resource:all:delete` or `$resource:<resource-name>:delete`,
@@ -309,7 +309,7 @@ To delete all person resources, you can use the following block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -328,7 +328,7 @@ blocks:
 
 ### resource.delete.bulk<Side name="resource.delete.bulk" />
 
-<ActionRef action={actions['resource.delete.bulk']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.delete.bulk']} />
 
 This action is used to delete several resources of a certain type from the database by id. This
 action requires at least one of the app permissions `$resource:all:delete` or
@@ -343,7 +343,7 @@ following block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -366,7 +366,7 @@ blocks:
 
 ### resource.subscription.subscribe<Side name="resource.subscription.subscribe" />
 
-<ActionRef action={actions['resource.subscription.subscribe']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.subscription.subscribe']} />
 
 This action is used to subscribe to resource modification for push notifications. Here’s how you can
 use this action to subscribe to all the updates made to the resource person:
@@ -374,7 +374,7 @@ use this action to subscribe to all the updates made to the resource person:
 ```yaml validate blocks-snippet
 blocks:
   - type: table
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       fields:
         - value: { prop: firstName }
@@ -390,7 +390,7 @@ blocks:
 
 ### resource.subscription.unsubscribe<Side name="resource.subscription.unsubscribe" />
 
-<ActionRef action={actions['resource.subscription.unsubscribe']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.subscription.unsubscribe']} />
 
 This action is used to unsubscribe from resource modifications. Here’s how you can use this action
 to unsubscribe to the delete notifications related to resource person.
@@ -398,7 +398,7 @@ to unsubscribe to the delete notifications related to resource person.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       icon: bell-slash
     actions:
@@ -410,7 +410,7 @@ blocks:
 
 ### resource.subscription.toggle<Side name="resource.subscription.toggle" />
 
-<ActionRef action={actions['resource.subscription.toggle']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.subscription.toggle']} />
 
 This action is used to toggle push notifications for resource modification. i.e. It will set the
 subscribed property to `true` if it’s set to `false` and vice versa. Here’s how you can use this
@@ -419,7 +419,7 @@ action.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       icon: toggle-on
     actions:
@@ -431,7 +431,7 @@ blocks:
 
 ### resource.subscription.status<Side name="resource.subscription.status" />
 
-<ActionRef action={actions['resource.subscription.status']} />
+<ActionRef action={referenceSchemas.resourceActions['resource.subscription.status']} />
 
 This action can be used to access the status of notification subscriptions for a resource. Here’s an
 example of usage of this action.
@@ -439,7 +439,7 @@ example of usage of this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       icon: envelope
     actions:

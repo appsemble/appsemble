@@ -1,5 +1,5 @@
+import { type CompanionContainerDefinition } from '@appsemble/lang-sdk';
 import { logger } from '@appsemble/node-utils';
-import { type CompanionContainerDefinition } from '@appsemble/types';
 import { type V1Secret, type V1ServiceList } from '@kubernetes/client-node';
 
 import {

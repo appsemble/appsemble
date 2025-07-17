@@ -1,3 +1,4 @@
+import { type AppDefinition, AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
   AppsembleError,
   assertKoaCondition,
@@ -6,12 +7,8 @@ import {
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import {
-  type AppDefinition,
-  OrganizationPermission,
-  type ResourceDefinition,
-} from '@appsemble/types';
-import { validateAppDefinition, validateStyle } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 import { parse } from 'yaml';
@@ -39,7 +36,6 @@ import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 
 export async function patchApp(ctx: Context): Promise<void> {
   const {
-    openApi,
     pathParams: { appId },
     request: {
       body: {
@@ -127,13 +123,9 @@ export async function patchApp(ctx: Context): Promise<void> {
       permissionsToCheck.push(OrganizationPermission.UpdateApps);
 
       const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
-      handleValidatorResult(
-        ctx,
-        openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
-          throw: false,
-        }),
-        'App validation failed',
-      );
+
+      const appValidator = new AppValidator();
+      handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
       handleValidatorResult(
         ctx,
         await validateAppDefinition(
@@ -143,6 +135,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         ),
         'App validation failed',
       );
+
       result.definition = definition;
       if (definition.cron && definition.security?.cron) {
         const appMember = await AppMember.findOne({ where: { role: 'cron' } });

@@ -10,7 +10,7 @@
 }
 
 .isMovable {
-  padding: 0.75rem;
+  padding-right: 0.75rem;
 }
 
 .isMovable:hover {

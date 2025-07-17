@@ -1,4 +1,4 @@
-import { type ActionName, type ServerActionName, serverActions } from '@appsemble/utils';
+import { type ActionName, type ServerActionName, serverActions } from '@appsemble/lang-sdk';
 import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 

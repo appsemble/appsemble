@@ -9,19 +9,20 @@ export async function createDynamicIndexes(
   transaction?: Transaction,
 ): Promise<void> {
   const { sequelize } = await getAppDB(appId);
-  const queries = enforceOrderingGroupByFields
-    .map(
-      (field) => `
+  const orderingFields = enforceOrderingGroupByFields
+    .map((field) => `(data->>'${field}')`)
+    .join(', ');
+  const queries = [
+    `
 CREATE UNIQUE INDEX IF NOT EXISTS
-"UniquePosition${resourceType}${field}WithGroupID"
-on "Resource"(type, "Position", (data->>'${field}'), "GroupId", ephemeral)
-WHERE "GroupId" IS NOT NULL;
+"UniquePosition${resourceType}WithGroupIDAppID${appId}"
+on "Resource"(type, "AppId", "Position", ${orderingFields}, "GroupId", ephemeral, deleted)
+WHERE "GroupId" IS NOT NULL;`,
+    `
 CREATE UNIQUE INDEX IF NOT EXISTS
-"UniquePosition${resourceType}${field}WithNULLGroupID"
-on "Resource"(type, "Position", (data->>'${field}'), ephemeral)
-WHERE "GroupId" IS NULL;
-`,
-    )
-    .join('\n');
+"UniquePosition${resourceType}WithNULLGroupIDAppID${appId}"
+on "Resource"(type, "AppId", "Position", ${orderingFields}, ephemeral, deleted)
+WHERE "GroupId" IS NULL;`,
+  ].join('\n');
   await sequelize.query(queries, { transaction });
 }

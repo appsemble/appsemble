@@ -4,7 +4,7 @@ icon: gears
 
 import { importDocs } from './index.js';
 import { ActionRef } from './ActionRef/index.tsx';
-import { ActionDefinition } from '../../../../utils/api/components/schemas/ActionDefinition.ts';
+import { schemas } from '@appsemble/lang-sdk';
 
 # Actions
 
@@ -30,7 +30,7 @@ Here’s an example of how you can use `onLoad` to trigger an action:
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.32.3
+    version: 0.33.11
     actions:
       onLoad:
         type: resource.query
@@ -46,7 +46,7 @@ pages:
   - name: Create Person
     blocks:
       - type: form
-        version: 0.32.3
+        version: 0.33.11
         actions:
           onSubmit:
             remapBefore: { null.strip }
@@ -61,7 +61,7 @@ pages:
   - name: Person List
     blocks:
       - type: markdown
-        version: 0.32.3
+        version: 0.33.11
         parameters:
           content: |
             ## Person list
@@ -74,7 +74,7 @@ pages:
   - name: Error Page
     blocks:
       - type: markdown
-        version: 0.32.3
+        version: 0.33.11
         parameters:
           content: |
             Something went wrong creating this resource :/
@@ -98,7 +98,7 @@ current data.
 
 ## Base properties:
 
-<ActionRef action={ActionDefinition.allOf[0]} excludeBase={false} />
+<ActionRef action={schemas.ActionDefinition.allOf[0]} excludeBase={false} />
 
 Below you can find the actions grouped by type that Appsemble supports.
 

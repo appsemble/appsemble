@@ -1,4 +1,5 @@
-import { mapValues, schemas } from '@appsemble/utils';
+import { schemas } from '@appsemble/lang-sdk';
+import { mapValues } from '@appsemble/utils';
 import { type Schema } from 'jsonschema';
 import 'monaco-editor/esm/vs/editor/contrib/colorPicker/browser/colorContributions.js';
 import 'monaco-editor/esm/vs/editor/contrib/comment/browser/comment.js';
@@ -69,8 +70,8 @@ configureMonacoYaml(monaco, {
   enableSchemaRequest: false,
   schemas: [
     {
-      fileMatch: ['app.yaml'],
       uri: String(new URL('/docs/reference', window.location.origin)),
+      fileMatch: ['app.yaml'],
       schema: {
         $ref: '#/components/schemas/AppDefinition',
         components: {

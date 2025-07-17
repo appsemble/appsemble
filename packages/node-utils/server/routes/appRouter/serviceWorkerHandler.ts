@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
+import { getAppBlocks } from '@appsemble/lang-sdk';
 import { assertKoaCondition, type Options } from '@appsemble/node-utils';
-import { getAppBlocks } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 
 export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Options): Middleware {
@@ -21,7 +21,7 @@ export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Opt
     const identifiableBlocks = getAppBlocks(app.definition);
     const blocksAssetsPaths = await getBlocksAssetsPaths({ identifiableBlocks, context: ctx });
 
-    ctx.body = `const blockAssets=${JSON.stringify(blocksAssetsPaths)};${serviceWorker}`;
+    ctx.body = `const appVersion = ${app.version};const blockAssets=${JSON.stringify(blocksAssetsPaths)};${serviceWorker}`;
     ctx.type = 'application/javascript';
   };
 }

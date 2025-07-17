@@ -1,11 +1,5 @@
-import {
-  type Action,
-  type ActionError,
-  type BaseMessage,
-  type BulmaColor,
-  type BulmaSize,
-  type Theme,
-} from '@appsemble/types';
+import { type Action, type ActionError, type BaseMessage, type Theme } from '@appsemble/lang-sdk';
+import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Promisable } from 'type-fest';
 
@@ -217,6 +211,11 @@ export interface BlockUtils extends Utils {
    * @param header A header that can be used to separate from other block menus.
    */
   menu: (items: MenuItem[], header?: string) => void;
+
+  /**
+   * @returns Whether the current user is using a mobile device.
+   */
+  isMobile: boolean;
 }
 
 export interface Events {

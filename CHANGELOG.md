@@ -2,6 +2,128 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.33.11](https://gitlab.com/appsemble/appsemble/-/releases/0.33.11)] - 2025-07-17
+
+### Added
+
+- App: Auto update apps when a new version is available.
+- App: Clicking on the logo in the navbar takes you to the default page.
+
+### Changed
+
+- App: Render the logo on the left side of header text.
+
+### Fixed
+
+- Server: Fix updating an app with resource positions unique index.
+
+## \[[0.33.10](https://gitlab.com/appsemble/appsemble/-/releases/0.33.10)] - 2025-07-14
+
+## \[[0.33.9](https://gitlab.com/appsemble/appsemble/-/releases/0.33.9)] - 2025-07-11
+
+### Fixed
+
+- Block(`form`): Fieldset now correctly handles undefined arrays.
+
+## \[[0.33.8](https://gitlab.com/appsemble/appsemble/-/releases/0.33.8)] - 2025-07-11
+
+## \[[0.33.7](https://gitlab.com/appsemble/appsemble/-/releases/0.33.7)] - 2025-07-09
+
+### Changed
+
+- App: Hide the app logo from the title bar by default.
+
+### Fixed
+
+- Block(`list`): Items outside a group are now rendered only once.
+- Lang-sdk: App validation fails for resource actions that are used only in cron job.
+
+## \[[0.33.6](https://gitlab.com/appsemble/appsemble/-/releases/0.33.6)] - 2025-07-07
+
+### Added
+
+- App: Add support for app logos for all apps.
+
+### Fixed
+
+- App: Handle service worker error.
+- Cli: Use the referencing property if it's present instead of the dynamic `$` one when publishing
+  seed resources.
+- Server: Assets' uniqueness now only applies to not deleted assets.
+- Server: Generate correct query for `is null` and `is not null` queries.
+
+## \[[0.33.5](https://gitlab.com/appsemble/appsemble/-/releases/0.33.5)] - 2025-07-04
+
+### Fixed
+
+- Server: Server actions not working as expected with the history remapper.
+- Server: `app.member.query` action not applying roles correctly in the sequelize query.
+
+## \[[0.33.4](https://gitlab.com/appsemble/appsemble/-/releases/0.33.4)] - 2025-07-03
+
+### Added
+
+- App: Add new option `query` to `app.member.query` action, which allows filtering using oData
+  standard.
+- Server: Add new option `query` to `app.member.query` action, which allows filtering using oData
+  standard.
+
+### Changed
+
+- Block(`list`): New styling for collapsible lists.
+
+### Fixed
+
+- Block(`form`): Handle form submission errors better.
+- Server: Dynamic resource indexes are now created correctly.
+- Server: Show all app member emails in resource history.
+- Utils: The `filter.from` remapper now correctly casts to string for `String` entries and works
+  with remappers that resolve to null.
+
+## \[[0.33.3](https://gitlab.com/appsemble/appsemble/-/releases/0.33.3)] - 2025-06-27
+
+### Added
+
+- Block(`filter`): New parameter `defaultFilter` which allows you to define a default filter for
+  every request.
+- Server: Support the `app.member.query` action on the server.
+
+### Fixed
+
+- App: Count blocks filtered by app roles towards block prefix indexes.
+
+## \[[0.33.2](https://gitlab.com/appsemble/appsemble/-/releases/0.33.2)] - 2025-06-26
+
+### Added
+
+- Block(`list`): Allow downloading assets by clicking on the asset name or icon.
+
+### Changed
+
+- Block(`filter`): Support dynamic values in enum options for enum and list filters.
+
+### Fixed
+
+- Block(`list`): Fix header styles with icons and images.
+- App: Tabs page security roles not working for the entire page.
+- Server: Fix server side `notify` action.
+
+## \[[0.33.1](https://gitlab.com/appsemble/appsemble/-/releases/0.33.1)] - 2025-06-26
+
+## \[[0.33.0](https://gitlab.com/appsemble/appsemble/-/releases/0.33.0)] - 2025-06-25
+
+### Added
+
+- Preact-components: Support icon class name in the dropdown component.
+- Studio: Allow a training chapter to be blocked by multiple chapters.
+
+### Changed
+
+- Block(`list`): Support defining header, content and footer separately. Mutually exclude images and
+  icons, buttons and dropdowns in headers and footers.
+- Types: Allow array of strings in `TrainingChapter` and `TrainingChapterProperties` types'
+  `blockedBy` properties.
+
 ## \[[0.32.3](https://gitlab.com/appsemble/appsemble/-/releases/0.32.3)] - 2025-06-18
 
 ### Added

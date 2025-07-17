@@ -1,5 +1,6 @@
+import { AppPermission } from '@appsemble/lang-sdk';
 import { assertKoaCondition } from '@appsemble/node-utils';
-import { AppPermission, type GroupMember as GroupMemberType } from '@appsemble/types';
+import { type GroupMember as GroupMemberType } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { getAppDB } from '../../../../../models/index.js';

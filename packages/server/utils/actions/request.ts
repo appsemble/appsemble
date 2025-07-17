@@ -1,10 +1,12 @@
-import { getRemapperContext } from '@appsemble/node-utils';
 import {
+  defaultLocale,
+  remap,
   type Remapper,
   type RequestLikeActionDefinition,
   type ResourceQueryActionDefinition,
-} from '@appsemble/types';
-import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
+} from '@appsemble/lang-sdk';
+import { getRemapperContext } from '@appsemble/node-utils';
+import { formatRequestAction } from '@appsemble/utils';
 import axios from 'axios';
 
 import { type ServerActionParameters } from './index.js';
@@ -15,6 +17,7 @@ export async function request({
   app,
   context,
   data,
+  internalContext,
   options,
 }: ServerActionParameters): Promise<any> {
   let method: 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT';
@@ -59,6 +62,11 @@ export async function request({
     options,
     context,
   );
+
+  Object.assign(remapperContext, {
+    history: internalContext?.history ?? [],
+  });
+
   const axiosConfig = formatRequestAction(
     { ...action, query: query.length ? query : null, method },
     data,

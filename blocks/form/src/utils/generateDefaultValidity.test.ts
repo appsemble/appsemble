@@ -1,5 +1,5 @@
+import { remap } from '@appsemble/lang-sdk';
 import { type BlockUtils } from '@appsemble/sdk';
-import { remap } from '@appsemble/utils';
 import { describe, expect, it } from 'vitest';
 
 import { generateDefaultValidity } from './generateDefaultValidity.js';

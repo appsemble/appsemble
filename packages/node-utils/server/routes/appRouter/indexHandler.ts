@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
-import { createThemeURL, defaultLocale, getAppBlocks, mergeThemes } from '@appsemble/utils';
+import { getAppBlocks } from '@appsemble/lang-sdk';
+import { createThemeURL, defaultLocale, mergeThemes } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 
 import { organizationBlocklist } from '../../../organizationBlocklist.js';

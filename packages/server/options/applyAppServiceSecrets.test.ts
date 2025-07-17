@@ -1,5 +1,5 @@
+import { type EmailActionDefinition } from '@appsemble/lang-sdk';
 import { version } from '@appsemble/node-utils';
-import { type EmailActionDefinition } from '@appsemble/types';
 import axios, { type InternalAxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';

@@ -1,5 +1,5 @@
 import { RemapperRef } from './RemapperRef/index.js';
-import { stringRemappers } from '../../../../utils/reference-schemas/remappers/index.js';
+import { referenceSchemas } from '@appsemble/lang-sdk';
 
 # String-manipulation
 
@@ -75,7 +75,7 @@ The complete block definition looks like this:
 
 ```yaml
 type: list
-version: 0.32.3
+version: 0.33.11
 events:
   listen:
     data: dailyBugleEmployees
@@ -94,4 +94,4 @@ parameters:
 
 ## Remappers
 
-<RemapperRef remappers={stringRemappers} />
+<RemapperRef remappers={referenceSchema.stringRemappers} />

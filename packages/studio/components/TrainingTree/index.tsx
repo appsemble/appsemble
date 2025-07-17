@@ -41,6 +41,7 @@ function generateChapterContent(chapter: TrainingChapter): { nodes: Node[]; edge
       },
     });
     const previousNode = nodes.at(currentNodeIndex - 2);
+    // Draw edges between training modules
     edges.push({
       id: `${previousNode.id}-TO-${training.id}`,
       source: previousNode.id,
@@ -61,27 +62,31 @@ function generateTreeContent(chapters: TrainingChapter[]): { nodes: Node[]; edge
     nodes.push(...chapterContent.nodes);
     edges.push(...chapterContent.edges);
 
-    const connection = chapterEdges.find(({ to }) => to === chapter.id);
-    if (!connection) {
+    const connections = chapterEdges.filter(({ to }) => to === chapter.id);
+    if (connections.length === 0) {
       continue;
     }
 
     // Draw edge between chapter head and last node of the parent chapter
-    const finalNodeOfParent = chapters.find(({ id }) => id === connection.from).trainings.at(-1).id;
-    edges.push({
-      id: `${finalNodeOfParent}-TO-${chapter.id}`,
-      source: finalNodeOfParent,
-      target: chapter.id,
-      type: 'straight',
-    });
+    for (const connection of connections) {
+      const finalNodeOfParent = chapters
+        .find(({ id }) => id === connection.from)
+        .trainings.at(-1).id;
+      edges.push({
+        id: `${finalNodeOfParent}-TO-${chapter.id}`,
+        source: finalNodeOfParent,
+        target: chapter.id,
+        type: 'straight',
+      });
+    }
   }
 
   return { nodes, edges };
 }
 
 export function TrainingTree({ chapters }: TrainingTreeProps): ReactNode {
-  const [nodes, setNodes] = useState([]);
-  const [edges, setEdges] = useState([]);
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const nodeTypes = { trainingModule: TrainingModuleNode };
 

@@ -8,7 +8,6 @@ import {
   normalized,
 } from '@appsemble/utils';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
-import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
@@ -28,12 +27,15 @@ interface HeaderComponentProps {
 export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps): VNode {
   const {
     actions,
-    parameters: { button, dropdown, fields, header, icon, image, toggleButton },
+    parameters: {
+      itemDefinition: { header },
+    },
     utils: { asset, remap },
   } = useBlock();
 
-  const [headerValue, setHeaderValue] = useState<string>('');
-  const [fileIcon, setFileIcon] = useState<FileIconName>(null);
+  const [titleValue, setTitleValue] = useState<string>('');
+  const [subtitleValue, setSubtitleValue] = useState<string>('');
+  const [assetIcon, setAssetIcon] = useState<FileIconName>(null);
   const [fetched, setFetched] = useState<boolean>(false);
 
   const onItemClick = useCallback(
@@ -45,38 +47,44 @@ export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps
   );
 
   useEffect(() => {
-    const remappedHeader = remap(header, item);
-    setHeaderValue(remappedHeader ? String(remappedHeader) : null);
+    if ('title' in header) {
+      const remappedTitle = remap(header.title, item);
+      const remappedSubtitle = remap(header.subtitle, item);
+      setTitleValue(remappedTitle ? String(remappedTitle) : null);
+      setSubtitleValue(remappedSubtitle ? String(remappedSubtitle) : null);
+    }
   }, [header, item, remap]);
 
   const headerHTML = (
-    <div className={classNames({ [styles.header]: fields?.length || fileIcon })}>
-      {fileIcon && isPreactChild(fileIcon) ? (
-        <Icon icon={fileIcon as IconName} size="large" />
-      ) : isPreactChild(icon) ? (
-        <Icon icon={icon} />
+    <div className="is-flex is-justify-content-space-between is-align-items-center">
+      {'icon' in header && isPreactChild(header.icon) ? <Icon icon={header.icon} /> : null}
+      {'showAssetIcon' in header && assetIcon && isPreactChild(assetIcon) ? (
+        <Icon icon={assetIcon as IconName} size="large" />
       ) : null}
-      {isPreactChild(headerValue) ? <h4>{headerValue}</h4> : null}
+      <div>
+        {isPreactChild(titleValue) ? <h4 className={styles.title}>{titleValue}</h4> : null}
+        {isPreactChild(subtitleValue) ? <h5>{subtitleValue}</h5> : null}
+      </div>
     </div>
   );
 
   useEffect(() => {
-    if (!isVisible) {
+    if (!isVisible || ('showAssetIcon' in header && !header.showAssetIcon)) {
       return;
     }
 
     (async () => {
-      if (headerValue && normalized.test(headerValue) && !fetched) {
-        const headerValueAssetUrl = asset(headerValue as string);
+      if (titleValue && normalized.test(titleValue) && !fetched) {
+        const headerValueAssetUrl = asset(titleValue as string);
         try {
           const response = await fetch(headerValueAssetUrl, { method: 'HEAD' });
           if (response.ok) {
             const contentType = response.headers.get('Content-Type');
-            setFileIcon(getMimeTypeIcon(getMimeTypeCategory(contentType)));
+            setAssetIcon(getMimeTypeIcon(getMimeTypeCategory(contentType)));
 
             const contentDisposition = response.headers.get('Content-Disposition');
             if (contentDisposition) {
-              setHeaderValue(getFilenameFromContentDisposition(contentDisposition));
+              setTitleValue(getFilenameFromContentDisposition(contentDisposition));
             }
           }
         } catch {
@@ -85,17 +93,25 @@ export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps
         setFetched(true);
       }
     })();
-  }, [asset, item, headerValue, fetched, isVisible]);
+  }, [asset, item, titleValue, fetched, isVisible, header]);
 
   return (
     <div className={`${styles.headerWrapper} is-flex`}>
       <div className={`is-flex ${styles.image}`}>
         <div>
-          {image && image.alignment === 'header' ? (
-            <Image field={image} index={index} isVisible={isVisible} item={item} />
+          {'image' in header ? (
+            <Image field={header.image} index={index} isVisible={isVisible} item={item} />
           ) : null}
         </div>
-        {actions.onClick.type === 'link' ? (
+        {'showAssetIcon' in header && assetIcon && 'title' in header ? (
+          <a
+            className={`${styles.item} has-text-left is-block`}
+            download
+            href={asset(remap(header.title, item) as string)}
+          >
+            {headerHTML}
+          </a>
+        ) : actions.onClick.type === 'link' ? (
           <a className={`${styles.item} has-text-left is-block`} href={actions.onClick.href(item)}>
             {headerHTML}
           </a>
@@ -109,15 +125,15 @@ export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps
           </button>
         )}
       </div>
-      {button && button.alignment === 'top-right' ? (
-        <ButtonComponent field={button} index={index} item={item} />
+      {'button' in header ? (
+        <ButtonComponent field={header.button} index={index} item={item} />
       ) : null}
-      {toggleButton ? (
-        <ToggleButtonComponent field={toggleButton} index={index} item={item} />
+      {'toggleButton' in header ? (
+        <ToggleButtonComponent field={header.toggleButton} index={index} item={item} />
       ) : null}
-      {dropdown && dropdown.alignment === 'top-right' ? (
+      {'dropdown' in header ? (
         <div className={styles.dropdown}>
-          <DropdownComponent field={dropdown} index={index} item={item} record={item} />
+          <DropdownComponent field={header.dropdown} index={index} item={item} record={item} />
         </div>
       ) : null}
     </div>

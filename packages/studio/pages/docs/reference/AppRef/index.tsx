@@ -1,5 +1,5 @@
+import { camelToHyphen, iterJSONSchema, schemas } from '@appsemble/lang-sdk';
 import { Checkbox, Title, useMeta, useToggle } from '@appsemble/react-components';
-import { camelToHyphen, iterJSONSchema, schemas } from '@appsemble/utils';
 import { type Schema as JSONSchema } from 'jsonschema';
 import { Fragment, type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';

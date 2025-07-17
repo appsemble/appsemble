@@ -1,7 +1,7 @@
+import { type AppRole } from '@appsemble/lang-sdk';
 import { Loader } from '@appsemble/react-components';
 import {
   type App,
-  type AppRole,
   type JwtPayload,
   type Organization,
   type PredefinedOrganizationRole,

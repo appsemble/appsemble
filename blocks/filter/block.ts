@@ -5,7 +5,7 @@ export interface EnumOption {
   /**
    * The value that gets submitted when filtering.
    */
-  value?: string;
+  value?: Remapper;
 
   /**
    * User facing label describing the option.
@@ -220,6 +220,14 @@ declare module '@appsemble/sdk' {
      * @default false
      */
     hideButton?: boolean;
+
+    /**
+     * A default filter that should be applied by default for every request,
+     *
+     * Use with the `string.format` remapper for extensive filtering.
+     *
+     */
+    defaultFilter?: Remapper;
   }
 
   interface Messages {

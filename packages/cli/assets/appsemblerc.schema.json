@@ -79,6 +79,10 @@
       "type": "string",
       "pattern": "^#[a-zA-Z\\d]{6}$"
     },
+    "wildcardActions": {
+      "type": "boolean",
+      "description": "Whether action validation for wildcard action is skipped.\n\nIf true, ignore unused actions that fall under '$any'."
+    },
     "context": {
       "type": "object",
       "description": "A context which can be specified using the --context command line parameter.",

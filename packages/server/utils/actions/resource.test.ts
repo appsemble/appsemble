@@ -1,4 +1,4 @@
-import { type ActionDefinition } from '@appsemble/types';
+import { type ActionDefinition } from '@appsemble/lang-sdk';
 import { uuid4Pattern } from '@appsemble/utils';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 

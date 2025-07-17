@@ -233,6 +233,94 @@ describe('queryAppMembers', () => {
     );
   });
 
+  it('should allow filtering app members using oDataFilters', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Staff',
+            policy: 'everyone',
+          },
+          roles: {
+            Staff: {},
+            Manager: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const user1 = await User.create({
+      primaryEmail: 'staff@example.com',
+      timezone: 'whatever',
+    });
+
+    const user2 = await User.create({
+      primaryEmail: 'manager@example.com',
+      timezone: 'whatever',
+    });
+
+    await AppMember.create({
+      UserId: user1.id,
+      AppId: app.id,
+      name: 'Test Member',
+      email: 'staff@example.com',
+      role: 'Staff',
+    });
+
+    await AppMember.create({
+      UserId: user2.id,
+      AppId: app.id,
+      name: 'Test Member',
+      email: 'manager@example.com',
+      role: 'Manager',
+    });
+
+    await AppMember.create({
+      AppId: app.id,
+      name: 'Test Not Filtered',
+      email: 'notFiltered@example.com',
+      role: 'Member',
+    });
+
+    authorizeStudio();
+    const response = await request.get(
+      `/api/apps/${app.id}/members?$filter=contains(name, 'Test Member')`,
+    );
+    expect(response.status).toBe(200);
+    expect(response.data).toStrictEqual([
+      {
+        sub: expect.any(String),
+        name: 'Test Member',
+        email: 'manager@example.com',
+        email_verified: false,
+        picture: expect.stringContaining('https://www.gravatar.com/avatar'),
+        locale: null,
+        zoneinfo: null,
+        properties: {},
+        role: 'Manager',
+        demo: false,
+      },
+      {
+        sub: expect.any(String),
+        name: 'Test Member',
+        email: 'staff@example.com',
+        email_verified: false,
+        picture: expect.stringContaining('https://www.gravatar.com/avatar'),
+        locale: null,
+        zoneinfo: null,
+        properties: {},
+        role: 'Staff',
+        demo: false,
+      },
+    ]);
+  });
+
   it('should fetch app members by a single role', async () => {
     const app = await App.create({
       definition: {

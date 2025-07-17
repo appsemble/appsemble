@@ -1,15 +1,15 @@
 import { type EventEmitter } from 'events';
 
-import { applyRefs, Loader, useMessages, useMeta } from '@appsemble/react-components';
-import { type BootstrapParams } from '@appsemble/sdk';
 import {
   type AppDefinition,
   type FlowPageDefinition,
   type LoopPageDefinition,
   type Remapper,
+  type RemapperContext,
   type SubPageDefinition,
-} from '@appsemble/types';
-import { type RemapperContext } from '@appsemble/utils';
+} from '@appsemble/lang-sdk';
+import { applyRefs, Loader, useMessages, useMeta } from '@appsemble/react-components';
+import { type BootstrapParams } from '@appsemble/sdk';
 import {
   type MutableRefObject,
   type ReactNode,

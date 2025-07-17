@@ -165,10 +165,11 @@ After adding a new permission to the `OrganizationPermission` enum in
 `packages/types/permissions.ts` add the permission and it’s description to
 `packages/studio/pages/organizations/messages.ts`.
 
-After adding a new permission to the `AppPermission` enum in `packages/types/permissions.ts`, add a
-corresponding one to the `OrganizationPermission` enum and map them in the
-`appOrganizationPermissionMapping` object. Then add the permissions to the relevant roles at
-`packages/types/roles.ts`.
+After adding a new permission to the `AppPermission` enum in
+`./packages/lang-sdk/types/permission.ts`, add a corresponding one to the `OrganizationPermission`
+enum and map them in the `appOrganizationPermissionMapping` object at
+`packages/types/permissions.ts`. Then add the permissions to the relevant roles at
+`packages/lang-sdk/types/roles.ts` and `packages/types/roles.ts`.
 
 ### Testing
 
@@ -322,8 +323,8 @@ collected here that may help you build your end 2 end tests:
 
 - If you are intercepting a request, make sure the target URL is specific enough so it won't get
   intercepted in a place you didn't intend.
-- If you are intercepting a request, make sure you do it before the request action is called during the test. 
-  Otherwise it won't be caught.
+- If you are intercepting a request, make sure you do it before the request action is called during
+  the test. Otherwise it won't be caught.
 - Utilize [global setup projects](https://playwright.dev/docs/test-global-setup-teardown) to run
   setup steps before the tests run.
   - These steps are included in the HTML report and trace viewer and allow you to use fixtures
@@ -497,7 +498,7 @@ the studio. These properties are:
 An individual training is placed in a chapter as a directory with a unique ID, and a markdown file
 that contains the content called `index.md`.
 
-[![Training structure](/config/assets/training-structure.png 'Training structure')]
+![Training structure](/config/assets/training-structure.png 'Training structure')
 
 ### Adding a new training
 
@@ -512,16 +513,34 @@ that contains the content called `index.md`.
 
 1. Create a new folder in the root of the `trainings` directory with a unique name.
 2. In the new folder, create a `properties.json` file containing the following JSON:
-
-```json
-{
-  "blockedBy": null,
-  "title": "Example chapter",
-  "trainingOrder": []
-}
-```
-
+   ```json
+   {
+     "blockedBy": null,
+     "title": "Example chapter",
+     "trainingOrder": []
+   }
+   ```
 3. Create at least one training in the chapter for it to be considered valid.
+
+#### Define node positions
+
+Define where the chapter gets placed and how they're connected to the other chapters in
+[nodePositions.ts](./packages/studio/components/TrainingTree/nodePositions.ts).
+
+1. Set the X and Y positions that define where the chapter gets placed in the training tree
+   ```ts
+   export const chapterNodes = [
+     // ...
+     { id: 'new-chapter', position: { x: 100, y: 200 } },
+   ];
+   ```
+2. Set the connections between chapters that are blocking/getting blocked
+   ```ts
+   export const chapterEdges = [
+     // ...
+     { from: 'blocking-chapter', to: 'blocked-chapter' },
+   ];
+   ```
 
 ## Releasing
 

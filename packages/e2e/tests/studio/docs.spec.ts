@@ -1,9 +1,5 @@
-import {
-  AppPermission,
-  OrganizationPermission,
-  predefinedAppRoles,
-  predefinedOrganizationRoles,
-} from '@appsemble/types';
+import { AppPermission, predefinedAppRoles } from '@appsemble/lang-sdk';
+import { OrganizationPermission, predefinedOrganizationRoles } from '@appsemble/types';
 
 import { expect, test } from '../../index.js';
 

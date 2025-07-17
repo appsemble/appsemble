@@ -76,7 +76,8 @@ This will be used to validate app definitions.
       additionalProperties: true,
     },
     parameters: {
-      $ref: '#/components/schemas/JSONSchemaRoot',
+      type: 'object',
+      additionalProperties: true,
       description: `A draft 7 JSON schema to use for block parameter validation.
 
 If the parameters of a block definition don’t conform to this schema, the app definition will be
@@ -157,6 +158,11 @@ English (\`en\`) messages are required.
       items: {
         type: 'string',
       },
+    },
+    wildcardActions: {
+      type: 'boolean',
+      description:
+        "Whether action validation for wildcard action is skipped.\n\nIf true, ignore unused actions that fall under '$any'.",
     },
   },
 };

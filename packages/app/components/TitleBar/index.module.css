@@ -1,5 +1,9 @@
 .dropdowns {
-  @media screen and (width > 540px) {
-    display: flex;
-  }
+  display: flex;
+}
+
+.logo {
+  cursor: pointer;
+  height: 48px;
+  padding: 4px;
 }

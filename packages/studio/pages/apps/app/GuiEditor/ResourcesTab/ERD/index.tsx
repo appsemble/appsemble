@@ -1,4 +1,4 @@
-import { type ResourceReference } from '@appsemble/types';
+import { type ResourceReference } from '@appsemble/lang-sdk';
 import ELK, { type ElkNode } from 'elkjs';
 import { type OpenAPIV3 } from 'openapi-types';
 import { type ReactNode, useCallback, useEffect, useMemo } from 'react';

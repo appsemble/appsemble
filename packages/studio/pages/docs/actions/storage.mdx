@@ -1,6 +1,6 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
 import { ActionRef } from './ActionRef/index.tsx';
-import { storageActions as actions } from '../../../../utils/reference-schemas/actions/storage.ts';
+import { referenceSchemas } from '@appsemble/lang-sdk';
 
 # Storage
 
@@ -27,14 +27,14 @@ visit this [page](../guides/storage.md). Supported storage actions are as below:
 
 ### storage.read<Side name="storage.read" />
 
-<ActionRef action={actions['storage.read']} />
+<ActionRef action={referenceSchemas.storageActions['storage.read']} />
 
 Here’s an example of how you can use this action to read data with key poolData from sessionStorage.
 
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.32.3
+    version: 0.33.11
     actions:
       onLoad:
         type: storage.read
@@ -46,14 +46,14 @@ blocks:
 
 ### storage.write<Side name="storage.write" />
 
-<ActionRef action={actions['storage.write']} />
+<ActionRef action={referenceSchemas.storageActions['storage.write']} />
 
 Here’s an example of how you can use this action to write data.
 
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       fields:
         - name: name
@@ -70,14 +70,14 @@ blocks:
 
 ### storage.append<Side name="storage.append" />
 
-<ActionRef action={actions['storage.append']} />
+<ActionRef action={referenceSchemas.storageActions['storage.append']} />
 
 Here’s an example of how you can use this action to write data.
 
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       fields:
         - name: fullName
@@ -101,14 +101,14 @@ blocks:
 
 ### storage.subtract<Side name="storage.subtract" />
 
-<ActionRef action={actions['storage.subtract']} />
+<ActionRef action={referenceSchemas.storageActions['storage.subtract']} />
 
 Here’s an example of how you can use this action to subtract an entry of data.
 
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       icon: minus
     actions:
@@ -120,14 +120,14 @@ blocks:
 
 ### storage.update<Side name="storage.update" />
 
-<ActionRef action={actions['storage.update']} />
+<ActionRef action={referenceSchemas.storageActions['storage.update']} />
 
 Here’s an example of how you can use this action to update the data in storage.
 
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       fields:
         - name: fullName
@@ -152,14 +152,14 @@ blocks:
 
 ### storage.delete<Side name="storage.delete" />
 
-<ActionRef action={actions['storage.delete']} />
+<ActionRef action={referenceSchemas.storageActions['storage.delete']} />
 
 Here’s an example of how you can use this in action to delete the data in storage.
 
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.32.3
+    version: 0.33.11
     parameters:
       icon: delete
     actions:

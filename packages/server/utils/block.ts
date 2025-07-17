@@ -1,11 +1,7 @@
+import { getAppBlocks, type IdentifiableBlock, parseBlockName } from '@appsemble/lang-sdk';
 import { logger } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
-import {
-  compareStrings,
-  getAppBlocks,
-  type IdentifiableBlock,
-  parseBlockName,
-} from '@appsemble/utils';
+import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 import { Op } from 'sequelize';
 

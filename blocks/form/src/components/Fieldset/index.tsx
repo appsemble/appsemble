@@ -83,7 +83,7 @@ export function Fieldset({
 
   const addEntry = useCallback(() => {
     const newEntry = generateDefaultValues(field.fields);
-    onChange(field.name, [...(localValues as Values[]), newEntry]);
+    onChange(field.name, [...((localValues as Values[]) || []), newEntry]);
   }, [field, onChange, localValues]);
 
   const removeEntry = useCallback(
@@ -157,7 +157,7 @@ export function Fieldset({
               </div>
             ))}
           </div>
-          {!readOnly && (!maxLength || localValues.length < maxLength) ? (
+          {!readOnly && (!maxLength || (localValues || []).length < maxLength) ? (
             <FormButtons>
               <Button disabled={disabled} icon="plus" onClick={addEntry}>
                 {utils.remap(field.addLabel ?? 'Add', localValues) as string}

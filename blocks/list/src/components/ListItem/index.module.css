@@ -1,7 +1,7 @@
 .item {
-  background-color: hsl(0deg 0% 96%);
+  background-color: hsl(0deg 0% 94%);
   border: none;
-  border-radius: 4px;
+  border-top-right-radius: 20px;
   color: inherit;
   cursor: pointer;
   font-family: inherit;

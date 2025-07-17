@@ -1,3 +1,4 @@
+import { type AppRole, getAppRoles } from '@appsemble/lang-sdk';
 import {
   type MinimalHTMLElement,
   ModalCard,
@@ -9,8 +10,7 @@ import {
   type Toggle,
   useToggle,
 } from '@appsemble/react-components';
-import { type AppMemberInfo, type AppRole } from '@appsemble/types';
-import { getAppRoles } from '@appsemble/utils';
+import { type AppMemberInfo } from '@appsemble/types';
 import { type ChangeEvent, type ReactNode, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
