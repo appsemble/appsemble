@@ -353,6 +353,7 @@ export class App extends Model {
       controllerCode: this.controllerCode,
       controllerImplementations: this.controllerImplementations,
       skipGroupInvites: this.skipGroupInvites,
+      version: (this.AppSnapshots || [{ id: -1 }]).at(-1)?.id,
     };
 
     return omit(result, omittedValues) as AppType;

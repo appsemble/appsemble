@@ -396,6 +396,11 @@ export interface App {
    * If set to true, group members are added directly to the group.
    */
   skipGroupInvites?: boolean;
+
+  /**
+   * The version of the app.
+   */
+  version?: number;
 }
 
 /**

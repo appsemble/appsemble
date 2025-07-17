@@ -21,7 +21,7 @@ export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Opt
     const identifiableBlocks = getAppBlocks(app.definition);
     const blocksAssetsPaths = await getBlocksAssetsPaths({ identifiableBlocks, context: ctx });
 
-    ctx.body = `const blockAssets=${JSON.stringify(blocksAssetsPaths)};${serviceWorker}`;
+    ctx.body = `const appVersion = ${app.version};const blockAssets=${JSON.stringify(blocksAssetsPaths)};${serviceWorker}`;
     ctx.type = 'application/javascript';
   };
 }

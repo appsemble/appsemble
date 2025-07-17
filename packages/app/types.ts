@@ -172,4 +172,5 @@ export interface ServiceWorkerRegistrationContextType {
   permission: Permission;
   subscription: PushSubscription;
   requestPermission: () => Promise<NotificationPermission>;
+  update: () => void;
 }

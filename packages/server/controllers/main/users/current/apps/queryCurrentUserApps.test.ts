@@ -116,6 +116,7 @@ describe('queryCurrentUserApps', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "unlisted",
         },
       ]
@@ -158,6 +159,7 @@ describe('queryCurrentUserApps', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "unlisted",
         },
         {
@@ -193,6 +195,7 @@ describe('queryCurrentUserApps', () => {
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
           "template": false,
+          "version": -1,
           "visibility": "unlisted",
         },
       ]

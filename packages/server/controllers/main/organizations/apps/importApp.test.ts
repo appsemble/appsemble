@@ -348,6 +348,7 @@ describe('importApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": 1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -472,6 +473,7 @@ describe('importApp', () => {
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
         "template": false,
+        "version": 1,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page

@@ -23,3 +23,13 @@ self.addEventListener('install', (event) =>
       .then((cache) => cache.addAll([...appAssets.map((entry) => entry.url), ...blockAssets])),
   ),
 );
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});

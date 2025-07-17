@@ -45,4 +45,8 @@ export const messages = defineMessages({
     id: 'app.ubmFc8',
     defaultMessage: 'Install',
   },
+  update: {
+    id: 'app.BWpuKl',
+    defaultMessage: 'Update',
+  },
 });

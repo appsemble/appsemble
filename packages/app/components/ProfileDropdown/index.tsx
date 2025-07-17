@@ -10,6 +10,7 @@ import { demoMode, displayAppMemberName, sentryDsn, showDemoLogin } from '../../
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
+import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 
 export function ProfileDropdown(): ReactNode {
   const { formatMessage } = useIntl();
@@ -17,6 +18,7 @@ export function ProfileDropdown(): ReactNode {
   const { appMemberInfo, isLoggedIn, logout } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const { pathname } = useLocation();
+  const { update } = useServiceWorkerRegistration();
 
   const showLogin = definition.security && Object.hasOwn(definition.security, 'roles');
   const { layout } = definition;
@@ -102,9 +104,15 @@ export function ProfileDropdown(): ReactNode {
             {showSettings || showFeedback || showDemoLogin ? (
               <hr className="navbar-divider" />
             ) : null}
-            <NavbarItem dataTestId="install" onClick={install}>
-              <FormattedMessage {...messages.install} />
-            </NavbarItem>
+            <>
+              <NavbarItem dataTestId="install" onClick={install}>
+                <FormattedMessage {...messages.install} />
+              </NavbarItem>
+              <hr className="navbar-divider" />
+              <NavbarItem dataTestId="update" onClick={update}>
+                <FormattedMessage {...messages.update} />
+              </NavbarItem>
+            </>
           </>
         ) : null}
         {showLogin ? (
