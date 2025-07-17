@@ -2,7 +2,7 @@ import {
   type AppDefinition,
   AppValidator,
   type ResourceDefinition,
-  validateAppDefinition
+  validateAppDefinition,
 } from '@appsemble/lang-sdk';
 import {
   AppsembleError,

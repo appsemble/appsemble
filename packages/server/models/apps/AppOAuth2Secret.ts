@@ -1,4 +1,4 @@
-import { type Remapper } from '@appsemble/types';
+import { type Remapper } from '@appsemble/lang-sdk';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import {
   AllowNull,
