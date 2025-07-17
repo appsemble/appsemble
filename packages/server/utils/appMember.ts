@@ -129,5 +129,5 @@ function renameMemberOData(name: string): string {
 }
 
 export function parseMemberFilterQuery(filter: string): WhereOptions {
-  return odataFilterToSequelize(filter ?? '', AppMember, renameMemberOData);
+  return odataFilterToSequelize(filter ?? '', 'AppMember', renameMemberOData);
 }

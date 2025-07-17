@@ -49,15 +49,6 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
     order: [['role', 'ASC']],
   });
 
-  const appMembers = await AppMember.findAll({
-    where: {
-      AppId: appId,
-      demo: false,
-      ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
-    },
-    order: [['role', 'ASC']],
-  });
-
   ctx.body = appMembers
     .filter((appMember) => appMember.role !== 'cron')
     .map((appMember) => getAppMemberInfo(appId, appMember));

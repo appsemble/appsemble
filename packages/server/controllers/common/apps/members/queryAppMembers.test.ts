@@ -265,6 +265,7 @@ describe('queryAppMembers', () => {
       timezone: 'whatever',
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
       UserId: user1.id,
       AppId: app.id,

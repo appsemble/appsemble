@@ -1,4 +1,4 @@
-import { type AppRole } from '@appsemble/types';
+import { type AppRole } from '@appsemble/lang-sdk';
 import {
   AllowNull,
   Column,

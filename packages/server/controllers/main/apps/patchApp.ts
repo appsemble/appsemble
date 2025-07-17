@@ -1,4 +1,9 @@
-import { type AppDefinition, AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
+import {
+  type AppDefinition,
+  AppValidator,
+  type ResourceDefinition,
+  validateAppDefinition,
+} from '@appsemble/lang-sdk';
 import {
   AppsembleError,
   assertKoaCondition,
