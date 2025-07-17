@@ -16,12 +16,12 @@ export async function createDynamicIndexes(
     `
 CREATE UNIQUE INDEX IF NOT EXISTS
 "UniquePosition${resourceType}WithGroupIDAppID${appId}"
-on "Resource"(type, "AppId", "Position", ${orderingFields}, "GroupId", ephemeral)
+on "Resource"(type, "AppId", "Position", ${orderingFields}, "GroupId", ephemeral, deleted)
 WHERE "GroupId" IS NOT NULL;`,
     `
 CREATE UNIQUE INDEX IF NOT EXISTS
 "UniquePosition${resourceType}WithNULLGroupIDAppID${appId}"
-on "Resource"(type, "AppId", "Position", ${orderingFields}, ephemeral)
+on "Resource"(type, "AppId", "Position", ${orderingFields}, ephemeral, deleted)
 WHERE "GroupId" IS NULL;`,
   ].join('\n');
   await db.query(queries, { transaction });

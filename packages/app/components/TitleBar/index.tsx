@@ -1,9 +1,12 @@
+import { normalize } from '@appsemble/lang-sdk';
 import { Portal, SideMenuButton } from '@appsemble/react-components';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { shouldShowMenu } from '../../utils/layout.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -25,12 +28,15 @@ interface AppBarProps {
  */
 export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { definition, demoMode } = useAppDefinition();
-  const { appMemberGroups, appMemberRole, appMemberSelectedGroup } = useAppMember();
+  const { appMemberGroups, appMemberRole, appMemberSelectedGroup, isLoggedIn } = useAppMember();
   const { page } = usePage();
   const { getAppMessage } = useAppMessages();
+  const { lang: locale } = useParams();
 
   const navigation = (page?.navigation || definition?.layout?.navigation) ?? 'left-menu';
   const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;
+
+  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, definition);
 
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
@@ -44,14 +50,16 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
           </div>
         ) : null}
         <div className="navbar-brand is-inline-flex is-flex-grow-1">
-          <h2 className="navbar-item title is-4">{!hideName && (children || appName)}</h2>
           {(definition.layout?.logo?.position || 'hidden') === 'navbar' ? (
-            <img
-              alt="app-logo"
-              className={styles.logo}
-              src={`${apiUrl}/api/apps/${appId}/assets/${definition.layout?.logo?.asset || 'logo'}`}
-            />
+            <Link to={`/${locale}/${normalize(defaultPageName)}`}>
+              <img
+                alt="app-logo"
+                className={styles.logo}
+                src={`${apiUrl}/api/apps/${appId}/assets/${definition.layout?.logo?.asset || 'logo'}`}
+              />
+            </Link>
           ) : null}
+          <h2 className="navbar-item title is-4">{!hideName && (children || appName)}</h2>
         </div>
         {demoMode ? (
           <div className="tag is-rounded is-warning mx-1 my-1">

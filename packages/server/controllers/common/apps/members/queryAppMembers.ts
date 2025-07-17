@@ -50,5 +50,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
     order: [['role', 'ASC']],
   });
 
-  ctx.body = appMembers.map((appMember) => getAppMemberInfo(appMember));
+  ctx.body = appMembers
+    .filter((appMember) => appMember.role !== 'cron')
+    .map((appMember) => getAppMemberInfo(appMember));
 }
