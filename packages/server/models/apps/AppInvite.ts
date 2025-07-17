@@ -1,3 +1,4 @@
+import { type AppRole } from '@appsemble/lang-sdk';
 import {
   AllowNull,
   Column,
@@ -11,7 +12,6 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
-import { AppRole } from '@appsemble/lang-sdk';
 
 export class AppInviteGlobal extends Model {
   email!: string;

@@ -1,5 +1,5 @@
-import { AppsembleError, logger } from '@appsemble/node-utils';
 import { type AppDefinition, type CompanionContainerDefinition } from '@appsemble/lang-sdk';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 import {
   type AppLock,
   type AppsembleMessages,

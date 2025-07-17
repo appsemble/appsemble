@@ -13,7 +13,6 @@ export async function notify({
 }: ServerActionParameters<NotifyActionDefinition>): Promise<any> {
   const { sendNotifications } = options;
 
-
   const remapperContext = await getRemapperContext(
     app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
