@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.33.11](https://gitlab.com/appsemble/appsemble/-/releases/0.33.11)] - 2025-07-17
+
+### Added
+
+- App: Auto update apps when a new version is available.
+- App: Clicking on the logo in the navbar takes you to the default page.
+
+### Changed
+
+- App: Render the logo on the left side of header text.
+
+### Fixed
+
+- Server: Fix updating an app with resource positions unique index.
+
 ## \[[0.33.10](https://gitlab.com/appsemble/appsemble/-/releases/0.33.10)] - 2025-07-14
 
 ## \[[0.33.9](https://gitlab.com/appsemble/appsemble/-/releases/0.33.9)] - 2025-07-11
