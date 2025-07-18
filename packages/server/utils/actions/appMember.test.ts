@@ -4,7 +4,7 @@ import { type AppMemberQueryAction } from '@appsemble/lang-sdk';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { appMemberQuery } from './appMember.js';
-import { App, AppMember, Organization } from '../../models/index.js';
+import { App, type AppMember, getAppDB, Organization } from '../../models/index.js';
 import { options } from '../../options/options.js';
 import { handleAction } from '../action.js';
 import { argv, setArgv } from '../argv.js';
@@ -64,6 +64,7 @@ describe('appMemberQuery', () => {
       OrganizationId: organization.id,
     });
 
+    const { AppMember } = await getAppDB(app.id);
     [...Array.from({ length: 5 }).keys()].map(async (item) => {
       await AppMember.create({
         name: `Bot ${item}`,
@@ -163,6 +164,7 @@ describe('appMemberQuery', () => {
       OrganizationId: organization.id,
     });
 
+    const { AppMember } = await getAppDB(app.id);
     [...Array.from({ length: 5 }).keys()].map(async (item) => {
       await AppMember.create({
         name: `Bot ${item}`,

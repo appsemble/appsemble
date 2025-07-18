@@ -425,7 +425,8 @@ const defaults: Argv = {
   ingressClassName: 'nginx',
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   databaseHost: undefined,
-  databasePort: 5432,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  databasePort: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   databaseUser: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)

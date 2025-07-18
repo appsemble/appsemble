@@ -198,7 +198,7 @@ describe('app.member.query', () => {
           email: 'role1@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
           properties: {},
         },
         {
@@ -206,7 +206,7 @@ describe('app.member.query', () => {
           email: 'role2@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
           properties: {},
         },
         {
@@ -214,7 +214,7 @@ describe('app.member.query', () => {
           email: 'role3@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
           properties: {},
         },
       ],
@@ -254,7 +254,7 @@ describe('app.member.query', () => {
         email: 'role1@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: {},
       },
       {
@@ -262,7 +262,7 @@ describe('app.member.query', () => {
         email: 'role2@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: {},
       },
       {
@@ -270,7 +270,7 @@ describe('app.member.query', () => {
         email: 'role3@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: {},
       },
     ]);
@@ -285,7 +285,7 @@ describe('app.member.query', () => {
           email: 'role1@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
           properties: {},
         },
         {
@@ -293,7 +293,7 @@ describe('app.member.query', () => {
           email: 'role2@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
           properties: {},
         },
         {
@@ -301,7 +301,7 @@ describe('app.member.query', () => {
           email: 'role3@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
           properties: {},
         },
       ],
@@ -335,7 +335,7 @@ describe('app.member.query', () => {
         email: 'role1@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: {},
       },
       {
@@ -343,7 +343,7 @@ describe('app.member.query', () => {
         email: 'role2@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: {},
       },
       {
@@ -351,7 +351,7 @@ describe('app.member.query', () => {
         email: 'role3@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: {},
       },
     ]);
@@ -366,7 +366,7 @@ describe('app.member.query', () => {
           email: 'role1@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
           properties: {},
         },
         {
@@ -374,7 +374,7 @@ describe('app.member.query', () => {
           email: 'role2@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
           properties: {},
         },
         {
@@ -382,7 +382,7 @@ describe('app.member.query', () => {
           email: 'role3@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
           properties: {},
         },
       ],
@@ -422,7 +422,7 @@ describe('app.member.query', () => {
         email: 'role1@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: {},
       },
       {
@@ -430,7 +430,7 @@ describe('app.member.query', () => {
         email: 'role2@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: {},
       },
       {
@@ -438,7 +438,7 @@ describe('app.member.query', () => {
         email: 'role3@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: {},
       },
     ]);
@@ -492,7 +492,7 @@ describe('app.member.current.patch', () => {
         email: 'email@example.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
     ]);
@@ -522,7 +522,7 @@ describe('app.member.current.patch', () => {
       name: 'name',
       email: 'email@example.com',
       emailVerified: false,
-      picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+      picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
       properties: {
         bool: 'true',
         property: 'Property',
@@ -534,7 +534,7 @@ describe('app.member.current.patch', () => {
       email: 'email@example.com',
       emailVerified: false,
       name: 'name',
-      picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+      picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
       properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
     });
     expect(refetchDemoAppMembers).toHaveBeenCalledWith();
@@ -566,7 +566,7 @@ describe('app.member.current.patch', () => {
         email: 'example@email.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
     ]);
@@ -599,7 +599,7 @@ describe('app.member.current.patch', () => {
       name: 'name',
       email: 'example@email.com',
       emailVerified: false,
-      picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+      picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
       properties: {
         bool: 'true',
         property: 'Property',
@@ -620,7 +620,7 @@ describe('app.member.role.update', () => {
   });
 
   it('should call the API for updating the role of the app member', async () => {
-    mock.onPut(`${apiUrl}/api/app-members/some-user-id/role`).reply(() => [
+    mock.onPut(`${apiUrl}/api/apps/${appId}/app-members/some-user-id/role`).reply(() => [
       201,
       {
         id: 'some-user-id',
@@ -628,7 +628,7 @@ describe('app.member.role.update', () => {
         emailVerified: false,
         name: 'name',
         role: PredefinedAppRole.Member,
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
     ]);
@@ -660,7 +660,7 @@ describe('app.member.role.update', () => {
       name: 'name',
       email: 'email@example.com',
       emailVerified: false,
-      picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+      picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
       role: PredefinedAppRole.Member,
       properties: {
         bool: 'true',
@@ -700,14 +700,14 @@ describe('app.member.properties.patch', () => {
   });
 
   it('should call the API for patching the app member', async () => {
-    mock.onPatch(`${apiUrl}/api/app-members/some-user-id/properties`).reply(() => [
+    mock.onPatch(`${apiUrl}/api/apps/${appId}/app-members/some-user-id/properties`).reply(() => [
       201,
       {
         id: 'some-user-id',
         email: currentEmail,
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
     ]);
@@ -739,7 +739,7 @@ describe('app.member.properties.patch', () => {
       name: 'name',
       email: currentEmail,
       emailVerified: false,
-      picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+      picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
       properties: {
         bool: 'true',
         property: 'Property',
@@ -782,7 +782,7 @@ describe('app.member.delete', () => {
   });
 
   it('should call the API for removing a user', async () => {
-    mock.onDelete(`${apiUrl}/api/app-members/some-user-id`).reply(() => [204, []]);
+    mock.onDelete(`${apiUrl}/api/apps/${appId}/app-members/some-user-id`).reply(() => [204, []]);
 
     const action = createTestAction({
       definition: {

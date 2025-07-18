@@ -1,7 +1,7 @@
 import { scimAssert, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember, Group, GroupMember, transactional } from '../../../../../models/index.js';
+import { App, getAppDB, transactional } from '../../../../../models/index.js';
 import { getCaseInsensitive } from '../../../../../utils/object.js';
 import { convertAppMemberToScimUser } from '../../../../../utils/scim.js';
 
@@ -10,25 +10,21 @@ export async function patchAppScimUser(ctx: Context): Promise<void> {
     pathParams: { appId, userId },
     request: { body },
   } = ctx;
+  const app = await App.findByPk(appId);
+  scimAssert(app != null, ctx, 404, 'App not found');
 
-  const app = await App.findByPk(appId, { include: [{ model: AppMember }] });
+  const { AppMember, Group, GroupMember } = await getAppDB(appId);
   const member = await AppMember.findOne({
-    where: { AppId: appId, id: userId },
+    where: { id: userId },
     include: [
       {
         model: GroupMember,
         where: { role: 'member' },
         required: false,
-        include: [
-          {
-            model: Group,
-            where: { AppId: appId },
-          },
-        ],
+        include: [Group],
       },
     ],
   });
-  scimAssert(app != null, ctx, 404, 'App not found');
   scimAssert(member != null, ctx, 404, 'User not found');
 
   const operations = getCaseInsensitive(body, 'operations');
@@ -106,17 +102,14 @@ export async function patchAppScimUser(ctx: Context): Promise<void> {
   await transactional(async (transaction) => {
     const promises: Promise<unknown>[] = [member.save({ transaction })];
     if (managerId != null && managerId !== '') {
+      const appMembers = await AppMember.findAll();
       let group = await Group.findOne({
-        where: { AppId: appId, name: managerId },
-        include: [
-          { model: GroupMember, required: false },
-          { model: App, include: [{ model: AppMember, required: false }] },
-        ],
+        where: { name: managerId },
+        include: [{ model: GroupMember, required: false }],
       });
 
       if (!group) {
-        group = await Group.create({ AppId: appId, name: managerId }, { transaction });
-        group.App = app;
+        group = await Group.create({ name: managerId }, { transaction });
       }
 
       if (!group.Members?.some((m) => m.AppMemberId === member.id)) {
@@ -134,7 +127,7 @@ export async function patchAppScimUser(ctx: Context): Promise<void> {
 
       // Check if manager has an AppMember account, but isn't assigned to the group yet
       if (
-        group.App?.AppMembers?.some((m) => m.id === managerId) &&
+        appMembers.some((m) => m.id === managerId) &&
         !group.Members?.some((m) => m.AppMemberId === managerId)
       ) {
         promises.push(
@@ -154,5 +147,5 @@ export async function patchAppScimUser(ctx: Context): Promise<void> {
     return Promise.all(promises);
   });
 
-  ctx.body = convertAppMemberToScimUser(member);
+  ctx.body = convertAppMemberToScimUser(appId, member);
 }

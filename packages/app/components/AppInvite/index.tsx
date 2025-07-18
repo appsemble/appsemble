@@ -21,7 +21,7 @@ import { FormattedMessage } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import { apiUrl } from '../../utils/settings.js';
+import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -55,10 +55,10 @@ export function AppInvite(): ReactNode {
     data: invite,
     error: inviteError,
     loading,
-  } = useData<AppInviteType>(`${apiUrl}/api/app-invites/${token}`);
+  } = useData<AppInviteType>(`${apiUrl}/api/apps/${appId}/app-invites/${token}`);
 
   const decline = useCallback(async () => {
-    await axios.post<AppMemberInfo>(`${apiUrl}/api/app-invites/${token}/respond`, {
+    await axios.post<AppMemberInfo>(`${apiUrl}/api/apps/${appId}/app-invites/${token}/respond`, {
       response: false,
     });
     setDeclined(true);
@@ -66,7 +66,7 @@ export function AppInvite(): ReactNode {
 
   const accept = useCallback(
     async (props: AppInviteFormProps) => {
-      await axios.post<AppMemberInfo>(`${apiUrl}/api/app-invites/${token}/respond`, {
+      await axios.post<AppMemberInfo>(`${apiUrl}/api/apps/${appId}/app-invites/${token}/respond`, {
         timezone,
         locale: lang,
         response: true,

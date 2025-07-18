@@ -9,7 +9,7 @@ import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
 
-import { App, Asset } from '../../../../models/index.js';
+import { App, type Asset, getAppDB } from '../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function createAppAsset(ctx: Context): Promise<void> {
@@ -24,9 +24,7 @@ export async function createAppAsset(ctx: Context): Promise<void> {
       query: { seed },
     },
   } = ctx;
-
   const app = await App.findByPk(appId, { attributes: ['id', 'demoMode', 'OrganizationId'] });
-
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
@@ -35,13 +33,14 @@ export async function createAppAsset(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateAppAssets],
   });
 
+  const { Asset } = await getAppDB(appId);
+
   let asset: Asset;
   const assetsToUpload: AssetToUpload[] = [];
   const compressedFileMeta = getCompressedFileMeta({ filename, mime });
   try {
     if (!(ctx.client && 'app' in ctx.client) && seed === 'true') {
       asset = await Asset.create({
-        AppId: appId,
         name,
         seed: true,
         ephemeral: false,
@@ -52,7 +51,6 @@ export async function createAppAsset(ctx: Context): Promise<void> {
       if (app.demoMode) {
         assetsToUpload.push({ id: asset.id, mime, path });
         asset = await Asset.create({
-          AppId: appId,
           name,
           seed: false,
           ephemeral: true,
@@ -62,7 +60,6 @@ export async function createAppAsset(ctx: Context): Promise<void> {
       }
     } else {
       asset = await Asset.create({
-        AppId: appId,
         name,
         ephemeral: app.demoMode,
         clonable,

@@ -46,7 +46,7 @@ export function DetailsPage(): ReactNode {
     color: 'danger',
     async action() {
       try {
-        await axios.delete(`/api/app-members/${appAccount.appMemberInfo.sub}`);
+        await axios.delete(`/api/apps/${appId}/app-members/${appAccount.appMemberInfo.sub}`);
         push({ body: formatMessage(messages.deleteSuccess), color: 'success' });
         navigate('.', { replace: true });
       } catch {

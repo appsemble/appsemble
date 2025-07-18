@@ -4,7 +4,7 @@ import { assertKoaCondition, logger } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
 import { type Context } from 'koa';
 
-import { App, AppMember, AppMessages } from '../../../../models/index.js';
+import { App, AppMessages, getAppDB } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
 
 export async function requestAppMemberPasswordReset(ctx: Context): Promise<void> {
@@ -13,7 +13,7 @@ export async function requestAppMemberPasswordReset(ctx: Context): Promise<void>
     pathParams: { appId },
     request,
   } = ctx;
-
+  const { AppMember } = await getAppDB(appId);
   const app = await App.findByPk(appId, {
     attributes: [
       'id',
@@ -35,7 +35,7 @@ export async function requestAppMemberPasswordReset(ctx: Context): Promise<void>
   const email = request.body.email.toLowerCase();
 
   const appMember = await AppMember.findOne({
-    where: { email, AppId: appId },
+    where: { email },
     attributes: {
       exclude: ['picture'],
     },

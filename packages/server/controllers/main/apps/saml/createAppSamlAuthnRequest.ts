@@ -7,7 +7,7 @@ import { DOMImplementation } from '@xmldom/xmldom';
 import { type Context } from 'koa';
 import forge from 'node-forge';
 
-import { App, AppMember, AppSamlSecret, SamlLoginRequest } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
 import { checkAppSecurityPolicy } from '../../../../utils/auth.js';
 import { NS } from '../../../../utils/saml.js';
@@ -24,21 +24,13 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
     },
     user: authSubject,
   } = ctx;
-
-  const app = await App.findOne({
-    where: { id: appId },
-    attributes: ['id'],
-    include: [
-      {
-        model: AppSamlSecret,
-        attributes: ['ssoUrl', 'spPrivateKey'],
-        where: { id: appSamlSecretId },
-        required: false,
-      },
-    ],
-  });
-
+  const app = await App.findOne({ where: { id: appId }, attributes: ['id'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
+
+  const { AppMember, AppSamlSecret, SamlLoginRequest } = await getAppDB(appId);
+  const appSamlSecret = await AppSamlSecret.findByPk(appSamlSecretId, {
+    attributes: ['ssoUrl', 'spPrivateKey'],
+  });
 
   assertKoaCondition(
     await checkAppSecurityPolicy(app, authSubject?.id),
@@ -49,13 +41,12 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
   );
 
   const appMember = await AppMember.findOne({
-    where: { AppId: app.id, UserId: authSubject!.id },
+    where: { userId: authSubject!.id },
     attributes: ['id'],
   });
 
   assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
-  const [secret] = app.AppSamlSecrets;
-  assertKoaCondition(secret != null, ctx, 404, 'SAML secret not found');
+  assertKoaCondition(appSamlSecret != null, ctx, 404, 'SAML secret not found');
 
   const loginId = `id${randomUUID()}`;
   const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);
@@ -64,7 +55,7 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
   const authnRequest = doc.documentElement;
   authnRequest.setAttributeNS(NS.xmlns, 'xmlns:saml', NS.saml);
   authnRequest.setAttribute('AssertionConsumerServiceURL', `${samlUrl}/acs`);
-  authnRequest.setAttribute('Destination', secret.ssoUrl);
+  authnRequest.setAttribute('Destination', appSamlSecret.ssoUrl);
   authnRequest.setAttribute('ID', loginId);
   authnRequest.setAttribute('Version', '2.0');
   authnRequest.setAttribute('IssueInstant', new Date().toISOString());
@@ -81,12 +72,12 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
 
   logger.verbose(`SAML request XML: ${doc}`);
   const samlRequest = await deflate(Buffer.from(String(doc)));
-  const redirect = new URL(secret.ssoUrl);
+  const redirect = new URL(appSamlSecret.ssoUrl);
   redirect.searchParams.set('SAMLRequest', samlRequest.toString('base64'));
   redirect.searchParams.set('RelayState', argv.host);
   redirect.searchParams.set('SigAlg', 'http://www.w3.org/2000/09/xmldsig#rsa-sha1');
 
-  const privateKey = forge.pki.privateKeyFromPem(secret.spPrivateKey);
+  const privateKey = forge.pki.privateKeyFromPem(appSamlSecret.spPrivateKey);
 
   const sha = forge.md.sha1.create().update(String(redirect.searchParams));
   const signatureBinary = privateKey.sign(sha);

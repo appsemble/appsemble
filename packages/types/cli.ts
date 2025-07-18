@@ -156,6 +156,26 @@ export interface AppsembleContext {
    * line.
    */
   assetsClonable?: boolean;
+
+  /**
+   * The name of the external app database.
+   */
+  dbName?: string;
+
+  /**
+   * The host of the external app database.
+   */
+  dbHost?: string;
+
+  /**
+   * The port of the external app database.
+   */
+  dbPort?: string;
+
+  /**
+   * The user of the external app database.
+   */
+  dbUser?: string;
 }
 
 export interface AppsembleRC {

@@ -95,9 +95,12 @@ export function MemberRow({
       const { value } = event.currentTarget;
 
       try {
-        const { data } = await axios.put<AppMemberInfo>(`/api/app-members/${sub}/role`, {
-          role: value,
-        });
+        const { data } = await axios.put<AppMemberInfo>(
+          `/api/apps/${app.id}/app-members/${sub}/role`,
+          {
+            role: value,
+          },
+        );
 
         push({
           color: 'success',
@@ -111,7 +114,7 @@ export function MemberRow({
         push({ body: formatMessage(messages.changeRoleError) });
       }
     },
-    [formatMessage, sub, onChanged, push],
+    [app.id, sub, push, formatMessage, onChanged],
   );
 
   const onUpdateProperties = useCallback(
@@ -120,24 +123,24 @@ export function MemberRow({
       assignAppMemberProperties(Object.fromEntries(annotations), formData);
 
       const { data } = await axios.patch<AppMemberInfo>(
-        `/api/app-members/${sub}/properties`,
+        `/api/apps/${app.id}/app-members/${sub}/properties`,
         formData,
       );
       editModal.disable();
       onChanged(data);
     },
-    [sub, editModal, onChanged],
+    [app.id, sub, editModal, onChanged],
   );
 
   const callDelete = useCallback(async () => {
-    await axios.delete(`/api/app-members/${sub}`);
+    await axios.delete(`/api/apps/${app.id}/app-members/${sub}`);
     onDeleted(member);
 
     push({
       body: formatMessage(messages.deleteSuccess, { member: name || email }),
       color: 'info',
     });
-  }, [formatMessage, sub, member, name, onDeleted, email, push]);
+  }, [app.id, sub, onDeleted, member, push, formatMessage, name, email]);
 
   const deleteMember = useConfirmation({
     title: <FormattedMessage {...messages.deleteMember} />,

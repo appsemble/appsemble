@@ -5,10 +5,9 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -71,14 +70,13 @@ describe('queryAppAssets', () => {
   });
 
   it('should fetch all of the app’s assets', async () => {
+    const { Asset, Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: {},
     });
 
     const assetA = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
@@ -86,7 +84,6 @@ describe('queryAppAssets', () => {
     });
 
     const assetB = await Asset.create({
-      AppId: app.id,
       ResourceId: resource.id,
       mime: 'application/octet-stream',
       filename: 'foo.bin',
@@ -128,15 +125,14 @@ describe('queryAppAssets', () => {
   });
 
   it('should not fetch another app’s assets', async () => {
+    const { Asset } = await getAppDB(app.id);
     const assetA = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
     });
 
     const assetB = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),
@@ -161,8 +157,8 @@ describe('queryAppAssets', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    await Asset.create({
-      AppId: appB.id,
+    const { Asset: AssetB } = await getAppDB(appB.id);
+    await AssetB.create({
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),

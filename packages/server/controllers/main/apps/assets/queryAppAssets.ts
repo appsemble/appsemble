@@ -2,7 +2,7 @@ import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { App, Asset, Resource } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function queryAppAssets(ctx: Context): Promise<void> {
@@ -10,11 +10,7 @@ export async function queryAppAssets(ctx: Context): Promise<void> {
     pathParams: { appId },
     queryParams: { $skip, $top },
   } = ctx;
-
-  const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'demoMode'],
-  });
-
+  const app = await App.findByPk(appId, { attributes: ['OrganizationId', 'demoMode'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
@@ -23,6 +19,7 @@ export async function queryAppAssets(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.QueryAppAssets],
   });
 
+  const { Asset, Resource } = await getAppDB(appId);
   const assets = await Asset.findAll({
     attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],
     include: [
@@ -33,7 +30,6 @@ export async function queryAppAssets(ctx: Context): Promise<void> {
       },
     ],
     where: {
-      AppId: appId,
       ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
     },
     offset: $skip,

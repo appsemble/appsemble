@@ -21,16 +21,7 @@ import {
 import { initAxios } from './initAxios.js';
 import { authorizeCLI } from './testUtils.js';
 
-const {
-  App,
-  AppMember,
-  BlockVersion,
-  Group,
-  GroupInvite,
-  GroupMember,
-  Organization,
-  OrganizationMember,
-} = models;
+const { App, BlockVersion, Organization, OrganizationMember, getAppDB } = models;
 
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 let user: models.User;
@@ -115,10 +106,10 @@ describe('group', () => {
         clientCredentials,
       });
 
+      const { Group } = await getAppDB(app.id);
       const group = await Group.findOne();
       expect(group).toMatchInlineSnapshot(`
         {
-          "AppId": 1,
           "annotations": null,
           "created": 1970-01-01T00:00:00.000Z,
           "demo": false,
@@ -167,8 +158,8 @@ describe('group', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       });
+      const { Group } = await getAppDB(app.id);
       const group = await Group.create({
-        AppId: app.id,
         name: 'test',
       });
 
@@ -181,7 +172,6 @@ describe('group', () => {
       });
       expect(group).toMatchInlineSnapshot(`
         {
-          "AppId": 1,
           "annotations": null,
           "created": 1970-01-01T00:00:00.000Z,
           "demo": false,
@@ -250,8 +240,8 @@ describe('group', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       });
+      const { Group } = await getAppDB(app.id);
       const group = await Group.create({
-        AppId: app.id,
         name: 'test',
       });
       await authorizeCLI('groups:write', testApp);
@@ -264,7 +254,6 @@ describe('group', () => {
       await group.reload();
       expect(group).toMatchInlineSnapshot(`
         {
-          "AppId": 1,
           "annotations": null,
           "created": 1970-01-01T00:00:00.000Z,
           "demo": false,
@@ -299,8 +288,8 @@ describe('group', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       });
+      const { Group } = await getAppDB(app.id);
       const group = await Group.create({
-        AppId: app.id,
         name: 'test',
       });
       await group.destroy();
@@ -340,8 +329,8 @@ describe('group', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       });
+      const { Group } = await getAppDB(app.id);
       const group = await Group.create({
-        AppId: app.id,
         name: 'test',
       });
       await expect(() =>
@@ -376,14 +365,13 @@ describe('group', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       });
+      const { AppMember, Group, GroupInvite } = await getAppDB(app.id);
       const group = await Group.create({
-        AppId: app.id,
         name: 'test',
       });
       await AppMember.create({
         email: user.primaryEmail,
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         role: 'Reader',
         name: user.name,
       });
@@ -477,14 +465,13 @@ describe('group', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       });
+      const { AppMember, Group, GroupMember } = await getAppDB(app.id);
       const group = await Group.create({
-        AppId: app.id,
         name: 'test',
       });
       const member = await AppMember.create({
         email: user.primaryEmail,
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         role: 'Updater',
         name: user.name,
       });
@@ -533,14 +520,13 @@ describe('group', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       });
+      const { AppMember, Group } = await getAppDB(app.id);
       const group = await Group.create({
-        AppId: app.id,
         name: 'test',
       });
       await AppMember.create({
         email: user.primaryEmail,
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         role: 'Updater',
         name: user.name,
       });
@@ -586,14 +572,13 @@ describe('group', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       });
+      const { AppMember, Group, GroupMember } = await getAppDB(app.id);
       const group = await Group.create({
-        AppId: app.id,
         name: 'test',
       });
       const member = await AppMember.create({
         email: user.primaryEmail,
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         role: 'Updater',
         name: user.name,
       });
@@ -645,14 +630,13 @@ describe('group', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       });
+      const { AppMember, Group } = await getAppDB(app.id);
       const group = await Group.create({
-        AppId: app.id,
         name: 'test',
       });
       await AppMember.create({
         email: user.primaryEmail,
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         role: 'Manager',
         name: user.name,
       });

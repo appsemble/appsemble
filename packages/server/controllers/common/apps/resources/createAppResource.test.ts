@@ -8,11 +8,9 @@ import webpush from 'web-push';
 
 import {
   App,
-  AppMember,
-  Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -315,10 +313,10 @@ describe('createAppResource', () => {
         file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
       }),
     );
+    const { Asset } = await getAppDB(app.id);
     const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
     expect(assets).toStrictEqual([
       expect.objectContaining({
-        AppId: app.id,
         ResourceId: 1,
         clonable: false,
         AppMemberId: null,
@@ -465,12 +463,12 @@ describe('createAppResource', () => {
         file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
       }),
     ]);
+    const { Asset } = await getAppDB(app.id);
     const assets = await Asset.findAll({ raw: true });
     const assetAId = response.data[0].file as string;
     const assetBId = response.data[1].file as string;
     expect(assets).toStrictEqual([
       expect.objectContaining({
-        AppId: app.id,
         ResourceId: 1,
         AppMemberId: null,
         GroupId: null,
@@ -486,7 +484,6 @@ describe('createAppResource', () => {
         updated: expect.any(Date),
       }),
       expect.objectContaining({
-        AppId: app.id,
         ResourceId: 2,
         AppMemberId: null,
         GroupId: null,
@@ -722,10 +719,10 @@ describe('createAppResource', () => {
   });
 
   it("should assign the user's AppMember account to the resource", async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      UserId: user.id,
-      AppId: app.id,
+      userId: user.id,
       role: PredefinedAppRole.ResourcesManager,
       timezone: 'Europe/Amsterdam',
     });
@@ -775,9 +772,9 @@ describe('createAppResource', () => {
       `,
     );
 
+    const { Resource } = await getAppDB(app.id);
     const ephemeralResource = await Resource.findOne({
       where: {
-        AppId: app.id,
         seed: false,
         ephemeral: true,
       },
@@ -816,9 +813,9 @@ describe('createAppResource', () => {
       }),
     );
 
+    const { Asset, Resource } = await getAppDB(app.id);
     const ephemeralResources = await Resource.findAll({
       where: {
-        AppId: app.id,
         seed: false,
         ephemeral: true,
       },
@@ -832,7 +829,6 @@ describe('createAppResource', () => {
 
     const ephemeralAssets = await Asset.findAll({
       where: {
-        AppId: app.id,
         seed: false,
         ephemeral: true,
       },
@@ -873,9 +869,9 @@ describe('createAppResource', () => {
       `,
     );
 
+    const { Resource } = await getAppDB(app.id);
     const seedResource = await Resource.findOne({
       where: {
-        AppId: app.id,
         seed: true,
         ephemeral: false,
       },
@@ -917,9 +913,9 @@ describe('createAppResource', () => {
       `,
     );
 
+    const { Resource } = await getAppDB(app.id);
     const seedResource = await Resource.findOne({
       where: {
-        AppId: app.id,
         seed: true,
         ephemeral: false,
       },
@@ -935,7 +931,6 @@ describe('createAppResource', () => {
 
     const ephemeralResource = await Resource.findOne({
       where: {
-        AppId: app.id,
         seed: false,
         ephemeral: true,
       },
@@ -971,9 +966,9 @@ describe('createAppResource', () => {
       }),
     );
 
+    const { Asset, Resource } = await getAppDB(app.id);
     const seedResources = await Resource.findAll({
       where: {
-        AppId: app.id,
         seed: true,
         ephemeral: false,
       },
@@ -986,7 +981,6 @@ describe('createAppResource', () => {
 
     const seedAssets = await Asset.findAll({
       where: {
-        AppId: app.id,
         seed: true,
         deleted: null,
         ephemeral: false,
@@ -1070,9 +1064,9 @@ describe('createAppResource', () => {
       }),
     );
 
+    const { Asset, Resource } = await getAppDB(app.id);
     const seedResources = await Resource.findAll({
       where: {
-        AppId: app.id,
         seed: true,
         ephemeral: false,
       },
@@ -1085,7 +1079,6 @@ describe('createAppResource', () => {
 
     const seedAssets = await Asset.findAll({
       where: {
-        AppId: app.id,
         seed: true,
         ephemeral: false,
       },
@@ -1105,7 +1098,6 @@ describe('createAppResource', () => {
 
     const ephemeralResources = await Resource.findAll({
       where: {
-        AppId: app.id,
         seed: false,
         ephemeral: true,
       },
@@ -1119,7 +1111,6 @@ describe('createAppResource', () => {
 
     const ephemeralAssets = await Asset.findAll({
       where: {
-        AppId: app.id,
         seed: false,
         ephemeral: true,
       },
