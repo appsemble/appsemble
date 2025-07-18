@@ -1,4 +1,5 @@
 export * from './app-collections/index.js';
+export * from './app-members/index.js';
 export * from './apps/index.js';
 export * from './auth/index.js';
 export * from './blocks/index.js';
