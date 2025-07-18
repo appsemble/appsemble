@@ -50,7 +50,7 @@ If this is omitted, a collapsable side navigation menu will be rendered on the l
       properties: {
         position: {
           enum: ['navbar', 'hidden'],
-          default: 'navbar',
+          default: 'hidden',
           description: 'The location of the app logo.',
         },
         asset: { type: 'string' },
