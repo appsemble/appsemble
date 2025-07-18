@@ -7,9 +7,9 @@ import {
 } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { AppMember } from '../../../models/index.js';
-import { getAppMemberInfo, parseAppMemberProperties } from '../../../utils/appMember.js';
-import { checkAuthSubjectAppPermissions } from '../../../utils/authorization.js';
+import { AppMember } from '../../../../models/index.js';
+import { getAppMemberInfo, parseAppMemberProperties } from '../../../../utils/appMember.js';
+import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
 export async function patchAppMemberProperties(ctx: Context): Promise<void> {
   const {

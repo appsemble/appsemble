@@ -44,6 +44,42 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
-    security: [{ studio: [] }, { app: [] }],
+    security: [{ app: [] }],
+  },
+  put: {
+    tags: ['common', 'app-member', 'update'],
+    description: 'Update the properties of an app member.',
+    operationId: 'updateAppMemberProperties',
+    parameters: [{ $ref: '#/components/parameters/selectedGroupId' }],
+    requestBody: {
+      content: {
+        'multipart/form-data': {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              properties: {
+                type: 'object',
+                additionalProperties: { type: 'string' },
+                description: 'The member’s custom properties.',
+              },
+            },
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: 'The updated app member',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/AppMember',
+            },
+          },
+        },
+      },
+    },
+    security: [{ studio: [] }],
   },
 };
