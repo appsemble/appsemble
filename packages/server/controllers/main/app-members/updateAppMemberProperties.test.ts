@@ -7,8 +7,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -72,9 +72,9 @@ describe('patchAppMemberProperties', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+    const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
       UserId: user.id,
       role: PredefinedAppRole.Member,
     });
@@ -118,9 +118,9 @@ describe('patchAppMemberProperties', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+    const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
       UserId: user.id,
       role: PredefinedAppRole.Member,
       properties: { foo: 'bar', number: 33 },
