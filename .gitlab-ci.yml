@@ -13,7 +13,7 @@ stages:
   - backup
 
 variables:
-  BACKUPS_LOCATION: stack:appsemble/backups
+  BACKUPS_LOCATION: hetzner-s3:appsemble/backups
   PROD_BACKUP_NAME: appsemble_prod_backup
 
 workflow:
@@ -918,10 +918,9 @@ staging:
       --set "provision.user.name=$BOT_ACCOUNT_NAME"
       --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.user.timezone=Europe/Amsterdam"
-      --set "importData.remoteStorage.url=$REMOTE_STORAGE_URL"
-      --set "importData.remoteStorage.user=$REMOTE_STORAGE_USER"
-      --set "importData.remoteStorage.existingPasswordSecret=remote-storage-secret"
-      --set "importData.remoteStorage.passwordSecretKey=password"
+      --set "importData.remoteStorage.url=$S3_REMOTE_STORAGE_URL"
+      --set "importData.remoteStorage.existingAccessKeySecret=s3-access-key-secret"
+      --set "importData.remoteStorage.region=$S3_REGION"
       --set "importData.remoteStorage.location=$BACKUPS_LOCATION"
       --set "importData.remoteStorage.filename=$PROD_BACKUP_NAME"
       --set "migrateDefinitions.save=true"
@@ -1148,8 +1147,7 @@ backup production data:
     GIT_STRATEGY: none
   script:
     - apk add --no-cache rclone
-    - rclone config create stack webdav url "$REMOTE_STORAGE_URL" vendor other user "$REMOTE_STORAGE_USER"
-    - rclone config password stack pass "$REMOTE_STORAGE_PASSWORD"
+    - rclone config create hetzner-s3 s3 url $S3_REMOTE_STORAGE_URL vendor other access_key_id $S3_ACCESS_KEY_ID endpoint $S3_REMOTE_STORAGE_URL secret_access_key $S3_SECRET_ACCESS_KEY region $S3_REGION provider Other
     - LATEST_TARGET="${PROD_BACKUP_NAME}.sql.gz"
     - VERSIONED_TARGET="${PROD_BACKUP_NAME}_$(date '+%Y%m%d%H%M').sql.gz"
     - pg_dump "$PRODUCTION_DB_URL" | gzip > "$VERSIONED_TARGET"

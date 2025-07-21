@@ -26,8 +26,7 @@ spec:
             - |
               apk add --no-cache rclone
 
-              rclone config create stack webdav url {{ .Values.importData.remoteStorage.url | quote }} vendor other user {{ .Values.importData.remoteStorage.user | quote }}
-              rclone config password stack pass "$REMOTE_STORAGE_SECRET"
+              rclone config create hetzner-s3 s3 url {{ .Values.importData.remoteStorage.url | quote }} vendor other access_key_id $S3_ACCESS_KEY_ID endpoint {{ .Values.importData.remoteStorage.url | quote }} secret_access_key $S3_SECRET_ACCESS_KEY region {{ .Values.importData.remoteStorage.region | quote }} provider Other
 
               echo "Listing files in the remote directory:"
               rclone lsf {{ .Values.importData.remoteStorage.location }}/
@@ -43,11 +42,16 @@ spec:
                 echo "Downloaded file to /data/backup.gz"
               fi
           env:
-            - name: REMOTE_STORAGE_SECRET
+            - name: S3_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.importData.remoteStorage.existingPasswordSecret }}
-                  key: {{ .Values.importData.remoteStorage.passwordSecretKey | quote }}
+                  name: {{ .Values.importData.remoteStorage.existingAccessKeySecret }}
+                  key: accessKeyId
+            - name: S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: { { .Values.importData.remoteStorage.existingAccessKeySecret } }
+                  key: secretAccessKey
           volumeMounts:
             - name: shared-data
               mountPath: /data
