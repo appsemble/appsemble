@@ -15,7 +15,11 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
+import {
+  authorizeAppMember,
+  createTestAppMember,
+  createTestUser,
+} from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
 let user: User;
@@ -64,18 +68,18 @@ describe('patchAppMemberProperties', () => {
   });
 
   it('should update and return the app member properties', async () => {
-    authorizeStudio();
-
     const app = await App.create({
       OrganizationId: 'testorganization',
       vapidPublicKey: '',
       vapidPrivateKey: '',
       definition: {},
     });
+
+    const owner = await createTestAppMember(app.id);
+    authorizeAppMember(app, owner);
     const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
-      email: user.primaryEmail,
-      userId: user.id,
+      email: 'test2@example.com',
       role: PredefinedAppRole.Member,
     });
 
@@ -92,11 +96,11 @@ describe('patchAppMemberProperties', () => {
 
       {
         "demo": false,
-        "email": "test@example.com",
+        "email": "test2@example.com",
         "email_verified": false,
         "locale": null,
         "name": null,
-        "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
+        "picture": "https://www.gravatar.com/avatar/43b05f394d5611c54a1a9e8e20baee21?s=128&d=mp",
         "properties": {
           "foo": "bar",
           "test": "Property",
@@ -110,18 +114,17 @@ describe('patchAppMemberProperties', () => {
   });
 
   it('should not update the existing properties that are not in the request body', async () => {
-    authorizeStudio();
-
     const app = await App.create({
       OrganizationId: 'testorganization',
       vapidPublicKey: '',
       vapidPrivateKey: '',
       definition: {},
     });
+    await createTestAppMember(app.id);
+    authorizeAppMember(app);
     const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
-      email: user.primaryEmail,
-      userId: user.id,
+      email: 'test2@example.com',
       role: PredefinedAppRole.Member,
       properties: { foo: 'bar', number: 33 },
     });
