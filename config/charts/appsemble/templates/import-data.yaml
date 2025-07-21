@@ -26,7 +26,7 @@ spec:
             - |
               apk add --no-cache rclone
 
-              rclone config create hetzner-s3 s3 url {{ .Values.importData.remoteStorage.url | quote }} vendor other access_key_id $S3_ACCESS_KEY_ID endpoint {{ .Values.importData.remoteStorage.url | quote }} secret_access_key $S3_SECRET_ACCESS_KEY provider Other
+              rclone config create hetzner-s3 s3 url {{ .Values.importData.remoteStorage.url | quote }} vendor other access_key_id $S3_ACCESS_KEY_ID endpoint {{ .Values.importData.remoteStorage.url | quote }} secret_access_key $S3_SECRET_ACCESS_KEY region {{ .Values.importData.remoteStorage.region | quote }} provider Other
 
               echo "Listing files in the remote directory:"
               rclone lsf {{ .Values.importData.remoteStorage.location }}/

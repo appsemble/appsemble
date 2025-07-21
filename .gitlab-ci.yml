@@ -915,6 +915,7 @@ staging:
       --set "provision.user.timezone=Europe/Amsterdam"
       --set "importData.remoteStorage.url=$S3_REMOTE_STORAGE_URL"
       --set "importData.remoteStorage.existingAccessKeySecret=s3-access-key-secret"
+      --set "importData.remoteStorage.region=$S3_REGION"
       --set "importData.remoteStorage.location=$BACKUPS_LOCATION"
       --set "importData.remoteStorage.filename=$PROD_BACKUP_NAME"
       --set "migrateDefinitions.save=true"
@@ -1141,7 +1142,7 @@ backup production data:
     GIT_STRATEGY: none
   script:
     - apk add --no-cache rclone
-    - rclone config create hetzner-s3 s3 url $S3_REMOTE_STORAGE_URL vendor other access_key_id $S3_ACCESS_KEY_ID endpoint $S3_REMOTE_STORAGE_URL secret_access_key $S3_SECRET_ACCESS_KEY provider Other
+    - rclone config create hetzner-s3 s3 url $S3_REMOTE_STORAGE_URL vendor other access_key_id $S3_ACCESS_KEY_ID endpoint $S3_REMOTE_STORAGE_URL secret_access_key $S3_SECRET_ACCESS_KEY region $S3_REGION provider Other
     - LATEST_TARGET="${PROD_BACKUP_NAME}.sql.gz"
     - VERSIONED_TARGET="${PROD_BACKUP_NAME}_$(date '+%Y%m%d%H%M').sql.gz"
     - pg_dump "$PRODUCTION_DB_URL" | gzip > "$VERSIONED_TARGET"
