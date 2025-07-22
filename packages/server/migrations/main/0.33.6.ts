@@ -21,7 +21,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   await queryInterface.sequelize.query(
     `
     CREATE UNIQUE INDEX "UniqueAssetWithGroupId"
-    ON "Asset" (name, ephemeral, "GroupId")
+    ON "Asset" (name, ephemeral, "AppId", "GroupId")
     WHERE "GroupId" IS NOT NULL AND "deleted" IS NULL;
   `,
     { transaction },
@@ -31,7 +31,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   await queryInterface.sequelize.query(
     `
     CREATE UNIQUE INDEX "UniqueAssetWithNullGroupId"
-    ON "Asset" (name, ephemeral)
+    ON "Asset" (name, ephemeral, "AppId")
     WHERE "GroupId" IS NULL AND "deleted" IS NULL;
   `,
     { transaction },
@@ -56,7 +56,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   await queryInterface.sequelize.query(
     `
       CREATE UNIQUE INDEX "UniqueAssetWithGroupId"
-        ON "Asset" (name, ephemeral, "GroupId")
+        ON "Asset" (name, ephemeral, "AppId", "GroupId")
         WHERE "GroupId" IS NOT NULL;
     `,
     { transaction },
@@ -66,7 +66,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   await queryInterface.sequelize.query(
     `
     CREATE UNIQUE INDEX "UniqueAssetWithNullGroupId"
-    ON "Asset" (name, ephemeral)
+    ON "Asset" (name, ephemeral, "AppId")
     WHERE "GroupId" IS NULL;
   `,
     { transaction },

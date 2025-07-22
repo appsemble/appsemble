@@ -1,322 +1,22 @@
 import { logger } from '@appsemble/node-utils';
-import { DataTypes, Op, QueryTypes, type Sequelize, type Transaction } from 'sequelize';
+import { DataTypes, Op, type Sequelize, type Transaction } from 'sequelize';
 
-import { getAppDB } from '../../models/index.js';
-
-export const key = '0.33.0';
-
-const BATCH_SIZE = 100;
-
-const appTables = [
-  { name: 'AppBlockStyle', orderby: 'block' },
-  { name: 'AppInvite', mapUsers: true, orderby: 'email' },
-  { name: 'AppMember', mapUsers: true },
-  { name: 'AppOAuth2Secret' },
-  { name: 'AppSamlSecret' },
-  { name: 'AppOAuth2Authorization', through: 'AppMember', orderby: 'sub' },
-  { name: 'AppSamlAuthorization', through: 'AppMember', orderby: 'nameId' },
-  { name: 'SamlLoginRequest', through: 'AppSamlSecret' },
-  { name: 'AppServiceSecret' },
-  { name: 'AppSubscription' },
-  { name: 'AppVariable' },
-  { name: 'AppWebhookSecret' },
-  { name: 'OAuth2AuthorizationCode', orderby: 'code' },
-  { name: 'Group' },
-  { name: 'GroupInvite', through: 'Group', orderby: 'email' },
-  { name: 'GroupMember', through: 'Group' },
-  { name: 'Resource' },
-  { name: 'ResourceSubscription', through: 'Resource' },
-  { name: 'ResourceVersion', through: 'Resource' },
-  { name: 'Asset' },
-];
-
-function serializeValue(value: any): Buffer | Date | string | null {
-  if (value == null) {
-    return null;
-  }
-  if (Buffer.isBuffer(value)) {
-    return value;
-  }
-  if (Array.isArray(value)) {
-    return JSON.stringify(value);
-  }
-  if (typeof value === 'object') {
-    return value instanceof Date ? value : JSON.stringify(value);
-  }
-  return value;
-}
-
-async function copyToAppDB(
-  mainDB: Sequelize,
-  appDB: Sequelize,
-  appId: number,
-  tableName: string,
-  transaction: Transaction,
-  appTransaction: Transaction,
-  mapUsers = false,
-  through?: string,
-  orderby = 'id',
-): Promise<void> {
-  logger.info(`Copying "${tableName}" records from main db to app-${appId} db`);
-
-  let existingAppMemberIds = new Set<string>();
-  if (['Asset', 'Resource', 'GroupMember'].includes(tableName)) {
-    const [existingAppMembers] = await appDB.query('select "id" from "AppMember"', {
-      transaction: appTransaction,
-    });
-
-    existingAppMemberIds = new Set((existingAppMembers as { id: string }[]).map((am) => am.id));
-  }
-
-  let batchSize = BATCH_SIZE;
-
-  // Some apps have large resources
-  if (tableName === 'Resource') {
-    batchSize = 10;
-  }
-
-  let offset = 0;
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    // Deliberately not selecting "picture" from "AppMember"
-    // It's BLOB and causes JavaScript to run out of memory
-    const batchQuery = through
-      ? `SELECT "${tableName}".* FROM "${tableName}"
-       JOIN "${through}" ON "${through}Id" = "${through}"."id"
-       WHERE "${through}"."AppId" = :appId
-       ORDER BY "${tableName}"."${orderby}"
-       OFFSET :offset LIMIT :limit`
-      : `SELECT ${tableName === 'AppMember' ? '"id", "role", "email", "emailVerified", "name", "password", "emailKey", "resetKey", "consent", "properties", "scimExternalId", "scimActive", "locale", "timezone", "demo", "created", "updated", "AppId", "UserId"' : '*'} FROM "${tableName}"
-       WHERE "AppId" = :appId
-       ORDER BY "${orderby}"
-       OFFSET :offset LIMIT :limit`;
-
-    const batch = await mainDB.query(batchQuery, {
-      replacements: { appId, offset, limit: batchSize },
-      type: QueryTypes.SELECT,
-      transaction,
-    });
-
-    if (batch.length === 0) {
-      break;
-    }
-
-    let preparedRows = batch as { AppId: number; UserId?: string }[];
-
-    if (tableName === 'Resource') {
-      preparedRows = (
-        preparedRows as { AppId: number; AuthorId: string | null; EditorId: string | null }[]
-      ).map((row) => {
-        const preparedRow = row;
-        if (row.AuthorId && !existingAppMemberIds.has(row.AuthorId)) {
-          logger.warn(
-            `Author ${row.AuthorId} is missing from app ${appId} app members. Setting resource AuthorId to NULL`,
-          );
-          preparedRow.AuthorId = null;
-        }
-        if (row.EditorId && !existingAppMemberIds.has(row.EditorId)) {
-          logger.warn(
-            `Editor ${row.EditorId} is missing from app ${appId} app members. Setting resource EditorId to NULL`,
-          );
-          preparedRow.EditorId = null;
-        }
-        return preparedRow;
-      });
-    }
-
-    if (tableName === 'Asset' || tableName === 'GroupMember') {
-      preparedRows = (preparedRows as { AppId: number; AppMemberId: string | null }[]).map(
-        (row) => {
-          const preparedRow = row;
-          if (row.AppMemberId && !existingAppMemberIds.has(row.AppMemberId)) {
-            logger.warn(
-              `AppMember ${row.AppMemberId} is missing from app ${appId} app members. Setting asset AppMemberId to NULL`,
-            );
-            preparedRow.AppMemberId = null;
-          }
-          return preparedRow;
-        },
-      );
-    }
-
-    if (tableName === 'GroupMember') {
-      preparedRows = (preparedRows as { AppId: number; AppMemberId: string | null }[]).filter(
-        (row) => {
-          if (row.AppMemberId == null) {
-            logger.warn('AppMemberId on GroupMember record cannot be null. Not inserting row');
-            return false;
-          }
-          return true;
-        },
-      );
-    }
-
-    if (Array.isArray(preparedRows) && preparedRows.length > 0) {
-      await appDB.getQueryInterface().bulkInsert(
-        tableName,
-        preparedRows.map(({ AppId, UserId, ...rest }) => {
-          const values = Object.fromEntries(
-            Object.entries(rest).map(([name, value]) => [name, serializeValue(value)]),
-          );
-          return {
-            ...values,
-            ...(mapUsers ? { userId: UserId } : {}),
-          };
-        }),
-        { transaction: appTransaction },
-      );
-    }
-
-    offset += batchSize;
-  }
-}
-
-async function deleteFromMainDB(
-  mainDB: Sequelize,
-  appId: number,
-  tableName: string,
-  transaction: Transaction,
-  through?: string,
-): Promise<void> {
-  logger.info(`Deleting "${tableName}" records from main db for app ${appId}`);
-  const query = through
-    ? `DELETE FROM "${tableName}"
-       USING "${through}"
-       WHERE "${tableName}"."${through}Id" = "${through}"."id"
-       AND "${through}"."AppId" = :appId`
-    : `DELETE FROM "${tableName}" WHERE "AppId" = :appId`;
-
-  await mainDB.query(query, { replacements: { appId }, transaction });
-}
-
-async function copyToMainDB(
-  mainDB: Sequelize,
-  appDB: Sequelize,
-  appId: number,
-  tableName: string,
-  transaction: Transaction,
-  appTransaction: Transaction,
-  mapUsers = false,
-  through = false,
-  orderby = 'id',
-): Promise<void> {
-  logger.info(`Copying "${tableName}" records from app-${appId} db to main db`);
-
-  let batchSize = BATCH_SIZE;
-
-  // Some apps have large resources
-  if (tableName === 'Resource') {
-    batchSize = 10;
-  }
-
-  let offset = 0;
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const batch: { userId?: string }[] = await appDB.query(
-      // Deliberately not selecting "picture" from "AppMember"
-      // It's BLOB and causes JavaScript to run out of memory
-      `SELECT ${tableName === 'AppMember' ? '"id", "role", "email", "emailVerified", "name", "password", "emailKey", "resetKey", "consent", "properties", "scimExternalId", "scimActive", "locale", "timezone", "demo", "created", "updated", "userId"' : '*'} FROM "${tableName}"
-       ORDER BY "${orderby}"
-       OFFSET :offset LIMIT :limit`,
-      {
-        replacements: { appId, offset, limit: batchSize },
-        type: QueryTypes.SELECT,
-        transaction: appTransaction,
-      },
-    );
-
-    if (batch.length === 0) {
-      break;
-    }
-
-    if (batch.length > 0) {
-      await mainDB.getQueryInterface().bulkInsert(
-        tableName,
-        batch.map(({ userId, ...rest }) => {
-          const values = Object.fromEntries(
-            Object.entries(rest).map(([name, value]) => [name, serializeValue(value)]),
-          );
-          return {
-            ...values,
-            ...(through ? {} : { AppId: appId }),
-            ...(mapUsers ? { UserId: userId } : {}),
-          };
-        }),
-        { transaction },
-      );
-    }
-
-    offset += batchSize;
-  }
-}
-
-async function deleteFromAppDB(
-  appDB: Sequelize,
-  appId: number,
-  tableName: string,
-  appTransaction: Transaction,
-): Promise<void> {
-  logger.info(`Deleting "${tableName}" records from app-${appId} db `);
-  await appDB.query(`DELETE FROM "${tableName}"`, { transaction: appTransaction });
-}
+export const key = '0.34.0';
 
 /*
  * Summary:
- * - Create app databases, move data over and drop app tables from main db
+ * - Create all tables from production database snapshot from 0.32.3
  */
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.info('Migrate app data to app databases');
-  const [apps] = await queryInterface.sequelize.query(
-    'SELECT "id" FROM "App" WHERE "deleted" IS NULL ORDER BY "id"',
-    { transaction },
-  );
-
-  for (const app of apps as { id: number }[]) {
-    const { sequelize: appDB } = await getAppDB(app.id, db);
-
-    const appTransaction = await appDB.transaction();
-    try {
-      for (const { mapUsers, name, orderby, through } of appTables) {
-        await copyToAppDB(
-          db,
-          appDB,
-          app.id,
-          name,
-          transaction,
-          appTransaction,
-          mapUsers,
-          through,
-          orderby,
-        );
-      }
-
-      for (const { name, through } of appTables) {
-        await deleteFromMainDB(db, app.id, name, transaction, through);
-      }
-
-      await appTransaction.commit();
-      await appDB.close();
-    } catch (error) {
-      await appTransaction.rollback();
-      await transaction.rollback();
-      throw error;
-    }
+  const tables = await queryInterface.showAllTables();
+  if (tables.some((name) => name !== 'Meta')) {
+    logger.info('skipping migration because database is not empty');
+    return;
   }
 
-  for (const { name } of appTables.toReversed()) {
-    logger.info(`Dropping table ${name} from main database`);
-    await queryInterface.dropTable(name, { transaction });
-  }
-}
-
-/*
- * Summary: Bring app data back into the main db and drop app dbs
- */
-export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
-  const queryInterface = db.getQueryInterface();
-
+  logger.info('Creating tables from production database snapshot from 0.32.3');
   await queryInterface.createTable(
     'AppBlockStyle',
     {
@@ -324,14 +24,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       style: { type: DataTypes.TEXT },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
-      AppId: {
-        primaryKey: true,
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
     },
     { transaction },
   );
@@ -341,27 +33,14 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       email: { type: DataTypes.STRING, primaryKey: true, allowNull: false },
       key: { type: DataTypes.STRING, allowNull: false },
       role: { type: DataTypes.STRING, allowNull: false, defaultValue: 'Member' },
+      userId: { type: DataTypes.UUID },
       created: { allowNull: false, type: DataTypes.DATE },
       updated: { allowNull: false, type: DataTypes.DATE },
-      AppId: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
-      UserId: {
-        type: DataTypes.UUID,
-        references: { model: 'User', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
     },
     { transaction },
   );
-  await queryInterface.addIndex('AppInvite', ['AppId', 'UserId'], {
-    name: 'AppInvite_UserId_AppId_key',
+  await queryInterface.addIndex('AppInvite', ['userId'], {
+    name: 'AppInvite_UserId_key',
     unique: true,
     transaction,
   });
@@ -384,32 +63,19 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       locale: { type: DataTypes.STRING },
       timezone: { type: DataTypes.STRING },
       demo: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+      userId: { type: DataTypes.UUID },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
-      AppId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
-      UserId: {
-        type: DataTypes.UUID,
-        allowNull: true,
-        references: { model: 'User', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
     },
     { transaction },
   );
-  await queryInterface.addIndex('AppMember', ['email', 'AppId'], {
+  await queryInterface.addIndex('AppMember', ['email'], {
     name: 'UniqueAppMemberEmailIndex',
     unique: true,
     transaction,
   });
-  await queryInterface.addIndex('AppMember', ['UserId', 'AppId'], {
-    name: 'UniqueAppMemberIndex',
+  await queryInterface.addIndex('AppMember', ['userId'], {
+    name: 'UniqueAppMemberUserIndex',
     unique: true,
     transaction,
   });
@@ -428,13 +94,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       scope: { type: DataTypes.STRING, allowNull: false },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
-      AppId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
     },
     { transaction },
   );
@@ -488,13 +147,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       objectIdAttribute: { type: DataTypes.STRING },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
-      AppId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
     },
     { transaction },
   );
@@ -539,13 +191,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       expiresAt: { type: DataTypes.DATE },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
-      AppId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
     },
     { transaction },
   );
@@ -565,13 +210,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
       },
-      AppId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
     },
     { transaction },
   );
@@ -583,17 +221,10 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       value: { type: DataTypes.STRING },
       created: { allowNull: false, type: DataTypes.DATE },
       updated: { allowNull: false, type: DataTypes.DATE },
-      AppId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
     },
     { transaction },
   );
-  await queryInterface.addIndex('AppVariable', ['name', 'AppId'], {
+  await queryInterface.addIndex('AppVariable', ['name'], {
     name: 'UniqueNameIndex',
     unique: true,
     transaction,
@@ -607,13 +238,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       secret: { type: DataTypes.BLOB, allowNull: false },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
-      AppId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
     },
     { transaction },
   );
@@ -622,17 +246,10 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     {
       id: { autoIncrement: true, type: DataTypes.INTEGER, primaryKey: true },
       name: { type: DataTypes.STRING, allowNull: false },
-      AppId: {
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-      },
-      created: { type: DataTypes.DATE, allowNull: false },
-      updated: { type: DataTypes.DATE, allowNull: false },
       annotations: { type: DataTypes.JSON },
       demo: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+      created: { type: DataTypes.DATE, allowNull: false },
+      updated: { type: DataTypes.DATE, allowNull: false },
     },
     { transaction },
   );
@@ -668,17 +285,10 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      AppId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
     },
     { transaction },
   );
-  await queryInterface.addIndex('Resource', ['type', 'expires', 'GroupId', 'AppId'], {
+  await queryInterface.addIndex('Resource', ['type', 'expires', 'GroupId'], {
     name: 'resourceTypeComposite',
     transaction,
   });
@@ -722,13 +332,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      AppId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
     },
     { transaction },
   );
@@ -736,24 +339,16 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     name: 'assetNameIndex',
     transaction,
   });
-  await queryInterface.addIndex('Asset', ['AppId'], {
-    name: 'assetAppIdIndex',
-    transaction,
-  });
-  await queryInterface.addIndex('Asset', ['name', 'AppId'], {
-    name: 'assetAppIdNameIndex',
-    transaction,
-  });
-  await queryInterface.addIndex('Asset', ['name', 'ephemeral', 'GroupId', 'AppId'], {
+  await queryInterface.addIndex('Asset', ['name', 'ephemeral', 'GroupId'], {
     name: 'UniqueAssetWithGroupId',
     unique: true,
-    where: { GroupId: { [Op.not]: null } },
+    where: { GroupId: { [Op.not]: null }, deleted: null },
     transaction,
   });
-  await queryInterface.addIndex('Asset', ['name', 'ephemeral', 'AppId'], {
+  await queryInterface.addIndex('Asset', ['name', 'ephemeral'], {
     name: 'UniqueAssetWithNullGroupId',
     unique: true,
-    where: { GroupId: null },
+    where: { GroupId: null, deleted: null },
     transaction,
   });
   await queryInterface.createTable(
@@ -812,13 +407,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
         references: { model: 'AppMember', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
-      },
-      AppId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'App', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
       },
     },
     { transaction },
@@ -903,43 +491,11 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     },
     { transaction },
   );
+}
 
-  const [apps] = await queryInterface.sequelize.query(
-    'SELECT "id" FROM "App" WHERE "deleted" IS NULL ORDER BY "id"',
-    {
-      transaction,
-    },
-  );
-
-  for (const app of apps as { id: number }[]) {
-    const { sequelize: appDB } = await getAppDB(app.id, db);
-
-    const appTransaction = await appDB.transaction();
-    try {
-      for (const { mapUsers, name, orderby, through } of appTables) {
-        await copyToMainDB(
-          db,
-          appDB,
-          app.id,
-          name,
-          transaction,
-          appTransaction,
-          mapUsers,
-          Boolean(through),
-          orderby,
-        );
-      }
-
-      for (const { name } of appTables.toReversed()) {
-        await deleteFromAppDB(appDB, app.id, name, appTransaction);
-      }
-
-      await appTransaction.commit();
-      await appDB.close();
-    } catch (error) {
-      await appTransaction.rollback();
-      await transaction.rollback();
-      throw error;
-    }
-  }
+/*
+ * Summary:
+ */
+export function down(): void {
+  logger.warn(`Down migration for ${key} not implemented!`);
 }
