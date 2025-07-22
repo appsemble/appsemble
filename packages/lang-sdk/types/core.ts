@@ -371,7 +371,7 @@ export interface AppLogo {
   /**
    * The location of the logo
    *
-   * @default navbar
+   * @default hidden
    */
   position?: 'hidden' | 'navbar';
 

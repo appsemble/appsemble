@@ -122,7 +122,7 @@ export function MemberRow({
       const formData = new FormData();
       assignAppMemberProperties(Object.fromEntries(annotations), formData);
 
-      const { data } = await axios.patch<AppMemberInfo>(
+      const { data } = await axios.put<AppMemberInfo>(
         `/api/apps/${app.id}/app-members/${sub}/properties`,
         formData,
       );

@@ -316,30 +316,19 @@
           "type": "object",
           "description": "The configuration for the remote storage.",
           "additionalProperties": false,
-          "required": [
-            "url",
-            "user",
-            "existingPasswordSecret",
-            "passwordSecretKey",
-            "location",
-            "filename"
-          ],
+          "required": ["url", "existingAccessKeySecret", "location", "filename"],
           "properties": {
             "url": {
               "type": "string",
-              "description": "The url of the remote storage."
+              "description": "The url of the remote s3 storage."
             },
-            "user": {
+            "existingAccessKeySecret": {
               "type": "string",
-              "description": "The user for the remote storage."
+              "description": "The name of the access key secret for the remote s3 storage."
             },
-            "existingPasswordSecret": {
+            "region": {
               "type": "string",
-              "description": "The name of the password secret for the remote storage."
-            },
-            "passwordSecretKey": {
-              "type": "string",
-              "description": "The key within the password secret for the remote storage."
+              "description": "The region for the remote s3 storage."
             },
             "location": {
               "type": "string",
