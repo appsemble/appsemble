@@ -50,7 +50,7 @@ spec:
             - name: S3_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: { { .Values.importData.remoteStorage.existingAccessKeySecret } }
+                  name: {{ .Values.importData.remoteStorage.existingAccessKeySecret }}
                   key: secretAccessKey
           volumeMounts:
             - name: shared-data
