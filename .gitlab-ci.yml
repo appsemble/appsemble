@@ -910,6 +910,7 @@ staging:
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts-max-age=\"31536000\""
       --set "migrateTo=next"
       --set "oauthSecret=oauth2"
+      --set "postgresql.primary.persistence.size=16Gi"
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "provision.organization.id=appsemble"
       --set "provision.user.organizationRole=Maintainer"
