@@ -309,7 +309,10 @@ export async function initAppDB(
 
   const appDBName = app.dbName || `app-${app.id}`;
 
-  if (app.dbHost === (argv.databaseHost || process.env.DATABASE_HOST || 'localhost')) {
+  if (
+    (app.dbHost || argv.databaseHost) ===
+    (argv.databaseHost || process.env.DATABASE_HOST || 'localhost')
+  ) {
     try {
       const [[{ exists }]] = (await mainDB.query(
         `SELECT EXISTS (SELECT FROM pg_database WHERE datname = '${appDBName}');`,
@@ -326,10 +329,13 @@ export async function initAppDB(
   try {
     appDB = new Sequelize({
       database: appDBName,
-      host: app.dbHost,
-      port: app.dbPort,
-      password: decrypt(app.dbPassword, argv.aesSecret || 'Local Appsemble development AES secret'),
-      username: app.dbUser,
+      host: app.dbHost || argv.databaseHost,
+      port: app.dbPort || argv.databasePort,
+      password: decrypt(
+        app.dbPassword || argv.databasePassword,
+        argv.aesSecret || 'Local Appsemble development AES secret',
+      ),
+      username: app.dbUser || argv.databaseUser,
       ssl: false,
       logging: logSQL,
       dialect: 'postgres',
