@@ -786,8 +786,6 @@ review:
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     # Stripe webhook setup
-    - kubectl delete secret stripe-secret-$CI_MERGE_REQUEST_IID || true
-    - kubectl create secret generic stripe-secret-$CI_MERGE_REQUEST_IID
     - apk add --no-cache curl jq tar
     - LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
     - URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
@@ -805,6 +803,8 @@ review:
         --enabled-events invoice.payment_failed \
         --enabled-events invoice.payment_succeeded \
         --api-key "$STRIPE_API_KEY" | jq -r '.secret')
+    - kubectl delete secret stripe-secret-$CI_MERGE_REQUEST_IID || true
+    - kubectl create secret generic stripe-secret-$CI_MERGE_REQUEST_IID --from-literal=stripe-secret="$STRIPE_SECRET"
     # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --debug
