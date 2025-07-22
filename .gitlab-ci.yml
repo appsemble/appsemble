@@ -486,6 +486,9 @@ e2e node:
       --icon packages/server/assets/appsemble.png
       --name Appsemble
       --website https://appsemble.com
+    - npm run scripts seed-subscription --
+      --subscription ENTERPRISE
+      --organization appsemble
     - npm run appsemble -- block publish 'blocks/*'
     - npm --workspace @appsemble/types run prepack
     - npm --workspace @appsemble/lang-sdk run prepack
