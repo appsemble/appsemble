@@ -19,8 +19,6 @@ spec:
       initContainers:
         - name: {{ include "appsemble.fullname" . }}-download-data
           image: alpine:latest
-          securityContext:
-            readOnlyRootFilesystem: true
           command: [ "/bin/sh", "-c" ]
           args:
             - |
