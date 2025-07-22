@@ -140,7 +140,23 @@ Configure the environment variable for Appsemble to authenticate incoming Stripe
 {{- define "appsemble.stripeSecret" -}}
 {{- with .Values.stripeSecret }}
 - name: STRIPE_SECRET
-  value: {{ . | quote }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ . | quote }}
+      key: stripe-secret
+{{- end }}
+{{- end }}
+
+{{/*
+Configure the environment variable for Appsemble to connect to Stripe.
+*/}}
+{{- define "appsemble.stripeApiKey" -}}
+{{- with .Values.stripeApiKey }}
+- name: STRIPE_API_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ . | quote }}
+      key: stripe-api-key
 {{- end }}
 {{- end }}
 
