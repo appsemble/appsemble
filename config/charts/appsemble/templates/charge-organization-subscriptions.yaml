@@ -36,10 +36,7 @@ spec:
                       name: {{ . | quote }}
                       key: stripe-api-key
                 {{- end }}
-                {{- with .Values.stripeSecret}}
-                - name: STRIPE_SECRET
-                  value: {{ . | quote }}
-                {{- end }}
+{{ include "appsemble.stripeSecret" . | indent 16 }}
                 {{- if hasPrefix "review-" (include "appsemble.fullname" .) }}
                 - name: SMTP_HOST
                   value: "{{ include "appsemble.fullname" . }}-mailpit-smtp"
