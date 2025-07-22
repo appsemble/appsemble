@@ -331,10 +331,9 @@ export async function initAppDB(
       database: appDBName,
       host: app.dbHost || argv.databaseHost,
       port: app.dbPort || argv.databasePort,
-      password: decrypt(
-        app.dbPassword || argv.databasePassword,
-        argv.aesSecret || 'Local Appsemble development AES secret',
-      ),
+      password: app.dbPassword
+        ? decrypt(app.dbPassword, argv.aesSecret || 'Local Appsemble development AES secret')
+        : argv.databasePassword,
       username: app.dbUser || argv.databaseUser,
       ssl: false,
       logging: logSQL,
