@@ -845,7 +845,7 @@ review:
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "stripeSecret=stripe-secret-$CI_MERGE_REQUEST_IID"
-      --set "stripeApiKey.secretName=stripe-api-key"
+      --set "stripeApiKey=stripe-api-key"
 
 # Stop a review environment.
 stop review:
