@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.0](https://gitlab.com/appsemble/appsemble/-/releases/0.34.0)] - 2025-07-23
+
+### Added
+
+- Server: New endpoint `updateAppMemberProperties` using put mechanism to update the app member
+  properties.
+
+### Changed
+
+- Utils: **Breaking** All app groups related endpoints are now prefixed by `/apps/<app-id>`.
+- Utils: **Breaking** All app invite related endpoints are now prefixed by `/apps/<app-id>`.
+- Utils: **Breaking** All app member related endpoints are now prefixed by `/apps/<app-id>`.
+
 ## \[[0.33.11](https://gitlab.com/appsemble/appsemble/-/releases/0.33.11)] - 2025-07-17
 
 ### Added
