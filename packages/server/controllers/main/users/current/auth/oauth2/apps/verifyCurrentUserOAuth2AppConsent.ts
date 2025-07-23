@@ -1,7 +1,7 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember } from '../../../../../../../models/index.js';
+import { App, getAppDB } from '../../../../../../../models/index.js';
 import { checkAppSecurityPolicy } from '../../../../../../../utils/auth.js';
 import { createAppOAuth2AuthorizationCode } from '../../../../../../../utils/oauth2.js';
 
@@ -13,12 +13,11 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
     },
     user: authSubject,
   } = ctx;
-
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'],
   });
-
   assertKoaCondition(app != null, ctx, 404, 'App not found');
+
   const isAllowed = await checkAppSecurityPolicy(app, authSubject!.id);
 
   assertKoaCondition(
@@ -32,12 +31,8 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
     },
   );
 
-  const appMember = await AppMember.findOne({
-    where: {
-      AppId: app.id,
-      UserId: authSubject!.id,
-    },
-  });
+  const { AppMember } = await getAppDB(appId);
+  const appMember = await AppMember.findOne({ where: { userId: authSubject!.id } });
 
   assertKoaCondition(
     appMember != null && appMember.consent != null,

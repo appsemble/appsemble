@@ -7,8 +7,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -72,15 +72,15 @@ describe('patchAppMemberProperties', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+    const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
       UserId: user.id,
       role: PredefinedAppRole.Member,
     });
 
     const response = await request.put(
-      `/api/app-members/${appMember.id}/properties`,
+      `/api/apps/${app.id}/app-members/${appMember.id}/properties`,
       createFormData({ properties: { test: 'Property', foo: 'bar' } }),
     );
 
@@ -118,16 +118,16 @@ describe('patchAppMemberProperties', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+    const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
       UserId: user.id,
       role: PredefinedAppRole.Member,
       properties: { foo: 'bar', number: 33 },
     });
 
     const { status } = await request.put(
-      `/api/app-members/${appMember.id}/properties`,
+      `/api/apps/${app.id}/app-members/${appMember.id}/properties`,
       createFormData({ properties: { foo: 'test' } }),
     );
     expect(status).toBe(200);

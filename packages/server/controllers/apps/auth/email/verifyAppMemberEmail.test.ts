@@ -4,8 +4,8 @@ import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -73,6 +73,7 @@ describe('verifyAppMemberEmail', () => {
       }),
     );
 
+    const { AppMember } = await getAppDB(app.id);
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
 
     expect(m.emailVerified).toBe(false);
@@ -109,6 +110,7 @@ describe('verifyAppMemberEmail', () => {
       }),
     );
 
+    const { AppMember } = await getAppDB(app.id);
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
 
     expect(m.emailVerified).toBe(false);

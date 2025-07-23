@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 
-import { App } from '../models/App.js';
+import { App } from '../models/main/App.js';
 
 export async function fetchCustomAppDomains(): Promise<string[]> {
   const apps = await App.findAll({

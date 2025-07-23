@@ -3,7 +3,7 @@ import { getRemapperContext } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
-import { AppMember } from '../../models/index.js';
+import { getAppDB } from '../../models/index.js';
 import { getAppMemberInfo, parseMemberFilterQuery } from '../appMember.js';
 
 export async function appMemberQuery({
@@ -27,17 +27,17 @@ export async function appMemberQuery({
   const query = (remap(action.query ?? '', data, remapperContext) ?? {}) as { $filter?: string };
   const parsedFilter = parseMemberFilterQuery(query.$filter ?? '');
   const commonFilters = {
-    AppId: app.id,
     demo: false,
     ...(remappedRoles.length
       ? { role: { [Op.in]: Array.isArray(remappedRoles) ? remappedRoles : [remappedRoles] } }
       : {}),
   };
 
+  const { AppMember } = await getAppDB(app.id);
   const appMembers = await AppMember.findAll({
     where: {
       ...(query.$filter ? { [Op.and]: [parsedFilter, commonFilters] } : commonFilters),
     },
   });
-  return appMembers.map((appMember) => getAppMemberInfo(appMember));
+  return appMembers.map((appMember) => getAppMemberInfo(app.id, appMember));
 }

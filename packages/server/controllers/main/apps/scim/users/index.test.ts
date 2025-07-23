@@ -2,14 +2,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setArgv } from '../../../../../index.js';
-import {
-  App,
-  AppMember,
-  Group,
-  GroupMember,
-  Organization,
-  User,
-} from '../../../../../models/index.js';
+import { App, getAppDB, Organization, User } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { encrypt } from '../../../../../utils/crypto.js';
@@ -55,10 +48,10 @@ describe('scim users', () => {
     "should create a group if the user contains a manager ID of a group that doesn't exist yet",
     async () => {
       const user = await User.create({ timezone: 'Europe/Amsterdam' });
+      const { AppMember, Group } = await getAppDB(app.id);
       const member = await AppMember.create({
         email: 'user@example.com',
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         role: 'User',
       });
 
@@ -76,7 +69,7 @@ describe('scim users', () => {
         ],
       });
 
-      const group = await Group.findOne({ where: { AppId: app.id, name: 'krbs' } });
+      const group = await Group.findOne({ where: { name: 'krbs' } });
 
       expect(group).toMatchObject({
         AppId: 1,
@@ -92,16 +85,15 @@ describe('scim users', () => {
     async () => {
       const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
       const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
+      const { AppMember, Group, GroupMember } = await getAppDB(app.id);
       const member1 = await AppMember.create({
         email: 'user1@example.com',
-        AppId: app.id,
-        UserId: user1.id,
+        userId: user1.id,
         role: 'User',
       });
       const member2 = await AppMember.create({
         email: 'user2@example.com',
-        AppId: app.id,
-        UserId: user2.id,
+        userId: user2.id,
         role: 'User',
       });
       const group = await Group.create({ AppId: app.id, name: member1.id });
@@ -138,16 +130,15 @@ describe('scim users', () => {
     async () => {
       const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
       const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
+      const { AppMember, Group, GroupMember } = await getAppDB(app.id);
       const member1 = await AppMember.create({
         email: 'user1@example.com',
-        AppId: app.id,
-        UserId: user1.id,
+        userId: user1.id,
         role: 'User',
       });
       const member2 = await AppMember.create({
         email: 'user2@example.com',
-        AppId: app.id,
-        UserId: user2.id,
+        userId: user2.id,
         role: 'User',
       });
 

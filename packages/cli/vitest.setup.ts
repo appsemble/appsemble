@@ -7,10 +7,10 @@ import {
   setFixtureBase,
   setLogLevel,
 } from '@appsemble/node-utils';
-import { rootDB, setupTestDatabase } from '@appsemble/server';
+import { getRootDB, models, setupTestDatabase } from '@appsemble/server';
 import { type Sequelize } from 'sequelize';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { afterAll, beforeAll, beforeEach, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, vi } from 'vitest';
 
 setFixtureBase(import.meta);
 delete process.env[CREDENTIALS_ENV_VAR];
@@ -31,14 +31,19 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  await models.dropAndCloseAllAppDBs();
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
   vi.useRealTimers();
   await clearAllS3Buckets();
+});
+
+afterEach(async () => {
+  await models.dropAndCloseAllAppDBs();
 });
 
 afterAll(() => {
   testDB.close();
   // We need to drop the test database from the root database
   // testDB.drop() doesn't actually delete the database
-  rootDB.query(`DROP DATABASE ${testDB.getDatabaseName()}`);
+  getRootDB().query(`DROP DATABASE ${testDB.getDatabaseName()}`);
 });

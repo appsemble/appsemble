@@ -6,12 +6,9 @@ import webpush from 'web-push';
 
 import {
   type App,
-  AppMember,
-  Group,
-  GroupMember,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -62,8 +59,8 @@ describe('getAppResourceById', () => {
   });
 
   it('should be able to fetch a resource', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
@@ -84,16 +81,15 @@ describe('getAppResourceById', () => {
   });
 
   it('should be able to fetch a resource view', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
       view: 'testView',
     });
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.Owner,
       timezone: 'Europe/Amsterdam',
     });
@@ -115,8 +111,8 @@ describe('getAppResourceById', () => {
   });
 
   it('should be able to fetch a public resource view', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
@@ -137,15 +133,14 @@ describe('getAppResourceById', () => {
   });
 
   it('should return 404 for non-existing resource views', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.Owner,
       timezone: 'Europe/Amsterdam',
     });
@@ -168,8 +163,8 @@ describe('getAppResourceById', () => {
   });
 
   it('should check for authentication when using resource views', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceB',
       data: { foo: 'bar' },
     });
@@ -191,15 +186,14 @@ describe('getAppResourceById', () => {
   });
 
   it('should check for the correct role when using resource views', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceB',
       data: { foo: 'bar' },
     });
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
@@ -222,19 +216,18 @@ describe('getAppResourceById', () => {
   });
 
   it('should be able to fetch a resource you are a group member of', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const group = await Group.create({ name: 'Test Group' });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const member1 = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
     const member2 = await AppMember.create({
       email: 'userB@example.com',
-      AppId: app.id,
-      UserId: userB.id,
+      userId: userB.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
@@ -251,7 +244,6 @@ describe('getAppResourceById', () => {
     });
 
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceGroup',
       data: { foo: 'bar' },
       AuthorId: member2.id,
@@ -287,15 +279,15 @@ describe('getAppResourceById', () => {
   });
 
   it('should not be able to fetch a resource you are not a group member of', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const group = await Group.create({ name: 'Test Group' });
     const userB = await User.create({
       timezone: 'Europe/Amsterdam',
       primaryEmail: 'userB@example.com',
     });
     const memberB = await AppMember.create({
       email: userB.primaryEmail,
-      AppId: app.id,
-      UserId: userB.id,
+      userId: userB.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
@@ -307,14 +299,12 @@ describe('getAppResourceById', () => {
 
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Member',
       timezone: 'Europe/Amsterdam',
     });
 
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceGroup',
       data: { foo: 'bar' },
       AuthorId: memberB.id,
@@ -340,8 +330,8 @@ describe('getAppResourceById', () => {
   it('should not be able to fetch a resources of a different app', async () => {
     const appB = await exampleApp(organization.id, 'app-b');
 
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
@@ -375,16 +365,15 @@ describe('getAppResourceById', () => {
   });
 
   it('should return the resource author when fetching a single resource if it has one', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       name: user.name,
       role: PredefinedAppRole.Owner,
     });
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
       AuthorId: member.id,
@@ -416,16 +405,15 @@ describe('getAppResourceById', () => {
   });
 
   it('should ignore id in the data fields', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       name: user.name,
       role: PredefinedAppRole.Member,
     });
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { id: 23, foo: 'foo', bar: 1 },
       AuthorId: member.id,
@@ -501,8 +489,8 @@ describe('getAppResourceById', () => {
   });
 
   it('should allow organization app editors to get resources using Studio', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -528,8 +516,8 @@ describe('getAppResourceById', () => {
       role: PredefinedOrganizationRole.Member,
     });
 
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -550,8 +538,8 @@ describe('getAppResourceById', () => {
   });
 
   it('should allow organization app editors to get resources using client credentials', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -577,8 +565,8 @@ describe('getAppResourceById', () => {
       role: PredefinedOrganizationRole.Member,
     });
 
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });

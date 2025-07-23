@@ -183,6 +183,22 @@
           "assetsClonable": {
             "type": "boolean",
             "description": "Whether app assets should be clonable.\n\nIf assetsClonable is specified, this will override --assets-clonable passed on the command line."
+          },
+          "dbName": {
+            "type": "string",
+            "description": "The name of the external app database."
+          },
+          "dbHost": {
+            "type": "string",
+            "description": "The host of the external app database."
+          },
+          "dbPort": {
+            "type": "integer",
+            "description": "The port of the external app database."
+          },
+          "dbUser": {
+            "type": "string",
+            "description": "The user of the external app database."
           }
         }
       }

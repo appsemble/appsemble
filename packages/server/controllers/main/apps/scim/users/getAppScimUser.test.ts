@@ -2,14 +2,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setArgv } from '../../../../../index.js';
-import {
-  App,
-  AppMember,
-  Group,
-  GroupMember,
-  Organization,
-  User,
-} from '../../../../../models/index.js';
+import { App, getAppDB, Organization, User } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { encrypt } from '../../../../../utils/crypto.js';
@@ -53,10 +46,10 @@ describe('getAppScimUser', () => {
 
   it.todo('should return a SCIM user', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
+    const { AppMember } = await getAppDB(app.id);
     const member = await AppMember.create({
-      UserId: user.id,
+      userId: user.id,
       email: 'user@example.com',
-      AppId: app.id,
       role: 'User',
       timezone: 'Europe/Amsterdam',
     });
@@ -94,12 +87,12 @@ describe('getAppScimUser', () => {
   });
 
   it.todo('should return a SCIM user with manager', async () => {
-    const group = await Group.create({ AppId: app.id, name: 'krbs' });
+    const { AppMember, Group, GroupMember } = await getAppDB(app.id);
+    const group = await Group.create({ name: 'krbs' });
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
     const member = await AppMember.create({
-      UserId: user.id,
+      userId: user.id,
       email: 'user@example.com',
-      AppId: app.id,
       role: 'User',
     });
     await GroupMember.create({ GroupId: group.id, AppMemberId: member.id });

@@ -8,14 +8,9 @@ import webpush from 'web-push';
 
 import {
   type App,
-  AppMember,
-  Asset,
-  Group,
-  GroupMember,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
-  ResourceVersion,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -66,9 +61,9 @@ describe('patchAppResource', () => {
   });
 
   it('should be able to patch an existing resource', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.', bar: 'I am Bar.' },
     });
 
@@ -119,22 +114,21 @@ describe('patchAppResource', () => {
   });
 
   it('should be able to patch an existing resource from another group', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const group = await Group.create({ name: 'Test Group' });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
 
     const memberA = await AppMember.create({
       email: user.primaryEmail,
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       name: user.name,
       role: PredefinedAppRole.ResourcesManager,
     });
     const memberB = await AppMember.create({
       email: 'userB@example.com',
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: userB.id,
+      userId: userB.id,
       name: userB.name,
       role: PredefinedAppRole.Member,
     });
@@ -152,7 +146,6 @@ describe('patchAppResource', () => {
 
     const resource = await Resource.create({
       type: 'testResourceGroup',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       AuthorId: memberB.id,
     });
@@ -193,13 +186,13 @@ describe('patchAppResource', () => {
   });
 
   it('should not be able to patch an existing resource from another group if not part of the group', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const group = await Group.create({ name: 'Test Group' });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
 
     const memberB = await AppMember.create({
       email: 'userB@example.com',
-      AppId: app.id,
-      UserId: userB.id,
+      userId: userB.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
@@ -211,15 +204,13 @@ describe('patchAppResource', () => {
     });
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
 
     const resource = await Resource.create({
       type: 'testResourceGroup',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       AuthorId: memberB.id,
     });
@@ -243,9 +234,9 @@ describe('patchAppResource', () => {
   });
 
   it('should not be possible to patch an existing resource through another resource', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
@@ -268,9 +259,9 @@ describe('patchAppResource', () => {
   });
 
   it('should not be possible to patch an existing resource through another app', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
@@ -313,9 +304,9 @@ describe('patchAppResource', () => {
   });
 
   it('should validate resources', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
@@ -358,9 +349,9 @@ describe('patchAppResource', () => {
   });
 
   it('should set clonable if specified in the request', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
@@ -482,7 +473,8 @@ describe('patchAppResource', () => {
 
   it('should accept assets as form data', async () => {
     vi.useRealTimers();
-    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
+    const { Asset, Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({ type: 'testAssets', data: {} });
     authorizeStudio();
     const response = await request.patch<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -510,7 +502,6 @@ describe('patchAppResource', () => {
     const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
     expect(assets).toStrictEqual([
       expect.objectContaining({
-        AppId: app.id,
         ResourceId: 1,
         AppMemberId: null,
         GroupId: null,
@@ -531,7 +522,8 @@ describe('patchAppResource', () => {
   });
 
   it('should disallow unused assets', async () => {
-    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({ type: 'testAssets', data: {} });
     authorizeStudio();
     const response = await request.patch(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -570,7 +562,8 @@ describe('patchAppResource', () => {
   });
 
   it('should block unknown asset references', async () => {
-    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({ type: 'testAssets', data: {} });
     authorizeStudio();
     const response = await request.patch(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -611,10 +604,10 @@ describe('patchAppResource', () => {
   });
 
   it('should allow referencing existing assets', async () => {
-    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
+    const { Asset, Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({ type: 'testAssets', data: {} });
     const asset = await Asset.create({
       ResourceId: resource.id,
-      AppId: app.id,
       data: Buffer.alloc(0),
     });
     authorizeStudio();
@@ -641,15 +634,14 @@ describe('patchAppResource', () => {
   });
 
   it('should delete dereferenced assets', async () => {
+    const { Asset, Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testAssets',
       data: { file: 'test-asset' },
     });
     const asset = await Asset.create({
       name: 'test-asset',
       ResourceId: resource.id,
-      AppId: app.id,
       data: Buffer.alloc(0),
     });
     authorizeStudio();
@@ -678,8 +670,8 @@ describe('patchAppResource', () => {
   });
 
   it('should allow organization app editors to patch resources using Studio', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -708,8 +700,8 @@ describe('patchAppResource', () => {
       role: PredefinedOrganizationRole.Member,
     });
 
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -731,8 +723,8 @@ describe('patchAppResource', () => {
   });
 
   it('should allow organization app editors to patch resources using client credentials', async () => {
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -761,8 +753,8 @@ describe('patchAppResource', () => {
       role: PredefinedOrganizationRole.Member,
     });
 
+    const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
@@ -784,17 +776,16 @@ describe('patchAppResource', () => {
   });
 
   it('should set the updater', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
     const member = await AppMember.create({
       email: user.primaryEmail,
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       name: user.name,
       role: PredefinedAppRole.ResourcesManager,
     });
@@ -828,8 +819,8 @@ describe('patchAppResource', () => {
   });
 
   it('should keep an old resource version including data if history is true', async () => {
+    const { Resource, ResourceVersion } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testHistoryTrue',
       data: { string: 'rev1' },
     });
@@ -864,8 +855,8 @@ describe('patchAppResource', () => {
   });
 
   it('should keep an old resource version including data if history.data is true', async () => {
+    const { Resource, ResourceVersion } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testHistoryDataTrue',
       data: { string: 'rev1' },
     });
@@ -900,8 +891,8 @@ describe('patchAppResource', () => {
   });
 
   it('should keep an old resource version excluding data if history.data is false', async () => {
+    const { Resource, ResourceVersion } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testHistoryDataFalse',
       data: { string: 'rev1' },
     });

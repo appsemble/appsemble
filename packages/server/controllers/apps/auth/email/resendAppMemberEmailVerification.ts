@@ -1,7 +1,7 @@
 import { assertKoaCondition, logger } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
 
 export async function resendAppMemberEmailVerification(ctx: Context): Promise<void> {
@@ -10,7 +10,7 @@ export async function resendAppMemberEmailVerification(ctx: Context): Promise<vo
     pathParams: { appId },
     request,
   } = ctx;
-
+  const { AppMember } = await getAppDB(appId);
   const email = request.body.email.toLowerCase();
 
   const app = await App.findByPk(appId, {

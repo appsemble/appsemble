@@ -5,13 +5,14 @@ import {
   getS3File,
 } from '@appsemble/node-utils';
 
-import { Asset } from '../models/index.js';
+import { getAppDB } from '../models/index.js';
 
 export async function getAppAsset({
   app,
   context: ctx,
   id: assetId,
 }: GetAppAssetParams): Promise<AppAsset> {
+  const { Asset } = await getAppDB(app.id!);
   const asset =
     (await Asset.findOne({
       where: {

@@ -1,7 +1,14 @@
 import { writeFile } from 'node:fs/promises';
 
 import { getS3FileBuffer, readFixture, resolveFixture } from '@appsemble/node-utils';
-import { createServer, createTestUser, models, setArgv } from '@appsemble/server';
+import {
+  createServer,
+  createTestDBWithUser,
+  createTestUser,
+  decrypt,
+  models,
+  setArgv,
+} from '@appsemble/server';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { ISODateTimePattern } from '@appsemble/utils';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
@@ -23,20 +30,14 @@ import { authorizeCLI } from './testUtils.js';
 
 const {
   App,
-  AppBlockStyle,
   AppCollection,
   AppCollectionApp,
   AppMessages,
-  AppOAuth2Secret,
-  AppSamlSecret,
   AppScreenshot,
-  AppServiceSecret,
-  AppVariable,
-  Asset,
   BlockVersion,
   Organization,
   OrganizationMember,
-  Resource,
+  getAppDB,
 } = models;
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 let user: models.User;
@@ -157,8 +158,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -205,6 +204,7 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -334,8 +334,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -382,6 +380,7 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -437,6 +436,10 @@ describe('app', () => {
         'apps:write resources:write assets:write',
         testApp,
       );
+      const dbUser = 'app-admin';
+      const dbPassword = 'app-password';
+      const dbName = 'app-db';
+      const appDB = await createTestDBWithUser({ dbUser, dbPassword, dbName });
       await publishApp({
         path: resolveFixture('apps/test'),
         organization: organization.id,
@@ -447,6 +450,10 @@ describe('app', () => {
         iconBackground: '#ffffff',
         // Define context
         context: 'test',
+        // Provide db params
+        // Need to be dynamic in tests because we create a database to connect to
+        ...appDB,
+        dbPassword,
       });
       vi.useFakeTimers();
       const app = (await App.findOne())!;
@@ -505,8 +512,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": "test",
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#000000",
@@ -551,8 +556,11 @@ describe('app', () => {
         }
       `,
       );
+      expect(app.get()).toStrictEqual(expect.objectContaining(appDB));
+      expect(decrypt(app.dbPassword, argv.aesSecret)).toBe(dbPassword);
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -680,8 +688,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -727,6 +733,7 @@ describe('app', () => {
       expect(app.maskableIcon).toStrictEqual(
         await readFixture('apps/test/variants/tux/maskable-icon.png'),
       );
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe('.tux{color:rgb(1 2 3)}');
       const appScreenshot = (await AppScreenshot.findOne())!;
@@ -806,7 +813,7 @@ describe('app', () => {
       vi.useFakeTimers();
 
       const app = (await App.findOne({
-        attributes: ['scimEnabled', 'scimToken', 'sslKey', 'sslCertificate'],
+        attributes: ['id', 'scimEnabled', 'scimToken', 'sslKey', 'sslCertificate'],
         where: {
           id: 1,
         },
@@ -824,11 +831,11 @@ describe('app', () => {
         sslCertificate: 'certificate',
       });
 
+      const { AppOAuth2Secret, AppSamlSecret, AppServiceSecret, AppVariable } = await getAppDB(
+        app.id,
+      );
       const appVariables = await AppVariable.findAll({
         attributes: ['name', 'value'],
-        where: {
-          AppId: 1,
-        },
       });
 
       expect(appVariables[0].toJSON()).toStrictEqual({
@@ -843,9 +850,6 @@ describe('app', () => {
 
       const appServiceSecret = (await AppServiceSecret.findOne({
         attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect(appServiceSecret.toJSON()).toStrictEqual({
@@ -866,9 +870,6 @@ describe('app', () => {
           'entityId',
           'ssoUrl',
         ],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect(appSamlSecret.toJSON()).toStrictEqual({
@@ -896,9 +897,6 @@ describe('app', () => {
           'clientId',
           'clientSecret',
         ],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect({
@@ -1034,8 +1032,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -1082,6 +1078,7 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -1204,8 +1201,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -1252,6 +1247,7 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -1376,8 +1372,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": "test",
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#000000",
@@ -1424,6 +1418,7 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -1553,8 +1548,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -1600,6 +1593,7 @@ describe('app', () => {
       expect(app.maskableIcon).toStrictEqual(
         await readFixture('apps/test/variants/tux/maskable-icon.png'),
       );
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe('.tux{color:rgb(1 2 3)}');
       const appScreenshot = (await AppScreenshot.findOne())!;
@@ -1695,11 +1689,11 @@ describe('app', () => {
         sslCertificate: 'certificate',
       });
 
+      const { AppOAuth2Secret, AppSamlSecret, AppServiceSecret, AppVariable } = await getAppDB(
+        app.id,
+      );
       const appVariables = await AppVariable.findAll({
         attributes: ['name', 'value'],
-        where: {
-          AppId: 1,
-        },
       });
 
       expect(appVariables[0].toJSON()).toStrictEqual({
@@ -1714,9 +1708,6 @@ describe('app', () => {
 
       const appServiceSecret = (await AppServiceSecret.findOne({
         attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect(appServiceSecret.toJSON()).toStrictEqual({
@@ -1737,9 +1728,6 @@ describe('app', () => {
           'entityId',
           'ssoUrl',
         ],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect(appSamlSecret.toJSON()).toStrictEqual({
@@ -1767,9 +1755,6 @@ describe('app', () => {
           'clientId',
           'clientSecret',
         ],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect({
@@ -1857,8 +1842,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#fff999",
@@ -1940,8 +1923,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": false,
           "hasMaskableIcon": false,
           "iconBackground": "#ffffff",
@@ -1994,55 +1975,51 @@ describe('app', () => {
       ).rejects.toThrow('is not a known block type');
       vi.useFakeTimers();
       await app.reload();
-      expect(app.dataValues).toMatchInlineSnapshot(`
+      expect(app).toMatchInlineSnapshot(`
         {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
-          "containers": null,
+          "OrganizationName": undefined,
           "controllerCode": null,
           "controllerImplementations": null,
-          "coreStyle": null,
-          "created": 1970-01-01T00:00:00.000Z,
+          "coreStyle": undefined,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
-          "deleted": null,
           "demoMode": false,
           "displayAppMemberName": false,
           "displayInstallationPrompt": false,
           "domain": null,
-          "emailHost": null,
           "emailName": null,
-          "emailPassword": null,
-          "emailPort": 587,
-          "emailSecure": true,
-          "emailUser": null,
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "icon": null,
-          "iconBackground": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
           "id": 1,
           "locked": "unlocked",
-          "maskableIcon": null,
+          "messages": undefined,
           "path": "test-app",
-          "registry": null,
-          "scimEnabled": false,
-          "scimToken": null,
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
           "sentryDsn": null,
           "sentryEnvironment": null,
-          "sharedStyle": null,
+          "sharedStyle": undefined,
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
-          "sslCertificate": null,
-          "sslKey": null,
           "template": false,
-          "updated": 1970-01-01T00:00:00.000Z,
-          "vapidPrivateKey": "b",
-          "vapidPublicKey": "a",
+          "version": -1,
           "visibility": "public",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        ",
         }
       `);
     });
@@ -2083,55 +2060,51 @@ describe('app', () => {
       expect(app.dataValues).toStrictEqual(
         expect.objectContaining({ ...app.dataValues, ...patches }),
       );
-      expect(app.dataValues).toMatchInlineSnapshot(`
+      expect(app).toMatchInlineSnapshot(`
         {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
-          "containers": null,
+          "OrganizationName": undefined,
           "controllerCode": null,
           "controllerImplementations": null,
-          "coreStyle": null,
-          "created": 1970-01-01T00:00:00.000Z,
+          "coreStyle": undefined,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
-          "deleted": null,
           "demoMode": true,
           "displayAppMemberName": false,
           "displayInstallationPrompt": false,
           "domain": null,
-          "emailHost": null,
           "emailName": null,
-          "emailPassword": null,
-          "emailPort": 587,
-          "emailSecure": true,
-          "emailUser": null,
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "icon": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
           "iconBackground": "#FFFFFF",
+          "iconUrl": null,
           "id": 1,
           "locked": "fullLock",
-          "maskableIcon": null,
+          "messages": undefined,
           "path": "updated-path",
-          "registry": null,
-          "scimEnabled": false,
-          "scimToken": null,
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
           "sentryDsn": null,
           "sentryEnvironment": null,
-          "sharedStyle": null,
+          "sharedStyle": undefined,
           "showAppDefinition": true,
           "showAppsembleLogin": true,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
-          "sslCertificate": null,
-          "sslKey": null,
           "template": true,
-          "updated": 1970-01-01T00:00:00.000Z,
-          "vapidPrivateKey": "b",
-          "vapidPublicKey": "a",
+          "version": -1,
           "visibility": "private",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        ",
         }
       `);
     });

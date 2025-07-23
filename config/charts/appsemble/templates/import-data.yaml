@@ -19,8 +19,6 @@ spec:
       initContainers:
         - name: {{ include "appsemble.fullname" . }}-download-data
           image: alpine:latest
-          securityContext:
-            readOnlyRootFilesystem: true
           command: [ "/bin/sh", "-c" ]
           args:
             - |
@@ -50,7 +48,7 @@ spec:
             - name: S3_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: { { .Values.importData.remoteStorage.existingAccessKeySecret } }
+                  name: {{ .Values.importData.remoteStorage.existingAccessKeySecret }}
                   key: secretAccessKey
           volumeMounts:
             - name: shared-data

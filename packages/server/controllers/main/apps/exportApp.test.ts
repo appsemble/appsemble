@@ -15,10 +15,9 @@ import {
   AppMessages,
   AppReadme,
   AppScreenshot,
-  Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -87,8 +86,8 @@ describe('exportApp', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
     });
+    const { Resource } = await getAppDB(appWithResources.id);
     await Resource.create({
-      AppId: appWithResources.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
@@ -118,8 +117,8 @@ describe('exportApp', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
     });
+    const { Asset } = await getAppDB(app.id);
     await Asset.create({
-      AppId: app.id,
       filename: 'icon.png',
       mime: 'image/png',
       data: await readFixture('nodejs-logo.png'),
@@ -526,8 +525,8 @@ describe('exportApp', () => {
       vapidPrivateKey: 'b',
     });
 
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      AppId: app.id,
       ...getCompressedFileMeta({ mime: 'image/png', filename: 'nodejs-logo.png' }),
     });
 
@@ -636,8 +635,8 @@ describe('exportApp', () => {
       language: 'en',
       messages: [{ test: 'test' }],
     });
+    const { Resource } = await getAppDB(appWithResources.id);
     await Resource.create({
-      AppId: appWithResources.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });

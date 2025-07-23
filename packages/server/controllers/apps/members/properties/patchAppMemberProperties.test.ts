@@ -7,8 +7,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -74,16 +74,17 @@ describe('patchAppMemberProperties', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+
     const owner = await createTestAppMember(app.id);
     authorizeAppMember(app, owner);
+    const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
       email: 'test2@example.com',
-      AppId: app.id,
       role: PredefinedAppRole.Member,
     });
 
     const response = await request.patch(
-      `/api/app-members/${appMember.id}/properties`,
+      `/api/apps/${app.id}/app-members/${appMember.id}/properties`,
       createFormData({ properties: { test: 'Property', foo: 'bar' } }),
     );
 
@@ -121,15 +122,15 @@ describe('patchAppMemberProperties', () => {
     });
     await createTestAppMember(app.id);
     authorizeAppMember(app);
+    const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
       email: 'test2@example.com',
-      AppId: app.id,
       role: PredefinedAppRole.Member,
       properties: { foo: 'bar', number: 33 },
     });
 
     const { status } = await request.patch(
-      `/api/app-members/${appMember.id}/properties`,
+      `/api/apps/${app.id}/app-members/${appMember.id}/properties`,
       createFormData({ properties: { foo: 'test' } }),
     );
     expect(status).toBe(200);

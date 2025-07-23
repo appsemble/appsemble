@@ -4,7 +4,7 @@ import { extension } from 'mime-types';
 import { type SendMailOptions } from 'nodemailer';
 
 import { type ServerActionParameters } from './index.js';
-import { Asset } from '../../models/index.js';
+import { getAppDB } from '../../models/index.js';
 import { iterTable } from '../database.js';
 import { renderEmail } from '../email/renderEmail.js';
 
@@ -51,6 +51,7 @@ export async function email({
   mailer,
   options,
 }: ServerActionParameters<EmailActionDefinition>): Promise<any> {
+  const { Asset } = await getAppDB(app.id);
   const remapperContext = await getRemapperContext(
     app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
@@ -102,7 +103,7 @@ export async function email({
   }
   if (assetSelectors.length) {
     for await (const asset of iterTable(Asset, {
-      where: { AppId: app.id, id: assetSelectors.map((selector) => selector.target) },
+      where: { id: assetSelectors.map((selector) => selector.target) },
     })) {
       const attachment = assetSelectors.find((selector) => selector.target === asset.id);
       // @ts-expect-error 2345 argument of type is not assignable to parameter of type

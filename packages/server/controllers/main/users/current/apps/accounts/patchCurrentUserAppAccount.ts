@@ -3,15 +3,7 @@ import { type AppAccount } from '@appsemble/types';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 
-import {
-  App,
-  AppMember,
-  AppOAuth2Authorization,
-  AppOAuth2Secret,
-  AppSamlAuthorization,
-  AppSamlSecret,
-  Organization,
-} from '../../../../../../models/index.js';
+import { App, type AppMember, getAppDB, Organization } from '../../../../../../models/index.js';
 import { applyAppMessages, parseLanguage } from '../../../../../../utils/app.js';
 import { getAppMemberInfo, getAppMemberSSO } from '../../../../../../utils/appMember.js';
 
@@ -23,7 +15,6 @@ export async function patchCurrentUserAppAccount(ctx: Context): Promise<void> {
     },
     user: authSubject,
   } = ctx;
-
   const {
     baseLanguage,
     language,
@@ -54,13 +45,20 @@ export async function patchCurrentUserAppAccount(ctx: Context): Promise<void> {
       ...includeOptions,
     ],
   });
-
   assertKoaCondition(app != null, ctx, 404, 'App not found');
+
+  const {
+    AppMember,
+    AppOAuth2Authorization,
+    AppOAuth2Secret,
+    AppSamlAuthorization,
+    AppSamlSecret,
+  } = await getAppDB(appId);
 
   const appMember = await AppMember.findOne({
     where: {
       AppId: appId,
-      UserId: authSubject!.id,
+      userId: authSubject!.id,
     },
     include: [
       {
@@ -102,7 +100,7 @@ export async function patchCurrentUserAppAccount(ctx: Context): Promise<void> {
 
   ctx.body = {
     app: app.toJSON(),
-    appMemberInfo: getAppMemberInfo(appMember),
+    appMemberInfo: getAppMemberInfo(appId, appMember),
     sso: getAppMemberSSO(appMember),
   } as AppAccount;
 }

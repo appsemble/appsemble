@@ -8,26 +8,26 @@ import { type WhereOptions } from 'sequelize';
 import { argv } from './argv.js';
 import { getGravatarUrl } from './gravatar.js';
 import { odataFilterToSequelize } from './odata.js';
-import { AppMember, Group, GroupMember } from '../models/index.js';
+import { type AppMember, getAppDB } from '../models/index.js';
 
-export function getAppMemberPicture(appMember: AppMember): string {
+export function getAppMemberPicture(appId: number, appMember: AppMember): string {
   return appMember.picture
     ? String(
         new URL(
-          `/api/app-members/${appMember.id}/picture?updated=${appMember.updated.getTime()}`,
+          `/api/apps/${appId}/app-members/${appMember.id}/picture?updated=${appMember.updated.getTime()}`,
           argv.host,
         ),
       )
     : getGravatarUrl(appMember.email);
 }
 
-export function getAppMemberInfo(appMember: AppMember): AppMemberInfo {
+export function getAppMemberInfo(appId: number, appMember: AppMember): AppMemberInfo {
   return {
     sub: appMember.id,
     name: appMember.name,
     email: appMember.email,
     email_verified: appMember.emailVerified,
-    picture: getAppMemberPicture(appMember),
+    picture: getAppMemberPicture(appId, appMember),
     locale: appMember.locale,
     zoneinfo: appMember.timezone,
     properties: appMember.properties,
@@ -36,14 +36,15 @@ export function getAppMemberInfo(appMember: AppMember): AppMemberInfo {
   } as AppMemberInfo;
 }
 
-export async function getAppMemberGroups(id: string, appId: number): Promise<GroupType[]> {
+export async function getAppMemberGroups(appId: number, id: string): Promise<GroupType[]> {
+  const { Group, GroupMember } = await getAppDB(appId);
   const appMemberGroups = await Group.findAll({
-    where: { AppId: appId },
     include: [
       {
         model: GroupMember,
         where: { AppMemberId: id },
         required: true,
+        as: 'Members',
       },
     ],
   });
@@ -54,10 +55,11 @@ export async function getAppMemberGroups(id: string, appId: number): Promise<Gro
   }));
 }
 
-export async function getAppMemberInfoById(id: string): Promise<AppMemberInfo> {
+export async function getAppMemberInfoById(appId: number, id: string): Promise<AppMemberInfo> {
+  const { AppMember } = await getAppDB(appId);
   const appMember = await AppMember.findByPk(id);
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-  return appMember ? getAppMemberInfo(appMember) : null;
+  return appMember ? getAppMemberInfo(appId, appMember) : null;
 }
 
 export function parseAppMemberProperties(properties: any): Record<string, any> {
@@ -127,5 +129,5 @@ function renameMemberOData(name: string): string {
 }
 
 export function parseMemberFilterQuery(filter: string): WhereOptions {
-  return odataFilterToSequelize(filter ?? '', AppMember, renameMemberOData);
+  return odataFilterToSequelize(filter ?? '', 'AppMember', renameMemberOData);
 }

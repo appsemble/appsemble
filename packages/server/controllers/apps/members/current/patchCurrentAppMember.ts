@@ -6,7 +6,7 @@ import {
 } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember } from '../../../../models/index.js';
+import { App, type AppMember, getAppDB } from '../../../../models/index.js';
 import { getAppMemberInfoById, parseAppMemberProperties } from '../../../../utils/appMember.js';
 
 export async function patchCurrentAppMember(ctx: Context): Promise<void> {
@@ -17,13 +17,12 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
     },
     user: authSubject,
   } = ctx;
-
   const app = await App.findOne({
     where: { id: appId },
   });
-
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
+  const { AppMember } = await getAppDB(appId);
   const appMember = await AppMember.findByPk(authSubject!.id);
 
   assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
@@ -56,5 +55,5 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
     }
   }
 
-  ctx.body = await getAppMemberInfoById(authSubject!.id);
+  ctx.body = await getAppMemberInfoById(appId, authSubject!.id);
 }

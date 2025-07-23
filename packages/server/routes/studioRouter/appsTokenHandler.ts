@@ -1,6 +1,6 @@
 import querystring from 'node:querystring';
 
-import { logger } from '@appsemble/node-utils';
+import { assertKoaCondition, logger } from '@appsemble/node-utils';
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
@@ -9,12 +9,9 @@ import raw from 'raw-body';
 
 import {
   App,
-  AppMember,
-  Group,
-  GroupMember,
-  OAuth2AuthorizationCode,
+  type AppMember as AppMemberType,
+  getAppDB,
   OAuth2ClientCredentials,
-  transactional,
 } from '../../models/index.js';
 import { argv } from '../../utils/argv.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
@@ -79,9 +76,13 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
         if (!match) {
           throw new GrantError('invalid_client');
         }
+        const appId = Number(match[1]);
+        const app = await App.findByPk(appId);
+        assertKoaCondition(app != null, ctx, 404, 'App not found');
+        const { OAuth2AuthorizationCode } = await getAppDB(appId);
         const authorizationCode = await OAuth2AuthorizationCode.findOne({
           attributes: ['expires', 'scope', 'AppMemberId'],
-          where: { code, AppId: match[1], redirectUri },
+          where: { code, redirectUri },
         });
         if (!authorizationCode) {
           throw new GrantError('invalid_client');
@@ -158,8 +159,9 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           username,
         } = checkTokenRequestParameters(query, ['client_id', 'username', 'password', 'scope']);
         const appId = Number(clientId.replace('app:', ''));
+        const { AppMember } = await getAppDB(appId);
         const appMember = await AppMember.findOne({
-          where: { AppId: appId, email: username.toLowerCase() },
+          where: { email: username.toLowerCase() },
           attributes: ['id', 'password'],
         });
 
@@ -182,24 +184,16 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
         } = checkTokenRequestParameters(query, ['client_id', 'role', 'scope', 'refresh_token']);
 
         const appId = Number(clientId.replace('app:', ''));
+        const { AppMember, Group, GroupMember, sequelize } = await getAppDB(appId);
         const app = await App.findByPk(appId, {
           attributes: ['demoMode', 'definition', 'id', 'OrganizationId'],
-          include: [
-            {
-              model: AppMember,
-              where: {
-                demo: true,
-              },
-              required: false,
-            },
-          ],
         });
 
         if (!app || !app.demoMode) {
           throw new GrantError('invalid_client');
         }
 
-        let appMember: Pick<AppMember, 'id'> | null = null;
+        let appMember: Pick<AppMemberType, 'id'> | null = null;
         if (appMemberId === '') {
           logger.verbose('Demo login: Creating new demo user');
 
@@ -213,12 +207,11 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
             throw new GrantError('invalid_request');
           }
 
-          await transactional(async (transaction) => {
+          await sequelize.transaction(async (transaction) => {
             const identifier = Math.random().toString(36).slice(2);
             const demoEmail = `demo-${identifier}@example.com`;
             appMember = await AppMember.create(
               {
-                AppId: appId,
                 role,
                 email: demoEmail,
                 emailVerified: true,
@@ -228,12 +221,11 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
               },
               { transaction },
             );
-            const appGroups = await Group.findAll({ where: { AppId: app.id } });
+            const appGroups = await Group.findAll();
             await GroupMember.bulkCreate(
               appGroups.map((group) => ({
                 GroupId: group.id,
                 demo: true,
-                AppId: app.id,
                 AppMemberId: appMember!.id,
               })),
               { transaction },

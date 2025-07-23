@@ -3,7 +3,7 @@ import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, AppMember } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { getAppMemberInfo } from '../../../../utils/appMember.js';
 
 export async function queryAppDemoMembers(ctx: Context): Promise<void> {
@@ -11,7 +11,7 @@ export async function queryAppDemoMembers(ctx: Context): Promise<void> {
     pathParams: { appId },
     queryParams: { roles },
   } = ctx;
-
+  const { AppMember } = await getAppDB(appId);
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId', 'definition', 'demoMode'],
   });
@@ -32,11 +32,10 @@ export async function queryAppDemoMembers(ctx: Context): Promise<void> {
 
   const appMembers = await AppMember.findAll({
     where: {
-      AppId: appId,
       demo: true,
       ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
     },
   });
 
-  ctx.body = appMembers.map((appMember) => getAppMemberInfo(appMember));
+  ctx.body = appMembers.map((appMember) => getAppMemberInfo(appId, appMember));
 }
