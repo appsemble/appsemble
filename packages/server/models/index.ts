@@ -335,9 +335,12 @@ export async function initAppDB(
         ? decrypt(app.dbPassword, argv.aesSecret || 'Local Appsemble development AES secret')
         : argv.databasePassword,
       username: app.dbUser || argv.databaseUser,
-      ssl: false,
       logging: logSQL,
       dialect: 'postgres',
+      dialectOptions: {
+        // TODO infer from app db settings instead if argv
+        ssl: argv.databaseSsl && { rejectUnauthorized: false },
+      },
     });
 
     const models: AppModels = {
