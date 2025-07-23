@@ -17,6 +17,7 @@ export function logSQL(statement: string): void {
 }
 
 export function handleDBError(error: Error): never {
+  logger.error(error);
   const original = (error as ConnectionError).original as any;
   if (error instanceof AccessDeniedError) {
     throw new AppsembleError(`AccessDeniedError: ${original.sqlMessage}`);
