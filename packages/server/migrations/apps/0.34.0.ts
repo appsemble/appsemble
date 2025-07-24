@@ -16,7 +16,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     return;
   }
 
-  logger.info('Creating tables from production database snapshot from 0.32.3');
+  logger.info('Creating tables from production database snapshot from 0.33.8');
   await queryInterface.createTable(
     'AppBlockStyle',
     {
