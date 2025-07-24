@@ -3,7 +3,7 @@ parameter. You can add event data objects, a list of strings, or both!
 
 ### Images
 
-![Word cloud screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.34.1-test.5/config/assets/wordcloud.png)
+![Word cloud screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.34.1-test.6/config/assets/wordcloud.png)
 
 ### Notes
 
