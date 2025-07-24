@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/map",
-  "version": "0.34.1-test.3",
+  "version": "0.34.1-test.4",
   "private": true,
   "description": "A block that displays a map powered by OpenStreetMap that can be used to display and interact with markers.",
   "homepage": "https://appsemble.app",
@@ -17,7 +17,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.34.1-test.3",
+    "@appsemble/sdk": "0.34.1-test.4",
     "@types/leaflet": "^1.0.0",
     "@wesselkuipers/leaflet.markercluster": "^1.0.0",
     "leaflet": "~1.5.0"
