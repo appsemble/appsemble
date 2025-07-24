@@ -10,10 +10,10 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "dependencies": {
-    "@appsemble/sdk": "0.34.1-test.1",
-    "@appsemble/preact": "0.34.1-test.1",
-    "@appsemble/preact-components": "0.34.1-test.1",
-    "@appsemble/utils": "0.34.1-test.1",
+    "@appsemble/sdk": "0.34.1-test.2",
+    "@appsemble/preact": "0.34.1-test.2",
+    "@appsemble/preact-components": "0.34.1-test.2",
+    "@appsemble/utils": "0.34.1-test.2",
     "preact": "^10.0.0"
   },
   "name": "@appsemble/paginator",
@@ -25,5 +25,5 @@
     "test": "vitest"
   },
   "type": "module",
-  "version": "0.34.1-test.1"
+  "version": "0.34.1-test.2"
 }
