@@ -32,7 +32,9 @@ import * as m0_32_3_test_2 from './0.32.3-test.2.js';
 import * as m0_33_6 from './0.33.6.js';
 import * as m0_33_7 from './0.33.7.js';
 import * as m0_33_8 from './0.33.8.js';
+import * as m0_33_9 from './0.33.9.js';
 import * as m0_34_0 from './0.34.0.js';
+import * as m0_34_1 from './0.34.1.js';
 import { type Migration } from '../../utils/migrate.js';
 
 export const migrations: Migration[] = [
@@ -70,5 +72,7 @@ export const migrations: Migration[] = [
   m0_33_6,
   m0_33_7,
   m0_33_8,
+  m0_33_9,
   m0_34_0,
+  m0_34_1,
 ];

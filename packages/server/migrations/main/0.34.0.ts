@@ -269,7 +269,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
   logger.info('Migrate app data to app databases');
   const [apps] = await queryInterface.sequelize.query(
-    'SELECT "id" FROM "App" WHERE "deleted" IS NULL ORDER BY "id"',
+    'SELECT "id" FROM "App" WHERE "deleted" IS NULL AND "migratedAt" IS NULL ORDER BY "id"',
     { transaction },
   );
 
@@ -297,6 +297,10 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       }
 
       await appTransaction.commit();
+      await db.query('UPDATE "App" SET "migratedAt" = NOW() WHERE "id" = $1', {
+        bind: [app.id],
+        transaction,
+      });
       await appDB.close();
     } catch (error) {
       await appTransaction.rollback();
@@ -905,7 +909,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   );
 
   const [apps] = await queryInterface.sequelize.query(
-    'SELECT "id" FROM "App" WHERE "deleted" IS NULL ORDER BY "id"',
+    'SELECT "id" FROM "App" WHERE "deleted" IS NULL AND "migratedAt" IS NOT NULL ORDER BY "id"',
     {
       transaction,
     },
@@ -935,6 +939,10 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       }
 
       await appTransaction.commit();
+      await db.query('UPDATE "App" SET "migratedAt" = NULL WHERE "id" = $1', {
+        bind: [app.id],
+        transaction,
+      });
       await appDB.close();
     } catch (error) {
       await appTransaction.rollback();
