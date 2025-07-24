@@ -10,16 +10,11 @@ export const key = '0.33.9';
  * Helps with tracking app migration status in 0.34.0
  */
 
-export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
+export async function up(_transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
   logger.info('Add column `migratedAt` to `App` table');
-  await queryInterface.addColumn(
-    'App',
-    'migratedAt',
-    { type: DataTypes.DATE, allowNull: true },
-    { transaction },
-  );
+  await queryInterface.addColumn('App', 'migratedAt', { type: DataTypes.DATE, allowNull: true });
 }
 
 /**
@@ -27,9 +22,9 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Remove column `migratedAt` from `App` table
  */
 
-export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
+export async function down(_transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
   logger.info('Remove column `migratedAt` from `App` table');
-  await queryInterface.removeColumn('App', 'migratedAt', { transaction });
+  await queryInterface.removeColumn('App', 'migratedAt');
 }
