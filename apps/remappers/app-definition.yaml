@@ -1,5 +1,5 @@
 name: Remappers
-description: This app contains every Remapper currently in Appsemble as of (0.33.12)
+description: This app contains every Remapper currently in Appsemble as of (0.33.11)
 defaultPage: Introduction
 security:
   default:
@@ -38,7 +38,7 @@ resources:
           type: string
 
 anchors:
-  - &block-version 0.33.12
+  - &block-version 0.33.11
 
 pages:
   - name: Introduction
