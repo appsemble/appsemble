@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/controller",
-  "version": "0.34.1",
+  "version": "0.34.2",
   "private": true,
   "description": "A controller for the controller-demo app.",
   "homepage": "https://appsemble.app",
@@ -17,6 +17,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.34.1"
+    "@appsemble/sdk": "0.34.2"
   }
 }

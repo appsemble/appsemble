@@ -30,7 +30,7 @@ Here’s an example of how you can use `onLoad` to trigger an action:
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.34.1
+    version: 0.34.2
     actions:
       onLoad:
         type: resource.query
@@ -46,7 +46,7 @@ pages:
   - name: Create Person
     blocks:
       - type: form
-        version: 0.34.1
+        version: 0.34.2
         actions:
           onSubmit:
             remapBefore: { null.strip }
@@ -61,7 +61,7 @@ pages:
   - name: Person List
     blocks:
       - type: markdown
-        version: 0.34.1
+        version: 0.34.2
         parameters:
           content: |
             ## Person list
@@ -74,7 +74,7 @@ pages:
   - name: Error Page
     blocks:
       - type: markdown
-        version: 0.34.1
+        version: 0.34.2
         parameters:
           content: |
             Something went wrong creating this resource :/
