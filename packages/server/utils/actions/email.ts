@@ -2,6 +2,7 @@ import { defaultLocale, type EmailActionDefinition, remap } from '@appsemble/lan
 import { getRemapperContext, getS3FileBuffer, throwKoaError } from '@appsemble/node-utils';
 import { extension } from 'mime-types';
 import { type SendMailOptions } from 'nodemailer';
+import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { Asset } from '../../models/index.js';
@@ -101,8 +102,17 @@ export async function email({
     }
   }
   if (assetSelectors.length) {
+    const commonQuery = {
+      [Op.in]: assetSelectors.map((selector) => selector.target),
+    };
     for await (const asset of iterTable(Asset, {
-      where: { AppId: app.id, id: assetSelectors.map((selector) => selector.target) },
+      where: {
+        AppId: app.id,
+        [Op.or]: {
+          id: commonQuery,
+          name: commonQuery,
+        },
+      },
     })) {
       const attachment = assetSelectors.find((selector) => selector.target === asset.id);
       // @ts-expect-error 2345 argument of type is not assignable to parameter of type
