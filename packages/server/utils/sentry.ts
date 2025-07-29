@@ -1,5 +1,6 @@
 import { version } from '@appsemble/node-utils';
-import { init } from '@sentry/node';
+import * as Sentry from '@sentry/node';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { matcher } from 'matcher';
 
 import { argv } from './argv.js';
@@ -64,6 +65,14 @@ export function getSentryClientSettings(
  */
 export function configureSentry(): void {
   if (argv.sentryDsn) {
-    init({ dsn: argv.sentryDsn, environment: argv.sentryEnvironment, release: version });
+    Sentry.init({
+      dsn: argv.sentryDsn,
+      environment: argv.sentryEnvironment,
+      release: version,
+      integrations: [nodeProfilingIntegration(), Sentry.postgresIntegration()],
+      tracesSampleRate: 1,
+      profileSessionSampleRate: 1,
+      profileLifecycle: 'trace',
+    });
   }
 }
