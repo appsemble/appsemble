@@ -52,5 +52,5 @@ export async function handler(): Promise<void> {
     handleDBError(error as Error);
   }
 
-  await reconcileDNS({ dryRun: true });
+  await reconcileDNS({ dryRun: false });
 }
