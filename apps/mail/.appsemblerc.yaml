@@ -2,13 +2,11 @@ context:
   development:
     organization: appsemble
     remote: http://localhost:9999
-    template: true
     visibility: public
     assets: true
     demoMode: true
   e2e:
     organization: appsemble
-    template: true
     visibility: public
     assets: true
     demoMode: true
@@ -16,13 +14,11 @@ context:
     id: 1220
     organization: appsemble
     remote: https://appsemble.app
-    template: true
     visibility: public
     assets: true
     demoMode: true
   review:
     organization: appsemble
-    template: true
     visibility: public
     assets: true
     demoMode: true
@@ -30,7 +26,6 @@ context:
     id: 1220
     organization: appsemble
     remote: https://staging.appsemble.review
-    template: true
     visibility: public
     assets: true
     demoMode: true
