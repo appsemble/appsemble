@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.3](https://gitlab.com/appsemble/appsemble/-/releases/0.34.3)] - 2025-07-29
+
+### Added
+
+- E2e: Added `loginAppAppsembleLogin` fixture.
+- E2e: Added `patchApp` fixture.
+- E2e: Added `randomTestId` fixture.
+- Types: Added types for end-to-end fixtures.
+
+### Changed
+
+- E2e: Allow assets to be uploaded together with resources.
+- E2e: Allow more options for app fixtures.
+- E2e: Rename `loginDemoApp` to `createAndLoginDemoAppMember` and make it more robust.
+
 ## \[[0.34.2](https://gitlab.com/appsemble/appsemble/-/releases/0.34.2)] - 2025-07-25
 
 ## \[[0.34.1](https://gitlab.com/appsemble/appsemble/-/releases/0.34.1)] - 2025-07-25
