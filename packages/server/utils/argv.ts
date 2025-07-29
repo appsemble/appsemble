@@ -398,6 +398,13 @@ export interface Argv {
    * default undefined
    */
   s3SecretKey: string;
+
+  /**
+   * Disable dry run for reconcile-dns command
+   *
+   * @default false
+   */
+  noDryRun: boolean;
 }
 
 const defaults: Argv = {
@@ -497,6 +504,7 @@ const defaults: Argv = {
   s3AccessKey: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   s3SecretKey: undefined,
+  noDryRun: false,
 };
 
 export const argv = { ...defaults };

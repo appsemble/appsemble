@@ -20,6 +20,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - reconcile-dns
+            - --no-dry-run
             - -vv
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
