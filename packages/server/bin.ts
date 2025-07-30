@@ -20,7 +20,6 @@ import * as start from './commands/start.js';
 import * as synchronizeTrainings from './commands/synchronizeTrainings.js';
 import './types.js';
 import { setArgv } from './utils/argv.js';
-import { configureSentry } from './utils/sentry.js';
 
 process.title = 'appsemble-server';
 
@@ -51,7 +50,6 @@ const parser = yargs()
   .middleware([
     setArgv as (...args: Parameters<typeof setArgv>) => void,
     configureLogger,
-    configureSentry,
   ])
   .command(cleanup as CommandModule)
   .command(reconcile as CommandModule)

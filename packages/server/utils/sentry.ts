@@ -62,15 +62,24 @@ export function getSentryClientSettings(
 
 /**
  * Setup Sentry server side.
+ *
+ * @param sentryDsn The Sentry DSN
  */
-export function configureSentry(): void {
-  if (argv.sentryDsn) {
+export function configureSentry({
+  sentryDsn,
+  sentryEnvironment,
+}: {
+  sentryDsn: string;
+  sentryEnvironment: string;
+}): void {
+  if (sentryDsn) {
     Sentry.init({
-      dsn: argv.sentryDsn,
-      environment: argv.sentryEnvironment,
+      dsn: sentryDsn,
+      environment: sentryEnvironment,
       release: version,
       integrations: [nodeProfilingIntegration(), Sentry.postgresIntegration()],
       tracesSampleRate: 1,
+      profilesSampleRate: 1,
       profileSessionSampleRate: 1,
       profileLifecycle: 'trace',
     });

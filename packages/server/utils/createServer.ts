@@ -12,6 +12,7 @@ import {
 } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
 import cors from '@koa/cors';
+import { startSpan } from '@sentry/node';
 import Koa, { type Context, type Middleware } from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
@@ -58,6 +59,27 @@ export async function createServer({
   app.use(loggerMiddleware());
   app.use(errorMiddleware());
   app.use(range);
+  app.use((ctx, next) =>
+    startSpan(
+      {
+        name: `${ctx.method} ${ctx.path}`,
+        op: 'http.server',
+        attributes: {
+          'http.method': ctx.method,
+          'http.url': ctx.href,
+          'http.user_agent': ctx.headers['user-agent'],
+          'user.ip': ctx.ip,
+        },
+      },
+      async () => {
+        await next();
+        return {
+          'http.status_code': ctx.status,
+          'http.response.size': ctx.length,
+        };
+      },
+    ),
+  );
 
   Object.assign(app.context, { mailer: new Mailer(argv) });
 
