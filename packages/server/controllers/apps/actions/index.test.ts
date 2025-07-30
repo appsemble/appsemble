@@ -824,6 +824,62 @@ describe('actions', () => {
       spy.mockRestore();
     });
 
+    it('should attach existing assets by name', async () => {
+      const spy = vi.spyOn(server.context.mailer, 'sendEmail');
+      const buffer = Buffer.from('test');
+      const asset = await Asset.create({
+        AppId: 1,
+        mime: 'text/plain',
+        filename: 'test.txt',
+        name: 'test',
+      });
+      await uploadS3File(`app-${1}`, asset.id, buffer);
+      const asset2 = await Asset.create({
+        AppId: 1,
+        mime: 'text/plain',
+        filename: 'test2.txt',
+      });
+      await uploadS3File(`app-${1}`, asset2.id, buffer);
+      const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
+        to: 'test@example.com',
+        body: 'Body',
+        attachments: [asset.name, asset2.id],
+      });
+
+      expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+      expect(spy).toHaveBeenCalledWith({
+        to: 'test@example.com',
+        from: 'Appsemble',
+        subject: 'Test title',
+        html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Body</p>
+</body>
+</html>
+`,
+        text: 'Body\n',
+        attachments: [
+          { content: buffer, filename: 'test.txt' },
+          { content: buffer, filename: 'test2.txt' },
+        ],
+        app: {
+          emailHost: null,
+          emailName: null,
+          emailPassword: null,
+          emailPort: 587,
+          emailSecure: true,
+          emailUser: null,
+          id: 1,
+        },
+      });
+      spy.mockRestore();
+    });
+
     it('should not attach non-existant assets', async () => {
       const spy = vi.spyOn(server.context.mailer, 'sendEmail');
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
