@@ -47,10 +47,7 @@ const parser = yargs()
     desc: 'The Sentry environment to use for error reporting. See https://sentry.io for details.',
     type: 'string',
   })
-  .middleware([
-    setArgv as (...args: Parameters<typeof setArgv>) => void,
-    configureLogger,
-  ])
+  .middleware([setArgv as (...args: Parameters<typeof setArgv>) => void, configureLogger])
   .command(cleanup as CommandModule)
   .command(reconcile as CommandModule)
   .command(cleanupResourcesAndAssets as CommandModule)
