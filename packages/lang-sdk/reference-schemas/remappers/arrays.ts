@@ -30,6 +30,15 @@ this problem, we use the \`null.strip\` remapper to remove any null values which
 array.
 `,
   },
+  'array.join': {
+    type: 'string',
+    description: `Join the items of an array using the input separator, a comma(,) is used if no separator is provided.
+
+    If the input is not an array, input is returned without any modifications.
+
+    ${schemaExample('array.join')}
+`,
+  },
   'array.unique': {
     $ref: '#/components/schemas/RemapperDefinition',
     description: `

@@ -485,6 +485,13 @@ export interface Remappers {
   'array.contains': Remapper;
 
   /**
+   * Join the items of an array using the input separator,
+   * If No separator is provided, ',' is used.
+   *
+   */
+  'array.join': string | null;
+
+  /**
    * This remapper return true if the provided string is a substring of the input string.
    *
    */

@@ -222,6 +222,13 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: ['Peter', 'Otto', 'Harry'],
   },
+  'array.join': {
+    input: ["id eq '5'", "id eq '6'", "id eq '7'"],
+    remapper: {
+      'array.join': ' or ',
+    },
+    result: "id eq '5' or id eq '6' or id eq '7'",
+  },
   'array.map': {
     input: [
       {
