@@ -73,11 +73,11 @@ afterEach(async () => {
   await dropAndCloseAllAppDBs();
 });
 
-afterAll(() => {
-  testDB.close();
+afterAll(async () => {
+  await testDB.close();
   // We need to drop the test database from the root database
   // testDB.drop() doesn't actually delete the database
-  getRootDB().query(`DROP DATABASE ${testDB.getDatabaseName()}`);
+  await getRootDB().query(`DROP DATABASE ${testDB.getDatabaseName()}`);
 });
 
 setResponseTransformer(
