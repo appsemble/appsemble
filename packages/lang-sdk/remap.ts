@@ -514,6 +514,14 @@ const mapperImplementations: MapperImplementations = {
     }
     return input.includes(remapped);
   },
+
+  'array.join'(separator, input) {
+    if (!Array.isArray(input)) {
+      return input;
+    }
+    return input.join(separator ?? undefined);
+  },
+
   'array.unique'(mapper, input, context) {
     if (!Array.isArray(input)) {
       return input;

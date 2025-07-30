@@ -1025,6 +1025,26 @@ describe('array.contains', () => {
   });
 });
 
+describe('array.join', () => {
+  runTests({
+    'should return the input if not of type array': {
+      input: { foo: 'bar' },
+      mappers: { 'array.join': null },
+      expected: { foo: 'bar' },
+    },
+    'should join the array with the default separator': {
+      input: [1, 2, 3, 4, 5],
+      mappers: { 'array.join': null },
+      expected: '1,2,3,4,5',
+    },
+    'should join the array with the provided separator': {
+      input: ["id eq '5'", "id eq '6'", "id eq '7'"],
+      mappers: { 'array.join': ' or ' },
+      expected: "id eq '5' or id eq '6' or id eq '7'",
+    },
+  });
+});
+
 describe('array.map', () => {
   runTests({
     'apply remappers to each array item': {
