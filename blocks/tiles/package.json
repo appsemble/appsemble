@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/tiles",
-  "version": "0.34.3",
+  "version": "0.34.4",
   "private": true,
   "description": "Render data in the form of colorful tiles.",
   "homepage": "https://appsemble.app",
@@ -17,7 +17,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.34.3",
+    "@appsemble/sdk": "0.34.4",
     "mini-jsx": "^4.0.0"
   }
 }

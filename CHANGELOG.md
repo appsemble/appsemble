@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.4](https://gitlab.com/appsemble/appsemble/-/releases/0.34.4)] - 2025-08-01
+
+### Added
+
+- Lang-sdk: Add new remapper `array.join` which joins an array using the provided separator.
+
+### Fixed
+
+- Server: Add email attachments from assets with names.
+
 ## \[[0.34.3](https://gitlab.com/appsemble/appsemble/-/releases/0.34.3)] - 2025-07-29
 
 ### Added
