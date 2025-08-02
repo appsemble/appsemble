@@ -62,6 +62,7 @@ WORKDIR /app
 # https://www.npmjs.com/package/chalk#chalksupportscolor
 ENV FORCE_COLOR 1
 ENV NODE_ENV production
+ENV NODE_OPTIONS="--enable-source-maps --import /app/packages/server/instrumentation.mjs"
 USER node
 ENTRYPOINT ["appsemble-server"]
 CMD ["start"]

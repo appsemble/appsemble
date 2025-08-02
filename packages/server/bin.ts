@@ -20,7 +20,6 @@ import * as start from './commands/start.js';
 import * as synchronizeTrainings from './commands/synchronizeTrainings.js';
 import './types.js';
 import { setArgv } from './utils/argv.js';
-import { configureSentry } from './utils/sentry.js';
 
 process.title = 'appsemble-server';
 
@@ -48,11 +47,7 @@ const parser = yargs()
     desc: 'The Sentry environment to use for error reporting. See https://sentry.io for details.',
     type: 'string',
   })
-  .middleware([
-    setArgv as (...args: Parameters<typeof setArgv>) => void,
-    configureLogger,
-    configureSentry,
-  ])
+  .middleware([setArgv as (...args: Parameters<typeof setArgv>) => void, configureLogger])
   .command(cleanup as CommandModule)
   .command(reconcile as CommandModule)
   .command(cleanupResourcesAndAssets as CommandModule)
