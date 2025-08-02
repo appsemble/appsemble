@@ -13,7 +13,7 @@ For example:
 
 ### Images
 
-![Form screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.34.4/config/assets/form.png)
+![Form screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.34.5-test.0/config/assets/form.png)
 
 ### Notes
 

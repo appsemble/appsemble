@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.34.4
-appVersion: 0.34.4
+version: 0.34.5-test.0
+appVersion: 0.34.5-test.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,12 +31,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Lang-sdk: Add new remapper array.join which joins an array using
-        the provided separator."
-    - kind: fixed
-      description: "Server: Add email attachments from assets with names."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
