@@ -1,20 +1,6 @@
 name: Notes
 description: Keep personal notes
 defaultPage: Notes
-security:
-  default:
-    role: User
-    policy: everyone
-  roles:
-    User:
-      description: A user who keeps their own notes.
-      permissions:
-        - $resource:note:own:update
-        - $resource:note:own:patch
-        - $resource:note:own:query
-        - $resource:note:own:get
-        - $resource:note:own:delete
-        - $resource:note:create
 
 resources:
   note:
@@ -30,6 +16,21 @@ resources:
         body:
           title: Body
           type: string
+
+security:
+  default:
+    role: User
+    policy: everyone
+  roles:
+    User:
+      description: A user who keeps their own notes.
+      permissions:
+        - $resource:note:own:update
+        - $resource:note:own:patch
+        - $resource:note:own:query
+        - $resource:note:own:get
+        - $resource:note:own:delete
+        - $resource:note:create
 
 pages:
   - name: Notes
