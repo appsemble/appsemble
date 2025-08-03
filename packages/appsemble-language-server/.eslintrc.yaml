@@ -1,0 +1,4 @@
+extends:
+  - remcohaszing/web
+rules:
+  no-console: off

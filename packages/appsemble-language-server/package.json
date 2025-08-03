@@ -1,0 +1,62 @@
+{
+  "name": "@appsemble/appsemble-language-server",
+  "version": "0.36.5-test.6",
+  "private": true,
+  "description": "A language server for Appsemble app definitions",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "languageserver",
+    "low-code",
+    "lowcode",
+    "lsp"
+  ],
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/appsemble-language-server"
+  },
+  "files": [
+    "**/*.d.ts",
+    "**/*.js",
+    "!*.config.js",
+    "!**/*.test.js",
+    "!**/*.test.d.ts"
+  ],
+  "bin": "appsemble-language-server",
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
+  },
+  "scripts": {
+    "test": "vitest",
+    "start": "tsx server.ts",
+    "prepack": "tsc --noEmit false"
+  },
+  "dependencies": {
+    "@appsemble/lang-sdk": "0.36.5-test.6",
+    "@vscode/l10n": "^0.0.18",
+    "jsonschema": "^1.5.0",
+    "request-light": "~0.5.7",
+    "type-fest": "^4.0.0",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-protocol": "^3.17.5",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-languageserver-types": "^3.17.5",
+    "vscode-uri": "^3.1.0",
+    "yaml-language-server": "^1.18.0"
+  },
+  "devDependencies": {
+    "vitest": "2.1.9"
+  }
+}
