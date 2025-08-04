@@ -92,10 +92,18 @@ export function ServiceWorkerRegistrationProvider({
     navigator.serviceWorker?.addEventListener('controllerchange', () => window.location.reload());
   }, []);
 
-  const update = useCallback(() => {
+  const update = useCallback(async () => {
+    if ('caches' in window) {
+      const cacheKeys = await caches.keys();
+      for (const name of cacheKeys) {
+        await caches.delete(name);
+      }
+    }
+
     serviceWorkerRegistrationPromise
       .then((reg) => reg?.update())
-      .catch((error) => setServiceWorkerError(error));
+      .catch((error) => setServiceWorkerError(error))
+      .finally(() => window.location.reload());
   }, [serviceWorkerRegistrationPromise]);
 
   const onUpdateConfirm = useCallback(() => {
