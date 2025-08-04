@@ -40,8 +40,9 @@ export class BlockAsset extends Model {
   @Column(DataType.STRING)
   mime?: string;
 
-  @AllowNull(false)
+  @Index('BlockAssetBlockVersionId')
   @ForeignKey(() => BlockVersion)
+  @AllowNull(false)
   @Column(DataType.UUID)
   BlockVersionId!: string;
 
