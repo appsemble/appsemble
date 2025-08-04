@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/table",
-  "version": "0.34.5",
+  "version": "0.34.6",
   "private": true,
   "description": "A block that can be used to display larger sets of data.",
   "homepage": "https://appsemble.app",
@@ -17,10 +17,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.34.5",
-    "@appsemble/preact-components": "0.34.5",
-    "@appsemble/sdk": "0.34.5",
-    "@appsemble/utils": "0.34.5",
+    "@appsemble/preact": "0.34.6",
+    "@appsemble/preact-components": "0.34.6",
+    "@appsemble/sdk": "0.34.6",
+    "@appsemble/utils": "0.34.6",
     "classnames": "^2.0.0",
     "preact": "^10.0.0"
   }

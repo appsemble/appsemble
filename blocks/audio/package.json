@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/audio",
-  "version": "0.34.5",
+  "version": "0.34.6",
   "private": true,
   "description": "A block that renders audio and emits it using url or events API.",
   "homepage": "https://appsemble.app",
@@ -17,6 +17,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.34.5"
+    "@appsemble/sdk": "0.34.6"
   }
 }
