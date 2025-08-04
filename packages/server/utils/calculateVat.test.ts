@@ -33,7 +33,7 @@ describe('calculateVat', () => {
 
     expect(result).toMatchObject({
       totalPrice: '6.05',
-      basePrice: '5',
+      basePrice: '5.00',
       vatPercentage: '0.21',
       vatAmount: '1.05',
     });
@@ -64,6 +64,7 @@ describe('calculateVat', () => {
       organization.vatIdNumber,
     );
 
+    expect(Number.parseFloat(result!.activeSubscriptionDiscount)).toBeGreaterThan(0);
     expect(Number.parseFloat(result!.totalPrice)).toBeLessThan(5);
   });
 
@@ -79,7 +80,7 @@ describe('calculateVat', () => {
 
     expect(result).toMatchObject({
       totalPrice: '4.84',
-      basePrice: '5',
+      basePrice: '5.00',
       couponDiscount: '1.00',
       vatPercentage: '0.21',
       vatAmount: '0.84',
@@ -98,7 +99,7 @@ describe('calculateVat', () => {
 
     expect(result).toMatchObject({
       totalPrice: '6.05',
-      basePrice: '5',
+      basePrice: '5.00',
       couponDiscount: '0.00',
       vatPercentage: '0.21',
       vatAmount: '1.05',

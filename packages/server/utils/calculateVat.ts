@@ -23,6 +23,11 @@ export interface PricingInfo {
   basePrice: string;
 
   /**
+   * The discount applied based on currently active subscription.
+   */
+  activeSubscriptionDiscount: string;
+
+  /**
    * The VAT percentage for the provided country.
    */
   vatPercentage: string;
@@ -55,6 +60,7 @@ export async function calculateSubscriptionPrice(
   const startDate = dayjs(activationDate) || dayjs();
   let basePrice = new Decimal(subscriptionPlan.price);
   let couponDiscount = new Decimal(0);
+  let activeSubscriptionDiscount = new Decimal(0);
 
   if (period === SubscriptionRenewalPeriod.Year) {
     const monthsInAYear = 12;
@@ -68,11 +74,13 @@ export async function calculateSubscriptionPrice(
       const currentSubscriptionPlan = getSubscriptionPlanByName(
         currentSubscription.subscriptionPlan!,
       );
-      basePrice = basePrice.minus(
-        new Decimal(currentSubscriptionPlan.price)
-          .dividedBy(startDate.daysInMonth())
-          .mul(dayDifference),
-      );
+      activeSubscriptionDiscount = new Decimal(currentSubscriptionPlan.price)
+        .dividedBy(startDate.daysInMonth())
+        .mul(dayDifference);
+      if (activeSubscriptionDiscount.greaterThan(basePrice)) {
+        activeSubscriptionDiscount = basePrice;
+      }
+      basePrice = basePrice.minus(activeSubscriptionDiscount);
     }
   }
 
@@ -98,12 +106,16 @@ export async function calculateSubscriptionPrice(
 
   return {
     totalPrice: pricingInfo.total.toFixed(2),
-    basePrice: basePrice.greaterThan(0) ? String(basePrice.toDecimalPlaces(2)) : '0',
+    basePrice: basePrice.greaterThan(0) ? basePrice.toDecimalPlaces(2).toFixed(2) : '0.00',
     vatPercentage: pricingInfo.rate.toFixed(2),
-    vatAmount: String(new Decimal(pricingInfo.total).minus(pricingInfo.price).toDecimalPlaces(2)),
-    couponDiscount: couponDiscount.toFixed(2),
+    activeSubscriptionDiscount: activeSubscriptionDiscount.toDecimalPlaces(2).toFixed(2),
+    vatAmount: new Decimal(pricingInfo.total)
+      .minus(pricingInfo.price)
+      .toDecimalPlaces(2)
+      .toFixed(2),
+    couponDiscount: couponDiscount.toDecimalPlaces(2).toFixed(2),
     priceWithCoupon: basePrice.greaterThan(couponDiscount)
-      ? String(basePrice.minus(couponDiscount).toDecimalPlaces(2))
+      ? basePrice.minus(couponDiscount).toDecimalPlaces(2).toFixed(2)
       : '0.00',
   };
 }

@@ -41,6 +41,7 @@ export async function getOrganizationSubscriptionPrice(ctx: Context): Promise<vo
   ctx.body = {
     totalPrice: pricingInfo?.totalPrice,
     basePrice: pricingInfo?.basePrice,
+    activeSubscriptionDiscount: pricingInfo?.activeSubscriptionDiscount,
     vatPercentage: pricingInfo?.vatPercentage,
     vatAmount: pricingInfo?.vatAmount,
     couponDiscount: pricingInfo?.couponDiscount,

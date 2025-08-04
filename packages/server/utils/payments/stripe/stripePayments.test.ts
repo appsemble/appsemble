@@ -44,6 +44,7 @@ describe('stripePayments', () => {
 
     pricingInformation = {
       totalPrice: '115.00',
+      activeSubscriptionDiscount: '0.00',
       basePrice: '100',
       couponDiscount: '0.00',
       vatPercentage: '0.15',

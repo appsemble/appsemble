@@ -70,6 +70,7 @@ interface PricingInfo {
   basePrice: string;
   totalPrice?: string;
   vatAmount?: string;
+  activeSubscriptionDiscount?: string;
   couponDiscount?: string;
   vatPercentage?: string;
   priceWithCoupon?: string;
@@ -135,13 +136,7 @@ export function SubscriptionInformationBox({
       <div className="box is-flex is-justify-content-space-between">
         <FormattedMessage {...messages.chosenSubscription} />
         {subscriptionPlan.name}
-        <span className="has-text-right">
-          €{' '}
-          {subscriptionPrice?.basePrice?.includes('.')
-            ? subscriptionPrice.basePrice || 0
-            : `${subscriptionPrice.basePrice || 0}.-`}
-          p/m
-        </span>
+        <span className="has-text-right">€ {subscriptionPlan.price}.00 p/m</span>
       </div>
       {currentSubscription?.subscriptionPlan === 'free' ? null : (
         <div className="box is-flex is-justify-content-space-between">
@@ -154,6 +149,9 @@ export function SubscriptionInformationBox({
             <div className="is-flex is-flex-direction-column is-align-items-flex-start">
               <div className="pr-5">
                 <FormattedMessage {...messages.subscriptionPrice} />
+              </div>
+              <div className="pr-5">
+                <FormattedMessage {...messages.activeSubscriptionDiscount} />
               </div>
               <div className="pr-5">
                 <FormattedMessage {...messages.couponDiscount} />
@@ -169,25 +167,23 @@ export function SubscriptionInformationBox({
             <div className="is-flex is-flex-direction-column is-align-items-flex-start">
               <span className="is-flex is-align-items-flex-end">€</span>
               <span className="is-flex is-align-items-flex-end">€</span>
+              <span className="is-flex is-align-items-flex-end">€</span>
               <span className="is-flex is-.couponDiscountalign-items-flex-end">€</span>
               <span className="is-flex is-align-items-flex-end has-text-weight-bold mt-2">€</span>
             </div>
             <div className="is-flex is-flex-direction-column is-align-items-flex-end">
+              <span className="is-flex is-align-items-flex-end">{subscriptionPrice.basePrice}</span>
               <span className="is-flex is-align-items-flex-end">
-                {subscriptionPrice.basePrice}.-
+                {subscriptionPrice?.activeSubscriptionDiscount}
               </span>
               <span className="is-flex is-align-items-flex-end">
-                - {subscriptionPrice?.couponDiscount?.replace(/\.00$/, '.-')}
+                {subscriptionPrice?.couponDiscount}
               </span>
               <span className="is-flex is-.couponDiscountalign-items-flex-end">
-                {Number.parseFloat(subscriptionPrice?.vatAmount) % 10 === 0
-                  ? `${subscriptionPrice?.vatAmount}.-`
-                  : subscriptionPrice?.vatAmount}
+                {subscriptionPrice?.vatAmount}
               </span>
               <span className="is-flex is-align-items-flex-end has-text-weight-bold mt-2">
-                {subscriptionPrice?.totalPrice?.includes('.')
-                  ? subscriptionPrice?.totalPrice
-                  : `${subscriptionPrice?.totalPrice}.-`}
+                {subscriptionPrice?.totalPrice}
               </span>
             </div>
           </div>
@@ -237,6 +233,9 @@ export function SubscriptionInformationBox({
                     <FormattedMessage {...messages.subscriptionPrice} />
                   </div>
                   <div className="pr-5">
+                    <FormattedMessage {...messages.activeSubscriptionDiscount} />
+                  </div>
+                  <div className="pr-5">
                     <FormattedMessage {...messages.couponDiscount} />
                   </div>
                   <div className="pr-5 has-text-weight-bold mt-2">
@@ -246,26 +245,23 @@ export function SubscriptionInformationBox({
                 <div className="is-flex is-flex-direction-column is-align-items-flex-start">
                   <span className="is-flex is-align-items-flex-end">€</span>
                   <span className="is-flex is-align-items-flex-end">€</span>
+                  <span className="is-flex is-align-items-flex-end">€</span>
                   <span className="is-flex is-align-items-flex-end has-text-weight-bold mt-2">
                     €
                   </span>
                 </div>
                 <div className="is-flex is-flex-direction-column is-align-items-flex-end  ">
                   <span className="is-flex is-align-items-flex-end">
-                    {subscriptionPrice?.basePrice?.includes('.')
-                      ? subscriptionPrice.basePrice || 0
-                      : `${subscriptionPrice.basePrice || 0}.-`}
+                    {subscriptionPrice.basePrice}
                   </span>
                   <span className="is-flex is-align-items-flex-end">
-                    -{' '}
-                    {subscriptionPrice.couponDiscount
-                      ? subscriptionPrice.couponDiscount.replace(/\.00$/, '.-')
-                      : 0}
+                    {subscriptionPrice.activeSubscriptionDiscount}
+                  </span>{' '}
+                  <span className="is-flex is-align-items-flex-end">
+                    {subscriptionPrice.couponDiscount}
                   </span>
                   <span className="is-flex is-align-items-flex-end has-text-weight-bold mt-2">
-                    {subscriptionPrice?.priceWithCoupon?.includes('.')
-                      ? subscriptionPrice?.priceWithCoupon || 0
-                      : `${subscriptionPrice?.priceWithCoupon || 0}.-`}
+                    {subscriptionPrice?.priceWithCoupon}
                   </span>
                 </div>
               </div>

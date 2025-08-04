@@ -41,6 +41,10 @@ export const messages = defineMessages({
     id: 'studio.vHYgoO',
     defaultMessage: 'Coupon discount',
   },
+  activeSubscriptionDiscount: {
+    id: 'studio.gqCPGf',
+    defaultMessage: 'Active subscription discount',
+  },
   couponCodeInvalid: {
     id: 'studio.rDvmAt',
     defaultMessage: 'Coupon code is invalid.',

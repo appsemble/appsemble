@@ -44,9 +44,9 @@ describe('getOrganizationSubscriptionPrice', () => {
     expect(response).toMatchObject({
       status: 200,
       data: {
-        basePrice: '5',
+        basePrice: '5.00',
         totalPrice: '5.00',
-        vatAmount: '0',
+        vatAmount: '0.00',
         vatPercentage: '0.00',
       },
     });
