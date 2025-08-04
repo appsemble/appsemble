@@ -1,4 +1,5 @@
 {
   "emptyMessage": "Nema podataka.",
-  "error": "Dogodila se greška tijekom dohvaćanja podataka"
+  "error": "Dogodila se greška tijekom dohvaćanja podataka",
+  "submitChecked": ""
 }

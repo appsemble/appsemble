@@ -1,4 +1,4 @@
-import { bootstrap } from '@appsemble/preact';
+import { bootstrap, useBlock } from '@appsemble/preact';
 import { Icon, Loader } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
@@ -13,12 +13,15 @@ interface Item {
 
 bootstrap(({ events, parameters: { borders, caption, fields, scrollable }, ready, utils }) => {
   const [data, setData] = useState<Item[]>([]);
+  const [selectedData, setSelectedData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [order, setOrder] = useState<{ field: string; order: 'asc' | 'desc' }>({
     field: '',
     order: 'asc',
   });
+
+  const { actions } = useBlock();
 
   const remappedCaption = utils.remap(caption, {}) as string;
 
@@ -95,6 +98,21 @@ bootstrap(({ events, parameters: { borders, caption, fields, scrollable }, ready
     );
   }, [fields, onTableHeaderClick, order, utils]);
 
+  const onToggleCheckbox = useCallback(
+    (value: boolean, index: number) => {
+      if (value) {
+        setSelectedData((prev) => [...prev, data[index]]);
+      } else {
+        setSelectedData((prev) => prev.filter((dataItem) => dataItem.id !== data[index].id));
+      }
+    },
+    [data],
+  );
+
+  useEffect(() => {
+    events.emit.checked(selectedData);
+  }, [events.emit, selectedData]);
+
   useEffect(() => {
     const callback = (d: Item | Item[], err: string): void => {
       if (err) {
@@ -111,6 +129,12 @@ bootstrap(({ events, parameters: { borders, caption, fields, scrollable }, ready
     ready();
     return () => events.off.data(callback);
   }, [events, ready, utils]);
+  const onSubmitChecked = useCallback(() => {
+    if (actions.onSubmitChecked.type === 'noop') {
+      return;
+    }
+    actions.onSubmitChecked(selectedData);
+  }, [actions, selectedData]);
 
   if (loading) {
     return <Loader />;
@@ -139,10 +163,22 @@ bootstrap(({ events, parameters: { borders, caption, fields, scrollable }, ready
         {headers}
         <tbody>
           {data.map((item, index) => (
-            <ItemRow index={index} item={item} key={item.id || index} />
+            <ItemRow
+              index={index}
+              item={item}
+              key={item.id || index}
+              onToggleCheckbox={onToggleCheckbox}
+            />
           ))}
         </tbody>
       </table>
+      {selectedData?.length && actions.onSubmitChecked.type !== 'noop' ? (
+        <div className="buttons is-right">
+          <button className="button my-2" onClick={onSubmitChecked} type="button">
+            {utils.formatMessage('submitChecked')}
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 });

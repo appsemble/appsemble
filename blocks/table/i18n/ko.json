@@ -1,4 +1,5 @@
 {
   "emptyMessage": "사용 가능한 자료가 없습니다.",
-  "error": "데이터를 가져오는 중에 오류 발생"
+  "error": "데이터를 가져오는 중에 오류 발생",
+  "submitChecked": ""
 }

@@ -1,4 +1,5 @@
 {
   "emptyMessage": "Brak dostępnych danych.",
-  "error": "Podczas pobierania danych wystąpił błąd"
+  "error": "Podczas pobierania danych wystąpił błąd",
+  "submitChecked": ""
 }
