@@ -10,7 +10,7 @@ export async function getApp({ context, query }: GetAppParams): Promise<AppInter
   const { app } = await getServerApp(context, {
     ...query,
     include: [
-      { model: AppSnapshot, attributes: ['id'] },
+      { model: AppSnapshot, attributes: ['id'], order: [['created', 'DESC']], limit: 1 },
       ...(context.user
         ? [
             { model: Organization, attributes: ['id'] },
