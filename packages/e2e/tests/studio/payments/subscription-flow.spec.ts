@@ -54,7 +54,9 @@ test.describe('Payments', () => {
     await page.getByRole('button').getByText('Continue').click();
 
     await expect(
-      page.getByText('Total subscription priceCoupon discountVAT 21%Total price'),
+      page.getByText(
+        'Total subscription priceActive subscription discountCoupon discountVAT 21%Total price',
+      ),
     ).toBeVisible();
 
     // eslint-disable-next-line playwright/no-conditional-in-test
