@@ -3,6 +3,7 @@ import {
   CheckboxField,
   Message,
   ModalCard,
+  NavLink,
   SelectField,
   SimpleForm,
   SimpleFormError,
@@ -149,6 +150,13 @@ export function CreateAppButton({ className }: { readonly className?: string }):
           />
           <SimpleFormField
             component={SelectField}
+            help={
+              <div>
+                Want to start off from a different app? You can also{' '}
+                <NavLink to="/docs/studio/app-store#cloning-an-app">clone an app</NavLink> directly
+                from the app store
+              </div>
+            }
             label={<FormattedMessage {...messages.template} />}
             name="selectedTemplate"
             onChange={({ currentTarget }) => setSelectedTemplate(currentTarget.value)}

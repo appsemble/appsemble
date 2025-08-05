@@ -2,30 +2,25 @@ context:
   development:
     organization: appsemble
     remote: http://localhost:9999
-    template: true
     visibility: public
     resources: true
   production:
     id: 1231
     organization: appsemble
     remote: https://appsemble.app
-    template: true
     visibility: public
     resources: true
   review:
     organization: appsemble
-    template: true
     visibility: public
     resources: true
   staging:
     id: 1189
     organization: appsemble
     remote: https://staging.appsemble.review
-    template: true
     visibility: public
     resources: true
   e2e:
     organization: appsemble
-    template: true
     visibility: public
     resources: true

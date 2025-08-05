@@ -57,5 +57,5 @@ button. This creates a copy of the app including translations, resources, stylin
 also variables and secrets. Once created, you have your very own copy of the app and can do whatever
 you want with it.
 
-Alternatively, you can also select an app to use as template when creating a new app. This works the
-same as cloning from the page directly, but you don't get the option to copy variables and secrets.
+Alternatively, you can also choose an app template to start with directly in the
+[app creation screen](/apps#create).

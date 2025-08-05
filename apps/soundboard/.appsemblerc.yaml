@@ -2,7 +2,6 @@ context:
   development:
     organization: appsemble
     remote: http://localhost:9999
-    template: true
     visibility: public
     resources: true
     assets: true
@@ -11,14 +10,12 @@ context:
     id: 369
     organization: appsemble
     remote: https://appsemble.app
-    template: true
     visibility: public
     resources: true
     assets: true
     assetsClonable: true
   review:
     organization: appsemble
-    template: true
     visibility: public
     resources: true
     assets: true
@@ -27,14 +24,12 @@ context:
     id: 369
     organization: appsemble
     remote: https://staging.appsemble.review
-    template: true
     visibility: public
     resources: true
     assets: true
     assetsClonable: true
   e2e:
     organization: appsemble
-    template: true
     visibility: public
     resources: true
     assets: true

@@ -1,13 +1,9 @@
 name: Survey
 description: An app which asks the user to fill out some questions.
 defaultPage: Survey
+
 layout:
   navigation: hidden
-
-security:
-  guest:
-    permissions:
-      - $resource:answer:create
 
 resources:
   answer:
@@ -25,74 +21,13 @@ resources:
           type: string
         notTriedReason:
           type: string
-        graphicalEditorRating:
-          type: number
-          minimum: 1
-          maximum: 5
-        graphicalEditorExplanation:
-          type: string
-        commonGroundRating:
-          type: number
-          minimum: 1
-          maximum: 5
-        commonGroundExplanation:
-          type: string
-        videoTutorialsRating:
-          type: number
-          minimum: 1
-          maximum: 5
-        videoTutorialsExplanation:
-          type: string
-        moreBlocksRating:
-          type: number
-          minimum: 1
-          maximum: 5
-        moreBlocksExplanation:
-          type: string
-        moreExamplesRating:
-          type: number
-          minimum: 1
-          maximum: 5
-        moreExamplesExplanation:
-          type: string
-        consideringAppsemble:
-          type: number
-          minimum: 0
-          maximum: 4
-        buildYourself:
-          type: boolean
-        whyNot:
-          type: string
         anythingElse:
           type: string
-        featureImportanceBuildingBlocks:
-          type: number
-          minimum: 1
-          maximum: 5
-        featureImportanceConstructing:
-          type: number
-          minimum: 1
-          maximum: 5
-        featureImportanceCommunitySupport:
-          type: number
-          minimum: 1
-          maximum: 5
-        propertyImportanceBuildCosts:
-          type: number
-          minimum: 1
-          maximum: 5
-        propertyImportanceMaintenanceCosts:
-          type: number
-          minimum: 1
-          maximum: 5
-        propertyImportanceHostCosts:
-          type: number
-          minimum: 1
-          maximum: 5
-        propertyImportancePaidSupport:
-          type: number
-          minimum: 1
-          maximum: 5
+
+security:
+  guest:
+    permissions:
+      - $resource:answer:create
 
 pages:
   - name: Survey
@@ -159,7 +94,7 @@ pages:
             actions:
               onSubmit:
                 type: flow.to
-                step: Feature Ratings
+                step: Anything Else
               onPrevious:
                 type: flow.to
                 step: Familiarity
@@ -188,7 +123,7 @@ pages:
             actions:
               onSubmit:
                 type: flow.to
-                step: Feature Ratings
+                step: Anything Else
               onPrevious:
                 type: flow.to
                 step: Familiarity
@@ -201,249 +136,6 @@ pages:
                   label: { translate: notTriedReason }
                   requirements: [{ required: true }]
 
-      - name: Feature Ratings
-        blocks:
-          - type: form
-            version: 0.34.6
-            header: { translate: features }
-            actions:
-              onSubmit:
-                type: flow.to
-                step: Next App With Appsemble
-              onPrevious:
-                type: condition
-                if: { prop: triedAppsemble }
-                then:
-                  type: flow.to
-                  step: Appsemble Ratings
-                else:
-                  type: flow.to
-                  step: Appsemble Feedback
-            parameters:
-              previous: true
-              fields:
-                - type: radio
-                  name: graphicalEditorRating
-                  label: { translate: graphicalEditor }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-                - type: string
-                  name: graphicalEditorExplanation
-                  multiline: true
-                  label: { translate: explanation }
-                - type: radio
-                  name: commonGroundRating
-                  label: { translate: commonGround }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-                - type: string
-                  name: commonGroundExplanation
-                  multiline: true
-                  label: { translate: explanation }
-                - type: radio
-                  name: videoTutorialsRating
-                  label: { translate: videoTutorials }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-                - type: string
-                  name: videoTutorialsExplanation
-                  multiline: true
-                  label: { translate: explanation }
-                - type: radio
-                  name: moreBlocksRating
-                  label: { translate: moreBlocks }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-                - type: string
-                  name: moreBlocksExplanation
-                  multiline: true
-                  label: { translate: explanation }
-                - type: radio
-                  name: moreExamplesRating
-                  label: { translate: moreExamples }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-                - type: string
-                  name: moreExamplesExplanation
-                  multiline: true
-                  label: { translate: explanation }
-
-      - name: Next App With Appsemble
-        blocks:
-          - type: form
-            version: 0.34.6
-            actions:
-              onSubmit:
-                type: condition
-                if:
-                  prop: consideringAppsemble # Any value that isn’t definitely not
-                then:
-                  type: flow.to
-                  step: Your Next app
-                else:
-                  type: flow.to
-                  step: Why Not Appsemble
-              onPrevious:
-                type: flow.to
-                step: Feature Ratings
-            parameters:
-              previous: true
-              fields:
-                - name: consideringAppsemble
-                  type: radio
-                  label: { translate: consideringAppsemble }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 0
-                      label: { translate: definitelyNot }
-                    - value: 1
-                      label: { translate: probablyNot }
-                    - value: 2
-                      label: { translate: possibly }
-                    - value: 3
-                      label: { translate: probably }
-                    - value: 4
-                      label: { translate: definitely }
-
-      - name: Your Next app
-        blocks:
-          - type: form
-            version: 0.34.6
-            actions:
-              onSubmit:
-                type: flow.to
-                step: Anything Else
-              onPrevious:
-                type: flow.to
-                step: Next App With Appsemble
-            parameters:
-              previous: true
-              fields:
-                - type: radio
-                  name: buildYourself
-                  label: { translate: buildYourself }
-                  requirements: [{ required: true }]
-                  options:
-                    - label: { translate: myself }
-                      value: true
-                    - label: { translate: someoneElse }
-                      value: false
-                - type: radio
-                  name: featureImportanceBuildingBlocks
-                  label: { translate: featureImportanceBuildingBlocks }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-                - type: radio
-                  name: featureImportanceConstructing
-                  label: { translate: featureImportanceConstructing }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-                - type: radio
-                  name: featureImportanceCommunitySupport
-                  label: { translate: featureImportanceCommunitySupport }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-                - type: radio
-                  name: propertyImportanceBuildCosts
-                  label: { translate: propertyImportanceBuildCosts }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-                - type: radio
-                  name: propertyImportanceMaintenanceCosts
-                  label: { translate: propertyImportanceMaintenanceCosts }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-                - type: radio
-                  name: propertyImportanceHostCosts
-                  label: { translate: propertyImportanceHostCosts }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-                - type: radio
-                  name: propertyImportancePaidSupport
-                  label: { translate: propertyImportancePaidSupport }
-                  requirements: [{ required: true }]
-                  options:
-                    - value: 1
-                    - value: 2
-                    - value: 3
-                    - value: 4
-                    - value: 5
-
-      - name: Why Not Appsemble
-        blocks:
-          - type: form
-            version: 0.34.6
-            actions:
-              onSubmit:
-                type: flow.to
-                step: Anything Else
-              onPrevious:
-                type: flow.to
-                step: Next App With Appsemble
-            parameters:
-              previous: true
-              fields:
-                - type: string
-                  name: whyNot
-                  label: { translate: whyNot }
-                  requirements: [{ required: true }]
-                  placeholder: { translate: whyNotPlaceholder }
-
       - name: Anything Else
         blocks:
           - type: form
@@ -454,13 +146,13 @@ pages:
               onPrevious:
                 type: condition
                 if:
-                  prop: consideringAppsemble # Any value that isn’t ‘definitely not’
+                  prop: notTriedReason
                 then:
                   type: flow.to
-                  step: Your Next app
+                  step: Appsemble Feedback
                 else:
                   type: flow.to
-                  step: Why Not Appsemble
+                  step: Familiarity
             parameters:
               previous: true
               fields:
