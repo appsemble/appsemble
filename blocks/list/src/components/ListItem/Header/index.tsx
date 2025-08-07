@@ -96,7 +96,14 @@ export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps
   }, [asset, item, titleValue, fetched, isVisible, header]);
 
   return (
-    <div className={`${styles.headerWrapper} is-flex`}>
+    // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
+    <div
+      className={`${styles.headerWrapper} is-flex`}
+      onClick={onItemClick}
+      onKeyDown={onItemClick}
+      role="button"
+      tabIndex={-1}
+    >
       <div className={`is-flex ${styles.image}`}>
         <div>
           {'image' in header ? (
