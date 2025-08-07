@@ -33,12 +33,17 @@ export function CollapsibleListComponent({
 
   return (
     <>
+      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <div
         className={classNames(
           styles['toggle-button'],
           title ? 'is-justify-content-space-between' : 'is-justify-content-flex-end',
           'py-2 pl-3 pr-2',
         )}
+        onClick={toggleCollapsed}
+        onKeyDown={toggleCollapsed}
+        role="button"
+        tabIndex={-1}
       >
         {title ? <span className={styles.title}>{title}</span> : null}
         <Button
