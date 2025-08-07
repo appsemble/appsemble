@@ -1,0 +1,7 @@
+overrides:
+  - files:
+      - 'src/**'
+    extends:
+      - remcohaszing/web
+    rules:
+      react/forbid-dom-props: off

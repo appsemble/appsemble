@@ -184,9 +184,11 @@ export function Block({
       refetchDemoAppMembers,
       getAppMemberSelectedGroup: () => appMemberSelectedGroup,
     });
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
-    const theme = mergeThemes(appDefinition.theme, pageDefinition.theme, block.theme);
+    const theme = mergeThemes(
+      appDefinition.theme ?? {},
+      pageDefinition.theme ?? {},
+      block.theme ?? {},
+    );
 
     const bulmaUrl = createThemeURL(theme);
 
