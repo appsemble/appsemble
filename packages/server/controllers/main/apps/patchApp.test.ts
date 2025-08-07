@@ -2059,6 +2059,50 @@ describe('patchApp', () => {
   });
 
   it('should update the app if app limit is not reached', async () => {
+    await App.create(
+      {
+        definition: { name: 'Test App 1', defaultPage: 'Test Page' },
+        path: 'test-app',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        definition: { name: 'Test App 2', defaultPage: 'Test Page' },
+        path: 'test-app-2',
+        vapidPublicKey: 'c',
+        vapidPrivateKey: 'd',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const testApp = await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-4',
+        vapidPublicKey: 'g',
+        vapidPrivateKey: 'h',
+        OrganizationId: organization.id,
+        visibility: 'unlisted',
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${testApp.id}`,
+      createFormData({ visibility: 'public' }),
+    );
+
+    expect(response.status).toBe(200);
+  });
+
+  it('should update the app if the organization has a subscription, increasing app limit.', async () => {
     const subscription = await OrganizationSubscription.findOne({
       where: { OrganizationId: organization.id },
     });

@@ -12,7 +12,7 @@ import {
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { getSubscriptionPlanByName, OrganizationPermission } from '@appsemble/types';
+import { OrganizationPermission } from '@appsemble/types';
 import { validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
@@ -25,7 +25,6 @@ import {
   AppSnapshot,
   getAppDB,
   Organization,
-  OrganizationSubscription,
   transactional,
 } from '../../../models/index.js';
 import {
@@ -36,6 +35,7 @@ import {
 import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
+import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
@@ -123,18 +123,7 @@ export async function patchApp(ctx: Context): Promise<void> {
   let Resource = OldResource;
   let appDB = oldAppDB;
 
-  if (visibility === 'public') {
-    const subscription = await OrganizationSubscription.findOne({
-      where: { OrganizationId: dbApp.OrganizationId },
-    });
-    assertKoaCondition(subscription != null, ctx, 404, 'Subscription not found');
-    const subscriptionPlan = getSubscriptionPlanByName(String(subscription!.subscriptionPlan!));
-    const appList = await App.findAll({
-      where: { OrganizationId: dbApp.OrganizationId },
-    });
-    const appCount = appList.filter((app) => app.visibility === 'public').length;
-    assertKoaCondition(appCount < subscriptionPlan.appLimit, ctx, 403, 'App limit reached.');
-  }
+  await checkAppLimit(ctx, dbApp, visibility);
 
   try {
     const permissionsToCheck: OrganizationPermission[] = [];

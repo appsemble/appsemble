@@ -6,7 +6,7 @@ import {
   updateCompanionContainers,
   uploadS3File,
 } from '@appsemble/node-utils';
-import { getSubscriptionPlanByName, OrganizationPermission } from '@appsemble/types';
+import { OrganizationPermission } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
@@ -20,10 +20,10 @@ import {
   AppScreenshot,
   AppSnapshot,
   getAppDB,
-  OrganizationSubscription,
 } from '../../../models/index.js';
 import { setAppPath } from '../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 
 export async function createAppFromTemplate(ctx: Context): Promise<void> {
@@ -98,19 +98,6 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     });
   }
 
-  if (visibility === 'public') {
-    const subscription = await OrganizationSubscription.findOne({
-      where: { OrganizationId: organizationId },
-    });
-    assertKoaCondition(subscription != null, ctx, 404, 'Subscription not found');
-    const subscriptionPlan = getSubscriptionPlanByName(String(subscription!.subscriptionPlan!));
-    const appList = await App.findAll({
-      where: { OrganizationId: organizationId },
-    });
-    const appCount = appList.filter((app) => app.visibility === 'public').length;
-    assertKoaCondition(appCount < subscriptionPlan.appLimit, ctx, 403, 'App limit reached.');
-  }
-
   const path = name ? normalize(name) : normalize(template.definition.name);
   try {
     const keys = webpush.generateVAPIDKeys();
@@ -140,6 +127,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       delete m.messages?.app?.name;
       delete m.messages?.app?.description;
     }
+    await checkAppLimit(ctx, result);
     const record = await App.create(result, { include: [AppMessages, AppScreenshot, AppReadme] });
 
     const {
