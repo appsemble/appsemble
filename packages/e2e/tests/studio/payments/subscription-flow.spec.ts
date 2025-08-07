@@ -40,7 +40,9 @@ test.describe('Payments', () => {
 
     await expect(page.getByText('Select type of')).toBeVisible();
     await expect(
-      page.getByText('Total subscription priceCoupon discountTotal price'),
+      page.getByText(
+        'Total subscription priceActive subscription discountCoupon discountTotal price',
+      ),
     ).toBeVisible();
     await page.getByRole('button', { name: 'Checkout ' }).click();
 
