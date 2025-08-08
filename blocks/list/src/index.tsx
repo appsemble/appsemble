@@ -111,9 +111,7 @@ bootstrap(
                       ) : null}
                     </div>
                   )}
-                  <div
-                    className={`${isDragging && currentLine === index ? styles.listItemDragEnter : ''} ${styles.listItem}`}
-                  >
+                  <div className={styles.listItem}>
                     <ListItem index={index} item={item} />
                   </div>
                 </div>
