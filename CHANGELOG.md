@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.7](https://gitlab.com/appsemble/appsemble/-/releases/0.34.7)] - 2025-08-08
+
+### Changed
+
+- Block(`list`): Show buttons for drag and drop on mobile.
+
+### Fixed
+
+- Block(`list`): Handle clicks also when clicking outside the button in the header.
+- Block(`list`): Handle expanding collapsed lists by clicking outside the button itself.
+
 ## \[[0.34.6](https://gitlab.com/appsemble/appsemble/-/releases/0.34.6)] - 2025-08-04
 
 ## \[[0.34.5](https://gitlab.com/appsemble/appsemble/-/releases/0.34.5)] - 2025-08-04
