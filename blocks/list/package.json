@@ -22,7 +22,6 @@
     "@appsemble/sdk": "0.34.6",
     "@appsemble/utils": "0.34.6",
     "classnames": "^2.0.0",
-    "mobile-drag-drop": "^3.0.0-rc.0",
     "preact": "^10.0.0"
   }
 }

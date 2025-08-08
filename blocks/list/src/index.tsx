@@ -1,6 +1,5 @@
 import { bootstrap, FormattedMessage, useBlock } from '@appsemble/preact';
-import { Icon, Loader, Message } from '@appsemble/preact-components';
-import { polyfill } from 'mobile-drag-drop/index.js';
+import { Button, Icon, Loader, Message } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
@@ -8,14 +7,6 @@ import { CollapsibleListComponent } from './components/CollapsibleList/index.js'
 import { ListItem } from './components/ListItem/index.js';
 import styles from './index.module.css';
 import { type Item } from '../block.js';
-
-const addMobileDragAndDropPolyfill = (): void => {
-  polyfill();
-
-  // Adding touchmove listener for iOS Safari support
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  window.addEventListener('touchmove', () => {}, { passive: false });
-};
 
 bootstrap(
   ({
@@ -35,9 +26,8 @@ bootstrap(
     const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
     const {
       actions: { onDrop },
+      utils: { isMobile },
     } = useBlock();
-
-    addMobileDragAndDropPolyfill();
 
     const renderItems = useCallback(
       (items: Item[], spaced?: boolean): VNode => {
@@ -70,7 +60,65 @@ bootstrap(
           setDraggedItemIndex(null);
         };
 
-        return (
+        const handleMoveUp = useCallback(
+          async (movedItemIndex: number) => {
+            const movedItem = itemList.at(movedItemIndex);
+
+            const prevResourcePosition = Number(itemList[movedItemIndex - 2]?.Position);
+            const nextResourcePosition = Number(itemList[movedItemIndex - 1]?.Position);
+
+            await onDrop({
+              prevResourcePosition,
+              nextResourcePosition,
+              ...movedItem,
+            });
+          },
+          [itemList],
+        );
+
+        const handleMoveDown = useCallback(
+          async (movedItemIndex: number) => {
+            const movedItem = itemList.at(movedItemIndex);
+
+            const prevResourcePosition = Number(itemList[movedItemIndex + 1]?.Position);
+            const nextResourcePosition = Number(itemList[movedItemIndex + 2]?.Position);
+
+            await onDrop({
+              prevResourcePosition,
+              nextResourcePosition,
+              ...movedItem,
+            });
+          },
+          [itemList],
+        );
+
+        return isMobile ? (
+          <ul className={spaced ? 'py-4' : 'pb-4'}>
+            {itemList.map((item, index) => (
+              <li key={item.id ?? index}>
+                <div className="is-flex is-align-items-center">
+                  {onDrop.type === 'noop' ? null : (
+                    <div className="is-flex is-flex-direction-column mr-4">
+                      {index > 0 ? (
+                        <Button className="mb-4" onClick={() => handleMoveUp(index)}>
+                          <Icon icon="arrow-up" size="medium" />
+                        </Button>
+                      ) : null}
+                      {index < itemList.length - 1 ? (
+                        <Button onClick={() => handleMoveDown(index)}>
+                          <Icon icon="arrow-down" size="medium" />
+                        </Button>
+                      ) : null}
+                    </div>
+                  )}
+                  <div className={styles.listItem}>
+                    <ListItem index={index} item={item} />
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
           <ul className={spaced ? 'py-4' : 'pb-4'}>
             {onDrop.type !== 'noop' && (
               // eslint-disable-next-line jsx-a11y/no-static-element-interactions
@@ -101,7 +149,7 @@ bootstrap(
                   {onDrop.type === 'noop' ? null : (
                     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                     <div
-                      className={`${String(styles.isMovable)} is-hidden-mobile`}
+                      className={styles.isMovable}
                       onMouseEnter={() => setIsDragging(true)}
                       onMouseLeave={() => setIsDragging(false)}
                     >
@@ -136,7 +184,7 @@ bootstrap(
           </ul>
         );
       },
-      [currentLine, isDragging, onDrop, draggedItemIndex],
+      [isMobile, onDrop, currentLine, draggedItemIndex, isDragging],
     );
 
     useEffect(() => {
