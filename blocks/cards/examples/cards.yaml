@@ -1,0 +1,12 @@
+parameters:
+  defaultImage: logo
+  itemDefinition:
+    title: Title
+    content: Content
+actions:
+  onClick:
+    to: Person Details
+    type: link
+events:
+  listen:
+    data: data
