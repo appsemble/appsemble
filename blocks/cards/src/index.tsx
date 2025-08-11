@@ -75,7 +75,6 @@ bootstrap(({ data: blockData, events, parameters: { hideOnNoData }, ready, utils
             <CardContent index={index} item={item} />
           </div>
         ))}
-        ;
       </div>
     </div>
   );

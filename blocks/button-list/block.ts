@@ -70,6 +70,18 @@ export interface Button {
    * Describe what the button does. This helps with accessibility for people using screen readers.
    */
   title?: Remapper;
+
+  /**
+   *
+   * Whether to not render the button.
+   */
+  hide?: Remapper;
+
+  /**
+   *
+   * If the button should be disabled.
+   */
+  disable?: Remapper;
 }
 
 declare module '@appsemble/sdk' {

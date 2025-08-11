@@ -224,11 +224,19 @@ This data can be used with remap to display labels dynamically based on the rece
             "$ref": "#/definitions/BulmaColor",
             "description": "The Bulma color to use.",
           },
+          "disable": {
+            "description": "If the button should be disabled.",
+            "format": "remapper",
+          },
           "fullwidth": {
             "description": "Whether the button should be full width or not.
 
 By default buttons only take up as much space as needed.",
             "type": "boolean",
+          },
+          "hide": {
+            "description": "Whether to not render the button.",
+            "format": "remapper",
           },
           "icon": {
             "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.
