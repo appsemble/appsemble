@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.34.7
-appVersion: 0.34.7
+version: 0.34.8
+appVersion: 0.34.8
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,14 +32,14 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: changed
-      description: "Block(list): Show buttons for drag and drop on mobile."
-    - kind: fixed
-      description: "Block(list): Handle clicks also when clicking outside the button
-        in the header."
-    - kind: fixed
-      description: "Block(list): Handle expanding collapsed lists by clicking outside
-        the button itself."
+    - kind: added
+      description: "Block(button-list): Add option to disable clicking for a button."
+    - kind: added
+      description: "Block(button-list): Add option to hide a button."
+    - kind: added
+      description: "Block(cards): New block cards."
+    - kind: added
+      description: "Block(list): Handle scroll to item after back navigation."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.8](https://gitlab.com/appsemble/appsemble/-/releases/0.34.8)] - 2025-08-11
+
+### Added
+
+- Block(`button-list`): Add option to disable clicking for a button.
+- Block(`button-list`): Add option to hide a button.
+- Block(`cards`): New block cards.
+- Block(`list`): Handle scroll to item after back navigation.
+
 ## \[[0.34.7](https://gitlab.com/appsemble/appsemble/-/releases/0.34.7)] - 2025-08-08
 
 ### Changed
