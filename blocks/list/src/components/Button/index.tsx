@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { Fragment, type VNode } from 'preact';
-import { useCallback, useMemo } from 'preact/hooks';
+import { useMemo } from 'preact/hooks';
 
 import { type Button } from '../../../block.js';
 
@@ -18,6 +18,8 @@ interface ButtonComponentProps {
    * The index of the row that was clicked.
    */
   readonly index: number;
+
+  readonly onItemClick: (event: Event) => void;
 }
 
 export function ButtonComponent({
@@ -36,9 +38,9 @@ export function ButtonComponent({
   },
   index,
   item,
+  onItemClick,
 }: ButtonComponentProps): VNode {
   const {
-    actions,
     utils: { isMobile, remap },
   } = useBlock();
 
@@ -46,7 +48,6 @@ export function ButtonComponent({
     () => Boolean(remap(field.disabled, item, { index })),
     [field.disabled, index, item, remap],
   );
-  const action = actions[field.onClick];
   const className = classNames('button', `is-${isMobile ? 'small' : size}`, {
     'is-rounded': rounded,
     'is-fullwidth': fullwidth,
@@ -64,19 +65,11 @@ export function ButtonComponent({
     </Fragment>
   );
 
-  const onClick = useCallback(() => {
-    if (disabled) {
-      return;
-    }
-
-    action(item, { index });
-  }, [action, disabled, item, index]);
-
   return (
     <button
       className={className}
       disabled={disabled}
-      onClick={onClick}
+      onClick={onItemClick}
       title={remappedTitle}
       type="button"
     >

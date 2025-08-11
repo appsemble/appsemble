@@ -16,12 +16,15 @@ interface ToggleButtonComponentProps {
    * The index of the row that was clicked.
    */
   readonly index: number;
+
+  readonly onItemClick: (event: Event) => void;
 }
 
 export function ToggleButtonComponent({
   field: { falseButton, trueButton, value },
   index,
   item,
+  onItemClick,
 }: ToggleButtonComponentProps): VNode {
   const {
     utils: { remap },
@@ -30,8 +33,8 @@ export function ToggleButtonComponent({
   const val = remap(value, item, { index }) as string;
 
   return val ? (
-    <ButtonComponent field={trueButton} index={index} item={item} />
+    <ButtonComponent field={trueButton} index={index} item={item} onItemClick={onItemClick} />
   ) : (
-    <ButtonComponent field={falseButton} index={index} item={item} />
+    <ButtonComponent field={falseButton} index={index} item={item} onItemClick={onItemClick} />
   );
 }
