@@ -26,7 +26,7 @@ events.
 ```yaml copy validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.32.1
+    version: 0.34.8
     events:
       emit:
         data: bicycleInventory
@@ -59,18 +59,21 @@ information:
 
 ```yaml copy validate block-snippet
 type: list
-version: 0.32.1
+version: 0.34.8
 events:
   listen:
     data: bicycleInventory # Listen for the bicycle inventory data
 parameters:
   title: Rent out bicycles # Title of the list, appears at the top
-  header: { prop: type } # Header of a card
-  image: # Image displayed in the left of a card
-    file: { prop: image }
-  fields: # A series of fields in a card
-    - label: Bicycles left
-      value: { prop: stock } # We want to display how much stock of an individual bike is left
+  itemDefinition: # Properties of an individual item
+    header: # Header of a card
+      title: { prop: type }
+    content:
+      image: # Image displayed in the left of a card
+        file: { prop: image }
+      fields: # A series of fields in a card
+        - label: Bicycles left
+          value: { prop: stock } # We want to display how much stock of an individual bike is left
 ```
 
 To make the app more accessible, we can add an alernate text to the image. An alternate text is used
@@ -80,13 +83,14 @@ We can use the [string.format](/docs/remappers/strings#string.format) remapper t
 alternate text based on what bicycle is shown.
 
 ```yaml copy
-image:
-  file: { prop: image }
-  alt: # An alternate text gets displayed if the image can't be loaded or if the user uses a screen reader
-    string.format: # Returns a string that dynamically adds values to text
-      template: '{type} image'
-      values:
-        type: { prop: type } # The {type} gets replaced with the value of the property 'type'
+content:
+  image:
+    file: { prop: image }
+    alt: # An alternate text gets displayed if the image can't be loaded or if the user uses a screen reader
+      string.format: # Returns a string that dynamically adds values to text
+        template: '{type} image'
+        values:
+          type: { prop: type } # The {type} gets replaced with the value of the property 'type'
 ```
 
 ## Selling a bicycle
@@ -100,17 +104,18 @@ there are no bicycles left.
 
 ```yaml copy
 type: list
-version: 0.32.1
+version: 0.34.8
 ...
 parameters:
   ...
-  button: # Button that gets displayed in the right of a card
-    label: Sell
-    onClick: sellBicycle # The action to call when the button is clicked
-    disabled: # Disables the button if the remapper returns true
-      lt: # Returns true if the first value is less than the second value
-        - { prop: stock }
-        - 1
+  footer:
+    button: # Button that gets displayed in the right of a card
+      label: Sell
+      onClick: sellBicycle # The action to call when the button is clicked
+      disabled: # Disables the button if the remapper returns true
+        lt: # Returns true if the first value is less than the second value
+          - { prop: stock }
+          - 1
 ```
 
 When the button is clicked, the `sellBicycle` action gets called.
@@ -123,7 +128,7 @@ actions:
     type: dialog
     blocks:
       - type: form
-        version: 0.32.1
+        version: 0.34.8
         parameters:
           fields:
             - name: phoneNumber
@@ -264,7 +269,7 @@ roles:
   - employee
 blocks:
   - type: data-loader
-    version: 0.32.1
+    version: 0.34.8
     events:
       emit:
         data: bicycleInventory
@@ -275,34 +280,39 @@ blocks:
         type: resource.query
         resource: bicycles
   - type: list
-    version: 0.32.1
+    version: 0.34.8
     events:
       listen:
         data: bicycleInventory
     parameters:
       title: Rent out bicycles
-      header: { prop: type }
-      image:
-        file: { prop: image }
-        alt:
-          string.format:
-            template: '{type} image'
-            values:
-              type: { prop: type }
-      fields:
-        - label: Bicycles left
-          value: { prop: stock }
-      button:
-        label: Sell
-        onClick: sellBicycle
-        disabled:
-          lt: [{ prop: stock }, 1]
+      itemDefinition:
+        header:
+          title: { prop: type }
+        content:
+          image:
+            file: { prop: image }
+            alt:
+              string.format:
+                template: '{type} image'
+                values:
+                  type: { prop: type }
+          fields:
+            - label: Bicycles left
+              value: { prop: stock }
+        footer:
+          button:
+            label: Sell
+            icon: dollar-sign
+            onClick: sellBicycle
+            disabled:
+              lt: [{ prop: stock }, 1]
     actions:
       sellBicycle:
         type: dialog
         blocks:
           - type: form
-            version: 0.32.1
+            version: 0.34.8
             parameters:
               fields:
                 - name: phoneNumber
