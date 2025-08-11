@@ -141,7 +141,12 @@ export function HeaderComponent({
         />
       ) : null}
       {'toggleButton' in header ? (
-        <ToggleButtonComponent field={header.toggleButton} index={index} item={item} />
+        <ToggleButtonComponent
+          field={header.toggleButton}
+          index={index}
+          item={item}
+          onItemClick={onItemClick}
+        />
       ) : null}
       {'dropdown' in header ? (
         <div className={styles.dropdown}>

@@ -45,7 +45,12 @@ export function FooterComponent({ index, item, onItemClick }: FooterComponentPro
         />
       ) : null}
       {'toggleButton' in footer ? (
-        <ToggleButtonComponent field={footer.toggleButton} index={index} item={item} />
+        <ToggleButtonComponent
+          field={footer.toggleButton}
+          index={index}
+          item={item}
+          onItemClick={onItemClick}
+        />
       ) : null}
       {'dropdown' in footer ? (
         <DropdownComponent field={footer.dropdown} index={index} item={item} record={item} />
