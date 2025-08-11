@@ -9,7 +9,7 @@ import {
 } from '@appsemble/utils';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type VNode } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type Item } from '../../../../block.js';
@@ -22,9 +22,17 @@ interface HeaderComponentProps {
   readonly index: number;
   readonly item: Item;
   readonly isVisible: boolean;
+  readonly onItemClick: (event: Event) => void;
+  readonly itemHref?: string;
 }
 
-export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps): VNode {
+export function HeaderComponent({
+  index,
+  isVisible,
+  item,
+  itemHref,
+  onItemClick,
+}: HeaderComponentProps): VNode {
   const {
     actions,
     parameters: {
@@ -37,14 +45,6 @@ export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps
   const [subtitleValue, setSubtitleValue] = useState<string>('');
   const [assetIcon, setAssetIcon] = useState<FileIconName>(null);
   const [fetched, setFetched] = useState<boolean>(false);
-
-  const onItemClick = useCallback(
-    (event: Event) => {
-      event.preventDefault();
-      actions.onClick(item);
-    },
-    [actions, item],
-  );
 
   useEffect(() => {
     if ('title' in header) {
@@ -119,7 +119,7 @@ export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps
             {headerHTML}
           </a>
         ) : actions.onClick.type === 'link' ? (
-          <a className={`${styles.item} has-text-left is-block`} href={actions.onClick.href(item)}>
+          <a className={`${styles.item} has-text-left is-block`} href={itemHref}>
             {headerHTML}
           </a>
         ) : (
@@ -133,7 +133,12 @@ export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps
         )}
       </div>
       {'button' in header ? (
-        <ButtonComponent field={header.button} index={index} item={item} />
+        <ButtonComponent
+          field={header.button}
+          index={index}
+          item={item}
+          onItemClick={onItemClick}
+        />
       ) : null}
       {'toggleButton' in header ? (
         <ToggleButtonComponent field={header.toggleButton} index={index} item={item} />

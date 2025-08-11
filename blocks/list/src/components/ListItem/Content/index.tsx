@@ -1,7 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Icon } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type Field, type Item } from '../../../../block.js';
@@ -11,9 +10,17 @@ interface ContentComponentProps {
   readonly index: number;
   readonly item: Item;
   readonly isVisible: boolean;
+  readonly onItemClick: (event: Event) => void;
+  readonly itemHref?: string;
 }
 
-export function ContentComponent({ index, isVisible, item }: ContentComponentProps): VNode {
+export function ContentComponent({
+  index,
+  isVisible,
+  item,
+  itemHref,
+  onItemClick,
+}: ContentComponentProps): VNode {
   const {
     actions,
     parameters: {
@@ -21,14 +28,6 @@ export function ContentComponent({ index, isVisible, item }: ContentComponentPro
     },
     utils: { remap },
   } = useBlock();
-
-  const onItemClick = useCallback(
-    (event: Event) => {
-      event.preventDefault();
-      actions.onClick(item);
-    },
-    [actions, item],
-  );
 
   const contentHTML = (field: Field, label: unknown, value: unknown): VNode => (
     <div className={`${styles.fieldWrapper} is-flex`}>
@@ -73,10 +72,7 @@ export function ContentComponent({ index, isVisible, item }: ContentComponentPro
               // There is nothing that is guaranteed to be unique in these items.
               <div className={`${styles.fieldWrapper} is-flex`} key={0}>
                 {actions.onClick.type === 'link' ? (
-                  <a
-                    className={`${styles.item} has-text-left is-block`}
-                    href={actions.onClick.href(item)}
-                  >
+                  <a className={`${styles.item} has-text-left is-block`} href={itemHref}>
                     {contentHTML(field, label, value)}
                   </a>
                 ) : (
