@@ -6,7 +6,9 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
     {buttons.map(
       ({
         color,
+        disable,
         fullwidth,
+        hide,
         icon,
         iconSide,
         inverted,
@@ -56,6 +58,14 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
         node.append(currentText);
         events.on.data((newData) => {
           const newText = createNode(newData);
+          const hidden = utils.remap(hide, newData);
+          if (hidden) {
+            node.classList.add('is-hidden');
+          }
+          const disabled = utils.remap(disable, newData);
+          if (disabled) {
+            node.setAttribute('disabled', 'true');
+          }
           currentText.replaceWith(newText);
           currentText = newText;
           currentData = newData;
