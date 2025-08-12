@@ -11,10 +11,9 @@ import { ToggleButtonComponent } from '../../ToggleButton/index.js';
 interface FooterComponentProps {
   readonly index: number;
   readonly item: Item;
-  readonly onItemClick: (event: Event) => void;
 }
 
-export function FooterComponent({ index, item, onItemClick }: FooterComponentProps): VNode {
+export function FooterComponent({ index, item }: FooterComponentProps): VNode {
   const {
     parameters: {
       itemDefinition: { footer },
@@ -37,20 +36,10 @@ export function FooterComponent({ index, item, onItemClick }: FooterComponentPro
     >
       <div className={styles.footerContent}>{contentValue}</div>
       {'button' in footer ? (
-        <ButtonComponent
-          field={footer.button}
-          index={index}
-          item={item}
-          onItemClick={onItemClick}
-        />
+        <ButtonComponent field={footer.button} index={index} item={item} />
       ) : null}
       {'toggleButton' in footer ? (
-        <ToggleButtonComponent
-          field={footer.toggleButton}
-          index={index}
-          item={item}
-          onItemClick={onItemClick}
-        />
+        <ToggleButtonComponent field={footer.toggleButton} index={index} item={item} />
       ) : null}
       {'dropdown' in footer ? (
         <DropdownComponent field={footer.dropdown} index={index} item={item} record={item} />

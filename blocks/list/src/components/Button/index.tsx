@@ -2,9 +2,9 @@ import { useBlock } from '@appsemble/preact';
 import { Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { Fragment, type VNode } from 'preact';
-import { useMemo } from 'preact/hooks';
+import { useCallback, useMemo } from 'preact/hooks';
 
-import { type Button } from '../../../block.js';
+import { type Button, type Item } from '../../../block.js';
 
 interface ButtonComponentProps {
   readonly field: Button;
@@ -12,14 +12,12 @@ interface ButtonComponentProps {
   /**
    * The data to display.
    */
-  readonly item: unknown;
+  readonly item: Item;
 
   /**
    * The index of the row that was clicked.
    */
   readonly index: number;
-
-  readonly onItemClick: (event: Event) => void;
 }
 
 export function ButtonComponent({
@@ -30,6 +28,7 @@ export function ButtonComponent({
     inverted,
     label,
     light,
+    onClick,
     outlined,
     rounded,
     size = 'normal',
@@ -38,9 +37,10 @@ export function ButtonComponent({
   },
   index,
   item,
-  onItemClick,
 }: ButtonComponentProps): VNode {
   const {
+    actions,
+    pathIndex,
     utils: { isMobile, remap },
   } = useBlock();
 
@@ -48,6 +48,16 @@ export function ButtonComponent({
     () => Boolean(remap(field.disabled, item, { index })),
     [field.disabled, index, item, remap],
   );
+
+  const handleClick = useCallback(async () => {
+    // We take the onClick action name specified in the button, wherever the button is
+    const action = actions[onClick];
+    if (action.type === 'link') {
+      window.location.hash = `${pathIndex}.item.${item.id}`;
+    }
+    await action(item, { index });
+  }, [actions, index, item, onClick, pathIndex]);
+
   const className = classNames('button', `is-${isMobile ? 'small' : size}`, {
     'is-rounded': rounded,
     'is-fullwidth': fullwidth,
@@ -56,6 +66,7 @@ export function ButtonComponent({
     'is-inverted': inverted,
     'is-outlined': outlined,
   });
+
   const remappedTitle = remap(title, item, { index }) as string;
 
   const content = (
@@ -69,7 +80,7 @@ export function ButtonComponent({
     <button
       className={className}
       disabled={disabled}
-      onClick={onItemClick}
+      onClick={handleClick}
       title={remappedTitle}
       type="button"
     >

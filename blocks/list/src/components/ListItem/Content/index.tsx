@@ -11,7 +11,7 @@ interface ContentComponentProps {
   readonly item: Item;
   readonly isVisible: boolean;
   readonly onItemClick: (event: Event) => void;
-  readonly itemHref?: string;
+  readonly itemHref: string | undefined;
 }
 
 export function ContentComponent({
