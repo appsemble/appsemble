@@ -186,6 +186,7 @@ export async function processHooks(
         ? remap(data.content, r, remapperContext)
         : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`
     ) as string;
+    const link = data?.link ? remap(data.link, r, remapperContext) : undefined;
 
     await sendSubscriptionNotifications(
       app,
@@ -199,6 +200,7 @@ export async function processHooks(
       {
         title,
         body: content,
+        link,
       },
     );
   }

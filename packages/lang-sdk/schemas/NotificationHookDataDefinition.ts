@@ -15,7 +15,7 @@ export const NotificationHookDataDefinition: OpenAPIV3.NonArraySchemaObject = {
       description: 'The body of the notification.',
     },
     link: {
-      type: 'string',
+      $ref: '#/components/schemas/RemapperDefinition',
       description: `The URL of the page the user gets redirected to after being clicked.
 
 If the URL is relative, it will be relative to the app.

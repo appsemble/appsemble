@@ -18,6 +18,10 @@ export const NotifyActionDefinition = extendJSONSchema(BaseActionDefinition, {
       $ref: '#/components/schemas/RemapperDefinition',
       description: 'The description of the notification.',
     },
+    link: {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: 'The link of the notification.',
+    },
     to: {
       $ref: '#/components/schemas/RemapperDefinition',
       description: `To whom the notification should be sent.

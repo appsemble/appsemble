@@ -351,6 +351,11 @@ export interface NotifyActionDefinition extends BaseActionDefinition<'notify'> {
    * Nothing is sent if the value is **not** a valid user id.
    */
   to: Remapper;
+
+  /**
+   * The link of the notification.
+   */
+  link: Remapper;
 }
 
 export interface LogActionDefinition extends BaseActionDefinition<'log'> {

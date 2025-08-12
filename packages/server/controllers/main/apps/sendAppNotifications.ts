@@ -10,7 +10,7 @@ export async function sendAppNotifications(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     request: {
-      body: { body, title },
+      body: { body, link, title },
     },
   } = ctx;
 
@@ -33,7 +33,7 @@ export async function sendAppNotifications(ctx: Context): Promise<void> {
   try {
     await Promise.all(
       app.AppSubscriptions.map((subscription) =>
-        sendNotification(app, subscription, { title, body }),
+        sendNotification(app, subscription, { title, body, link }),
       ),
     );
   } catch (error) {
