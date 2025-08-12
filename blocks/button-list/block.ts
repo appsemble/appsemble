@@ -90,6 +90,13 @@ declare module '@appsemble/sdk' {
      * The list of buttons.
      */
     buttons: Button[];
+
+    /**
+     * Alignment of the buttons
+     *
+     * @default center
+     */
+    alignment?: 'center' | 'left' | 'right';
   }
 
   interface Actions {

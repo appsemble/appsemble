@@ -1,8 +1,10 @@
 import { bootstrap } from '@appsemble/sdk';
 import classNames from 'classnames';
 
-bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
-  <div className="buttons is-centered">
+bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils }) => (
+  <div
+    className={`buttons is-${alignment === 'left' || alignment === 'right' ? alignment : 'centered'}`}
+  >
     {buttons.map(
       ({
         color,
