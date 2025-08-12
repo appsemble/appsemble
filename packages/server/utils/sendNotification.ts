@@ -7,6 +7,7 @@ import { type App, type AppSubscription } from '../models/index.js';
 export interface SendNotificationOptions {
   title: string;
   body: string;
+  data: Record<string, unknown>;
 }
 
 export async function sendNotification(
