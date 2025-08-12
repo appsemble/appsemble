@@ -1302,6 +1302,10 @@ This is the default action for block actions that are not required.
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The description of the notification.",
                     },
+                    "link": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The link of the notification.",
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "remapAfter": {},
@@ -1356,6 +1360,10 @@ Nothing is sent if the value is **not** a valid user id.
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The description of the notification.",
                     },
+                    "link": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The link of the notification.",
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "remapAfter": {},
@@ -1409,6 +1417,10 @@ Nothing is sent if the value is **not** a valid user id.
                     "body": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The description of the notification.",
+                    },
+                    "link": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The link of the notification.",
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -6755,6 +6767,10 @@ This is the default action for block actions that are not required.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The description of the notification.",
             },
+            "link": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The link of the notification.",
+            },
             "onError": {},
             "onSuccess": {},
             "remapAfter": {},
@@ -6809,6 +6825,10 @@ Nothing is sent if the value is **not** a valid user id.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The description of the notification.",
             },
+            "link": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The link of the notification.",
+            },
             "onError": {},
             "onSuccess": {},
             "remapAfter": {},
@@ -6862,6 +6882,10 @@ Nothing is sent if the value is **not** a valid user id.
             "body": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The description of the notification.",
+            },
+            "link": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The link of the notification.",
             },
             "onError": {},
             "onSuccess": {},
