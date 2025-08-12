@@ -27,8 +27,9 @@ export async function notify({
   const to = remap(action.to, data, remapperContext) as string;
   const title = remap(action.title, data, remapperContext) as string;
   const body = remap(action.body, data, remapperContext) as string;
+  const link = remap(action.link, data, remapperContext) as string;
 
-  await sendNotifications({ app: app.toJSON(), to, title, body });
+  await sendNotifications({ app: app.toJSON(), to, title, body, link });
 
   return data;
 }

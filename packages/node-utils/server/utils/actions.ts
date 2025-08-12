@@ -89,8 +89,9 @@ export async function handleNotify(
   const to = remap(action.to, data, remapperContext) as string;
   const title = remap(action.title, data, remapperContext) as string;
   const body = remap(action.body, data, remapperContext) as string;
+  const link = remap(action.link, data, remapperContext) as string;
 
-  await sendNotifications({ app, to, title, body });
+  await sendNotifications({ app, to, title, body, link });
 
   ctx.status = 204;
 }

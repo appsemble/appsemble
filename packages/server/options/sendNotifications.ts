@@ -7,6 +7,7 @@ import { sendNotification } from '../utils/sendNotification.js';
 export async function sendNotifications({
   app,
   body,
+  link,
   title,
   to,
 }: SendNotificationsParams): Promise<void> {
@@ -50,6 +51,6 @@ export async function sendNotifications({
   }))!;
 
   for (const subscription of persistedApp.AppSubscriptions) {
-    sendNotification(persistedApp, subscription, { title, body });
+    sendNotification(persistedApp, subscription, { title, body, link });
   }
 }

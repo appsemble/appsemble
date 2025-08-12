@@ -382,6 +382,7 @@ export interface SendNotificationsParams {
   to: string;
   title: string;
   body: string;
+  link: string;
 }
 
 export interface AppDetails {
