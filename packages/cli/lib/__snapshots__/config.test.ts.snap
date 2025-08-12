@@ -342,34 +342,6 @@ Commonly used with a filter.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
-      "BaseCardItemDefinition": {
-        "additionalProperties": false,
-        "properties": {
-          "content": {
-            "description": "The label to render.",
-            "format": "remapper",
-          },
-          "footer": {
-            "description": "A list of buttons to be rendered as the footer of the card.",
-            "items": {
-              "$ref": "#/definitions/Button",
-            },
-            "type": "array",
-          },
-          "image": {
-            "$ref": "#/definitions/Image",
-            "description": "Image for the card.",
-          },
-          "title": {
-            "description": "Title of the card, appears in bold.",
-            "format": "remapper",
-          },
-        },
-        "required": [
-          "content",
-        ],
-        "type": "object",
-      },
       "BulmaColor": {
         "description": "A color known to Bulma.",
         "enum": [
@@ -469,124 +441,34 @@ Describe what the button does. This helps with accessibility for people using sc
         "type": "object",
       },
       "CardItemDefinition": {
-        "anyOf": [
-          {
-            "$ref": "#/definitions/BaseCardItemDefinition",
-          },
-          {
-            "additionalProperties": false,
-            "properties": {
-              "actionButton": {
-                "$ref": "#/definitions/Omit%3CButton%2C%22label%22%3E",
-                "description": "A dropdown menu to be rendered at the top right corner of a card.",
-              },
-              "content": {
-                "description": "The label to render.",
-                "format": "remapper",
-              },
-              "footer": {
-                "description": "A list of buttons to be rendered as the footer of the card.",
-                "items": {
-                  "$ref": "#/definitions/Button",
-                },
-                "type": "array",
-              },
-              "image": {
-                "$ref": "#/definitions/Image",
-                "description": "Image for the card.",
-              },
-              "title": {
-                "description": "Title of the card, appears in bold.",
-                "format": "remapper",
-              },
-            },
-            "required": [
-              "actionButton",
-              "content",
-            ],
-            "type": "object",
-          },
-          {
-            "additionalProperties": false,
-            "properties": {
-              "content": {
-                "description": "The label to render.",
-                "format": "remapper",
-              },
-              "dropdown": {
-                "$ref": "#/definitions/Dropdown",
-                "description": "A dropdown menu to be rendered at the top right corner of a card.",
-              },
-              "footer": {
-                "description": "A list of buttons to be rendered as the footer of the card.",
-                "items": {
-                  "$ref": "#/definitions/Button",
-                },
-                "type": "array",
-              },
-              "image": {
-                "$ref": "#/definitions/Image",
-                "description": "Image for the card.",
-              },
-              "title": {
-                "description": "Title of the card, appears in bold.",
-                "format": "remapper",
-              },
-            },
-            "required": [
-              "content",
-              "dropdown",
-            ],
-            "type": "object",
-          },
-        ],
-      },
-      "Dropdown": {
         "additionalProperties": false,
         "properties": {
-          "icon": {
-            "description": "The icon to show in the dropdown button.",
-            "format": "fontawesome",
-            "type": "string",
-          },
-          "label": {
-            "description": "The text to show in the dropdown button.",
+          "content": {
+            "description": "The label to render.",
             "format": "remapper",
           },
-          "options": {
-            "description": "The list of options to display. Must have at least 1 option.",
+          "footer": {
+            "description": "A list of buttons to be rendered as the footer of the card.",
             "items": {
-              "$ref": "#/definitions/DropdownOption",
+              "$ref": "#/definitions/Button",
             },
-            "minItems": 1,
             "type": "array",
           },
-        },
-        "required": [
-          "options",
-        ],
-        "type": "object",
-      },
-      "DropdownOption": {
-        "additionalProperties": false,
-        "properties": {
-          "icon": {
-            "description": "The icon to show in the option.",
-            "format": "fontawesome",
-            "type": "string",
+          "image": {
+            "$ref": "#/definitions/Image",
+            "description": "Image for the card.",
           },
-          "label": {
-            "description": "The text to show in the option.",
+          "subtitle": {
+            "description": "Subtitle of the card.",
             "format": "remapper",
           },
-          "onClick": {
-            "description": "The action that will be called when selecting this option.",
-            "format": "action",
-            "type": "string",
+          "title": {
+            "description": "Title of the card, appears in bold.",
+            "format": "remapper",
           },
         },
         "required": [
-          "onClick",
+          "content",
         ],
         "type": "object",
       },
@@ -613,82 +495,11 @@ image can either be url or uploaded image",
         ],
         "type": "object",
       },
-      "Omit<Button,"label">": {
-        "$ref": "#/definitions/Pick%3CButton%2CExclude%3C(%22color%22%7C%22disabled%22%7C%22size%22%7C%22label%22%7C%22icon%22%7C%22light%22%7C%22rounded%22%7C%22fullwidth%22%7C%22inverted%22%7C%22onClick%22%7C%22outlined%22%7C%22title%22%7C%22hide%22)%2C%22label%22%3E%3E",
-      },
-      "Pick<Button,Exclude<("color"|"disabled"|"size"|"label"|"icon"|"light"|"rounded"|"fullwidth"|"inverted"|"onClick"|"outlined"|"title"|"hide"),"label">>": {
-        "additionalProperties": false,
-        "properties": {
-          "color": {
-            "$ref": "#/definitions/BulmaColor",
-            "default": "primary",
-            "description": "The color of the button.",
-          },
-          "disabled": {
-            "description": "Whether the button should be disabled.
-
-If the resulting remapper value is truthy, the button will be disabled.",
-            "format": "remapper",
-          },
-          "fullwidth": {
-            "description": "Whether the button should be full width or not.
-
-By default buttons only take up as much space as needed.",
-            "type": "boolean",
-          },
-          "hide": {
-            "description": "Whether to hide the button.
-
-Useful for conditional rendering.",
-            "format": "remapper",
-          },
-          "icon": {
-            "description": "An FontAwesome icon to display inside of the button.
-
-This is the only thing visible on mobile so it's required",
-            "format": "fontawesome",
-            "type": "string",
-          },
-          "inverted": {
-            "description": "Whether the text and background colors should be inverted.",
-            "type": "boolean",
-          },
-          "light": {
-            "description": "When set to true, the ‘light’ set of Bulma colors are used.",
-            "type": "boolean",
-          },
-          "onClick": {
-            "description": "The name of the action to trigger when clicking on this field.",
-            "format": "action",
-            "type": "string",
-          },
-          "outlined": {
-            "description": "Whether the button should display its colors in the outlines.",
-            "type": "boolean",
-          },
-          "rounded": {
-            "description": "Whether the button should be rounded.",
-            "type": "boolean",
-          },
-          "size": {
-            "$ref": "#/definitions/BulmaSize",
-            "default": "normal",
-            "description": "The size of the button.",
-          },
-          "title": {
-            "description": "The title for the button.
-
-Describe what the button does. This helps with accessibility for people using screen readers.",
-            "format": "remapper",
-          },
-        },
-        "required": [
-          "icon",
-        ],
-        "type": "object",
-      },
     },
     "properties": {
+      "card": {
+        "$ref": "#/definitions/CardItemDefinition",
+      },
       "defaultImage": {
         "description": "An image to fallback on,
 
@@ -696,13 +507,10 @@ this can either be an asset name or a URL",
         "type": "string",
       },
       "hideOnNoData": {
-        "description": "Whether the list should be hidden if there is no data.
+        "description": "Whether the cards should be hidden if there is no data.
 
 Will not hide if undefined.",
         "type": "boolean",
-      },
-      "itemDefinition": {
-        "$ref": "#/definitions/CardItemDefinition",
       },
       "show": {
         "description": "Whether to render the item.",
@@ -711,7 +519,7 @@ Will not hide if undefined.",
     },
     "required": [
       "defaultImage",
-      "itemDefinition",
+      "card",
     ],
     "type": "object",
   },
