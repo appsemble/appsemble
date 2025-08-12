@@ -23,7 +23,7 @@ interface HeaderComponentProps {
   readonly item: Item;
   readonly isVisible: boolean;
   readonly onItemClick: (event: Event) => void;
-  readonly itemHref?: string;
+  readonly itemHref: string | undefined;
 }
 
 export function HeaderComponent({
@@ -133,20 +133,10 @@ export function HeaderComponent({
         )}
       </div>
       {'button' in header ? (
-        <ButtonComponent
-          field={header.button}
-          index={index}
-          item={item}
-          onItemClick={onItemClick}
-        />
+        <ButtonComponent field={header.button} index={index} item={item} />
       ) : null}
       {'toggleButton' in header ? (
-        <ToggleButtonComponent
-          field={header.toggleButton}
-          index={index}
-          item={item}
-          onItemClick={onItemClick}
-        />
+        <ToggleButtonComponent field={header.toggleButton} index={index} item={item} />
       ) : null}
       {'dropdown' in header ? (
         <div className={styles.dropdown}>

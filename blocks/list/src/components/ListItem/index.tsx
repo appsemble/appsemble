@@ -36,10 +36,15 @@ export function ListItem({ index, item }: ListItemProps): VNode {
     async (event: Event) => {
       event.preventDefault();
       event.stopPropagation();
-      window.location.hash = itemHash;
-      await actions.onClick(item);
+
+      // We take the onClick action defined in the block actions
+      const action = actions.onClick;
+      if (action.type === 'link') {
+        window.location.hash = `${pathIndex}.item.${item.id}`;
+      }
+      await action(item, { index });
     },
-    [actions, item, itemHash],
+    [actions.onClick, index, item, pathIndex],
   );
 
   const ref = useRef<HTMLDivElement>();
@@ -132,10 +137,11 @@ export function ListItem({ index, item }: ListItemProps): VNode {
           index={index}
           isVisible={isVisible}
           item={item}
+          itemHref={itemHref}
           onItemClick={onItemClick}
         />
       ) : null}
-      {footer ? <FooterComponent index={index} item={item} onItemClick={onItemClick} /> : null}
+      {footer ? <FooterComponent index={index} item={item} /> : null}
     </div>
   );
 }
