@@ -1,6 +1,6 @@
 {
   "name": "appsemble",
-  "version": "0.34.8",
+  "version": "0.34.9-test.0",
   "description": "A simple wrapper for @appsemble/cli",
   "keywords": [
     "app",
@@ -36,6 +36,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/cli": "0.34.8"
+    "@appsemble/cli": "0.34.9-test.0"
   }
 }
