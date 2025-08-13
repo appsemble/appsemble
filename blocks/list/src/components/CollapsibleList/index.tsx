@@ -27,7 +27,9 @@ export function CollapsibleListComponent({
 
   const [collapsed, setCollapsed] = useState(index === 0 ? startCollapsed : true);
 
-  const toggleCollapsed = (): void => {
+  const toggleCollapsed = (event: Event): void => {
+    event.preventDefault();
+    event.stopPropagation();
     setCollapsed(!collapsed);
   };
 

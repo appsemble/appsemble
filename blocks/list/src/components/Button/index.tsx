@@ -49,14 +49,20 @@ export function ButtonComponent({
     [field.disabled, index, item, remap],
   );
 
-  const handleClick = useCallback(async () => {
-    // We take the onClick action name specified in the button, wherever the button is
-    const action = actions[onClick];
-    if (action.type === 'link') {
-      window.location.hash = `${pathIndex}.item.${item.id}`;
-    }
-    await action(item, { index });
-  }, [actions, index, item, onClick, pathIndex]);
+  const handleClick = useCallback(
+    async (event: Event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      // We take the onClick action name specified in the button, wherever the button is
+      const action = actions[onClick];
+      if (action.type === 'link') {
+        window.location.hash = `${pathIndex}.item.${item.id}`;
+      }
+      await action(item, { index });
+    },
+    [actions, index, item, onClick, pathIndex],
+  );
 
   const className = classNames('button', `is-${isMobile ? 'small' : size}`, {
     'is-rounded': rounded,
