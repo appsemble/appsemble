@@ -24,9 +24,11 @@ interface HeaderComponentProps {
   readonly isVisible: boolean;
   readonly onItemClick: (event: Event) => void;
   readonly itemHref: string | undefined;
+  readonly dataTestId?: string;
 }
 
 export function HeaderComponent({
+  dataTestId,
   index,
   isVisible,
   item,
@@ -99,6 +101,7 @@ export function HeaderComponent({
     // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
     <div
       className={`${styles.headerWrapper} is-flex`}
+      data-testid={dataTestId}
       onClick={onItemClick}
       onKeyDown={onItemClick}
       role="button"
