@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.9](https://gitlab.com/appsemble/appsemble/-/releases/0.34.9)] - 2025-08-13
+
+### Fixed
+
+- Block(`list`): Properly toggle collapsed lists. Handle header button click only once.
+
 ## \[[0.34.9-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.34.9-test.0)] - 2025-08-12
 
 ### Fixed
