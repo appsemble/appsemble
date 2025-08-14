@@ -7,6 +7,9 @@
     "types": ["@appsemble/webpack-config/types"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "react-jsx",
-    "jsxImportSource": "preact"
+    "jsxImportSource": "preact",
+    "moduleDetection": "force",
+    "moduleResolution": "bundler",
+    "module": "ESNext"
   }
 }

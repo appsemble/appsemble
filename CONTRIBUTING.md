@@ -213,8 +213,9 @@ packages.
 
 We use `@testing-library/preact` and `@testing-library/react` with `vitest`.
 
-To see an example of how to write these tests, check an existing test in the repo and/or read the
-documentation of the testing libraries.
+To see an example of how to write these tests, check an existing test in the repo (e.g. in
+`packages/preact-components/Button/index.test.tsx`) and/or read the documentation of the testing
+libraries.
 
 #### Block Component Tests
 
@@ -228,8 +229,9 @@ To render a component of a visual block (e.g. `@appsemble/list`, `@appsemble/for
 wrap it with a `<Context.Provider>` component imported from `@appsemble/preact` and pass it an
 object implementing the `BlockProps` interface from `@appsemble/preact`.
 
-To see an example of how to write these tests, check an existing test in the repo and/or read the
-documentation of the testing libraries.
+To see an example of how to write these tests, check an existing test in the repo (e.g. in
+`blocks/list/src/components/ListItem/Header/index.test.tsx`) and/or read the documentation of the
+testing libraries.
 
 #### Block Interaction Tests
 
@@ -255,7 +257,8 @@ call its bootstrap function with an object implementing the `BootstrapParams` in
 If you are testing events, you can create an instance of `EventEmitter` in your test, then call the
 `createEvents` function from `@appsemble/block-interaction-tests/utils`.
 
-To see an example of how to write these tests, check an existing test in the repo and/or read the
+To see an example of how to write these tests, check an existing test in the repo (e.g. in
+`packages/block-interaction-tests/src/list-with-data-loader/index.test.ts`) and/or read the
 documentation of the testing libraries.
 
 #### End 2 End Tests
@@ -398,6 +401,16 @@ collected here that may help you build your end 2 end tests:
     to keep tests isolated
 - Finally, Playwright has a list of best practices that are really useful:
   https://playwright.dev/docs/best-practices
+
+#### Testing Guidelines
+
+We aim to follow these guidelines to ensure stability in the platform:
+
+- Aim to test blocks and their components at the lowest possible level first in the following order:
+> component tests -> block component tests -> block interaction tests -> e2e tests
+- When making changes to a block, make sure its component and interaction tests remain working
+- When making changes to a block, make sure to add tests to cover the changes
+- e2e tests should be reserved for app specific features
 
 ### Local CI
 

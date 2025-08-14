@@ -1,7 +1,7 @@
 import { EventEmitter } from 'node:events';
 
-import { DataLoader } from '@appsemble/data-loader/src/bootstrap';
-import { List } from '@appsemble/list/src/bootstrap';
+import { DataLoader } from '@appsemble/data-loader/src/bootstrap.js';
+import { List } from '@appsemble/list/src/bootstrap.js';
 import { type BlockProps, Context } from '@appsemble/preact';
 import { render, screen } from '@testing-library/preact';
 import { expect, it } from 'vitest';
