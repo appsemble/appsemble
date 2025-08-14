@@ -3,6 +3,13 @@
   "version": "0.34.9",
   "private": true,
   "description": "Used to test interactions between different appsemble blocks.",
+  "keywords": [
+    "app",
+    "apps",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
   "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
   "repository": {
