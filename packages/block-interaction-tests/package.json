@@ -1,5 +1,5 @@
 {
-  "name": "@appsemble/block-interactions-tests",
+  "name": "@appsemble/block-interaction-tests",
   "version": "0.34.9",
   "private": true,
   "description": "Used to test interactions between different appsemble blocks.",
@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",
-    "directory": "packages/block-interactions-tests"
+    "directory": "packages/block-interaction-tests"
   },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",

@@ -1,8 +1,11 @@
 class IntersectionObserverMock {
   constructor() {}
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+
+  observe(): void {}
+
+  unobserve(): void {}
+
+  disconnect(): void {}
 }
 
 (global as any).IntersectionObserver = IntersectionObserverMock;
