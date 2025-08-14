@@ -205,7 +205,65 @@ npm test -- -u
 > When writing tests, make sure to put any hooks like `beforeAll` and `afterEach` within a describe
 > block to make sure the global hooks are respected.
 
+#### Component Tests
+
+These tests are intended to test preact/react components in isolation and focus mainly on visuals.
+They are mainly written for the `@appsemble/preact-components` and `@appsemble/react-components`
+packages.
+
+We use `@testing-library/preact` and `@testing-library/react` with `vitest`.
+
+To see an example of how to write these tests, check an existing test in the repo and/or read the
+documentation of the testing libraries.
+
+#### Block Component Tests
+
+These tests are intended to test different components of blocks. For example, the `Header` and
+`Footer` components in `@appsemble/list`. They focus mainly on visuals and some user events like
+clicking and ensure that block components remain working on small level.
+
+We use `@testing-library/preact` and `@testing-library/react` with `vitest`.
+
+To render a component of a visual block (e.g. `@appsemble/list`, `@appsemble/form`), you need to
+wrap it with a `<Context.Provider>` component imported from `@appsemble/preact` and pass it an
+object implementing the `BlockProps` interface from `@appsemble/preact`.
+
+To see an example of how to write these tests, check an existing test in the repo and/or read the
+documentation of the testing libraries.
+
+#### Block Interaction Tests
+
+These tests are intended to test interactions between blocks and make sure that blocks keep working
+as intended in combinations with each other. For simplicity, we only maintain interaction tests
+between the latest versions of the blocks.
+
+We use `@testing-library/preact` and `@testing-library/react` with `vitest`.
+
+We have a dedicated `@appsemble/block-interaction-tests` package where these tests reside. Each
+block interaction has a dedicated directory containing the `index.test.tsx/ts` file and a `types.ts`
+file. In `types.ts` the `block.ts` file of each tested block is imported to combine the augmented
+interfaces of `@appsemble/sdk`.
+
+To render a visual block (e.g. `@appsemble/list`, `@appsemble/form`), you need to wrap it with a
+`<Context.Provider>` component imported from `@appsemble/preact` and pass it an object implementing
+the `BlockProps` interface from `@appsemble/preact`.
+
+To render a non-visual block (e.g. `@appsemble/data-loader`, `@paginator/paginator`), you need to
+call its bootstrap function with an object implementing the `BootstrapParams` interface from
+`@appsemble/sdk`.
+
+If you are testing events, you can create an instance of `EventEmitter` in your test, then call the
+`createEvents` function from `@appsemble/block-interaction-tests/utils`.
+
+To see an example of how to write these tests, check an existing test in the repo and/or read the
+documentation of the testing libraries.
+
 #### End 2 End Tests
+
+These tests are intended to test the functionality of an app like a user would use it. This includes
+network requests, block interactions, data, notifications, files, etc. They assume a pinned version
+of each block used in the app, defined in the app-definition, and may need to be updated whenever
+these versions change.
 
 The end 2 end tests are run using
 [![](https://avatars.githubusercontent.com/u/89237858?s=16) Playwright](https://playwright.dev).
