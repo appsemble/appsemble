@@ -74,7 +74,7 @@ pages:
       - employee
     blocks:
       - type: data-loader
-        version: 0.32.1
+        version: 0.34.8
         events:
           emit:
             data: bicycleInventory
@@ -90,6 +90,7 @@ pages:
           listen:
             data: bicycleInventory
         parameters:
+          title: Rent out bicycles
           itemDefinition:
             header:
               title: { prop: type }
@@ -107,16 +108,16 @@ pages:
             footer:
               button:
                 label: Sell
+                icon: dollar-sign
                 onClick: sellBicycle
                 disabled:
                   lt: [{ prop: stock }, 1]
-          title: Rent out bicycles
         actions:
           sellBicycle:
             type: dialog
             blocks:
               - type: form
-                version: 0.32.1
+                version: 0.34.8
                 parameters:
                   fields:
                     - name: phoneNumber
@@ -165,7 +166,7 @@ pages:
       - manager
     blocks:
       - type: data-loader
-        version: 0.32.1
+        version: 0.34.8
         events:
           emit:
             data: bicycleStock
@@ -176,7 +177,7 @@ pages:
             type: resource.query
             resource: bicycles
       - type: table
-        version: 0.32.1
+        version: 0.34.8
         events:
           listen:
             data: bicycleStock
@@ -188,7 +189,7 @@ pages:
             - label: Amount in stock
               value: { prop: stock }
       - type: action-button
-        version: 0.32.1
+        version: 0.34.8
         parameters:
           icon: plus
         actions:
@@ -196,7 +197,7 @@ pages:
             type: dialog
             blocks:
               - type: form
-                version: 0.32.1
+                version: 0.34.8
                 parameters:
                   fields:
                     - type: string
@@ -230,7 +231,7 @@ pages:
   - name: Sale history
     blocks:
       - type: data-loader
-        version: 0.32.1
+        version: 0.34.8
         events:
           emit:
             data: saleHistoryData
@@ -239,7 +240,7 @@ pages:
             type: resource.query
             resource: saleHistory
       - type: feed
-        version: 0.32.1
+        version: 0.34.8
         events:
           listen:
             data: saleHistoryData

@@ -37,7 +37,7 @@ then be emitted for other blocks to use. This makes it a great block for data in
 ```yaml copy validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.32.1
+    version: 0.34.8
     events:
       emit:
         data: bicycleStock # Emit the data at the end of the onLoad action for other blocks to use
@@ -63,7 +63,7 @@ tell the block _how_ each entry of the array will populate the table.
 
 ```yaml copy validate block-snippet
 type: table
-version: 0.32.1
+version: 0.34.8
 events:
   listen:
     data: bicycleStock # Listen for data emitted with this key, like the one from the data loader
@@ -99,7 +99,7 @@ First, we need to initiate the dialog:
 
 ```yaml copy
 type: action-button
-version: 0.32.1
+version: 0.34.8
 parameters:
   icon: plus # The icon to show on the button
 actions:
@@ -118,7 +118,7 @@ create new bicycles, the form should include the properties of the bicycle resou
 type: dialog
 blocks:
   - type: form
-    version: 0.32.1
+    version: 0.34.8
     parameters:
       fields:
         - type: string
@@ -192,7 +192,7 @@ The block in its entirety looks like this:
 
 ```yaml copy block-definition
 type: action-button
-version: 0.32.1
+version: 0.34.8
 parameters:
   icon: plus
 actions:
@@ -200,7 +200,7 @@ actions:
     type: dialog
     blocks:
       - type: form
-        version: 0.32.1
+        version: 0.34.8
         parameters:
           fields:
             - type: string
@@ -248,7 +248,7 @@ roles:
   - manager
 blocks:
   - type: data-loader
-    version: 0.32.1
+    version: 0.34.8
     events:
       emit:
         data: bicycleStock
@@ -259,7 +259,7 @@ blocks:
         type: resource.query
         resource: bicycles
   - type: table
-    version: 0.32.1
+    version: 0.34.8
     events:
       listen:
         data: bicycleStock
@@ -271,7 +271,7 @@ blocks:
         - label: Amount in stock
           value: { prop: stock }
   - type: action-button
-    version: 0.32.1
+    version: 0.34.8
     parameters:
       icon: plus
     actions:
@@ -279,7 +279,7 @@ blocks:
         type: dialog
         blocks:
           - type: form
-            version: 0.32.1
+            version: 0.34.8
             parameters:
               fields:
                 - type: string

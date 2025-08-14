@@ -14,7 +14,7 @@ First, we'll load the resource and emit the data for other blocks to use:
 
 ```yaml copy block-snippet
 type: data-loader
-version: 0.32.1
+version: 0.34.8
 events:
   emit:
     data: saleHistoryData
@@ -32,7 +32,7 @@ bicycle has been sold.
 
 ```yaml copy block-snippet
 type: feed
-version: 0.32.1
+version: 0.34.8
 events:
   listen:
     data: saleHistoryData
@@ -60,7 +60,7 @@ The final **Sale history** page looks like this:
 name: Sale history
 blocks:
   - type: data-loader
-    version: 0.32.1
+    version: 0.34.8
     events:
       emit:
         data: saleHistoryData
@@ -69,7 +69,7 @@ blocks:
         type: resource.query
         resource: saleHistory
   - type: feed
-    version: 0.32.1
+    version: 0.34.8
     events:
       listen:
         data: saleHistoryData
