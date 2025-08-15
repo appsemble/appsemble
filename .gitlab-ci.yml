@@ -465,17 +465,6 @@ e2e:
         S3_SECRET_KEY: password
         migrateTo: next
         E2E: true
-  before_script:
-    - apt-get update && apt-get install -y curl dnsutils
-    - |
-      echo "Aliasing app domains to appsemble..."
-      APPSEMBLE_IP=$(getent hosts appsemble | awk '{ print $1 }')
-      for APP_NAME in ./apps/*/; do
-        APP_NAME=$(basename "$APP_NAME")
-        CUSTOM_ALIAS="${APP_NAME}.appsemble.appsemble"
-        echo "$APPSEMBLE_IP $CUSTOM_ALIAS" >> /etc/hosts
-        echo "Added alias: $CUSTOM_ALIAS -> $APPSEMBLE_IP"
-      done
   script:
     - npm ci
     - npm run scripts seed-account --

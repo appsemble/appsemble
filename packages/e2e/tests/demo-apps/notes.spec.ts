@@ -1,13 +1,24 @@
+import { readFile } from 'node:fs/promises';
+
 import { expect, test } from '../../index.js';
 
+let appId: number;
+
 test.describe('Notes', () => {
-  test.beforeAll(async ({ getAppId, giveAppConsent }) => {
-    const appId = await getAppId('notes');
+  test.beforeAll(async ({ createApp, giveAppConsent }) => {
+    const appDefinition = await readFile('../../apps/notes/app-definition.yaml', 'utf8');
+
+    appId = (await createApp('appsemble', appDefinition)).id!;
+
     await giveAppConsent(appId);
   });
 
+  test.afterAll(async ({ deleteApp }) => {
+    await deleteApp(appId);
+  });
+
   test.beforeEach(async ({ loginAppAppsembleOAuth, page, visitApp }) => {
-    await visitApp('notes');
+    await visitApp(appId);
     await loginAppAppsembleOAuth();
     await page.waitForURL('**/notes');
   });

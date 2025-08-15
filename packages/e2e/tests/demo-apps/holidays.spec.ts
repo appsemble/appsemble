@@ -1,6 +1,20 @@
+import { readFile } from 'node:fs/promises';
+
 import { expect, test } from '../../index.js';
 
+let appId: number;
+
 test.describe('Holidays', () => {
+  test.beforeAll(async ({ createApp }) => {
+    const appDefinition = await readFile('../../apps/holidays/app-definition.yaml', 'utf8');
+
+    appId = (await createApp('appsemble', appDefinition)).id!;
+  });
+
+  test.afterAll(async ({ deleteApp }) => {
+    await deleteApp(appId);
+  });
+
   test.beforeEach(async ({ page, visitApp }) => {
     await page.route('/api/apps/*/actions/pages.0.tabs.0.blocks.0.actions.onLoad*', (route) => {
       route.fulfill({ path: 'mock-data/holidays-nl.json' });
@@ -12,7 +26,7 @@ test.describe('Holidays', () => {
       route.fulfill({ path: 'mock-data/holidays-us.json' });
     });
 
-    await visitApp('holidays');
+    await visitApp(appId);
     await page.waitForURL('**/holidays-in-europe/netherlands');
   });
 

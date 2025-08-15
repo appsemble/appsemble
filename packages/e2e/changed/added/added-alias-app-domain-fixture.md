@@ -1,0 +1,1 @@
+Added `aliasAppDomain` fixture

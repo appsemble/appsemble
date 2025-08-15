@@ -1,5 +1,5 @@
 import { type App } from '@appsemble/types';
-import { test as base } from '@playwright/test';
+import { type APIRequestContext, test as base } from '@playwright/test';
 
 import { expect } from '../../expect/index.js';
 
@@ -7,9 +7,11 @@ export interface LiveAppFixtures {
   /**
    * Visit an app.
    *
-   * @param appId The app id.
+   * @param appIdentifier Used to find the app to visit.
+   *   Can be either the app's **ID** as number, or the app's **path** as string
+   * @returns URL of the live app
    */
-  visitApp: (appPath: string) => Promise<void>;
+  visitApp: (appIdentifier: number | string) => Promise<string>;
 
   /**
    * Login to an app with the Appsemble OAuth2 flow.
@@ -44,15 +46,23 @@ export interface LiveAppFixtures {
   getLiveAppURL: (appId: number) => Promise<string>;
 }
 
+async function getAppId(appPath: string, request: APIRequestContext): Promise<number> {
+  const apps: App[] = await (await request.get('/api/apps')).json();
+  const appId = apps.find(({ path }) => path === appPath)?.id;
+  expect(appId).not.toBeUndefined();
+
+  return appId!;
+}
+
 export const test = base.extend<LiveAppFixtures>({
   async visitApp({ getLiveAppURL, page, request }, use) {
-    await use(async (appPath) => {
-      const apps: App[] = await (await request.get('/api/apps')).json();
-      const appId = apps.find(({ path }) => path === appPath)?.id;
-      expect(appId).not.toBeUndefined();
+    await use(async (appIdentifier) => {
+      const url = await (typeof appIdentifier === 'number'
+        ? getLiveAppURL(appIdentifier)
+        : getLiveAppURL(await getAppId(appIdentifier, request)));
 
-      const url = await getLiveAppURL(appId!);
       await page.goto(url);
+      return url;
     });
   },
 
