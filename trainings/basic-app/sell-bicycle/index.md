@@ -65,7 +65,7 @@ events:
     data: bicycleInventory # Listen for the bicycle inventory data
 parameters:
   title: Rent out bicycles # Title of the list, appears at the top
-  itemDefinition: # Properties of an individual item
+  item: # Properties of an individual item
     header: # Header of a card
       title: { prop: type }
     content:
@@ -286,7 +286,7 @@ blocks:
         data: bicycleInventory
     parameters:
       title: Rent out bicycles
-      itemDefinition:
+      item:
         header:
           title: { prop: type }
         content:

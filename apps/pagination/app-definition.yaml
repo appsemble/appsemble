@@ -378,7 +378,7 @@ pages:
       - type: list
         version: 0.34.10-test.0
         parameters:
-          itemDefinition:
+          item:
             header:
               title: { prop: title }
             footer:

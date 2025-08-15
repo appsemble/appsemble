@@ -93,7 +93,7 @@ it('should render a header component', async () => {
   const props: BlockProps = {
     ...defaultBootstrapParams,
     parameters: {
-      itemDefinition: {
+      item: {
         header: {
           title: 'test',
         },
@@ -138,7 +138,7 @@ it('should render a header component with a link onClick action', async () => {
   const props: BlockProps = {
     ...defaultBootstrapParams,
     parameters: {
-      itemDefinition: {
+      item: {
         header: {
           title: 'test',
         },

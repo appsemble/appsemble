@@ -91,7 +91,7 @@ pages:
             data: bicycleInventory
         parameters:
           title: Rent out bicycles
-          itemDefinition:
+          item:
             header:
               title: { prop: type }
             content:
