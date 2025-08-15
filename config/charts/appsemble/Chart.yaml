@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.34.9
-appVersion: 0.34.9
+version: 0.34.10-test.0
+appVersion: 0.34.10-test.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,10 +31,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: fixed
-      description: "Block(list): Properly toggle collapsed lists. Handle header button
-        click only once."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
