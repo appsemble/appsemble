@@ -28,6 +28,14 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['packages/block-interaction-tests/vitest.setup.ts'],
+      rules: {
+        'no-useless-constructor': 'off',
+        '@typescript-eslint/no-empty-function': 'off',
+        'class-methods-use-this': 'off',
+      },
+    },
+    {
       files: ['packages/scripts/**'],
       rules: {
         'no-console': 'off',

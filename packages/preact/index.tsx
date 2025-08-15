@@ -11,7 +11,7 @@ export interface BlockProps extends BootstrapParams {
 
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
 // @ts-ignore 2345 argument of type is not assignable to parameter of type (strictNullChecks)
-const Context = createContext<BlockProps>(null);
+export const Context = createContext<BlockProps>(null);
 
 /**
  * Mount a Preact component returned by a bootstrap function in the shadow DOM of a block.

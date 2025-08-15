@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "rootDir": ".",
+    "strictFunctionTypes": false,
+    "strictNullChecks": false,
+    "types": ["@appsemble/webpack-config/types"],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "moduleDetection": "force",
+    "moduleResolution": "bundler",
+    "module": "ESNext"
+  }
+}

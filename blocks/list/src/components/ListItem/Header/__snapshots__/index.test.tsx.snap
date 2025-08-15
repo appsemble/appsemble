@@ -1,0 +1,63 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should render a header component 1`] = `
+<div
+  class="headerWrapper is-flex"
+  data-testid="header-test"
+  role="button"
+  tabindex="-1"
+>
+  <div
+    class="is-flex image"
+  >
+    <div />
+    <button
+      class="item has-text-left is-block"
+      type="button"
+    >
+      <div
+        class="is-flex is-justify-content-space-between is-align-items-center"
+      >
+        <div>
+          <h4
+            class="title"
+          >
+            test
+          </h4>
+        </div>
+      </div>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`should render a header component with a link onClick action 1`] = `
+<div
+  class="headerWrapper is-flex"
+  data-testid="header-test"
+  role="button"
+  tabindex="-1"
+>
+  <div
+    class="is-flex image"
+  >
+    <div />
+    <a
+      class="item has-text-left is-block"
+      href="href"
+    >
+      <div
+        class="is-flex is-justify-content-space-between is-align-items-center"
+      >
+        <div>
+          <h4
+            class="title"
+          >
+            test
+          </h4>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+`;
