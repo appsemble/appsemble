@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.10](https://gitlab.com/appsemble/appsemble/-/releases/0.34.10)] - 2025-08-18
+
+### Fixed
+
+- Service-worker: pass data correctly to notifications.
+
 ## \[[0.34.10-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.34.10-test.0)] - 2025-08-15
 
 ## \[[0.34.9](https://gitlab.com/appsemble/appsemble/-/releases/0.34.9)] - 2025-08-13
