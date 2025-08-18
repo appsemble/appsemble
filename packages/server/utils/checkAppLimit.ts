@@ -5,11 +5,11 @@ import { type Context } from 'koa';
 import { App, OrganizationSubscription } from '../models/index.js';
 
 /**
- * Check if the app is currently locked.
+ * Check if the organization passes app limit.
  *
- * Will throw a 403 error if the app is locked.
+ * Will throw a 403 error if the app limit is reached.
  *
- * @param ctx The Koa context that can contain a force flag in its body
+ * @param ctx The Koa context
  * @param app The app to check against
  * @param visibility Optional parameter when app visibility is being updated
  * @returns boolean Whether the app is public
