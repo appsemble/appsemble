@@ -1,12 +1,10 @@
 import { type TrainingStatus } from '@appsemble/types';
 import { expect as base, type Locator } from '@playwright/test';
 
-import {
-  availableColor,
-  blockedColor,
-  completedColor,
-  inProgressColor,
-} from '../../../tests/studio/trainings/constants.js';
+const availableColor = 'rgb(255, 255, 255)';
+const inProgressColor = 'rgb(255, 127, 39)';
+const completedColor = 'rgb(34, 177, 76)';
+const blockedColor = 'rgb(211, 211, 211)';
 
 export interface TrainingMatchers {
   /**

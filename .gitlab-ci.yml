@@ -482,15 +482,11 @@ e2e:
       --name Appsemble
       --website https://appsemble.com
     - npm run appsemble -- block publish 'blocks/*'
-    - npm run appsemble -- app publish 'apps/empty' --modify-context
-    - npm run appsemble -- app publish 'apps/holidays' --modify-context
-    - npm run appsemble -- app publish 'apps/notes' --modify-context
-    - npm run appsemble -- app publish 'apps/person' --modify-context
-    - npm run appsemble -- app publish 'apps/survey' --modify-context
-    - npm run appsemble -- app publish 'apps/unlittered' --modify-context
+    - npm run appsemble -- app publish 'apps/empty'
+    - npm run appsemble -- app publish 'apps/person'
     - npm --workspace @appsemble/types run prepack
     - npm --workspace @appsemble/lang-sdk run prepack
-    - npm --workspace @appsemble/e2e run e2e -- --max-failures 6
+    - npm --workspace @appsemble/e2e run e2e
   artifacts:
     expose_as: Playwright videos
     when: always

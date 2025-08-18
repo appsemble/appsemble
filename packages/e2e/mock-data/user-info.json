@@ -1,0 +1,11 @@
+{
+  "sub": "0",
+  "name": "Test account",
+  "email": "test@test.com",
+  "email_verified": true,
+  "picture": "https://www.gravatar.com/avatar/f46b82357ce29bcd1099915946cda468?s=128&d=mp",
+  "locale": null,
+  "zoneinfo": "Europe/Amsterdam",
+  "subscribed": true,
+  "hasPassword": true
+}

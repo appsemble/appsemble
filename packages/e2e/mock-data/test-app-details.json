@@ -1,0 +1,33 @@
+{
+  "id": 0,
+  "path": "test-app",
+  "iconBackground": "#ffffff",
+  "iconUrl": null,
+  "definition": {
+    "name": "Test app",
+    "description": "Test app description",
+    "resources": {
+      "Test resource": {
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title"],
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string"
+            },
+            "body": {
+              "title": "Body",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "showAppDefinition": false,
+  "OrganizationId": "test-org",
+  "OrganizationName": "Test org",
+  "screenshotUrls": [null]
+}

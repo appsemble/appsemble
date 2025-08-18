@@ -5,21 +5,6 @@ test.describe('Organizations', () => {
     await page.goto('/en/organizations');
   });
 
-  test('should render a list of organizations', async ({ page }) => {
-    await expect(
-      page.getByRole('link', { name: 'Appsemble appsemble', exact: true }),
-    ).toBeVisible();
-  });
-
-  test('should link to organization details', async ({ page }) => {
-    await page.getByRole('link', { name: 'Appsemble appsemble', exact: true }).click();
-    await expect(page.getByText('The open source low-code app building platform')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Apps', exact: true })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Blocks', exact: true })).toBeVisible();
-    await expect(page.getByText('Unlittered')).toBeVisible();
-    await expect(page.getByText('action-button')).toBeVisible();
-  });
-
   test('should cancel the deletion of invite', async ({ page }) => {
     await page.goto('/en/organizations/appsemble/members');
     await page.click('button.button');

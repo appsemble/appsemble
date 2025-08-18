@@ -14,10 +14,12 @@ export default defineConfig({
   forbidOnly: Boolean(CI),
   // Retry on CI only
   retries: CI ? 2 : 0,
-  // A lot of tests depend on the same pre-seeded apps, so more workers can introduce flakiness.
+  // Concurrent tests run better on CI in general
   workers: 1,
   // Reporter to use. See https://playwright.dev/docs/test-reporters
   reporter: [['junit', { outputFile: 'results.xml' }]],
+  // Prevent the pipeline from timing out
+  maxFailures: 6,
   // Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions.
   use: {
     // Base URL to use in actions like `await page.goto('/')`.
@@ -36,19 +38,35 @@ export default defineConfig({
 
   // Configure projects for major browsers
   projects: [
+    {
+      name: 'static-chromium',
+      testDir: './tests/static-ui',
+      use: { ...devices['Desktop Chrome'] },
+      fullyParallel: true,
+    },
+    {
+      name: 'static-firefox',
+      testDir: './tests/static-ui',
+      use: { ...devices['Desktop Firefox'] },
+      fullyParallel: true,
+    },
+    {
+      name: 'static-safari',
+      testDir: './tests/static-ui',
+      use: { ...devices['Desktop Safari'] },
+      fullyParallel: true,
+    },
     { name: 'setup', testMatch: /.*\.setup\.ts/ },
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'], storageState: '.auth/user.json' },
       dependencies: ['setup'],
     },
-
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'], storageState: '.auth/user.json' },
       dependencies: ['setup'],
     },
-
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'], storageState: '.auth/user.json' },
