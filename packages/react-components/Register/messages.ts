@@ -49,4 +49,8 @@ export const messages = defineMessages({
     id: 'react-components.It/Dy0',
     defaultMessage: 'Yes, I want to be kept up to date with Appsemble news.',
   },
+  phoneNumber: {
+    id: 'react-components.jdJhOL',
+    defaultMessage: 'Phone number',
+  },
 });

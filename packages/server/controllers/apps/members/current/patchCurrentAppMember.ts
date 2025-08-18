@@ -5,6 +5,7 @@ import {
   uploadToBuffer,
 } from '@appsemble/node-utils';
 import { type Context } from 'koa';
+import { parsePhoneNumber } from 'libphonenumber-js/min';
 
 import { App, AppMember } from '../../../../models/index.js';
 import { getAppMemberInfoById, parseAppMemberProperties } from '../../../../utils/appMember.js';
@@ -13,12 +14,13 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     request: {
-      body: { locale, name, picture, properties },
+      body: { locale, name, phoneNumber, picture, properties },
     },
     user: authSubject,
   } = ctx;
 
   const app = await App.findOne({
+    attributes: ['id', 'definition'],
     where: { id: appId },
   });
 
@@ -28,10 +30,31 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
 
   assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
 
+  if (phoneNumber) {
+    const enabled = app.definition?.members?.phoneNumber?.enable === true;
+    assertKoaCondition(enabled, ctx, 400, 'App does not allow registering phone numbers');
+    const phoneNumberExists = await AppMember.count({
+      where: {
+        AppId: appId,
+        phoneNumber: parsePhoneNumber(phoneNumber, 'NL').format('INTERNATIONAL'),
+      },
+    });
+    assertKoaCondition(
+      !phoneNumberExists,
+      ctx,
+      409,
+      'App member with this phone number already exists.',
+    );
+  }
+
   const result: Partial<AppMember> = {};
 
   if (name != null) {
     result.name = name;
+  }
+
+  if (phoneNumber != null) {
+    result.phoneNumber = phoneNumber;
   }
 
   if (picture === '') {

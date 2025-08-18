@@ -1083,6 +1083,20 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should validate member phone number definition', async () => {
+    const phoneNumber = { enable: false, required: true };
+    const app = { ...createTestApp(), members: { phoneNumber } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('phone number should be enabled', phoneNumber, undefined, [
+        'members',
+        'phoneNumber',
+        'required',
+      ]),
+    ]);
+  });
+
   it('should validate app member properties for resource references', async () => {
     const app = {
       ...createTestApp(),

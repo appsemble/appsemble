@@ -62,4 +62,8 @@ export const messages = defineMessages({
     id: 'app.swaMky',
     defaultMessage: 'Preferred language for this app',
   },
+  phoneNumber: {
+    id: 'app.mXiD5u',
+    defaultMessage: 'Phone Number',
+  },
 });

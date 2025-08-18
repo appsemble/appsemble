@@ -14,5 +14,20 @@ export const AppMembersDefinition: OpenAPIV3.NonArraySchemaObject = {
         $ref: '#/components/schemas/AppMemberPropertyDefinition',
       },
     },
+    phoneNumber: {
+      type: 'object',
+      description: 'Whether the phone number property should be enabled',
+      required: ['enable'],
+      properties: {
+        enable: {
+          type: 'boolean',
+          default: false,
+        },
+        required: {
+          type: 'boolean',
+          default: false,
+        },
+      },
+    },
   },
 };

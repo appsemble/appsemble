@@ -17,15 +17,20 @@ import { PasswordStrengthIndicator } from '../PasswordStrengthIndicator/index.js
 export interface RegistrationFormValues {
   email: string;
   name: string;
+  phoneNumber?: string;
   password: string;
   subscribed: boolean;
 }
 
 interface RegisterProps {
   readonly onRegister: (values: RegistrationFormValues) => Promise<void>;
+  readonly phoneNumberDefinition?: {
+    enable: boolean;
+    required?: boolean;
+  };
 }
 
-export function Register({ onRegister }: RegisterProps): ReactNode {
+export function Register({ onRegister, phoneNumberDefinition }: RegisterProps): ReactNode {
   return (
     <SimpleForm
       defaultValues={{ email: '', name: '', password: '', subscribed: false }}
@@ -68,6 +73,16 @@ export function Register({ onRegister }: RegisterProps): ReactNode {
         name="password"
         required
       />
+      {phoneNumberDefinition?.enable ? (
+        <SimpleFormField
+          autoComplete="tel"
+          icon="mobile"
+          label={<FormattedMessage {...messages.phoneNumber} />}
+          name="phoneNumber"
+          required={Boolean(phoneNumberDefinition?.required)}
+          type="tel"
+        />
+      ) : null}
       <SimpleFormField
         // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
         // @ts-ignore Messed up

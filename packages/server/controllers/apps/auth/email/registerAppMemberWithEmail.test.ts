@@ -292,4 +292,128 @@ describe('registerAppMemberWithEmail', () => {
       }
     `);
   });
+
+  it('should throw if the app definition does not have phoneNumber enabled', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+    await app.update({
+      definition: {
+        ...app.definition,
+        members: { phoneNumber: { enable: false } },
+      },
+    });
+    const response = await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+        phoneNumber: '+31 612345678',
+      }),
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "App does not allow registering phone numbers",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should throw if phoneNumber is omitted', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+    await app.update({
+      definition: {
+        ...app.definition,
+        members: { phoneNumber: { enable: true, required: true } },
+      },
+    });
+    const response = await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Phone number is required for registering with this app",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should throw for duplicate phone numbers', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+    await app.update({
+      definition: {
+        ...app.definition,
+        members: { phoneNumber: { enable: true } },
+      },
+    });
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+      email: 'test@example.com',
+      phoneNumber: '+31612345678',
+    });
+
+    const response = await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test2@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+        phoneNumber: '+31 612345678',
+      }),
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 409 Conflict
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Conflict",
+        "message": "App member with this phone number already exists.",
+        "statusCode": 409,
+      }
+    `);
+  });
+
+  it('should create an app member with a phone number', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+    await app.update({
+      definition: {
+        ...app.definition,
+        members: { phoneNumber: { enable: true } },
+      },
+    });
+    const response = await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+        phoneNumber: '+31 612345678',
+      }),
+    );
+
+    expect(response.status).toBe(201);
+
+    const appMember = await AppMember.findOne({
+      where: { AppId: app.id, phoneNumber: '+31 6 12345678' },
+    });
+    expect(appMember?.dataValues).toMatchObject({
+      email: 'test@example.com',
+      timezone: 'Europe/Amsterdam',
+      phoneNumber: '+31 6 12345678',
+    });
+  });
 });
