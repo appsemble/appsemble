@@ -24,7 +24,7 @@ export function ContentComponent({
   const {
     actions,
     parameters: {
-      itemDefinition: { content },
+      item: { content },
     },
     utils: { remap },
   } = useBlock();

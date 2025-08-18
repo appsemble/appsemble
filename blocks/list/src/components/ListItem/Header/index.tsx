@@ -38,7 +38,7 @@ export function HeaderComponent({
   const {
     actions,
     parameters: {
-      itemDefinition: { header },
+      item: { header },
     },
     utils: { asset, remap },
   } = useBlock();

@@ -6727,8 +6727,9 @@ Will show the title in the collapse button if this is true.",
 Will not hide if undefined.",
         "type": "boolean",
       },
-      "itemDefinition": {
+      "item": {
         "$ref": "#/definitions/ItemDefinition",
+        "description": "The properties that describe what an item will look like in the list",
       },
       "startCollapsed": {
         "description": "Whether the list should start in a collapsed state.
@@ -6742,7 +6743,7 @@ Will only apply to the first list in grouped lists.",
       },
     },
     "required": [
-      "itemDefinition",
+      "item",
     ],
     "type": "object",
   },

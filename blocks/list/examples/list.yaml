@@ -1,5 +1,5 @@
 parameters:
-  itemDefinition:
+  item:
     header:
       icon: fontawesomeIcon
       title: { prop: name }

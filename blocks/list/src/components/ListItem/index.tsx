@@ -17,7 +17,7 @@ export function ListItem({ index, item }: ListItemProps): VNode {
   const {
     actions,
     parameters: {
-      itemDefinition: { content, footer, header },
+      item: { content, footer, header },
     },
     pathIndex,
   } = useBlock();

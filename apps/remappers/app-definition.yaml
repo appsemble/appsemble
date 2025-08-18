@@ -127,7 +127,7 @@ pages:
           listen:
             data: dailyBugleEmployees
         parameters:
-          itemDefinition:
+          item:
             header:
               title: [{ prop: firstName }, { string.case: upper }]
             content:

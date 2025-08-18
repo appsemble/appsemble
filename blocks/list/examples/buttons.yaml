@@ -1,5 +1,5 @@
 parameters:
-  itemDefinition:
+  item:
     header:
       title: { prop: name }
       toggleButton:

@@ -24,7 +24,7 @@ it('should render a list with data from a data-loader', async () => {
     ...defaultBootstrapParams,
     ready: resolveReady,
     parameters: {
-      itemDefinition: {
+      item: {
         header: {
           title: 'test',
         },

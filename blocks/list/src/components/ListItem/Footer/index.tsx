@@ -16,7 +16,7 @@ interface FooterComponentProps {
 export function FooterComponent({ index, item }: FooterComponentProps): VNode {
   const {
     parameters: {
-      itemDefinition: { footer },
+      item: { footer },
     },
     utils: { remap },
   } = useBlock();

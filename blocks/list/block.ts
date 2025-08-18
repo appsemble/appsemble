@@ -422,7 +422,10 @@ declare module '@appsemble/sdk' {
      */
     hideOnNoData?: boolean;
 
-    itemDefinition: ItemDefinition;
+    /**
+     * The properties that describe what an item will look like in the list
+     */
+    item: ItemDefinition;
 
     /**
      * An optional name of the field that contains the data.
