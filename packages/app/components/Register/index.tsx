@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { AppBar } from '../TitleBar/index.js';
 
@@ -21,6 +22,7 @@ export function Register(): ReactNode {
   const { passwordLogin } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const qs = useQuery();
+  const { definition } = useAppDefinition();
   const redirect = qs.get('redirect');
 
   const onRegister = useCallback(
@@ -36,6 +38,10 @@ export function Register(): ReactNode {
         formData.append('name', values.name);
       }
 
+      if (values.phoneNumber) {
+        formData.append('phoneNumber', values.phoneNumber);
+      }
+
       await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
       await passwordLogin({
         username: values.email,
@@ -49,7 +55,10 @@ export function Register(): ReactNode {
   return (
     <Content padding>
       <AppBar />
-      <RegisterForm onRegister={onRegister} />
+      <RegisterForm
+        onRegister={onRegister}
+        phoneNumberDefinition={definition.members?.phoneNumber}
+      />
     </Content>
   );
 }

@@ -111,7 +111,8 @@ export interface AppDefinition {
   controller?: ControllerDefinition;
 
   members?: {
-    properties: Record<string, AppMemberPropertyDefinition>;
+    phoneNumber?: AppMemberPhoneNumberDefinition;
+    properties?: Record<string, AppMemberPropertyDefinition>;
   };
 
   /**
@@ -351,6 +352,11 @@ export interface CronDefinition {
 export interface WebhookDefinition {
   schema: OpenAPIV3.SchemaObject;
   action: ActionDefinition;
+}
+
+export interface AppMemberPhoneNumberDefinition {
+  enable: boolean;
+  required?: boolean;
 }
 
 export interface AppMemberPropertyDefinition {

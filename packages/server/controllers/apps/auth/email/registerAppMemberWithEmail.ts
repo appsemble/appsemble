@@ -10,6 +10,7 @@ import {
 import { defaultLocale } from '@appsemble/utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
+import { parsePhoneNumber } from 'libphonenumber-js/min';
 
 import { App, AppMember, AppMessages } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
@@ -22,7 +23,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { locale, name, password, picture, properties = {}, timezone = '' },
+      body: { locale, name, password, phoneNumber, picture, properties = {}, timezone = '' },
     },
   } = ctx;
 
@@ -95,6 +96,31 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     'App member with this email address already exists.',
   );
 
+  if (phoneNumber) {
+    const enabled = app.definition?.members?.phoneNumber?.enable === true;
+    assertKoaCondition(enabled, ctx, 400, 'App does not allow registering phone numbers');
+    const phoneNumberExists = await AppMember.count({
+      where: {
+        AppId: appId,
+        phoneNumber: parsePhoneNumber(phoneNumber, 'NL').format('INTERNATIONAL'),
+      },
+    });
+    assertKoaCondition(
+      !phoneNumberExists,
+      ctx,
+      409,
+      'App member with this phone number already exists.',
+    );
+  } else {
+    const isRequired = app.definition?.members?.phoneNumber?.required === true;
+    assertKoaCondition(
+      !isRequired,
+      ctx,
+      400,
+      'Phone number is required for registering with this app',
+    );
+  }
+
   let appMember = { id: '' } as AppMember;
   try {
     appMember = await AppMember.create({
@@ -109,6 +135,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       timezone,
       locale,
       demo: app.demoMode,
+      phoneNumber,
     });
   } catch (error: unknown) {
     if (error instanceof AppMemberPropertiesError) {

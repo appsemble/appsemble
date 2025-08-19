@@ -113,11 +113,13 @@ function validateUniquePageNames(definition: AppDefinition, report: Report): voi
 }
 
 function validateMembersSchema(definition: AppDefinition, report: Report): void {
-  if (!definition.members) {
+  if (!definition.members?.properties) {
     return;
   }
 
-  for (const [propertyName, propertyDefinition] of Object.entries(definition.members.properties)) {
+  for (const [propertyName, propertyDefinition] of Object.entries(
+    definition.members.properties ?? {},
+  )) {
     // Handled by schema validation
     if (!propertyDefinition?.schema) {
       continue;
@@ -147,6 +149,19 @@ function validateMembersSchema(definition: AppDefinition, report: Report): void 
         ]);
       }
     }
+  }
+}
+
+function validatePhoneNumberDefinition(definition: AppDefinition, report: Report): void {
+  if (!definition.members?.phoneNumber) {
+    return;
+  }
+  if (!definition.members.phoneNumber.enable && definition.members.phoneNumber.required) {
+    report(definition.members.phoneNumber, 'phone number should be enabled', [
+      'members',
+      'phoneNumber',
+      'required',
+    ]);
   }
 }
 
@@ -1688,6 +1703,7 @@ export async function validateAppDefinition(
     validateLanguage(definition, report);
     validateResourceReferences(definition, report);
     validateMembersSchema(definition, report);
+    validatePhoneNumberDefinition(definition, report);
     validateResourceSchemas(definition, report);
     validateSecurity(definition, report);
     validateBlocks(definition, blockVersionMap, report);

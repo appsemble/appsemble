@@ -1,6 +1,8 @@
 import { type AppMemberPropertyDefinition } from '@appsemble/lang-sdk';
 import { AppMemberPropertiesError, AppsembleError } from '@appsemble/node-utils';
 import { Validator } from 'jsonschema';
+import { isValidPhoneNumber } from 'libphonenumber-js';
+import { parsePhoneNumber } from 'libphonenumber-js/min';
 import { has } from 'lodash-es';
 import { type OpenAPIV3 } from 'openapi-types';
 import {
@@ -99,10 +101,16 @@ export class AppMember extends Model {
   @UpdatedAt
   updated!: Date;
 
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  @Index({ name: 'UniqueAppMemberPhoneNumberIndex', unique: true })
+  phoneNumber?: string;
+
   @AllowNull(false)
   @ForeignKey(() => App)
   @Index({ name: 'UniqueAppMemberEmailIndex', unique: true })
   @Index({ name: 'UniqueAppMemberIndex', unique: true })
+  @Index({ name: 'UniqueAppMemberPhoneNumberIndex', unique: true })
   @Column(DataType.INTEGER)
   AppId!: number;
 
@@ -185,6 +193,20 @@ export class AppMember extends Model {
     if (memberCount > 0) {
       throw new AppsembleError('App member with role `cron` already exists for this app');
     }
+  }
+
+  @BeforeCreate
+  @BeforeUpdate
+  static validatePhoneNumber(instance: AppMember): void {
+    if (!instance.phoneNumber) {
+      return;
+    }
+    if (!isValidPhoneNumber(instance.phoneNumber, 'NL')) {
+      throw new AppsembleError('Invalid Phone Number');
+    }
+    Object.assign(instance, {
+      phoneNumber: parsePhoneNumber(instance.phoneNumber, 'NL').format('INTERNATIONAL'),
+    });
   }
 
   @BeforeCreate

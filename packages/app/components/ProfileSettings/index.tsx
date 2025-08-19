@@ -19,6 +19,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { messages } from './messages.js';
 import { PicturePreview } from './PicturePreview/index.js';
 import { apiUrl, appId, languages } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 
 const DEFAULT_IMAGE_PREFIX = 'https://www.gravatar.com/avatar/';
@@ -26,6 +27,7 @@ const DEFAULT_IMAGE_PREFIX = 'https://www.gravatar.com/avatar/';
 export function ProfileSettings(): ReactNode {
   const { formatMessage } = useIntl();
   const { appMemberInfo, setAppMemberInfo } = useAppMember();
+  const { definition } = useAppDefinition();
   const push = useMessages();
   const [pictureCamera, setPictureCamera] = useState<Blob | null>(null);
   const navigate = useNavigate();
@@ -105,6 +107,14 @@ export function ProfileSettings(): ReactNode {
         name="name"
         placeholder={formatMessage(messages.displayName)}
       />
+      {definition.members?.phoneNumber?.enable ? (
+        <SimpleFormField
+          icon="phone"
+          label={<FormattedMessage {...messages.phoneNumber} />}
+          name="phoneNumber"
+          placeholder={formatMessage(messages.phoneNumber)}
+        />
+      ) : null}
       <SimpleFormField
         accept="image/jpeg, image/png, image/tiff, image/webp"
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
