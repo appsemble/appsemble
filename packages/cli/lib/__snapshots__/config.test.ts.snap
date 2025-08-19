@@ -291,6 +291,16 @@ Describe what the button does. This helps with accessibility for people using sc
       },
     },
     "properties": {
+      "alignment": {
+        "default": "center",
+        "description": "Alignment of the buttons",
+        "enum": [
+          "center",
+          "left",
+          "right",
+        ],
+        "type": "string",
+      },
       "buttons": {
         "description": "The list of buttons.",
         "items": {
