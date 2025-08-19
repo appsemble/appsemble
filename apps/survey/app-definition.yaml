@@ -43,12 +43,12 @@ pages:
       - name: Introduction
         blocks:
           - type: markdown
-            version: 0.34.10
+            version: 0.34.11
             layout: static
             parameters:
               content: { translate: introText }
           - type: button-list
-            version: 0.34.10
+            version: 0.34.11
             parameters:
               buttons:
                 - label: { translate: start }
@@ -61,7 +61,7 @@ pages:
       - name: Familiarity
         blocks:
           - type: form
-            version: 0.34.10
+            version: 0.34.11
             actions:
               onSubmit:
                 type: condition
@@ -90,7 +90,7 @@ pages:
       - name: Appsemble Ratings
         blocks:
           - type: form
-            version: 0.34.10
+            version: 0.34.11
             actions:
               onSubmit:
                 type: flow.to
@@ -119,7 +119,7 @@ pages:
       - name: Appsemble Feedback
         blocks:
           - type: form
-            version: 0.34.10
+            version: 0.34.11
             actions:
               onSubmit:
                 type: flow.to
@@ -139,7 +139,7 @@ pages:
       - name: Anything Else
         blocks:
           - type: form
-            version: 0.34.10
+            version: 0.34.11
             actions:
               onSubmit:
                 type: flow.finish
@@ -163,7 +163,7 @@ pages:
   - name: Finished
     blocks:
       - type: markdown
-        version: 0.34.10
+        version: 0.34.11
         layout: static
         parameters:
           content:
@@ -172,7 +172,7 @@ pages:
               values:
                 appId: { app: id }
       - type: button-list
-        version: 0.34.10
+        version: 0.34.11
         parameters:
           buttons:
             - label: { translate: backToHome }

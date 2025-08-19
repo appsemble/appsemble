@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/control-buttons",
-  "version": "0.34.10",
+  "version": "0.34.11",
   "private": true,
   "description": "This block renders a back and a forward button",
   "homepage": "https://appsemble.app",
@@ -17,7 +17,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.34.10",
+    "@appsemble/sdk": "0.34.11",
     "classnames": "^2.0.0",
     "mini-jsx": "^4.0.0"
   }

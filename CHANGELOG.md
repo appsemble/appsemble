@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.11](https://gitlab.com/appsemble/appsemble/-/releases/0.34.11)] - 2025-08-19
+
+### Added
+
+- Block(`button-list`): Add new parameter `alignment` to allow aligning buttons left, right or
+  center.
+
+### Changed
+
+- Block(`cards`): Renamed `itemDefinition` field to `card`.
+
+### Removed
+
+- Block(`cards`): Remove option `actionButton` from card definition.
+- Block(`cards`): Remove option `dropdown` from card definition.
+
 ## \[[0.34.10](https://gitlab.com/appsemble/appsemble/-/releases/0.34.10)] - 2025-08-18
 
 ### Fixed

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.34.10
-appVersion: 0.34.10
+version: 0.34.11
+appVersion: 0.34.11
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,9 +31,16 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: |
-    - kind: fixed
-      description: "Service-worker: pass data correctly to notifications."
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Block(button-list): Add new parameter alignment to allow aligning
+        buttons left, right or center."
+    - kind: changed
+      description: "Block(cards): Renamed itemDefinition field to card."
+    - kind: removed
+      description: "Block(cards): Remove option actionButton from card definition."
+    - kind: removed
+      description: "Block(cards): Remove option dropdown from card definition."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
