@@ -4,8 +4,9 @@
   "iconBackground": "#ffffff",
   "iconUrl": null,
   "definition": {
-    "name": "Test app",
-    "description": "Test app description",
+    "name": "test app",
+    "description": "test app description",
+    "defaultPage": "Page 1",
     "resources": {
       "Test resource": {
         "schema": {
@@ -14,18 +15,28 @@
           "required": ["title"],
           "properties": {
             "title": {
-              "title": "Title",
               "type": "string"
             },
             "body": {
-              "title": "Body",
               "type": "string"
             }
           }
         }
       }
-    }
+    },
+    "pages": [
+      {
+        "name": "Page 1",
+        "blocks": [
+          {
+            "type": "data-loader",
+            "version": "0.34.11"
+          }
+        ]
+      }
+    ]
   },
+  "yaml": "name: test app\r\ndescription: test app description\r\ndefaultPage: Page 1\r\n\r\nresources:\r\n  Test resource:\r\n    schema:\r\n      type: object\r\n      additionalProperties: false\r\n      required:\r\n        - title\r\n      properties:\r\n        title:\r\n          type: string\r\n        body:\r\n          type: string\r\n\r\npages:\r\n  - name: Page 1\r\n    blocks:\r\n      - type: data-loader\r\n        version: 0.34.11\r\n",
   "showAppDefinition": false,
   "OrganizationId": "test-org",
   "OrganizationName": "Test org",

@@ -33,6 +33,31 @@ export interface StudioFixtures {
    * Log the worker out of their current user account
    */
   logoutUser: () => Promise<void>;
+
+  /**
+   * Clicks on one of the items in the app side menu in the studio
+   *
+   * @param itemName Name of the menu item to click
+   */
+  clickAppSideMenuItem: (itemName: string) => Promise<void>;
+
+  /**
+   * Clicks on one of the items in the app side menu in the studio
+   *
+   * @param itemName Name of the menu item to click
+   * @param page Page to use
+   */
+  clickAppSideMenuItemOnPage: (itemName: string, page: Page) => Promise<void>;
+}
+
+/**
+ * Clicks on one of the items in the app side menu in the studio using the given page
+ *
+ * @param page Page on which to click
+ * @param itemName Name of the menu item to click
+ */
+export async function clickAppSideMenuItem(page: Page, itemName: string): Promise<void> {
+  await page.getByTestId('studio-app-side-menu').getByRole('link', { name: itemName }).click();
 }
 
 export const test = base.extend<StudioFixtures>({
@@ -76,6 +101,18 @@ export const test = base.extend<StudioFixtures>({
     await use(async () => {
       await page.getByRole('button').nth(1).click();
       await page.getByRole('button', { name: 'Logout' }).click();
+    });
+  },
+
+  async clickAppSideMenuItem({ clickAppSideMenuItemOnPage, page }, use) {
+    await use(async (itemName) => {
+      await clickAppSideMenuItemOnPage(itemName, page);
+    });
+  },
+
+  async clickAppSideMenuItemOnPage({}, use) {
+    await use(async (itemName, page) => {
+      await page.getByTestId('studio-app-side-menu').getByRole('link', { name: itemName }).click();
     });
   },
 });

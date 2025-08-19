@@ -1,21 +1,28 @@
-import { type Page } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+
+import { type App } from '@appsemble/types';
 
 import { expect, test } from '../../index.js';
 
-async function clickSideMenuItem(page: Page, title: string): Promise<void> {
-  await page.getByTestId('studio-app-side-menu').getByRole('link', { name: title }).click();
-}
+let appId: number;
 
-test.describe('/apps/:appId', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/en/apps');
-    await page.getByRole('link', { name: 'Person Appsemble' }).first().click();
+test.describe('Individual app', () => {
+  test.beforeAll(async ({ createApp }) => {
+    const { yaml } = JSON.parse(await readFile('mock-data/test-app-details.json', 'utf8')) as App;
 
-    await expect(page.getByTestId('studio-app-side-menu-name')).toHaveText('Person');
+    appId = (await createApp('appsemble', yaml!)).id!;
   });
 
-  test('should prompt when user has unsaved changes', async ({ page }) => {
-    await clickSideMenuItem(page, 'Editor');
+  test.afterAll(async ({ deleteApp }) => {
+    await deleteApp(appId);
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto(`/en/apps/${appId}`);
+  });
+
+  test('should prompt when user has unsaved changes', async ({ clickAppSideMenuItem, page }) => {
+    await clickAppSideMenuItem('Editor');
     page.on('dialog', (alert) => {
       expect(alert.type()).toBe('confirm');
       expect(alert.message()).toBe('You have unsaved changes. Do you wish to continue?');
@@ -23,9 +30,11 @@ test.describe('/apps/:appId', () => {
     });
 
     await expect(page.getByRole('button', { name: 'Publish' })).toBeDisabled();
-    await page.getByRole('code').getByText('Person', { exact: true }).dblclick();
-    await page.getByRole('code').getByText('Person', { exact: true }).press('Backspace');
-    await page.getByRole('code').getByText('name:').first().press('t+e+s+t');
+    const codeEditor = page.getByRole('code');
+    await codeEditor.getByText('name: test app').click();
+    await codeEditor.getByText('name: test app').press('End');
+    await codeEditor.getByText('name: test app').press('Backspace');
+    await codeEditor.getByText('name: test ap').press('p');
     await expect(page.getByRole('button', { name: 'Publish' })).toBeEnabled();
 
     await page.getByRole('link', { name: 'Details' }).click();
@@ -33,20 +42,22 @@ test.describe('/apps/:appId', () => {
     await expect(page.getByText('Clone App')).toBeHidden();
   });
 
-  test('should not prompt when user has saved their changes', async ({ page }) => {
-    await clickSideMenuItem(page, 'Editor');
-    await page.route('/api/apps/*', (route) => {
-      route.fulfill({ path: 'mock-data/person-app-definition.json' });
-    });
+  test('should not prompt when user has saved their changes', async ({
+    clickAppSideMenuItem,
+    page,
+  }) => {
+    await clickAppSideMenuItem('Editor');
     page.on('dialog', (alert) => {
       // If a dialog comes up at all, the test should fail
       expect(alert).toBeNull();
     });
 
     await expect(page.getByRole('button', { name: 'Publish' })).toBeDisabled();
-    await page.getByRole('code').getByText('Person', { exact: true }).dblclick();
-    await page.getByRole('code').getByText('Person', { exact: true }).press('Backspace');
-    await page.getByRole('code').getByText('name:').first().press('P+e+r+s+o+n');
+    const codeEditor = page.getByRole('code');
+    await codeEditor.getByText('name: test app').click();
+    await codeEditor.getByText('name: test app').press('End');
+    await codeEditor.getByText('name: test app').press('Backspace');
+    await codeEditor.getByText('name: test ap').press('p');
 
     await page.getByRole('button', { name: 'Publish' }).click();
 

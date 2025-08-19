@@ -19,7 +19,7 @@ export interface AppFixtures {
    *
    * @param organizationId ID of the organization to create the app for
    * @param options Options to create the app with
-   * @returns The created app
+   * @returns Created app
    */
   createApp: (organizationId: string, yaml: string, options?: CreateAppOptions) => Promise<App>;
 
