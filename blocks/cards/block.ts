@@ -104,7 +104,7 @@ export interface Button {
   hide?: Remapper;
 }
 
-interface BaseCardItemDefinition {
+interface CardItemDefinition {
   /**
    * Image for the card.
    */
@@ -114,6 +114,11 @@ interface BaseCardItemDefinition {
    * Title of the card, appears in bold.
    */
   title?: Remapper;
+
+  /**
+   * Subtitle of the card.
+   */
+  subtitle?: Remapper;
 
   /**
    * The label to render.
@@ -164,25 +169,6 @@ export interface DropdownOption {
   onClick: string;
 }
 
-export interface CardItemDefinitionWithDropdown {
-  /**
-   * A dropdown menu to be rendered at the top right corner of a card.
-   */
-  dropdown: Dropdown;
-}
-
-export interface CardItemDefinitionWithActionButton {
-  /**
-   * A dropdown menu to be rendered at the top right corner of a card.
-   */
-  actionButton: Omit<Button, 'label'>;
-}
-
-export type CardItemDefinition =
-  | BaseCardItemDefinition
-  | (BaseCardItemDefinition & CardItemDefinitionWithActionButton)
-  | (BaseCardItemDefinition & CardItemDefinitionWithDropdown);
-
 /**
  * A generic interface for data with an ID field.
  */
@@ -226,7 +212,7 @@ declare module '@appsemble/sdk' {
     show?: Remapper;
 
     /**
-     * Whether the list should be hidden if there is no data.
+     * Whether the cards should be hidden if there is no data.
      *
      * Will not hide if undefined.
      */
@@ -239,7 +225,7 @@ declare module '@appsemble/sdk' {
      */
     defaultImage: string;
 
-    itemDefinition: CardItemDefinition;
+    card: CardItemDefinition;
   }
 
   interface Messages {

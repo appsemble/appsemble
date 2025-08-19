@@ -165,7 +165,7 @@ export function FileEntry({
       if (valueString) {
         try {
           const assetUrl = utils.asset(valueString);
-          const response = await fetch(assetUrl);
+          const response = await fetch(assetUrl, { mode: 'cors' });
           if (response.ok) {
             if (!checkedThumbnailAsset && !thumbnailAddedToForm) {
               const thumbnailId = `${valueString}-thumbnail`;

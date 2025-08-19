@@ -1,8 +1,10 @@
 parameters:
   defaultImage: logo
-  itemDefinition:
+  card:
     title: Title
+    subtitle: Subtitle
     content: Content
+    image: { prop: picture }
 actions:
   onClick:
     to: Person Details
