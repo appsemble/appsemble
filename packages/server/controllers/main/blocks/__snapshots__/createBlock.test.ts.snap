@@ -4290,6 +4290,10 @@ Does nothing if the app member is already logged in.",
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The password to log in with.",
                     },
+                    "phoneNumber": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "Phone number of the app member",
+                    },
                     "picture": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The image to use for the profile picture of the app member.",
@@ -4353,6 +4357,10 @@ Does nothing if the app member is already logged in.",
                     "password": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The password to log in with.",
+                    },
+                    "phoneNumber": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "Phone number of the app member",
                     },
                     "picture": {
                       "$ref": "#/components/schemas/RemapperDefinition",
@@ -9755,6 +9763,10 @@ Does nothing if the app member is already logged in.",
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The password to log in with.",
             },
+            "phoneNumber": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "Phone number of the app member",
+            },
             "picture": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The image to use for the profile picture of the app member.",
@@ -9818,6 +9830,10 @@ Does nothing if the app member is already logged in.",
             "password": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The password to log in with.",
+            },
+            "phoneNumber": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "Phone number of the app member",
             },
             "picture": {
               "$ref": "#/components/schemas/RemapperDefinition",

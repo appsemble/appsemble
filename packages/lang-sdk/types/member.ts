@@ -17,6 +17,11 @@ export interface AppMemberInfo {
   email: string;
 
   /**
+   * The phone number of the app member.
+   */
+  phoneNumber?: string;
+
+  /**
    * True if the end-user's email address has been verified, else false.
    */
   email_verified: boolean;

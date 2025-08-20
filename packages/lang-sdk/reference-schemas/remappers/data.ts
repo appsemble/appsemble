@@ -326,6 +326,7 @@ parameters:
       'zoneinfo',
       'role',
       'properties',
+      'phoneNumber',
     ],
     description: `
 > **Note:** For this remapper to work, the app member that activated the remapper has to be logged in to
@@ -343,6 +344,7 @@ Provides some fields of app member information taken from the OpenID user info. 
 - \`zoneinfo\`: The app member’s timezone
 - \`role\`: The role of the app member in the app
 - \`properties\`: Custom properties defined on the app member
+- \`phoneNumber\`: Phone number of the app member if enabled in app definition.
 
 Example:
 
@@ -354,7 +356,8 @@ Example:
   "name": "Test User",
   "picture": "https://www.gravatar.com/avatar/f46b82357ce29bcd1099915946cda468?s=128&d=mp",
   "sub": "5c6270e2-ad31-414f-bcab-6752a2c4dcfd",
-  "properties": {}
+  "properties": {},
+  "phoneNumber":+31 612345678"
 }
 \`\`\`
     `,

@@ -33,6 +33,7 @@ export function getAppMemberInfo(appMember: AppMember): AppMemberInfo {
     properties: appMember.properties,
     role: appMember.role,
     demo: appMember.demo,
+    phoneNumber: appMember.phoneNumber,
   } as AppMemberInfo;
 }
 

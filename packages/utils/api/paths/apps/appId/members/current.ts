@@ -51,6 +51,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                   type: 'object',
                   description: 'Custom app member properties.',
                 },
+                phoneNumber: {
+                  type: 'string',
+                  description: 'Phone number',
+                },
               },
             },
           },
@@ -86,6 +90,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
               locale: {
                 type: 'string',
                 description: 'The preferred locale of the user.',
+              },
+              phoneNumber: {
+                type: 'string',
+                description: 'Phone number',
               },
             },
           },
