@@ -87,8 +87,12 @@ global:
     service:
       ports:
         postgresql: 5432
+  security:
+    allowInsecureImages: true
 
 postgresql:
+  image:
+    registry: bitnamilegacy/postgresql
   fullnameOverride: appsemble-postgresql
 
 postgresSSL: false
@@ -117,6 +121,8 @@ mailpit:
           name: mailpit-ui
 
 minio:
+  image:
+    registry: bitnamilegacy/minio
   fullnameOverride: appsemble-minio
   auth:
     existingSecret: s3
