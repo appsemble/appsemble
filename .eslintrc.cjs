@@ -150,7 +150,11 @@ module.exports = {
       },
     },
     {
-      files: ['packages/server/utils/payments/stripe/**', 'packages/utils/api/paths/payments/**'],
+      files: [
+        'packages/server/utils/payments/stripe/**',
+        'packages/utils/api/paths/payments/**',
+        'packages/utils/api/paths/apps/appId/payments/**',
+      ],
       rules: {
         '@typescript-eslint/naming-convention': 'off',
       },

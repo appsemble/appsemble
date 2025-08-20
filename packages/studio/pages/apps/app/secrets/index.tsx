@@ -37,6 +37,13 @@ interface EmailFormParameters {
   emailSecure: boolean;
 }
 
+interface PaymentFormParameters {
+  stripeApiKey: string;
+  stripeSecret: string;
+  successUrl: string;
+  cancelUrl: string;
+}
+
 export function SecretsPage(): ReactNode {
   useMeta(messages.title);
   const { app, setApp } = useApp();
@@ -45,6 +52,12 @@ export function SecretsPage(): ReactNode {
   const emailSettingsResult = useData<
     Omit<EmailFormParameters, 'emailPassword'> & { emailPassword: boolean }
   >(`/api/apps/${app.id}/email`);
+  const paymentSettingsResult = useData<
+    Omit<PaymentFormParameters, 'stripeApiKey' | 'stripeSecret'> & {
+      stripeSecret: boolean;
+      stripeApiKey: boolean;
+    }
+  >(`/api/apps/${app.id}/payment`);
 
   const onClickOAuth2Checkbox = useCallback(async () => {
     const formData = new FormData();
@@ -74,6 +87,23 @@ export function SecretsPage(): ReactNode {
       });
     },
     [app, emailSettingsResult, formatMessage, push],
+  );
+
+  const onSavePaymentSettings = useCallback(
+    async (values: PaymentFormParameters) => {
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(values)) {
+        formData.set(key, value);
+      }
+      await axios.patch(`/api/apps/${app.id}/payment`, formData);
+      push({ color: 'success', body: formatMessage(messages.paymentUpdateSuccess) });
+      paymentSettingsResult.setData({
+        ...values,
+        stripeApiKey: Boolean(values.stripeApiKey),
+        stripeSecret: Boolean(values.stripeSecret),
+      });
+    },
+    [app, paymentSettingsResult, formatMessage, push],
   );
 
   const onClickLoginCheckbox = useCallback(async () => {
@@ -184,6 +214,69 @@ export function SecretsPage(): ReactNode {
                 required={Boolean(
                   emailSettings.emailHost || emailSettings.emailUser || emailSettings.emailPassword,
                 )}
+              />
+              <SimpleFormError>
+                {() => <FormattedMessage {...messages.submitError} />}
+              </SimpleFormError>
+              <SimpleSubmit>
+                <FormattedMessage {...messages.submit} />
+              </SimpleSubmit>
+            </SimpleForm>
+          )}
+        </AsyncDataView>
+      </Collapsible>
+      <Collapsible collapsed={false} title={<FormattedMessage {...messages.paymentSettings} />}>
+        <AsyncDataView
+          errorMessage={<FormattedMessage {...messages.emailSettingsError} />}
+          loadingMessage={<FormattedMessage {...messages.emailLoading} />}
+          result={paymentSettingsResult}
+        >
+          {(paymentSettings) => (
+            <SimpleForm
+              defaultValues={{
+                ...paymentSettings,
+                stripeApiKey: '',
+                stripeSecret: '',
+              }}
+              onSubmit={onSavePaymentSettings}
+            >
+              <SimpleFormField
+                autoComplete="stripe-api-key"
+                component={CheckboxField}
+                help={<FormattedMessage {...messages.stripeApiKeyDescription} />}
+                label={<FormattedMessage {...messages.stripeApiKey} />}
+                name="enablePayments"
+              />
+              <SimpleFormField
+                autoComplete="stripe-api-key"
+                component={PasswordField}
+                help={<FormattedMessage {...messages.stripeApiKeyDescription} />}
+                label={<FormattedMessage {...messages.stripeApiKey} />}
+                name="stripeApiKey"
+                placeholder="●●●●●●●●●●●"
+              />
+              <SimpleFormField
+                autoComplete="stripe-secret"
+                component={PasswordField}
+                help={<FormattedMessage {...messages.stripeSecretDescription} />}
+                label={<FormattedMessage {...messages.stripeSecret} />}
+                name="stripeSecret"
+                placeholder="●●●●●●●●●●●"
+                required={Boolean(paymentSettings.stripeApiKey)}
+              />
+              <SimpleFormField
+                autoComplete="off"
+                help={<FormattedMessage {...messages.successUrlDescription} />}
+                label={<FormattedMessage {...messages.successUrl} />}
+                name="successUrl"
+                required={Boolean(paymentSettings.stripeApiKey)}
+              />
+              <SimpleFormField
+                autoComplete="off"
+                help={<FormattedMessage {...messages.cancelUrlDescription} />}
+                label={<FormattedMessage {...messages.cancelUrl} />}
+                name="cancelUrl"
+                required={Boolean(paymentSettings.stripeApiKey)}
               />
               <SimpleFormError>
                 {() => <FormattedMessage {...messages.submitError} />}

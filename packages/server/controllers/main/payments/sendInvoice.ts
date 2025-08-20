@@ -92,7 +92,7 @@ export async function sendInvoice(ctx: Context): Promise<void> {
   }
   assertKoaError(!invoice, ctx, 500, 'Problem creating invoice.');
 
-  const payments = getPaymentObject(organization!.preferredPaymentProvider!);
+  const payments = await getPaymentObject(organization!.preferredPaymentProvider!);
 
   const stripeCustomerId = await payments.createOrUpdateCustomer(organization!);
   assertKoaError(!stripeCustomerId, ctx, 500, 'Problem creating customer.');

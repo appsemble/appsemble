@@ -97,7 +97,7 @@ describe('stripePayments', () => {
         },
       },
     };
-    payments = new StripePayments(stripeMock as unknown as Stripe);
+    payments = new StripePayments(argv.stripeApiKey, stripeMock as unknown as Stripe);
     if (argv.updateStripeResponses) {
       const stripe = new Stripe(argv.stripeApiKey);
 

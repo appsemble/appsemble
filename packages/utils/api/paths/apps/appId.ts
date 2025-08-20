@@ -146,6 +146,26 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 type: 'boolean',
                 description: 'Whether TLS is being used.',
               },
+              stripeApiKey: {
+                type: 'string',
+                description:
+                  'The API key to use for Stripe authentication. This gets encrypted when stored.',
+              },
+              stripeSecret: {
+                type: 'string',
+                description:
+                  'The secret to use for verifying incoming webhooks. This gets encrypted when stored.',
+              },
+              successUrl: {
+                type: 'string',
+                description:
+                  'The URL to which the user will be redirected after a successful payment.',
+              },
+              cancelUrl: {
+                type: 'string',
+                description:
+                  'The URL to which the user will be redirected after an unsuccessful payment.',
+              },
               containers: {
                 type: 'array',
                 items: { $ref: '#/components/schemas/ContainerDefinition' },

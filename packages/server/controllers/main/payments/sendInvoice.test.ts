@@ -97,11 +97,12 @@ describe('sendInvoice', () => {
 
   it('should handle undefined response from payment interface', async () => {
     authorizeStudio();
-    vi.mocked(getPaymentObject).mockReturnValue({
+    vi.mocked(getPaymentObject).mockResolvedValue({
       createOrUpdateCustomer: vi.fn(() => Promise.resolve(null)),
       createInvoice: vi.fn(() => Promise.resolve({ id: invoiceId, paymentUrl })),
       chargeInvoice: vi.fn(() => Promise.resolve(null)),
       deletePaymentMethods: vi.fn(() => Promise.resolve(null)),
+      createAppCheckout: vi.fn(() => Promise.resolve(null)),
     });
     const response = await request.post(
       `/api/payments/send-invoice?organizationId=${organization.id}&subscriptionType=basic&period=month`,

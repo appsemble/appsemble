@@ -19,7 +19,7 @@ function serializer(): Plugin {
 
 function bodyParser(): Plugin {
   return koaBodyParser({
-    ignore: ['acceptPayment'],
+    ignore: ['acceptPayment', 'acceptAppPayment'],
     parsers: {
       'application/scim+json': jsonParser,
       'application/x-www-form-urlencoded': xWwwFormUrlencodedParser,

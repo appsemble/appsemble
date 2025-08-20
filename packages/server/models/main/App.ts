@@ -192,6 +192,22 @@ export class App extends Model {
   containers?: CompanionContainerDefinition[];
 
   @AllowNull(true)
+  @Column(DataType.BLOB)
+  stripeApiKey?: Buffer;
+
+  @AllowNull(true)
+  @Column(DataType.BLOB)
+  stripeSecret?: Buffer;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  successUrl?: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  cancelUrl?: string;
+
+  @AllowNull(true)
   @Column(DataType.STRING)
   registry?: string;
 

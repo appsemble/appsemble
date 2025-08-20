@@ -124,6 +124,7 @@ declare module 'koas-parameters' {
     count: number;
     period: string;
     subscriptionType: string;
+    price: string;
     couponCode: string;
     startIndex: number;
     view: string;

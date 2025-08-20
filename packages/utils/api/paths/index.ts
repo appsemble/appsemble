@@ -48,6 +48,9 @@ import { pathItems as appsAppIdMembersCurrent } from './apps/appId/members/curre
 import { pathItems as appsAppIdMembers } from './apps/appId/members.js';
 import { pathItems as appsAppIdMessagesLanguage } from './apps/appId/messages/language.js';
 import { pathItems as appsAppIdMessages } from './apps/appId/messages.js';
+import { pathItems as acceptAppPayment } from './apps/appId/payments/acceptPayment.js';
+import { pathItems as createAppCheckout } from './apps/appId/payments/createCheckout.js';
+import { pathItems as appsAppIdPayments } from './apps/appId/paymentSettings.js';
 import { pathItems as appsAppIdQuotasEmail } from './apps/appId/quotas/emails.js';
 import { pathItems as appsAppIdRatings } from './apps/appId/ratings.js';
 import { pathItems as appsAppIdReadmesReadmeId } from './apps/appId/readmes/readmeId.js';
@@ -184,9 +187,12 @@ export const paths = {
   '/api/apps/{appId}/demo-groups': appsAppIdDemoGroups,
   '/api/apps/{appId}/demo-members': appsAppIdDemoMembers,
   '/api/apps/{appId}/email': appsAppIdEmail,
+  '/api/apps/{appId}/payment': appsAppIdPayments,
+  '/api/apps/{appId}/accept-payment': acceptAppPayment,
   '/api/apps/{appId}/export': appsAppIdExport,
   '/api/apps/{appId}/groups': appsAppIdGroups,
   '/api/apps/{appId}/icon': appsAppIdIcon,
+  '/api/apps/{appId}/createCheckout': createAppCheckout,
   '/api/apps/{appId}/invites/resend': appsAppIdInvitesResend,
   '/api/apps/{appId}/invites': appsAppIdInvites,
   '/api/apps/{appId}/lock': appsAppIdLock,

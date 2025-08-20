@@ -33,7 +33,7 @@ export async function chargeOrganizationSubscriptions(
   const chargeSubscriptions = await getExpiringOrganizationSubscriptions(chargeDaysInAdvance);
   logger.info('charge subscriptions:', chargeSubscriptions);
   const notifySubscriptions = await getExpiringOrganizationSubscriptions(chargeDaysInAdvance + 2);
-  const payments = existingPayments || getPaymentObject(PaymentProvider.Stripe);
+  const payments = existingPayments || (await getPaymentObject(PaymentProvider.Stripe));
   const mailer = existingMailer || new Mailer(argv);
 
   const startDate = dayjs().subtract(1, 'month');

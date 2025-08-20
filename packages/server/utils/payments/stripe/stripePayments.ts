@@ -50,8 +50,8 @@ interface OrganizationComparisonFields {
 export class StripePayments implements Payments {
   stripe: Stripe;
 
-  constructor(stripe?: Stripe) {
-    this.stripe = stripe || new Stripe(argv.stripeApiKey);
+  constructor(stripeApiKey: string, stripe?: Stripe) {
+    this.stripe = stripe || new Stripe(stripeApiKey);
   }
 
   async createOrUpdateCustomer(organization: Partial<Organization>): Promise<any> {
@@ -217,6 +217,31 @@ export class StripePayments implements Payments {
       }
     } catch {
       logger.info('Something went wrong deleting associated payment methods.');
+    }
+  }
+
+  async createAppCheckout(price: string, successUrl: string, cancelUrl: string): Promise<any> {
+    let checkoutSession;
+
+    const product = await this.stripe.prices.retrieve(price);
+    const mode = product.type === 'recurring' ? 'subscription' : 'payment';
+    try {
+      checkoutSession = await this.stripe.checkout.sessions.create({
+        mode,
+        line_items: [
+          {
+            price,
+            quantity: 1,
+          },
+        ],
+        locale: 'auto',
+        success_url: `${argv.host}/${successUrl}`,
+        cancel_url: `${argv.host}/${cancelUrl}`,
+        tax_id_collection: { enabled: true },
+      });
+      return { id: checkoutSession.id, paymentUrl: checkoutSession?.url };
+    } catch {
+      return { id: checkoutSession?.id, paymentUrl: checkoutSession?.url };
     }
   }
 }

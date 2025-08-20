@@ -28,7 +28,7 @@ export async function patchOrganizationSubscription(ctx: Context): Promise<void>
     requiredPermissions: [OrganizationPermission.ManageOrganizationSubscriptions],
   });
 
-  const payments = getPaymentObject(PaymentProvider.Stripe);
+  const payments = await getPaymentObject(PaymentProvider.Stripe);
   const result: Partial<OrganizationSubscription> = {};
 
   if (cancelled !== undefined) {

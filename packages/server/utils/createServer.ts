@@ -115,6 +115,7 @@ export async function createServer({
           cors(),
         ),
         conditional((ctx) => ctx.path === '/api/payments/accept-payment', stripeMiddleware()),
+        conditional((ctx) => ctx.path === '/api/apps/26/accept-payment', stripeMiddleware()),
         koas(api(version, argv), [
           specHandler(),
           swaggerUI({ url: '/api-explorer' }),
