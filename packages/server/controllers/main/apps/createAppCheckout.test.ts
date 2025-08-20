@@ -12,7 +12,7 @@ let organization: Organization;
 let user: User;
 let app: App;
 
-const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
+const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'appsemble' };
 
 describe('createAppCheckout', () => {
   beforeAll(async () => {
@@ -46,8 +46,8 @@ describe('createAppCheckout', () => {
         path: 'test-app',
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        stripeApiKey: 'testkey',
-        stripeSecret: 'testsecret',
+        stripeApiKey: 'key',
+        stripeSecret: 'secret',
         successUrl: 'testSuccessUrl',
         cancelUrl: 'testCancelUrl',
         OrganizationId: organization.id,
@@ -73,14 +73,8 @@ describe('createAppCheckout', () => {
       deletePaymentMethods: vi.fn(() => Promise.resolve(null)),
       createAppCheckout,
     });
-    await request.post<AppType>(
-      `/api/apps/${app.id}/createCheckout?price=price_1RtR8AIqNkYhnCOAir7xeruz`,
-    );
-    expect(createAppCheckout).toHaveBeenCalledWith(
-      'price_1RtR8AIqNkYhnCOAir7xeruz',
-      'testSuccessUrl',
-      'testCancelUrl',
-    );
+    await request.post<AppType>(`/api/apps/${app.id}/createCheckout?price=price_id`);
+    expect(createAppCheckout).toHaveBeenCalledWith('price_id', 'testSuccessUrl', 'testCancelUrl');
   });
 
   it('should not create a checkout session for an app when missing payment information', async () => {
@@ -96,9 +90,7 @@ describe('createAppCheckout', () => {
       createAppCheckout,
     });
     await app.update({ successUrl: null });
-    await request.post<AppType>(
-      `/api/apps/${app.id}/createCheckout?price=price_1RtR8AIqNkYhnCOAir7xeruz`,
-    );
+    await request.post<AppType>(`/api/apps/${app.id}/createCheckout?price=price_id`);
     expect(createAppCheckout).not.toHaveBeenCalled();
   });
 
@@ -115,7 +107,7 @@ describe('createAppCheckout', () => {
       createAppCheckout,
     });
     await app.update({ successUrl: null });
-    await request.post<AppType>('/api/apps/2/createCheckout?price=price_1RtR8AIqNkYhnCOAir7xeruz');
+    await request.post<AppType>('/api/apps/2/createCheckout?price=price_id');
     expect(createAppCheckout).not.toHaveBeenCalled();
   });
 });
