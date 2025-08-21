@@ -72,6 +72,7 @@ describe('patchCurrentAppMember', () => {
         "email_verified": false,
         "locale": "en",
         "name": "Me",
+        "phoneNumber": null,
         "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
         "properties": {
           "test": "Property",
@@ -131,6 +132,7 @@ describe('patchCurrentAppMember', () => {
         "email_verified": false,
         "locale": "en",
         "name": "Me",
+        "phoneNumber": null,
         "picture": Any<String>,
         "properties": {},
         "role": "Member",
@@ -166,6 +168,7 @@ describe('patchCurrentAppMember', () => {
         "email_verified": false,
         "locale": "en",
         "name": "Me",
+        "phoneNumber": null,
         "picture": Any<String>,
         "properties": {},
         "role": "Member",

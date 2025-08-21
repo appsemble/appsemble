@@ -6,6 +6,7 @@ type AppMemberInfoKey =
   | 'email'
   | 'locale'
   | 'name'
+  | 'phoneNumber'
   | 'picture'
   | 'properties'
   | 'role'

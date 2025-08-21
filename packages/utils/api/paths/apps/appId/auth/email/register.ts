@@ -39,6 +39,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
               timezone: {
                 enum: Intl.supportedValuesOf('timeZone'),
               },
+              phoneNumber: {
+                type: 'string',
+                description: 'Phone number',
+              },
             },
           },
         },

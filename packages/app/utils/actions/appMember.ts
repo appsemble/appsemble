@@ -25,6 +25,7 @@ export const appMemberRegister: ActionCreator<'app.member.register'> = ({
     const email = remap(definition.email, data);
     const password = remap(definition.password, data);
     const name = remap(definition.name, data);
+    const phoneNumber = remap(definition.phoneNumber ?? null, data);
     const picture = remap(definition.picture ?? null, data);
     const properties = remap(definition.properties ?? null, data);
     const login = remap(definition.login ?? null, data) ?? true;
@@ -35,6 +36,9 @@ export const appMemberRegister: ActionCreator<'app.member.register'> = ({
     // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
     formData.append('locale', params.lang);
     formData.append('timezone', timezone);
+    if (phoneNumber) {
+      formData.append('phoneNumber', phoneNumber);
+    }
 
     if (name) {
       formData.append('name', name);
@@ -159,6 +163,7 @@ export const appMemberCurrentPatch: ActionCreator<'app.member.current.patch'> = 
     const name = remap(definition.name ?? null, data);
     const properties = remap(definition.properties ?? null, data);
     const picture = remap(definition.picture ?? null, data);
+    const phoneNumber = remap(definition.phoneNumber ?? null, data);
 
     const formData = new FormData();
 
@@ -168,6 +173,10 @@ export const appMemberCurrentPatch: ActionCreator<'app.member.current.patch'> = 
 
     if (picture && picture instanceof File) {
       formData.append('picture', picture);
+    }
+
+    if (phoneNumber) {
+      formData.append('phoneNumber', phoneNumber);
     }
 
     assignAppMemberProperties(properties, formData);

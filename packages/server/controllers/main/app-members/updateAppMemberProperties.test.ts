@@ -96,6 +96,7 @@ describe('patchAppMemberProperties', () => {
         "email_verified": false,
         "locale": null,
         "name": null,
+        "phoneNumber": null,
         "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
         "properties": {
           "foo": "bar",

@@ -4,6 +4,7 @@ import {
   AppMemberPropertiesError,
   assertKoaCondition,
   logger,
+  PhoneNumberValidationError,
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
@@ -139,6 +140,9 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     });
   } catch (error: unknown) {
     if (error instanceof AppMemberPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
+    if (error instanceof PhoneNumberValidationError) {
       throwKoaError(ctx, 400, error.message);
     }
 

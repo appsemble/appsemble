@@ -561,6 +561,12 @@ export interface AppMemberRegisterAction extends BaseActionDefinition<'app.membe
   email: Remapper;
 
   /**
+   * The phone number of the app member,
+   * only works if the phone number is enabled in the members definition.
+   */
+  phoneNumber?: Remapper;
+
+  /**
    * The password to login with.
    */
   password: Remapper;
@@ -650,6 +656,11 @@ export interface AppMemberCurrentPatchAction
    * The display name to update.
    */
   name?: Remapper;
+
+  /**
+   * Phone number of the app member
+   */
+  phoneNumber?: Remapper;
 
   /**
    * Custom properties that can be assigned freely.

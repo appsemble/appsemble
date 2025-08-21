@@ -16,6 +16,10 @@ Does nothing if the app member isn’t logged in.`,
       $ref: '#/components/schemas/RemapperDefinition',
       description: 'The new full name of the app member.',
     },
+    phoneNumber: {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: 'Phone number of the app member',
+    },
     properties: {
       $ref: '#/components/schemas/RemapperDefinition',
       description: `The updated custom properties for the app member.

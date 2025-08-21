@@ -20,6 +20,10 @@ Does nothing if the app member is already logged in.`,
       $ref: '#/components/schemas/RemapperDefinition',
       description: 'The email to log in with.',
     },
+    phoneNumber: {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: 'Phone number of the app member',
+    },
     name: {
       $ref: '#/components/schemas/RemapperDefinition',
       description: 'The full name of the app member.',

@@ -1,5 +1,9 @@
 import { type AppMemberPropertyDefinition } from '@appsemble/lang-sdk';
-import { AppMemberPropertiesError, AppsembleError } from '@appsemble/node-utils';
+import {
+  AppMemberPropertiesError,
+  AppsembleError,
+  PhoneNumberValidationError,
+} from '@appsemble/node-utils';
 import { Validator } from 'jsonschema';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { parsePhoneNumber } from 'libphonenumber-js/min';
@@ -202,7 +206,7 @@ export class AppMember extends Model {
       return;
     }
     if (!isValidPhoneNumber(instance.phoneNumber, 'NL')) {
-      throw new AppsembleError('Invalid Phone Number');
+      throw new PhoneNumberValidationError('Invalid Phone Number');
     }
     Object.assign(instance, {
       phoneNumber: parsePhoneNumber(instance.phoneNumber, 'NL').format('INTERNATIONAL'),
