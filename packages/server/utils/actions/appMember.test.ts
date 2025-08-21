@@ -101,6 +101,7 @@ describe('appMemberQuery', () => {
       {
         sub: expect.any(String),
         name: 'Bot 2',
+        phoneNumber: null,
         email: 'test2@example.com',
         email_verified: true,
         picture: expect.stringContaining('https://www.gravatar.com/avatar/'),
@@ -113,6 +114,7 @@ describe('appMemberQuery', () => {
       {
         sub: expect.any(String),
         name: 'Bot 22',
+        phoneNumber: null,
         email: 'test22@example.com',
         email_verified: true,
         picture: expect.stringContaining('https://www.gravatar.com/avatar/'),
@@ -201,6 +203,7 @@ describe('appMemberQuery', () => {
         {
           sub: expect.any(String),
           name: 'Bot 2',
+          phoneNumber: null,
           email: 'test2@example.com',
           email_verified: true,
           picture: expect.stringContaining('https://www.gravatar.com/avatar/'),
@@ -213,6 +216,7 @@ describe('appMemberQuery', () => {
         {
           sub: expect.any(String),
           name: 'Bot 22',
+          phoneNumber: null,
           email: 'test22@example.com',
           email_verified: true,
           picture: expect.stringContaining('https://www.gravatar.com/avatar/'),
