@@ -1,6 +1,11 @@
 name: Remappers
 description: This app contains every Remapper currently in Appsemble as of (0.34.11)
 defaultPage: Introduction
+layout:
+  enabledSettings:
+    - languages
+    - name
+    - picture
 security:
   default:
     role: User

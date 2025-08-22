@@ -2,6 +2,12 @@ name: PDF
 description: An app demonstrating how PDFs can be generated
 defaultPage: Create report
 
+layout:
+  enabledSettings:
+    - name
+    - picture
+    - languages
+
 security:
   default:
     role: User

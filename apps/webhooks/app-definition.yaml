@@ -1,6 +1,9 @@
 name: Webhooks
 description: An app showcasing the app webhooks feature
 defaultPage: Test
+layout:
+  enabledSettings:
+    - languages
 
 resources:
   record:

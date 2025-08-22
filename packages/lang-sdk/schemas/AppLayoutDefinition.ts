@@ -27,6 +27,13 @@ If set to \`navigation\`, it will only be visible if \`login\` is also visible i
 If set to \`navigation\`, it will only be visible if \`login\` is also visible in \`navigation\`.
 `,
     },
+    enabledSettings: {
+      type: 'array',
+      items: {
+        enum: ['name', 'phoneNumber', 'picture', 'languages'],
+      },
+      description: 'A list of the settings to display on the settings page.',
+    },
     install: {
       enum: ['navbar', 'navigation', 'hidden'],
       default: 'navigation',

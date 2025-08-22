@@ -7,7 +7,6 @@ import {
   validateAppDefinition,
 } from '@appsemble/lang-sdk';
 import { logger } from '@appsemble/node-utils';
-import {} from '@appsemble/types';
 import { type Validator } from 'jsonschema';
 import { type Sequelize, type Transaction } from 'sequelize';
 import { type Document, parseDocument, stringify, type YAMLMap } from 'yaml';
@@ -15,7 +14,7 @@ import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
 import { migrations } from '../migrations/index.js';
-import { App, AppSnapshot, initDB } from '../models/index.js';
+import { App, AppSnapshot, initDB, transactional } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { getBlockVersions } from '../utils/block.js';
 import { handleDBError } from '../utils/sqlUtils.js';
@@ -220,7 +219,12 @@ async function saveDefinition(yaml: string, idOrPath: number | string): Promise<
     // TODO: add properties to inform the user about the patched definition
     // TODO: maybe a command line option to adjust what apps will use the patched definition
     // for the published version based on a supplied list of apps and or orgs
-    await AppSnapshot.create({ yaml, AppId: idOrPath });
+    await transactional(async (transaction) => {
+      const document = parseDocument(yaml);
+      const definition = document.toJS({ maxAliasCount: 10_000 }) as AppDefinitionType;
+      await App.update({ definition }, { where: { id: idOrPath }, transaction });
+      await AppSnapshot.create({ yaml, AppId: idOrPath }, { transaction });
+    });
     logger.info(`Saved snapshot for app: ${idOrPath}`);
   }
 }

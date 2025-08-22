@@ -1,6 +1,9 @@
 name: Soundboard
 description: This app displays buttons which play sounds when you click on them.
 defaultPage: Soundboard
+layout:
+  enabledSettings:
+    - languages
 
 security:
   guest:

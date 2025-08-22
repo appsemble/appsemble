@@ -2,6 +2,12 @@ name: Bicycle Store
 description: Website for employees to manage and and sell bicycles
 defaultPage: Inventory
 
+layout:
+  enabledSettings:
+    - name
+    - picture
+    - languages
+
 theme:
   primaryColor: '#4357AD'
   successColor: '#48A9A6'

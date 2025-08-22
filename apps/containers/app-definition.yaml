@@ -2,6 +2,10 @@ name: Containers
 description: An app showcasing companion containers feature
 defaultPage: Test
 
+layout:
+  enabledSettings:
+    - languages
+
 containers:
   - name: my-api
     image: httpd

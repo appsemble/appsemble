@@ -1,6 +1,11 @@
 name: Notes
 description: Keep personal notes
 defaultPage: Notes
+layout:
+  enabledSettings:
+    - languages
+    - name
+    - picture
 
 resources:
   note:

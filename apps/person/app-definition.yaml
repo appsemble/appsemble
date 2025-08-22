@@ -1,6 +1,9 @@
 name: Person
 description: A simple form and data viewing app using the resource API
 defaultPage: Person Registration Form
+layout:
+  enabledSettings:
+    - languages
 
 security:
   guest:

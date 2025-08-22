@@ -1,6 +1,11 @@
 name: Mail
 description: An app that demonstrates the email action in demo mode.
 defaultPage: Send Mail
+layout:
+  enabledSettings:
+    - languages
+    - name
+    - picture
 
 security:
   roles:

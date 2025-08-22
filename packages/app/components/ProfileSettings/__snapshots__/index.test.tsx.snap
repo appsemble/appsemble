@@ -1,0 +1,463 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProfileDropdown > should render fields mentioned in the app definition 1`] = `
+HTMLCollection [
+  <div
+    class="field"
+  >
+    <label
+      class="label"
+      for="name"
+    >
+      Display Name
+      <span
+        class="is-pulled-right has-text-weight-normal"
+      >
+        (
+        Optional
+        )
+      </span>
+    </label>
+    <div
+      class="control control has-icons-left"
+    >
+      <input
+        class="input"
+        id="name"
+        name="name"
+        placeholder="Display Name"
+        value="Test User"
+      />
+      <span
+        class="icon is-left"
+      >
+        <i
+          class="fas fa-user"
+        />
+      </span>
+    </div>
+    <span
+      class="help help"
+    >
+      This is the name that displays for other users.
+    </span>
+  </div>,
+  <div
+    class="field"
+  >
+    <label
+      class="label"
+      for="picture"
+    >
+      Picture
+      <span
+        class="is-pulled-right has-text-weight-normal"
+      >
+        (
+        Optional
+        )
+      </span>
+    </label>
+    <div
+      class="control control"
+    >
+      <figure
+        class="image is-128x128 mb-2"
+      >
+        <img
+          alt="Picture"
+          class="picture is-rounded"
+        />
+      </figure>
+      <div
+        class="file has-name"
+      >
+        <label
+          class="file-label undefined"
+          for="picture"
+        >
+          <input
+            accept="image/jpeg, image/png, image/tiff, image/webp"
+            class="file-input"
+            id="picture"
+            name="picture"
+            type="file"
+          />
+          <span
+            class="file-cta"
+          >
+            <span
+              class="icon"
+            >
+              <i
+                class="fas fa-upload"
+              />
+            </span>
+            <span
+              class="file-label"
+            >
+              Picture
+            </span>
+          </span>
+          <span
+            class="file-name"
+          >
+            Select a file
+          </span>
+        </label>
+      </div>
+      <p
+        class="help"
+      >
+        The public picture to use for your profile.
+      </p>
+    </div>
+    <span
+      class="help help"
+    />
+  </div>,
+  <div
+    class="field"
+  >
+    <div
+      class="control control"
+    >
+      <div>
+        <div>
+          <button
+            class="button mr-1"
+            type="button"
+          >
+            Click a Picture
+          </button>
+          <button
+            class="button"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="icon is-large"
+            >
+              <i
+                class="fas fa-camera fa-2x"
+              />
+            </span>
+          </button>
+        </div>
+        <p
+          class="help"
+        >
+          Click a picture straight from your camera, (Only works if no file is being uploaded)
+        </p>
+      </div>
+    </div>
+    <span
+      class="help help"
+    />
+  </div>,
+  <div
+    class="field"
+  >
+    <label
+      class="label"
+      for="locale"
+    >
+      Language
+      <span
+        class="is-pulled-right has-text-weight-normal"
+      >
+        (
+        Optional
+        )
+      </span>
+    </label>
+    <div
+      class="control control has-icons-left"
+    >
+      <div
+        class="select is-fullwidth"
+      >
+        <select
+          class="is-fullwidth"
+          id="locale"
+          name="locale"
+          size="1"
+        >
+          <option
+            value="en"
+          >
+            English
+          </option>
+          <option
+            value="nl"
+          >
+            Dutch (Nederlands)
+          </option>
+        </select>
+      </div>
+      <span
+        class="icon is-left"
+      >
+        <i
+          class="fas fa-language"
+        />
+      </span>
+    </div>
+    <span
+      class="help help"
+    >
+      Preferred language for this app
+    </span>
+  </div>,
+]
+`;
+
+exports[`ProfileDropdown > should render phoneNumber field 1`] = `
+HTMLCollection [
+  <div
+    class="field"
+  >
+    <label
+      class="label"
+      for="name"
+    >
+      Display Name
+      <span
+        class="is-pulled-right has-text-weight-normal"
+      >
+        (
+        Optional
+        )
+      </span>
+    </label>
+    <div
+      class="control control has-icons-left"
+    >
+      <input
+        class="input"
+        id="name"
+        name="name"
+        placeholder="Display Name"
+        value="Test User"
+      />
+      <span
+        class="icon is-left"
+      >
+        <i
+          class="fas fa-user"
+        />
+      </span>
+    </div>
+    <span
+      class="help help"
+    >
+      This is the name that displays for other users.
+    </span>
+  </div>,
+  <div
+    class="field"
+  >
+    <label
+      class="label"
+      for="phoneNumber"
+    >
+      Phone Number
+      <span
+        class="is-pulled-right has-text-weight-normal"
+      >
+        (
+        Optional
+        )
+      </span>
+    </label>
+    <div
+      class="control control has-icons-left"
+    >
+      <input
+        class="input"
+        id="phoneNumber"
+        name="phoneNumber"
+        placeholder="Phone Number"
+        value=""
+      />
+      <span
+        class="icon is-left"
+      >
+        <i
+          class="fas fa-phone"
+        />
+      </span>
+    </div>
+    <span
+      class="help help"
+    />
+  </div>,
+  <div
+    class="field"
+  >
+    <label
+      class="label"
+      for="picture"
+    >
+      Picture
+      <span
+        class="is-pulled-right has-text-weight-normal"
+      >
+        (
+        Optional
+        )
+      </span>
+    </label>
+    <div
+      class="control control"
+    >
+      <figure
+        class="image is-128x128 mb-2"
+      >
+        <img
+          alt="Picture"
+          class="picture is-rounded"
+        />
+      </figure>
+      <div
+        class="file has-name"
+      >
+        <label
+          class="file-label undefined"
+          for="picture"
+        >
+          <input
+            accept="image/jpeg, image/png, image/tiff, image/webp"
+            class="file-input"
+            id="picture"
+            name="picture"
+            type="file"
+          />
+          <span
+            class="file-cta"
+          >
+            <span
+              class="icon"
+            >
+              <i
+                class="fas fa-upload"
+              />
+            </span>
+            <span
+              class="file-label"
+            >
+              Picture
+            </span>
+          </span>
+          <span
+            class="file-name"
+          >
+            Select a file
+          </span>
+        </label>
+      </div>
+      <p
+        class="help"
+      >
+        The public picture to use for your profile.
+      </p>
+    </div>
+    <span
+      class="help help"
+    />
+  </div>,
+  <div
+    class="field"
+  >
+    <div
+      class="control control"
+    >
+      <div>
+        <div>
+          <button
+            class="button mr-1"
+            type="button"
+          >
+            Click a Picture
+          </button>
+          <button
+            class="button"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="icon is-large"
+            >
+              <i
+                class="fas fa-camera fa-2x"
+              />
+            </span>
+          </button>
+        </div>
+        <p
+          class="help"
+        >
+          Click a picture straight from your camera, (Only works if no file is being uploaded)
+        </p>
+      </div>
+    </div>
+    <span
+      class="help help"
+    />
+  </div>,
+  <div
+    class="field"
+  >
+    <label
+      class="label"
+      for="locale"
+    >
+      Language
+      <span
+        class="is-pulled-right has-text-weight-normal"
+      >
+        (
+        Optional
+        )
+      </span>
+    </label>
+    <div
+      class="control control has-icons-left"
+    >
+      <div
+        class="select is-fullwidth"
+      >
+        <select
+          class="is-fullwidth"
+          id="locale"
+          name="locale"
+          size="1"
+        >
+          <option
+            value="en"
+          >
+            English
+          </option>
+          <option
+            value="nl"
+          >
+            Dutch (Nederlands)
+          </option>
+        </select>
+      </div>
+      <span
+        class="icon is-left"
+      >
+        <i
+          class="fas fa-language"
+        />
+      </span>
+    </div>
+    <span
+      class="help help"
+    >
+      Preferred language for this app
+    </span>
+  </div>,
+]
+`;

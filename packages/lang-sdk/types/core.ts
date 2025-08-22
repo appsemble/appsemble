@@ -11,6 +11,8 @@ import { type ViewRole } from './roles.js';
 import { type Security } from './security.js';
 import { type Theme } from './theme.js';
 
+export type SettingName = 'languages' | 'name' | 'phoneNumber' | 'picture';
+
 export interface AppDefinition {
   /**
    * The name of the app.
@@ -80,6 +82,11 @@ export interface AppDefinition {
      * @default 'navbar'
      */
     install?: LayoutPosition;
+
+    /**
+     * Settings to be shown on the default settings page.
+     */
+    enabledSettings?: SettingName[];
 
     /**
      * The navigation type to use.
