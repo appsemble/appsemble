@@ -78,6 +78,9 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
     (pageDefinition) =>
       !pageDefinition.parameters &&
       !pageDefinition.hideNavTitle &&
+      !(
+        pageDefinition.navigation === 'hidden' || pageDefinition.navigation === 'profileDropdown'
+      ) &&
       checkPagePermissions(pageDefinition, appDefinition, appMemberRole, appMemberSelectedGroup),
   );
 
@@ -99,6 +102,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
       );
       break;
     case 'hidden':
+    case 'profileDropdown':
       navigationElement = children;
       break;
     default:
