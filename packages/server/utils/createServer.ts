@@ -93,6 +93,12 @@ export async function createServer({
     app.use(await frontend(webpackConfigs, argv, true));
   }
 
+  app.use(async (ctx, next) => {
+    ctx.set('Access-Control-Expose-Headers', 'X-Appsemble-Version');
+    ctx.set('X-Appsemble-Version', version);
+    await next();
+  });
+
   app.use(
     appMapper(
       compose([
