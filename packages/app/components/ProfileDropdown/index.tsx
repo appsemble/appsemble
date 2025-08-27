@@ -1,28 +1,37 @@
+import { normalize, type PageDefinition } from '@appsemble/lang-sdk';
 import { Icon, NavbarDropdown, NavbarItem, useToggle } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { usePWAInstall } from 'react-use-pwa-install';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { checkPagePermissions } from '../../utils/authorization.js';
 import { demoMode, displayAppMemberName, sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 
 export function ProfileDropdown(): ReactNode {
   const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
-  const { appMemberInfo, isLoggedIn, logout } = useAppMember();
+  const navigate = useNavigate();
+  const { getAppMessage } = useAppMessages();
+  const { appMemberInfo, appMemberRole, appMemberSelectedGroup, isLoggedIn, logout } =
+    useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const { pathname } = useLocation();
   const { update } = useServiceWorkerRegistration();
 
   const showLogin = definition.security && Object.hasOwn(definition.security, 'roles');
   const { layout } = definition;
-
+  const onClickPageName = useCallback(
+    (page: PageDefinition) => navigate(`/${lang}/${normalize(page.name)}`),
+    [navigate, lang],
+  );
   const demoLoginToggle = useToggle();
   const install = usePWAInstall();
 
@@ -49,6 +58,11 @@ export function ProfileDropdown(): ReactNode {
   }
 
   const showSettings = (layout?.settings ?? 'navbar') === 'navbar';
+  const pages = definition.pages.filter(
+    (page) =>
+      page.navigation === 'profileDropdown' &&
+      checkPagePermissions(page, definition, appMemberRole, appMemberSelectedGroup),
+  );
   const showFeedback = (layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn;
   const showInstall = (layout?.install ?? 'navbar') === 'navbar' && install;
 
@@ -115,6 +129,16 @@ export function ProfileDropdown(): ReactNode {
             </>
           </>
         ) : null}
+        {pages?.length
+          ? pages.map((page) => (
+              <div key={page.name}>
+                <hr className="navbar-divider" />
+                <NavbarItem onClick={() => onClickPageName(page)}>
+                  {getAppMessage({ id: `pages.${normalize(page.name)}` }).format()}
+                </NavbarItem>
+              </div>
+            ))
+          : null}
         {showLogin ? (
           <>
             {showSettings || showFeedback || showInstall ? <hr className="navbar-divider" /> : null}

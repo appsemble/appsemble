@@ -188,8 +188,9 @@ export interface BasePageDefinition {
   /**
    * The navigation type to use for the page.
    * Setting this will override the default navigation for the app.
+   * if this is set to `navbar`, navigation link is rendered in the profile dropdown.
    */
-  navigation?: Navigation;
+  navigation?: Navigation | 'profileDropdown';
 
   /**
    * A list of roles that may view the page.

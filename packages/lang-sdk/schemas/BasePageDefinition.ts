@@ -37,7 +37,7 @@ have two pages with the same name. The name of the page is displayed at the *app
       default: false,
     },
     navigation: {
-      $ref: '#/components/schemas/AppLayoutDefinition/properties/navigation',
+      enum: ['bottom', 'left-menu', 'hidden', 'dropdown', 'profileDropdown'],
       description: `The type of navigation displayed on the page.
 
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
