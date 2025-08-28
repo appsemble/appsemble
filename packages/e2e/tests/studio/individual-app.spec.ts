@@ -7,10 +7,11 @@ import { expect, test } from '../../index.js';
 let appId: number;
 
 test.describe('Individual app', () => {
-  test.beforeAll(async ({ createApp }) => {
+  test.beforeAll(async ({ createApp, createOrganization, randomTestId }) => {
     const { yaml } = JSON.parse(await readFile('mock-data/test-app-details.json', 'utf8')) as App;
+    const organizationId = (await createOrganization({ id: randomTestId() })).id;
 
-    appId = (await createApp('appsemble', yaml!)).id!;
+    appId = (await createApp(organizationId, yaml!)).id!;
   });
 
   test.afterAll(async ({ deleteApp }) => {

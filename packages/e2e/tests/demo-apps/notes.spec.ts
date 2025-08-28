@@ -3,18 +3,21 @@ import { readFile } from 'node:fs/promises';
 import { expect, test } from '../../index.js';
 
 let appId: number;
+let organizationId: string;
 
 test.describe('Notes', () => {
-  test.beforeAll(async ({ createApp, giveAppConsent }) => {
+  test.beforeAll(async ({ createApp, createOrganization, giveAppConsent, randomTestId }) => {
     const appDefinition = await readFile('../../apps/notes/app-definition.yaml', 'utf8');
+    organizationId = (await createOrganization({ id: randomTestId() })).id;
 
-    appId = (await createApp('appsemble', appDefinition)).id!;
+    appId = (await createApp(organizationId, appDefinition)).id!;
 
     await giveAppConsent(appId);
   });
 
-  test.afterAll(async ({ deleteApp }) => {
+  test.afterAll(async ({ deleteApp, deleteOrganization }) => {
     await deleteApp(appId);
+    await deleteOrganization(organizationId);
   });
 
   test.beforeEach(async ({ loginAppAppsembleOAuth, page, visitApp }) => {
