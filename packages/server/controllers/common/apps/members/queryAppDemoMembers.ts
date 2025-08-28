@@ -4,12 +4,12 @@ import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, AppMember } from '../../../../models/index.js';
-import { getAppMemberInfo } from '../../../../utils/appMember.js';
+import { getAppMemberInfo, parseMemberFilterQuery } from '../../../../utils/appMember.js';
 
 export async function queryAppDemoMembers(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
-    queryParams: { roles },
+    queryParams: { $filter: parsedFilter, roles },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -23,6 +23,12 @@ export async function queryAppDemoMembers(ctx: Context): Promise<void> {
   const supportedAppRoles = getAppRoles(app.definition.security);
 
   const passedRoles = roles ? roles.split(',') : [];
+  const filter = parseMemberFilterQuery(parsedFilter ?? '');
+  const commonFilters = {
+    AppId: appId,
+    demo: true,
+    ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
+  };
 
   if (passedRoles.length) {
     const passedRolesAreSupported = passedRoles.every((role) => supportedAppRoles.includes(role));
@@ -32,11 +38,11 @@ export async function queryAppDemoMembers(ctx: Context): Promise<void> {
 
   const appMembers = await AppMember.findAll({
     where: {
-      AppId: appId,
-      demo: true,
-      ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
+      ...(parsedFilter ? { [Op.and]: [filter, commonFilters] } : commonFilters),
     },
   });
 
-  ctx.body = appMembers.map((appMember) => getAppMemberInfo(appMember));
+  ctx.body = appMembers
+    .filter((member) => member.role !== 'cron')
+    .map((appMember) => getAppMemberInfo(appMember));
 }
