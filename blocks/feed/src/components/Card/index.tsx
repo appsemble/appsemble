@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import styles from './index.module.css';
 import { AvatarWrapper } from '../AvatarWrapper/index.js';
 import { CardImage } from '../CardImage/index.js';
+import { DropdownComponent } from '../Dropdown/index.js';
 import { createIcon } from '../utils/createIcon.js';
 
 export interface CardProps {
@@ -170,6 +171,11 @@ export function Card({ content, onUpdate }: CardProps): VNode {
             ) : null}
             {isPreactChild(heading) ? <p className="subtitle is-6">{heading}</p> : null}
           </header>
+          {'dropdown' in parameters ? (
+            <div className={styles.dropdown}>
+              <DropdownComponent content={content} dropdown={parameters.dropdown} />
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="card-image">

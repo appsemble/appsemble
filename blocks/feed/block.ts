@@ -84,6 +84,44 @@ interface AssetMarkerIcon extends BaseMarkerIcon {
   asset: string;
 }
 
+export interface Dropdown {
+  /**
+   * The text to show in the dropdown button.
+   */
+  label?: Remapper;
+
+  /**
+   * The icon to show in the dropdown button.
+   */
+  icon?: IconName;
+
+  /**
+   * The list of options to display. Must have at least 1 option.
+   *
+   * @minItems 1
+   */
+  options: DropdownOption[];
+}
+
+export interface DropdownOption {
+  /**
+   * The text to show in the option.
+   */
+  label?: Remapper;
+
+  /**
+   * The icon to show in the option.
+   */
+  icon?: IconName;
+
+  /**
+   * The action that will be called when selecting this option.
+   *
+   * @format action
+   */
+  onClick: string;
+}
+
 declare module '@appsemble/sdk' {
   interface Messages {
     /**
@@ -141,6 +179,11 @@ declare module '@appsemble/sdk' {
     heading?: Remapper;
 
     /**
+     * The dropdown menu displayed in the header of the card.
+     */
+    dropdown?: Dropdown;
+
+    /**
      * The highlighted picture.
      */
     picture?: Remapper;
@@ -186,6 +229,11 @@ declare module '@appsemble/sdk' {
      * Action to retrieve replies, dispatched on every feed item.
      */
     onLoadReply: never;
+
+    /**
+     * Custom action mapping.
+     */
+    [key: string]: never;
   }
 
   interface EventListeners {

@@ -67,8 +67,8 @@ export function getDefaultUtils(): BlockUtils {
 
 export function getDefaultBootstrapParams(): Pick<
   BootstrapParams,
-  'data' | 'path' | 'pathIndex' | 'shadowRoot' | 'theme' | 'utils'
-> {
+  'data' | 'events' | 'path' | 'pathIndex' | 'shadowRoot' | 'theme' | 'utils'
+> & { ready: () => Promise<void> } {
   return {
     data: {},
     path: '',
@@ -76,6 +76,14 @@ export function getDefaultBootstrapParams(): Pick<
     shadowRoot: document?.createElement('div').attachShadow({ mode: 'open' }),
     theme: {} as Theme,
     utils: getDefaultUtils(),
+    events: {
+      emit: null,
+      on: null,
+      off: null,
+    },
+    ready() {
+      return Promise.resolve();
+    },
   };
 }
 
