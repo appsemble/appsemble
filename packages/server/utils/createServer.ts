@@ -94,6 +94,17 @@ export async function createServer({
   }
 
   app.use(
+    conditional(
+      (ctx) => ctx.path === '/api',
+      async (ctx, next) => {
+        ctx.set('Access-Control-Expose-Headers', 'X-Appsemble-Version');
+        ctx.set('X-Appsemble-Version', version);
+        await next();
+      },
+    ),
+  );
+
+  app.use(
     appMapper(
       compose([
         conditional(

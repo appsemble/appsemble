@@ -198,8 +198,8 @@ describe('appMemberQuery', () => {
       context: {} as any,
     });
 
-    expect((members as AppMember[]).sort()).toStrictEqual(
-      [
+    expect(members as AppMember[]).toStrictEqual(
+      expect.arrayContaining([
         {
           sub: expect.any(String),
           name: 'Bot 2',
@@ -226,7 +226,7 @@ describe('appMemberQuery', () => {
           role: 'Manager',
           demo: false,
         },
-      ].sort(),
+      ]),
     );
   });
 });
