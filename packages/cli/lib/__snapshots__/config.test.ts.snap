@@ -1308,6 +1308,9 @@ If the content is an object it will be converted using \`JSON.stringify()\`.",
 exports[`config > getProjectImplementations > official blocks > feed 1`] = `
 {
   "actions": {
+    "$any": {
+      "description": "Custom action mapping.",
+    },
     "onAvatarClick": {
       "description": "Action that gets dispatched when a user clicks on an avatar.",
     },
@@ -1327,7 +1330,11 @@ as an object containing \`parentId\` and \`content\`.",
     },
   },
   "events": {
-    "emit": undefined,
+    "emit": {
+      "$any": {
+        "description": undefined,
+      },
+    },
     "listen": {
       "data": {
         "description": "The event that is triggered when data is received.
@@ -1414,6 +1421,55 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
           "white",
         ],
         "type": "string",
+      },
+      "Dropdown": {
+        "additionalProperties": false,
+        "properties": {
+          "icon": {
+            "description": "The icon to show in the dropdown button.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The text to show in the dropdown button.",
+            "format": "remapper",
+          },
+          "options": {
+            "description": "The list of options to display. Must have at least 1 option.",
+            "items": {
+              "$ref": "#/definitions/DropdownOption",
+            },
+            "minItems": 1,
+            "type": "array",
+          },
+        },
+        "required": [
+          "options",
+        ],
+        "type": "object",
+      },
+      "DropdownOption": {
+        "additionalProperties": false,
+        "properties": {
+          "icon": {
+            "description": "The icon to show in the option.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The text to show in the option.",
+            "format": "remapper",
+          },
+          "onClick": {
+            "description": "The action that will be called when selecting this option.",
+            "format": "action",
+            "type": "string",
+          },
+        },
+        "required": [
+          "onClick",
+        ],
+        "type": "object",
       },
       "FontAwesomeMarkerIcon": {
         "additionalProperties": false,
@@ -1505,6 +1561,10 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
       "description": {
         "description": "The description or content of the card.",
         "format": "remapper",
+      },
+      "dropdown": {
+        "$ref": "#/definitions/Dropdown",
+        "description": "The dropdown menu displayed in the header of the card.",
       },
       "heading": {
         "description": "The heading displayed on the card.",
@@ -5311,7 +5371,11 @@ If you define this action the list items will be draggable.",
     },
   },
   "events": {
-    "emit": undefined,
+    "emit": {
+      "$any": {
+        "description": undefined,
+      },
+    },
     "listen": {
       "data": {
         "description": "The event that is triggered when data is received.

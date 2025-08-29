@@ -107,19 +107,25 @@ export function createEvents(
   function createProxy<
     E extends keyof Events,
     M extends keyof NonNullable<ProjectManifest['events']>,
-  >(manifestKey: M, createFn: (registered: boolean, key: string) => Events[E][string]): Events[E] {
-    return new Proxy<Events[E]>({} as any, {
+  >(
+    manifestKey: M,
+    createFn: (registered: boolean, key: string) => Events[E][keyof Events[E]],
+  ): Events[E] {
+    return new Proxy<Events[E]>({} as Events[E], {
       get(target, key) {
         if (typeof key !== 'string') {
           return;
         }
         if (has(target, key)) {
-          return target[key];
+          return target[key as keyof Events[E]];
         }
         if (!has(manifest?.[manifestKey], key) && !has(manifest?.[manifestKey], '$any')) {
           return;
         }
-        const handler: Events[E][string] = createFn(has(definition?.[manifestKey], key), key);
+        const handler: Events[E][keyof Events[E]] = createFn(
+          has(definition?.[manifestKey], key),
+          key,
+        );
         // eslint-disable-next-line no-param-reassign
         target[key as keyof Events[E]] = handler;
         return handler;

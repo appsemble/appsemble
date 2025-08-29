@@ -1,6 +1,11 @@
 import { EventEmitter } from 'node:events';
 
+// Import augmented interfaces from data-loader
+import '@appsemble/data-loader/block.js';
 import { DataLoader } from '@appsemble/data-loader/src/bootstrap.js';
+// Import augmented interfaces from list
+import '@appsemble/list/block.js';
+// Imported augmented interfaces from data-loader and list get combined
 import { List } from '@appsemble/list/src/bootstrap.js';
 import { type BlockProps, Context } from '@appsemble/preact';
 import { render, screen } from '@testing-library/preact';
