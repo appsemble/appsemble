@@ -1,0 +1,5 @@
+ci_access:
+  groups:
+    - id: appsemble
+      environments:
+        - staging
