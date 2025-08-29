@@ -67,8 +67,8 @@ export function getDefaultUtils(): BlockUtils {
 
 export function getDefaultBootstrapParams(): Pick<
   BootstrapParams,
-  'data' | 'path' | 'pathIndex' | 'shadowRoot' | 'theme' | 'utils'
-> {
+  'data' | 'events' | 'path' | 'pathIndex' | 'shadowRoot' | 'theme' | 'utils'
+> & { ready: () => Promise<void> } {
   return {
     data: {},
     path: '',
@@ -76,6 +76,14 @@ export function getDefaultBootstrapParams(): Pick<
     shadowRoot: document?.createElement('div').attachShadow({ mode: 'open' }),
     theme: {} as Theme,
     utils: getDefaultUtils(),
+    events: {
+      emit: null,
+      on: null,
+      off: null,
+    },
+    ready() {
+      return Promise.resolve();
+    },
   };
 }
 
@@ -99,19 +107,25 @@ export function createEvents(
   function createProxy<
     E extends keyof Events,
     M extends keyof NonNullable<ProjectManifest['events']>,
-  >(manifestKey: M, createFn: (registered: boolean, key: string) => Events[E][string]): Events[E] {
-    return new Proxy<Events[E]>({} as any, {
+  >(
+    manifestKey: M,
+    createFn: (registered: boolean, key: string) => Events[E][keyof Events[E]],
+  ): Events[E] {
+    return new Proxy<Events[E]>({} as Events[E], {
       get(target, key) {
         if (typeof key !== 'string') {
           return;
         }
         if (has(target, key)) {
-          return target[key];
+          return target[key as keyof Events[E]];
         }
         if (!has(manifest?.[manifestKey], key) && !has(manifest?.[manifestKey], '$any')) {
           return;
         }
-        const handler: Events[E][string] = createFn(has(definition?.[manifestKey], key), key);
+        const handler: Events[E][keyof Events[E]] = createFn(
+          has(definition?.[manifestKey], key),
+          key,
+        );
         // eslint-disable-next-line no-param-reassign
         target[key as keyof Events[E]] = handler;
         return handler;

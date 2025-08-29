@@ -1,81 +1,20 @@
-import { ActionError, remap, type Remapper } from '@appsemble/lang-sdk';
+import { getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { Context } from '@appsemble/preact';
-import { type BlockUtils, type BootstrapParams, type Messages, type Theme } from '@appsemble/sdk';
-import { defaultLocale } from '@appsemble/utils';
+import { type BootstrapParams } from '@appsemble/sdk';
 import { render, screen } from '@testing-library/preact';
 import userEvent from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
 
 import { HeaderComponent } from './index.js';
 
+declare module '@appsemble/sdk' {
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+  interface EventEmitters {
+    [K: string]: never;
+  }
+}
+
 type BlockProps = BootstrapParams & { ready: (value: PromiseLike<void> | void) => void };
-
-function remapWithContext(remapper: Remapper, data: any, context?: Record<string, any>): unknown {
-  return remap(remapper, data, {
-    getMessage: null,
-    getVariable: null,
-    appId: 1,
-    url: 'https://example.com/en/example',
-    appUrl: 'https://example.com',
-    appMemberInfo: null,
-    context,
-    locale: defaultLocale,
-  });
-}
-
-function getDefaultUtils(): BlockUtils {
-  return {
-    showMessage(message) {
-      return message;
-    },
-    formatMessage<T extends keyof Messages>(
-      message: T,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ...args: Messages[T] extends never ? [] : [Messages[T]]
-    ) {
-      return message;
-    },
-    asset(assetId) {
-      return assetId;
-    },
-    fa(icon) {
-      return icon;
-    },
-    remap: remapWithContext,
-    isMobile: window.innerWidth < 768,
-    menu() {
-      return null;
-    },
-    isActionError(input): input is ActionError {
-      return input instanceof ActionError;
-    },
-    addCleanup() {
-      return null;
-    },
-  };
-}
-
-function getDefaultBootstrapParams(): Pick<
-  BootstrapParams,
-  'data' | 'events' | 'path' | 'pathIndex' | 'shadowRoot' | 'theme' | 'utils'
-> & { ready: () => Promise<void> } {
-  return {
-    data: {},
-    path: '',
-    pathIndex: '',
-    shadowRoot: document?.createElement('div').attachShadow({ mode: 'open' }),
-    theme: {} as Theme,
-    utils: getDefaultUtils(),
-    events: {
-      emit: null,
-      on: null,
-      off: null,
-    },
-    ready() {
-      return Promise.resolve();
-    },
-  };
-}
 
 const defaultBootstrapParams = getDefaultBootstrapParams();
 

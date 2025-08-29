@@ -23,5 +23,12 @@
     "@types/leaflet": "^1.0.0",
     "leaflet": "~1.5.0",
     "preact": "^10.0.0"
+  },
+  "devDependencies": {
+    "@appsemble/block-interaction-tests": "0.34.11",
+    "@testing-library/preact": "3.2.4",
+    "@testing-library/user-event": "14.6.1",
+    "vitest": "2.1.9",
+    "@appsemble/utils": "0.34.11"
   }
 }

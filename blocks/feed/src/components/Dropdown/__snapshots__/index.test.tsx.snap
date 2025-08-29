@@ -1,0 +1,43 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should render a dropdown component 1`] = `
+<div
+  class="dropdown"
+  data-testid="dropdown"
+>
+  <div
+    class="dropdown-trigger"
+  >
+    <div
+      aria-haspopup="true"
+      role="button"
+      tabindex="-1"
+    >
+      <span
+        class="icon is-justify-content-end is-align-items-end"
+      >
+        <i
+          class="ellipsis-vertical"
+        />
+      </span>
+    </div>
+  </div>
+  <div
+    class="dropdown-menu dropdown-menu"
+    data-testid="dropdown-menu"
+    role="menu"
+    tabindex="0"
+  >
+    <div
+      class="dropdown-content"
+    >
+      <button
+        class="button dropdown-item pl-5 noBorder"
+        type="button"
+      >
+        Click
+      </button>
+    </div>
+  </div>
+</div>
+`;

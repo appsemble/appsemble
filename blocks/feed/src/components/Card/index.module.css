@@ -49,3 +49,7 @@
 .replyButton {
   border-radius: 50%;
 }
+
+.dropdown {
+  cursor: pointer;
+}
