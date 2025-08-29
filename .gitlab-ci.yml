@@ -777,7 +777,7 @@ review:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   environment:
     name: review/$CI_MERGE_REQUEST_IID
-    url: https://$CI_MERGE_REQUEST_IID.appsemble.review
+    url: https://review-$CI_MERGE_REQUEST_IID.appsemble.eu
     on_stop: stop review
     auto_stop_in: 1 day
   variables:
@@ -821,7 +821,7 @@ review:
       --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
-      --set "sentry.allowedDomains={*.review.appsemble}"
+      --set "sentry.allowedDomains={*.appsemble.eu}"
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
