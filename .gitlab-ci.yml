@@ -777,14 +777,13 @@ review:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   environment:
     name: review/$CI_MERGE_REQUEST_IID
-    url: https://$CI_MERGE_REQUEST_IID.appsemble.review
+    url: https://$CI_MERGE_REQUEST_IID.review.appsemble.eu
     on_stop: stop review
     auto_stop_in: 1 day
   variables:
     GIT_STRATEGY: none
   script:
-    - kubectl config use-context "$CI_PROJECT_PATH:development"
-    - kubectl config set-context --current --namespace review
+    - kubectl config use-context "$CI_PROJECT_PATH:review"
     # This is the only way to make sure the review environment can be overwritten
     - helm delete "review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" || true
@@ -822,7 +821,7 @@ review:
       --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
-      --set "sentry.allowedDomains={*.appsemble.review}"
+      --set "sentry.allowedDomains={*.review.appsemble.eu}"
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
