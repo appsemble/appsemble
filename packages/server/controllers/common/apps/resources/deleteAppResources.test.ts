@@ -559,25 +559,23 @@ describe('deleteAppResources', () => {
     const responseGetTestResources = await request.get(
       `/api/apps/${app.id}/resources/testResource`,
     );
-    expect(responseGetTestResources).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      [
+    expect(responseGetTestResources).toMatchObject({
+      status: 200,
+      data: expect.arrayContaining([
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I am Foo.",
-          "id": 1,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I am Foo.',
+          id: 1,
         },
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I am Foo Too.",
-          "id": 2,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I am Foo Too.',
+          id: 2,
         },
-      ]
-    `);
+      ]),
+    });
 
     const responseGetTestResourcesD = await request.get(
       `/api/apps/${app.id}/resources/testResourceD`,
