@@ -16,6 +16,6 @@ context:
     visibility: public
   staging:
     organization: appsemble
-    remote: https://staging.appsemble.review
+    remote: https://staging.appsemble.eu
     visibility: public
     id: 1191

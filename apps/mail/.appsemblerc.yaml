@@ -25,7 +25,7 @@ context:
   staging:
     id: 1220
     organization: appsemble
-    remote: https://staging.appsemble.review
+    remote: https://staging.appsemble.eu
     visibility: public
     assets: true
     demoMode: true

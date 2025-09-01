@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const { CI, CI_MERGE_REQUEST_IID, E2E_HOST } = process.env;
+const { APPSEMBLE_REVIEW_DOMAIN, APPSEMBLE_STAGING_DOMAIN, CI, CI_MERGE_REQUEST_IID, E2E_HOST } =
+  process.env;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -21,7 +22,12 @@ export default defineConfig({
   use: {
     // Base URL to use in actions like `await page.goto('/')`.
     baseURL: CI
-      ? (E2E_HOST ?? `https://${CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`)
+      ? (E2E_HOST ??
+        `https://${
+          CI_MERGE_REQUEST_IID
+            ? `${CI_MERGE_REQUEST_IID}.${APPSEMBLE_REVIEW_DOMAIN || 'appsemble.review'}`
+            : APPSEMBLE_STAGING_DOMAIN || 'staging.appsemble.eu'
+        }`)
       : 'http://localhost:9999',
     // Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer
     trace: 'on-first-retry',

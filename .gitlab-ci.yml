@@ -777,7 +777,7 @@ review:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   environment:
     name: review/$CI_MERGE_REQUEST_IID
-    url: https://$CI_MERGE_REQUEST_IID.review.appsemble.eu
+    url: https://$CI_MERGE_REQUEST_IID.appsemble.review
     on_stop: stop review
     auto_stop_in: 1 day
   variables:
@@ -821,7 +821,7 @@ review:
       --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
-      --set "sentry.allowedDomains={*.review.appsemble.eu}"
+      --set "sentry.allowedDomains={*.appsemble.review}"
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
@@ -866,7 +866,7 @@ staging:
     - if: $CI_COMMIT_BRANCH == 'staging'
   environment:
     name: staging
-    url: https://staging.appsemble.review
+    url: https://staging.appsemble.eu
   variables:
     GIT_STRATEGY: none
   script:
@@ -892,7 +892,7 @@ staging:
       --set "image.tag=staging"
       --set "ingress.clusterIssuer=acme-issuer-dev"
       --set "ingress.enabled=true"
-      --set "ingress.host=staging.appsemble.review"
+      --set "ingress.host=staging.appsemble.eu"
       --set "ingress.tls.secretName=staging-tls"
       --set "ingress.tls.wildcardSecretName=staging-tls-wildcard"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=1G"
@@ -919,7 +919,7 @@ staging:
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
-      --set "sentry.allowedDomains={*.appsemble.review}"
+      --set "sentry.allowedDomains={*.appsemble.eu}"
       --set "sentry.environment=staging"
       --set "sentry.secret=sentry"
       --set "quotas.appEmail.enabled=true"
@@ -928,9 +928,9 @@ staging:
       --set "mailpit.mailpit.smtp.tls.secretName=staging-mailpit-tls"
       --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
       --set "minio.fullnameOverride=staging-minio"
-      --set "minio.ingress.hostname=console.minio.staging.appsemble.review"
+      --set "minio.ingress.hostname=console.minio.staging.appsemble.eu"
       --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
-      --set "minio.apiIngress.hostname=api.minio.staging.appsemble.review"
+      --set "minio.apiIngress.hostname=api.minio.staging.appsemble.eu"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
 
@@ -1032,13 +1032,15 @@ provision review:
   variables:
     INCREMENT: patch
     IDENTIFIER: ''
+    APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
+    APPSEMBLE_STAGING_DOMAIN: 'staging.appsemble.eu'
   needs:
     - review
     - npm_ci
   script:
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context review
-    - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.review.appsemble.eu"
+    - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
     - npm run appsemble -- block create --organization appsemble --template vanilla --name template-vanilla --path blocks
     - npm run appsemble -- block create --organization appsemble --template preact --name template-preact --path blocks
@@ -1063,7 +1065,7 @@ provision staging:
   script:
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context staging
-    - npm run appsemble -- config set remote https://staging.appsemble.review
+    - npm run appsemble -- config set remote https://staging.appsemble.eu
     - npm run appsemble -- -vv block publish blocks/*
     - apt-get update
     - apt-get install --yes git gnupg yq
@@ -1113,6 +1115,9 @@ provision production:
 #   rules:
 #     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
 #     - if: $CI_COMMIT_TAG
+#   variables:
+#     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
+#     APPSEMBLE_STAGING_DOMAIN: 'staging.appsemble.eu'
 #   script:
 #     - npm run scripts -- wait-for-ssl
 #     - npx -- lhci collect
