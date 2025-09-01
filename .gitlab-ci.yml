@@ -848,8 +848,7 @@ stop review:
   variables:
     GIT_STRATEGY: none
   script:
-    - kubectl config use-context "$CI_PROJECT_PATH:development"
-    - kubectl config set-context --current --namespace review
+    - kubectl config use-context "$CI_PROJECT_PATH:review"
     - helm delete "review-$CI_MERGE_REQUEST_IID"
     - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID"
     - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
@@ -1039,7 +1038,7 @@ provision review:
   script:
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context review
-    - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
+    - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.review.appsemble.eu"
     - npm run scripts -- wait-for-api
     - npm run appsemble -- block create --organization appsemble --template vanilla --name template-vanilla --path blocks
     - npm run appsemble -- block create --organization appsemble --template preact --name template-preact --path blocks
