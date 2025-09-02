@@ -1169,8 +1169,7 @@ cleanup review environments:
   variables:
     GIT_STRATEGY: none
   script:
-    - kubectl config use-context "$CI_PROJECT_PATH:development"
-    - kubectl config set-context --current --namespace review
+    - kubectl config use-context "$CI_PROJECT_PATH:review"
     # Delete all review managed ingresses instead of relying on the pre-delete hooks
     - kubectl get ingress --selector app.kubernetes.io/managed-by -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete ingress " $1}' | bash || true
     # Delete all review managed secrets instead of relying on the pre-delete hooks
