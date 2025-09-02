@@ -2,17 +2,19 @@ import { logger } from '@appsemble/node-utils';
 import { type SSLStatusMap } from '@appsemble/types';
 import axios from 'axios';
 
-const { CI_MERGE_REQUEST_IID } = process.env;
+const { APPSEMBLE_REVIEW_DOMAIN, APPSEMBLE_STAGING_DOMAIN, CI_MERGE_REQUEST_IID } = process.env;
 
 export const command = 'wait-for-api';
 export const description =
   'Wait for the SSL certificate to be ready for the API of a review environment';
 
 export async function handler(): Promise<void> {
-  const reviewDomain = `${CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`;
+  const domain = CI_MERGE_REQUEST_IID
+    ? `${CI_MERGE_REQUEST_IID}.${APPSEMBLE_REVIEW_DOMAIN || 'appsemble.review'}`
+    : APPSEMBLE_STAGING_DOMAIN || 'staging.appsemble.eu';
   await new Promise<void>((resolve) => {
     const interval = setInterval(async () => {
-      const url = `https://${reviewDomain}`;
+      const url = `https://${domain}`;
       try {
         logger.info(`Checking if server is ready on ${url}`);
         await axios.get<SSLStatusMap>(url, { validateStatus: () => true });

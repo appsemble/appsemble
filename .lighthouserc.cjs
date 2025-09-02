@@ -1,9 +1,17 @@
 const { readdirSync } = require('node:fs');
 
-const { CI, CI_COMMIT_TAG, CI_MERGE_REQUEST_IID } = process.env;
+const {
+  APPSEMBLE_REVIEW_DOMAIN,
+  APPSEMBLE_STAGING_DOMAIN,
+  CI,
+  CI_COMMIT_TAG,
+  CI_MERGE_REQUEST_IID,
+} = process.env;
 const domain = CI_COMMIT_TAG
   ? 'appsemble.app'
-  : `${CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`;
+  : CI_MERGE_REQUEST_IID
+    ? `${CI_MERGE_REQUEST_IID}.${APPSEMBLE_REVIEW_DOMAIN || 'appsemble.review'}`
+    : APPSEMBLE_STAGING_DOMAIN || 'staging.appsemble.eu';
 
 module.exports = {
   ci: {
