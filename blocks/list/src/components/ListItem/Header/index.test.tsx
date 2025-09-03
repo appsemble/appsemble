@@ -102,8 +102,8 @@ it('should render a header component with a link onClick action', async () => {
     </Context.Provider>,
   );
 
-  const testSelect = screen.getByTestId('header-test');
-  expect(testSelect).toMatchSnapshot();
-  await userEvent.click(testSelect);
+  const header = screen.getByTestId('header-test');
+  expect(header).toMatchSnapshot();
+  await userEvent.click(header);
   expect(onClickMock).toHaveBeenCalledOnce();
 });

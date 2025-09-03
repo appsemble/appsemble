@@ -61,13 +61,24 @@ export function Modal<T extends ElementType = 'div'>({
     closing: styles.closing,
   });
 
-  const onKeyDown = useCallback(
+  const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      event.stopPropagation();
+      if (closable && event.key === 'Escape') {
         onClose?.(event);
       }
     },
-    [onClose],
+    [closable, onClose],
+  );
+
+  const handleClose = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
+      if (closable) {
+        onClose?.(e);
+      }
+    },
+    [closable, onClose],
   );
 
   if (!openClass) {
@@ -79,8 +90,8 @@ export function Modal<T extends ElementType = 'div'>({
       {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <div
         className="modal-background"
-        onClick={closable ? onClose : null}
-        onKeyDown={closable ? onKeyDown : null}
+        onClick={handleClose}
+        onKeyDown={handleKeyDown}
         role="presentation"
       />
       {/* @ts-expect-error This construct should work */}
@@ -91,7 +102,7 @@ export function Modal<T extends ElementType = 'div'>({
         <button
           aria-label={closeButtonLabel}
           className="modal-close is-large"
-          onClick={onClose}
+          onClick={handleClose}
           type="button"
         />
       ) : null}

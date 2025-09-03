@@ -1,6 +1,6 @@
 import { Modal, useToggle } from '@appsemble/preact-components';
 import { Fragment, type VNode } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 
@@ -94,15 +94,19 @@ export function ImageComponent({
     };
   }, [src]);
 
+  const handleClick = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
+      modal.enable();
+    },
+    [modal],
+  );
+
   return (
     <Fragment key={id}>
       {src ? (
         <>
-          <button
-            className={`${styles.button} ${styles.root}`}
-            onClick={modal.enable}
-            type="button"
-          >
+          <button className={`${styles.button} ${styles.root}`} onClick={handleClick} type="button">
             <figure
               className={`image mr-2 ${styles.root}`}
               // eslint-disable-next-line react/forbid-dom-props
@@ -117,7 +121,13 @@ export function ImageComponent({
             </figure>
           </button>
           <Modal isActive={modal.enabled} onClose={modal.disable}>
-            <figure className="image">
+            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions */}
+            <figure
+              className="image"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <img alt="list icon" src={src} />
             </figure>
           </Modal>

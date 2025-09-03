@@ -1,3 +1,7 @@
+.image {
+  max-width: 100px;
+}
+
 .item {
   background-color: transparent;
   border: none;

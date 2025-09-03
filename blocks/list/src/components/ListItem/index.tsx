@@ -11,9 +11,10 @@ import { type Item } from '../../../block.js';
 interface ListItemProps {
   readonly index: number;
   readonly item: Item;
+  readonly dataTestId?: string;
 }
 
-export function ListItem({ index, item }: ListItemProps): VNode {
+export function ListItem({ dataTestId, index, item }: ListItemProps): VNode {
   const {
     actions,
     parameters: {
@@ -118,10 +119,16 @@ export function ListItem({ index, item }: ListItemProps): VNode {
   }, [itemHash]);
 
   return (
+    // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
     <div
       className={`${styles.item} has-text-left is-flex is-flex-direction-column my-1 py-2 pl-3 pr-2`}
+      data-testid={dataTestId}
       id={itemHash}
+      onClick={onItemClick}
+      onKeyDown={onItemClick}
       ref={ref}
+      role="button"
+      tabIndex={-1}
     >
       {header ? (
         <HeaderComponent
