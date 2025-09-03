@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.12](https://gitlab.com/appsemble/appsemble/-/releases/0.34.12)] - 2025-09-03
+
+### Added
+
+- Block(`feed`): Support dropdown with options.
+- App: Add `profileDropdown` option to page navigation enum.
+- App: Add phone number support for `app.member.register` and `app.member.current.patch` actions.
+- App: Make settings page customisable.
+
+### Fixed
+
+- Block(`form`): Allow images to be captured from the camera for file inputs.
+- Server: Apply filters to the demo app member query.
+- Service-worker: Don't cache opaque responses.
+
 ## \[[0.34.11](https://gitlab.com/appsemble/appsemble/-/releases/0.34.11)] - 2025-08-19
 
 ### Added
