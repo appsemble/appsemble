@@ -114,6 +114,7 @@ export function FileEntry({
   const src = valueString?.startsWith('http') ? valueString : prefix;
   const url = useObjectURL((src || value) as unknown as Blob | string);
   const { icon: iconName, requirements } = field;
+  const acceptMime = getAccept(field);
 
   const acceptRequirement = requirements?.find((requirement) => 'accept' in requirement);
   const acceptedMimeTypeCategories = getMimeTypeCategories(
@@ -341,7 +342,11 @@ export function FileEntry({
       <label className="file-label">
         {!value || !url ? (
           <input
-            accept={getAccept(field)}
+            accept={
+              acceptMime?.includes('image/') || acceptMime?.includes('video/')
+                ? `${acceptMime}, android/allowCamera`
+                : acceptMime
+            }
             className={`file-input ${styles.input}`}
             disabled={disabled}
             name={name}
