@@ -100,6 +100,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
       new UnusedWebpackPlugin({
         directories: [projectDir],
         exclude: [
+          '**/*.test.{ts,tsx}.snap',
           '**/*.test.{ts,tsx}',
           '**/*.d.ts',
           '**/*.md',

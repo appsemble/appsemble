@@ -32,6 +32,7 @@ export function ProfileSettings(): ReactNode {
   const [pictureCamera, setPictureCamera] = useState<Blob | null>(null);
   const navigate = useNavigate();
   const { lang } = useParams<{ lang: string }>();
+  const enabledSettings = definition.layout?.enabledSettings;
 
   const preferredLanguage =
     appMemberInfo.locale || localStorage.getItem('preferredLanguage') || lang;
@@ -88,7 +89,7 @@ export function ProfileSettings(): ReactNode {
     });
   }, [setAppMemberInfo, appMemberInfo]);
 
-  return (
+  return enabledSettings?.length ? (
     <SimpleForm
       defaultValues={{
         name: appMemberInfo?.name || '',
@@ -100,14 +101,16 @@ export function ProfileSettings(): ReactNode {
       onSubmit={onSaveProfile}
     >
       <SimpleFormError>{() => <FormattedMessage {...messages.submitError} />}</SimpleFormError>
-      <SimpleFormField
-        help={<FormattedMessage {...messages.displayNameHelp} />}
-        icon="user"
-        label={<FormattedMessage {...messages.displayName} />}
-        name="name"
-        placeholder={formatMessage(messages.displayName)}
-      />
-      {definition.members?.phoneNumber?.enable ? (
+      {enabledSettings.includes('name') ? (
+        <SimpleFormField
+          help={<FormattedMessage {...messages.displayNameHelp} />}
+          icon="user"
+          label={<FormattedMessage {...messages.displayName} />}
+          name="name"
+          placeholder={formatMessage(messages.displayName)}
+        />
+      ) : null}
+      {definition.members?.phoneNumber?.enable && enabledSettings.includes('phoneNumber') ? (
         <SimpleFormField
           icon="phone"
           label={<FormattedMessage {...messages.phoneNumber} />}
@@ -115,49 +118,55 @@ export function ProfileSettings(): ReactNode {
           placeholder={formatMessage(messages.phoneNumber)}
         />
       ) : null}
-      <SimpleFormField
-        accept="image/jpeg, image/png, image/tiff, image/webp"
-        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-        component={FileUpload}
-        fileButtonLabel={<FormattedMessage {...messages.picture} />}
-        fileLabel={<FormattedMessage {...messages.selectFile} />}
-        handleRemove={onRemoveProfilePicture}
-        hasPicture={hasPicture}
-        help={<FormattedMessage {...messages.pictureDescription} />}
-        label={<FormattedMessage {...messages.picture} />}
-        name="picture"
-        preview={
+      {enabledSettings.includes('picture') ? (
+        <SimpleFormField
+          accept="image/jpeg, image/png, image/tiff, image/webp"
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-          <PicturePreview pictureCamera={pictureCamera} pictureUrl={appMemberInfo?.picture} />
-        }
-      />
-      <SimpleFormField
-        clickButtonLabel={<Icon icon="camera" size="large" />}
-        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-        component={WebcamImageUpload}
-        help={<FormattedMessage {...messages.clickDescription} />}
-        onCapture={onCapture}
-        value={pictureCamera}
-        videoButtonLabel={<FormattedMessage {...messages.clickPicture} />}
-      />
-      <SimpleFormField
-        component={SelectField}
-        help={<FormattedMessage {...messages.languageDescription} />}
-        icon="language"
-        label={<FormattedMessage {...messages.languageLabel} />}
-        name="locale"
-      >
-        {languages.map((language) => (
-          <option key={language} value={language}>
-            {getLanguageDisplayName(language)}
-          </option>
-        ))}
-      </SimpleFormField>
+          component={FileUpload}
+          fileButtonLabel={<FormattedMessage {...messages.picture} />}
+          fileLabel={<FormattedMessage {...messages.selectFile} />}
+          handleRemove={onRemoveProfilePicture}
+          hasPicture={hasPicture}
+          help={<FormattedMessage {...messages.pictureDescription} />}
+          label={<FormattedMessage {...messages.picture} />}
+          name="picture"
+          preview={
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+            <PicturePreview pictureCamera={pictureCamera} pictureUrl={appMemberInfo?.picture} />
+          }
+        />
+      ) : null}
+      {enabledSettings.includes('picture') ? (
+        <SimpleFormField
+          clickButtonLabel={<Icon icon="camera" size="large" />}
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+          component={WebcamImageUpload}
+          help={<FormattedMessage {...messages.clickDescription} />}
+          onCapture={onCapture}
+          value={pictureCamera}
+          videoButtonLabel={<FormattedMessage {...messages.clickPicture} />}
+        />
+      ) : null}
+      {enabledSettings.includes('languages') ? (
+        <SimpleFormField
+          component={SelectField}
+          help={<FormattedMessage {...messages.languageDescription} />}
+          icon="language"
+          label={<FormattedMessage {...messages.languageLabel} />}
+          name="locale"
+        >
+          {languages.map((language) => (
+            <option key={language} value={language}>
+              {getLanguageDisplayName(language)}
+            </option>
+          ))}
+        </SimpleFormField>
+      ) : null}
       <FormButtons>
         <SimpleSubmit>
           <FormattedMessage {...messages.saveProfile} />
         </SimpleSubmit>
       </FormButtons>
     </SimpleForm>
-  );
+  ) : null;
 }

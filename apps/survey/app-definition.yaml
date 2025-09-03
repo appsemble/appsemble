@@ -4,6 +4,8 @@ defaultPage: Survey
 
 layout:
   navigation: hidden
+  enabledSettings:
+    - languages
 
 resources:
   answer:

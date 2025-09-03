@@ -2,6 +2,10 @@ name: ChatGPT
 description: Demonstrates the use of OpenAI's ChatGPT in Appsemble.
 defaultPage: Chat
 
+layout:
+  enabledSettings:
+    - languages
+
 pages:
   - name: Chat
     blocks:

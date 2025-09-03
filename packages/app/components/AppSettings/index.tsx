@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { AppSubscriptions } from './AppSubscriptions/index.js';
 import { LanguagePreference } from './LanguagePreference/index.js';
 import { messages } from './messages.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { Main } from '../Main/index.js';
 import { ProfileSettings } from '../ProfileSettings/index.js';
@@ -16,13 +17,19 @@ import { AppBar } from '../TitleBar/index.js';
 export function AppSettings(): ReactNode {
   useMeta(messages.settings);
   const { isLoggedIn } = useAppMember();
+  const { definition } = useAppDefinition();
+  const enabledSettings = definition.layout?.enabledSettings;
   return (
     <Content padding>
       <AppBar>
         <FormattedMessage {...messages.settings} />
       </AppBar>
       <Main>
-        {isLoggedIn ? <ProfileSettings /> : <LanguagePreference />}
+        {isLoggedIn && enabledSettings?.length ? (
+          <ProfileSettings />
+        ) : enabledSettings?.includes('languages') ? (
+          <LanguagePreference />
+        ) : null}
         <AppSubscriptions />
       </Main>
     </Content>

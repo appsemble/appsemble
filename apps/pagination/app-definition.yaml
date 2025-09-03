@@ -1,6 +1,11 @@
 name: Pagination
 description: Keep personal notes and display them nicely
 defaultPage: Notes Table
+layout:
+  enabledSettings:
+    - languages
+    - name
+    - picture
 security:
   default:
     role: User

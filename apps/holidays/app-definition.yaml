@@ -1,6 +1,10 @@
 name: Holidays
 description: A simple app that fetches holiday information for various countries.
 defaultPage: Holidays in Europe
+layout:
+  enabledSettings:
+    - languages
+
 pages:
   - name: Holidays in Europe
     icon: globe-europe

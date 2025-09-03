@@ -57,12 +57,15 @@ export function ProfileDropdown(): ReactNode {
     );
   }
 
-  const showSettings = (layout?.settings ?? 'navbar') === 'navbar';
+  const enabledSettings = definition.layout?.enabledSettings;
   const pages = definition.pages.filter(
     (page) =>
       page.navigation === 'profileDropdown' &&
       checkPagePermissions(page, definition, appMemberRole, appMemberSelectedGroup),
   );
+  const showSettings =
+    (layout?.settings ?? 'navbar') === 'navbar' &&
+    (enabledSettings?.length || definition.notifications === 'opt-in');
   const showFeedback = (layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn;
   const showInstall = (layout?.install ?? 'navbar') === 'navbar' && install;
 

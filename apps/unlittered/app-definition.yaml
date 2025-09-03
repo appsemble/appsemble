@@ -5,6 +5,9 @@ theme:
   themeColor: '#eb0000'
   splashColor: '#ffffff'
   primaryColor: '#eb0000'
+layout:
+  enabledSettings:
+    - languages
 
 security:
   guest:

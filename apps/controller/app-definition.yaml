@@ -6,6 +6,10 @@ controller:
     emit:
       data: calculationResult
 
+layout:
+  enabledSettings:
+    - languages
+
 pages:
   - name: Example Page A
     blocks:
