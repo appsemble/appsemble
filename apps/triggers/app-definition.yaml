@@ -108,7 +108,7 @@ pages:
       - name: Owners
         blocks:
           - type: data-loader
-            version: 0.34.12
+            version: 0.34.13
             actions:
               onLoad:
                 type: resource.query
@@ -120,7 +120,7 @@ pages:
                 data: owners
 
           - type: table
-            version: 0.34.12
+            version: 0.34.13
             parameters:
               fields:
                 - value: { prop: name }
@@ -139,14 +139,14 @@ pages:
                 closable: true
                 blocks:
                   - type: detail-viewer
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       fields:
                         - label: { translate: confirmDeleteOwner }
                           value: { prop: name }
 
                   - type: button-list
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       buttons:
                         - label: { translate: cancel }
@@ -168,7 +168,7 @@ pages:
                             type: dialog.ok
 
           - type: action-button
-            version: 0.34.12
+            version: 0.34.13
             parameters:
               icon: plus
             actions:
@@ -176,7 +176,7 @@ pages:
                 type: dialog
                 blocks:
                   - type: form
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       fields:
                         - type: string
@@ -195,7 +195,7 @@ pages:
       - name: House Pets
         blocks:
           - type: data-loader
-            version: 0.34.12
+            version: 0.34.13
             actions:
               onLoad:
                 type: resource.query
@@ -207,7 +207,7 @@ pages:
                 data: housePets
 
           - type: table
-            version: 0.34.12
+            version: 0.34.13
             parameters:
               fields:
                 - value: { prop: name }
@@ -228,14 +228,14 @@ pages:
                 closable: true
                 blocks:
                   - type: detail-viewer
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       fields:
                         - label: { translate: confirmDeleteHousePet }
                           value: { prop: name }
 
                   - type: button-list
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       buttons:
                         - label: { translate: cancel }
@@ -257,7 +257,7 @@ pages:
                             type: dialog.ok
 
           - type: action-button
-            version: 0.34.12
+            version: 0.34.13
             parameters:
               icon: plus
             actions:
@@ -265,7 +265,7 @@ pages:
                 type: dialog
                 blocks:
                   - type: form
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       fields:
                         - type: string
@@ -292,7 +292,7 @@ pages:
       - name: Farm Pets
         blocks:
           - type: data-loader
-            version: 0.34.12
+            version: 0.34.13
             actions:
               onLoad:
                 type: resource.query
@@ -304,7 +304,7 @@ pages:
                 data: farmPets
 
           - type: table
-            version: 0.34.12
+            version: 0.34.13
             parameters:
               fields:
                 - value: { prop: name }
@@ -325,14 +325,14 @@ pages:
                 closable: true
                 blocks:
                   - type: detail-viewer
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       fields:
                         - label: { translate: confirmDeleteFarmPet }
                           value: { prop: name }
 
                   - type: button-list
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       buttons:
                         - label: { translate: cancel }
@@ -354,7 +354,7 @@ pages:
                             type: dialog.ok
 
           - type: action-button
-            version: 0.34.12
+            version: 0.34.13
             parameters:
               icon: plus
             actions:
@@ -362,7 +362,7 @@ pages:
                 type: dialog
                 blocks:
                   - type: form
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       fields:
                         - type: string
@@ -389,7 +389,7 @@ pages:
       - name: Wild Pets
         blocks:
           - type: data-loader
-            version: 0.34.12
+            version: 0.34.13
             actions:
               onLoad:
                 type: resource.query
@@ -401,7 +401,7 @@ pages:
                 data: wildPets
 
           - type: table
-            version: 0.34.12
+            version: 0.34.13
             parameters:
               fields:
                 - value: { prop: name }
@@ -422,14 +422,14 @@ pages:
                 closable: true
                 blocks:
                   - type: detail-viewer
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       fields:
                         - label: { translate: confirmDeleteWildPet }
                           value: { prop: name }
 
                   - type: button-list
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       buttons:
                         - label: { translate: cancel }
@@ -451,7 +451,7 @@ pages:
                             type: dialog.ok
 
           - type: action-button
-            version: 0.34.12
+            version: 0.34.13
             parameters:
               icon: plus
             actions:
@@ -459,7 +459,7 @@ pages:
                 type: dialog
                 blocks:
                   - type: form
-                    version: 0.34.12
+                    version: 0.34.13
                     parameters:
                       fields:
                         - type: string
