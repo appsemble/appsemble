@@ -1081,7 +1081,7 @@ provision production:
     - production
     - npm_ci
   environment:
-    name: production
+    name: production-do
     action: prepare
   script:
     - npm run appsemble -- config set context production
