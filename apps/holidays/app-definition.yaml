@@ -13,7 +13,7 @@ pages:
       - name: Netherlands
         blocks:
           - type: data-loader
-            version: 0.34.11
+            version: 0.34.12
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v3/NextPublicHolidays/NL
@@ -22,7 +22,7 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.34.11
+            version: 0.34.12
             parameters:
               fields:
                 - value: { prop: date }
@@ -47,7 +47,7 @@ pages:
       - name: Germany
         blocks:
           - type: data-loader
-            version: 0.34.11
+            version: 0.34.12
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v3/NextPublicHolidays/DE
@@ -56,7 +56,7 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.34.11
+            version: 0.34.12
             parameters:
               fields:
                 - value: { prop: date }
@@ -81,7 +81,7 @@ pages:
       - name: Spain
         blocks:
           - type: data-loader
-            version: 0.34.11
+            version: 0.34.12
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v3/NextPublicHolidays/ES
@@ -90,7 +90,7 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.34.11
+            version: 0.34.12
             parameters:
               fields:
                 - value: { prop: date }
@@ -120,7 +120,7 @@ pages:
       - name: USA
         blocks:
           - type: data-loader
-            version: 0.34.11
+            version: 0.34.12
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v3/NextPublicHolidays/US
@@ -129,7 +129,7 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.34.11
+            version: 0.34.12
             parameters:
               fields:
                 - value: { prop: date }
@@ -152,7 +152,7 @@ pages:
       - name: Canada
         blocks:
           - type: data-loader
-            version: 0.34.11
+            version: 0.34.12
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v3/NextPublicHolidays/CA
@@ -161,7 +161,7 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.34.11
+            version: 0.34.12
             parameters:
               fields:
                 - value: { prop: date }
@@ -184,7 +184,7 @@ pages:
       - name: Mexico
         blocks:
           - type: data-loader
-            version: 0.34.11
+            version: 0.34.12
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v3/NextPublicHolidays/MX
@@ -193,7 +193,7 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.34.11
+            version: 0.34.12
             parameters:
               fields:
                 - value: { prop: date }
