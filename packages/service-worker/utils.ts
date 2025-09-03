@@ -7,7 +7,10 @@ async function put(
 ): Promise<Response> {
   // Only cache responses if the status code is 2xx
   // or if the status is 0 due to cors and the destination is an image
-  if (response.ok || (response.status === 0 && request.destination === 'image')) {
+  if (
+    response.type !== 'opaque' &&
+    (response.ok || (response.status === 0 && request.destination === 'image'))
+  ) {
     const cache = await caches.open('appsemble');
     cache.put(request, response.clone());
     return response;
