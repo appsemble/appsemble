@@ -948,7 +948,7 @@ production:
   variables:
     GIT_STRATEGY: none
   script:
-    - kubectl config use-context "$CI_PROJECT_PATH:production"
+    - kubectl config use-context "$CI_PROJECT_PATH:production-do"
     - kubectl config set-context --current --namespace appsemble
     - helm repo add appsemble https://charts.appsemble.com
     # Prevent a finished job without chart actually serving.
