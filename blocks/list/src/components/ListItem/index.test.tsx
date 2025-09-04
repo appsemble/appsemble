@@ -7,13 +7,6 @@ import { expect, it, vi } from 'vitest';
 
 import { ListItem } from './index.js';
 
-declare module '@appsemble/sdk' {
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  interface EventEmitters {
-    [K: string]: never;
-  }
-}
-
 type BlockProps = BootstrapParams & { ready: (value: PromiseLike<void> | void) => void };
 
 const defaultBootstrapParams = getDefaultBootstrapParams();
