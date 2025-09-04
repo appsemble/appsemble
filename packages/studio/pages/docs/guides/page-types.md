@@ -268,7 +268,7 @@ The example above was created using the following page definition (minus Page 2)
     - name: Contained page 1
       blocks:
         - type: action-button
-          version: 0.34.15-test.0
+          version: 0.34.15-test.1
           parameters:
             icon: git-alt
           actions:
@@ -278,7 +278,7 @@ The example above was created using the following page definition (minus Page 2)
     - name: Contained page 2
       blocks:
         - type: action-button
-          version: 0.34.15-test.0
+          version: 0.34.15-test.1
           parameters:
             icon: git-alt
           actions:

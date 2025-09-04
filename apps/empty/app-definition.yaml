@@ -9,7 +9,7 @@ pages:
   - name: Example Page A
     blocks:
       - type: action-button
-        version: 0.34.15-test.0
+        version: 0.34.15-test.1
         parameters:
           icon: arrow-right
         actions:
@@ -20,7 +20,7 @@ pages:
   - name: Example Page B
     blocks:
       - type: action-button
-        version: 0.34.15-test.0
+        version: 0.34.15-test.1
         parameters:
           icon: arrow-left
         actions:
