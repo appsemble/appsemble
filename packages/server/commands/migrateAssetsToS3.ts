@@ -1,4 +1,4 @@
-import { logger, uploadS3File } from '@appsemble/node-utils';
+import { initS3Client, logger, uploadS3File } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
@@ -30,6 +30,20 @@ export async function handler(): Promise<void> {
     });
   } catch (error: unknown) {
     handleDBError(error as Error);
+  }
+
+  try {
+    initS3Client({
+      accessKey: argv.s3AccessKey,
+      endPoint: argv.s3Host,
+      secretKey: argv.s3SecretKey,
+      port: argv.s3Port,
+      useSSL: argv.s3Secure,
+    });
+  } catch (error: unknown) {
+    logger.warn('S3Error: Failed to initialize S3 client.');
+    logger.error(error as Error);
+    process.exit(1);
   }
 
   const assetsWithDataIter = iterTable(Asset, {
