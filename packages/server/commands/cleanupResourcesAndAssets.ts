@@ -1,4 +1,11 @@
-import { deleteS3Files, initS3Client, logger } from '@appsemble/node-utils';
+import {
+  deleteS3Files,
+  getS3File,
+  getS3FileStats,
+  initS3Client,
+  logger,
+  uploadS3File,
+} from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
@@ -76,7 +83,7 @@ export async function handler(): Promise<void> {
   logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
 
   const demoAssetsToReseed = await Asset.findAll({
-    attributes: ['mime', 'filename', 'data', 'name', 'AppId', 'ResourceId'],
+    attributes: ['id', 'mime', 'filename', 'data', 'name', 'AppId', 'ResourceId'],
     include: [
       {
         model: App,
@@ -96,11 +103,16 @@ export async function handler(): Promise<void> {
   logger.info('Reseeding ephemeral assets into demo apps.');
 
   for (const asset of demoAssetsToReseed) {
-    await Asset.create({
-      ...asset.dataValues,
+    const { data, id, ...values } = asset.dataValues;
+    const appId = asset.App!.id;
+    const created = await Asset.create({
+      ...values,
       ephemeral: true,
       seed: false,
     });
+    const stream = await getS3File(`app-${appId}`, id);
+    const stats = await getS3FileStats(`app-${appId}`, id);
+    await uploadS3File(`app-${appId}`, created.id, stream, stats.size);
   }
 
   logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets into demo apps.`);
