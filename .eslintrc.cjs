@@ -28,7 +28,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['packages/block-interaction-tests/vitest.setup.ts'],
+      files: ['packages/block-interaction-tests/vitest.setup.ts', 'blocks/list/vitest.setup.ts'],
       rules: {
         'no-useless-constructor': 'off',
         '@typescript-eslint/no-empty-function': 'off',

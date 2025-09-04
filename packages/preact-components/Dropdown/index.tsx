@@ -59,11 +59,20 @@ export function Dropdown({
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      event.stopPropagation();
       if (event.key === 'Escape') {
         disable();
       }
     },
     [disable],
+  );
+
+  const handleClick = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
+      toggle();
+    },
+    [toggle],
   );
 
   useClickOutside(ref, disable);
@@ -76,12 +85,18 @@ export function Dropdown({
     >
       <div className="dropdown-trigger">
         {asButton ? (
-          <Button aria-haspopup icon={icon} onClick={toggle} onKeyDown={onKeyDown}>
+          <Button aria-haspopup icon={icon} onClick={handleClick} onKeyDown={onKeyDown}>
             {label}
           </Button>
         ) : (
           // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
-          <div aria-haspopup onClick={toggle} onKeyDown={onKeyDown} role="button" tabIndex={-1}>
+          <div
+            aria-haspopup
+            onClick={handleClick}
+            onKeyDown={onKeyDown}
+            role="button"
+            tabIndex={-1}
+          >
             <Icon className={iconClassName} icon={icon} />
           </div>
         )}
@@ -89,7 +104,7 @@ export function Dropdown({
       <div
         className={classNames('dropdown-menu', styles['dropdown-menu'])}
         data-testid="dropdown-menu"
-        onClick={toggle}
+        onClick={handleClick}
         onKeyDown={onKeyDown}
         role="menu"
         tabIndex={0}

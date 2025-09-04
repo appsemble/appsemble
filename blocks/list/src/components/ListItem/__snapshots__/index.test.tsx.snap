@@ -1,0 +1,88 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should render a list item component 1`] = `
+<div
+  class="item has-text-left is-flex is-flex-direction-column my-1 py-2 pl-3 pr-2"
+  data-testid="list-item-test"
+  id=".item.1"
+  role="button"
+  tabindex="-1"
+>
+  <div
+    class="headerWrapper is-flex"
+    role="button"
+    tabindex="-1"
+  >
+    <div
+      class="is-flex image"
+    >
+      <div />
+      <a
+        class="item has-text-left is-block"
+        href="href"
+      >
+        <div
+          class="is-flex is-justify-content-space-between is-align-items-center"
+        >
+          <div>
+            <h4
+              class="title"
+            >
+              test
+            </h4>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+  <div>
+    <figure
+      class="image image"
+    />
+  </div>
+  <div
+    class="footerWrapper is-flex is-justify-content-space-between is-align-items-end"
+  >
+    <div
+      class="footerContent"
+    >
+      
+    </div>
+    <div
+      class="dropdown"
+      data-testid="dropdown"
+    >
+      <div
+        class="dropdown-trigger"
+      >
+        <div
+          aria-haspopup="true"
+          role="button"
+          tabindex="-1"
+        >
+          <span
+            class="icon is-justify-content-end is-align-items-end"
+          >
+            <i />
+          </span>
+        </div>
+      </div>
+      <div
+        class="dropdown-menu dropdown-menu"
+        data-testid="dropdown-menu"
+        role="menu"
+        tabindex="0"
+      >
+        <div
+          class="dropdown-content"
+        >
+          <button
+            class="button dropdown-item pl-5 noBorder"
+            type="button"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
