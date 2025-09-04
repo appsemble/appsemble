@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.34.13",
+  "version": "0.34.14",
   "description": "The CLI for developing with Appsemble apps and blocks",
   "keywords": [
     "app",
@@ -44,10 +44,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.34.13",
-    "@appsemble/types": "0.34.13",
-    "@appsemble/lang-sdk": "0.34.13",
-    "@appsemble/utils": "0.34.13",
+    "@appsemble/node-utils": "0.34.14",
+    "@appsemble/types": "0.34.14",
+    "@appsemble/lang-sdk": "0.34.14",
+    "@appsemble/utils": "0.34.14",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@koa/cors": "^5.0.0",
     "@odata/parser": "^0.2.0",
@@ -90,8 +90,8 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@appsemble/types": "0.34.13",
-    "@appsemble/server": "0.34.13",
+    "@appsemble/types": "0.34.14",
+    "@appsemble/server": "0.34.14",
     "bcrypt": "5.1.1",
     "axios-test-instance": "7.0.0",
     "@types/concat-stream": "2.0.3",
