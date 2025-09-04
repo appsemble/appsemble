@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/tsconfig",
-  "version": "0.34.14",
+  "version": "0.34.15-test.0",
   "type": "commonjs",
   "description": "The recommended TypeScript configuration for building Appsemble blocks",
   "keywords": [
