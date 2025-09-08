@@ -12,7 +12,7 @@ export async function updateAppPaymentSettings(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     request: {
-      body: { cancelUrl, stripeApiKey, stripeSecret, successUrl },
+      body: { cancelUrl, enablePayments, stripeApiKey, stripeSecret, successUrl },
     },
   } = ctx;
 
@@ -32,27 +32,36 @@ export async function updateAppPaymentSettings(ctx: Context): Promise<void> {
 
   const result: Partial<App> = {};
 
-  if (stripeSecret !== undefined) {
-    result.stripeSecret = stripeSecret.length ? encrypt(stripeSecret, argv.aesSecret) : undefined;
-  }
+  if (enablePayments === 'false') {
+    result.stripeSecret = null;
+    result.stripeApiKey = null;
+    result.cancelUrl = null;
+    result.successUrl = null;
+  } else {
+    if (stripeSecret !== undefined) {
+      result.stripeSecret = stripeSecret.length ? encrypt(stripeSecret, argv.aesSecret) : undefined;
+    }
 
-  if (stripeApiKey !== undefined) {
-    result.stripeApiKey = stripeApiKey.length ? encrypt(stripeApiKey, argv.aesSecret) : undefined;
-  }
+    if (stripeApiKey !== undefined) {
+      result.stripeApiKey = stripeApiKey.length ? encrypt(stripeApiKey, argv.aesSecret) : undefined;
+    }
 
-  if (cancelUrl !== undefined) {
-    result.cancelUrl = cancelUrl;
-  }
+    if (cancelUrl !== undefined) {
+      result.cancelUrl = cancelUrl;
+    }
 
-  if (successUrl !== undefined) {
-    result.successUrl = successUrl;
+    if (successUrl !== undefined) {
+      result.successUrl = successUrl;
+    }
   }
   await app.update(result, { where: { id: appId } });
-
   ctx.body = {
     stripeApiKey: Boolean(app.stripeApiKey?.length),
     stripeSecret: Boolean(app.stripeSecret?.length),
     successUrl: app.successUrl,
     cancelUrl: app.cancelUrl,
+    enablePayments: Boolean(
+      result.stripeApiKey || result.stripeSecret || result.successUrl || result.cancelUrl,
+    ),
   };
 }

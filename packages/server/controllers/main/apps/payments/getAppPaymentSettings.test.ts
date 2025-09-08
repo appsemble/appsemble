@@ -58,6 +58,7 @@ describe('getAppPaymentSettings', () => {
       cancelUrl: 'testCancelUrl',
       stripeApiKey: true,
       stripeSecret: true,
+      enablePayments: true,
     });
   });
 
@@ -70,6 +71,7 @@ describe('getAppPaymentSettings', () => {
       cancelUrl: 'testCancelUrl',
       stripeApiKey: false,
       stripeSecret: true,
+      enablePayments: true,
     });
   });
 

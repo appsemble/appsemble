@@ -26,5 +26,6 @@ export async function createAppCheckout(ctx: Context): Promise<void> {
 
   ctx.body = {
     url: checkout.paymentUrl,
+    checkoutId: checkout.id,
   };
 }

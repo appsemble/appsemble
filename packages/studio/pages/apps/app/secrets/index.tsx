@@ -13,7 +13,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactNode, useCallback } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -42,6 +42,7 @@ interface PaymentFormParameters {
   stripeSecret: string;
   successUrl: string;
   cancelUrl: string;
+  enablePayments: boolean;
 }
 
 export function SecretsPage(): ReactNode {
@@ -58,6 +59,17 @@ export function SecretsPage(): ReactNode {
       stripeApiKey: boolean;
     }
   >(`/api/apps/${app.id}/payment`);
+  const [enablePayments, setEnablePayments] = useState<boolean>(
+    paymentSettingsResult?.data?.enablePayments || false,
+  );
+  useEffect(() => {
+    if (paymentSettingsResult?.data?.enablePayments !== undefined) {
+      setEnablePayments(paymentSettingsResult.data.enablePayments);
+    }
+  }, [paymentSettingsResult?.data?.enablePayments]);
+  const toggleEnablePayments = useCallback(() => {
+    setEnablePayments(!enablePayments);
+  }, [setEnablePayments, enablePayments]);
 
   const onClickOAuth2Checkbox = useCallback(async () => {
     const formData = new FormData();
@@ -241,42 +253,46 @@ export function SecretsPage(): ReactNode {
               onSubmit={onSavePaymentSettings}
             >
               <SimpleFormField
-                autoComplete="stripe-api-key"
                 component={CheckboxField}
-                help={<FormattedMessage {...messages.stripeApiKeyDescription} />}
-                label={<FormattedMessage {...messages.stripeApiKey} />}
+                help={<FormattedMessage {...messages.enablePaymentsDescription} />}
                 name="enablePayments"
+                onChange={toggleEnablePayments}
               />
               <SimpleFormField
                 autoComplete="stripe-api-key"
                 component={PasswordField}
+                disabled={!enablePayments}
                 help={<FormattedMessage {...messages.stripeApiKeyDescription} />}
                 label={<FormattedMessage {...messages.stripeApiKey} />}
                 name="stripeApiKey"
                 placeholder="●●●●●●●●●●●"
+                required={enablePayments}
               />
               <SimpleFormField
                 autoComplete="stripe-secret"
                 component={PasswordField}
+                disabled={!enablePayments}
                 help={<FormattedMessage {...messages.stripeSecretDescription} />}
                 label={<FormattedMessage {...messages.stripeSecret} />}
                 name="stripeSecret"
                 placeholder="●●●●●●●●●●●"
-                required={Boolean(paymentSettings.stripeApiKey)}
+                required
               />
               <SimpleFormField
                 autoComplete="off"
+                disabled={!enablePayments}
                 help={<FormattedMessage {...messages.successUrlDescription} />}
                 label={<FormattedMessage {...messages.successUrl} />}
                 name="successUrl"
-                required={Boolean(paymentSettings.stripeApiKey)}
+                required
               />
               <SimpleFormField
                 autoComplete="off"
+                disabled={!enablePayments}
                 help={<FormattedMessage {...messages.cancelUrlDescription} />}
                 label={<FormattedMessage {...messages.cancelUrl} />}
                 name="cancelUrl"
-                required={Boolean(paymentSettings.stripeApiKey)}
+                required
               />
               <SimpleFormError>
                 {() => <FormattedMessage {...messages.submitError} />}

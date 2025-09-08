@@ -29,5 +29,6 @@ export async function getAppPaymentSettings(ctx: Context): Promise<void> {
     stripeSecret: Boolean(stripeSecret?.length),
     successUrl,
     cancelUrl,
+    enablePayments: Boolean(stripeApiKey || stripeSecret || successUrl || cancelUrl),
   };
 }

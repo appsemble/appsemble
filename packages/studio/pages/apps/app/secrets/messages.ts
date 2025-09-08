@@ -152,8 +152,12 @@ export const messages = defineMessages({
     defaultMessage: 'Cancel URL',
   },
   cancelUrlDescription: {
-    id: 'studio.GSqyxD',
+    id: 'studio.iDmp8S',
     defaultMessage:
-      'RL to which the user will be redirected after failing to complete the payment.',
+      'URL to which the user will be redirected after failing to complete the payment.',
+  },
+  enablePaymentsDescription: {
+    id: 'studio.IXOEh/',
+    defaultMessage: 'Whether you want payments enabled in your app.',
   },
 });

@@ -220,23 +220,27 @@ export class StripePayments implements Payments {
     }
   }
 
-  async createAppCheckout(price: string, successUrl: string, cancelUrl: string): Promise<any> {
+  async createAppCheckout(priceId: string, successUrl: string, cancelUrl: string): Promise<any> {
     let checkoutSession;
 
-    const product = await this.stripe.prices.retrieve(price);
-    const mode = product.type === 'recurring' ? 'subscription' : 'payment';
+    const price = await this.stripe.prices.retrieve(priceId, {
+      expand: ['product'],
+    });
+    const product = price.product as Stripe.Product;
+    const mode = price.type === 'recurring' ? 'subscription' : 'payment';
     try {
       checkoutSession = await this.stripe.checkout.sessions.create({
         mode,
         line_items: [
           {
-            price,
+            price: priceId,
             quantity: 1,
           },
         ],
+        metadata: { product: product.name },
         locale: 'auto',
-        success_url: `${argv.host}/${successUrl}`,
-        cancel_url: `${argv.host}/${cancelUrl}`,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
         tax_id_collection: { enabled: true },
       });
       return { id: checkoutSession.id, paymentUrl: checkoutSession?.url };

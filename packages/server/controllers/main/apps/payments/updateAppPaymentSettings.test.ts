@@ -65,6 +65,28 @@ describe('updateAppPaymentSettings', () => {
       cancelUrl: 'newCancelUrl',
       stripeApiKey: true,
       stripeSecret: true,
+      enablePayments: true,
+    });
+  });
+
+  it('should remove payment settings for an app', async () => {
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/payment`,
+      createFormData({
+        stripeApiKey: 'newKey',
+        stripeSecret: 'newSecret',
+        successUrl: 'newSuccessUrl',
+        cancelUrl: 'newCancelUrl',
+        enablePayments: false,
+      }),
+    );
+    expect(response.data).toStrictEqual({
+      successUrl: null,
+      cancelUrl: null,
+      stripeApiKey: false,
+      stripeSecret: false,
+      enablePayments: false,
     });
   });
 

@@ -193,19 +193,19 @@ export class App extends Model {
 
   @AllowNull(true)
   @Column(DataType.BLOB)
-  stripeApiKey?: Buffer;
+  stripeApiKey?: Buffer | null;
 
   @AllowNull(true)
   @Column(DataType.BLOB)
-  stripeSecret?: Buffer;
+  stripeSecret?: Buffer | null;
 
   @AllowNull(true)
   @Column(DataType.STRING)
-  successUrl?: string;
+  successUrl?: string | null;
 
   @AllowNull(true)
   @Column(DataType.STRING)
-  cancelUrl?: string;
+  cancelUrl?: string | null;
 
   @AllowNull(true)
   @Column(DataType.STRING)
