@@ -12,7 +12,19 @@ export const command = 'migrate-assets-to-s3';
 export const description = 'Migrates all assets with a leftover data column to S3';
 
 export function builder(yargs: Argv): Argv {
-  return databaseBuilder(yargs);
+  return databaseBuilder(yargs).option('dry-run', {
+    type: 'boolean',
+    default: true,
+    description:
+      'Prevents the command from performing the migration and instead logs the actions that would be taken.',
+  });
+}
+
+function dryUploadS3File(bucket: string, key: string, data: Buffer): Promise<void> {
+  logger.info(
+    `[DryRun] Uploading file to S3 bucket ${bucket} with key ${key} and size ${data.length}`,
+  );
+  return Promise.resolve();
 }
 
 export async function handler(): Promise<void> {
@@ -54,16 +66,26 @@ export async function handler(): Promise<void> {
     include: {
       model: App,
       attributes: ['id'],
+      required: true,
     },
     chunkSize: 50,
   });
 
   let [uploadedCount, failedCount] = [0, 0];
   const failedAssetIds = [];
+
+  if (argv.dryRun) {
+    logger.info('Dry run enabled. NO changes will be made to S3.');
+  } else {
+    logger.info('Dry run disabled. Changes WILL be made to S3.');
+  }
+
   for await (const asset of assetsWithDataIter) {
     logger.info(`Uploading asset ${asset.id} to S3 bucket app-${asset.App!.id}`);
     try {
-      await uploadS3File(`app-${asset.App!.id}`, asset.id, asset.data!);
+      await (argv.dryRun
+        ? dryUploadS3File(`app-${asset.App!.id}`, asset.id, asset.data!)
+        : uploadS3File(`app-${asset.App!.id}`, asset.id, asset.data!));
       uploadedCount += 1;
     } catch (error) {
       logger.error(`Failed to upload asset ${asset.id} to S3: ${error}`);

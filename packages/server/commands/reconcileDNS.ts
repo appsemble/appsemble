@@ -36,10 +36,10 @@ export function builder(yargs: Argv): Argv {
       desc: 'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
       required: true,
     })
-    .option('no-dry-run', {
-      desc: 'Run the command without dry-run mode and make changes.',
+    .option('dry-run', {
+      desc: 'If set, the command will only log the changes that would be made, but not actually make them.',
       type: 'boolean',
-      default: false,
+      default: true,
     });
 }
 export async function handler(): Promise<void> {
@@ -57,5 +57,5 @@ export async function handler(): Promise<void> {
     handleDBError(error as Error);
   }
 
-  await reconcileDNS({ dryRun: !argv.noDryRun });
+  await reconcileDNS({ dryRun: argv.dryRun });
 }
