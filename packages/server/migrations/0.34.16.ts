@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 
-export const key = '0.32.2';
+export const key = '0.34.16';
 
 /**
  * Summary:
@@ -34,7 +34,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     'data',
     {
       type: DataTypes.BLOB,
-      allowNull: false,
+      allowNull: true,
     },
     { transaction },
   );
