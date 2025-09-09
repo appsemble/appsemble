@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.15](https://gitlab.com/appsemble/appsemble/-/releases/0.34.15)] - 2025-09-09
+
+### Changed
+
+- Server: Invert dry-run logic for commands to be on by default, replacing the confusing
+  --no-dry-run flag with the more standard --dry-run.
+
 ## \[[0.34.15-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.34.15-test.1)] - 2025-09-04
 
 ## \[[0.34.15-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.34.15-test.0)] - 2025-09-04
