@@ -11,6 +11,8 @@
     "showAppDefinition": false,
     "OrganizationId": "test-org",
     "OrganizationName": "Test org",
-    "screenshotUrls": [null]
+    "screenshotUrls": [
+      null
+    ]
   }
 ]

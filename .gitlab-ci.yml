@@ -482,8 +482,6 @@ e2e:
       --name Appsemble
       --website https://appsemble.com
     - npm run appsemble -- block publish 'blocks/*'
-    - npm run appsemble -- app publish 'apps/empty'
-    - npm run appsemble -- app publish 'apps/person'
     - npm --workspace @appsemble/types run prepack
     - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/e2e run e2e
