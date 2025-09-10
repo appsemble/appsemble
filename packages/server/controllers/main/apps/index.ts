@@ -12,6 +12,7 @@ export * from './variables/index.js';
 export * from './assets/index.js';
 export * from './invites/index.js';
 export * from './webhooks/index.js';
+export * from './demo-members/index.js';
 
 export { createApp } from './createApp.js';
 export { createAppFromTemplate } from './createAppFromTemplate.js';

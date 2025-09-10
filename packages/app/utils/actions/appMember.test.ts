@@ -62,6 +62,8 @@ describe('app.member.register', () => {
         name: 'name',
         role: PredefinedAppRole.Member,
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       }),
       refetchDemoAppMembers,
     });
@@ -98,6 +100,8 @@ describe('app.member.invite', () => {
         name: 'name',
         role: PredefinedAppRole.MembersManager,
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       }),
     });
 
@@ -169,6 +173,8 @@ describe('app.member.login', () => {
         name: 'name',
         role: PredefinedAppRole.Member,
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       }),
       refetchDemoAppMembers,
     });
@@ -239,6 +245,8 @@ describe('app.member.query', () => {
         properties: {},
         role: PredefinedAppRole.MembersManager,
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       }),
       setAppMemberInfo,
     });
@@ -324,6 +332,8 @@ describe('app.member.query', () => {
         properties: {},
         role: PredefinedAppRole.MembersManager,
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       }),
       setAppMemberInfo,
     });
@@ -404,6 +414,8 @@ describe('app.member.query', () => {
         properties: {},
         role: PredefinedAppRole.MembersManager,
         demo: true,
+        $seed: false,
+        $ephemeral: false,
       }),
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
@@ -511,6 +523,8 @@ describe('app.member.current.patch', () => {
         properties: { test: [1, 2, 3], property: 'Property', bool: true },
         role: PredefinedAppRole.Member,
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       }),
       setAppMemberInfo,
       refetchDemoAppMembers,
@@ -585,6 +599,8 @@ describe('app.member.current.patch', () => {
         properties: {},
         role: PredefinedAppRole.Member,
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       }),
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
@@ -647,6 +663,8 @@ describe('app.member.role.update', () => {
         properties: { test: [1, 2, 3], property: 'Property', bool: true },
         role: PredefinedAppRole.MembersManager,
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       }),
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
@@ -726,6 +744,8 @@ describe('app.member.properties.patch', () => {
         properties: { test: [1, 2, 3], property: 'Property', bool: true },
         role: PredefinedAppRole.Member,
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       }),
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
@@ -801,6 +821,8 @@ describe('app.member.delete', () => {
         properties: {},
         role: PredefinedAppRole.MembersManager,
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       }),
       refetchDemoAppMembers,
     });

@@ -1,5 +1,5 @@
 import { cpSync, createReadStream, createWriteStream, existsSync, type ReadStream } from 'node:fs';
-import { mkdir, readdir, rm, stat } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rm, stat } from 'node:fs/promises';
 import { basename, dirname, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
 
@@ -438,6 +438,32 @@ export async function publishSeedResources(path: string, app: App, remote: strin
     }
   } else {
     logger.warn(`Missing resources directory in ${path}. Skipping...`);
+  }
+}
+
+export async function publishSeedAppMembers(path: string, app: App, remote: string): Promise<void> {
+  const membersPath = join(path, 'members', 'index.json');
+  logger.info(`Publishing seed app members from ${membersPath}`);
+
+  if (existsSync(membersPath)) {
+    logger.info(`Deleting seed app members from app ${app.id}`);
+
+    try {
+      await axios.delete(`/api/apps/${app.id}/demo-members`, {
+        baseURL: remote,
+      });
+      const membersContent = await readFile(membersPath, 'utf8');
+      const members = JSON.parse(membersContent);
+      await axios({
+        url: `/api/apps/${app.id}/demo-members`,
+        baseURL: remote,
+        data: members,
+        method: 'post',
+      });
+      logger.info(`Seeded ${members.length} members successfully`);
+    } catch (error) {
+      logger.error(error);
+    }
   }
 }
 
@@ -1068,6 +1094,11 @@ interface PublishAppParams {
   resources?: boolean;
 
   /**
+   * Whether to publish seed members from `members/index.json` after publishing the app.
+   */
+  members?: boolean;
+
+  /**
    * Whether assets from the `assets` directory should be published after publishing the app.
    */
   assets?: boolean;
@@ -1169,6 +1200,7 @@ export async function publishApp({
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
   const assets = appsembleContext.assets ?? options.assets;
   const resources = appsembleContext.resources ?? options.resources;
+  const members = appsembleContext.members ?? options.members;
   const appLock = appsembleContext.appLock || 'unlocked';
 
   logger.verbose(`App remote: ${remote}`);
@@ -1273,6 +1305,10 @@ export async function publishApp({
     if (resources) {
       await publishSeedResources(appVariantPath, data, remote);
     }
+
+    if (members) {
+      await publishSeedAppMembers(appVariantPath, data, remote);
+    }
   }
 
   if (modifyContext && appsembleContext && context && !dryRun) {
@@ -1371,6 +1407,11 @@ interface UpdateAppParams {
    * Whether resources from the `resources` directory should be published after publishing the app.
    */
   resources?: boolean;
+
+  /**
+   * Whether to publish seed members from `members/index.json` after publishing the app.
+   */
+  members?: boolean;
 
   /**
    * Whether assets from the `assets` directory should be published after publishing the app.
@@ -1485,6 +1526,7 @@ export async function updateApp({
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
   const resources = appsembleContext.resources ?? options.resources;
+  const members = appsembleContext.members ?? options.members;
   const assets = appsembleContext.assets ?? options.assets;
   const { appLock } = appsembleContext;
 
@@ -1590,6 +1632,10 @@ export async function updateApp({
 
     if (resources && (data.locked !== 'fullLock' || force)) {
       await publishSeedResources(appVariantPath, data, remote);
+    }
+
+    if (members && (data.locked !== 'fullLock' || force)) {
+      await publishSeedAppMembers(appVariantPath, data, remote);
     }
   }
 

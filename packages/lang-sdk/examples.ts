@@ -1019,6 +1019,8 @@ export function createExampleContext(
       properties: {
         completedExamples: [],
       },
+      $seed: false,
+      $ephemeral: false,
     },
   };
 }

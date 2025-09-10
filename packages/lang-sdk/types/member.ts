@@ -55,4 +55,14 @@ export interface AppMemberInfo {
    * Whether this app member is used for demonstration purposes
    */
   demo: boolean;
+
+  /**
+   * Whether this app member has been created by seeding.
+   */
+  $seed: boolean;
+
+  /**
+   * Whether this app member is a copy of a seed app member.
+   */
+  $ephemeral: boolean;
 }

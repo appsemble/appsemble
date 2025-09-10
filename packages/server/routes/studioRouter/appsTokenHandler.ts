@@ -189,6 +189,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
               model: AppMember,
               where: {
                 demo: true,
+                seed: false,
               },
               required: false,
             },
@@ -225,6 +226,8 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
                 name: `${role} ${identifier}`,
                 timezone: '',
                 demo: true,
+                seed: false,
+                ephemeral: false,
               },
               { transaction },
             );

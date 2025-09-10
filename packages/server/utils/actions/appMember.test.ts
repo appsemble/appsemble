@@ -1,6 +1,6 @@
 import { beforeEach } from 'node:test';
 
-import { type AppMemberQueryAction } from '@appsemble/lang-sdk';
+import { type AppMemberInfo, type AppMemberQueryAction } from '@appsemble/lang-sdk';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { appMemberQuery } from './appMember.js';
@@ -110,6 +110,8 @@ describe('appMemberQuery', () => {
         properties: { foo: 'Bar 2' },
         role: 'Staff',
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       },
       {
         sub: expect.any(String),
@@ -123,6 +125,8 @@ describe('appMemberQuery', () => {
         properties: { foo: 'Bar 2' },
         role: 'Manager',
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       },
     ]);
   });
@@ -198,7 +202,7 @@ describe('appMemberQuery', () => {
       context: {} as any,
     });
 
-    expect(members as AppMember[]).toStrictEqual(
+    expect(members as AppMemberInfo[]).toStrictEqual(
       expect.arrayContaining([
         {
           sub: expect.any(String),
@@ -212,6 +216,8 @@ describe('appMemberQuery', () => {
           properties: { foo: 'Bar 2' },
           role: 'Staff',
           demo: false,
+          $seed: false,
+          $ephemeral: false,
         },
         {
           sub: expect.any(String),
@@ -225,6 +231,8 @@ describe('appMemberQuery', () => {
           properties: { foo: 'Bar 2' },
           role: 'Manager',
           demo: false,
+          $seed: false,
+          $ephemeral: false,
         },
       ]),
     );

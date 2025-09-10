@@ -183,6 +183,10 @@
           "assetsClonable": {
             "type": "boolean",
             "description": "Whether app assets should be clonable.\n\nIf assetsClonable is specified, this will override --assets-clonable passed on the command line."
+          },
+          "members": {
+            "type": "boolean",
+            "description": "Whether to publish seed members from `members/index.json` after publishing the app.\n\nIf members is specified, this will override --members passed on the command line."
           }
         }
       }

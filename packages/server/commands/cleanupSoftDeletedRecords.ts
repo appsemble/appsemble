@@ -16,7 +16,8 @@ import { argv } from '../utils/argv.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
 export const command = 'cleanup-soft-deleted';
-export const description = 'Permanently deleted soft deleted records that are older than one month';
+export const description =
+  'Permanently deleted soft deleted records that are older than three months';
 
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs);

@@ -143,6 +143,13 @@ export interface AppsembleContext {
   resources?: boolean;
 
   /**
+   * Whether to publish seed members from `members/index.json` after publishing the app.
+   *
+   * If members is specified, this will override --members passed on the command line.
+   */
+  members?: boolean;
+
+  /**
    * Whether to publish assets from the assets directory.
    *
    * If assets is specified, this will override --assets passed on the command line.
