@@ -41,12 +41,10 @@ export async function cleanupDNS(): Promise<void> {
 }
 
 /**
- * Restore the DNS settings for the running environment.
+ * Re-creates missing ingresses and deletes extra ingresses.
+ *
+ * @param options Options for the reconciliation.
  */
-export async function restoreDNS(): Promise<void> {
-  await getImplementation()?.restoreDNS();
-}
-
 export async function reconcileDNS({ dryRun = true } = {}): Promise<void> {
   await getImplementation()?.reconcileDNS({ dryRun });
 }

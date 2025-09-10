@@ -58,4 +58,5 @@ export async function handler(): Promise<void> {
   }
 
   await reconcileDNS({ dryRun: argv.dryRun });
+  process.exit();
 }
