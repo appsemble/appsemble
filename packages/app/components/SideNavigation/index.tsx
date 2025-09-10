@@ -147,9 +147,19 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
           )
         ) : null}
         {layout?.install === 'navigation' && install ? (
-          <MenuButton active={false} icon="download" onClick={install} title="Install">
+          <MenuButton
+            active={false}
+            icon="download"
+            onClick={install}
+            title={formatMessage(messages.install)}
+          >
             <FormattedMessage {...messages.install} />
           </MenuButton>
+        ) : null}
+        {layout?.debug === 'navigation' ? (
+          <MenuItem icon="bug" title={formatMessage(messages.debug)} to={`${url}/Debug`}>
+            <FormattedMessage {...messages.debug} />
+          </MenuItem>
         ) : null}
       </MenuSection>
       {blockMenus.map((menu) => (
