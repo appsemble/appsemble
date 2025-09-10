@@ -13,7 +13,6 @@ import * as health from './commands/health.js';
 import * as migrate from './commands/migrate.js';
 import * as migrateAppDefinitions from './commands/migrateAppDefinitions.js';
 import * as reconcile from './commands/reconcileDNS.js';
-import * as restore from './commands/restore.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
 import * as start from './commands/start.js';
@@ -62,7 +61,6 @@ const parser = yargs()
   .command(synchronizeTrainings as CommandModule)
   .command(migrate as CommandModule)
   .command(migrateAppDefinitions as CommandModule)
-  .command(restore as CommandModule)
   .command(cleanupSoftDeletedRecords)
   .fail(handleError)
   .help('help', 'Show this help message.')

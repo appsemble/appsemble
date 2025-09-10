@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { cleanupDNS, configureDNS, restoreDNS } from './index.js';
+import { cleanupDNS, configureDNS, reconcileDNS } from './index.js';
 import * as kubernetes from './kubernetes.js';
 import { setArgv } from '../argv.js';
 
@@ -12,9 +12,6 @@ describe('dns', () => {
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     vi.spyOn(kubernetes, 'cleanupDNS').mockResolvedValue(null);
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
-    vi.spyOn(kubernetes, 'restoreDNS').mockResolvedValue(null);
   });
 
   describe('configureDNS', () => {
@@ -55,22 +52,22 @@ describe('dns', () => {
     });
   });
 
-  describe('restoreDNS', () => {
-    it('should delegate restoreDNS to kubernetes if the app domain strategy is kubernetes-ingress', async () => {
+  describe('reconcileDNS', () => {
+    it('should delegate reconcileDNS to kubernetes if the app domain strategy is kubernetes-ingress', async () => {
       setArgv({ appDomainStrategy: 'kubernetes-ingress' });
-      await restoreDNS();
-      expect(kubernetes.restoreDNS).toHaveBeenCalledWith();
+      await reconcileDNS();
+      expect(kubernetes.reconcileDNS).toHaveBeenCalledWith();
     });
 
-    it('should not delegate restoreDNS to kubernetes if the app domain strategy is undefined', async () => {
+    it('should not delegate reconcileDNS to kubernetes if the app domain strategy is undefined', async () => {
       setArgv({});
-      await restoreDNS();
-      expect(kubernetes.restoreDNS).not.toHaveBeenCalled();
+      await reconcileDNS();
+      expect(kubernetes.reconcileDNS).not.toHaveBeenCalled();
     });
 
     it('should throw if the app domain strategy is unknown', async () => {
       setArgv({ appDomainStrategy: 'unknown' });
-      await expect(restoreDNS()).rejects.toThrow("Unknown app domain strategy: 'unknown'");
+      await expect(reconcileDNS()).rejects.toThrow("Unknown app domain strategy: 'unknown'");
     });
   });
 });

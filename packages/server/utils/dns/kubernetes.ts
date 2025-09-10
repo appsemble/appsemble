@@ -510,39 +510,6 @@ export async function cleanupDNS(): Promise<void> {
   logger.info(`Successfully deleted all secrets for ${serviceName}`);
 }
 
-/**
- * Restore ingresses for all apps and organizations.
- */
-export async function restoreDNS(): Promise<void> {
-  const { hostname } = new URL(argv.host);
-  const createIngress = await createIngressFunction();
-
-  for await (const { id } of iterTable(Organization, { attributes: ['id'] })) {
-    await createIngress(`*.${id}.${hostname}`);
-  }
-
-  for await (const { domain } of iterTable(App, {
-    attributes: ['domain'],
-    // TODO: does changing null to undefined break this query?
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-    where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
-  })) {
-    await createIngress(domain!);
-  }
-
-  for await (const { domain } of iterTable(AppCollection, {
-    attributes: ['domain'],
-    // TODO: does changing null to undefined break this query?
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-    where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
-  })) {
-    await createIngress(domain!);
-    if (!domain!.startsWith('www.')) {
-      await createIngress(`www.${domain}`, false, domain);
-    }
-  }
-}
-
 async function getIngressHosts(): Promise<{ hosts: string[]; name: string }[]> {
   const config = await getAxiosConfig();
   const namespace = await readK8sSecret('namespace');
@@ -562,7 +529,14 @@ async function getIngressHosts(): Promise<{ hosts: string[]; name: string }[]> {
   return names;
 }
 
-export async function reconcileDNS({ dryRun = true } = {}): Promise<void> {
+/**
+ * Re-creates missing ingresses and deletes extra ingresses.
+ *
+ * @param options Options for reconciling DNS.
+ */
+export async function reconcileDNS({
+  dryRun = true,
+}: { dryRun?: boolean | undefined } = {}): Promise<void> {
   const { hostname } = new URL(argv.host);
   const orgWildcards = new Set<string>();
   for await (const { id } of iterTable(Organization, { attributes: ['id'] })) {
