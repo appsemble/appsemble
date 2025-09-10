@@ -3,4 +3,3 @@ ci_access:
     - id: appsemble
       environments:
         - staging-do
-        - review/*
