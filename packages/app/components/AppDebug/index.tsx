@@ -64,8 +64,8 @@ export function AppDebug(): ReactNode {
       }
 
       try {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        if (regs.length === 0) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        if (registrations.length === 0) {
           setServiceWorkerStatus({
             available: true,
             reason: 'No service worker is currently registered.',
@@ -74,14 +74,18 @@ export function AppDebug(): ReactNode {
         } else {
           setServiceWorkerStatus({
             available: true,
-            registrations: regs.map((reg) => ({
-              scope: reg.scope,
+            registrations: registrations.map((registration) => ({
+              scope: registration.scope,
               scriptURL:
-                reg.active?.scriptURL ??
-                reg.waiting?.scriptURL ??
-                reg.installing?.scriptURL ??
+                registration.active?.scriptURL ??
+                registration.waiting?.scriptURL ??
+                registration.installing?.scriptURL ??
                 'unknown',
-              state: reg.active?.state ?? reg.waiting?.state ?? reg.installing?.state ?? 'unknown',
+              state:
+                registration.active?.state ??
+                registration.waiting?.state ??
+                registration.installing?.state ??
+                'unknown',
             })),
           });
         }
