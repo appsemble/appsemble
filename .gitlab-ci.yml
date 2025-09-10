@@ -876,7 +876,7 @@ staging:
       --set "image.tag=staging"
       --set "ingress.clusterIssuer=acme-issuer-dev"
       --set "ingress.enabled=true"
-      --set "ingress.host=staging.appsemble.eu"
+      --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
       --set "ingress.tls.wildcardSecretName=staging-tls-wildcard"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=1G"
