@@ -67,6 +67,8 @@ describe('patchCurrentAppMember', () => {
       { sub: expect.stringMatching(uuid4Pattern) },
       `
       {
+        "$ephemeral": false,
+        "$seed": false,
         "demo": false,
         "email": "test@example.com",
         "email_verified": false,
@@ -127,6 +129,8 @@ describe('patchCurrentAppMember', () => {
       { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) },
       `
       {
+        "$ephemeral": false,
+        "$seed": false,
         "demo": false,
         "email": "test@example.com",
         "email_verified": false,
@@ -163,6 +167,8 @@ describe('patchCurrentAppMember', () => {
       { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) },
       `
       {
+        "$ephemeral": false,
+        "$seed": false,
         "demo": false,
         "email": "test@example.com",
         "email_verified": false,

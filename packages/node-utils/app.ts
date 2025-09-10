@@ -323,6 +323,7 @@ export async function applyAppVariant(appPath: string, appVariant: string): Prom
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'config');
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'assets');
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'resources');
+    await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'members');
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'screenshots');
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'icon.png');
     await transferAppVariantFiles(

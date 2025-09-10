@@ -1886,6 +1886,8 @@ describe('user', () => {
         picture: '',
         role: 'Member',
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       },
     },
   });

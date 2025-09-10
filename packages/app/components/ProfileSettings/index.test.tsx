@@ -15,6 +15,8 @@ const appMemberInfo = {
   zoneinfo: 'Europe/Amsterdam',
   email: 'test@appsemble.com',
   name: 'Test User',
+  $seed: false,
+  $ephemeral: false,
 };
 
 const appDefinition: AppDefinition = {

@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Alice",
+    "timezone": "Asia/Calcutta",
+    "role": "User"
+  },
+  {
+    "name": "Bob",
+    "timezone": "Europe/Amsterdam",
+    "role": "Manager"
+  },
+  {
+    "name": "Charlie",
+    "timezone": "Europe/London",
+    "role": "Staff"
+  },
+  {
+    "name": "David",
+    "timezone": "Australia/Sydney",
+    "role": "User"
+  },
+  {
+    "name": "Eva",
+    "timezone": "Asia/Tokyo",
+    "role": "Staff"
+  },
+  {
+    "name": "Frank",
+    "timezone": "America/Los_Angeles",
+    "role": "User"
+  },
+  {
+    "name": "Grace",
+    "timezone": "Europe/Berlin",
+    "role": "Manager"
+  },
+  {
+    "name": "Hannah",
+    "timezone": "Africa/Johannesburg",
+    "role": "User"
+  },
+  {
+    "name": "Ian",
+    "timezone": "America/Toronto",
+    "role": "Staff"
+  },
+  {
+    "name": "Jasmine",
+    "timezone": "Europe/Amsterdam",
+    "role": "Manager"
+  }
+]

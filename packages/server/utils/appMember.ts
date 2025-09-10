@@ -34,6 +34,8 @@ export function getAppMemberInfo(appMember: AppMember): AppMemberInfo {
     role: appMember.role,
     demo: appMember.demo,
     phoneNumber: appMember.phoneNumber,
+    $seed: appMember.seed,
+    $ephemeral: appMember.ephemeral,
   } as AppMemberInfo;
 }
 
@@ -115,6 +117,10 @@ function renameMemberOData(name: string): string {
       return 'created';
     case '__updated__':
       return 'updated';
+    case '$seed':
+      return 'seed';
+    case '$ephemeral':
+      return 'ephemeral';
     case 'id':
     case 'email':
     case 'name':

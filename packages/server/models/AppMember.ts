@@ -99,6 +99,17 @@ export class AppMember extends Model {
   @Column(DataType.BOOLEAN)
   demo!: boolean;
 
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  seed!: boolean;
+
+  @AllowNull(false)
+  @Default(false)
+  @Index({ name: 'UniqueAppMemberEmailIndex', unique: true })
+  @Column(DataType.BOOLEAN)
+  ephemeral!: boolean;
+
   @CreatedAt
   created!: Date;
 
@@ -211,6 +222,18 @@ export class AppMember extends Model {
     Object.assign(instance, {
       phoneNumber: parsePhoneNumber(instance.phoneNumber, 'NL').format('INTERNATIONAL'),
     });
+  }
+
+  @BeforeCreate
+  @BeforeUpdate
+  static validateSeedAppMember(instance: AppMember): void {
+    if (!instance.seed) {
+      return;
+    }
+
+    if (instance.seed && !instance.demo) {
+      throw new AppsembleError('Seed app members can only exist in demo apps');
+    }
   }
 
   @BeforeCreate

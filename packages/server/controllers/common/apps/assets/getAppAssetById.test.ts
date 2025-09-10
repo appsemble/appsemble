@@ -213,7 +213,7 @@ describe('getAppAssetById', () => {
     `);
   });
 
-  it('should fetch assets from apps that don’t exist', async () => {
+  it('should not fetch assets from apps that don’t exist', async () => {
     const response = await request.get('/api/apps/0/assets/0');
 
     expect(response).toMatchInlineSnapshot(`

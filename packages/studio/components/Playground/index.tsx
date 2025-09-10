@@ -203,6 +203,8 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
       ...userInfo,
       demo: false,
       role: PredefinedAppRole.Member,
+      $seed: false,
+      $ephemeral: false,
     });
   }, [lang, userInfo]);
 

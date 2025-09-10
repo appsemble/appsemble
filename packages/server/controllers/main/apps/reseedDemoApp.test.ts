@@ -6,6 +6,7 @@ import {
 } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import { Op } from 'sequelize';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -719,5 +720,68 @@ describe('reseedDemoApp', () => {
         },
       ]
     `);
+  });
+
+  it('should reseed app members', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      demoMode: true,
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await AppMember.create({
+      AppId: app.id,
+      email: 'test@example.com',
+      name: 'Test',
+      demo: true,
+      role: 'Staff',
+      seed: true,
+      ephemeral: false,
+    });
+
+    await AppMember.create({
+      AppId: app.id,
+      email: 'test2@example.com',
+      name: 'Test 2',
+      demo: true,
+      role: 'Staff',
+      seed: true,
+      ephemeral: false,
+    });
+
+    const { id: ephemeral1Id } = await AppMember.create({
+      AppId: app.id,
+      email: 'test@example.com',
+      name: 'Test',
+      demo: true,
+      role: 'Staff',
+      seed: false,
+      ephemeral: true,
+    });
+
+    const { id: ephemeral2Id } = await AppMember.create({
+      AppId: app.id,
+      email: 'test2@example.com',
+      name: 'Test 2',
+      demo: true,
+      role: 'Staff',
+      seed: false,
+      ephemeral: true,
+    });
+    const response = await request.post(`/api/apps/${app.id}/reseed`);
+    expect(response.status).toBe(200);
+
+    const oldEphemeralMembers = await AppMember.findAll({
+      where: {
+        id: {
+          [Op.in]: [ephemeral1Id, ephemeral2Id],
+        },
+      },
+    });
+
+    expect(oldEphemeralMembers).toStrictEqual([]);
   });
 });

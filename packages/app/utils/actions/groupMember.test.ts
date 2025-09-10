@@ -36,6 +36,8 @@ describe('groupMemberInvite', () => {
         email: 'test2@example.com',
         demo: false,
         email_verified: true,
+        $seed: false,
+        $ephemeral: false,
       }),
       getAppMemberSelectedGroup: () => ({
         id: 1,
@@ -100,6 +102,8 @@ describe('groupMemberQuery', () => {
         email: 'test2@example.com',
         demo: false,
         email_verified: true,
+        $seed: false,
+        $ephemeral: false,
       }),
       getAppMemberSelectedGroup: () => ({
         id: 1,
@@ -196,6 +200,8 @@ describe('GroupMemberRoleUpdate', () => {
         email: 'test2@example.com',
         demo: false,
         email_verified: true,
+        $seed: false,
+        $ephemeral: false,
       }),
       getAppMemberSelectedGroup: () => ({
         id: 1,

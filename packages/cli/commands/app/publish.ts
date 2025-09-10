@@ -84,6 +84,10 @@ export function builder(yargs: Argv): Argv<any> {
         'Whether the resources from the `resources` directory should be created after publishing the app. The names of sub-directories are used as the name of the resource, otherwise the names of top level resource .json files are used instead.',
       type: 'boolean',
     })
+    .option('members', {
+      describe: '',
+      type: 'boolean',
+    })
     .option('assets', {
       describe:
         'Whether the assets from the `assets` directory should be created after publishing the app.',

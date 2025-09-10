@@ -10,7 +10,8 @@ import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, Asset, Resource } from '../../../models/index.js';
+import { App, AppMember, Asset, Resource } from '../../../models/index.js';
+import { parseAppMemberProperties } from '../../../utils/appMember.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { reseedResourcesRecursively } from '../../../utils/resource.js';
 
@@ -37,6 +38,8 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
       OrganizationPermission.DeleteAppResources,
       OrganizationPermission.CreateAppAssets,
       OrganizationPermission.CreateAppResources,
+      OrganizationPermission.DeleteAppMembers,
+      OrganizationPermission.QueryAppMembers,
     ],
   });
   const demoAssetsToDelete = await Asset.findAll({
@@ -98,6 +101,55 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   }
 
   logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets.`);
+
+  const demoMembersToDelete = await AppMember.findAll({
+    attributes: ['id'],
+    where: {
+      [Op.and]: {
+        ephemeral: true,
+        AppId: appId,
+      },
+    },
+  });
+
+  const demoMembersDeletionResult = await AppMember.destroy({
+    where: {
+      id: {
+        [Op.in]: demoMembersToDelete.map((member) => member.id),
+      },
+    },
+  });
+
+  logger.info(`Removed ${demoMembersDeletionResult} ephemeral members`);
+
+  const demoMembersToReseed = await AppMember.findAll({
+    include: [
+      {
+        model: App,
+        attributes: ['id'],
+        where: {
+          id: appId,
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      seed: true,
+    },
+  });
+
+  logger.info('Reseeding ephemeral App members');
+  for (const member of demoMembersToReseed) {
+    const { id, properties, ...values } = member.dataValues;
+    await AppMember.create({
+      ...values,
+      properties: parseAppMemberProperties(properties ?? {}),
+      ephemeral: true,
+      seed: false,
+    });
+  }
+  logger.info(`Reseeded ${demoMembersToReseed.length} demo members`);
 
   const date = new Date();
 

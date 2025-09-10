@@ -1,0 +1,22 @@
+[
+  [
+    ["security"],
+    {
+      "roles": {
+        "User": {
+          "permissions": []
+        },
+        "Staff": {
+          "permissions": []
+        },
+        "Manager": {
+          "permissions": []
+        }
+      },
+      "default": {
+        "role": "User",
+        "policy": "everyone"
+      }
+    }
+  ]
+]

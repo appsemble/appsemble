@@ -91,6 +91,8 @@ describe('patchAppMemberProperties', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "$ephemeral": false,
+        "$seed": false,
         "demo": false,
         "email": "test@example.com",
         "email_verified": false,

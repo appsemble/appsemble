@@ -108,6 +108,8 @@ describe('queryAppMembers', () => {
 
       [
         {
+          "$ephemeral": false,
+          "$seed": false,
           "demo": false,
           "email": "member@example.com",
           "email_verified": false,
@@ -208,6 +210,8 @@ describe('queryAppMembers', () => {
 
       [
         {
+          "$ephemeral": false,
+          "$seed": false,
           "demo": false,
           "email": "manager@example.com",
           "email_verified": false,
@@ -221,6 +225,8 @@ describe('queryAppMembers', () => {
           "zoneinfo": null,
         },
         {
+          "$ephemeral": false,
+          "$seed": false,
           "demo": false,
           "email": "staff@example.com",
           "email_verified": false,
@@ -311,6 +317,8 @@ describe('queryAppMembers', () => {
         properties: {},
         role: 'Manager',
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       },
       {
         sub: expect.any(String),
@@ -324,6 +332,8 @@ describe('queryAppMembers', () => {
         properties: {},
         role: 'Staff',
         demo: false,
+        $seed: false,
+        $ephemeral: false,
       },
     ]);
   });
@@ -393,6 +403,8 @@ describe('queryAppMembers', () => {
 
       [
         {
+          "$ephemeral": false,
+          "$seed": false,
           "demo": false,
           "email": "staff@example.com",
           "email_verified": false,
@@ -479,6 +491,8 @@ describe('queryAppMembers', () => {
 
       [
         {
+          "$ephemeral": false,
+          "$seed": false,
           "demo": false,
           "email": "manager@example.com",
           "email_verified": false,
@@ -492,6 +506,8 @@ describe('queryAppMembers', () => {
           "zoneinfo": null,
         },
         {
+          "$ephemeral": false,
+          "$seed": false,
           "demo": false,
           "email": "staff@example.com",
           "email_verified": false,

@@ -27,6 +27,7 @@ export async function queryAppDemoMembers(ctx: Context): Promise<void> {
   const commonFilters = {
     AppId: appId,
     demo: true,
+    ...(ctx.client && 'app' in ctx.client ? { seed: false } : {}),
     ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
   };
 

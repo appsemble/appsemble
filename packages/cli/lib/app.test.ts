@@ -26,6 +26,7 @@ const {
   AppBlockStyle,
   AppCollection,
   AppCollectionApp,
+  AppMember,
   AppMessages,
   AppOAuth2Secret,
   AppSamlSecret,
@@ -42,6 +43,99 @@ const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret'
 let user: models.User;
 let organization: models.Organization;
 let testApp: AxiosTestInstance;
+
+const parsedAppMembers = [
+  {
+    demo: true,
+    email: expect.any(String),
+    id: expect.any(String),
+    name: 'Alice User',
+    role: 'User',
+    seed: true,
+    timezone: 'Asia/Calcutta',
+  },
+  {
+    demo: true,
+    email: expect.any(String),
+    id: expect.any(String),
+    name: 'Bob Manager',
+    role: 'Manager',
+    seed: true,
+    timezone: 'Europe/Amsterdam',
+  },
+  {
+    demo: true,
+    email: expect.any(String),
+    id: expect.any(String),
+    name: 'Charlie Staff',
+    role: 'Staff',
+    seed: true,
+    timezone: 'Europe/London',
+  },
+  {
+    demo: true,
+    email: expect.any(String),
+    id: expect.any(String),
+    name: 'David User',
+    role: 'User',
+    seed: true,
+    timezone: 'Australia/Sydney',
+  },
+  {
+    demo: true,
+    email: expect.any(String),
+    id: expect.any(String),
+    name: 'Eva Staff',
+    role: 'Staff',
+    seed: true,
+    timezone: 'Asia/Tokyo',
+  },
+  {
+    demo: true,
+    email: expect.any(String),
+    id: expect.any(String),
+    name: 'Frank User',
+    role: 'User',
+    seed: true,
+    timezone: 'America/Los_Angeles',
+  },
+  {
+    demo: true,
+    email: expect.any(String),
+    id: expect.any(String),
+    name: 'Grace Manager',
+    role: 'Manager',
+    seed: true,
+    timezone: 'Europe/Berlin',
+  },
+  {
+    demo: true,
+    email: expect.any(String),
+    id: expect.any(String),
+    name: 'Hannah User',
+    role: 'User',
+    seed: true,
+    timezone: 'Africa/Johannesburg',
+  },
+  {
+    demo: true,
+    email: expect.any(String),
+    id: expect.any(String),
+    name: 'Ian Staff',
+    role: 'Staff',
+    seed: true,
+    timezone: 'America/Toronto',
+  },
+  {
+    demo: true,
+    email: expect.any(String),
+    id: expect.any(String),
+    name: 'Jasmine Manager',
+    role: 'Manager',
+    seed: true,
+    timezone: 'Europe/Amsterdam',
+  },
+];
 
 describe('app', () => {
   beforeAll(() => {
@@ -222,6 +316,31 @@ describe('app', () => {
       expect(resource).toStrictEqual([]);
       const asset = await Asset.findAll();
       expect(asset).toStrictEqual([]);
+    });
+
+    it('should publish seed app members with an app', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+      await publishApp({
+        path: resolveFixture('apps/test'),
+        organization: organization.id,
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+        members: true,
+        demoMode: true,
+        variant: 'members',
+      });
+      vi.useFakeTimers();
+      const app = await App.findOne({ attributes: ['id', 'definition'] });
+      expect(app).not.toBeNull();
+      const members = await AppMember.findAll({
+        attributes: ['id', 'name', 'email', 'role', 'timezone', 'seed', 'demo'],
+        where: { demo: true, seed: true },
+      });
+      expect(members.map((member) => member.dataValues)).toStrictEqual(parsedAppMembers);
     });
 
     it('should throw an error if the user doesn’t have enough scope permissions', async () => {
@@ -1099,6 +1218,30 @@ describe('app', () => {
       expect(resource).toStrictEqual([]);
       const asset = await Asset.findAll();
       expect(asset).toStrictEqual([]);
+    });
+
+    it('should publish seed app members if members is set to true', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+      await updateApp({
+        id: app.id,
+        path: resolveFixture('apps/test'),
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+        demoMode: true,
+        force: false,
+        variant: 'members',
+        members: true,
+      });
+      await app.reload({ attributes: ['id'] });
+      const appMembers = await AppMember.findAll({
+        attributes: ['id', 'name', 'email', 'role', 'timezone', 'seed', 'demo'],
+        where: { demo: true, AppId: app.id, seed: true },
+      });
+      expect(appMembers.map((member) => member.dataValues)).toStrictEqual(parsedAppMembers);
     });
 
     it('should throw an error if the user doesn’t have enough scope permissions', async () => {
