@@ -1,6 +1,7 @@
 import { ModalCard } from '@appsemble/react-components';
 import { type ResourceSubscribableAction } from '@appsemble/types';
 import { urlB64ToUint8Array } from '@appsemble/web-utils';
+import { captureException, captureMessage } from '@sentry/browser';
 import axios from 'axios';
 import {
   createContext,
@@ -206,6 +207,13 @@ export function ServiceWorkerRegistrationProvider({
     }),
     [permission, requestPermission, subscribe, subscription, unsubscribe, update],
   );
+
+  useEffect(() => {
+    if (serviceWorkerError) {
+      captureMessage('Service worker registration failed.');
+      captureException(serviceWorkerError);
+    }
+  }, [serviceWorkerError]);
 
   const clearServiceWorkerError = useCallback(
     () => setServiceWorkerError(null),
