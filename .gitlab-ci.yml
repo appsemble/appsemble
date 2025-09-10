@@ -865,8 +865,8 @@ staging:
   rules:
     - if: $CI_COMMIT_BRANCH == 'staging'
   environment:
-    name: staging
-    url: https://staging.appsemble.eu
+    name: staging-do
+    url: https://staging.appsemble.review
   variables:
     GIT_STRATEGY: none
   script:
