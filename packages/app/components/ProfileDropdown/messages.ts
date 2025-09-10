@@ -49,4 +49,8 @@ export const messages = defineMessages({
     id: 'app.BWpuKl',
     defaultMessage: 'Update',
   },
+  debug: {
+    id: 'app.z3UjXR',
+    defaultMessage: 'Debug',
+  },
 });

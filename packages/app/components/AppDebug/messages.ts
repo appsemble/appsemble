@@ -5,10 +5,6 @@ export const messages = defineMessages({
     id: 'app.z3UjXR',
     defaultMessage: 'Debug',
   },
-  snapshot: {
-    id: 'app.hRHARm',
-    defaultMessage: 'App Snapshot ID: {id}',
-  },
   clean: {
     id: 'app.HvTaVW',
     defaultMessage: 'Clean State',

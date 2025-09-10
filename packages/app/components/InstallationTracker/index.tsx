@@ -11,9 +11,9 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const userAgent = navigator.userAgent.toLowerCase();
-
-const isApple = userAgent.includes('iphone') || userAgent.includes('ipad');
-const isAndroid = userAgent.includes('android');
+const isIOS = /iphone|ipad|ipod/.test(userAgent);
+const isAndroid = /android/.test(userAgent);
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 export function InstallationTracker(): ReactNode {
   const promptToggle = useToggle(true);
@@ -66,18 +66,27 @@ export function InstallationTracker(): ReactNode {
         );
       };
 
-      // @ts-expect-error beforeinstallprompt not keyof WindowEventMap (who knows why)
+      // @ts-expect-error beforeinstallprompt not keyof WindowEventMap
       window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-      // Cleanup the event listener on component unmount
       return () => {
-        // @ts-expect-error beforeinstallprompt not keyof WindowEventMap (who knows why)
+        // @ts-expect-error beforeinstallprompt not keyof WindowEventMap
         window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       };
     }
   }, [setPrompted, showInstallationPrompt, promptSupported]);
 
-  if (!promptSupported || !showInstallationPrompt || !promptToggle.enabled || !showPrompt) {
+  // Always show manual instructions on Safari iOS (ignores beforeinstallprompt).
+  const shouldShowSafariIOS = isIOS && isSafari && showInstallationPrompt;
+  // Show explicit unsupported message on Safari desktop.
+  const shouldShowSafariDesktop = !isIOS && isSafari && showInstallationPrompt;
+
+  if (
+    (!promptSupported && !shouldShowSafariIOS && !shouldShowSafariDesktop) ||
+    !showInstallationPrompt ||
+    !promptToggle.enabled ||
+    (!showPrompt && !shouldShowSafariIOS && !shouldShowSafariDesktop)
+  ) {
     return null;
   }
 
@@ -92,7 +101,7 @@ export function InstallationTracker(): ReactNode {
         <p className="mb-2">
           <FormattedMessage {...messages.bannerTitle} />
         </p>
-        {isApple ? (
+        {shouldShowSafariIOS ? (
           <ul>
             <li className="mb-2">
               <FormattedMessage {...messages.bannerAppleStep1} />
@@ -102,7 +111,7 @@ export function InstallationTracker(): ReactNode {
             </li>
           </ul>
         ) : null}
-        {isAndroid ? (
+        {isAndroid && promptSupported && showPrompt ? (
           <ul>
             <li className="mb-2">
               <FormattedMessage {...messages.bannerAndroidStep1} />
@@ -112,7 +121,12 @@ export function InstallationTracker(): ReactNode {
             </li>
           </ul>
         ) : null}
-        {!isApple && !isAndroid ? (
+        {shouldShowSafariDesktop ? (
+          <p>
+            <FormattedMessage {...messages.bannerSafariDesktopUnsupported} />
+          </p>
+        ) : null}
+        {!isIOS && !isAndroid && !isSafari && showPrompt ? (
           <ul>
             <li className="mb-2">
               <FormattedMessage {...messages.bannerGenericStep1} />
