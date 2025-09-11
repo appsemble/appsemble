@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.34.15
-appVersion: 0.34.15
+version: 0.34.16
+appVersion: 0.34.16
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,9 +32,10 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: changed
-      description: "Server: Invert dry-run logic for commands to be on by default,
-        replacing the confusing --no-dry-run flag with the more standard --dry-run."
+    - kind: added
+      description: "App: Add debug button to app navigation. Improve app debug page."
+    - kind: fixed
+      description: "Block(form): Fix selection option min-width."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

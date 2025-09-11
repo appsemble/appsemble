@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.34.15/config/assets/logo.svg) Appsemble CLI
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.34.16/config/assets/logo.svg) Appsemble CLI
 
 > Manage apps and blocks from the command line.
 
 [![npm](https://img.shields.io/npm/v/@appsemble/cli)](https://www.npmjs.com/package/@appsemble/cli)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.34.15/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.34.15)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.34.16/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.34.16)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -323,5 +323,5 @@ appsemble run-cronjobs --interval 30
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.34.15/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.34.16/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

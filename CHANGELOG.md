@@ -2,12 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.16](https://gitlab.com/appsemble/appsemble/-/releases/0.34.16)] - 2025-09-11
+
+### Added
+
+- App: Add debug button to app navigation. Improve app debug page.
+
+### Fixed
+
+- Block(`form`): Fix selection option min-width.
+
 ## \[[0.34.15](https://gitlab.com/appsemble/appsemble/-/releases/0.34.15)] - 2025-09-09
 
 ### Changed
 
 - Server: Invert dry-run logic for commands to be on by default, replacing the confusing
-  --no-dry-run flag with the more standard --dry-run.
+  \--no-dry-run flag with the more standard --dry-run.
 
 ## \[[0.34.15-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.34.15-test.1)] - 2025-09-04
 
