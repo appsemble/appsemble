@@ -124,10 +124,17 @@ export async function handleModifyAndInvalidateCache(request: Request): Promise<
   const resourceUrl = new URL(clonedRequest.url);
 
   const resourceListPrefix = resourceUrl.pathname.replace(/\/[^/]+$/, '');
+  const positionListPrefix = resourceUrl.pathname.replace(
+    /(\/api\/apps\/\d+\/resources\/[^/]+).*/,
+    '$1',
+  );
 
   const cacheKeys = await cache.keys();
   for (const cacheRequest of cacheKeys) {
-    if (cacheRequest.url.startsWith(resourceUrl.origin + resourceListPrefix)) {
+    if (
+      cacheRequest.url.startsWith(resourceUrl.origin + resourceListPrefix) ||
+      cacheRequest.url.startsWith(resourceUrl.origin + positionListPrefix)
+    ) {
       await cache.delete(cacheRequest);
     }
   }
