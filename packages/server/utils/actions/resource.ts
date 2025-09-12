@@ -167,8 +167,7 @@ export async function create({
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
-
-  if ((context.is && context.is('multipart/form-data')) || context.request) {
+  if (context.is && context.is('multipart/form-data')) {
     Object.assign(context.request, { body: serializeServerResource(body) });
   } else {
     Object.assign(context, { body: serializeResource(body) });
@@ -239,7 +238,7 @@ export async function update({
   const { getAppAssets } = options;
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
 
-  if ((context.is && context.is('multipart/form-data')) || context.request) {
+  if (context.is && context.is('multipart/form-data')) {
     Object.assign(context.request, { body: serializeServerResource(body) });
   } else {
     Object.assign(context, { body: serializeResource(body) });
@@ -341,7 +340,7 @@ export async function patch({
   const { getAppAssets } = options;
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
 
-  if ((context.is && context.is('multipart/form-data')) || context.request) {
+  if (context.is && context.is('multipart/form-data')) {
     Object.assign(context.request, { body: serializeServerResource(body) });
   } else {
     Object.assign(context, { body: serializeResource(body) });
