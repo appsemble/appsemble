@@ -171,7 +171,7 @@ export async function create({
     Object.assign(context.request, { body: serializeServerResource(body) });
   } else {
     Object.assign(context, { body: serializeResource(body) });
-    Object.assign(context.request, { body: null });
+    Object.assign(context, { request: {} });
   }
 
   const [processedBody, preparedAssets] = processResourceBody(
@@ -243,7 +243,7 @@ export async function update({
     Object.assign(context.request, { body: serializeServerResource(body) });
   } else {
     Object.assign(context, { body: serializeResource(body) });
-    Object.assign(context.request, { body: null });
+    Object.assign(context, { request: {} });
   }
 
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
@@ -346,7 +346,7 @@ export async function patch({
     Object.assign(context.request, { body: serializeServerResource(body) });
   } else {
     Object.assign(context, { body: serializeResource(body) });
-    Object.assign(context.request, { body: null });
+    Object.assign(context, { request: {} });
   }
 
   const [patchedResource, preparedAssets, deletedAssetIds] = processResourceBody(
