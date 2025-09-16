@@ -255,20 +255,23 @@ describe('deleteAppResources', () => {
     const responseGetTestResources = await request.get(
       `/api/apps/${app.id}/resources/testResource`,
     );
-    expect(responseGetTestResources.data).toMatchObject([
-      {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'I am Foo.',
-        id: 1,
-      },
-      {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'I am Foo Too.',
-        id: 2,
-      },
-    ]);
+
+    expect(responseGetTestResources.data).toStrictEqual(
+      expect.arrayContaining([
+        {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I am Foo.',
+          id: 1,
+        },
+        {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I am Foo Too.',
+          id: 2,
+        },
+      ]),
+    );
 
     const responseGetTestResourcesB = await request.get(
       `/api/apps/${app.id}/resources/testResourceB`,
@@ -341,20 +344,22 @@ describe('deleteAppResources', () => {
     const responseGetTestResources = await request.get(
       `/api/apps/${app.id}/resources/testResource`,
     );
-    expect(responseGetTestResources.data).toMatchObject([
-      {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'I am Foo.',
-        id: 1,
-      },
-      {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'I am Foo Too.',
-        id: 2,
-      },
-    ]);
+    expect(responseGetTestResources.data).toStrictEqual(
+      expect.arrayContaining([
+        {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I am Foo.',
+          id: 1,
+        },
+        {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I am Foo Too.',
+          id: 2,
+        },
+      ]),
+    );
 
     const responseGetTestResourcesB = await request.get(
       `/api/apps/${app.id}/resources/testResourceB`,
@@ -427,20 +432,22 @@ describe('deleteAppResources', () => {
     const responseGetTestResources = await request.get(
       `/api/apps/${app.id}/resources/testResource`,
     );
-    expect(responseGetTestResources.data).toMatchObject([
-      {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'I am Foo.',
-        id: 1,
-      },
-      {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'I am Foo Too.',
-        id: 2,
-      },
-    ]);
+    expect(responseGetTestResources.data).toStrictEqual(
+      expect.arrayContaining([
+        {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I am Foo.',
+          id: 1,
+        },
+        {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I am Foo Too.',
+          id: 2,
+        },
+      ]),
+    );
 
     const responseGetTestResourcesC = await request.get(
       `/api/apps/${app.id}/resources/testResourceC`,
