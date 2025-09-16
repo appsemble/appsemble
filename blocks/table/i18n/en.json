@@ -1,4 +1,5 @@
 {
   "emptyMessage": "No data available.",
-  "error": "An error occurred when fetching the data"
+  "error": "An error occurred when fetching the data",
+  "submitChecked": "Submit"
 }

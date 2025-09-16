@@ -14,12 +14,17 @@ interface ItemRowProps {
    * The index of the item being rendered.
    */
   readonly index: number;
+
+  /**
+   * The function to execute when a checkbox is toggled.
+   */
+  readonly onToggleCheckbox: (value: boolean, index: number) => void;
 }
 
 /**
  * Render an item as a table row.
  */
-export function ItemRow({ index, item }: ItemRowProps): VNode {
+export function ItemRow({ index, item, onToggleCheckbox }: ItemRowProps): VNode {
   const {
     parameters: { fields },
     utils,
@@ -38,6 +43,7 @@ export function ItemRow({ index, item }: ItemRowProps): VNode {
                 field={repeatedCell}
                 index={index}
                 item={repeatedItem}
+                onToggleCheckbox={onToggleCheckbox}
                 record={item}
                 repeatedIndex={repeatedIndex}
               />
@@ -47,6 +53,7 @@ export function ItemRow({ index, item }: ItemRowProps): VNode {
               field={field}
               index={index}
               item={item}
+              onToggleCheckbox={onToggleCheckbox}
               record={item}
               repeatedIndex={0}
               rowSpan={repeatedItems.length}
@@ -61,7 +68,14 @@ export function ItemRow({ index, item }: ItemRowProps): VNode {
     <tr>
       {fields.map((field) => (
         // eslint-disable-next-line react/jsx-key
-        <ItemCell field={field} index={index} item={item} record={item} repeatedIndex={0} />
+        <ItemCell
+          field={field}
+          index={index}
+          item={item}
+          onToggleCheckbox={onToggleCheckbox}
+          record={item}
+          repeatedIndex={0}
+        />
       ))}
     </tr>
   );

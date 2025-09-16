@@ -7199,9 +7199,15 @@ exports[`config > getProjectImplementations > official blocks > table 1`] = `
 
 This does not trigger if the field has a different action specified.",
     },
+    "onSubmitChecked": {
+      "description": "The action that is triggered when checked data is submitted.",
+    },
   },
   "events": {
     "emit": {
+      "checked": {
+        "description": "This event is emitted when an item is checked or unchecked.",
+      },
       "sorted": {
         "description": "This event is emitted when one of the columns is clicked for sorting.",
       },
@@ -7218,6 +7224,9 @@ This does not trigger if the field has a different action specified.",
     },
     "error": {
       "description": "The message to display when data could not be loaded.",
+    },
+    "submitChecked": {
+      "description": "The text on the button that is used to submit the checked data.",
     },
   },
   "parameters": {
@@ -7337,6 +7346,51 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
         },
         "required": [
           "button",
+        ],
+        "type": "object",
+      },
+      "CheckBox": {
+        "additionalProperties": false,
+        "properties": {
+          "alignment": {
+            "description": "Whether the content of the cell should be aligned left, right, or centered",
+            "enum": [
+              "center",
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
+          "checkbox": {
+            "additionalProperties": false,
+            "properties": {
+              "disabled": {
+                "description": "Whether the checkbox should be disabled.
+
+If the resulting remapper value is truthy, the button will be disabled.",
+                "format": "remapper",
+              },
+              "size": {
+                "$ref": "#/definitions/BulmaSize",
+                "default": "normal",
+                "description": "The size of the checkbox.",
+              },
+            },
+            "type": "object",
+          },
+          "label": {
+            "description": "An optional label used in the header of the table.
+
+If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "Name of the field to use for sorting the table.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "checkbox",
         ],
         "type": "object",
       },
@@ -7631,6 +7685,9 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
           "anyOf": [
             {
               "$ref": "#/definitions/Button",
+            },
+            {
+              "$ref": "#/definitions/CheckBox",
             },
             {
               "$ref": "#/definitions/Dropdown",

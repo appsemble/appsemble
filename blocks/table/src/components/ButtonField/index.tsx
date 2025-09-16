@@ -55,7 +55,7 @@ export function ButtonField({
     () => Boolean(remap(button.disabled, item, { index, repeatedIndex })),
     [button.disabled, index, item, remap, repeatedIndex],
   );
-  const action = actions[field.onClick];
+  const action = field.onClick ? actions[field.onClick] : actions.onClick;
   const className = classNames('button', `is-${size}`, {
     'is-rounded': rounded,
     'is-fullwidth': fullwidth,

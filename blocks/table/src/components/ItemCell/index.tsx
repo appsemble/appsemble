@@ -6,12 +6,14 @@ import { useCallback } from 'preact/hooks';
 import styles from './index.module.css';
 import {
   type Button,
+  type CheckBox,
   type Dropdown as DropdownType,
   type Field,
   type Image,
   type StringField,
 } from '../../../block.js';
 import { ButtonField } from '../ButtonField/index.js';
+import { CheckBoxField } from '../CheckBoxField/index.js';
 import { DropdownField } from '../DropdownField/index.js';
 import { ImageField } from '../ImageField/index.js';
 import { StringInput } from '../StringInput/index.js';
@@ -30,7 +32,7 @@ interface ItemCellProps extends ComponentProps<'td'> {
   /**
    * The field to render.
    */
-  readonly field: Button | DropdownType | Field | Image | StringField;
+  readonly field: Button | CheckBox | DropdownType | Field | Image | StringField;
 
   /**
    * The index of the row that was clicked.
@@ -41,6 +43,11 @@ interface ItemCellProps extends ComponentProps<'td'> {
    * The index of the sub row that was clicked.
    */
   readonly repeatedIndex: number;
+
+  /**
+   * The function to execute when a checkbox is toggled.
+   */
+  readonly onToggleCheckbox: (value: boolean, index: number) => void;
 }
 
 function renderValue(value: unknown): string {
@@ -54,6 +61,7 @@ export function ItemCell({
   field,
   index,
   item,
+  onToggleCheckbox,
   record,
   repeatedIndex,
   ...props
@@ -68,6 +76,7 @@ export function ItemCell({
     !('button' in field) &&
     !('string' in field) &&
     !('image' in field) &&
+    !('checkbox' in field) &&
     (actions[field.onClick] || actions.onClick);
 
   const onCellClick = useCallback(() => {
@@ -96,6 +105,15 @@ export function ItemCell({
     content = <StringInput field={field} index={index} item={item} repeatedIndex={repeatedIndex} />;
   } else if ('image' in field) {
     content = <ImageField field={field} index={index} item={item} repeatedIndex={repeatedIndex} />;
+  } else if ('checkbox' in field) {
+    content = (
+      <CheckBoxField
+        field={field}
+        index={index}
+        item={item}
+        onChange={(event, value) => onToggleCheckbox(value, index)}
+      />
+    );
   } else {
     content = renderValue(remap(field.value, item, { index, repeatedIndex }));
   }
@@ -103,7 +121,7 @@ export function ItemCell({
   return (
     <td
       {...props}
-      className={onClickAction?.type !== 'noop' && styles.clickable}
+      className={onClickAction?.type !== 'noop' && !('checkbox' in field) && styles.clickable}
       onClick={onCellClick}
       role="gridcell"
     >
