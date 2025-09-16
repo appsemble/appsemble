@@ -13,6 +13,7 @@ describe('validateRadio', () => {
       requirements: [{ required: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateRadio(field, null, remap)).toBe(field.requirements[0]);
   });
 
@@ -24,6 +25,7 @@ describe('validateRadio', () => {
       requirements: [{ required: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateRadio(field, 'a', remap)).toBeUndefined();
   });
 
@@ -35,7 +37,9 @@ describe('validateRadio', () => {
       requirements: [{ required: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateRadio(field, undefined, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateRadio(field, null, remap)).toBeUndefined();
   });
 
@@ -47,7 +51,9 @@ describe('validateRadio', () => {
       requirements: [{ prohibited: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateRadio(field, 'a', remap)).toStrictEqual(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateRadio(field, undefined, remap)).toBeUndefined();
   });
 
@@ -59,6 +65,7 @@ describe('validateRadio', () => {
       requirements: [{ prohibited: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateRadio(field, 'a', remap)).toBeUndefined();
   });
 
@@ -70,6 +77,7 @@ describe('validateRadio', () => {
       requirements: [{ required: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateRadio(field, '', remap)).toBeUndefined();
   });
 });

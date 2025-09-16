@@ -12,6 +12,7 @@ describe('validateFile', () => {
       requirements: [{ required: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, {} as File, remap)).toBeUndefined();
   });
 
@@ -22,6 +23,7 @@ describe('validateFile', () => {
       requirements: [{ required: true }, { maxLength: 5 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, null, remap)).toStrictEqual(field.requirements[0]);
   });
 
@@ -32,6 +34,7 @@ describe('validateFile', () => {
       requirements: [{ required: false }, { maxLength: 5 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, null, remap)).toBeUndefined();
   });
 
@@ -42,7 +45,9 @@ describe('validateFile', () => {
       requirements: [{ prohibited: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, {} as File, remap)).toStrictEqual(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, null, remap)).toBeUndefined();
   });
 
@@ -53,6 +58,7 @@ describe('validateFile', () => {
       requirements: [{ prohibited: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, {} as File, remap)).toBeUndefined();
   });
 
@@ -64,9 +70,11 @@ describe('validateFile', () => {
       requirements: [{ prohibited: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [{} as File, {} as File], remap)).toStrictEqual(
-      field.requirements[0],
+      field.requirements?.[0],
     );
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [], remap)).toBeUndefined();
   });
 
@@ -78,6 +86,7 @@ describe('validateFile', () => {
       requirements: [{ prohibited: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [{} as File, {} as File], remap)).toBeUndefined();
   });
 
@@ -89,7 +98,9 @@ describe('validateFile', () => {
       requirements: [{ minLength: 2, maxLength: 2 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [{} as File], remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [{} as File, {} as File], remap)).toBeUndefined();
   });
 
@@ -101,7 +112,9 @@ describe('validateFile', () => {
       requirements: [{ minLength: 2 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [{} as File, {} as File], remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [], remap)).toStrictEqual(field.requirements[0]);
   });
 
@@ -113,9 +126,11 @@ describe('validateFile', () => {
       requirements: [{ maxLength: 2 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [{} as File, {} as File], remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [{} as File, {} as File, {} as File], remap)).toStrictEqual(
-      field.requirements[0],
+      field.requirements?.[0],
     );
   });
 
@@ -127,8 +142,11 @@ describe('validateFile', () => {
       requirements: [{ minSize: 2 }, { maxSize: 2 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { size: 2 } as File, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { size: 1 } as File, remap)).toStrictEqual(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { size: 3 } as File, remap)).toStrictEqual(field.requirements[1]);
   });
 
@@ -140,8 +158,11 @@ describe('validateFile', () => {
       requirements: [{ minSize: 2 }, { maxSize: 2 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [{ size: 2 } as File], remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [{ size: 1 } as File], remap)).toStrictEqual(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, [{ size: 3 } as File], remap)).toStrictEqual(field.requirements[1]);
   });
 
@@ -152,9 +173,12 @@ describe('validateFile', () => {
       requirements: [{ accept: ['image/jpeg', 'image/png'] }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { type: 'image/jpeg' } as File, remap)).toBeUndefined();
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { type: 'image/svg+xml' } as File, remap)).toStrictEqual(
+      // @ts-expect-error strictNullChecks not assignable to type
       field.requirements[0],
     );
 
@@ -162,6 +186,7 @@ describe('validateFile', () => {
       validateFile(
         { ...field, repeated: true },
         [{ type: 'image/jpeg' } as File, { type: 'image/png' } as File],
+        // @ts-expect-error strictNullChecks not assignable to type
         remap,
       ),
     ).toBeUndefined();
@@ -170,9 +195,10 @@ describe('validateFile', () => {
       validateFile(
         { ...field, repeated: true },
         [{ type: 'image/svg+xml' } as File, { type: 'image/png' } as File],
+        // @ts-expect-error strictNullChecks not assignable to type
         remap,
       ),
-    ).toStrictEqual(field.requirements[0]);
+    ).toStrictEqual(field.requirements?.[0]);
   });
 
   it('should check combining mime types', () => {
@@ -182,16 +208,20 @@ describe('validateFile', () => {
       requirements: [{ accept: ['image/*'] }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { type: 'image/jpeg' } as File, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { type: 'image/svg+xml' } as File, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { type: 'video/quicktime' } as File, remap)).toStrictEqual(
-      field.requirements[0],
+      field.requirements?.[0],
     );
 
     expect(
       validateFile(
         { ...field, repeated: true },
         [{ type: 'image/jpeg' } as File, { type: 'image/png' } as File],
+        // @ts-expect-error strictNullChecks not assignable to type
         remap,
       ),
     ).toBeUndefined();
@@ -200,6 +230,7 @@ describe('validateFile', () => {
       validateFile(
         { ...field, repeated: true },
         [{ type: 'image/svg+xml' } as File, { type: 'image/png' } as File],
+        // @ts-expect-error strictNullChecks not assignable to type
         remap,
       ),
     ).toBeUndefined();
@@ -208,9 +239,10 @@ describe('validateFile', () => {
       validateFile(
         { ...field, repeated: true },
         [{ type: 'image/svg+xml' } as File, { type: 'video/quicktime' } as File],
+        // @ts-expect-error strictNullChecks not assignable to type
         remap,
       ),
-    ).toStrictEqual(field.requirements[0]);
+    ).toStrictEqual(field.requirements?.[0]);
   });
 
   it('should check complex combining mime types', () => {
@@ -220,17 +252,22 @@ describe('validateFile', () => {
       requirements: [{ accept: ['image/*', 'video/quicktime'] }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { type: 'image/jpeg' } as File, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { type: 'image/svg+xml' } as File, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { type: 'video/quicktime' } as File, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, { type: 'video/x-msvideo' } as File, remap)).toStrictEqual(
-      field.requirements[0],
+      field.requirements?.[0],
     );
 
     expect(
       validateFile(
         { ...field, repeated: true },
         [{ type: 'image/jpeg' } as File, { type: 'image/png' } as File],
+        // @ts-expect-error strictNullChecks not assignable to type
         remap,
       ),
     ).toBeUndefined();
@@ -239,6 +276,7 @@ describe('validateFile', () => {
       validateFile(
         { ...field, repeated: true },
         [{ type: 'image/svg+xml' } as File, { type: 'image/png' } as File],
+        // @ts-expect-error strictNullChecks not assignable to type
         remap,
       ),
     ).toBeUndefined();
@@ -247,6 +285,7 @@ describe('validateFile', () => {
       validateFile(
         { ...field, repeated: true },
         [{ type: 'image/svg+xml' } as File, { type: 'video/quicktime' } as File],
+        // @ts-expect-error strictNullChecks not assignable to type
         remap,
       ),
     ).toBeUndefined();
@@ -255,9 +294,10 @@ describe('validateFile', () => {
       validateFile(
         { ...field, repeated: true },
         [{ type: 'image/svg+xml' } as File, { type: 'video/x-msvideo' } as File],
+        // @ts-expect-error strictNullChecks not assignable to type
         remap,
       ),
-    ).toStrictEqual(field.requirements[0]);
+    ).toStrictEqual(field.requirements?.[0]);
   });
 
   it('should allow null values if not required', () => {
@@ -266,6 +306,7 @@ describe('validateFile', () => {
       name: 'test',
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, null, remap)).toBeUndefined();
   });
 
@@ -276,7 +317,8 @@ describe('validateFile', () => {
       requirements: [{ required: true }],
     };
 
-    expect(validateFile(field, null, remap)).toStrictEqual(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
+    expect(validateFile(field, null, remap)).toStrictEqual(field.requirements?.[0]);
   });
 
   it('should allow existing asset id', () => {
@@ -285,6 +327,7 @@ describe('validateFile', () => {
       name: 'test',
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, 'asset-1' as unknown as File, remap)).toBeUndefined();
   });
 
@@ -295,6 +338,7 @@ describe('validateFile', () => {
       repeated: true,
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, ['asset-1', 'asset-2'] as unknown as File[], remap)).toBeUndefined();
   });
 });

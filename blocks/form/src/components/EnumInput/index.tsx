@@ -47,7 +47,7 @@ export function EnumInput({
         ? (utils.remap(field.remapper, remapperValues) as Choice[])
         : field.enum,
   );
-  const [error, setError] = useState<string>(null);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('');
   const [originalOptions, setOriginalOptions] = useState<Choice[]>(options);
   const [inputValue, setInputValue] = useState<string>('');
@@ -192,6 +192,7 @@ export function EnumInput({
     [disable, handleChange, name],
   );
 
+  // @ts-expect-error strictNullChecks undefined is not assignable
   useClickOutside(ref, disable);
 
   return (
@@ -201,6 +202,7 @@ export function EnumInput({
           className={classNames('appsemble-enum dropdown is-block', {
             'is-active': enabled,
           })}
+          // @ts-expect-error strictNullChecks undefined is not assignable
           ref={ref}
         >
           <InputField

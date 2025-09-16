@@ -25,11 +25,12 @@ export const TagsField = forwardRef<HTMLInputElement, TagsFieldProps>(
     const innerRef = useRef<HTMLInputElement>();
     const bulmaInputRef = useRef<BulmaTagsInput>();
 
-    const mergedRef = useCombinedRefs(innerRef, ref);
+    const mergedRef = useCombinedRefs(innerRef, ref as MutableRef<HTMLElement>);
 
     useEffect(() => {
       const element = innerRef.current;
 
+      // @ts-expect-error strictNullChecks not assignable to type
       bulmaInputRef.current = new BulmaTagsInput(element, { delimiter, tagClass: 'tag' });
 
       const bulmaInputElement = (
@@ -48,9 +49,9 @@ export const TagsField = forwardRef<HTMLInputElement, TagsFieldProps>(
     useEffect(() => {
       if (value) {
         const bulmaInput = bulmaInputRef.current;
-        bulmaInput.flush();
+        bulmaInput?.flush();
         for (const v of value) {
-          bulmaInput.add(String(v));
+          bulmaInput?.add(String(v));
         }
       }
     }, [value]);

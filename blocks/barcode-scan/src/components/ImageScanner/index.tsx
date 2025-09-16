@@ -17,7 +17,7 @@ export function ImageScanner({
   resolution,
   setBarcode,
 }: ImageScannerProps): VNode {
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState<ArrayBuffer | string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function runBarcodeDetection(image: any): void {
@@ -40,13 +40,13 @@ export function ImageScanner({
 
   useEffect(() => {
     const fileInput = inputRef.current;
-    const file = fileInput.files[0];
+    const file = fileInput?.files?.[0];
 
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const dataURL = e.target.result;
-        setSelectedImage(dataURL);
+        const dataURL = e.target?.result;
+        setSelectedImage(dataURL ?? null);
         runBarcodeDetection(dataURL);
       };
 
@@ -59,7 +59,7 @@ export function ImageScanner({
     const reader = new FileReader();
     reader.onload = (e) => {
       const dataURL = e?.target?.result;
-      setSelectedImage(dataURL);
+      setSelectedImage(dataURL ?? null);
       runBarcodeDetection(dataURL);
     };
 
@@ -68,7 +68,9 @@ export function ImageScanner({
 
   const handleRemove = (): any => {
     if (inputRef) {
-      inputRef.current.value = '';
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
       setBarcode(null);
       setSelectedImage(null);
     }
@@ -91,7 +93,7 @@ export function ImageScanner({
 
       {selectedImage ? (
         <div className={styles.imageContainer}>
-          <img alt="Selected" src={selectedImage} />
+          <img alt="Selected" src={selectedImage as string} />
           <button className={styles.close} onClick={handleRemove} type="button">
             <i class="fas fa-times" />
           </button>

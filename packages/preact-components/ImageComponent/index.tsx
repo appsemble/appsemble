@@ -1,6 +1,6 @@
 import { Modal, useToggle } from '@appsemble/preact-components';
 import { Fragment, type VNode } from 'preact';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 
@@ -53,7 +53,7 @@ export function ImageComponent({
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const imgRef = useRef();
+  const imgRef = useRef<HTMLImageElement>();
 
   let width = size;
   let height = size;
@@ -115,7 +115,7 @@ export function ImageComponent({
               <img
                 alt={alt}
                 className={`${styles.img} ${rounded && 'is-rounded'}`}
-                ref={imgRef}
+                ref={imgRef as MutableRef<HTMLImageElement>}
                 src={isVisible ? src : undefined}
               />
             </figure>

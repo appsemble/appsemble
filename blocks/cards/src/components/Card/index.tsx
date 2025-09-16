@@ -17,7 +17,7 @@ export function CardContent({ index, item }: CardContentProps): VNode {
     utils: { asset, remap },
   } = useBlock();
 
-  const image = remap(card.image?.file ?? null, item) as string;
+  const image = remap(card.image?.file, item) as string;
   const imageSrc = image ? asset(image) : asset(defaultImage);
   const handleClick = useCallback(
     (event: MouseEvent, data: Item) => {
@@ -26,7 +26,7 @@ export function CardContent({ index, item }: CardContentProps): VNode {
     },
     [actions],
   );
-  const alt = remap(card.image?.alt ?? null, item) as string;
+  const alt = remap(card.image?.alt, item) as string;
   const title = remap(card.title, item) as string;
   const subtitle = remap(card.subtitle, item) as string;
   const content = remap(card.content, item) as string;

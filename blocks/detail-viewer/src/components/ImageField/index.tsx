@@ -18,7 +18,7 @@ export function ImageField({
   label,
   name,
   source,
-}: ImageFieldProps): VNode {
+}: ImageFieldProps): VNode | null {
   const { utils } = useBlock();
   const modal = useToggle();
   const img = source as string;

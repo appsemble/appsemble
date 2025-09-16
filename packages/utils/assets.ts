@@ -50,13 +50,13 @@ export function getMimeTypeCategory(mimeType: string): MimeTypeCategory | null {
   return category as MimeTypeCategory;
 }
 
-export function getMimeTypeCategories(mimeTypes: string[]): MimeTypeCategory[] {
+export function getMimeTypeCategories(mimeTypes: string[]): (MimeTypeCategory | null)[] {
   return Array.from(new Set(mimeTypes.map(getMimeTypeCategory).filter((cat) => cat != null)));
 }
 
 export type FileIconName = IconName | `file-${string}`;
 
-export function getMimeTypeIcon(category: MimeTypeCategory): FileIconName {
+export function getMimeTypeIcon(category: MimeTypeCategory | null): FileIconName {
   switch (category) {
     case MimeTypeCategory.Image:
     case MimeTypeCategory.Video:

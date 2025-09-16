@@ -11,7 +11,7 @@ function populateContentNodes(
 ): void {
   for (const contentNode of nodes) {
     const placeholderName = contentNode.dataset.content;
-    if (has(placeholders, placeholderName)) {
+    if (placeholderName && has(placeholders, placeholderName)) {
       contentNode.textContent = remap(placeholders[placeholderName], data);
     }
   }
@@ -32,17 +32,19 @@ bootstrap(
     const assetNodes = body.querySelectorAll<HTMLElement>('[data-asset]');
     const clickNodes = body.querySelectorAll<HTMLElement>('[data-click]');
 
+    // @ts-expect-error strictNullCheck
     events.on.data((d) => populateContentNodes(contentNodes, d, placeholders, remap));
+    // @ts-expect-error strictNullCheck
     populateContentNodes(contentNodes, data, placeholders, remap);
 
     for (const assetNode of assetNodes) {
       const assetId = assetNode.dataset.asset;
-      assetNode.setAttribute('src', asset(assetId));
+      assetNode.setAttribute('src', assetId ? asset(assetId) : '#');
     }
 
     for (const clickNode of clickNodes) {
       const { click } = clickNode.dataset;
-      if (!has(actions, click)) {
+      if (!click || !has(actions, click)) {
         continue;
       }
 

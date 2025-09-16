@@ -6,7 +6,7 @@ import { ModelGPT } from './components/gpt/index.tsx';
 import styles from './index.module.css';
 
 bootstrap(({ events, ready }) => {
-  const [data, setData] = useState<OpenAIResponse>(null);
+  const [data, setData] = useState<OpenAIResponse | null>(null);
 
   useEffect(() => {
     ready();

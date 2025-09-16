@@ -39,12 +39,15 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
     const handleChange = useCallback(
       (event: JSX.TargetedEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
-        onChange(event, currentTarget.valueAsNumber);
+        onChange?.(event, currentTarget.valueAsNumber);
       },
       [onChange],
     );
 
-    const combinedRef = useCombinedRefs(ref, errorLinkRef);
+    const combinedRef = useCombinedRefs(
+      ref as MutableRef<HTMLElement>,
+      errorLinkRef as MutableRef<HTMLElement>,
+    );
 
     return (
       <input

@@ -12,7 +12,8 @@ describe('validateDateTime', () => {
       requirements: [{ required: true }],
     };
 
-    expect(validateDateTime(field, null, remap)).toBe(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
+    expect(validateDateTime(field, null, remap)).toBe(field.requirements?.[0]);
   });
 
   it('should should return undefined if it validates correctly', () => {
@@ -22,6 +23,7 @@ describe('validateDateTime', () => {
       requirements: [{ required: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateDateTime(field, '2020-02-02T20:20:02.02Z', remap)).toBeUndefined();
   });
 
@@ -32,6 +34,7 @@ describe('validateDateTime', () => {
       requirements: [{ required: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateDateTime(field, null, remap)).toBeUndefined();
   });
 
@@ -42,7 +45,11 @@ describe('validateDateTime', () => {
       requirements: [{ prohibited: true }],
     };
 
-    expect(validateDateTime(field, '1969-12-31T14:00:00.000Z', remap)).toBe(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
+    expect(validateDateTime(field, '1969-12-31T14:00:00.000Z', remap)).toBe(
+      field.requirements?.[0],
+    );
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateDateTime(field, undefined, remap)).toBeUndefined();
   });
 
@@ -53,6 +60,7 @@ describe('validateDateTime', () => {
       requirements: [{ prohibited: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateDateTime(field, '1969-12-31T14:00:00.000Z', remap)).toBeUndefined();
   });
 
@@ -63,7 +71,10 @@ describe('validateDateTime', () => {
       requirements: [{ from: { static: new Date(0) } }],
     };
 
-    expect(validateDateTime(field, '1969-12-31T14:00:00.000Z', remap)).toBe(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
+    expect(validateDateTime(field, '1969-12-31T14:00:00.000Z', remap)).toBe(
+      field.requirements?.[0],
+    );
   });
 
   it('should validate from requirements based on a value from another field', () => {
@@ -74,8 +85,9 @@ describe('validateDateTime', () => {
       requirements: [{ from: { prop: 'other' } }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateDateTime(field, '1969-12-31T14:00:00.000Z', remap, values)).toBe(
-      field.requirements[0],
+      field.requirements?.[0],
     );
   });
 
@@ -86,6 +98,7 @@ describe('validateDateTime', () => {
       requirements: [{ from: { static: 'invalid' } }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateDateTime(field, '1969-12-31T14:00:00.000Z', remap)).toBeUndefined();
   });
 
@@ -96,7 +109,10 @@ describe('validateDateTime', () => {
       requirements: [{ to: { static: '1969-12-31T14:00:00.000Z' } }],
     };
 
-    expect(validateDateTime(field, '1970-12-31T14:00:00.000Z', remap)).toBe(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
+    expect(validateDateTime(field, '1970-12-31T14:00:00.000Z', remap)).toBe(
+      field.requirements?.[0],
+    );
   });
 
   it('should validate to requirements based on a value from another field', () => {
@@ -107,8 +123,9 @@ describe('validateDateTime', () => {
       requirements: [{ to: { prop: 'other' } }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateDateTime(field, '1970-12-31T14:00:00.000Z', remap, values)).toBe(
-      field.requirements[0],
+      field.requirements?.[0],
     );
   });
 
@@ -119,6 +136,7 @@ describe('validateDateTime', () => {
       requirements: [{ to: { static: 'invalid' } }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateDateTime(field, '1969-12-31T14:00:00.000Z', remap)).toBeUndefined();
   });
 });

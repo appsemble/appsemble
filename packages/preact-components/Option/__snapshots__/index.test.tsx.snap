@@ -2,7 +2,6 @@
 
 exports[`should render an option 1`] = `
 <option
-  class=""
   data-testid="option"
   value="test"
 />

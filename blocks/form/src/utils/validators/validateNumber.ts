@@ -13,6 +13,7 @@ export function validateNumber(
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
   values?: Values,
 ): NumberRequirement {
+  // @ts-expect-error strictNullChecks not assignable to type
   return field.requirements?.find((requirement) => {
     if (
       Requirement.Required in requirement &&
@@ -30,11 +31,11 @@ export function validateNumber(
       return true;
     }
 
-    if (Requirement.Max in requirement && value > requirement.max) {
+    if (Requirement.Max in requirement && value > requirement.max!) {
       return true;
     }
 
-    if (Requirement.Min in requirement && value < requirement.min) {
+    if (Requirement.Min in requirement && value < requirement.min!) {
       return true;
     }
 

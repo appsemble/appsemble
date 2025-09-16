@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'preact/hooks';
 import { CardContent } from './components/Card/index.js';
 
 bootstrap(({ data: blockData, events, parameters: { hideOnNoData }, ready, utils }) => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const loadData = useCallback((d: any, err: string): void => {

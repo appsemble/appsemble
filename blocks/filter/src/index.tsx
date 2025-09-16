@@ -28,7 +28,7 @@ bootstrap(
         } else if (type === 'buttons' || type === 'date-range') {
           result[name] = [];
         } else {
-          result[name] = null;
+          result[name] = undefined;
         }
       }
       return result;

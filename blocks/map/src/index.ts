@@ -2,7 +2,7 @@ import { bootstrap } from '@appsemble/sdk';
 import { MarkerClusterGroup } from '@wesselkuipers/leaflet.markercluster';
 import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.css';
 import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.Default.css';
-import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
+import { CircleMarker, type LatLngExpression, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import './index.css';
@@ -24,6 +24,7 @@ bootstrap((params) => {
   const latitude = data && (remap(parameters.latitude, data) as number);
   const longitude = data && (remap(parameters.longitude, data) as number);
   const hasExplicitCenter = Number.isFinite(latitude) && Number.isFinite(longitude);
+  // @ts-expect-error strictNullCheck
   const locationMarker = new CircleMarker(null, {
     color: primaryColor,
     radius: 10,
@@ -39,7 +40,7 @@ bootstrap((params) => {
   const map = new Map(node, {
     attributionControl: false,
     layers: [new TileLayer(tileLayer)],
-    center: hasExplicitCenter ? [latitude, longitude] : defaultLocation,
+    center: hasExplicitCenter ? ([latitude, longitude] as LatLngExpression) : defaultLocation,
     zoom: 16,
   });
 

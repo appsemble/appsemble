@@ -42,7 +42,7 @@ bootstrap(
     const alt = remap(alternate, data) as string;
     const img = remap(url, data) as string;
     const defaultSrc = remap(defaultImage, data) as string;
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     useEffect(() => {
       setSelectedImage(img);
@@ -55,7 +55,7 @@ bootstrap(
     if (imgRef.current) {
       imgRef.current.style.width = `${width}px`;
       imgRef.current.style.height = `${height}px`;
-      imgRef.current.style.borderRadius = rounded && '50%';
+      imgRef.current.style.borderRadius = (rounded && '50%') as string;
       if (defaultImage) {
         imgRef.current.style.backgroundColor = '#5393ff';
       }
@@ -64,12 +64,16 @@ bootstrap(
     const handleFileChange = useCallback(
       (event: JSX.TargetedEvent<HTMLInputElement>): void => {
         const { currentTarget } = event;
-        const file = currentTarget.files[0] as Blob;
+        const file = currentTarget.files?.[0] as Blob;
+        // @ts-expect-error strictNullCheck
         currentTarget.value = null;
 
         setSelectedImage(URL.createObjectURL(file));
 
-        actions.onChange({ ...(data as Record<string, unknown>), [name]: file });
+        actions.onChange({
+          ...(data as Record<string, unknown>),
+          ...(name ? { [name]: file } : null),
+        });
       },
       [data, selectedImage],
     );
@@ -114,9 +118,9 @@ bootstrap(
               <img
                 alt={alt}
                 src={
-                  /^(https?:|blob:https?:)?\/\//.test(selectedImage)
-                    ? selectedImage
-                    : asset(selectedImage)
+                  /^(https?:|blob:https?:)?\/\//.test(selectedImage ?? '')
+                    ? (selectedImage ?? undefined)
+                    : (asset(selectedImage ?? '') ?? undefined)
                 }
               />
             </figure>

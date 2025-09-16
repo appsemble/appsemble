@@ -15,6 +15,7 @@ export function DateFieldComponent({
       className={className}
       loading={loading}
       name={field.name}
+      // @ts-expect-error strictNullChecks type is not assignable
       onChange={onChange}
       type="date"
       value={value}

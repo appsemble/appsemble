@@ -19,7 +19,7 @@ export function BulletPoints({
     label,
     value,
   },
-}: RendererProps<BulletPointsType>): VNode {
+}: RendererProps<BulletPointsType>): VNode | null {
   const { utils } = useBlock();
 
   const listRef = useRef<HTMLOListElement>(null);
@@ -38,7 +38,10 @@ export function BulletPoints({
     <div className="appsemble-group">
       {isPreactChild(remappedLabel) ? <h5 className="title is-5">{remappedLabel}</h5> : null}
       {Array.isArray(remappedValue) ? (
-        <ol className={bulletType === 'horizontal' ? styles.horizontalList : null} ref={listRef}>
+        <ol
+          className={bulletType === 'horizontal' ? styles.horizontalList : undefined}
+          ref={listRef}
+        >
           {remappedValue.flatMap((val) => (
             <li>
               <Field data={val} field={heading} />

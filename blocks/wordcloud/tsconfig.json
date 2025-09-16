@@ -1,7 +1,7 @@
 {
   "extends": "@appsemble/tsconfig/preact",
   "compilerOptions": {
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "strictFunctionTypes": false,
     "types": ["@appsemble/webpack-config/types"]
   }

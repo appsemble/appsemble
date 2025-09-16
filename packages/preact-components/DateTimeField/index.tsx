@@ -109,7 +109,7 @@ export function DateTimeField({
   const wrapper = useRef<HTMLDivElement>();
   const internal = useRef<HTMLDivElement>();
   const positionElement = useRef<HTMLDivElement>();
-  const [picker, setPicker] = useState<flatpickr.Instance>(null);
+  const [picker, setPicker] = useState<flatpickr.Instance | null>(null);
   const {
     utils: { remap },
   } = useBlock();
@@ -117,9 +117,9 @@ export function DateTimeField({
   const handleChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>) => {
       if (picker) {
-        onChange(event, iso ? picker.selectedDates[0].toISOString() : picker.selectedDates[0]);
+        onChange?.(event, iso ? picker.selectedDates[0].toISOString() : picker.selectedDates[0]);
       } else if (event.currentTarget.value) {
-        onChange(event, event.currentTarget.value);
+        onChange?.(event, event.currentTarget.value);
       }
     },
     [onChange, picker, iso],
@@ -142,6 +142,7 @@ export function DateTimeField({
       template += '{date, time, short}';
     }
 
+    // @ts-expect-error strictNullChecks not assignable to type
     const p = flatpickr(internal.current, {
       appendTo: wrapper.current,
       enableTime,
@@ -211,7 +212,7 @@ export function DateTimeField({
   }, [picker, value]);
 
   return (
-    <div className={className} id="wrapper" ref={wrapper}>
+    <div className={className} id="wrapper" ref={wrapper as MutableRef<HTMLDivElement>}>
       <FormComponent
         error={error}
         help={help}
@@ -220,10 +221,12 @@ export function DateTimeField({
         inline={inline}
         label={label}
         optionalLabel={optionalLabel}
+        // @ts-expect-error strictNullChecks not assignable to type
         ref={internal}
         required={required}
         tag={tag}
       >
+        {/* @ts-expect-error strictNullChecks not assignable to type */}
         <div ref={positionElement} />
         <Input
           {...props}

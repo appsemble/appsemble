@@ -44,7 +44,7 @@ export function SelectionInput({
   const [loading, setLoading] = useState('event' in field);
   const [options, setOptions] = useState('event' in field ? [] : field.selection);
   const [optionsError, setOptionsError] = useState<boolean>(false);
-  const [searchString, setSearchString] = useState<string>(null);
+  const [searchString, setSearchString] = useState<string | null>(null);
 
   const selectedOptions = getValueByNameSequence(name, formValues) as SelectionChoice[];
 
@@ -84,6 +84,7 @@ export function SelectionInput({
   }, [events, field, utils]);
 
   const selectOption = (id: number): void => {
+    /* @ts-expect-error strictNullChecks */
     onChange(name, [...selectedOptions, options.find((option) => option.id === id)]);
 
     if (selectedOptions.length + 1 === maxItems) {
@@ -128,7 +129,7 @@ export function SelectionInput({
       filtered = filtered.filter(
         (option) =>
           String(option.header).toLowerCase().includes(searchString) ||
-          option.fields.some((optionField) =>
+          option.fields?.some((optionField) =>
             String(optionField.value).toLowerCase().includes(searchString),
           ),
       );

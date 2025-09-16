@@ -41,9 +41,10 @@ export async function resize(
   canvas.width = Math.floor(width);
   canvas.height = Math.floor(height);
 
-  ctx.drawImage(img, 0, 0, width, height);
+  ctx?.drawImage(img, 0, 0, width, height);
 
   return new Promise((resolve) => {
+    /* @ts-expect-error strictNullChecks */
     canvas.toBlob((blob) => resolve(blob), file.type, quality / 100);
   });
 }

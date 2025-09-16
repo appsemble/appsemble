@@ -27,6 +27,7 @@ it('should render a list with data from a data-loader', async () => {
 
   const listProps: BlockProps = {
     ...defaultBootstrapParams,
+    // @ts-expect-error strictNullChecks not assignable to type
     ready: resolveReady,
     parameters: {
       item: {

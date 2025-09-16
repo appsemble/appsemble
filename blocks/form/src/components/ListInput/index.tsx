@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { Button, Form, FormComponent, useToggle } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type Choice, type InputProps, type ListField } from '../../../block.js';
@@ -28,7 +28,7 @@ export function ListInput({
   const { events, utils } = useBlock();
   const [loading, setLoading] = useState('event' in field);
   const [options, setOptions] = useState<Choice[]>('event' in field ? [] : field.list);
-  const [error, setError] = useState<string>(null);
+  const [error, setError] = useState<string | null>(null);
   const oldOptions = useRef<typeof options>(options);
 
   const { icon, inline, label, placeholder, tag } = field;
@@ -76,7 +76,10 @@ export function ListInput({
   const handleClickAway = useCallback(
     (event: MouseEvent) => {
       const dropdown = ref.current;
-      const { height, left, top, width } = dropdown?.getBoundingClientRect() || {};
+      if (!dropdown) {
+        return;
+      }
+      const { height, left, top, width } = dropdown.getBoundingClientRect();
 
       if (isDropdownOpen) {
         // If clicked in dropdown area, don't close
@@ -167,7 +170,7 @@ export function ListInput({
         )}
         data-field={field.name}
         disabled={disabled || readOnly || loading || !options.length}
-        errorLinkRef={errorLinkRef}
+        errorLinkRef={errorLinkRef as MutableRef<HTMLDivElement>}
         icon="chevron-down"
         iconRight={Boolean(icon)}
         id={field.name}

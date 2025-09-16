@@ -1,6 +1,6 @@
 import { Button } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { type MutableRef, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type SelectionChoice } from '../../../../block.js';
@@ -28,7 +28,7 @@ export function SelectionOption({
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement>();
 
   const onClick = (): void => {
     if (selected && mayRemove) {
@@ -67,7 +67,10 @@ export function SelectionOption({
   }, [id]);
 
   return (
-    <div className={`${styles.option} has-text-left is-flex my-1 p-2`} ref={ref}>
+    <div
+      className={`${styles.option} has-text-left is-flex my-1 p-2`}
+      ref={(ref as MutableRef<HTMLDivElement>) || undefined}
+    >
       {image && !imageInline ? (
         <div className={styles.image}>
           {alignment === 'default' ? (
@@ -86,7 +89,7 @@ export function SelectionOption({
       </div>
       <div className="is-flex is-flex-direction-column is-justify-content-end">
         <Button
-          disabled={selected ? !mayRemove : null}
+          disabled={selected ? !mayRemove : undefined}
           icon={selected ? (mayRemove ? 'xmark' : 'check') : 'plus'}
           onClick={onClick}
         />

@@ -101,6 +101,7 @@ export function FieldGroup({
 
   const handleChange = useCallback(
     (localName: string, val: unknown) => {
+      // @ts-expect-error strictNullChecks undefined is not assignable
       onChange(name, { ...(getValueByNameSequence(name, formValues) as Values), [localName]: val });
     },
     [name, onChange, formValues],

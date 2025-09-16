@@ -21,7 +21,10 @@ export function ListFieldComponent({
   const handleClickAway = useCallback(
     (event: MouseEvent) => {
       const dropdown = ref.current;
-      const { height, left, top, width } = dropdown?.getBoundingClientRect() || {};
+      if (!dropdown) {
+        return;
+      }
+      const { height, left, top, width } = dropdown.getBoundingClientRect();
 
       if (isDropdownOpen) {
         // If clicked in dropdown area, don't close

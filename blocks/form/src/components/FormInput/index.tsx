@@ -45,11 +45,11 @@ interface FormInputProps extends Omit<InputProps<any, Field>, 'dirty' | 'errorLi
 /**
  * Render any type of form input.
  */
-export function FormInput({ field, onChange, ...props }: FormInputProps): VNode {
+export function FormInput({ field, onChange, ...props }: FormInputProps): VNode | null | undefined {
   const [dirty, setDirty] = useState(false);
   const { utils } = useBlock();
 
-  const errorLinkRef = useRef<HTMLElement>();
+  const errorLinkRef = useRef<HTMLElement>() as MutableRef<HTMLElement>;
 
   const { error, formValues, setFieldErrorLink } = props;
 
@@ -58,9 +58,10 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
 
   useEffect(() => {
     if (error && typeof error === 'string') {
-      setFieldErrorLink(field.name, { ref: errorLinkRef, error, label: remappedLabel as string });
+      setFieldErrorLink?.(field.name, { ref: errorLinkRef, error, label: remappedLabel as string });
     } else {
-      setFieldErrorLink(field.name, null);
+      // @ts-expect-error strictNullChecks undefined is not assignable
+      setFieldErrorLink?.(field.name, null);
     }
   }, [error, field.name, remappedLabel, setFieldErrorLink]);
 

@@ -21,7 +21,7 @@ import { ListFieldComponent } from '../ListFieldComponent/index.js';
 import { RangeFieldComponent } from '../RangeFieldComponent/index.js';
 import { StringFieldComponent } from '../StringFieldComponent/index.js';
 
-export function FieldComponent(props: FieldComponentProps<Field>): VNode {
+export function FieldComponent(props: FieldComponentProps<Field>): VNode | null {
   const { field } = props;
   switch (field.type) {
     case 'boolean':

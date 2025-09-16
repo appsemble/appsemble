@@ -15,14 +15,14 @@ export function List({
   parameters: { appendData, base, collapsible, groupBy, hideOnNoData = false, title },
   ready,
   utils,
-}: BlockProps & { readonly dataTestId?: string }): VNode {
+}: BlockProps & { readonly dataTestId?: string }): VNode | null {
   const [data, setData] = useState<Item[]>([]);
   const [groupedData, setGroupedData] = useState<Record<string, Item[]>>({});
   const [leftoverData, setLeftoverData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [currentLine, setCurrentLine] = useState(null);
+  const [currentLine, setCurrentLine] = useState<number | null>(null);
   const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
   const {
     actions: { onDrop },
@@ -133,9 +133,10 @@ export function List({
           {itemList.map((item, index) => (
             // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
             <li
-              draggable={isDragging && onDrop ? onDrop.type !== 'noop' : null}
+              draggable={isDragging && onDrop ? onDrop.type !== 'noop' : undefined}
               key={item.id ?? index}
               onDragEnd={() => {
+                // @ts-expect-error strictNullCheck
                 handleDrop(currentLine);
                 setCurrentLine(null);
               }}
@@ -210,7 +211,7 @@ export function List({
   useEffect(ready, [ready]);
 
   useEffect(() => {
-    if (data != null) {
+    if (data != null && groupBy) {
       const newGroupedData: Record<string, Item[]> = {};
       const newLeftoverData: Item[] = [];
       for (const entry of data) {
