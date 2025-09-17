@@ -5,7 +5,7 @@ context:
     template: true
     visibility: public
   production:
-    id: 1194
+    id: 130
     organization: appsemble
     remote: https://appsemble.app
     template: true
@@ -15,7 +15,7 @@ context:
     template: true
     visibility: public
   staging:
-    id: 1194
+    id: 130
     organization: appsemble
     remote: https://staging.appsemble.eu
     template: true
