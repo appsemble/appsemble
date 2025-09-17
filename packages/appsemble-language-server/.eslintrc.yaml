@@ -2,3 +2,4 @@ extends:
   - remcohaszing/web
 rules:
   no-console: off
+  'n/shebang': off

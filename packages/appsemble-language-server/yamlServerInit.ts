@@ -188,7 +188,7 @@ export class YAMLServerInit {
       this.connection,
     );
     // TODO: ignore
-    // await this.setupl10nBundle(params);
+    // await this.setupLocalizationBundle(params);
     return {
       capabilities: {
         textDocumentSync: TextDocumentSyncKind.Incremental,

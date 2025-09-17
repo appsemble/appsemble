@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/appsemble-language-server",
-  "version": "0.36.5-test.6",
+  "version": "0.36.10",
   "private": true,
   "description": "A language server for Appsemble app definitions",
   "keywords": [
@@ -23,11 +23,14 @@
   "files": [
     "**/*.d.ts",
     "**/*.js",
+    "**/*.js.map",
     "!*.config.js",
     "!**/*.test.js",
     "!**/*.test.d.ts"
   ],
-  "bin": "appsemble-language-server",
+  "bin": {
+    "appsemble-language-server": "./build/server.js"
+  },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
@@ -41,10 +44,11 @@
   "scripts": {
     "test": "vitest",
     "start": "tsx server.ts",
-    "prepack": "tsc --noEmit false"
+    "prepack": "tsc --noEmit false",
+    "build": "tsx ./esbuild.ts"
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.36.5-test.6",
+    "@appsemble/lang-sdk": "0.36.10",
     "@vscode/l10n": "^0.0.18",
     "jsonschema": "^1.5.0",
     "request-light": "~0.5.7",
@@ -57,6 +61,9 @@
     "yaml-language-server": "^1.18.0"
   },
   "devDependencies": {
-    "vitest": "2.1.9"
+    "vitest": "2.1.9",
+    "esbuild": "~0.28.0",
+    "esbuild-plugins-node-modules-polyfill": "^1.8.2",
+    "esbuild-shim-plugin": "^1.0.3"
   }
 }

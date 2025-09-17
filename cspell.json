@@ -228,6 +228,7 @@
     "rrsets",
     "CREATEDB",
     "Voss",
-    "dockercompose"
+    "dockercompose",
+    "languageservice"
   ]
 }
