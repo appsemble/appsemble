@@ -3,7 +3,7 @@ import { FormComponent, type SharedFormComponentProps } from '@appsemble/preact-
 import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { type Ref, type VNode } from 'preact';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type GeoCoordinatesField, type InputProps } from '../../../block.js';
@@ -25,7 +25,9 @@ export function GeoCoordinatesInput({
 }: GeoCoordinatesInputProps): VNode {
   const { theme, utils } = useBlock();
   const ref = useRef<HTMLDivElement>();
+  // @ts-expect-error strictNullChecks undefined is not assignable
   const [map, setMap] = useState<Map>(null);
+  // @ts-expect-error strictNullChecks undefined is not assignable
   const [locationMarker, setLocationMarker] = useState<CircleMarker>(null);
   const { icon, label, tag } = field;
   const required = isRequired(field, utils, formValues);
@@ -48,6 +50,7 @@ export function GeoCoordinatesInput({
       return;
     }
 
+    // @ts-expect-error strictNullChecks undefined is not assignable
     const marker = new CircleMarker(null, {
       color: theme.primaryColor,
       radius: 10,
@@ -86,7 +89,7 @@ export function GeoCoordinatesInput({
   }, [name, map, onChange]);
 
   useEffect(() => {
-    const m = new Map(ref.current, {
+    const m = new Map(ref.current as HTMLDivElement, {
       center: [defaultLat, defaultLng],
       attributionControl: false,
       layers: [new TileLayer(theme.tileLayer)],
@@ -128,7 +131,10 @@ export function GeoCoordinatesInput({
         className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}
         ref={errorLinkRef as unknown as Ref<HTMLDivElement>}
       >
-        <div className={styles.map} ref={ref} />
+        <div
+          className={styles.map}
+          ref={ref.current ? (ref as MutableRef<HTMLDivElement>) : undefined}
+        />
         <div className={styles.crossHairsOverlay}>
           <i className={`fas fa-crosshairs ${styles.crossHairs}`} />
         </div>

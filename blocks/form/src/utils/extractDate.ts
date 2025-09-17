@@ -2,7 +2,7 @@ function pad(value: number, padding = 2): string {
   return String(value).padStart(padding, '0');
 }
 
-export function extractDate(date: Date): string {
+export function extractDate(date: Date | undefined): string | undefined {
   if (!date) {
     return;
   }

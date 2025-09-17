@@ -150,7 +150,7 @@ export function Fieldset({
                   onChange={changeArray}
                   removeThumbnail={removeThumbnail}
                   setFieldErrorLink={(fieldName, params) =>
-                    setFieldErrorLink(`${field.name}.${index}.${fieldName}`, params)
+                    setFieldErrorLink?.(`${field.name}.${index}.${fieldName}`, params)
                   }
                   setFieldsReady={setFieldsReady}
                 />

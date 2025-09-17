@@ -35,12 +35,15 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ errorLinkRef, error, name, loading, onChange, readOnly, id = name, ...props }, ref) => {
     const handleChange = useCallback(
       (event: JSX.TargetedEvent<HTMLTextAreaElement>) => {
-        onChange(event, event.currentTarget.value);
+        onChange?.(event, event.currentTarget.value);
       },
       [onChange],
     );
 
-    const combinedRef = useCombinedRefs(ref, errorLinkRef);
+    const combinedRef = useCombinedRefs(
+      ref as MutableRef<HTMLTextAreaElement>,
+      errorLinkRef as MutableRef<HTMLElement>,
+    );
 
     return (
       <textarea

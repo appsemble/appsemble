@@ -1,6 +1,7 @@
 import { getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { Context } from '@appsemble/preact';
-import { type BootstrapParams } from '@appsemble/sdk';
+import { type Action, type BootstrapParams } from '@appsemble/sdk';
+import { noop } from '@appsemble/utils';
 import { render, screen } from '@testing-library/preact';
 import userEvent from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
@@ -39,10 +40,10 @@ it('should render a dropdown component', async () => {
     },
     actions: {
       onClick,
-      onAvatarClick: null,
-      onButtonClick: null,
-      onLoadReply: null,
-      onSubmitReply: null,
+      onAvatarClick: noop as Action,
+      onButtonClick: noop as Action,
+      onLoadReply: noop as Action,
+      onSubmitReply: noop as Action,
     },
   };
 

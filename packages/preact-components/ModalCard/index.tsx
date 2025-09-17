@@ -72,13 +72,14 @@ export function ModalCard<T extends ElementType = 'div'>({
   closable = true,
   closeButtonLabel,
   component: Component = 'div' as T,
+  // @ts-expect-error strictNullChecks not assignable to type
   footer = null,
   fullscreen,
   isActive,
   onClose,
   title,
   ...props
-}: ModalCardProps<T> & Omit<ComponentProps<T>, keyof ModalCardProps<T>>): VNode {
+}: ModalCardProps<T> & Omit<ComponentProps<T>, keyof ModalCardProps<T>>): VNode | null {
   const openClass = useAnimation(isActive, 300, {
     opening: styles.opening,
     open: styles.open,
@@ -88,7 +89,7 @@ export function ModalCard<T extends ElementType = 'div'>({
   const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onClose(event);
+        onClose?.(event);
       }
     },
     [onClose],
@@ -103,8 +104,8 @@ export function ModalCard<T extends ElementType = 'div'>({
       {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <div
         className="modal-background"
-        onClick={closable ? onClose : null}
-        onKeyDown={closable ? onKeyDown : null}
+        onClick={closable ? onClose : undefined}
+        onKeyDown={closable ? onKeyDown : undefined}
         role="presentation"
       />
       {/* @ts-expect-error This construct should work */}

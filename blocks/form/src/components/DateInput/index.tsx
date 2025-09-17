@@ -22,7 +22,7 @@ export function DateInput({
   error,
   errorLinkRef,
   field,
-  formValues = null,
+  formValues = {},
   onChange,
   readOnly,
 }: DateTimeInputProps): VNode {

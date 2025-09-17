@@ -21,5 +21,5 @@ it('should correctly apply the class names', () => {
       <Button>Button</Button>
     </ButtonGroup>,
   );
-  expect(container.firstElementChild.classList).toContain('test-class');
+  expect(container.firstElementChild?.classList).toContain('test-class');
 });

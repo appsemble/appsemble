@@ -36,7 +36,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   const [message, setMessage] = useState('');
   const [replies, setReplies] = useState<unknown[]>([]);
   const [valid, setValid] = useState(false);
-  const [marker, setMarker] = useState<DivIcon | Icon>(null);
+  const [marker, setMarker] = useState<DivIcon | Icon | null>(null);
 
   useEffect(() => {
     createIcon({ parameters, utils }).then(setMarker);
@@ -221,6 +221,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         )}
         {actions.onLoadReply.type !== 'noop' && replies ? (
           <>
+            {/* @ts-expect-error strictNullChecks undefined is not assignable */}
             <div className={styles.replies} ref={replyContainer}>
               {replies.map((reply: any) => {
                 const author =

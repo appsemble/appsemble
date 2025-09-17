@@ -77,7 +77,7 @@ export function ItemCell({
     !('string' in field) &&
     !('image' in field) &&
     !('checkbox' in field) &&
-    (actions[field.onClick] || actions.onClick);
+    actions[field.onClick ?? 'onClick'];
 
   const onCellClick = useCallback(() => {
     if (!onClickAction || onClickAction.type === 'noop') {
@@ -121,6 +121,7 @@ export function ItemCell({
   return (
     <td
       {...props}
+      // @ts-expect-error strict-null-checks type not assignable
       className={onClickAction?.type !== 'noop' && !('checkbox' in field) && styles.clickable}
       onClick={onCellClick}
       role="gridcell"

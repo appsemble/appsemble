@@ -7,7 +7,7 @@ import { type RendererProps, type StringField } from '../../../block.js';
 /**
  * An element for a text type schema.
  */
-export function StringRenderer({ data, field }: RendererProps<StringField>): VNode {
+export function StringRenderer({ data, field }: RendererProps<StringField>): VNode | null {
   const { utils } = useBlock();
 
   const label = utils.remap(field.label, data);

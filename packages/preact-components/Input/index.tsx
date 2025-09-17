@@ -72,12 +72,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const handleChange = useCallback(
       (event: JSX.TargetedEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
-        onChange(event, type === 'number' ? currentTarget.valueAsNumber : currentTarget.value);
+        onChange?.(event, type === 'number' ? currentTarget.valueAsNumber : currentTarget.value);
       },
       [onChange, type],
     );
 
-    const combinedRef = useCombinedRefs(ref, errorLinkRef);
+    const combinedRef = useCombinedRefs(
+      ref as MutableRef<HTMLDivElement>,
+      errorLinkRef as MutableRef<HTMLDivElement>,
+    );
 
     return (
       <>
@@ -97,7 +100,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           type={type}
         />
         {datalist ? (
-          <datalist data-testid="test-id-datalist" id={datalist ? `${id}-dataset` : null}>
+          <datalist data-testid="test-id-datalist" id={datalist ? `${id}-dataset` : undefined}>
             {datalist.map((option) => (
               <option key={option} value={option} />
             ))}

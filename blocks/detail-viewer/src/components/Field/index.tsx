@@ -18,13 +18,8 @@ const renderers = {
  */
 export function Field({ data, field }: RendererProps<FieldType>): VNode {
   // Always default to string if type is not supported in renderers list.
+  // @ts-expect-error strictNullChecks null is not assignable to type
   const Comp = renderers[field.type] || renderers.string;
 
-  return (
-    <Comp
-      data={data}
-      // @ts-expect-error XXX This should be fine
-      field={field}
-    />
-  );
+  return <Comp data={data} field={field} />;
 }

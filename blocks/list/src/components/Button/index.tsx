@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Icon } from '@appsemble/preact-components';
+import { type Action } from '@appsemble/sdk';
 import classNames from 'classnames';
 import { Fragment, type VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
@@ -55,7 +56,7 @@ export function ButtonComponent({
       event.stopPropagation();
 
       // We take the onClick action name specified in the button, wherever the button is
-      const action = actions[onClick];
+      const action = onClick ? actions[onClick] : ({ type: 'noop' } as Action);
       if (action.type === 'link') {
         window.location.hash = `${pathIndex}.item.${item.id}`;
       }

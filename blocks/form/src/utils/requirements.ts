@@ -55,7 +55,7 @@ export function isValidTime(time: string): boolean {
 export function getMinDate(
   field: FieldWithRequirements,
   utils: BlockUtils,
-  values: Values = null,
+  values: Values = {},
 ): Date | undefined {
   const minDates = field.requirements
     ?.filter((r) => 'from' in r)
@@ -113,7 +113,7 @@ export function getMaxTime(field: FieldWithRequirements): string {
 export function getMaxDate(
   field: FieldWithRequirements,
   utils: BlockUtils,
-  values: Values = null,
+  values: Values = {},
 ): Date | undefined {
   const maxDates = field.requirements
     ?.filter((r) => 'to' in r)
@@ -268,6 +268,6 @@ export function getStep(field: FieldWithRequirements): number | undefined {
  * @param field The field to check.
  * @returns The accept attribute
  */
-export function getAccept(field: FieldWithRequirements): string {
+export function getAccept(field: FieldWithRequirements): string | undefined {
   return field.requirements?.map((r) => r.accept).join(',');
 }

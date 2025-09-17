@@ -19,7 +19,7 @@ import { type AcceptRequirement, type FileField, type InputProps } from '../../.
 import { getAccept } from '../../utils/requirements.js';
 import { resize } from '../../utils/resize.js';
 
-export function createCustomSvg(iconName: any, hasPlus?: boolean): string {
+export function createCustomSvg(iconName: any, hasPlus?: boolean): string | undefined {
   /* Add all font awesome solid icons to the library. */
   library.add(fas);
 
@@ -36,6 +36,7 @@ export function createCustomSvg(iconName: any, hasPlus?: boolean): string {
   const viewBoxMatch = svgContent.match(
     /viewBox="(\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)/,
   );
+  // @ts-expect-error strictNullChecks undefined is not assignable
   const originalViewBoxValues = viewBoxMatch.slice(1).map(Number);
   const [xMin, yMin, originalWidth, originalHeight] = originalViewBoxValues;
 
@@ -117,16 +118,15 @@ export function FileEntry({
   const acceptMime = getAccept(field);
 
   const acceptRequirement = requirements?.find((requirement) => 'accept' in requirement);
-  const acceptedMimeTypeCategories = getMimeTypeCategories(
-    (acceptRequirement as AcceptRequirement)?.accept || [],
-  );
+  const acceptedMimeTypeCategories =
+    getMimeTypeCategories((acceptRequirement as AcceptRequirement)?.accept || []) ?? [];
 
   const modal = useToggle();
-  const videoRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [fileType, setFileType] = useState<MimeTypeCategory | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [firstFrameSrc, setFirstFrameSrc] = useState('');
-  const [thumbnail, setThumbnail] = useState<File | string>(null);
+  const [thumbnail, setThumbnail] = useState<File | string | null>(null);
   const [thumbnailAddedToForm, setThumbnailAddedToForm] = useState<boolean>(false);
   const [checkedThumbnailAsset, setCheckedThumbnailAsset] = useState<boolean>(false);
 
@@ -135,10 +135,12 @@ export function FileEntry({
       const { maxHeight, maxWidth, quality } = field;
       const { currentTarget } = event;
 
-      let file = currentTarget.files[0] as Blob;
+      let file = currentTarget.files?.[0] as Blob;
+      // @ts-expect-error strictNullChecks undefined is not assignable
       currentTarget.value = null;
 
       if (file?.type.match('image/*') && (maxWidth || maxHeight || quality)) {
+        // @ts-expect-error strictNullChecks undefined is not assignable
         file = await resize(file, maxWidth, maxHeight, quality);
       }
 
@@ -149,7 +151,7 @@ export function FileEntry({
       }
 
       setThumbnailAddedToForm(false);
-      onChange({ currentTarget, ...event }, file);
+      onChange({ ...event, currentTarget }, file);
     },
     [field, onChange, handleFileEntryReady, name],
   );
@@ -191,7 +193,7 @@ export function FileEntry({
 
             const contentDisposition = response.headers.get('Content-Disposition');
             if (contentDisposition) {
-              setFileName(getFilenameFromContentDisposition(contentDisposition));
+              setFileName(getFilenameFromContentDisposition(contentDisposition) ?? '');
             }
           } else {
             setFileType(null);
@@ -228,7 +230,7 @@ export function FileEntry({
   useEffect(() => {
     if (firstFrameSrc && fileName && !thumbnailAddedToForm) {
       const [header, base64] = firstFrameSrc.split(',');
-      const mimeType = header.match(/:(.*?);/)[1];
+      const mimeType = header.match(/:(.*?);/)?.[1];
       const binary = atob(base64);
       const array = new Uint8Array(binary.length);
 
@@ -262,7 +264,9 @@ export function FileEntry({
   const onRemove = useCallback(
     (event: Event) => {
       event.preventDefault();
+      // @ts-expect-error strictNullChecks undefined is not assignable
       onChange({ currentTarget: { name } } as any as Event, null);
+      // @ts-expect-error strictNullChecks undefined is not assignable
       removeThumbnail(thumbnail);
       setThumbnail(null);
       setFirstFrameSrc('');
@@ -280,13 +284,13 @@ export function FileEntry({
       canvas.width = videoElement.videoWidth;
       canvas.height = videoElement.videoHeight;
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+      ctx?.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
       const dataURL = canvas.toDataURL();
       setFirstFrameSrc(dataURL);
     }
   };
 
-  const previewAvailable = ['image', 'video'].includes(fileType);
+  const previewAvailable = ['image', 'video'].includes(fileType ?? '');
 
   const displayFileEntryPlaceholder = (
     fileIconName: FileIconName,
@@ -302,8 +306,8 @@ export function FileEntry({
     </span>
   );
 
-  const displayFileEntryButtons = (): VNode =>
-    !disabled && (
+  const displayFileEntryButtons = (): VNode | null =>
+    disabled ? null : (
       <button
         className={`button is-small ${styles['remove-button']}`}
         onClick={onRemove}

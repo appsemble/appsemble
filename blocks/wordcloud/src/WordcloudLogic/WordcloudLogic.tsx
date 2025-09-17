@@ -1,6 +1,6 @@
 import { FormattedMessage } from '@appsemble/preact';
 import { type VNode } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { type MutableRef, useEffect, useRef } from 'preact/hooks';
 import WordCloud, { type ListEntry, type Options } from 'wordcloud';
 
 import styles from './wordcloud.module.css';
@@ -49,7 +49,7 @@ export function WordcloudLogic(props: WordcloudProps): VNode {
     <canvas
       className={styles.centerCloud}
       height={canvasHeight}
-      ref={canvasRef}
+      ref={(canvasRef as MutableRef<HTMLCanvasElement>) || undefined}
       width={canvasWidth}
     />
   );

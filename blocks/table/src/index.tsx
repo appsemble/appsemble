@@ -50,7 +50,7 @@ bootstrap(({ events, parameters: { borders, caption, fields, scrollable }, ready
     events.emit.sorted(order);
   }, [events.emit, order]);
 
-  const headers = useMemo<VNode>(() => {
+  const headers = useMemo<VNode | undefined>(() => {
     const heads = fields.flatMap((field) => {
       if ('label' in field) {
         return {
@@ -80,7 +80,7 @@ bootstrap(({ events, parameters: { borders, caption, fields, scrollable }, ready
               <th
                 className={`${header?.name ? styles.pointer : ''} ${header?.name && header.name === order.field ? 'has-background-warning' : ''}`}
                 key={header?.label}
-                {...(header?.name ? { onClick: () => onTableHeaderClick(header.name) } : {})}
+                {...(header?.name ? { onClick: () => onTableHeaderClick(header.name!) } : {})}
               >
                 {header.label as string}
                 <span className="ml-1">

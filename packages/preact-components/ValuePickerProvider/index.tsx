@@ -18,7 +18,7 @@ interface ValuePickerContext<T> {
   readonly value: T;
 }
 
-const Context = createContext<ValuePickerContext<unknown>>(null);
+const Context = createContext<ValuePickerContext<unknown> | null>(null);
 
 export interface ValuePickerProviderProps<T> extends ValuePickerContext<T> {
   readonly children: ComponentChildren;

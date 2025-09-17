@@ -32,6 +32,7 @@ function getIconSize(url: string): Promise<[number, number]> {
       }),
     );
   }
+  // @ts-expect-error strictNullChecks undefined is not assignable
   return sizeMap.get(url);
 }
 

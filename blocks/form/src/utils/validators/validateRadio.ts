@@ -22,6 +22,7 @@ export function validateRadio(
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
   values?: Values,
 ): RadioRequirement {
+  // @ts-expect-error strictNullChecks not assignable to type
   return field.requirements?.find((requirement) => {
     if (Requirement.Required in requirement && Boolean(remap(requirement.required, values))) {
       return value === undefined || value == null;

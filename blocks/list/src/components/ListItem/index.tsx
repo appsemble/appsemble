@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { type VNode } from 'preact';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { type MutableRef, useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
 import { ContentComponent } from './Content/index.js';
 import { FooterComponent } from './Footer/index.js';
@@ -126,7 +126,7 @@ export function ListItem({ dataTestId, index, item }: ListItemProps): VNode {
       id={itemHash}
       onClick={onItemClick}
       onKeyDown={onItemClick}
-      ref={ref}
+      ref={(ref as MutableRef<HTMLDivElement>) || undefined}
       role="button"
       tabIndex={-1}
     >

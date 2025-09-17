@@ -44,7 +44,7 @@ bootstrap(
         return;
       }
 
-      const results = [].concat(data);
+      const results = ([] as any[]).concat(data);
 
       wrapper.append(
         ...results.map((result) => {

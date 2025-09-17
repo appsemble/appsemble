@@ -1,6 +1,6 @@
 import { bootstrap } from '@appsemble/preact';
 import { Button } from '@appsemble/preact-components';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 bootstrap(
   ({
@@ -15,7 +15,7 @@ bootstrap(
     const [loading, setLoading] = useState(false);
     const [tracking, setTracking] = useState(false);
 
-    const ref = useRef();
+    const ref = useRef<HTMLDivElement>();
     const observerRef = useRef<IntersectionObserver | null>(null);
 
     const prevPage = useCallback(() => {
@@ -104,7 +104,7 @@ bootstrap(
 
     switch (paginatorType) {
       case 'scroll':
-        return <div ref={ref} />;
+        return <div ref={(ref as MutableRef<HTMLDivElement>) || undefined} />;
       default:
         return (
           // eslint-disable-next-line react/forbid-dom-props

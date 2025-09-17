@@ -7,7 +7,7 @@ import { type Field, type Values } from '../../block.js';
 
 describe('generate default validity', () => {
   it('should return an empty error map', () => {
-    let fields: Field[];
+    const fields: Field[] = [];
     const data: Values = {};
     const defaultError = 'the value is invalid';
     const defaultValues: Values = {};

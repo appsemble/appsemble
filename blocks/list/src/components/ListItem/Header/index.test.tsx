@@ -1,6 +1,6 @@
 import { getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { Context } from '@appsemble/preact';
-import { type BootstrapParams } from '@appsemble/sdk';
+import { type Action, type BootstrapParams } from '@appsemble/sdk';
 import { render, screen } from '@testing-library/preact';
 import userEvent from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
@@ -40,7 +40,7 @@ it('should render a header component', async () => {
     },
     actions: {
       onClick,
-      onDrop: null,
+      onDrop: { type: 'noop' } as Action,
     },
   };
 
@@ -85,7 +85,7 @@ it('should render a header component with a link onClick action', async () => {
     },
     actions: {
       onClick,
-      onDrop: null,
+      onDrop: { type: 'noop' } as Action,
     },
   };
 

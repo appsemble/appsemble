@@ -2,6 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
+import { type MutableRef } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type InputProps, type RadioField } from '../../../block.js';
@@ -34,7 +35,7 @@ export function RadioInput({
     <RadioGroup
       className={classNames('appsemble-radio', className)}
       error={dirty ? error : null}
-      errorLinkRef={errorLinkRef}
+      errorLinkRef={(errorLinkRef as MutableRef<HTMLElement>) ?? undefined}
       help={utils.remap(help, value) as string}
       label={(utils.remap(label, value) as string) ?? name}
       name={name}
@@ -44,7 +45,7 @@ export function RadioInput({
       tag={utils.remap(tag, value) as string}
       value={value}
     >
-      {options.map((option, index) => {
+      {(options ?? []).map((option, index) => {
         const id = `${name}.${index}`;
         return (
           <RadioButton

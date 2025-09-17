@@ -12,6 +12,7 @@ describe('validateNumber', () => {
       requirements: [{ required: true }, { max: 5 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, null, remap)).toStrictEqual(field.requirements[0]);
   });
 
@@ -22,6 +23,7 @@ describe('validateNumber', () => {
       requirements: [{ required: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, 5, remap)).toBeUndefined();
   });
 
@@ -32,6 +34,7 @@ describe('validateNumber', () => {
       requirements: [{ required: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, null, remap)).toBeUndefined();
   });
 
@@ -42,7 +45,9 @@ describe('validateNumber', () => {
       requirements: [{ prohibited: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, 0, remap)).toStrictEqual(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, undefined as number, remap)).toBeUndefined();
   });
 
@@ -53,6 +58,7 @@ describe('validateNumber', () => {
       requirements: [{ prohibited: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, 0, remap)).toBeUndefined();
   });
 
@@ -63,7 +69,9 @@ describe('validateNumber', () => {
       requirements: [{ min: 1 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, 1, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, 0, remap)).toStrictEqual(field.requirements[0]);
   });
 
@@ -74,7 +82,9 @@ describe('validateNumber', () => {
       requirements: [{ max: 1 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, 1, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, 2, remap)).toStrictEqual(field.requirements[0]);
   });
 
@@ -85,7 +95,9 @@ describe('validateNumber', () => {
       requirements: [{ step: 3.5 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, 3.5, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, 4, remap)).toStrictEqual(field.requirements[0]);
   });
 
@@ -96,7 +108,9 @@ describe('validateNumber', () => {
       requirements: [{ step: 3.5 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, 3, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateNumber(field, 4, remap)).toStrictEqual(field.requirements[0]);
   });
 });

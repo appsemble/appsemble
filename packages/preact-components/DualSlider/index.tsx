@@ -57,7 +57,7 @@ export function DualSlider({
       noUiSlider.cssClasses.connect += ` ${styles.connect}`;
       noUiSlider.cssClasses.handle += ` ${styles.handle}`;
 
-      noUiSlider.create(sliderRef.current, {
+      noUiSlider.create(sliderRef.current as HTMLDivElement, {
         start: [from, to],
         connect: true,
         range: {
@@ -68,7 +68,7 @@ export function DualSlider({
 
       sliderInitiated.current = true;
 
-      sliderRef.current.noUiSlider.on('change', (values) => {
+      sliderRef.current?.noUiSlider?.on('change', (values) => {
         const event = { currentTarget: { name: name as string } } as Event & {
           currentTarget: EventTarget & HTMLInputElement;
         };
@@ -78,12 +78,12 @@ export function DualSlider({
         const min = Math.round(Number(v1));
         const max = Math.round(Number(v2));
 
-        onChange(event, [min, max] as [number, number]);
+        onChange?.(event, [min, max] as [number, number]);
       });
     }
   }, [from, to, onChange, name]);
 
-  const combinedRef = useCombinedRefs(sliderRef, errorLinkRef);
+  const combinedRef = useCombinedRefs(sliderRef, errorLinkRef as MutableRef<HTMLDivElement>);
 
   return (
     <div

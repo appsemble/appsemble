@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { DualSliderField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { type MutableRef, useEffect, useState } from 'preact/hooks';
 
 import { type InputProps, type RangeField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
@@ -75,7 +75,7 @@ export function RangeInput({
     <DualSliderField
       {...commonProps}
       bottomLabels={bottomLabels?.map((bottomLabel) => utils.remap(bottomLabel, value) as string)}
-      errorLinkRef={errorLinkRef}
+      errorLinkRef={(errorLinkRef as MutableRef<HTMLElement>) || undefined}
       topLabels={customTopLabels?.map((topLabel) => utils.remap(topLabel, value) as string)}
     />
   );

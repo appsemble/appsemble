@@ -24,6 +24,7 @@ export function validateDateTime(
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
   values?: Values,
 ): DateTimeRequirement {
+  // @ts-expect-error strictNullChecks not assignable to type
   return field.requirements?.find((requirement) => {
     if (
       Requirement.Required in requirement &&
@@ -42,7 +43,7 @@ export function validateDateTime(
     }
 
     if (Requirement.From in requirement && value) {
-      const fromDate = new Date(remap(requirement.from, values));
+      const fromDate = new Date(remap(requirement.from!, values));
 
       if (!isValidDate(fromDate)) {
         return false;
@@ -54,7 +55,7 @@ export function validateDateTime(
     }
 
     if (Requirement.To in requirement && value) {
-      const toDate = new Date(remap(requirement.to, values));
+      const toDate = new Date(remap(requirement.to!, values));
 
       if (!isValidDate(toDate)) {
         return false;

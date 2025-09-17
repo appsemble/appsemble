@@ -19,7 +19,7 @@ function sortData(givenWordsList: any): string[] {
     } else if (typeof unknownData === 'string') {
       filteredList.push(unknownData);
     } else if (unknownData == null) {
-      return null;
+      // Don't need to return anything
     } else {
       filteredList.push(unknownData.String());
     }

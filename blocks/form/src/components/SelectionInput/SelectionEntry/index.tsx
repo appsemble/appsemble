@@ -1,5 +1,5 @@
 import { type VNode } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { type MutableRef, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type SelectionChoice } from '../../../../block.js';
@@ -19,7 +19,7 @@ export function SelectionEntry({ onRemove, option, showRemove }: SelectionOption
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement>();
 
   const onRemoveClick = (): void => {
     onRemove(id);
@@ -54,7 +54,10 @@ export function SelectionEntry({ onRemove, option, showRemove }: SelectionOption
   }, [id]);
 
   return (
-    <div className={`${styles.option} has-text-left is-flex mb-4 p-2`} ref={ref}>
+    <div
+      className={`${styles.option} has-text-left is-flex mb-4 p-2`}
+      ref={(ref as MutableRef<HTMLDivElement>) || undefined}
+    >
       {image && !imageInline ? (
         <div className={styles.image}>
           {alignment === 'default' ? (
