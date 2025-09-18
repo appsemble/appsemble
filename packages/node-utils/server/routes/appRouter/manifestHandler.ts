@@ -8,7 +8,7 @@ const iconSizes = [48, 144, 192, 512];
 
 export function createManifestHandler({ getApp, getAppScreenshots }: Options): Middleware {
   return async (ctx: Context) => {
-    const app = await getApp({ context: ctx });
+    const app = await getApp({ context: ctx, query: { attributes: ['id', 'definition'] } });
 
     assertKoaCondition(app != null, ctx, 404, 'Block asset not found');
 

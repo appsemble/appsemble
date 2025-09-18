@@ -12,7 +12,10 @@ export function createDeleteAppSeedResourcesController(options: Options): Middle
 
     const { getApp } = options;
 
-    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+    const app = await getApp({
+      context: ctx,
+      query: { attributes: ['id', 'definition'], where: { id: appId } },
+    });
 
     assertKoaCondition(app != null, ctx, 404, 'App not found');
 

@@ -14,7 +14,7 @@ export async function email({
   const {
     pathParams: { appId },
   } = context;
-  const app = await getApp({ context, query: { where: { id: appId } } });
+  const app = await getApp({ context, query: { attributes: ['id'], where: { id: appId } } });
 
   const persistedApp = (await App.findByPk(app.id, {
     attributes: [

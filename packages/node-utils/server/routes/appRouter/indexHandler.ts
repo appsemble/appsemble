@@ -25,6 +25,7 @@ export function createIndexHandler({
     const { hostname, path } = ctx;
     const host = getHost({ context: ctx });
 
+    // Most of the fields here are used either directly or indirectly that's why no attributes query
     const app = await getApp({ context: ctx });
 
     if (!app) {
