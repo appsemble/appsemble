@@ -15,7 +15,7 @@ export function createCreateAppAssetController({ createAppAsset, getApp }: Optio
       },
     } = ctx;
 
-    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+    const app = await getApp({ context: ctx, query: { attributes: ['id'], where: { id: appId } } });
 
     assertKoaCondition(app != null, ctx, 404, 'App not found');
 

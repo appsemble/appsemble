@@ -14,7 +14,10 @@ export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Opt
       ? readFile(new URL('../../../../../dist/app/service-worker.js', import.meta.url), 'utf8')
       : ctx.fs.promises.readFile(filename, 'utf8'));
 
-    const app = await getApp({ context: ctx });
+    const app = await getApp({
+      context: ctx,
+      query: { attributes: ['id', 'version', 'definition'] },
+    });
 
     assertKoaCondition(app != null, ctx, 404, 'App does not exist.');
 

@@ -18,7 +18,10 @@ export function createUpdateAppResourceController(options: Options): Middleware 
     const { checkAppPermissions, getApp, getAppAssets, getAppResource, updateAppResource } =
       options;
 
-    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+    const app = await getApp({
+      context: ctx,
+      query: { attributes: ['id', 'demoMode', 'definition'], where: { id: appId } },
+    });
 
     const findOptions: FindOptions = {
       where: {

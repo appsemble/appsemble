@@ -32,7 +32,10 @@ export function createCreateAppResourceController(options: Options): Middleware 
     } = ctx;
     const { checkAppPermissions, createAppResourcesWithAssets, getApp, getAppAssets } = options;
 
-    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+    const app = await getApp({
+      context: ctx,
+      query: { attributes: ['id', 'demoMode', 'definition'], where: { id: appId } },
+    });
 
     await checkAppPermissions({
       context: ctx,
