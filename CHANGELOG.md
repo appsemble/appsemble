@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.18-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.34.18-test.0)] - 2025-09-18
+
+### Fixed
+
+- Server: Importing resources from CSV files with assetIds fail.
+
 ## \[[0.34.17](https://gitlab.com/appsemble/appsemble/-/releases/0.34.17)] - 2025-09-18
 
 ### Added

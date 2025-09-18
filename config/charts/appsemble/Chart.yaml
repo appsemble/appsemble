@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.34.17
-appVersion: 0.34.17
+version: 0.34.18-test.0
+appVersion: 0.34.18-test.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,15 +31,9 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: |
-    - kind: added
-      description: "Block(table): Add new field checkbox to select data."
+  artifacthub.io/changes: >
     - kind: fixed
-      description: "App: Close the modal in dialog action without errors."
-    - kind: fixed
-      description: "React-components: Use sentry api URL from the sentryDSN."
-    - kind: fixed
-      description: "Service-worker: Clear cache on resource position updates."
+      description: "Server: Importing resources from CSV files with assetIds fail."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
