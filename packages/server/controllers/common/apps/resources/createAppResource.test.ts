@@ -507,6 +507,32 @@ describe('createAppResource', () => {
     expect(await getS3FileBuffer(`app-${app.id}`, assetBId)).toStrictEqual(assetBContent);
   });
 
+  it('should allow existing assets to be referenced by new resources', async () => {
+    authorizeStudio();
+    const { data, status } = await request.post(
+      `/api/apps/${app.id}/resources/testAssets`,
+      createFormData({
+        resource: { file: '0', string: 'foo' },
+        assets: [Buffer.from('Test resource a')],
+      }),
+    );
+    expect(status).toBe(201);
+    const response = await request.post(`/api/apps/${app.id}/resources/testAssets`, {
+      file: data.file,
+      string: 'bar',
+    });
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        id: 2,
+        string: 'bar',
+      },
+    });
+  });
+
   it('should block unknown asset references', async () => {
     authorizeStudio();
     const response = await request.post(
