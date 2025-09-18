@@ -16,7 +16,7 @@ export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Opt
 
     const app = await getApp({
       context: ctx,
-      query: { attributes: ['id', 'version', 'definition'] },
+      query: { attributes: ['id', 'definition'] },
     });
 
     assertKoaCondition(app != null, ctx, 404, 'App does not exist.');
@@ -24,6 +24,7 @@ export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Opt
     const identifiableBlocks = getAppBlocks(app.definition);
     const blocksAssetsPaths = await getBlocksAssetsPaths({ identifiableBlocks, context: ctx });
 
+    // App.version is a virtual column and comes from App.AppSnapshots
     ctx.body = `const appVersion = ${app.version};const blockAssets=${JSON.stringify(blocksAssetsPaths)};${serviceWorker}`;
     ctx.type = 'application/javascript';
   };
