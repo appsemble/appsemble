@@ -14,7 +14,7 @@ stages:
 
 variables:
   BACKUPS_LOCATION: hetzner-s3:appsemble/backups
-  PROD_BACKUP_NAME: appsemble_prod_backup
+  PROD_BACKUP_NAME: appsemble_staging_backup
 
 workflow:
   rules:
@@ -850,12 +850,13 @@ staging:
     - if: $CI_COMMIT_BRANCH == 'staging'
   environment:
     name: staging-do
-    url: https://staging.appsemble.review
+    url: https://staging.appsemble.nl
   variables:
     GIT_STRATEGY: none
   script:
-    - kubectl config use-context "$CI_PROJECT_PATH:development"
-    - kubectl config set-context --current --namespace staging
+    # - kubectl config use-context "$CI_PROJECT_PATH:development"
+    # - kubectl config set-context --current --namespace staging
+    - kubectl config use-context "$CI_PROJECT_PATH:staging"
     # This is the only way to make sure staging can be overwritten
     - helm delete staging || true
     - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
@@ -903,7 +904,7 @@ staging:
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
-      --set "sentry.allowedDomains={*.appsemble.eu}"
+      --set "sentry.allowedDomains={*.appsemble.nl}"
       --set "sentry.environment=staging"
       --set "sentry.secret=sentry"
       --set "quotas.appEmail.enabled=true"
@@ -912,9 +913,9 @@ staging:
       --set "mailpit.mailpit.smtp.tls.secretName=staging-mailpit-tls"
       --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
       --set "minio.fullnameOverride=staging-minio"
-      --set "minio.ingress.hostname=console.minio.staging.appsemble.eu"
+      --set "minio.ingress.hostname=console.minio.staging.appsemble.nl"
       --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
-      --set "minio.apiIngress.hostname=api.minio.staging.appsemble.eu"
+      --set "minio.apiIngress.hostname=api.minio.staging.appsemble.nl"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
 
@@ -1018,7 +1019,7 @@ provision review:
     INCREMENT: patch
     IDENTIFIER: ''
     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
-    APPSEMBLE_STAGING_DOMAIN: 'staging.appsemble.eu'
+    APPSEMBLE_STAGING_DOMAIN: 'staging.appsemble.nl'
   needs:
     - review
     - npm_ci
@@ -1050,7 +1051,7 @@ provision staging:
   script:
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context staging
-    - npm run appsemble -- config set remote https://staging.appsemble.eu
+    - npm run appsemble -- config set remote https://staging.appsemble.nl
     - npm run appsemble -- -vv block publish blocks/*
     - apt-get update
     - apt-get install --yes git gnupg yq
@@ -1102,7 +1103,7 @@ provision production:
 #     - if: $CI_COMMIT_TAG
 #   variables:
 #     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
-#     APPSEMBLE_STAGING_DOMAIN: 'staging.appsemble.eu'
+#     APPSEMBLE_STAGING_DOMAIN: 'staging.appsemble.nl'
 #   script:
 #     - npm run scripts -- wait-for-ssl
 #     - npx -- lhci collect
