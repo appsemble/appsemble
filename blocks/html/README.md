@@ -18,7 +18,7 @@ To replace the text content of an element, apply the `data-content` attribute:
 ```yaml
 blocks:
   - type: html
-    version: 0.34.16
+    version: 0.34.17
     parameters:
       placeholders:
         myTestContent: Hello this is replaced content using a remapper!
@@ -35,7 +35,7 @@ To add a click handler to a button, apply the `data-click` attribute:
 ```yaml
 blocks:
   - type: html
-    version: 0.34.16
+    version: 0.34.17
     actions:
       onTestClick:
         type: link

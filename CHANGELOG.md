@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.17](https://gitlab.com/appsemble/appsemble/-/releases/0.34.17)] - 2025-09-18
+
+### Added
+
+- Block(`table`): Add new field `checkbox` to select data.
+
+### Fixed
+
+- App: Close the modal in `dialog` action without errors.
+- React-components: Use sentry api URL from the sentryDSN.
+- Service-worker: Clear cache on resource position updates.
+
 ## \[[0.34.16](https://gitlab.com/appsemble/appsemble/-/releases/0.34.16)] - 2025-09-11
 
 ### Added
