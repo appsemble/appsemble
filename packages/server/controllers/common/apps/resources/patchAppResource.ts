@@ -57,8 +57,6 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     definition,
     appAssets.filter((asset) => asset.ResourceId === resourceId).map((asset) => asset.id),
     resource.expires,
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
     appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
   );
 
