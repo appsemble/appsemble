@@ -192,6 +192,7 @@
     "psql",
     "formcomp",
     "Klokgebouw",
-    "DATEONLY"
+    "DATEONLY",
+    "klarna"
   ]
 }

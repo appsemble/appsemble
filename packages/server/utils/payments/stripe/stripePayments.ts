@@ -246,6 +246,7 @@ export class StripePayments implements Payments {
         metadata: { product: product.name },
         success_url: successUrl,
         cancel_url: cancelUrl,
+        automatic_tax: { enabled: true },
         tax_id_collection: { enabled: true },
         locale: locale ? (locale as Stripe.Checkout.SessionCreateParams['locale']) : 'auto',
         payment_method_types: ['paypal', 'ideal', 'card', 'klarna'],
