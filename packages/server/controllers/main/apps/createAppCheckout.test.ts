@@ -73,8 +73,16 @@ describe('createAppCheckout', () => {
       deletePaymentMethods: vi.fn(() => Promise.resolve(null)),
       createAppCheckout,
     });
-    await request.post<AppType>(`/api/apps/${app.id}/createCheckout?price=price_id`);
-    expect(createAppCheckout).toHaveBeenCalledWith('price_id', 'testSuccessUrl', 'testCancelUrl');
+    await request.post<AppType>(`/api/apps/${app.id}/create-checkout?price=price_id&locale=en`, {
+      email: 'test@email.test',
+    });
+    expect(createAppCheckout).toHaveBeenCalledWith(
+      'price_id',
+      'testSuccessUrl',
+      'testCancelUrl',
+      'en',
+      'test@email.test',
+    );
   });
 
   it('should not create a checkout session for an app when missing payment information', async () => {
@@ -90,7 +98,9 @@ describe('createAppCheckout', () => {
       createAppCheckout,
     });
     await app.update({ successUrl: null });
-    await request.post<AppType>(`/api/apps/${app.id}/createCheckout?price=price_id`);
+    await request.post<AppType>(`/api/apps/${app.id}/create-checkout?price=price_id&locale=en`, {
+      email: 'test@email.test',
+    });
     expect(createAppCheckout).not.toHaveBeenCalled();
   });
 
@@ -107,7 +117,9 @@ describe('createAppCheckout', () => {
       createAppCheckout,
     });
     await app.update({ successUrl: null });
-    await request.post<AppType>('/api/apps/2/createCheckout?price=price_id');
+    await request.post<AppType>('/api/apps/2/create-checkout?price=price_id&locale=en', {
+      email: 'test@email.test',
+    });
     expect(createAppCheckout).not.toHaveBeenCalled();
   });
 });

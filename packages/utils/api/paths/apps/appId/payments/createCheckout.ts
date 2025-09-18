@@ -24,6 +24,26 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'Product that is being charged.',
         schema: { type: 'string' },
       },
+      {
+        in: 'query',
+        name: 'locale',
+        description: 'Locale that the app is currently shown in, to be used for Stripe checkout.',
+        schema: { type: 'string' },
+      },
     ],
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: { type: 'string', description: 'Customer email address' },
+            },
+            required: ['email'],
+          },
+        },
+      },
+    },
   },
 };

@@ -16,5 +16,11 @@ export interface Payments {
 
   deletePaymentMethods: (customerId: any) => Promise<any>;
 
-  createAppCheckout: (priceId: string, successUrl: string, cancelUrl: string) => Promise<any>;
+  createAppCheckout: (
+    priceId: string,
+    successUrl: string,
+    cancelUrl: string,
+    locale: string,
+    email: string,
+  ) => Promise<any>;
 }

@@ -125,6 +125,7 @@ declare module 'koas-parameters' {
     period: string;
     subscriptionType: string;
     price: string;
+    locale: string;
     couponCode: string;
     startIndex: number;
     view: string;

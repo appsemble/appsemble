@@ -192,7 +192,7 @@ export const paths = {
   '/api/apps/{appId}/export': appsAppIdExport,
   '/api/apps/{appId}/groups': appsAppIdGroups,
   '/api/apps/{appId}/icon': appsAppIdIcon,
-  '/api/apps/{appId}/createCheckout': createAppCheckout,
+  '/api/apps/{appId}/create-checkout': createAppCheckout,
   '/api/apps/{appId}/invites/resend': appsAppIdInvitesResend,
   '/api/apps/{appId}/invites': appsAppIdInvites,
   '/api/apps/{appId}/lock': appsAppIdLock,

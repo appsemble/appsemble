@@ -220,9 +220,14 @@ export class StripePayments implements Payments {
     }
   }
 
-  async createAppCheckout(priceId: string, successUrl: string, cancelUrl: string): Promise<any> {
+  async createAppCheckout(
+    priceId: string,
+    successUrl: string,
+    cancelUrl: string,
+    locale: string,
+    email: string,
+  ): Promise<any> {
     let checkoutSession;
-
     const price = await this.stripe.prices.retrieve(priceId, {
       expand: ['product'],
     });
@@ -237,11 +242,13 @@ export class StripePayments implements Payments {
             quantity: 1,
           },
         ],
+        customer_email: email,
         metadata: { product: product.name },
-        locale: 'auto',
         success_url: successUrl,
         cancel_url: cancelUrl,
         tax_id_collection: { enabled: true },
+        locale: locale ? (locale as Stripe.Checkout.SessionCreateParams['locale']) : 'auto',
+        payment_method_types: ['paypal', 'ideal', 'card', 'klarna'],
       });
       return { id: checkoutSession.id, paymentUrl: checkoutSession?.url };
     } catch {
