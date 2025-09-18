@@ -902,7 +902,7 @@ staging:
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
-      --set "sentry.allowedDomains={*.appsemble.eu}"
+      --set "sentry.allowedDomains={*.appsemble.nl}"
       --set "sentry.environment=staging"
       --set "sentry.secret=sentry"
       --set "quotas.appEmail.enabled=true"
