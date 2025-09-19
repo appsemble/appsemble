@@ -313,6 +313,10 @@
             "id": {
               "type": "string",
               "description": "The id of the organization to provision. Ignored if the organization exists in imported data"
+            },
+            "subscription": {
+              "enum": ["free", "basic", "standard", "extensive", "enterprise"],
+              "description": "The type of subscription plan to provision for the organization. Ignored if no organization is provisioned."
             }
           }
         }

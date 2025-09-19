@@ -827,6 +827,7 @@ review:
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
       --set "postgresql.primary.persistence.size=1Gi"
       --set "provision.organization.id=appsemble"
+      --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
       --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
