@@ -9,7 +9,7 @@ It is recommended to use a YAML ´literal block´, as shown in the example below
 
 ```yaml
 type: markdown
-version: 0.34.20
+version: 0.34.21
 parameters:
   content: |
     > Do Androids Dream of Electric Sheep?
@@ -27,6 +27,6 @@ parameters:
 
 ### Images
 
-![Markdown screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.34.20/config/assets/markdown.png)
+![Markdown screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.34.21/config/assets/markdown.png)
 
 [markdown]: https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet

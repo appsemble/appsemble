@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/video",
-  "version": "0.34.20",
+  "version": "0.34.21",
   "private": true,
   "description": "A block that embeds a Vimeo video.",
   "homepage": "https://appsemble.app",
@@ -17,7 +17,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.34.20",
+    "@appsemble/sdk": "0.34.21",
     "@types/vimeo__player": "^2.0.0",
     "@vimeo/player": "^2.0.0"
   }

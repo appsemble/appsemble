@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/sdk",
-  "version": "0.34.20",
+  "version": "0.34.21",
   "description": "Build your own blocks",
   "keywords": [
     "app",
@@ -43,8 +43,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.34.20",
-    "@appsemble/lang-sdk": "0.34.20",
+    "@appsemble/types": "0.34.21",
+    "@appsemble/lang-sdk": "0.34.21",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "type-fest": "^4.0.0"
   },
