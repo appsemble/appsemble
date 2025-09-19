@@ -17,7 +17,14 @@ export async function updateAppPaymentSettings(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['stripeApiSecretKey', 'stripeWebhookSecret', 'successUrl', 'cancelUrl', 'id', 'OrganizationId'],
+    attributes: [
+      'stripeApiSecretKey',
+      'stripeWebhookSecret',
+      'successUrl',
+      'cancelUrl',
+      'id',
+      'OrganizationId',
+    ],
   });
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
@@ -39,11 +46,15 @@ export async function updateAppPaymentSettings(ctx: Context): Promise<void> {
     result.successUrl = null;
   } else {
     if (stripeWebhookSecret !== undefined) {
-      result.stripeWebhookSecret = stripeWebhookSecret.length ? encrypt(stripeWebhookSecret, argv.aesSecret) : undefined;
+      result.stripeWebhookSecret = stripeWebhookSecret.length
+        ? encrypt(stripeWebhookSecret, argv.aesSecret)
+        : undefined;
     }
 
     if (stripeApiSecretKey !== undefined) {
-      result.stripeApiSecretKey = stripeApiSecretKey.length ? encrypt(stripeApiSecretKey, argv.aesSecret) : undefined;
+      result.stripeApiSecretKey = stripeApiSecretKey.length
+        ? encrypt(stripeApiSecretKey, argv.aesSecret)
+        : undefined;
     }
 
     if (cancelUrl !== undefined) {
@@ -61,7 +72,10 @@ export async function updateAppPaymentSettings(ctx: Context): Promise<void> {
     successUrl: app.successUrl,
     cancelUrl: app.cancelUrl,
     enablePayments: Boolean(
-      result.stripeApiSecretKey || result.stripeWebhookSecret || result.successUrl || result.cancelUrl,
+      result.stripeApiSecretKey ||
+        result.stripeWebhookSecret ||
+        result.successUrl ||
+        result.cancelUrl,
     ),
   };
 }

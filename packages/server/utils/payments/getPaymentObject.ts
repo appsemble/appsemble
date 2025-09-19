@@ -14,7 +14,9 @@ export async function getPaymentObject(
   if (appId === -1 || !appId) {
     apiKey = argv.stripeApiSecretKey;
   } else {
-    const app = await App.findByPk(appId, { attributes: ['stripeWebhookSecret', 'stripeApiSecretKey'] });
+    const app = await App.findByPk(appId, {
+      attributes: ['stripeWebhookSecret', 'stripeApiSecretKey'],
+    });
     apiKey = app ? decrypt(app.stripeApiSecretKey!, argv.aesSecret) : undefined;
   }
   if (!apiKey) {

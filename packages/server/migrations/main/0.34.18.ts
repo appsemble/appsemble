@@ -308,7 +308,8 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Remove columns preferredPaymentProvider, vatIdNumber, streetName, houseNumber,
  * city, zipCode, country, invoiceReference, stripeCustomerId
  * from table `Organization`
- * - Remove columns stripeApiSecretKey, stripeWebhookSecret, cancelUrl and successUrl from table `App`
+ * - Remove columns stripeApiSecretKey, stripeWebhookSecret, cancelUrl and successUrl from table
+ * `App`
  *
  * @param transaction The sequelize Transaction.
  * @param db The sequelize database.

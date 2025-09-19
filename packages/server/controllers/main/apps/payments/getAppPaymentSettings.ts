@@ -11,7 +11,14 @@ export async function getAppPaymentSettings(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['stripeApiSecretKey', 'stripeWebhookSecret', 'successUrl', 'cancelUrl', 'id', 'OrganizationId'],
+    attributes: [
+      'stripeApiSecretKey',
+      'stripeWebhookSecret',
+      'successUrl',
+      'cancelUrl',
+      'id',
+      'OrganizationId',
+    ],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
