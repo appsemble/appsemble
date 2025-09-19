@@ -63,10 +63,14 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
           const hidden = utils.remap(hide, newData);
           if (hidden) {
             node.classList.add('is-hidden');
+          } else if (node.classList.contains('is-hidden')) {
+            node.classList.remove('is-hidden');
           }
           const disabled = utils.remap(disable, newData);
           if (disabled) {
             node.setAttribute('disabled', 'true');
+          } else if (node.attributes.getNamedItem('disabled')?.value === 'true') {
+            node.removeAttribute('disabled');
           }
           currentText.replaceWith(newText);
           currentText = newText;
