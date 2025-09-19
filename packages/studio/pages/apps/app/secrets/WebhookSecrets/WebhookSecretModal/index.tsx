@@ -96,7 +96,7 @@ export function WebhookSecretsModal({
       defaultValues={secret}
       footer={
         <SimpleModalFooter
-          allowPristine={false}
+          allowPristine
           cancelLabel={<FormattedMessage {...messages.close} />}
           onClose={onClose}
           submitLabel={<FormattedMessage {...messages.save} />}

@@ -6,9 +6,9 @@ interface SimpleSubmitProps extends Omit<ComponentPropsWithoutRef<'button'>, 'on
   readonly children?: ReactNode;
 
   /**
-   * If true, disable the submit button if no values have been changed.
+   * If true, enable the submit button if no values have been changed.
    *
-   * @default true
+   * @default false
    */
   readonly allowPristine?: boolean;
 
@@ -30,7 +30,7 @@ export function SimpleSubmit({
       data-testid={dataTestId}
       disabled={
         disabled ||
-        (allowPristine && Object.values(pristine).every(Boolean)) ||
+        (!allowPristine && Object.values(pristine).every(Boolean)) ||
         submitting ||
         Object.values(formErrors).some(Boolean)
       }
