@@ -999,7 +999,7 @@ production:
       --set "ingress.tls.wildcardSecretName=appsemble-tls-wildcard"
       --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
-      --set "postgresql.enabled=false"
+      --set "postgresql.enabled=true"
       --set 'postgresSSL=true'
       --set "importData.remoteStorage.url=$S3_REMOTE_STORAGE_URL"
       --set "importData.remoteStorage.existingAccessKeySecret=s3-access-key-secret"
