@@ -27,9 +27,9 @@ interface SimpleModalFooterProps {
   readonly submitLabel: ReactNode;
 
   /**
-   * If true, disable the submit button if no values have been changed.
+   * If true, enable the submit button if no values have been changed.
    *
-   * @default true
+   * @default false
    */
   readonly allowPristine?: boolean;
 
@@ -61,7 +61,7 @@ export function SimpleModalFooter({
         color={color}
         disabled={
           disabled ||
-          (allowPristine && Object.values(pristine).every(Boolean)) ||
+          (!allowPristine && Object.values(pristine).every(Boolean)) ||
           submitting ||
           Object.values(formErrors).some(Boolean)
         }
