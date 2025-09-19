@@ -797,7 +797,6 @@ review:
     - mv stripe /usr/local/bin/
     - stripe -v
     - kubectl delete secret stripe-webhook-secret-$CI_MERGE_REQUEST_IID || true
-    - kubectl delete secret stripe-api-secret-key || true
     - |
       export STRIPE_WEBHOOK_SECRET=$(stripe webhook_endpoints create \
         --url https://$CI_MERGE_REQUEST_IID.appsemble.review/api/payments/accept-payment \
@@ -809,7 +808,6 @@ review:
         --enabled-events invoice.payment_succeeded \
         --api-key "$STRIPE_API_SECRET_KEY" | jq -r '.secret')
     - kubectl create secret generic stripe-webhook-secret-$CI_MERGE_REQUEST_IID --from-literal=stripe-webhook-secret="$STRIPE_WEBHOOK_SECRET"
-    - kubectl create secret generic stripe-api-secret-key --from-literal=stripe-api-secret-key="$STRIPE_API_SECRET_KEY"
     # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --debug
@@ -1001,10 +999,6 @@ production:
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=appsemble-mailpit-smtp" -addext "subjectAltName=DNS:appsemble-mailpit-smtp"
     - kubectl create secret tls appsemble-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
-    - kubectl delete secret stripe-webhook-secret || true
-    - kubectl delete secret stripe-api-secret-key || true
-    - kubectl create secret generic stripe-webhook-secret --from-literal=stripe-webhook-secret="$STRIPE_WEBHOOK_SECRET"
-    - kubectl create secret generic stripe-api-secret-key --from-literal=stripe-api-secret-key="$STRIPE_API_SECRET_KEY"
     - kubectl rollout restart deployment appsemble-mailpit || true
     - helm upgrade appsemble appsemble/appsemble
       --debug
