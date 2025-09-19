@@ -44,7 +44,7 @@ pages:
   - name: Test
     blocks:
       - type: action-button
-        version: 0.34.18
+        version: 0.34.19
         parameters:
           icon: plus
         actions:

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/timer",
-  "version": "0.34.18",
+  "version": "0.34.19",
   "private": true,
   "description": "A block that emits an event on an interval",
   "homepage": "https://appsemble.app",
@@ -17,6 +17,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.34.18"
+    "@appsemble/sdk": "0.34.19"
   }
 }

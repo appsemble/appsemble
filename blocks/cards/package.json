@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cards",
-  "version": "0.34.18",
+  "version": "0.34.19",
   "private": true,
   "description": "Render data as multiple cards.",
   "homepage": "https://appsemble.app",
@@ -17,10 +17,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.34.18",
-    "@appsemble/preact": "0.34.18",
-    "@appsemble/utils": "0.34.18",
-    "@appsemble/preact-components": "0.34.18",
+    "@appsemble/sdk": "0.34.19",
+    "@appsemble/preact": "0.34.19",
+    "@appsemble/utils": "0.34.19",
+    "@appsemble/preact-components": "0.34.19",
     "classnames": "^2.0.0",
     "preact": "^10.0.0"
   }
