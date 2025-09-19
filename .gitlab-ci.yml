@@ -976,7 +976,7 @@ production:
     - kubectl create secret tls appsemble-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - kubectl rollout restart deployment appsemble-mailpit || true
-    - helm install appsemble appsemble/appsemble
+    - helm upgrade appsemble appsemble/appsemble
       --debug
       --timeout 30m
       --version "$CI_COMMIT_TAG"
