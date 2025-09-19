@@ -797,6 +797,7 @@ review:
     - mv stripe /usr/local/bin/
     - stripe -v
     - kubectl delete secret stripe-webhook-secret-$CI_MERGE_REQUEST_IID || true
+    - kubectl delete secret stripe-api-secret-key || true
     - |
       export STRIPE_WEBHOOK_SECRET=$(stripe webhook_endpoints create \
         --url https://$CI_MERGE_REQUEST_IID.appsemble.review/api/payments/accept-payment \
@@ -808,6 +809,7 @@ review:
         --enabled-events invoice.payment_succeeded \
         --api-key "$STRIPE_API_SECRET_KEY" | jq -r '.secret')
     - kubectl create secret generic stripe-webhook-secret-$CI_MERGE_REQUEST_IID --from-literal=stripe-webhook-secret="$STRIPE_WEBHOOK_SECRET"
+    - kubectl create secret generic stripe-api-secret-key --from-literal=stripe-api-secret-key="$STRIPE_API_SECRET_KEY"
     # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --debug
