@@ -12,6 +12,9 @@ describe('dns', () => {
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     vi.spyOn(kubernetes, 'cleanupDNS').mockResolvedValue(null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
+    vi.spyOn(kubernetes, 'reconcileDNS').mockResolvedValue(null);
   });
 
   describe('configureDNS', () => {
@@ -56,7 +59,7 @@ describe('dns', () => {
     it('should delegate reconcileDNS to kubernetes if the app domain strategy is kubernetes-ingress', async () => {
       setArgv({ appDomainStrategy: 'kubernetes-ingress' });
       await reconcileDNS();
-      expect(kubernetes.reconcileDNS).toHaveBeenCalledWith();
+      expect(kubernetes.reconcileDNS).toHaveBeenCalledWith({ dryRun: true });
     });
 
     it('should not delegate reconcileDNS to kubernetes if the app domain strategy is undefined', async () => {
