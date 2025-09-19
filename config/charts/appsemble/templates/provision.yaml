@@ -50,7 +50,7 @@ spec:
                   NOW()
                 ) ON CONFLICT (id) DO NOTHING;
 
-                INSERT INTO "OrganizationSubscription" ("OrganizationId", subscriptionPlan, created, updated) VALUES (
+                INSERT INTO "OrganizationSubscription" ("OrganizationId", "subscriptionPlan", created, updated) VALUES (
                   {{ .Values.provision.organization.id | squote }},
                   {{ .Values.provision.organization.subscription | squote }},
                   NOW(),
