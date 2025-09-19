@@ -252,7 +252,9 @@ export class StripePayments implements Payments {
         payment_method_types: ['paypal', 'ideal', 'card', 'klarna'],
       });
       return { id: checkoutSession.id, paymentUrl: checkoutSession?.url };
-    } catch {
+    } catch (error) {
+      logger.error('Something went wrong creating the checkout session.');
+      logger.error(error);
       return { id: checkoutSession?.id, paymentUrl: checkoutSession?.url };
     }
   }
