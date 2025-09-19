@@ -22,7 +22,7 @@ pages:
       # the email to ourselves
     blocks:
       - type: action-button
-        version: 0.34.19
+        version: 0.34.20
         parameters:
           icon: paper-plane
         actions:

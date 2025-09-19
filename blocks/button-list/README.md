@@ -6,4 +6,4 @@ supported and can be combined.
 
 ### Images
 
-![Action button screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.34.19/config/assets/button-list.png)
+![Action button screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.34.20/config/assets/button-list.png)
