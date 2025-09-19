@@ -14,11 +14,11 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             schema: {
               type: 'object',
               properties: {
-                stripeApiKey: {
+                stripeApiSecretKey: {
                   type: 'boolean',
                   description: 'Whether stripe api key is set.',
                 },
-                stripeSecret: {
+                stripeWebhookSecret: {
                   type: 'boolean',
                   description: 'Whether stripe secret is set.',
                 },
@@ -58,12 +58,12 @@ export const pathItems: OpenAPIV3.PathItemObject = {
           schema: {
             type: 'object',
             properties: {
-              stripeApiKey: {
+              stripeApiSecretKey: {
                 type: 'string',
                 description:
                   'The private API key used for accessing Stripe account connected to the app.',
               },
-              stripeSecret: {
+              stripeWebhookSecret: {
                 type: 'string',
                 description:
                   'The private secret used for authenticating app related Stripe webhooks.',

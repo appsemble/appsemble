@@ -58,9 +58,9 @@ oauthSecret: null
 
 secretSecret: appsemble
 
-stripeApiKey: stripe-api-key
+stripeApiSecretKey: stripe-api-secret-key
 
-stripeSecret: stripe-secret
+stripeWebhookSecret: stripe-webhook-secret
 
 cronjob:
   jobsHistoryLimit: 3

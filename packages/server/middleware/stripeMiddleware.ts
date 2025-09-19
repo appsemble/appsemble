@@ -16,13 +16,13 @@ export function stripeMiddleware(): compose.Middleware<ParameterizedContext> {
     let apiKey;
     if (ctx.path.split('/')[ctx.path.split('/').length - 3] === 'apps') {
       const app = await App.findByPk(Number(appId), {
-        attributes: ['stripeSecret', 'stripeApiKey'],
+        attributes: ['stripeWebhookSecret', 'stripeApiSecretKey'],
       });
-      secret = app ? decrypt(app.stripeSecret!, argv.aesSecret) : undefined;
-      apiKey = app ? decrypt(app.stripeApiKey!, argv.aesSecret) : undefined;
+      secret = app ? decrypt(app.stripeWebhookSecret!, argv.aesSecret) : undefined;
+      apiKey = app ? decrypt(app.stripeApiSecretKey!, argv.aesSecret) : undefined;
     } else {
-      secret = argv.stripeSecret;
-      apiKey = argv.stripeApiKey;
+      secret = argv.stripeWebhookSecret;
+      apiKey = argv.stripeApiSecretKey;
     }
     if (!apiKey || !secret) {
       throwKoaError(ctx, 401, 'Missing Stripe credentials.');

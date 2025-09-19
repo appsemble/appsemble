@@ -176,12 +176,12 @@ export interface Argv {
   /**
    * The Stripe API key to use.
    */
-  stripeApiKey: string;
+  stripeApiSecretKey: string;
 
   /**
    * The Stripe secret to use for verifying incoming requests.
    */
-  stripeSecret: string;
+  stripeWebhookSecret: string;
 
   /**
    * Whether to update recorded Stripe responses used for tests.
@@ -478,9 +478,9 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sslCert: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
-  stripeApiKey: undefined,
+  stripeApiSecretKey: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
-  stripeSecret: undefined,
+  stripeWebhookSecret: undefined,
   updateStripeResponses: false,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpFrom: undefined,

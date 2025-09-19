@@ -39,8 +39,8 @@ describe('getAppPaymentSettings', () => {
         path: 'test-app',
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        stripeApiKey: 'key',
-        stripeSecret: 'secret',
+        stripeApiSecretKey: 'key',
+        stripeWebhookSecret: 'secret',
         successUrl: 'testSuccessUrl',
         cancelUrl: 'testCancelUrl',
         OrganizationId: organization.id,
@@ -56,21 +56,21 @@ describe('getAppPaymentSettings', () => {
     expect(response.data).toStrictEqual({
       successUrl: 'testSuccessUrl',
       cancelUrl: 'testCancelUrl',
-      stripeApiKey: true,
-      stripeSecret: true,
+      stripeApiSecretKey: true,
+      stripeWebhookSecret: true,
       enablePayments: true,
     });
   });
 
   it('should fetch incomplete payment settings', async () => {
     authorizeStudio();
-    await app.update({ successUrl: null, stripeApiKey: null });
+    await app.update({ successUrl: null, stripeApiSecretKey: null });
     const response = await request.get(`/api/apps/${app.id}/payment`);
     expect(response.data).toStrictEqual({
       successUrl: null,
       cancelUrl: 'testCancelUrl',
-      stripeApiKey: false,
-      stripeSecret: true,
+      stripeApiSecretKey: false,
+      stripeWebhookSecret: true,
       enablePayments: true,
     });
   });

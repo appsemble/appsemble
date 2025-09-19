@@ -38,8 +38,8 @@ interface EmailFormParameters {
 }
 
 interface PaymentFormParameters {
-  stripeApiKey: string;
-  stripeSecret: string;
+  stripeApiSecretKey: string;
+  stripeWebhookSecret: string;
   successUrl: string;
   cancelUrl: string;
   enablePayments: boolean;
@@ -54,9 +54,9 @@ export function SecretsPage(): ReactNode {
     Omit<EmailFormParameters, 'emailPassword'> & { emailPassword: boolean }
   >(`/api/apps/${app.id}/email`);
   const paymentSettingsResult = useData<
-    Omit<PaymentFormParameters, 'stripeApiKey' | 'stripeSecret'> & {
-      stripeSecret: boolean;
-      stripeApiKey: boolean;
+    Omit<PaymentFormParameters, 'stripeApiSecretKey' | 'stripeWebhookSecret'> & {
+      stripeWebhookSecret: boolean;
+      stripeApiSecretKey: boolean;
     }
   >(`/api/apps/${app.id}/payment`);
   const [enablePayments, setEnablePayments] = useState<boolean>(
@@ -111,8 +111,8 @@ export function SecretsPage(): ReactNode {
       push({ color: 'success', body: formatMessage(messages.paymentUpdateSuccess) });
       paymentSettingsResult.setData({
         ...values,
-        stripeApiKey: Boolean(values.stripeApiKey),
-        stripeSecret: Boolean(values.stripeSecret),
+        stripeApiSecretKey: Boolean(values.stripeApiSecretKey),
+        stripeWebhookSecret: Boolean(values.stripeWebhookSecret),
       });
     },
     [app, paymentSettingsResult, formatMessage, push],
@@ -247,8 +247,8 @@ export function SecretsPage(): ReactNode {
             <SimpleForm
               defaultValues={{
                 ...paymentSettings,
-                stripeApiKey: '',
-                stripeSecret: '',
+                stripeApiSecretKey: '',
+                stripeWebhookSecret: '',
               }}
               onSubmit={onSavePaymentSettings}
             >
@@ -259,22 +259,22 @@ export function SecretsPage(): ReactNode {
                 onChange={toggleEnablePayments}
               />
               <SimpleFormField
-                autoComplete="stripe-api-key"
+                autoComplete="stripe-api-secret-key"
                 component={PasswordField}
                 disabled={!enablePayments}
-                help={<FormattedMessage {...messages.stripeApiKeyDescription} />}
-                label={<FormattedMessage {...messages.stripeApiKey} />}
-                name="stripeApiKey"
+                help={<FormattedMessage {...messages.stripeApiSecretKeyDescription} />}
+                label={<FormattedMessage {...messages.stripeApiSecretKey} />}
+                name="stripeApiSecretKey"
                 placeholder="●●●●●●●●●●●"
                 required={enablePayments}
               />
               <SimpleFormField
-                autoComplete="stripe-secret"
+                autoComplete="stripe-webhook-secret"
                 component={PasswordField}
                 disabled={!enablePayments}
-                help={<FormattedMessage {...messages.stripeSecretDescription} />}
-                label={<FormattedMessage {...messages.stripeSecret} />}
-                name="stripeSecret"
+                help={<FormattedMessage {...messages.stripeWebhookSecretDescription} />}
+                label={<FormattedMessage {...messages.stripeWebhookSecret} />}
+                name="stripeWebhookSecret"
                 placeholder="●●●●●●●●●●●"
                 required
               />

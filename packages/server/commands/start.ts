@@ -76,10 +76,10 @@ export function builder(yargs: Argv): Argv {
       desc: 'The secret key to be used for GitLab OAuth2.',
       implies: ['gitlab-client-id'],
     })
-    .option('stripe-api-key', {
+    .option('stripe-api-secret-key', {
       desc: 'The API key for stripe.',
     })
-    .option('stripe-secret', {
+    .option('stripe-webhook-secret', {
       desc: 'The stripe webhook secret',
     })
     .option('secret', {

@@ -146,12 +146,12 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 type: 'boolean',
                 description: 'Whether TLS is being used.',
               },
-              stripeApiKey: {
+              stripeApiSecretKey: {
                 type: 'string',
                 description:
                   'The API key to use for Stripe authentication. This gets encrypted when stored.',
               },
-              stripeSecret: {
+              stripeWebhookSecret: {
                 type: 'string',
                 description:
                   'The secret to use for verifying incoming webhooks. This gets encrypted when stored.',

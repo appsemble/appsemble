@@ -149,11 +149,11 @@
       "type": "string",
       "description": "The Kubernetes secret which holds the `SECRET` environment variable."
     },
-    "stripeApiKey": {
+    "stripeApiSecretKey": {
       "type": ["string", "null"],
       "description": "Api key used for connecting to Stripe."
     },
-    "stripeSecret": {
+    "stripeWebhookSecret": {
       "type": ["string", "null"],
       "description": "Secret used for authenticating incoming Stripe webhooks."
     },

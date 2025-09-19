@@ -54,8 +54,8 @@ describe('updateAppPaymentSettings', () => {
     const response = await request.patch(
       `/api/apps/${app.id}/payment`,
       createFormData({
-        stripeApiKey: 'newKey',
-        stripeSecret: 'newSecret',
+        stripeApiSecretKey: 'newKey',
+        stripeWebhookSecret: 'newSecret',
         successUrl: 'newSuccessUrl',
         cancelUrl: 'newCancelUrl',
       }),
@@ -63,8 +63,8 @@ describe('updateAppPaymentSettings', () => {
     expect(response.data).toStrictEqual({
       successUrl: 'newSuccessUrl',
       cancelUrl: 'newCancelUrl',
-      stripeApiKey: true,
-      stripeSecret: true,
+      stripeApiSecretKey: true,
+      stripeWebhookSecret: true,
       enablePayments: true,
     });
   });
@@ -74,8 +74,8 @@ describe('updateAppPaymentSettings', () => {
     const response = await request.patch(
       `/api/apps/${app.id}/payment`,
       createFormData({
-        stripeApiKey: 'newKey',
-        stripeSecret: 'newSecret',
+        stripeApiSecretKey: 'newKey',
+        stripeWebhookSecret: 'newSecret',
         successUrl: 'newSuccessUrl',
         cancelUrl: 'newCancelUrl',
         enablePayments: false,
@@ -84,8 +84,8 @@ describe('updateAppPaymentSettings', () => {
     expect(response.data).toStrictEqual({
       successUrl: null,
       cancelUrl: null,
-      stripeApiKey: false,
-      stripeSecret: false,
+      stripeApiSecretKey: false,
+      stripeWebhookSecret: false,
       enablePayments: false,
     });
   });
@@ -96,8 +96,8 @@ describe('updateAppPaymentSettings', () => {
     const response = await request.patch(
       `/api/apps/${app.id}/payment`,
       createFormData({
-        stripeApiKey: 'newKey',
-        stripeSecret: 'newSecret',
+        stripeApiSecretKey: 'newKey',
+        stripeWebhookSecret: 'newSecret',
         successUrl: 'newSuccessUrl',
         cancelUrl: 'newCancelUrl',
       }),

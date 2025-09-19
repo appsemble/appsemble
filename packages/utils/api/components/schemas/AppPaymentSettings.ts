@@ -5,11 +5,11 @@ export const SSLSecret: OpenAPIV3.SchemaObject = {
   additionalProperties: false,
   description: 'The payment settings of an app.',
   properties: {
-    stripeApiKey: {
+    stripeApiSecretKey: {
       type: 'string',
       description: 'The private API key used for accessing Stripe account connected to the app.',
     },
-    stripeSecret: {
+    stripeWebhookSecret: {
       type: 'string',
       description: 'The private secret used for authenticating app related Stripe webhooks.',
     },

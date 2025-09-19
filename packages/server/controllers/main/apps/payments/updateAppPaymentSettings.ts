@@ -12,12 +12,12 @@ export async function updateAppPaymentSettings(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     request: {
-      body: { cancelUrl, enablePayments, stripeApiKey, stripeSecret, successUrl },
+      body: { cancelUrl, enablePayments, stripeApiSecretKey, stripeWebhookSecret, successUrl },
     },
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['stripeApiKey', 'stripeSecret', 'successUrl', 'cancelUrl', 'id', 'OrganizationId'],
+    attributes: ['stripeApiSecretKey', 'stripeWebhookSecret', 'successUrl', 'cancelUrl', 'id', 'OrganizationId'],
   });
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
@@ -33,17 +33,17 @@ export async function updateAppPaymentSettings(ctx: Context): Promise<void> {
   const result: Partial<App> = {};
 
   if (enablePayments === 'false') {
-    result.stripeSecret = null;
-    result.stripeApiKey = null;
+    result.stripeWebhookSecret = null;
+    result.stripeApiSecretKey = null;
     result.cancelUrl = null;
     result.successUrl = null;
   } else {
-    if (stripeSecret !== undefined) {
-      result.stripeSecret = stripeSecret.length ? encrypt(stripeSecret, argv.aesSecret) : undefined;
+    if (stripeWebhookSecret !== undefined) {
+      result.stripeWebhookSecret = stripeWebhookSecret.length ? encrypt(stripeWebhookSecret, argv.aesSecret) : undefined;
     }
 
-    if (stripeApiKey !== undefined) {
-      result.stripeApiKey = stripeApiKey.length ? encrypt(stripeApiKey, argv.aesSecret) : undefined;
+    if (stripeApiSecretKey !== undefined) {
+      result.stripeApiSecretKey = stripeApiSecretKey.length ? encrypt(stripeApiSecretKey, argv.aesSecret) : undefined;
     }
 
     if (cancelUrl !== undefined) {
@@ -56,12 +56,12 @@ export async function updateAppPaymentSettings(ctx: Context): Promise<void> {
   }
   await app.update(result, { where: { id: appId } });
   ctx.body = {
-    stripeApiKey: Boolean(app.stripeApiKey?.length),
-    stripeSecret: Boolean(app.stripeSecret?.length),
+    stripeApiSecretKey: Boolean(app.stripeApiSecretKey?.length),
+    stripeWebhookSecret: Boolean(app.stripeWebhookSecret?.length),
     successUrl: app.successUrl,
     cancelUrl: app.cancelUrl,
     enablePayments: Boolean(
-      result.stripeApiKey || result.stripeSecret || result.successUrl || result.cancelUrl,
+      result.stripeApiSecretKey || result.stripeWebhookSecret || result.successUrl || result.cancelUrl,
     ),
   };
 }

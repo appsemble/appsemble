@@ -11,7 +11,7 @@ export async function getAppPaymentSettings(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['stripeApiKey', 'stripeSecret', 'successUrl', 'cancelUrl', 'id', 'OrganizationId'],
+    attributes: ['stripeApiSecretKey', 'stripeWebhookSecret', 'successUrl', 'cancelUrl', 'id', 'OrganizationId'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
@@ -22,13 +22,13 @@ export async function getAppPaymentSettings(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.QueryAppSecrets],
   });
 
-  const { cancelUrl, stripeApiKey, stripeSecret, successUrl } = app!;
+  const { cancelUrl, stripeApiSecretKey, stripeWebhookSecret, successUrl } = app!;
 
   ctx.body = {
-    stripeApiKey: Boolean(stripeApiKey?.length),
-    stripeSecret: Boolean(stripeSecret?.length),
+    stripeApiSecretKey: Boolean(stripeApiSecretKey?.length),
+    stripeWebhookSecret: Boolean(stripeWebhookSecret?.length),
     successUrl,
     cancelUrl,
-    enablePayments: Boolean(stripeApiKey || stripeSecret || successUrl || cancelUrl),
+    enablePayments: Boolean(stripeApiSecretKey || stripeWebhookSecret || successUrl || cancelUrl),
   };
 }

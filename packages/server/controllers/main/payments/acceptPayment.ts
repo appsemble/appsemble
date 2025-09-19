@@ -15,7 +15,7 @@ import { argv } from '../../../utils/argv.js';
 import { Mailer } from '../../../utils/email/Mailer.js';
 
 export async function acceptPayment(ctx: Context): Promise<void> {
-  const stripe = new Stripe(argv.stripeApiKey);
+  const stripe = new Stripe(argv.stripeApiSecretKey);
   const mailer = new Mailer(argv);
 
   const event = ctx.request.body;

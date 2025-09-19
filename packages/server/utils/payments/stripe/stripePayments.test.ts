@@ -97,9 +97,9 @@ describe('stripePayments', () => {
         },
       },
     };
-    payments = new StripePayments(argv.stripeApiKey, stripeMock as unknown as Stripe);
+    payments = new StripePayments(argv.stripeApiSecretKey, stripeMock as unknown as Stripe);
     if (argv.updateStripeResponses) {
-      const stripe = new Stripe(argv.stripeApiKey);
+      const stripe = new Stripe(argv.stripeApiSecretKey);
 
       const customerCreateParams = {
         name: organization.name,

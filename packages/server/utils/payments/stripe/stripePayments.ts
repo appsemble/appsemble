@@ -50,8 +50,8 @@ interface OrganizationComparisonFields {
 export class StripePayments implements Payments {
   stripe: Stripe;
 
-  constructor(stripeApiKey: string, stripe?: Stripe) {
-    this.stripe = stripe || new Stripe(stripeApiKey);
+  constructor(stripeApiSecretKey: string, stripe?: Stripe) {
+    this.stripe = stripe || new Stripe(stripeApiSecretKey);
   }
 
   async createOrUpdateCustomer(organization: Partial<Organization>): Promise<any> {

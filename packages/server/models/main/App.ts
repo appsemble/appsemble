@@ -193,11 +193,11 @@ export class App extends Model {
 
   @AllowNull(true)
   @Column(DataType.BLOB)
-  stripeApiKey?: Buffer | null;
+  stripeApiSecretKey?: Buffer | null;
 
   @AllowNull(true)
   @Column(DataType.BLOB)
-  stripeSecret?: Buffer | null;
+  stripeWebhookSecret?: Buffer | null;
 
   @AllowNull(true)
   @Column(DataType.STRING)

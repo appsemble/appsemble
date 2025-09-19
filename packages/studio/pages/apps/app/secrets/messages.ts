@@ -122,19 +122,19 @@ export const messages = defineMessages({
     id: 'studio.XuZJvq',
     defaultMessage: 'Successfully updated payment settings',
   },
-  stripeApiKeyDescription: {
+  stripeApiSecretKeyDescription: {
     id: 'studio.Askm/X',
     defaultMessage: 'API key used by the app to access your Stripe account.',
   },
-  stripeApiKey: {
+  stripeApiSecretKey: {
     id: 'studio.+B//bs',
     defaultMessage: 'Stripe API key',
   },
-  stripeSecretDescription: {
+  stripeWebhookSecretDescription: {
     id: 'studio.pyYEl7',
     defaultMessage: 'Secret used for verifying incoming Stripe webhooks',
   },
-  stripeSecret: {
+  stripeWebhookSecret: {
     id: 'studio.iN4q1l',
     defaultMessage: 'Stripe secret',
   },

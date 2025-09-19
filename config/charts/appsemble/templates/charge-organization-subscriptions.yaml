@@ -29,14 +29,14 @@ spec:
               env:
 {{ include "appsemble.postgres" . | indent 16 }}
 {{ include "appsemble.s3" . | indent 16 }}
-                {{- with .Values.stripeApiKey }}
-                - name: STRIPE_API_KEY
+                {{- with .Values.stripeApiSecretKey }}
+                - name: STRIPE_API_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
                       name: {{ . | quote }}
-                      key: stripe-api-key
+                      key: stripe-api-secret-key
                 {{- end }}
-{{ include "appsemble.stripeSecret" . | indent 16 }}
+{{ include "appsemble.stripeWebhookSecret" . | indent 16 }}
                 {{- if hasPrefix "review-" (include "appsemble.fullname" .) }}
                 - name: SMTP_HOST
                   value: "{{ include "appsemble.fullname" . }}-mailpit-smtp"

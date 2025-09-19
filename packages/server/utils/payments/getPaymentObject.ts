@@ -12,10 +12,10 @@ export async function getPaymentObject(
 ): Promise<Payments> {
   let apiKey;
   if (appId === -1 || !appId) {
-    apiKey = argv.stripeApiKey;
+    apiKey = argv.stripeApiSecretKey;
   } else {
-    const app = await App.findByPk(appId, { attributes: ['stripeSecret', 'stripeApiKey'] });
-    apiKey = app ? decrypt(app.stripeApiKey!, argv.aesSecret) : undefined;
+    const app = await App.findByPk(appId, { attributes: ['stripeWebhookSecret', 'stripeApiSecretKey'] });
+    apiKey = app ? decrypt(app.stripeApiSecretKey!, argv.aesSecret) : undefined;
   }
   if (!apiKey) {
     throw new Error('Missing API key');

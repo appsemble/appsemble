@@ -12,7 +12,7 @@ export const key = '0.34.18';
  * - Create table `organizationSubscription`
  * - Add columns preferredPaymentProvider, vatIdNumber, streetName, houseNumber,
  * city, zipCode, countryCode, customerName and invoiceReference to table `Organization`
- * - Add columns stripeApiKey, stripeSecret, cancelUrl and successUrl to table `App`
+ * - Add columns stripeApiSecretKey, stripeWebhookSecret, cancelUrl and successUrl to table `App`
  *
  * @param transaction The sequelize Transaction.
  * @param db The sequelize database.
@@ -255,10 +255,10 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  logger.info('Add column `StripeApiKey` to `App` table');
+  logger.info('Add column `stripeApiSecretKey` to `App` table');
   await queryInterface.addColumn(
     'App',
-    'stripeApiKey',
+    'stripeApiSecretKey',
     {
       type: DataTypes.BLOB,
       allowNull: true,
@@ -266,10 +266,10 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  logger.info('Add column `StripeSecret` to `App` table');
+  logger.info('Add column `stripeWebhookSecret` to `App` table');
   await queryInterface.addColumn(
     'App',
-    'stripeSecret',
+    'stripeWebhookSecret',
     {
       type: DataTypes.BLOB,
       allowNull: true,
@@ -308,7 +308,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Remove columns preferredPaymentProvider, vatIdNumber, streetName, houseNumber,
  * city, zipCode, country, invoiceReference, stripeCustomerId
  * from table `Organization`
- * - Remove columns stripeApiKey, stripeSecret, cancelUrl and successUrl from table `App`
+ * - Remove columns stripeApiSecretKey, stripeWebhookSecret, cancelUrl and successUrl from table `App`
  *
  * @param transaction The sequelize Transaction.
  * @param db The sequelize database.
@@ -356,11 +356,11 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   logger.info('Remove column stripeCustomerId from `Organization` table');
   await queryInterface.removeColumn('Organization', 'stripeCustomerId', { transaction });
 
-  logger.info('Remove column StripeApiKey from `App` table');
-  await queryInterface.removeColumn('App', 'stripeApiKey', { transaction });
+  logger.info('Remove column stripeApiSecretKey from `App` table');
+  await queryInterface.removeColumn('App', 'stripeApiSecretKey', { transaction });
 
-  logger.info('Remove column StripeSecret from `App` table');
-  await queryInterface.removeColumn('App', 'stripeSecret', { transaction });
+  logger.info('Remove column stripeWebhookSecret from `App` table');
+  await queryInterface.removeColumn('App', 'stripeWebhookSecret', { transaction });
 
   logger.info('Remove column SuccessUrl from `App` table');
   await queryInterface.removeColumn('App', 'successUrl', { transaction });
