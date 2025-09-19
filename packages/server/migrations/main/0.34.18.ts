@@ -1,9 +1,9 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 
-import { Organization } from '../models/Organization.js';
+import { Organization } from '../../models/index.js';
 
-export const key = '0.30.15';
+export const key = '0.34.18';
 
 /**
  * Summary:
@@ -12,10 +12,12 @@ export const key = '0.30.15';
  * - Create table `organizationSubscription`
  * - Add columns preferredPaymentProvider, vatIdNumber, streetName, houseNumber,
  * city, zipCode, countryCode, customerName and invoiceReference to table `Organization`
+ * - Add columns stripeApiKey, stripeSecret, cancelUrl and successUrl to table `App`
  *
  * @param transaction The sequelize Transaction.
  * @param db The sequelize database.
  */
+
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
@@ -102,7 +104,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     'OrganizationSubscription',
     {
       id: { autoIncrement: true, type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
-      cancelled: { type: DataTypes.BOOLEAN, allowNull: false },
+      cancelled: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
       cancellationReason: { type: DataTypes.TEXT, allowNull: true },
       cancelledAt: { type: DataTypes.DATE, allowNull: true },
       expirationDate: { type: DataTypes.DATEONLY, allowNull: true },
@@ -252,6 +254,50 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
+
+  logger.info('Add column `StripeApiKey` to `App` table');
+  await queryInterface.addColumn(
+    'App',
+    'stripeApiKey',
+    {
+      type: DataTypes.BLOB,
+      allowNull: true,
+    },
+    { transaction },
+  );
+
+  logger.info('Add column `StripeSecret` to `App` table');
+  await queryInterface.addColumn(
+    'App',
+    'stripeSecret',
+    {
+      type: DataTypes.BLOB,
+      allowNull: true,
+    },
+    { transaction },
+  );
+
+  logger.info('Add column `CancelUrl` to `App` table');
+  await queryInterface.addColumn(
+    'App',
+    'cancelUrl',
+    {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    { transaction },
+  );
+
+  logger.info('Add column `SuccessUrl` to `App` table');
+  await queryInterface.addColumn(
+    'App',
+    'successUrl',
+    {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    { transaction },
+  );
 }
 
 /**
@@ -262,10 +308,12 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Remove columns preferredPaymentProvider, vatIdNumber, streetName, houseNumber,
  * city, zipCode, country, invoiceReference, stripeCustomerId
  * from table `Organization`
+ * - Remove columns stripeApiKey, stripeSecret, cancelUrl and successUrl from table `App`
  *
  * @param transaction The sequelize Transaction.
  * @param db The sequelize database.
  */
+
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
@@ -307,4 +355,16 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
 
   logger.info('Remove column stripeCustomerId from `Organization` table');
   await queryInterface.removeColumn('Organization', 'stripeCustomerId', { transaction });
+
+  logger.info('Remove column StripeApiKey from `App` table');
+  await queryInterface.removeColumn('App', 'stripeApiKey', { transaction });
+
+  logger.info('Remove column StripeSecret from `App` table');
+  await queryInterface.removeColumn('App', 'stripeSecret', { transaction });
+
+  logger.info('Remove column SuccessUrl from `App` table');
+  await queryInterface.removeColumn('App', 'successUrl', { transaction });
+
+  logger.info('Remove column CancelUrl from `App` table');
+  await queryInterface.removeColumn('App', 'cancelUrl', { transaction });
 }

@@ -25,6 +25,7 @@ export class OrganizationSubscription extends Model {
   id?: number;
 
   @AllowNull(false)
+  @Default(false)
   @Column(DataType.BOOLEAN)
   cancelled?: Boolean;
 
