@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/barcode-scan",
-  "version": "0.34.18-test.1",
+  "version": "0.34.18",
   "private": true,
   "description": "A block that scans barcode",
   "homepage": "https://appsemble.app",
@@ -17,8 +17,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.34.18-test.1",
-    "@appsemble/sdk": "0.34.18-test.1",
+    "@appsemble/preact": "0.34.18",
+    "@appsemble/sdk": "0.34.18",
     "@ericblade/quagga2": "^1.8.2",
     "preact": "^10.0.0"
   }

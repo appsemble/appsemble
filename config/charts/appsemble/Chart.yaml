@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.34.18-test.1
-appVersion: 0.34.18-test.1
+version: 0.34.18
+appVersion: 0.34.18
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,8 +31,10 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: fixed
+      description: "React-components: Invert allowPristine field for the SimpleSubmit
+        and SimpleModalFooter components."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
