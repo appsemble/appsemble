@@ -943,13 +943,13 @@ production:
   rules:
     - if: $CI_COMMIT_TAG
   environment:
-    name: production
+    name: production-do
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
   script:
-    - kubectl config use-context "$CI_PROJECT_PATH:production"
-    - kubectl config set-context --current --namespace default
+    - kubectl config use-context "$CI_PROJECT_PATH:production-do"
+    - kubectl config set-context --current --namespace appsemble
     - helm repo add appsemble https://charts.appsemble.com
     # Prevent a finished job without chart actually serving.
     - |
@@ -999,13 +999,8 @@ production:
       --set "ingress.tls.wildcardSecretName=appsemble-tls-wildcard"
       --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
-      --set "postgresql.enabled=true"
+      --set "postgresql.enabled=false"
       --set 'postgresSSL=true'
-      --set "importData.remoteStorage.url=$S3_REMOTE_STORAGE_URL"
-      --set "importData.remoteStorage.existingAccessKeySecret=s3-access-key-secret"
-      --set "importData.remoteStorage.region=$S3_REGION"
-      --set "importData.remoteStorage.location=$BACKUPS_LOCATION"
-      --set "importData.remoteStorage.filename=$PROD_BACKUP_NAME"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
