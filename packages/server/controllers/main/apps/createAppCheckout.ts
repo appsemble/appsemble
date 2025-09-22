@@ -10,7 +10,7 @@ export async function createAppCheckout(ctx: Context): Promise<void> {
     pathParams: { appId },
     queryParams: { locale, price },
     request: {
-      body: { email },
+      body: { email, redirectParams },
     },
   } = ctx;
   const app = await App.findByPk(appId);
@@ -23,13 +23,18 @@ export async function createAppCheckout(ctx: Context): Promise<void> {
   );
   const payments = await getPaymentObject(PaymentProvider.Stripe, appId);
 
-  const checkout = await payments.createAppCheckout(
-    price,
-    app!.successUrl!,
-    app!.cancelUrl!,
-    locale,
-    email,
-  );
+  let successUrl = app!.successUrl!;
+  let cancelUrl = app!.cancelUrl!;
+  if (redirectParams && typeof redirectParams === 'object' && !Array.isArray(redirectParams)) {
+    for (const value of Object.values(redirectParams)) {
+      successUrl += `/${value}`;
+    }
+    for (const value of Object.values(redirectParams)) {
+      cancelUrl += `/${value}`;
+    }
+  }
+
+  const checkout = await payments.createAppCheckout(price, successUrl, cancelUrl, locale, email);
 
   ctx.body = {
     url: checkout.paymentUrl,

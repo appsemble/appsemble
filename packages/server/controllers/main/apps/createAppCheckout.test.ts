@@ -85,6 +85,33 @@ describe('createAppCheckout', () => {
     );
   });
 
+  it('should create a checkout session for an app and append custom params to the success and cancel URLs', async () => {
+    authorizeStudio();
+    const createAppCheckout = vi.fn().mockResolvedValue({
+      checkout: { paymentUrl: 'testUrl' },
+    });
+    vi.mocked(getPaymentObject).mockResolvedValue({
+      createOrUpdateCustomer: vi.fn(() => Promise.resolve(null)),
+      createInvoice: vi.fn(() => Promise.resolve(null)),
+      chargeInvoice: vi.fn(() => Promise.resolve(null)),
+      deletePaymentMethods: vi.fn(() => Promise.resolve(null)),
+      createAppCheckout,
+    });
+    await request.post<AppType>(`/api/apps/${app.id}/create-checkout?price=price_id&locale=en`, {
+      email: 'test@email.test',
+      redirectParams: {
+        id: 7,
+      },
+    });
+    expect(createAppCheckout).toHaveBeenCalledWith(
+      'price_id',
+      'testSuccessUrl/7',
+      'testCancelUrl/7',
+      'en',
+      'test@email.test',
+    );
+  });
+
   it('should not create a checkout session for an app when missing payment information', async () => {
     authorizeStudio();
     const createAppCheckout = vi.fn().mockResolvedValue({
