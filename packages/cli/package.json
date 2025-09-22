@@ -58,7 +58,7 @@
     "csvtojson": "^2.0.0",
     "esbuild": "^0.21.5",
     "fast-glob": "^3.0.0",
-    "form-data": "^4.0.0",
+    "form-data": "^4.0.4",
     "global-cache-dir": "^6.0.0",
     "inquirer": "^9.0.0",
     "jsonschema": "~1.4.1",
