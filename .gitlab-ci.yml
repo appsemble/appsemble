@@ -854,8 +854,6 @@ staging:
   variables:
     GIT_STRATEGY: none
   script:
-    # - kubectl config use-context "$CI_PROJECT_PATH:development"
-    # - kubectl config set-context --current --namespace staging
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
     # This is the only way to make sure staging can be overwritten
     - helm delete staging || true
@@ -877,7 +875,7 @@ staging:
       --set "image.tag=staging"
       --set "ingress.clusterIssuer=acme-issuer-dev"
       --set "ingress.enabled=true"
-      --set "ingress.host=staging.appsemble.nl"
+      --set "ingress.host=appsemble.eu"
       --set "ingress.tls.secretName=staging-tls"
       --set "ingress.tls.wildcardSecretName=staging-tls-wildcard"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=1G"
@@ -904,7 +902,7 @@ staging:
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
-      --set "sentry.allowedDomains={*.appsemble.nl}"
+      --set "sentry.allowedDomains={*.appsemble.eu}"
       --set "sentry.environment=staging"
       --set "sentry.secret=sentry"
       --set "quotas.appEmail.enabled=true"
@@ -913,9 +911,9 @@ staging:
       --set "mailpit.mailpit.smtp.tls.secretName=staging-mailpit-tls"
       --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
       --set "minio.fullnameOverride=staging-minio"
-      --set "minio.ingress.hostname=console.minio.staging.appsemble.nl"
+      --set "minio.ingress.hostname=console.minio.appsemble.eu"
       --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
-      --set "minio.apiIngress.hostname=api.minio.staging.appsemble.nl"
+      --set "minio.apiIngress.hostname=api.minio.appsemble.eu"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
 
