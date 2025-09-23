@@ -4,7 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppServiceSecret,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -72,13 +72,13 @@ describe('deleteAppServiceSecret', () => {
   });
 
   it('should delete a single app service secret', async () => {
+    const { AppServiceSecret } = await getAppDB(app.id);
     await AppServiceSecret.create({
       name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'query',
       identifier: 'key',
       secret: 'c6a5e780dee8e2f1f576538c8',
-      AppId: app.id,
     });
     const response = await request.delete(`/api/apps/${app.id}/secrets/service/1`);
 

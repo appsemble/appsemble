@@ -13,7 +13,7 @@ import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 import { parsePhoneNumber } from 'libphonenumber-js/min';
 
-import { App, AppMember, AppMessages } from '../../../../models/index.js';
+import { App, type AppMember, AppMessages, getAppDB } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
 import { parseAppMemberProperties } from '../../../../utils/appMember.js';
 import { checkAppSecurityPolicy } from '../../../../utils/auth.js';
@@ -27,7 +27,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       body: { locale, name, password, phoneNumber, picture, properties = {}, timezone = '' },
     },
   } = ctx;
-
+  const { AppMember } = await getAppDB(appId);
   const email = ctx.request.body.email.toLowerCase();
   const hashedPassword = await hash(password, 10);
   const key = randomBytes(40).toString('hex');
@@ -86,9 +86,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     'This app has no default role',
   );
 
-  const appMemberExists = await AppMember.count({
-    where: { email, AppId: appId },
-  });
+  const appMemberExists = await AppMember.count({ where: { email } });
 
   assertKoaCondition(
     !appMemberExists,
@@ -125,7 +123,6 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
   let appMember = { id: '' } as AppMember;
   try {
     appMember = await AppMember.create({
-      AppId: appId,
       name,
       password: hashedPassword,
       email,

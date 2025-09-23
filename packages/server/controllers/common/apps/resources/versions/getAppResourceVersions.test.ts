@@ -6,11 +6,9 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 
 import {
   App,
-  AppMember,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
-  ResourceVersion,
   type User,
 } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
@@ -122,15 +120,14 @@ describe('getAppResourceVersions', () => {
   it('should return the resource history if history is set to true', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2000-01-01T00:00:00Z'));
+    const { AppMember, Resource, ResourceVersion } = await getAppDB(1);
     const resource = await Resource.create({
-      AppId: 1,
       type: 'yesHistory',
       data: { version: 'old' },
     });
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: 1,
-      UserId: user.id,
+      userId: user.id,
       name: user.name,
       role: PredefinedAppRole.Member,
     });

@@ -3,7 +3,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -58,8 +58,8 @@ describe('getAssetHeadersById', () => {
 
   it('should be able to fetch the headers of an asset', async () => {
     const data = Buffer.from('buffer');
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data,
@@ -83,8 +83,8 @@ describe('getAssetHeadersById', () => {
 
   it('should be able to fetch the headers of an asset by name', async () => {
     const data = Buffer.from('buffer');
+    const { Asset } = await getAppDB(app.id);
     await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.mp3',
       data,
@@ -101,8 +101,8 @@ describe('getAssetHeadersById', () => {
 
   it('should fallback to the asset id as the filename', async () => {
     const data = Buffer.from('buffer');
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      AppId: app.id,
       data,
     });
 
@@ -124,8 +124,8 @@ describe('getAssetHeadersById', () => {
 
   it('should determine the file extension based on the mime type', async () => {
     const data = Buffer.from('buffer');
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      AppId: app.id,
       mime: 'text/plain',
       data,
     });
@@ -167,8 +167,8 @@ describe('getAssetHeadersById', () => {
       OrganizationId: organization.id,
     });
     const data = Buffer.from('buffer');
+    const { Asset } = await getAppDB(appB.id);
     const asset = await Asset.create({
-      AppId: appB.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data,

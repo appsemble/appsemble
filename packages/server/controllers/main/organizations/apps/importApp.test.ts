@@ -10,11 +10,10 @@ import {
   App,
   AppReadme,
   AppScreenshot,
-  Asset,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -157,11 +156,8 @@ describe('importApp', () => {
       },
     );
 
-    const resources = await Resource.findAll({
-      where: {
-        AppId: 1,
-      },
-    });
+    const { Asset, Resource } = await getAppDB(1);
+    const resources = await Resource.findAll();
 
     for (const resource of resources) {
       expect(resource.toJSON()).toMatchInlineSnapshot(
@@ -182,7 +178,7 @@ describe('importApp', () => {
       );
     }
 
-    const asset = (await Asset.findOne({ where: { AppId: 1 } }))!;
+    const asset = (await Asset.findOne())!;
 
     expect(await getS3FileBuffer(`app-${1}`, asset.id)).toStrictEqual(
       await readFixture('10x50.png'),

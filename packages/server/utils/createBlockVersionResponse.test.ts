@@ -6,10 +6,10 @@ import {
   createBlockVersionResponse,
   type ExtendedBlockVersion,
 } from './createBlockVersionResponse.js';
-import { BlockVersion } from '../models/BlockVersion.js';
-import { Organization } from '../models/Organization.js';
-import { OrganizationMember } from '../models/OrganizationMember.js';
-import { type User } from '../models/User.js';
+import { BlockVersion } from '../models/main/BlockVersion.js';
+import { Organization } from '../models/main/Organization.js';
+import { OrganizationMember } from '../models/main/OrganizationMember.js';
+import { type User } from '../models/main/User.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';

@@ -1,21 +1,17 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import {
-  AppMember,
-  AppOAuth2Authorization,
-  AppSamlAuthorization,
-  EmailAuthorization,
-  User,
-} from '../../../../models/index.js';
+import { EmailAuthorization, getAppDB, User } from '../../../../models/index.js';
 
 export async function linkCurrentAppMember(ctx: Context): Promise<void> {
   const {
+    pathParams: { appId },
     request: {
       body: { email, externalId, secret },
     },
     user: appMember,
   } = ctx;
+  const { AppMember, AppOAuth2Authorization, AppSamlAuthorization } = await getAppDB(appId);
   const { id: AppMemberId } = appMember!;
   function assertNotNull(
     value: unknown,
@@ -66,7 +62,7 @@ export async function linkCurrentAppMember(ctx: Context): Promise<void> {
       });
       assertNotNull(user, 'User');
       assert(user.EmailAuthorizations[0].verified);
-      await AppMember.update({ UserId: externalId }, { where: { id: AppMemberId } });
+      await AppMember.update({ userId: externalId }, { where: { id: AppMemberId } });
       break;
     }
     default:

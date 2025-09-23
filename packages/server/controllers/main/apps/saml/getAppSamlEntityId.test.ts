@@ -2,7 +2,7 @@ import { readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, AppSamlSecret, Organization } from '../../../../models/index.js';
+import { App, type AppSamlSecret, getAppDB, Organization } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { createTestUser } from '../../../../utils/test/authorization.js';
@@ -33,8 +33,8 @@ describe('getEntityId', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+    const { AppSamlSecret } = await getAppDB(app.id);
     secret = await AppSamlSecret.create({
-      AppId: app.id,
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: await readFixture('saml/idp-certificate.pem', 'utf8'),
@@ -50,8 +50,17 @@ describe('getEntityId', () => {
     vi.useRealTimers();
   });
 
-  it('should handle if no secret can be found', async () => {
+  it('should handle if no app can be found', async () => {
     const response = await request.get('/api/apps/23/saml/93/metadata.xml');
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: { statusCode: 404, error: 'Not Found', message: 'App not found' },
+    });
+  });
+
+  it('should handle if no secret can be found', async () => {
+    const response = await request.get(`/api/apps/${app.id}/saml/93/metadata.xml`);
 
     expect(response).toMatchObject({
       status: 404,

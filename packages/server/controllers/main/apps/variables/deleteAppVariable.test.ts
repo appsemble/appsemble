@@ -4,7 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppVariable,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -71,10 +71,10 @@ describe('deleteAppVariable', () => {
   });
 
   it('should delete a single app variable', async () => {
+    const { AppVariable } = await getAppDB(app.id);
     await AppVariable.create({
       name: 'Test variable',
       value: 'Test value',
-      AppId: app.id,
     });
 
     const response = await request.delete(`/api/apps/${app.id}/variables/1`);

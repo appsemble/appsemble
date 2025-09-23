@@ -9,9 +9,7 @@ import {
   AppReadme,
   AppScreenshot,
   AppSnapshot,
-  Asset,
   Organization,
-  Resource,
 } from '../../../models/index.js';
 import { applyAppMessages, parseLanguage } from '../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
@@ -20,6 +18,7 @@ export async function getAppById(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
   } = ctx;
+
   const {
     baseLanguage,
     language,
@@ -67,18 +66,18 @@ export async function getAppById(ctx: Context): Promise<void> {
       exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
     },
     include: [
-      {
-        model: Resource,
-        attributes: ['id', 'clonable'],
-        required: false,
-        separate: true,
-      },
-      {
-        model: Asset,
-        attributes: ['id', 'clonable'],
-        required: false,
-        separate: true,
-      },
+      // {
+      //   model: Resource,
+      //   attributes: ['id', 'clonable'],
+      //   required: false,
+      //   separate: true,
+      // },
+      // {
+      //   model: Asset,
+      //   attributes: ['id', 'clonable'],
+      //   required: false,
+      //   separate: true,
+      // },
       { model: AppSnapshot, as: 'AppSnapshots', order: [['created', 'DESC']], limit: 1 },
       {
         model: Organization,

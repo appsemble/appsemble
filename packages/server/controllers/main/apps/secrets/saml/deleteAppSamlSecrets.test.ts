@@ -2,12 +2,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  App,
-  AppSamlSecret,
-  Organization,
-  OrganizationMember,
-} from '../../../../../models/index.js';
+import { App, getAppDB, Organization, OrganizationMember } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
@@ -52,6 +47,7 @@ describe('deleteAppSamlSecrets', () => {
 
   it('should delete all app saml secrets', async () => {
     authorizeStudio();
+    const { AppSamlSecret } = await getAppDB(app.id);
     await AppSamlSecret.create({
       AppId: app.id,
       entityId: 'https://example.com/saml/metadata.xml',

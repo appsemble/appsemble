@@ -3,7 +3,7 @@ import semver from 'semver';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { migrations } from '../migrations/index.js';
+import { migrations } from '../migrations/main/index.js';
 import { initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { migrate } from '../utils/migrate.js';
@@ -52,7 +52,7 @@ export async function handler(): Promise<void> {
     logger.warn('Features related to file uploads will not work correctly!');
   }
 
-  await migrate(migrateTo, migrations);
+  await migrate(db, migrateTo, migrations);
   await db.close();
   process.exit();
 }

@@ -4,7 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import { toXml } from 'xast-util-to-xml';
 import { x as h } from 'xastscript';
 
-import { App, AppSamlSecret, Organization } from '../../../../models/index.js';
+import { App, type AppSamlSecret, getAppDB, Organization } from '../../../../models/index.js';
 import { type CreateSamlResponseOptions } from '../../../../types/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
@@ -184,8 +184,8 @@ describe('assertAppSamlConsumerService', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+    const { AppSamlSecret } = await getAppDB(app.id);
     secret = await AppSamlSecret.create({
-      AppId: app.id,
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: await readFixture('saml/idp-certificate.pem', 'utf8'),

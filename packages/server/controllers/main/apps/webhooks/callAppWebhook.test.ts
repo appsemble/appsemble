@@ -7,10 +7,10 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,
-  AppWebhookSecret,
+  type AppWebhookSecret,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -152,20 +152,18 @@ describe('callAppWebhook', () => {
       },
     });
 
+    const { AppWebhookSecret } = await getAppDB(app.id);
     createSecret = await AppWebhookSecret.create({
-      AppId: app.id,
       webhookName: 'createRecord',
       secret: encrypt(randomBytes(40).toString('hex'), aesSecret),
     });
 
     patchSecret = await AppWebhookSecret.create({
-      AppId: app.id,
       webhookName: 'patchFirstRecord',
       secret: encrypt(randomBytes(40).toString('hex'), aesSecret),
     });
 
     updateSecret = await AppWebhookSecret.create({
-      AppId: app.id,
       webhookName: 'updateFirstRecord',
       secret: encrypt(randomBytes(40).toString('hex'), aesSecret),
     });
@@ -369,7 +367,8 @@ describe('callAppWebhook', () => {
         "foo": "bar",
       }
     `);
-    const resource = (await Resource.findOne({ where: { AppId: app.id } }))!;
+    const { Resource } = await getAppDB(app.id);
+    const resource = (await Resource.findOne())!;
     expect(resource.toJSON()).toStrictEqual(
       expect.objectContaining({
         id: 1,
@@ -394,7 +393,8 @@ describe('callAppWebhook', () => {
 
       OK
     `);
-    const resource = (await Resource.findOne({ where: { AppId: app.id } }))!;
+    const { Resource } = await getAppDB(app.id);
+    const resource = (await Resource.findOne())!;
     expect(resource.toJSON()).toStrictEqual(
       expect.objectContaining({
         id: 1,

@@ -10,8 +10,7 @@ import { type Resource as ResourceInterface } from '@appsemble/types';
 import { Op } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
-import { App, Asset, transactional } from '../models/index.js';
-import { Resource } from '../models/Resource.js';
+import { App, getAppDB, type Resource } from '../models/index.js';
 import { parseQuery, processHooks, processReferenceHooks } from '../utils/resource.js';
 
 export async function createAppResourcesWithAssets({
@@ -23,66 +22,65 @@ export async function createAppResourcesWithAssets({
   resourceType,
   resources,
 }: CreateAppResourcesWithAssetsParams): Promise<ResourceInterface[]> {
-  const appMember = await getCurrentAppMember({ context });
+  const { Asset, Resource, sequelize } = await getAppDB(app.id!);
+  const appMember = await getCurrentAppMember({ context, app });
 
   let createdResources: Resource[] = [];
-  await transactional(async (transaction) => {
+  await sequelize.transaction(async (transaction) => {
     const resourceDefinition = getResourceDefinition(app.definition, resourceType);
     const { enforceOrderingGroupByFields, positioning } = resourceDefinition;
     createdResources = await Resource.bulkCreate(
       await Promise.all(
-        resources.map(
-          async ({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }, idx) => {
-            const { query } = parseQuery({
-              $filter: enforceOrderingGroupByFields
-                ?.map((item) => `${item} eq ${data[item] ? `'${data[item]}'` : null}`)
-                .join(' and '),
-              resourceDefinition,
-            });
-            logger.verbose('Resource query');
-            logger.verbose(query);
+        resources.map(async ({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }, idx) => {
+          const { query } = parseQuery({
+            $filter: enforceOrderingGroupByFields
+              ?.map((item) => `${item} eq ${data[item] ? `'${data[item]}'` : null}`)
+              .join(' and '),
+            resourceDefinition,
+            tableName: 'Resource',
+          });
+          logger.verbose('Resource query');
+          logger.verbose(query);
 
-            // Fetch the last position resource
-            const lastPositionResource = await Resource.findOne({
-              attributes: ['Position'],
-              where: {
-                AppId: app.id,
-                type: resourceType,
-                GroupId: groupId ?? null,
-                Position: { [Op.not]: null },
-                ...(query ? { query } : {}),
-                ...($seed ? { seed: $seed } : {}),
-                ...($ephemeral ? { ephemeral: $ephemeral } : {}),
-              },
-              order: [['Position', 'DESC']],
-            });
-            logger.verbose('Last resource');
-            logger.verbose(lastPositionResource);
-
-            logger.verbose('Next position');
-            logger.verbose(
-              positioning
-                ? Number.parseFloat(String(lastPositionResource?.Position ?? 0)) + (idx + 1) * 10
-                : null,
-            );
-            // Return the resource object to be created
-            return {
-              AppId: app.id,
-              GroupId: groupId ?? null,
+          // Fetch the last position resource
+          const lastPositionResource = await Resource.findOne({
+            attributes: ['Position'],
+            where: {
               type: resourceType,
-              data,
-              AuthorId: appMember?.sub,
-              seed: $seed,
-              expires: $expires,
-              clonable: $clonable,
-              ephemeral: $ephemeral,
-              // Database returns string values for `DECIMAL` type
-              Position: positioning
-                ? Number.parseFloat(String(lastPositionResource?.Position ?? 0)) + (idx + 1) * 10
-                : null,
-            };
-          },
-        ),
+              GroupId: groupId ?? null,
+              Position: { [Op.not]: null },
+              ...(query ? { query } : {}),
+              ...($seed ? { seed: $seed } : {}),
+              ...($ephemeral ? { ephemeral: $ephemeral } : {}),
+            },
+            order: [['Position', 'DESC']],
+            transaction,
+          });
+          logger.verbose('Last resource');
+          logger.verbose(lastPositionResource);
+
+          logger.verbose('Next position');
+          logger.verbose(
+            positioning
+              ? Number.parseFloat(String(lastPositionResource?.Position ?? 0)) + (idx + 1) * 10
+              : null,
+          );
+          // Return the resource object to be created
+          return {
+            GroupId: groupId ?? null,
+            type: resourceType,
+            data,
+            AuthorId: appMember?.sub,
+            seed: $seed,
+            expires: $expires,
+            clonable: $clonable,
+            ephemeral: $ephemeral,
+            // Database returns string values for `DECIMAL` type
+            Position: positioning
+              ? Number.parseFloat(String(lastPositionResource?.Position ?? 0)) + (idx + 1) * 10
+              : null,
+          };
+        }),
       ),
       { transaction },
     );
@@ -113,7 +111,6 @@ export async function createAppResourcesWithAssets({
         return {
           ...asset,
           ...getCompressedFileMeta(asset),
-          AppId: app.id,
           GroupId: groupId ?? null,
           ResourceId,
           AppMemberId: appMember?.sub,

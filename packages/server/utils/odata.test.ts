@@ -236,7 +236,7 @@ describe('odataFilterToSequelize', () => {
   };
 
   it.each(Object.entries(cases))('%s', (filter, expected) => {
-    const result = odataFilterToSequelize(filter, { tableName: 'Model' });
+    const result = odataFilterToSequelize(filter, 'Model');
     expect(result).toStrictEqual(expected);
   });
 
@@ -245,7 +245,7 @@ describe('odataFilterToSequelize', () => {
   it.each(empty)('%p', (filter) => {
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
-    const result = odataFilterToSequelize(filter, { tableName: 'Model' });
+    const result = odataFilterToSequelize(filter, 'Model');
     expect(result).toStrictEqual({});
   });
 });

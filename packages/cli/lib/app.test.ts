@@ -23,21 +23,15 @@ import { authorizeCLI } from './testUtils.js';
 
 const {
   App,
-  AppBlockStyle,
   AppCollection,
   AppCollectionApp,
   AppMember,
   AppMessages,
-  AppOAuth2Secret,
-  AppSamlSecret,
   AppScreenshot,
-  AppServiceSecret,
-  AppVariable,
-  Asset,
   BlockVersion,
   Organization,
   OrganizationMember,
-  Resource,
+  getAppDB,
 } = models;
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 let user: models.User;
@@ -251,8 +245,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -299,6 +291,7 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -453,8 +446,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -501,6 +492,7 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -624,8 +616,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": "test",
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#000000",
@@ -672,6 +662,7 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -799,8 +790,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -846,6 +835,7 @@ describe('app', () => {
       expect(app.maskableIcon).toStrictEqual(
         await readFixture('apps/test/variants/tux/maskable-icon.png'),
       );
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe('.tux{color:rgb(1 2 3)}');
       const appScreenshot = (await AppScreenshot.findOne())!;
@@ -925,7 +915,7 @@ describe('app', () => {
       vi.useFakeTimers();
 
       const app = (await App.findOne({
-        attributes: ['scimEnabled', 'scimToken', 'sslKey', 'sslCertificate'],
+        attributes: ['id', 'scimEnabled', 'scimToken', 'sslKey', 'sslCertificate'],
         where: {
           id: 1,
         },
@@ -943,11 +933,11 @@ describe('app', () => {
         sslCertificate: 'certificate',
       });
 
+      const { AppOAuth2Secret, AppSamlSecret, AppServiceSecret, AppVariable } = await getAppDB(
+        app.id,
+      );
       const appVariables = await AppVariable.findAll({
         attributes: ['name', 'value'],
-        where: {
-          AppId: 1,
-        },
       });
 
       expect(appVariables[0].toJSON()).toStrictEqual({
@@ -962,9 +952,6 @@ describe('app', () => {
 
       const appServiceSecret = (await AppServiceSecret.findOne({
         attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect(appServiceSecret.toJSON()).toStrictEqual({
@@ -985,9 +972,6 @@ describe('app', () => {
           'entityId',
           'ssoUrl',
         ],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect(appSamlSecret.toJSON()).toStrictEqual({
@@ -1015,9 +999,6 @@ describe('app', () => {
           'clientId',
           'clientSecret',
         ],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect({
@@ -1153,8 +1134,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -1201,6 +1180,7 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -1347,8 +1327,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -1395,6 +1373,7 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -1519,8 +1498,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": "test",
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#000000",
@@ -1567,6 +1544,7 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
@@ -1696,8 +1674,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#ffffff",
@@ -1743,6 +1719,7 @@ describe('app', () => {
       expect(app.maskableIcon).toStrictEqual(
         await readFixture('apps/test/variants/tux/maskable-icon.png'),
       );
+      const { AppBlockStyle, Asset, Resource } = await getAppDB(app.id);
       const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe('.tux{color:rgb(1 2 3)}');
       const appScreenshot = (await AppScreenshot.findOne())!;
@@ -1838,11 +1815,11 @@ describe('app', () => {
         sslCertificate: 'certificate',
       });
 
+      const { AppOAuth2Secret, AppSamlSecret, AppServiceSecret, AppVariable } = await getAppDB(
+        app.id,
+      );
       const appVariables = await AppVariable.findAll({
         attributes: ['name', 'value'],
-        where: {
-          AppId: 1,
-        },
       });
 
       expect(appVariables[0].toJSON()).toStrictEqual({
@@ -1857,9 +1834,6 @@ describe('app', () => {
 
       const appServiceSecret = (await AppServiceSecret.findOne({
         attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect(appServiceSecret.toJSON()).toStrictEqual({
@@ -1880,9 +1854,6 @@ describe('app', () => {
           'entityId',
           'ssoUrl',
         ],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect(appSamlSecret.toJSON()).toStrictEqual({
@@ -1910,9 +1881,6 @@ describe('app', () => {
           'clientId',
           'clientSecret',
         ],
-        where: {
-          AppId: 1,
-        },
       }))!;
 
       expect({
@@ -2000,8 +1968,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": true,
           "hasMaskableIcon": true,
           "iconBackground": "#fff999",
@@ -2083,8 +2049,6 @@ describe('app', () => {
           "enableSelfRegistration": true,
           "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
-          "hasClonableAssets": undefined,
-          "hasClonableResources": undefined,
           "hasIcon": false,
           "hasMaskableIcon": false,
           "iconBackground": "#ffffff",

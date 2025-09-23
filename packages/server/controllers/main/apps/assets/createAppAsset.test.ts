@@ -6,7 +6,8 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  Asset,
+  type Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -80,9 +81,9 @@ describe('createAppAsset', () => {
     `,
     );
 
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.findByPk(response.data.id);
     expect(asset).toMatchObject({
-      AppId: app.id,
       filename: null,
       mime: 'application/octet-stream',
       name: 'test-asset',
@@ -102,10 +103,10 @@ describe('createAppAsset', () => {
 
   it('should not allow using conflicting names', async () => {
     authorizeStudio();
+    const { Asset } = await getAppDB(app.id);
     await Asset.create({
       data: Buffer.alloc(0),
       name: 'conflict',
-      AppId: app.id,
     });
     const response = await request.post(
       `/api/apps/${app.id}/assets`,
@@ -211,6 +212,7 @@ describe('createAppAsset', () => {
       createFormData({ file: Buffer.from('Test asset') }),
       { params: { seed: 'true' } },
     );
+    const { Asset } = await getAppDB(app.id);
     const asset = (await Asset.findByPk(response.data.id))!;
 
     expect(asset.AppMemberId).toBeNull();
@@ -229,7 +231,6 @@ describe('createAppAsset', () => {
 
     const seedAsset = (await Asset.findOne({
       where: {
-        AppId: app.id,
         seed: true,
         ephemeral: false,
       },
@@ -239,7 +240,6 @@ describe('createAppAsset', () => {
         id: expect.any(String),
         created: expect.any(Date),
         updated: expect.any(Date),
-        AppId: 1,
         AppMemberId: null,
         GroupId: null,
         ResourceId: null,
@@ -261,6 +261,7 @@ describe('createAppAsset', () => {
       `/api/apps/${app.id}/assets?seed=true`,
       createFormData({ file: Buffer.from('Test asset') }),
     );
+    const { Asset } = await getAppDB(app.id);
     const asset = (await Asset.findByPk(response.data.id))!;
 
     expect(asset.AppMemberId).toBeNull();
@@ -279,7 +280,6 @@ describe('createAppAsset', () => {
 
     const seedAsset = (await Asset.findOne({
       where: {
-        AppId: app.id,
         seed: true,
         ephemeral: false,
       },
@@ -289,7 +289,6 @@ describe('createAppAsset', () => {
         id: expect.any(String),
         created: expect.any(Date),
         updated: expect.any(Date),
-        AppId: 1,
         AppMemberId: null,
         GroupId: null,
         ResourceId: null,
@@ -305,7 +304,6 @@ describe('createAppAsset', () => {
 
     const ephemeralAsset = (await Asset.findOne({
       where: {
-        AppId: app.id,
         seed: false,
         ephemeral: true,
       },
@@ -315,7 +313,6 @@ describe('createAppAsset', () => {
         id: expect.any(String),
         created: expect.any(Date),
         updated: expect.any(Date),
-        AppId: 1,
         AppMemberId: null,
         GroupId: null,
         ResourceId: null,

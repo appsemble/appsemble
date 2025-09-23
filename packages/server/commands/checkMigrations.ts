@@ -3,7 +3,9 @@ import { type Sequelize } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { migrations } from '../migrations/index.js';
+import { migrations as appMigrations } from '../migrations/apps/index.js';
+import { migrations } from '../migrations/main/index.js';
+import { getAppDB } from '../models/index.js';
 import { migrate } from '../utils/migrate.js';
 import { apply, handleDiff } from '../utils/migrateDiff.js';
 import { handleDBError } from '../utils/sqlUtils.js';
@@ -28,14 +30,14 @@ export async function handler(): Promise<void> {
   }
   const fromMigrations = await apply(db, 'migrations', async () => {
     logger.info(`Applying migrations from ${migrations[0].key} to latest`);
-    await migrate('next', migrations);
+    await migrate(db, 'next', migrations);
   });
   const fromModels = await apply(db, 'models', async () => {
     logger.info('Syncing models with database');
     await db.sync();
   });
   const counts = handleDiff(fromMigrations, fromModels, 'migrations', 'models');
-  await db.close();
+
   if (counts.tables + counts.enums > 0) {
     logger.error('Models and migrations are out of sync');
     logger.info(`Use the following command to connect to the test database for further debugging:
@@ -43,5 +45,36 @@ export async function handler(): Promise<void> {
 psql postgres://admin:password@localhost:54321/${dbName}`);
     process.exit(1);
   }
+
+  await db.query(
+    'INSERT INTO "Organization" ("id", "created", "updated") VALUES (\'appsemble\', NOW(), NOW())',
+  );
+  await db.query(
+    'INSERT INTO "App" ("id", "definition", "vapidPublicKey", "vapidPrivateKey", "OrganizationId", "created", "updated") VALUES (1, \'{}\', \'\', \'\', \'appsemble\', NOW(), NOW())',
+  );
+
+  try {
+    const { sequelize: appDB } = await getAppDB(1);
+    const fromAppMigrations = await apply(appDB, 'migrations', async () => {
+      logger.info(`Applying migrations from ${appMigrations[0].key} to latest`);
+      await migrate(appDB, 'next', appMigrations);
+    });
+    const fromAppModels = await apply(appDB, 'models', async () => {
+      logger.info('Syncing models with database');
+      await appDB.sync();
+    });
+    const appCounts = handleDiff(fromAppMigrations, fromAppModels, 'migrations', 'models');
+    if (appCounts.tables + appCounts.enums > 0) {
+      logger.error('Models and migrations are out of sync');
+      logger.info(`Use the following command to connect to the test database for further debugging:
+
+psql postgres://admin:password@localhost:54321/${appDB.getDatabaseName()}`);
+      process.exit(1);
+    }
+  } catch (error: unknown) {
+    handleDBError(error as Error);
+  }
+
+  await db.close();
   process.exit();
 }

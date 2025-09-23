@@ -3,10 +3,7 @@ import { uuid4Pattern } from '@appsemble/utils';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { create, get, patch, query, remove, update } from './resource.js';
-import { App } from '../../models/App.js';
-import { Organization } from '../../models/Organization.js';
-import { Resource } from '../../models/Resource.js';
-import { ResourceVersion } from '../../models/ResourceVersion.js';
+import { App, getAppDB, Organization } from '../../models/index.js';
 import { options } from '../../options/options.js';
 import { handleAction } from '../action.js';
 import { argv, setArgv } from '../argv.js';
@@ -138,13 +135,12 @@ describe('resource', () => {
       };
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { name: 'Spongebob' },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { name: 'Patrick' },
       });
@@ -184,13 +180,12 @@ describe('resource', () => {
       };
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Spongebob', lastName: 'Squarepants' },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
@@ -221,13 +216,12 @@ describe('resource', () => {
       };
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { name: 'Spongebob' },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { name: 'Patrick' },
       });
@@ -259,13 +253,12 @@ describe('resource', () => {
       };
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Spongebob', lastName: 'Squarepants' },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
@@ -292,8 +285,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -336,8 +329,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -518,6 +511,7 @@ describe('resource', () => {
         }),
       ).rejects.toThrow('App does not have resources called testResourceC');
 
+      const { Resource } = await getAppDB(app.id);
       const remainingResources = await Resource.findAll();
       expect(remainingResources).toStrictEqual([]);
     });
@@ -673,8 +667,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -722,8 +716,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -760,8 +754,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -769,7 +763,6 @@ describe('resource', () => {
         },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
@@ -817,8 +810,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -826,7 +819,6 @@ describe('resource', () => {
         },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
@@ -876,8 +868,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -923,8 +915,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -972,8 +964,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1007,8 +999,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       const resource = await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1053,8 +1045,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'testExpirableResource',
         data: {
           foo: 'test',
@@ -1100,8 +1092,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'testExpirableResource',
         data: {
           foo: 'test',
@@ -1135,8 +1127,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       const resource = await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1182,8 +1174,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource, ResourceVersion } = await getAppDB(app.id);
       const resource = await Resource.create({
-        AppId: app.id,
         type: 'testHistoryTrue',
         data: {
           string: 'rev1',
@@ -1234,8 +1226,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource, ResourceVersion } = await getAppDB(app.id);
       const resource = await Resource.create({
-        AppId: app.id,
         type: 'testHistoryDataTrue',
         data: {
           string: 'rev1',
@@ -1286,8 +1278,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource, ResourceVersion } = await getAppDB(app.id);
       const resource = await Resource.create({
-        AppId: app.id,
         type: 'testHistoryDataFalse',
         data: {
           string: 'rev1',
@@ -1340,8 +1332,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1387,8 +1379,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1425,8 +1417,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1434,7 +1426,6 @@ describe('resource', () => {
         },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
@@ -1482,8 +1473,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1491,7 +1482,6 @@ describe('resource', () => {
         },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
@@ -1541,8 +1531,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1588,8 +1578,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1637,8 +1627,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1672,8 +1662,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1713,8 +1703,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       const resource = await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1758,8 +1748,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'testExpirableResource',
         data: {
           foo: 'test',
@@ -1805,8 +1795,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'testExpirableResource',
         data: {
           foo: 'test',
@@ -1840,8 +1830,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       const resource = await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -1886,8 +1876,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource, ResourceVersion } = await getAppDB(app.id);
       const resource = await Resource.create({
-        AppId: app.id,
         type: 'testHistoryTrue',
         data: {
           string: 'rev1',
@@ -1938,8 +1928,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource, ResourceVersion } = await getAppDB(app.id);
       const resource = await Resource.create({
-        AppId: app.id,
         type: 'testHistoryDataTrue',
         data: {
           string: 'rev1',
@@ -1990,8 +1980,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource, ResourceVersion } = await getAppDB(app.id);
       const resource = await Resource.create({
-        AppId: app.id,
         type: 'testHistoryDataFalse',
         data: {
           string: 'rev1',
@@ -2044,8 +2034,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -2053,7 +2043,6 @@ describe('resource', () => {
         },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
@@ -2096,8 +2085,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -2105,7 +2094,6 @@ describe('resource', () => {
         },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
@@ -2148,8 +2136,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -2157,7 +2145,6 @@ describe('resource', () => {
         },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
@@ -2205,8 +2192,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -2214,7 +2201,6 @@ describe('resource', () => {
         },
       });
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
@@ -2264,8 +2250,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',
@@ -2311,8 +2297,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      const { Resource } = await getAppDB(app.id);
       await Resource.create({
-        AppId: app.id,
         type: 'person',
         data: {
           firstName: 'Spongebob',

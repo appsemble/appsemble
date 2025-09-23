@@ -1,13 +1,15 @@
 import { type GetAppResourcesParams } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
-import { Resource } from '../models/Resource.js';
+import { getAppDB } from '../models/index.js';
 import { mapKeysRecursively } from '../utils/sequelize.js';
 
 export async function getAppResources({
+  app,
   findOptions,
 }: GetAppResourcesParams): Promise<ResourceInterface[]> {
   const { attributes, ...clearOptions } = findOptions;
+  const { Resource } = await getAppDB(app.id!);
   const resources = await Resource.findAll({
     ...clearOptions,
     where: mapKeysRecursively(clearOptions.where),
@@ -15,13 +17,12 @@ export async function getAppResources({
       { association: 'Author', attributes: ['id', 'name'], required: false },
       { association: 'Editor', attributes: ['id', 'name'], required: false },
       { association: 'Group', attributes: ['id', 'name'], required: false },
-      { association: 'App', attributes: ['template'] },
     ],
   });
   return resources.map((resource) =>
     resource.toJSON({
       include: attributes,
-      exclude: resource.App!.template ? ['$seed'] : undefined,
+      exclude: app.template ? ['$seed'] : undefined,
     }),
   );
 }

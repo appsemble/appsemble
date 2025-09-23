@@ -155,7 +155,7 @@ export function getScimResourceType(appId: number): unknown {
   };
 }
 
-export function convertAppMemberToScimUser(member: AppMember): ScimUser {
+export function convertAppMemberToScimUser(appId: number, member: AppMember): ScimUser {
   return {
     schemas: [
       'urn:ietf:params:scim:schemas:core:2.0:User',
@@ -182,7 +182,7 @@ export function convertAppMemberToScimUser(member: AppMember): ScimUser {
     meta: {
       created: member.created.toISOString(),
       lastModified: member.updated.toISOString(),
-      location: getScimLocation(member.AppId, `Users/${member.id}`),
+      location: getScimLocation(appId, `Users/${member.id}`),
       resourceType: 'User',
     },
   };

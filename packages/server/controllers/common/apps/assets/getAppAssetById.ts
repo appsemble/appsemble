@@ -8,22 +8,20 @@ import { type Context } from 'koa';
 import { extension } from 'mime-types';
 import { Op } from 'sequelize';
 
-import { App, Asset } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 
 export async function getAppAssetById(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, assetId },
   } = ctx;
-
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId', 'demoMode'],
   });
-
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
+  const { Asset } = await getAppDB(appId);
   const asset = await Asset.findOne({
     where: {
-      AppId: appId,
       [Op.or]: [{ id: assetId }, { name: assetId }],
       ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
     },

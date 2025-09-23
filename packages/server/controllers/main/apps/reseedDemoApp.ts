@@ -10,7 +10,7 @@ import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, AppMember, Asset, Resource } from '../../../models/index.js';
+import { App, getAppDB } from '../../../models/index.js';
 import { parseAppMemberProperties } from '../../../utils/appMember.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { reseedResourcesRecursively } from '../../../utils/resource.js';
@@ -19,7 +19,6 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
   } = ctx;
-
   const app = await App.findByPk(appId, {
     attributes: ['demoMode', 'definition', 'OrganizationId'],
   });
@@ -42,16 +41,11 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
       OrganizationPermission.QueryAppMembers,
     ],
   });
+
+  const { Asset, Resource } = await getAppDB(appId);
   const demoAssetsToDelete = await Asset.findAll({
     attributes: ['id', 'name'],
-    where: {
-      [Op.or]: {
-        [Op.and]: {
-          ephemeral: true,
-          AppId: appId,
-        },
-      },
-    },
+    where: { ephemeral: true },
   });
 
   await deleteS3Files(
@@ -69,21 +63,8 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
 
   const demoAssetsToReseed = await Asset.findAll({
-    attributes: ['id', 'mime', 'filename', 'name', 'AppId', 'ResourceId'],
-    include: [
-      {
-        model: App,
-        attributes: ['id'],
-        where: {
-          id: appId,
-          demoMode: true,
-        },
-        required: true,
-      },
-    ],
-    where: {
-      seed: true,
-    },
+    attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],
+    where: { seed: true },
   });
 
   logger.info('Reseeding ephemeral assets.');
@@ -160,33 +141,19 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   const demoResourcesDeletionResult = await Resource.destroy({
     where: {
       [Op.or]: [{ seed: false, expires: { [Op.lt]: date } }, { ephemeral: true }],
-      [Op.and]: { AppId: appId },
     },
   });
 
   logger.info(`Removed ${demoResourcesDeletionResult} ephemeral resources.`);
 
   const demoResourcesToReseed = await Resource.findAll({
-    attributes: ['type', 'data', 'AppId', 'AuthorId'],
-    include: [
-      {
-        model: App,
-        attributes: ['definition'],
-        where: {
-          id: appId,
-          demoMode: true,
-        },
-        required: true,
-      },
-    ],
-    where: {
-      seed: true,
-    },
+    attributes: ['type', 'data', 'AuthorId'],
+    where: { seed: true },
   });
 
   logger.info('Reseeding ephemeral resources.');
 
-  await reseedResourcesRecursively(app.definition, demoResourcesToReseed);
+  await reseedResourcesRecursively(app.definition, Resource, demoResourcesToReseed);
 
   logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources.`);
 }

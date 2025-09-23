@@ -1,7 +1,7 @@
-import { scimAssert } from '@appsemble/node-utils';
+import { assertKoaCondition, scimAssert } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { AppMember, Group, GroupMember, transactional } from '../../../../../models/index.js';
+import { App, getAppDB } from '../../../../../models/index.js';
 import { getCaseInsensitive } from '../../../../../utils/object.js';
 import { convertAppMemberToScimUser } from '../../../../../utils/scim.js';
 
@@ -10,7 +10,12 @@ export async function updateAppScimUser(ctx: Context): Promise<void> {
     pathParams: { appId, userId },
     request: { body },
   } = ctx;
+  const app = await App.findOne({
+    where: { id: appId, attributes: ['id'] },
+  });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
+  const { AppMember, Group, GroupMember, sequelize } = await getAppDB(appId);
   const externalId = getCaseInsensitive(body, 'externalid');
   scimAssert(typeof externalId === 'string', ctx, 400, 'Expected externalId to be string');
 
@@ -55,23 +60,18 @@ export async function updateAppScimUser(ctx: Context): Promise<void> {
   );
 
   const member = await AppMember.findOne({
-    where: { AppId: appId, id: userId },
+    where: { id: userId },
     include: [
       {
         model: GroupMember,
         required: false,
-        include: [
-          {
-            model: Group,
-            where: { AppId: appId },
-          },
-        ],
+        include: [Group],
       },
     ],
   });
   scimAssert(member, ctx, 404, 'User not found');
 
-  await transactional(async (transaction) => {
+  await sequelize.transaction(async (transaction) => {
     const promises: Promise<unknown>[] = [
       member.update(
         {
@@ -86,7 +86,7 @@ export async function updateAppScimUser(ctx: Context): Promise<void> {
       ),
     ];
     if (managerId != null) {
-      const group = await Group.findOne({ where: { AppId: appId, name: managerId } });
+      const group = await Group.findOne({ where: { name: managerId } });
       if (managerId === '') {
         if (group) {
           promises.push(
@@ -107,7 +107,7 @@ export async function updateAppScimUser(ctx: Context): Promise<void> {
           }
         } else {
           promises.push(
-            Group.create({ AppId: appId, name: managerId }, { transaction }).then((t) =>
+            Group.create({ name: managerId }, { transaction }).then((t) =>
               GroupMember.create({ GroupId: t.id, AppMemberId: member.id }, { transaction }),
             ),
           );
@@ -117,5 +117,5 @@ export async function updateAppScimUser(ctx: Context): Promise<void> {
     return Promise.all(promises);
   });
 
-  ctx.body = convertAppMemberToScimUser(member);
+  ctx.body = convertAppMemberToScimUser(appId, member);
 }

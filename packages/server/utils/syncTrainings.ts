@@ -1,6 +1,6 @@
 import { getValidTrainings, logger } from '@appsemble/node-utils';
 
-import { Training } from '../models/Training.js';
+import { Training } from '../models/main/Training.js';
 
 /**
  * Makes sure that each individual training document has its reference stored on the database

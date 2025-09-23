@@ -6,12 +6,7 @@ import { hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  App,
-  OAuth2AuthorizationCode,
-  OAuth2ClientCredentials,
-  type User,
-} from '../../models/index.js';
+import { App, getAppDB, OAuth2ClientCredentials, type User } from '../../models/index.js';
 import { setArgv } from '../../utils/argv.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { createServer } from '../../utils/createServer.js';
@@ -128,11 +123,38 @@ describe('appsTokenHandler', () => {
       });
     });
 
-    it('should fail if no authorization code has been registered', async () => {
+    it('should fail if app is not found', async () => {
       const response = await request.post(
         '/apps/1/auth/oauth2/token',
         new URLSearchParams({
           client_id: 'app:42',
+          code: '123',
+          grant_type: 'authorization_code',
+          redirect_uri: 'http://foo.bar.localhost:9999/',
+          scope: 'openid',
+        }),
+        { headers: { referer: 'http://foo.bar.localhost:9999/' } },
+      );
+      expect(response).toMatchObject({
+        status: 404,
+        data: {
+          error: 'Not Found',
+        },
+      });
+    });
+
+    it('should fail if no authorization code has been registered', async () => {
+      await user.$create('Organization', { id: 'org' });
+      const app = await App.create({
+        OrganizationId: 'org',
+        definition: '',
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+      });
+      const response = await request.post(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${app.id}`,
           code: '123',
           grant_type: 'authorization_code',
           redirect_uri: 'http://foo.bar.localhost:9999/',
@@ -158,8 +180,8 @@ describe('appsTokenHandler', () => {
       });
       const appMember = await createTestAppMember(app.id);
       const expires = new Date('1999-12-31T23:00:00Z');
+      const { OAuth2AuthorizationCode } = await getAppDB(app.id);
       const authCode = await OAuth2AuthorizationCode.create({
-        AppId: app.id,
         code: '123',
         AppMemberId: appMember.id,
         expires,
@@ -197,8 +219,8 @@ describe('appsTokenHandler', () => {
       });
       const expires = new Date('2000-01-01T00:10:00Z');
       const appMember = await createTestAppMember(app.id);
+      const { OAuth2AuthorizationCode } = await getAppDB(app.id);
       await OAuth2AuthorizationCode.create({
-        AppId: app.id,
         code: '123',
         AppMemberId: appMember.id,
         expires,
@@ -234,8 +256,8 @@ describe('appsTokenHandler', () => {
       });
       const appMember = await createTestAppMember(app.id);
       const expires = new Date('2000-01-01T00:10:00Z');
+      const { OAuth2AuthorizationCode } = await getAppDB(app.id);
       const authCode = await OAuth2AuthorizationCode.create({
-        AppId: app.id,
         code: '123',
         AppMemberId: appMember.id,
         expires,

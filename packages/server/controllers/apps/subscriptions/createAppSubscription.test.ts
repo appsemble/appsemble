@@ -4,7 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,
-  AppSubscription,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -95,6 +95,7 @@ describe('createAppSubscription', () => {
       keys: { p256dh: 'abc', auth: 'def' },
     });
 
+    const { AppSubscription } = await getAppDB(app.id);
     const subscription = await AppSubscription.findOne({
       where: { endpoint: 'https://example.com' },
       raw: true,
@@ -105,7 +106,6 @@ describe('createAppSubscription', () => {
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
-      AppId: app.id,
       AppMemberId: appMember.id,
       created: new Date(),
       updated: new Date(),

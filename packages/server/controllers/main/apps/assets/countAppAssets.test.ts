@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -70,15 +70,14 @@ describe('countAppAssets', () => {
   });
 
   it('should return the number of assets', async () => {
+    const { Asset } = await getAppDB(app.id);
     await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
     });
 
     await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),
@@ -95,15 +94,14 @@ describe('countAppAssets', () => {
   });
 
   it('should return the number of assets even if compressed versions exist', async () => {
+    const { Asset } = await getAppDB(app.id);
     await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
     });
 
     await Asset.create({
-      AppId: app.id,
       mime: 'image/png',
       filename: 'logo.png',
       data: await readFixture('nodejs-logo.png'),
@@ -120,15 +118,14 @@ describe('countAppAssets', () => {
   });
 
   it('should not count another app’s assets', async () => {
+    const { Asset } = await getAppDB(app.id);
     await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
     });
 
     await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),
@@ -153,8 +150,8 @@ describe('countAppAssets', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    await Asset.create({
-      AppId: appB.id,
+    const { Asset: AssetB } = await getAppDB(appB.id);
+    await AssetB.create({
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),
@@ -171,15 +168,14 @@ describe('countAppAssets', () => {
   });
 
   it('should not count another organization’s assets', async () => {
+    const { Asset } = await getAppDB(app.id);
     await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
     });
 
     await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),
@@ -208,8 +204,8 @@ describe('countAppAssets', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organizationB.id,
     });
-    await Asset.create({
-      AppId: appB.id,
+    const { Asset: AssetB } = await getAppDB(appB.id);
+    await AssetB.create({
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),

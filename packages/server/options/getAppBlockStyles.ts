@@ -3,15 +3,16 @@ import {
   type GetAppBlockStylesParams,
 } from '@appsemble/node-utils';
 
-import { AppBlockStyle } from '../models/index.js';
+import { getAppDB } from '../models/index.js';
 
 export async function getAppBlockStyles({
   app,
   name,
 }: GetAppBlockStylesParams): Promise<AppBlockStyleInterface[]> {
+  const { AppBlockStyle } = await getAppDB(app.id!);
   const appBlockStyles = await AppBlockStyle.findAll({
     attributes: ['style'],
-    where: { AppId: app.id, block: name },
+    where: { block: name },
   });
 
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)

@@ -2,14 +2,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setArgv } from '../../../../../index.js';
-import {
-  App,
-  AppMember,
-  Group,
-  GroupMember,
-  Organization,
-  User,
-} from '../../../../../models/index.js';
+import { App, getAppDB, Organization, User } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { encrypt } from '../../../../../utils/crypto.js';
@@ -100,9 +93,9 @@ describe('createAppScimUser', () => {
     `,
     );
 
+    const { AppMember } = await getAppDB(app.id);
     const member = await AppMember.findByPk(response.data.id);
     expect(member).toMatchObject({
-      AppId: app.id,
       email: 'spongebob@krustykrab.example',
       id: response.data.id,
       name: 'Spongebob Squarepants',
@@ -184,9 +177,9 @@ describe('createAppScimUser', () => {
     `,
     );
 
+    const { AppMember } = await getAppDB(app.id);
     const member = await AppMember.findByPk(response.data.id);
     expect(member).toMatchObject({
-      AppId: app.id,
       email: 'spongebob@krustykrab.example',
       id: response.data.id,
       role: 'User',
@@ -243,6 +236,7 @@ describe('createAppScimUser', () => {
     `,
     );
 
+    const { AppMember, Group, GroupMember } = await getAppDB(app.id);
     const member = await AppMember.findByPk(response.data.id, {
       include: [
         {
@@ -252,7 +246,6 @@ describe('createAppScimUser', () => {
       ],
     });
     expect(member).toMatchObject({
-      AppId: app.id,
       GroupMembers: [
         {
           Group: { name: 'krbs' },
@@ -268,7 +261,8 @@ describe('createAppScimUser', () => {
   });
 
   it.todo('should add members to an existing group matching the manager id', async () => {
-    const group = await Group.create({ AppId: app.id, name: 'krbs' });
+    const { AppMember, Group, GroupMember } = await getAppDB(app.id);
+    const group = await Group.create({ name: 'krbs' });
 
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
@@ -328,7 +322,6 @@ describe('createAppScimUser', () => {
     });
 
     expect(member).toMatchObject({
-      AppId: app.id,
       GroupMembers: [
         {
           GroupId: group.id,
@@ -342,7 +335,8 @@ describe('createAppScimUser', () => {
   });
 
   it.todo('should make members manager of a group matching their id', async () => {
-    const group = await Group.create({ AppId: app.id, name: 'krbs' });
+    const { AppMember, Group, GroupMember } = await getAppDB(app.id);
+    const group = await Group.create({ name: 'krbs' });
 
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
@@ -392,7 +386,6 @@ describe('createAppScimUser', () => {
       ],
     });
     expect(member).toMatchObject({
-      AppId: app.id,
       GroupMembers: [
         {
           GroupId: group.id,
@@ -410,10 +403,10 @@ describe('createAppScimUser', () => {
     'should assign manager to group that was created before their group’s creation, with the appropriate role',
     async () => {
       const user = await User.create({ timezone: '' });
+      const { AppMember, Group, GroupMember } = await getAppDB(app.id);
       const appMember = await AppMember.create({
-        UserId: user.id,
+        userId: user.id,
         email: 'user@example.com',
-        AppId: app.id,
         role: 'User',
         scimExternalId: 'krbs',
         timezone: 'Europe/Amsterdam',
@@ -435,7 +428,7 @@ describe('createAppScimUser', () => {
         },
       });
       const result = (await Group.findOne({
-        where: { AppId: app.id, name: appMember.scimExternalId },
+        where: { name: appMember.scimExternalId },
       }).then((group) =>
         GroupMember.findOne({ where: { GroupId: group!.id, AppMemberId: appMember.id } }),
       ))!;

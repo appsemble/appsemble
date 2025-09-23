@@ -2,7 +2,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setArgv } from '../../../../../index.js';
-import { App, AppMember, Organization, User } from '../../../../../models/index.js';
+import { App, getAppDB, Organization, User } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { encrypt } from '../../../../../utils/crypto.js';
@@ -46,10 +46,10 @@ describe('updateAppScimUser', () => {
 
   it.todo('should update a user and app member', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
+    const { AppMember } = await getAppDB(app.id);
     const member = await AppMember.create({
-      UserId: user.id,
+      userId: user.id,
       email: 'user@example.com',
-      AppId: app.id,
       role: 'User',
     });
 

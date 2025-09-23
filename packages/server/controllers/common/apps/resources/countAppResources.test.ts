@@ -6,12 +6,9 @@ import webpush from 'web-push';
 
 import {
   type App,
-  AppMember,
-  Group,
-  GroupMember,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -60,13 +57,12 @@ describe('countAppResources', () => {
   });
 
   it('should be able to count all resources of a type', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
     });
@@ -92,18 +88,16 @@ describe('countAppResources', () => {
   });
 
   it('should apply filters', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
     });
@@ -122,22 +116,20 @@ describe('countAppResources', () => {
   });
 
   it('should only count resources the user has access to', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const memberA = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'Reader',
       timezone: 'Europe/Amsterdam',
     });
 
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
       AuthorId: memberA.id,
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'baz' },
     });
@@ -156,27 +148,25 @@ describe('countAppResources', () => {
   });
 
   it('should only count resources from group members', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const group = await Group.create({ name: 'Test Group' });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     const memberA = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
     const memberB = await AppMember.create({
       email: 'userB@example.com',
-      AppId: app.id,
-      UserId: userB.id,
+      userId: userB.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
     const memberC = await AppMember.create({
       email: 'userC@example.com',
-      AppId: app.id,
-      UserId: userC.id,
+      userId: userC.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
@@ -193,21 +183,18 @@ describe('countAppResources', () => {
     });
 
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceGroup',
       data: { foo: 'bar' },
       AuthorId: memberA.id,
       GroupId: group.id,
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceGroup',
       data: { foo: 'baz' },
       AuthorId: memberB.id,
       GroupId: group.id,
     });
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceGroup',
       data: { foo: 'foo' },
       AuthorId: memberC.id,
@@ -226,8 +213,8 @@ describe('countAppResources', () => {
   });
 
   it('should override general action roles', async () => {
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
-      AppId: app.id,
       type: 'testPrivateResource',
       data: { foo: 'bar' },
     });
@@ -243,16 +230,15 @@ describe('countAppResources', () => {
   });
 
   it('should throw if the user does not have enough permissions', async () => {
+    const { AppMember, Resource } = await getAppDB(app.id);
     const memberA = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
 
     await Resource.create({
-      AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });

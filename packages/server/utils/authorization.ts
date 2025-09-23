@@ -16,7 +16,13 @@ import {
 import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
-import { App, AppMember, GroupMember, Organization, OrganizationMember } from '../models/index.js';
+import {
+  App,
+  type AppMember,
+  getAppDB,
+  Organization,
+  OrganizationMember,
+} from '../models/index.js';
 
 interface CheckAppPermissionsParams {
   context: Context;
@@ -31,7 +37,13 @@ interface CheckOrganizationPermissionsParams {
   requiredPermissions: OrganizationPermission[];
 }
 
-async function getAppMemberScopedRole(appMember: AppMember, groupId?: number): Promise<AppRole> {
+async function getAppMemberScopedRole(
+  appMember: AppMember,
+  appId: number,
+  groupId?: number,
+): Promise<AppRole> {
+  const { GroupMember } = await getAppDB(appId);
+
   if (!appMember) {
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return null;
@@ -61,25 +73,24 @@ async function getAppMemberAppRole(
   appId: number,
   groupId?: number,
 ): Promise<AppRole> {
+  const { AppMember } = await getAppDB(appId);
   const appMember = await AppMember.findByPk(appMemberId, { attributes: ['id', 'role'] });
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
-  return getAppMemberScopedRole(appMember, groupId);
+  return getAppMemberScopedRole(appMember, appId, groupId);
 }
 
 async function getUserAppRole(userId: string, appId: number, groupId?: number): Promise<AppRole> {
+  const { AppMember } = await getAppDB(appId);
   const appMember = await AppMember.findOne({
     attributes: ['id', 'role'],
-    where: {
-      AppId: appId,
-      UserId: userId,
-    },
+    where: { userId },
   });
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
-  return getAppMemberScopedRole(appMember, groupId);
+  return getAppMemberScopedRole(appMember, appId, groupId);
 }
 
 async function getUserOrganizationRole(
@@ -129,6 +140,8 @@ export async function checkAppMemberAppPermissions({
   groupId,
   requiredPermissions,
 }: CheckAppPermissionsParams): Promise<void> {
+  const { AppMember } = await getAppDB(appId);
+
   const { user: authSubject } = context;
 
   const app = await App.findByPk(appId, { attributes: ['definition'] });

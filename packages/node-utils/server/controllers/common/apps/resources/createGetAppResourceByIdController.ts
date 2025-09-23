@@ -27,7 +27,6 @@ export function createGetAppResourceByIdController(options: Options): Middleware
       where: {
         id: resourceId,
         type: resourceType,
-        AppId: appId,
         GroupId: selectedGroupId ?? null,
         expires: { or: [{ gt: new Date() }, null] },
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),

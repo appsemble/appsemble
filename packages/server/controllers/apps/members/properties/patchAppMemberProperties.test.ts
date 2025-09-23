@@ -7,19 +7,23 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
+<<<<<<<< HEAD:packages/server/controllers/apps/members/properties/patchAppMemberProperties.test.ts
 import {
   authorizeAppMember,
   createTestAppMember,
   createTestUser,
 } from '../../../../utils/test/authorization.js';
+========
+import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
+>>>>>>>> 421054bb29 (support database per app):packages/server/controllers/common/apps/members/patchAppMemberProperties.test.ts
 
 let organization: Organization;
 let user: User;
@@ -74,16 +78,23 @@ describe('patchAppMemberProperties', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+<<<<<<<< HEAD:packages/server/controllers/apps/members/properties/patchAppMemberProperties.test.ts
     const owner = await createTestAppMember(app.id);
     authorizeAppMember(app, owner);
     const appMember = await AppMember.create({
       email: 'test2@example.com',
       AppId: app.id,
+========
+    const { AppMember } = await getAppDB(app.id);
+    const appMember = await AppMember.create({
+      email: user.primaryEmail,
+      userId: user.id,
+>>>>>>>> 421054bb29 (support database per app):packages/server/controllers/common/apps/members/patchAppMemberProperties.test.ts
       role: PredefinedAppRole.Member,
     });
 
     const response = await request.patch(
-      `/api/app-members/${appMember.id}/properties`,
+      `/api/apps/${app.id}/app-members/${appMember.id}/properties`,
       createFormData({ properties: { test: 'Property', foo: 'bar' } }),
     );
 
@@ -122,17 +133,24 @@ describe('patchAppMemberProperties', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+<<<<<<<< HEAD:packages/server/controllers/apps/members/properties/patchAppMemberProperties.test.ts
     await createTestAppMember(app.id);
     authorizeAppMember(app);
     const appMember = await AppMember.create({
       email: 'test2@example.com',
       AppId: app.id,
+========
+    const { AppMember } = await getAppDB(app.id);
+    const appMember = await AppMember.create({
+      email: user.primaryEmail,
+      userId: user.id,
+>>>>>>>> 421054bb29 (support database per app):packages/server/controllers/common/apps/members/patchAppMemberProperties.test.ts
       role: PredefinedAppRole.Member,
       properties: { foo: 'bar', number: 33 },
     });
 
     const { status } = await request.patch(
-      `/api/app-members/${appMember.id}/properties`,
+      `/api/apps/${app.id}/app-members/${appMember.id}/properties`,
       createFormData({ properties: { foo: 'test' } }),
     );
     expect(status).toBe(200);

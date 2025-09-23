@@ -4,7 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppServiceSecret,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -71,13 +71,13 @@ describe('getAppServiceSecrets', () => {
   });
 
   it('should get app service secrets', async () => {
+    const { AppServiceSecret } = await getAppDB(app.id);
     await AppServiceSecret.create({
       name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'query',
       identifier: 'key',
       secret: 'c6a5e780dee8e2f1f576538c8',
-      AppId: app.id,
     });
     await AppServiceSecret.create({
       name: 'Test service',
@@ -85,7 +85,6 @@ describe('getAppServiceSecrets', () => {
       authenticationMethod: 'basic',
       identifier: 'john_doe',
       secret: 'Strong_Password-123',
-      AppId: app.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/secrets/service`);

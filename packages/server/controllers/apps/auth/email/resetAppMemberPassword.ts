@@ -2,7 +2,7 @@ import { assertKoaCondition } from '@appsemble/node-utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 
-import { App, AppMember } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 
 export async function resetAppMemberPassword(ctx: Context): Promise<void> {
   const {
@@ -11,13 +11,13 @@ export async function resetAppMemberPassword(ctx: Context): Promise<void> {
       body: { token },
     },
   } = ctx;
-
+  const { AppMember } = await getAppDB(appId);
   const app = await App.findByPk(appId, { attributes: ['id'] });
 
   assertKoaCondition(app != null, ctx, 404, 'App could not be found.');
 
   const appMember = await AppMember.findOne({
-    where: { AppId: appId, resetKey: token },
+    where: { resetKey: token },
     attributes: ['id'],
   });
 

@@ -5,12 +5,7 @@ import {
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  App,
-  AppSamlSecret,
-  Organization,
-  OrganizationMember,
-} from '../../../../../models/index.js';
+import { App, getAppDB, Organization, OrganizationMember } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
@@ -55,8 +50,8 @@ describe('deleteAppSamlSecret', () => {
 
   it('should generate SAML parameters', async () => {
     authorizeStudio();
+    const { AppSamlSecret } = await getAppDB(app.id);
     const secret = await AppSamlSecret.create({
-      AppId: app.id,
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',

@@ -13,8 +13,9 @@ import axiosSnapshotSerializer, { setResponseTransformer } from 'jest-axios-snap
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import { type Sequelize } from 'sequelize';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { afterAll, beforeAll, beforeEach, expect, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from 'vitest';
 
+import { dropAndCloseAllAppDBs } from './models/index.js';
 import { rootDB, setupTestDatabase } from './utils/test/testSchema.js';
 
 interface CustomMatchers<R = unknown> {
@@ -38,7 +39,7 @@ let testDB: Sequelize;
 beforeAll(async () => {
   [testDB] = await setupTestDatabase(randomUUID());
   await testDB.sync();
-  await initS3Client({
+  initS3Client({
     accessKey: 'admin',
     secretKey: 'password',
     endPoint: process.env.S3_HOST || 'localhost',
@@ -48,9 +49,14 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  await dropAndCloseAllAppDBs();
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
   vi.useRealTimers();
   await clearAllS3Buckets();
+});
+
+afterEach(async () => {
+  await dropAndCloseAllAppDBs();
 });
 
 afterAll(() => {

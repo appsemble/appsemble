@@ -9,7 +9,12 @@ import jwt from 'jsonwebtoken';
 import { type Context } from 'koa';
 
 import { argv } from './argv.js';
-import { type App, type AppMember, OAuth2AuthorizationCode } from '../models/index.js';
+import {
+  type App,
+  type AppMember,
+  getAppDB,
+  type OAuth2AuthorizationCode,
+} from '../models/index.js';
 
 export class GrantError extends Error {
   status: number;
@@ -198,7 +203,7 @@ export async function getUserInfo(
   };
 }
 
-export function createAppOAuth2AuthorizationCode(
+export async function createAppOAuth2AuthorizationCode(
   app: App,
   redirectUri: string,
   scope: string,
@@ -211,8 +216,8 @@ export function createAppOAuth2AuthorizationCode(
     throwKoaError(ctx, 403, 'Invalid redirectUri');
   }
 
+  const { OAuth2AuthorizationCode } = await getAppDB(app.id);
   return OAuth2AuthorizationCode.create({
-    AppId: app.id,
     code: randomBytes(12).toString('hex'),
     expires: addMinutes(new Date(), 10),
     redirectUri,

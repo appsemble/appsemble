@@ -9,7 +9,7 @@ import {
 import { UniqueConstraintError } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
-import { Asset } from '../models/Asset.js';
+import { type Asset, getAppDB } from '../models/index.js';
 
 export async function createAppAsset({
   app,
@@ -18,10 +18,11 @@ export async function createAppAsset({
 }: CreateAppAssetParams): Promise<AppAsset> {
   const { filename, mime, name, path } = payload;
 
-  const member = await getCurrentAppMember({ context });
+  const member = await getCurrentAppMember({ context, app });
 
   let asset: Asset;
   try {
+    const { Asset } = await getAppDB(app.id!);
     asset = await Asset.create({
       AppId: app.id,
       name,
