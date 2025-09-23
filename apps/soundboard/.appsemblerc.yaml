@@ -23,7 +23,7 @@ context:
   staging:
     id: 369
     organization: appsemble
-    remote: https://staging.appsemble.eu
+    remote: https://appsemble.eu
     visibility: public
     resources: true
     assets: true
