@@ -71,10 +71,6 @@ export interface JSONSchemaSettings {
 // This class is responsible for handling all the settings
 export class SettingsState {
   yamlConfigurationSettings: JSONSchemaSettings[] = [];
-  // TODO: remove
-  // yamlConfigurationSettings: Record<string, string> = {};
-  // TODO: remove
-  // yamlConfigurationSettings: Record<string, JSONSchemaSettings> = {};
 
   schemaAssociations: ISchemaAssociations | SchemaConfiguration[] | undefined = undefined;
 

@@ -1,5 +1,6 @@
 import { schemas } from '@appsemble/lang-sdk';
 import { type Schema } from 'jsonschema';
+import { cloneDeep } from 'lodash-es';
 import { type SchemaConfiguration } from 'yaml-language-server';
 import { type JSONSchema } from 'yaml-language-server/lib/esm/languageservice/jsonSchema.js';
 
@@ -44,7 +45,18 @@ export function createAppsembleSchemaConfig({
     schema: {
       $ref: '#/components/schemas/AppDefinition',
       components: {
-        schemas: mapValues(schemas, addMarkdownDescriptions),
+        // Whatever ingests this from yaml-language-server's languageService,
+        // we really don't trust it!
+        // Evil stuff would happen if you don't deep clone this, never remove that part.
+        // (N.B: We should also deep-freeze the schemas object in lang-sdk to make sure code crashes
+        // before it messes with the schemas, but that's not a hard necessity.)
+        // Evil stuff in question: schemas somehow become recursive exactly along $ref lines.
+        // Some part of the languageService mangles the schemas object in place to make $refs real.
+        // Problem with that: any other thing that uses the schemas now has to handle a circular
+        // object.
+        // Say goodbye to JSON.stringify working
+        // and hello to "Maximum call stack size exceeded" when you try to use a schema validator
+        schemas: mapValues(cloneDeep(schemas), addMarkdownDescriptions),
       },
     } as JSONSchema,
   };

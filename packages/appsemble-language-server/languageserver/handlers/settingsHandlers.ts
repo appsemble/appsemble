@@ -263,14 +263,7 @@ export class SettingsHandler {
       }
     }
 
-    this.connection.console.log(
-      `schemaConfigurationSettings are: ${this.yamlSettings.schemaConfigurationSettings}`,
-    );
-
     if (this.yamlSettings.schemaConfigurationSettings) {
-      this.connection.console.log(
-        `Processing schemaConfigurationSettings: ${JSON.stringify(this.yamlSettings.schemaConfigurationSettings)}`,
-      );
       for (const schema of this.yamlSettings.schemaConfigurationSettings) {
         let uri = schema.uri as string | undefined;
         if (!uri && schema.schema) {
@@ -305,9 +298,6 @@ export class SettingsHandler {
       );
     }
 
-    this.connection.console.log(
-      `Configuring languageService with ${JSON.stringify(languageSettings)}`,
-    );
     this.languageService.configure(languageSettings);
 
     // Revalidate any open text documents

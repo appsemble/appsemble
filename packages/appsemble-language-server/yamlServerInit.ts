@@ -132,23 +132,10 @@ export class YAMLServerInit {
         formatterRegistration: NonNullable<SettingsState['formatterRegistration']>;
         style: NonNullable<SettingsState['style']>;
         workspaceRoot: NonNullable<SettingsState['workspaceRoot']>;
-        // TODO: nvm
-        // yamlConfigurationSettings: any[];
       },
       telemetry: this.telemetry,
       clientCapabilities: params.capabilities,
     });
-
-    // TODO: rm
-    // this.languageService.configure(this.yamlSettings);
-    // TODO: uncomment or replace
-    // this.languageService.configure({
-    //   schemas: this.yamlSettings.schemaStoreSettings,
-    // });
-    // TODO: or this one
-    // this.connection.console.log('Pulling config');
-    // this.settingsHandler.pullConfiguration();
-    // this.connection.console.log('Pulled config');
 
     // Only try to parse the workspace root if its not null. Otherwise initialize will fail
     if (params.rootUri) {
