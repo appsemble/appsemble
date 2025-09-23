@@ -2,7 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import { type Sequelize, type Transaction } from 'sequelize';
 import { Scalar, YAMLMap, YAMLSeq } from 'yaml';
 
-import { type Patch } from '../utils/yaml.js';
+import { type Patch } from '../../utils/yaml.js';
 
 export const key = '0.34.12';
 

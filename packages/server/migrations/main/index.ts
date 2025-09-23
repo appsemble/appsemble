@@ -29,13 +29,13 @@ import * as m0_32_1_test_14 from './0.32.1-test.14.js';
 import * as m0_32_1_test_16 from './0.32.1-test.16.js';
 import * as m0_32_1_test_8 from './0.32.1-test.8.js';
 import * as m0_32_3_test_2 from './0.32.3-test.2.js';
-import * as m0_33_0 from './0.33.0.js';
 import * as m0_33_6 from './0.33.6.js';
 import * as m0_34_11 from './0.34.11.js';
 import * as m0_34_12 from './0.34.12.js';
 import * as m0_34_15 from './0.34.15.js';
 import * as m0_34_16 from './0.34.16.js';
 import * as m0_34_5 from './0.34.5.js';
+import * as m0_35_0 from './0.35.0.js';
 import { type Migration } from '../../utils/migrate.js';
 
 export const migrations: Migration[] = [
@@ -70,11 +70,11 @@ export const migrations: Migration[] = [
   m0_32_1_test_14,
   m0_32_1_test_16,
   m0_32_3_test_2,
-  m0_33_0,
   m0_33_6,
   m0_34_5,
   m0_34_11,
   m0_34_12,
   m0_34_15,
   m0_34_16,
+  m0_35_0,
 ];
