@@ -14,7 +14,7 @@ stages:
 
 variables:
   BACKUPS_LOCATION: hetzner-s3:appsemble/backups
-  PROD_BACKUP_NAME: appsemble_staging_backup
+  PROD_BACKUP_NAME: appsemble_prod_backup
 
 workflow:
   rules:
