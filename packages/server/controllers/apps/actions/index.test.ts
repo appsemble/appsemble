@@ -827,15 +827,14 @@ describe('actions', () => {
     it('should attach existing assets by name', async () => {
       const spy = vi.spyOn(server.context.mailer, 'sendEmail');
       const buffer = Buffer.from('test');
+      const { Asset } = await getAppDB(1);
       const asset = await Asset.create({
-        AppId: 1,
         mime: 'text/plain',
         filename: 'test.txt',
         name: 'test',
       });
       await uploadS3File(`app-${1}`, asset.id, buffer);
       const asset2 = await Asset.create({
-        AppId: 1,
         mime: 'text/plain',
         filename: 'test2.txt',
       });

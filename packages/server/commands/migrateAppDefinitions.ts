@@ -14,7 +14,7 @@ import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
 import { migrations } from '../migrations/main/index.js';
-import { App, AppSnapshot, initDB } from '../models/index.js';
+import { App, AppSnapshot, initDB, transactional } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { getBlockVersions } from '../utils/block.js';
 import { handleDBError } from '../utils/sqlUtils.js';

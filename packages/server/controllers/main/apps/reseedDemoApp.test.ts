@@ -689,8 +689,8 @@ describe('reseedDemoApp', () => {
       OrganizationId: organization.id,
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      AppId: app.id,
       email: 'test@example.com',
       name: 'Test',
       demo: true,
@@ -700,7 +700,6 @@ describe('reseedDemoApp', () => {
     });
 
     await AppMember.create({
-      AppId: app.id,
       email: 'test2@example.com',
       name: 'Test 2',
       demo: true,
@@ -710,7 +709,6 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: ephemeral1Id } = await AppMember.create({
-      AppId: app.id,
       email: 'test@example.com',
       name: 'Test',
       demo: true,
@@ -720,7 +718,6 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: ephemeral2Id } = await AppMember.create({
-      AppId: app.id,
       email: 'test2@example.com',
       name: 'Test 2',
       demo: true,

@@ -4,7 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  AppMember,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -59,9 +59,9 @@ describe('deleteDemoAppMembers', () => {
       demoMode: true,
       OrganizationId: organization.id,
     });
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.bulkCreate(
       Array.from(Array.from({ length: 5 }).keys()).map((entry) => ({
-        AppId: app.id,
         email: `test${entry}@example.com`,
         name: `Test ${entry}`,
         demo: true,
@@ -123,8 +123,9 @@ describe('deleteDemoAppMembers', () => {
       demoMode: true,
       path: 'test-app-dup',
     });
-    const memberApp2 = await AppMember.create({
-      AppId: app2.id,
+    const { AppMember } = await getAppDB(app.id);
+    const { AppMember: AppMember2 } = await getAppDB(app2.id);
+    const memberApp2 = await AppMember2.create({
       email: 'test@example.com',
       name: 'Test',
       demo: true,
@@ -134,9 +135,9 @@ describe('deleteDemoAppMembers', () => {
     });
     const { status } = await request.delete(`/api/apps/${app.id}/demo-members`);
     expect(status).toBe(204);
-    const members = await AppMember.findAll({ where: { AppId: app.id } });
+    const members = await AppMember.findAll();
     expect(members).toStrictEqual([]);
-    const member2 = await AppMember.findOne({ where: { AppId: app2.id } });
+    const member2 = await AppMember2.findOne();
     expect(member2?.dataValues).toMatchObject(memberApp2.dataValues);
   });
 
@@ -144,7 +145,8 @@ describe('deleteDemoAppMembers', () => {
     await authorizeClientCredentials('apps:write');
     const { status } = await request.delete(`/api/apps/${app.id}/demo-members`);
     expect(status).toBe(204);
-    const members = await AppMember.findAll({ where: { AppId: app.id } });
+    const { AppMember } = await getAppDB(app.id);
+    const members = await AppMember.findAll();
     expect(members).toStrictEqual([]);
   });
 });

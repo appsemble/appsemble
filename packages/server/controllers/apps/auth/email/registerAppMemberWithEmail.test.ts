@@ -361,6 +361,7 @@ describe('registerAppMemberWithEmail', () => {
         members: { phoneNumber: { enable: true } },
       },
     });
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
       AppId: app.id,
       UserId: user.id,
@@ -410,6 +411,7 @@ describe('registerAppMemberWithEmail', () => {
 
     expect(response.status).toBe(201);
 
+    const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.findOne({
       where: { AppId: app.id, phoneNumber: '+31 6 12345678' },
     });

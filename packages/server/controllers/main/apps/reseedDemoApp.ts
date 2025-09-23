@@ -42,7 +42,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
     ],
   });
 
-  const { Asset, Resource } = await getAppDB(appId);
+  const { AppMember, Asset, Resource } = await getAppDB(appId);
   const demoAssetsToDelete = await Asset.findAll({
     attributes: ['id', 'name'],
     where: { ephemeral: true },
@@ -88,7 +88,6 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
     where: {
       [Op.and]: {
         ephemeral: true,
-        AppId: appId,
       },
     },
   });
@@ -103,22 +102,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
 
   logger.info(`Removed ${demoMembersDeletionResult} ephemeral members`);
 
-  const demoMembersToReseed = await AppMember.findAll({
-    include: [
-      {
-        model: App,
-        attributes: ['id'],
-        where: {
-          id: appId,
-          demoMode: true,
-        },
-        required: true,
-      },
-    ],
-    where: {
-      seed: true,
-    },
-  });
+  const demoMembersToReseed = await AppMember.findAll({ where: { seed: true } });
 
   logger.info('Reseeding ephemeral App members');
   for (const member of demoMembersToReseed) {

@@ -85,23 +85,22 @@ export async function handler(): Promise<void> {
       logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
 
       const demoAssetsToReseed = await Asset.findAll({
-        attributes: ['id', 'mime', 'filename', 'data', 'name', 'ResourceId'],
+        attributes: ['id', 'mime', 'filename', 'data', 'name', 'ResourceId', 'AppId'],
         where: { OriginalId: null, seed: true },
       });
 
       logger.info(`Reseeding ephemeral assets into demo app ${demoApp.id}.`);
 
       for (const asset of demoAssetsToReseed) {
-        const { id, ...values } = asset.dataValues;
-        const appId = asset.App!.id;
+        const { data, id, ...values } = asset.dataValues;
         const created = await Asset.create({
           ...values,
           ephemeral: true,
           seed: false,
         });
-        const stream = await getS3File(`app-${appId}`, id);
-        const stats = await getS3FileStats(`app-${appId}`, id);
-        await uploadS3File(`app-${appId}`, created.id, stream, stats.size);
+        const stream = await getS3File(`app-${demoApp.id}`, id);
+        const stats = await getS3FileStats(`app-${demoApp.id}`, id);
+        await uploadS3File(`app-${demoApp.id}`, created.id, stream, stats.size);
       }
 
       logger.info(

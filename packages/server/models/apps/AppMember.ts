@@ -61,7 +61,13 @@ export class AppMemberGlobal extends Model {
 
   timezone?: string;
 
+  phoneNumber?: string;
+
   demo!: boolean;
+
+  ephemeral!: boolean;
+
+  seed!: boolean;
 
   userId?: string;
 
@@ -313,10 +319,26 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
     @Column(DataType.STRING)
     timezone?: string;
 
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    @Index({ name: 'UniqueAppMemberPhoneNumberIndex', unique: true })
+    phoneNumber?: string;
+
     @AllowNull(false)
     @Default(false)
     @Column(DataType.BOOLEAN)
     demo!: boolean;
+
+    @AllowNull(false)
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    seed!: boolean;
+
+    @AllowNull(false)
+    @Default(false)
+    @Index({ name: 'UniqueAppMemberEmailIndex', unique: true })
+    @Column(DataType.BOOLEAN)
+    ephemeral!: boolean;
 
     @Column(DataType.UUID)
     @Index({ name: 'UniqueAppMemberUserIndex', unique: true })
