@@ -30,7 +30,10 @@ export async function getMessagesUtil(
     .find((sub) => sub.type() === 'language');
   const baseLang = baseLanguage && String(baseLanguage).toLowerCase();
 
-  const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+  const app = await getApp({
+    context: ctx,
+    query: { attributes: ['id', 'definition'], where: { id: appId } },
+  });
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 

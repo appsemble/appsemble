@@ -14,16 +14,21 @@ import { createIcon } from '../utils/createIcon.js';
  *
  * https://schema.org/GeoCoordinates
  */
-export function GeoCoordinatesRenderer({ data, field }: RendererProps<GeoCoordinatesField>): VNode {
+export function GeoCoordinatesRenderer({
+  data,
+  field,
+}: RendererProps<GeoCoordinatesField>): VNode | null {
   const block = useBlock();
   const { theme, utils } = block;
 
   const label = utils.remap(field.label, data);
   const value = utils.remap(field.value, data) as { lat: number; lng: number } | null;
   const hide = utils.remap(field.hide, data);
-  const lat = field.latitude ? (utils.remap(field.latitude, value ?? data) as number) : value.lat;
-  const lng = field.longitude ? (utils.remap(field.longitude, value ?? data) as number) : value.lng;
-  const [marker, setMarker] = useState<DivIcon | Icon>(null);
+  const lat = field.latitude ? (utils.remap(field.latitude, value ?? data) as number) : value?.lat;
+  const lng = field.longitude
+    ? (utils.remap(field.longitude, value ?? data) as number)
+    : value?.lng;
+  const [marker, setMarker] = useState<DivIcon | Icon | null>(null);
 
   useEffect(() => {
     createIcon(block).then(setMarker);
@@ -36,7 +41,9 @@ export function GeoCoordinatesRenderer({ data, field }: RendererProps<GeoCoordin
       {marker ? (
         <Location
           className={styles.map}
+          // @ts-expect-error strictNullChecks undefined is not assignable
           latitude={lat}
+          // @ts-expect-error strictNullChecks undefined is not assignable
           longitude={lng}
           marker={marker}
           radius={10}

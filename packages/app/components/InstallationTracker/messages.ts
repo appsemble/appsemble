@@ -30,4 +30,8 @@ export const messages = defineMessages({
     id: 'app.8+fEUD',
     defaultMessage: '2. Find and select "Add to Home Screen" or "Install App".',
   },
+  bannerSafariDesktopUnsupported: {
+    id: 'app./xUZ2e',
+    defaultMessage: 'Safari on desktop does not support installing PWAs.',
+  },
 });

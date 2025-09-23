@@ -42,6 +42,14 @@ If set to \`navigation\`, it will only be visible if \`login\` is also visible i
 If set to \`navigation\`, it will only be visible if \`login\` is also visible in \`navigation\`.
 `,
     },
+    debug: {
+      enum: ['navbar', 'navigation', 'hidden'],
+      default: 'hidden',
+      description: `The location of the debug button.
+
+If set to \`navigation\`, it will only be visible if \`login\` is also visible in \`navigation\`.
+`,
+    },
     navigation: {
       enum: ['bottom', 'left-menu', 'hidden'],
       default: 'left-menu',

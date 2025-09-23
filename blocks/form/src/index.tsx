@@ -60,14 +60,14 @@ bootstrap(
       return { ...valuesFromData, ...(data as Record<string, unknown>) };
     }, [data, disableDefault, fields]);
     const [formErrors, setFormErrors] = useState(
-      Array.from<string>({ length: requirements?.length ?? 0 }).fill(null),
+      Array.from<string | null | undefined>({ length: requirements?.length ?? 0 }).fill(null),
     );
-    const [submitErrorResult, setSubmitErrorResult] = useState<string>(null);
+    const [submitErrorResult, setSubmitErrorResult] = useState<string | null>(null);
     const [dataLoading, setDataLoading] = useState(!skipInitialLoad);
     const [fieldsLoading, setFieldsLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [values, setValues] = useState(defaultValues);
-    const [lastChanged, setLastChanged] = useState<string>(null);
+    const [lastChanged, setLastChanged] = useState<string | null>(null);
     const [triedToSubmit, setTriedToSubmit] = useState<boolean>(false);
     const [longSubmission, setLongSubmission] = useState<boolean>(false);
     const [thumbnails, setThumbnails] = useState<(File | string)[]>([]);
@@ -100,7 +100,7 @@ bootstrap(
     );
 
     const [fieldErrorLinks, setFieldErrorLinks] = useState<
-      Record<string, { error: string; element: VNode }>
+      Record<string, { error: string; element: VNode } | null>
     >({});
 
     const setFieldErrorLink = (
@@ -110,7 +110,7 @@ bootstrap(
       if (params) {
         const { error, label, ref } = params;
 
-        if (!fieldErrorLinks[fieldName] || fieldErrorLinks[fieldName].error !== error) {
+        if (!fieldErrorLinks[fieldName] || fieldErrorLinks[fieldName]?.error !== error) {
           setFieldErrorLinks((prevState) => ({
             ...prevState,
             [fieldName]: {
@@ -173,17 +173,17 @@ bootstrap(
       const token = Symbol('Async requirements lock');
       lock.current = token;
 
-      const requirementErrors = new Map<number, string>();
+      const requirementErrors = new Map<number, string | null>();
       Promise.all(
         pendingRequirements.map((requirement) =>
           actions[requirement.action](values).then(
             (result) => {
-              requirementErrors.set(requirements.indexOf(requirement), null);
+              requirementErrors.set((requirements ?? []).indexOf(requirement), null);
               return result;
             },
             (errorResponse) => {
               requirementErrors.set(
-                requirements.indexOf(requirement),
+                (requirements ?? []).indexOf(requirement),
                 requirement.errorMessage
                   ? (utils.remap(requirement.errorMessage, values, {
                       error: errorResponse,
@@ -325,7 +325,7 @@ bootstrap(
     ]);
 
     const onPrevious = useCallback(() => {
-      actions.onPrevious(values);
+      actions.onPrevious?.(values);
     }, [actions, values]);
 
     useEffect(() => {
@@ -360,7 +360,7 @@ bootstrap(
         setDataLoading(false);
         setValues(newValues);
 
-        const requirementErrors = new Map<number, string>();
+        const requirementErrors = new Map<number, string | null>();
         Promise.all(
           requirements?.map((requirement) =>
             actions[requirement.action](newValues).then(
@@ -392,22 +392,28 @@ bootstrap(
     const debouncedRequest = useMemo(
       () =>
         debounce(async (fieldValues: Values) => {
-          await actions[autofill.action](fieldValues).then((response) => {
-            if (typeof response === 'object' && !Array.isArray(response)) {
-              const newValues = response as Record<string, unknown>;
-              for (const [key] of Object.entries(newValues)) {
-                newValues[key] ??= defaultValues[key];
+          if (!autofill?.action) {
+            return;
+          }
+          if (autofill.action) {
+            await actions[autofill.action](fieldValues).then((response) => {
+              if (typeof response === 'object' && !Array.isArray(response)) {
+                const newValues = response as Record<string, unknown>;
+                for (const [key] of Object.entries(newValues)) {
+                  newValues[key] ??= defaultValues[key];
+                }
+                setValues((prevValues) => ({ ...prevValues, ...newValues }));
+                setLastChanged(null);
               }
-              setValues((prevValues) => ({ ...prevValues, ...newValues }));
-              setLastChanged(null);
-            }
-            // TODO: Handle errors appropriately
-          }, identity);
+              // TODO: Handle errors appropriately
+            }, identity);
+          }
         }, autofill?.delay),
       [actions, defaultValues, autofill],
     );
 
     useEffect(() => {
+      // @ts-expect-error strictNullChecks
       if (autofill?.names.includes(lastChanged)) {
         debouncedRequest(values);
       }
@@ -416,7 +422,7 @@ bootstrap(
     useEffect(() => {
       // If a listener is present, wait until data has been received
       const hasListener = events.on.data(receiveData);
-      if (actions.onLoad.type !== 'noop') {
+      if (actions.onLoad?.type !== 'noop') {
         (async () => {
           const result = (await actions?.onLoad?.({ ...pageParameters })) as Values;
           if (result) {

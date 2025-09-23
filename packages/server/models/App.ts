@@ -289,7 +289,7 @@ export class App extends Model {
    * @returns An app resource that can be safely returned from the API.
    */
   toJSON(omittedValues: (keyof AppType)[] = []): AppType {
-    const { anchors, ...definition } = this.definition;
+    const { anchors, ...definition } = this.definition ?? { anchors: [] };
 
     const result: AppType = {
       id: this.id,

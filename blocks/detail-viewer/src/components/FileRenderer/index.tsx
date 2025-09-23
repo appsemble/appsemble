@@ -10,7 +10,7 @@ import { ImageField } from '../ImageField/index.js';
 /**
  * Renders a file as an image.
  */
-export function FileRenderer({ data, field }: RendererProps<FileField>): VNode {
+export function FileRenderer({ data, field }: RendererProps<FileField>): VNode | null {
   const { utils } = useBlock();
   const value = utils.remap(field.value, data);
   const label = utils.remap(field.label, data);

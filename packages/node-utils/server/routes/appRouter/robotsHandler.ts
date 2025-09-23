@@ -3,7 +3,7 @@ import { type Context, type Middleware } from 'koa';
 
 export function createRobotsHandler({ getApp }: Options): Middleware {
   return async (ctx: Context) => {
-    const app = await getApp({ context: ctx });
+    const app = await getApp({ context: ctx, query: { attributes: ['id', 'visibility'] } });
     assertKoaCondition(app != null, ctx, 404, 'App not found');
     switch (app.visibility) {
       case 'public':

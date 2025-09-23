@@ -8,7 +8,7 @@ import { Field } from '../Field/index.js';
 /**
  * Renders a group of fields.
  */
-export function FieldGroup({ data, field }: RendererProps<FieldGroupType>): VNode {
+export function FieldGroup({ data, field }: RendererProps<FieldGroupType>): VNode | null {
   const { utils } = useBlock();
 
   const label = utils.remap(field.label, data);

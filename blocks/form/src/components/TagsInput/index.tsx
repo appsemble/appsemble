@@ -3,6 +3,7 @@ import { TagsField } from '@appsemble/preact-components';
 import { type NamedEvent } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
+import { type MutableRef } from 'preact/hooks';
 
 import styles from './index.module.css';
 import {
@@ -46,7 +47,7 @@ export function TagsInput({
     optionalLabel: utils.formatMessage('optionalLabel'),
     placeholder: (utils.remap(placeholder, value) ?? remappedLabel) as string,
     readOnly,
-    required: getMinItems(field) > 0,
+    required: (getMinItems(field) ?? 0) > 0,
     tag: utils.remap(tag, value) as string,
     value,
     inline,
@@ -55,7 +56,7 @@ export function TagsInput({
   return (
     <TagsField
       {...commonProps}
-      errorLinkRef={errorLinkRef}
+      errorLinkRef={(errorLinkRef as MutableRef<HTMLElement>) || undefined}
       regex={field.requirements?.some((r) => Boolean((r as RegexRequirement).regex))}
     />
   );

@@ -84,6 +84,15 @@ export interface AppDefinition {
     install?: LayoutPosition;
 
     /**
+     * The location of the debug button.
+     *
+     * If set to `navigation`, it will only be visible if `login` is also visible in `navigation`.
+     *
+     * @default 'hidden'
+     */
+    debug?: LayoutPosition;
+
+    /**
      * Settings to be shown on the default settings page.
      */
     enabledSettings?: SettingName[];

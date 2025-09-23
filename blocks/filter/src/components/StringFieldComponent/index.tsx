@@ -15,6 +15,7 @@ export function StringFieldComponent({
       className={className}
       loading={loading}
       name={field.name}
+      // @ts-expect-error strictNullChecks undefined is not assignable
       onChange={onChange}
       value={value ?? ''}
     />

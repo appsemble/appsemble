@@ -12,6 +12,7 @@ describe('validateSelection', () => {
       selection: [],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateSelection(field, null)).toStrictEqual(field.requirements[0]);
   });
 
@@ -35,7 +36,7 @@ describe('validateSelection', () => {
     };
 
     expect(validateSelection(field, [{ id: 1 }])).toBeUndefined();
-    expect(validateSelection(field, [])).toStrictEqual(field.requirements[0]);
+    expect(validateSelection(field, [])).toStrictEqual(field.requirements?.[0]);
   });
 
   it('should validate maxItems requirements', () => {
@@ -47,6 +48,6 @@ describe('validateSelection', () => {
     };
 
     expect(validateSelection(field, [{ id: 1 }])).toBeUndefined();
-    expect(validateSelection(field, [{ id: 1 }, { id: 2 }])).toStrictEqual(field.requirements[0]);
+    expect(validateSelection(field, [{ id: 1 }, { id: 2 }])).toStrictEqual(field.requirements?.[0]);
   });
 });

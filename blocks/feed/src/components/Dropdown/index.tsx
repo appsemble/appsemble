@@ -18,7 +18,7 @@ interface DropdownComponentProps {
   /**
    * The dropdown definition.
    */
-  readonly dropdown: DropdownInterface;
+  readonly dropdown: DropdownInterface | undefined;
 }
 
 export function DropdownComponent({ content, dropdown }: DropdownComponentProps): VNode {
@@ -29,11 +29,11 @@ export function DropdownComponent({ content, dropdown }: DropdownComponentProps)
   return (
     <Dropdown
       asButton={false}
-      icon={dropdown.icon}
+      icon={dropdown?.icon}
       iconClassName="is-justify-content-end is-align-items-end"
-      label={remap(dropdown.label, content, content) as string}
+      label={remap(dropdown?.label, content, content) as string}
     >
-      {dropdown.options.map((option, i) => {
+      {dropdown?.options.map((option, i) => {
         const label = remap(option.label, content, content);
 
         return (

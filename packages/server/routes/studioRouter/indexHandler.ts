@@ -87,7 +87,7 @@ export async function indexHandler(ctx: Context): Promise<void> {
     ],
     'font-src': ["'self'", 'https://fonts.gstatic.com'],
     'frame-src': [`*.${new URL(host).host}`, host, ...domains],
-    'frame-ancestors': ["'none'"],
+    'frame-ancestors': [host, "'none'"],
     'object-src': ["'none'"],
     'base-uri': ["'self'"],
   });

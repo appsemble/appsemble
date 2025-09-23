@@ -18,7 +18,10 @@ export function createGetAppResourceByIdController(options: Options): Middleware
 
     const { checkAppPermissions, getApp, getAppResource } = options;
 
-    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+    const app = await getApp({
+      context: ctx,
+      query: { attributes: ['demoMode', 'definition', 'id'], where: { id: appId } },
+    });
 
     const findOptions: FindOptions = {
       where: {

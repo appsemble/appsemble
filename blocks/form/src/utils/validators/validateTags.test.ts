@@ -11,7 +11,8 @@ describe('validateTags', () => {
       requirements: [{ minItems: 1 }, { min: 1 }],
     };
 
-    expect(validateTags(field, null)).toStrictEqual(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
+    expect(validateTags(field, null)).toStrictEqual(field.requirements?.[0]);
   });
 
   it('should should return undefined if it validates correctly', () => {
@@ -32,6 +33,7 @@ describe('validateTags', () => {
     };
 
     expect(validateTags(field, [1])).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateTags(field, [])).toStrictEqual(field.requirements[0]);
   });
 
@@ -43,7 +45,7 @@ describe('validateTags', () => {
     };
 
     expect(validateTags(field, [1])).toBeUndefined();
-    expect(validateTags(field, [1, 2])).toStrictEqual(field.requirements[0]);
+    expect(validateTags(field, [1, 2])).toStrictEqual(field.requirements?.[0]);
   });
 
   it('should validate regex requirements', () => {
@@ -54,7 +56,7 @@ describe('validateTags', () => {
     };
 
     expect(validateTags(field, ['abc'])).toBeUndefined();
-    expect(validateTags(field, ['abd'])).toStrictEqual(field.requirements[0]);
+    expect(validateTags(field, ['abd'])).toStrictEqual(field.requirements?.[0]);
   });
 
   it('should apply regex flags', () => {
@@ -75,7 +77,7 @@ describe('validateTags', () => {
     };
 
     expect(validateTags(field, [1])).toBeUndefined();
-    expect(validateTags(field, [0, 1])).toStrictEqual(field.requirements[0]);
+    expect(validateTags(field, [0, 1])).toStrictEqual(field.requirements?.[0]);
   });
 
   it('should validate max requirements', () => {
@@ -86,6 +88,6 @@ describe('validateTags', () => {
     };
 
     expect(validateTags(field, [1])).toBeUndefined();
-    expect(validateTags(field, [1, 2])).toStrictEqual(field.requirements[0]);
+    expect(validateTags(field, [1, 2])).toStrictEqual(field.requirements?.[0]);
   });
 });

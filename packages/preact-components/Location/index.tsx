@@ -40,12 +40,13 @@ class LocationComponent extends Component<BlockProps & LocationProps> {
       theme: { primaryColor, tileLayer },
     } = this.props;
 
+    // @ts-expect-error strictNullChecks not assignable to type
     const locationMarker = new CircleMarker(null, {
       color: primaryColor,
       radius,
     });
 
-    const map = new Map(this.ref.current, {
+    const map = new Map(this.ref.current as HTMLDivElement, {
       attributionControl: false,
       zoom: 16,
       center: [latitude, longitude],

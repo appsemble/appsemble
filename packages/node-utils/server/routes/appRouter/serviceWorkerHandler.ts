@@ -14,13 +14,17 @@ export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Opt
       ? readFile(new URL('../../../../../dist/app/service-worker.js', import.meta.url), 'utf8')
       : ctx.fs.promises.readFile(filename, 'utf8'));
 
-    const app = await getApp({ context: ctx });
+    const app = await getApp({
+      context: ctx,
+      query: { attributes: ['id', 'definition'] },
+    });
 
     assertKoaCondition(app != null, ctx, 404, 'App does not exist.');
 
     const identifiableBlocks = getAppBlocks(app.definition);
     const blocksAssetsPaths = await getBlocksAssetsPaths({ identifiableBlocks, context: ctx });
 
+    // App.version is a virtual column and comes from App.AppSnapshots
     ctx.body = `const appVersion = ${app.version};const blockAssets=${JSON.stringify(blocksAssetsPaths)};${serviceWorker}`;
     ctx.type = 'application/javascript';
   };

@@ -10,7 +10,7 @@ import { ImageField } from '../ImageField/index.js';
 export function VideoRenderer({
   data,
   field: { height = 350, hide, label, platform, thumbnail: t, value, width = 350 },
-}: RendererProps<VideoField>): VNode {
+}: RendererProps<VideoField>): VNode | null {
   const {
     utils: { asset, remap },
   } = useBlock();
@@ -19,9 +19,9 @@ export function VideoRenderer({
   const thumbnail = remap(t, data) as string;
   const conceal = remap(hide, data) as boolean;
 
-  const [videoUrl, setVideoUrl] = useState(null);
-  const [thumbnailUrl, setThumbnailUrl] = useState(null);
-  const [assetVideoThumbnailUrl, setAssetVideoThumbnailUrl] = useState(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  const [assetVideoThumbnailUrl, setAssetVideoThumbnailUrl] = useState<string | null>(null);
 
   const [videoIsAsset, setVideoIsAsset] = useState(false);
   const [fetchedAssetVideoHeaders, setFetchedAssetVideoHeaders] = useState(false);
@@ -86,7 +86,7 @@ export function VideoRenderer({
             allowFullScreen
             height={height}
             sandbox={sandboxConfig}
-            src={videoUrl}
+            src={videoUrl ?? undefined}
             title="video"
             width={width}
           />
@@ -95,8 +95,8 @@ export function VideoRenderer({
             controls
             height={height}
             id="interactive"
-            poster={thumbnailUrl || assetVideoThumbnailUrl}
-            src={videoUrl}
+            poster={(thumbnailUrl || assetVideoThumbnailUrl) ?? undefined}
+            src={videoUrl ?? undefined}
             width={width}
           >
             <track class="viewport" kind="captions" label="English" src="captions.vtt" />

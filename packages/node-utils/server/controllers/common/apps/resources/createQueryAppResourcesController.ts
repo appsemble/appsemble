@@ -19,7 +19,10 @@ export function createQueryAppResourcesController(options: Options): Middleware 
 
     const { checkAppPermissions, getApp, getAppResources } = options;
 
-    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+    const app = await getApp({
+      context: ctx,
+      query: { attributes: ['definition', 'demoMode', 'id'], where: { id: appId } },
+    });
 
     const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx, view);
 

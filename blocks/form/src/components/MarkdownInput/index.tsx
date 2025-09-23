@@ -158,7 +158,7 @@ export function MarkdownInput({
 
   useEffect(() => {
     if (crepeRef?.current) {
-      crepeRef.current.setReadonly(disabled || readOnly);
+      crepeRef.current.setReadonly((disabled || readOnly) ?? false);
     }
   }, [disabled, readOnly]);
 

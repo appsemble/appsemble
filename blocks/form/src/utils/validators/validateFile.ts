@@ -14,6 +14,7 @@ export function validateFile(
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
   values?: Values,
 ): FileRequirement {
+  // @ts-expect-error strictNullChecks not assignable to type
   return field.requirements?.find((requirement) => {
     if (value == null) {
       return Requirement.Required in requirement && Boolean(remap(requirement.required, values));
@@ -39,28 +40,28 @@ export function validateFile(
 
       if (
         Requirement.MinLength in requirement &&
-        remap(requirement.minLength, values) > (value as File[]).length
+        remap(requirement.minLength!, values) > (value as File[]).length
       ) {
         return true;
       }
 
       if (
         Requirement.MaxLength in requirement &&
-        remap(requirement.maxLength, values) < (value as File[]).length
+        remap(requirement.maxLength!, values) < (value as File[]).length
       ) {
         return true;
       }
 
       if (
         Requirement.MinSize in requirement &&
-        (value as File[]).some((file) => requirement.minSize > file.size)
+        (value as File[]).some((file) => requirement.minSize! > file.size)
       ) {
         return true;
       }
 
       if (
         Requirement.MaxSize in requirement &&
-        (value as File[]).some((file) => requirement.maxSize < file.size)
+        (value as File[]).some((file) => requirement.maxSize! < file.size)
       ) {
         return true;
       }
@@ -84,11 +85,11 @@ export function validateFile(
         return false;
       }
 
-      if (Requirement.MinSize in requirement && requirement.minSize > (value as File).size) {
+      if (Requirement.MinSize in requirement && requirement.minSize! > (value as File).size) {
         return true;
       }
 
-      if (Requirement.MaxSize in requirement && requirement.maxSize < (value as File).size) {
+      if (Requirement.MaxSize in requirement && requirement.maxSize! < (value as File).size) {
         return true;
       }
 

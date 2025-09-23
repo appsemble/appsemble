@@ -45,22 +45,24 @@ export function HeaderComponent({
 
   const [titleValue, setTitleValue] = useState<string>('');
   const [subtitleValue, setSubtitleValue] = useState<string>('');
-  const [assetIcon, setAssetIcon] = useState<FileIconName>(null);
+  const [assetIcon, setAssetIcon] = useState<FileIconName | null>(null);
   const [fetched, setFetched] = useState<boolean>(false);
 
   useEffect(() => {
-    if ('title' in header) {
+    if (header && 'title' in header) {
       const remappedTitle = remap(header.title, item);
       const remappedSubtitle = remap(header.subtitle, item);
-      setTitleValue(remappedTitle ? String(remappedTitle) : null);
-      setSubtitleValue(remappedSubtitle ? String(remappedSubtitle) : null);
+      setTitleValue(remappedTitle ? String(remappedTitle) : '');
+      setSubtitleValue(remappedSubtitle ? String(remappedSubtitle) : '');
     }
   }, [header, item, remap]);
 
   const headerHTML = (
     <div className="is-flex is-justify-content-space-between is-align-items-center">
-      {'icon' in header && isPreactChild(header.icon) ? <Icon icon={header.icon} /> : null}
-      {'showAssetIcon' in header && assetIcon && isPreactChild(assetIcon) ? (
+      {header && 'icon' in header && isPreactChild(header.icon) ? (
+        <Icon icon={header.icon} />
+      ) : null}
+      {header && 'showAssetIcon' in header && assetIcon && isPreactChild(assetIcon) ? (
         <Icon icon={assetIcon as IconName} size="large" />
       ) : null}
       <div>
@@ -71,7 +73,7 @@ export function HeaderComponent({
   );
 
   useEffect(() => {
-    if (!isVisible || ('showAssetIcon' in header && !header.showAssetIcon)) {
+    if (!isVisible || (header && 'showAssetIcon' in header && !header.showAssetIcon)) {
       return;
     }
 
@@ -82,11 +84,12 @@ export function HeaderComponent({
           const response = await fetch(headerValueAssetUrl, { method: 'HEAD' });
           if (response.ok) {
             const contentType = response.headers.get('Content-Type');
+            // @ts-expect-error strictNullCheck
             setAssetIcon(getMimeTypeIcon(getMimeTypeCategory(contentType)));
 
             const contentDisposition = response.headers.get('Content-Disposition');
             if (contentDisposition) {
-              setTitleValue(getFilenameFromContentDisposition(contentDisposition));
+              setTitleValue(getFilenameFromContentDisposition(contentDisposition) ?? '');
             }
           }
         } catch {
@@ -109,11 +112,11 @@ export function HeaderComponent({
     >
       <div className={`is-flex ${styles.image}`}>
         <div>
-          {'image' in header ? (
+          {header && 'image' in header ? (
             <Image field={header.image} index={index} isVisible={isVisible} item={item} />
           ) : null}
         </div>
-        {'showAssetIcon' in header && assetIcon && 'title' in header ? (
+        {header && 'showAssetIcon' in header && assetIcon && 'title' in header ? (
           <a
             className={`${styles.item} has-text-left is-block`}
             download
@@ -135,13 +138,13 @@ export function HeaderComponent({
           </button>
         )}
       </div>
-      {'button' in header ? (
+      {header && 'button' in header ? (
         <ButtonComponent field={header.button} index={index} item={item} />
       ) : null}
-      {'toggleButton' in header ? (
+      {header && 'toggleButton' in header ? (
         <ToggleButtonComponent field={header.toggleButton} index={index} item={item} />
       ) : null}
-      {'dropdown' in header ? (
+      {header && 'dropdown' in header ? (
         <div className={styles.dropdown}>
           <DropdownComponent field={header.dropdown} index={index} item={item} record={item} />
         </div>

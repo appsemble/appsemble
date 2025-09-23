@@ -14,7 +14,7 @@ export function createGetAppGroupsController({
       pathParams: { appId },
     } = ctx;
 
-    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+    const app = await getApp({ context: ctx, query: { attributes: ['id'], where: { id: appId } } });
 
     assertKoaCondition(app != null, ctx, 404, 'App not found');
 

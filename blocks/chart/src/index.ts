@@ -90,6 +90,7 @@ bootstrap(
     shadowRoot.append(canvas);
     const ctx = canvas.getContext('2d');
     const yAxisID = 'y';
+    // @ts-expect-error strictNullChecks null is not assignable to type
     const chart = new Chart(ctx, {
       type,
       data: {
@@ -100,13 +101,13 @@ bootstrap(
         responsive: true,
         onClick(e, element) {
           if (!element || element.length === 0) {
-            actions.onClick({});
+            actions.onClick?.({});
             return;
           }
           // $context isn't a property in the ActiveElement interface, but it is there at runtime
           if ('$context' in element[0].element) {
             const { x, y }: { x: number; y: number } = (element as any)[0].element.$context.parsed;
-            actions.onClick({ label: chart.data.labels[x], value: y });
+            actions.onClick?.({ label: chart.data.labels?.[x], value: y });
           }
         },
         scales: {
@@ -157,7 +158,7 @@ bootstrap(
       if (Array.isArray(dataset.labels)) {
         chart.data.labels = dataset.labels;
       }
-      for (let i = 0; i < chart.data.labels.length && i < dataset.data.length; i += 1) {
+      for (let i = 0; i < (chart.data.labels?.length ?? 0) && i < dataset.data.length; i += 1) {
         if (backgroundColors) {
           const remapper = backgroundColors[i % backgroundColors.length];
           const color = remap(remapper, { data: dataset.data[i] });

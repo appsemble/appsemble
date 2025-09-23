@@ -28,5 +28,5 @@ export interface OptionProps {
  * @see Select
  */
 export function Option({ hidden, ...props }: OptionProps): VNode {
-  return <option className={hidden ? 'is-hidden' : null} {...props} />;
+  return <option className={hidden ? 'is-hidden' : undefined} {...props} />;
 }

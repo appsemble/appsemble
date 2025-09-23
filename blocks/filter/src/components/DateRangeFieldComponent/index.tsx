@@ -19,14 +19,16 @@ export function DateRangeFieldComponent({
 
   const onChangeFrom = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>) => {
-      onChange(event, [event.currentTarget.value, value[1]]);
+      // @ts-expect-error strictNullChecks undefined is not assignable
+      onChange(event, [event.currentTarget.value, value?.[1]]);
     },
     [onChange, value],
   );
 
   const onChangeTo = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>) => {
-      onChange(event, [value[0], event.currentTarget.value]);
+      // @ts-expect-error strictNullChecks undefined is not assignable
+      onChange(event, [value?.[0], event.currentTarget.value]);
     },
     [onChange, value],
   );
@@ -44,7 +46,7 @@ export function DateRangeFieldComponent({
         onChange={onChangeFrom}
         placeholder={utils.remap(field.fromLabel ?? 'From', {}) as string}
         type="date"
-        value={value[0]}
+        value={value?.[0]}
       />
       <div>{utils.remap(field.separator ?? 'to', {}) as string}</div>
       <Input
@@ -53,7 +55,7 @@ export function DateRangeFieldComponent({
         onChange={onChangeTo}
         placeholder={utils.remap(field.toLabel ?? 'To', {}) as string}
         type="date"
-        value={value[1]}
+        value={value?.[1]}
       />
     </div>
   );

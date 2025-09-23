@@ -54,7 +54,7 @@ export function Modal<T extends ElementType = 'div'>({
   isActive,
   onClose,
   ...props
-}: ModalProps<T> & Omit<ComponentProps<T>, keyof ModalProps<T>>): VNode {
+}: ModalProps<T> & Omit<ComponentProps<T>, keyof ModalProps<T>>): VNode | null {
   const openClass = useAnimation(isActive, 300, {
     opening: styles.opening,
     open: styles.open,

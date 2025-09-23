@@ -56,7 +56,10 @@ export const CheckboxField = forwardRef<HTMLInputElement, CheckboxFieldProps>(
     },
     ref,
   ) => {
-    const combinedRef = useCombinedRefs(ref, errorLinkRef);
+    const combinedRef = useCombinedRefs(
+      ref as MutableRef<HTMLElement>,
+      errorLinkRef as MutableRef<HTMLElement>,
+    );
     return (
       <FormComponent
         className={wrapperClassName}

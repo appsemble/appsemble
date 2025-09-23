@@ -2,7 +2,7 @@ import { Icon } from '@appsemble/preact-components';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type ComponentChild, type ComponentChildren, type VNode } from 'preact';
-import { useCallback, useRef } from 'preact/hooks';
+import { type MutableRef, useCallback, useRef } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { Button, useClickOutside, useToggle } from '../index.js';
@@ -75,13 +75,13 @@ export function Dropdown({
     [toggle],
   );
 
-  useClickOutside(ref, disable);
+  useClickOutside(ref as MutableRef<HTMLElement>, disable);
 
   return (
     <div
       className={classNames('dropdown', className, { 'is-active': enabled })}
       data-testid="dropdown"
-      ref={ref}
+      ref={(ref as MutableRef<HTMLDivElement>) || undefined}
     >
       <div className="dropdown-trigger">
         {asButton ? (
@@ -97,6 +97,7 @@ export function Dropdown({
             role="button"
             tabIndex={-1}
           >
+            {/* @ts-expect-error strictNullChecks not assignable to type */}
             <Icon className={iconClassName} icon={icon} />
           </div>
         )}

@@ -19,8 +19,10 @@ export function onFetch(event: FetchEvent): void {
 
   // Match all modifying requests (POST, PUT, PATCH, DELETE) for resource endpoints
   if (
-    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method) &&
-    /^\/api\/apps\/\d+\/resources\/[^/?]+/.test(pathname)
+    (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method) &&
+      /^\/api\/apps\/\d+\/resources\/[^/?]+/.test(pathname)) ||
+    (request.method === 'PUT' &&
+      /^\/api\/apps\/\d+\/resources\/[^/]+\/\d+\/positions$/.test(pathname))
   ) {
     event.respondWith(handleModifyAndInvalidateCache(request));
     return;

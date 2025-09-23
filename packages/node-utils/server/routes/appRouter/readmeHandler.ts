@@ -6,7 +6,7 @@ export function createReadmeHandler({ getApp, getAppReadmes }: Options): Middlew
     // @ts-expect-error Messed up
     const { id } = ctx.params;
 
-    const app = await getApp({ context: ctx });
+    const app = await getApp({ context: ctx, query: { attributes: ['id'] } });
 
     assertKoaCondition(app != null, ctx, 404, 'App not found');
 

@@ -13,7 +13,9 @@ describe('validateEnum', () => {
       requirements: [{ required: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateEnum(field, undefined, remap)).toBe(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateEnum(field, null, remap)).toBe(field.requirements[0]);
   });
 
@@ -25,6 +27,7 @@ describe('validateEnum', () => {
       requirements: [{ required: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateEnum(field, 'a', remap)).toBeUndefined();
   });
 
@@ -36,7 +39,9 @@ describe('validateEnum', () => {
       requirements: [{ required: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateEnum(field, undefined, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateEnum(field, null, remap)).toBeUndefined();
   });
 
@@ -48,8 +53,11 @@ describe('validateEnum', () => {
       requirements: [{ prohibited: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateEnum(field, 'a', remap)).toStrictEqual(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateEnum(field, undefined, remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateEnum(field, null, remap)).toBeUndefined();
   });
 
@@ -61,6 +69,7 @@ describe('validateEnum', () => {
       requirements: [{ prohibited: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateEnum(field, 'a', remap)).toBeUndefined();
   });
 
@@ -72,6 +81,7 @@ describe('validateEnum', () => {
       requirements: [{ required: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateEnum(field, '', remap)).toBeUndefined();
   });
 });

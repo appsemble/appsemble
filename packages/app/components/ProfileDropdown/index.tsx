@@ -68,6 +68,7 @@ export function ProfileDropdown(): ReactNode {
     (enabledSettings?.length || definition.notifications === 'opt-in');
   const showFeedback = (layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn;
   const showInstall = (layout?.install ?? 'navbar') === 'navbar' && install;
+  const showDebug = (layout?.debug ?? 'hidden') === 'navbar';
 
   return (
     <>
@@ -130,6 +131,16 @@ export function ProfileDropdown(): ReactNode {
                 <FormattedMessage {...messages.update} />
               </NavbarItem>
             </>
+          </>
+        ) : null}
+        {showDebug ? (
+          <>
+            {showSettings || showFeedback || showDemoLogin || showInstall ? (
+              <hr className="navbar-divider" />
+            ) : null}
+            <NavbarItem dataTestId="debug" to={`/${lang}/Debug`}>
+              <FormattedMessage {...messages.debug} />
+            </NavbarItem>
           </>
         ) : null}
         {pages?.length

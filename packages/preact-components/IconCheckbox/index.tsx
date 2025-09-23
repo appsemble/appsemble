@@ -86,7 +86,7 @@ export const IconCheckbox = forwardRef<HTMLInputElement, CheckboxProps>(
           ref={ref}
           type="checkbox"
         />
-        <label className={classNames(styles[size], styles[color])} htmlFor={id}>
+        <label className={classNames(styles[size], color ? styles[color] : null)} htmlFor={id}>
           {icon ? <Icon icon={icon as IconName} /> : null}
           {label}
         </label>

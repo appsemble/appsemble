@@ -30,7 +30,8 @@ export const dialog: ActionCreator<'dialog'> = ({
         data,
         close() {
           close?.();
-          reject(new Error('closed'));
+          // eslint-disable-next-line prefer-promise-reject-errors
+          reject();
         },
         fullscreen,
         prefix,

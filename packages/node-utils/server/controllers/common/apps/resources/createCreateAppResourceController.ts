@@ -32,7 +32,10 @@ export function createCreateAppResourceController(options: Options): Middleware 
     } = ctx;
     const { checkAppPermissions, createAppResourcesWithAssets, getApp, getAppAssets } = options;
 
-    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+    const app = await getApp({
+      context: ctx,
+      query: { attributes: ['id', 'demoMode', 'definition'], where: { id: appId } },
+    });
 
     await checkAppPermissions({
       context: ctx,
@@ -48,10 +51,8 @@ export function createCreateAppResourceController(options: Options): Middleware 
     const [processedBody, preparedAssets] = processResourceBody(
       ctx,
       resourceDefinition,
+      appAssets.map(({ id }) => id),
       undefined,
-      undefined,
-      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-      // (strictNullChecks)
       appAssets.map((appAsset) => ({ id: appAsset.id, name: appAsset.name })),
     );
 

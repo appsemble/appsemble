@@ -23,8 +23,8 @@ it('should render matching auto-suggestions', () => {
   expect(datalist).toBeInstanceOf(HTMLDataListElement);
   expect(datalist.children).toBeInstanceOf(HTMLCollection);
   expect(datalist.children).toHaveLength(2);
-  expect(datalist.children.item(0).outerHTML).toBe('<option value="test suggestion"></option>');
-  expect(datalist.children.item(1).outerHTML).toBe('<option value="test auto"></option>');
+  expect(datalist.children.item(0)?.outerHTML).toBe('<option value="test suggestion"></option>');
+  expect(datalist.children.item(1)?.outerHTML).toBe('<option value="test auto"></option>');
 });
 
 it('should render an input element with appropriate classnames', () => {

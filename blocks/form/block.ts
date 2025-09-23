@@ -1331,7 +1331,7 @@ export interface InputProps<T, F extends Field> {
   /**
    * A field error object.
    */
-  error: FieldError;
+  error: FieldError | null;
 
   /**
    * The field to render.
@@ -1415,7 +1415,7 @@ declare module '@appsemble/sdk' {
     /**
      * Action that gets dispatched when the previous button is clicked.
      */
-    onPrevious?: never;
+    onPrevious: never;
 
     /**
      * A custom action that gets dispatched when checking form requirements.
@@ -1425,7 +1425,7 @@ declare module '@appsemble/sdk' {
     /**
      * Action that can be used to load data to pre-fill the form.
      */
-    onLoad?: never;
+    onLoad: never;
   }
 
   interface EventListeners {

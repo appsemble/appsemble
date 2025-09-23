@@ -5,7 +5,7 @@
     "jsxImportSource": "preact",
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "strictFunctionTypes": false,
     "moduleResolution": "bundler",
     "rootDir": ".",

@@ -182,7 +182,7 @@ export function processResourceBody(
   definition: ResourceDefinition,
   knownAssetIds: string[] = [],
   knownExpires?: Date,
-  knownAssetNameIds: { id: string; name: string }[] = [],
+  knownAssetNameIds: { id: string; name?: string }[] = [],
   isPatch = false,
 ): [Record<string, unknown> | Record<string, unknown>[], PreparedAsset[], string[]] {
   const [resource, assets, preValidateProperty] = extractResourceBody(ctx);

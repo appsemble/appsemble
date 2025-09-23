@@ -79,12 +79,12 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 
     const handleChange = useCallback(
       (event: JSX.TargetedEvent<HTMLSelectElement>) => {
-        onChange(event, childArray[Number(event.currentTarget.value)].props.value);
+        onChange?.(event, childArray[Number(event.currentTarget.value)].props.value);
       },
       [childArray, onChange],
     );
 
-    let hasValue: boolean;
+    let hasValue: boolean | undefined;
     const options = childArray.map((child, index) => {
       const selected = child.props.value === value;
       hasValue ||= selected;
@@ -98,7 +98,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       );
     }
 
-    const combinedRef = useCombinedRefs(ref, errorLinkRef);
+    const combinedRef = useCombinedRefs(
+      ref as MutableRef<HTMLSelectElement>,
+      errorLinkRef as MutableRef<HTMLSelectElement>,
+    );
 
     return (
       <div

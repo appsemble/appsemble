@@ -31,54 +31,58 @@ export async function createAppResourcesWithAssets({
     const { enforceOrderingGroupByFields, positioning } = resourceDefinition;
     createdResources = await Resource.bulkCreate(
       await Promise.all(
-        resources.map(async ({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }) => {
-          const { query } = parseQuery({
-            $filter: enforceOrderingGroupByFields
-              ?.map((item) => `${item} eq ${data[item] ? `'${data[item]}'` : null}`)
-              .join(' and '),
-            resourceDefinition,
-          });
-          logger.verbose('Resource query');
-          logger.verbose(query);
+        resources.map(
+          async ({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }, idx) => {
+            const { query } = parseQuery({
+              $filter: enforceOrderingGroupByFields
+                ?.map((item) => `${item} eq ${data[item] ? `'${data[item]}'` : null}`)
+                .join(' and '),
+              resourceDefinition,
+            });
+            logger.verbose('Resource query');
+            logger.verbose(query);
 
-          // Fetch the last position resource
-          const lastPositionResource = await Resource.findOne({
-            attributes: ['Position'],
-            where: {
+            // Fetch the last position resource
+            const lastPositionResource = await Resource.findOne({
+              attributes: ['Position'],
+              where: {
+                AppId: app.id,
+                type: resourceType,
+                GroupId: groupId ?? null,
+                Position: { [Op.not]: null },
+                ...(query ? { query } : {}),
+                ...($seed ? { seed: $seed } : {}),
+                ...($ephemeral ? { ephemeral: $ephemeral } : {}),
+              },
+              order: [['Position', 'DESC']],
+            });
+            logger.verbose('Last resource');
+            logger.verbose(lastPositionResource);
+
+            logger.verbose('Next position');
+            logger.verbose(
+              positioning
+                ? Number.parseFloat(String(lastPositionResource?.Position ?? 0)) + (idx + 1) * 10
+                : null,
+            );
+            // Return the resource object to be created
+            return {
               AppId: app.id,
-              type: resourceType,
               GroupId: groupId ?? null,
-              Position: { [Op.not]: null },
-              ...(query ? { query } : {}),
-            },
-            order: [['Position', 'DESC']],
-          });
-          logger.verbose('Last resource');
-          logger.verbose(lastPositionResource);
-
-          logger.verbose('Next position');
-          logger.verbose(
-            positioning
-              ? Number.parseFloat(String(lastPositionResource?.Position ?? 0)) + 10
-              : null,
-          );
-          // Return the resource object to be created
-          return {
-            AppId: app.id,
-            GroupId: groupId ?? null,
-            type: resourceType,
-            data,
-            AuthorId: appMember?.sub,
-            seed: $seed,
-            expires: $expires,
-            clonable: $clonable,
-            ephemeral: $ephemeral,
-            // Database returns string values for `DECIMAL` type
-            Position: positioning
-              ? Number.parseFloat(String(lastPositionResource?.Position ?? 0)) + 10
-              : null,
-          };
-        }),
+              type: resourceType,
+              data,
+              AuthorId: appMember?.sub,
+              seed: $seed,
+              expires: $expires,
+              clonable: $clonable,
+              ephemeral: $ephemeral,
+              // Database returns string values for `DECIMAL` type
+              Position: positioning
+                ? Number.parseFloat(String(lastPositionResource?.Position ?? 0)) + (idx + 1) * 10
+                : null,
+            };
+          },
+        ),
       ),
       { transaction },
     );

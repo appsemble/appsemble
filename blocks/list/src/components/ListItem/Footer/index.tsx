@@ -24,9 +24,9 @@ export function FooterComponent({ index, item }: FooterComponentProps): VNode {
   const [contentValue, setContentValue] = useState<string>('');
 
   useEffect(() => {
-    if ('content' in footer) {
+    if (footer && 'content' in footer) {
       const remappedValue = remap(footer.content, item);
-      setContentValue(remappedValue ? String(remappedValue) : null);
+      setContentValue(remappedValue ? String(remappedValue) : '');
     }
   }, [footer, item, remap]);
 
@@ -35,13 +35,13 @@ export function FooterComponent({ index, item }: FooterComponentProps): VNode {
       className={`${styles.footerWrapper} is-flex is-justify-content-space-between is-align-items-end`}
     >
       <div className={styles.footerContent}>{contentValue}</div>
-      {'button' in footer ? (
+      {footer && 'button' in footer ? (
         <ButtonComponent field={footer.button} index={index} item={item} />
       ) : null}
-      {'toggleButton' in footer ? (
+      {footer && 'toggleButton' in footer ? (
         <ToggleButtonComponent field={footer.toggleButton} index={index} item={item} />
       ) : null}
-      {'dropdown' in footer ? (
+      {footer && 'dropdown' in footer ? (
         <DropdownComponent field={footer.dropdown} index={index} item={item} record={item} />
       ) : null}
     </div>

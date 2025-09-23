@@ -12,6 +12,7 @@ describe('validateMarkdown', () => {
       requirements: [{ required: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateMarkdown(field, null, remap)).toStrictEqual(field.requirements[0]);
   });
 
@@ -22,6 +23,7 @@ describe('validateMarkdown', () => {
       requirements: [{ required: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateMarkdown(field, 'hello', remap)).toBeUndefined();
   });
 
@@ -32,6 +34,7 @@ describe('validateMarkdown', () => {
       requirements: [{ required: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateMarkdown(field, null, remap)).toBeUndefined();
   });
 });

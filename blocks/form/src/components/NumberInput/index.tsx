@@ -2,6 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { InputField, SliderField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
+import { type MutableRef } from 'preact/hooks';
 
 import { type InputProps, type NumberField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
@@ -54,7 +55,7 @@ export function NumberInput({
       <SliderField
         {...commonProps}
         bottomLabels={bottomLabels?.map((bottomLabel) => utils.remap(bottomLabel, value) as string)}
-        errorLinkRef={errorLinkRef}
+        errorLinkRef={errorLinkRef as MutableRef<HTMLElement>}
         onChange={onChange}
         topLabels={topLabels?.map((topLabel) => utils.remap(topLabel, value) as string)}
       />
@@ -62,8 +63,8 @@ export function NumberInput({
   }
 
   return (
+    // @ts-expect-error strictNullChecks not assignable to type
     <InputField
-      icon={icon}
       placeholder={
         (utils.remap(placeholder, value) as string) ||
         (utils.remap(label, value) as string) ||
@@ -71,7 +72,8 @@ export function NumberInput({
       }
       type="number"
       {...commonProps}
-      errorLinkRef={errorLinkRef}
+      errorLinkRef={errorLinkRef as MutableRef<HTMLElement>}
+      icon={icon}
     />
   );
 }

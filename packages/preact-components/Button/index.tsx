@@ -61,7 +61,10 @@ export function Button({
   ref,
   ...props
 }: ButtonProps): VNode {
-  const combinedRef = useCombinedRefs(ref, errorLinkRef);
+  const combinedRef = useCombinedRefs(
+    ref as MutableRef<HTMLButtonElement>,
+    errorLinkRef as MutableRef<HTMLElement>,
+  );
   return (
     <button
       className={classNames('button', className, {

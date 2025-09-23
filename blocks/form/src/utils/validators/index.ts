@@ -20,6 +20,7 @@ export const validators: Record<string, Validator> = {
   enum: validateEnum,
   radio: validateRadio,
   file: validateFile,
+  // @ts-expect-error strictNullChecks not assignable to type
   geocoordinates: (field, value: { longitude: number; latitude: number }) =>
     value?.latitude && value?.longitude ? undefined : {},
   string: validateString,
@@ -57,7 +58,7 @@ export function validate(
   defaultError: Remapper,
   defaultValue: any,
   prefix = '',
-): boolean | string {
+): boolean | string | undefined {
   let value = getValueByNameSequence(prefix ? `${prefix}.${field.name}` : field.name, values);
   value = typeof value === 'string' ? value.trim() : value;
 

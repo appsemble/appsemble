@@ -22,12 +22,16 @@ export function remapWithContext(
   context?: Record<string, any>,
 ): unknown {
   return remap(remapper, data, {
+    // @ts-expect-error strictNullChecks not assignable to type
     getMessage: null,
+    // @ts-expect-error strictNullChecks not assignable to type
     getVariable: null,
     appId: 1,
     url: 'https://example.com/en/example',
     appUrl: 'https://example.com',
+    // @ts-expect-error strictNullChecks not assignable to type
     appMemberInfo: null,
+    // @ts-expect-error strictNullChecks not assignable to type
     context,
     locale: defaultLocale,
   });
@@ -51,6 +55,7 @@ export function getDefaultUtils(): BlockUtils {
     fa(icon) {
       return icon;
     },
+    // @ts-expect-error strictNullChecks not assignable to type
     remap: remapWithContext,
     isMobile: window.innerWidth < 768,
     menu() {
@@ -77,8 +82,11 @@ export function getDefaultBootstrapParams(): Pick<
     theme: {} as Theme,
     utils: getDefaultUtils(),
     events: {
+      // @ts-expect-error strictNullChecks not assignable to type
       emit: null,
+      // @ts-expect-error strictNullChecks not assignable to type
       on: null,
+      // @ts-expect-error strictNullChecks not assignable to type
       off: null,
     },
     ready() {
@@ -138,6 +146,7 @@ export function createEvents(
       ? async (data, error) => {
           await ready;
           const name = definition?.emit?.[key];
+          // @ts-expect-error strictNullChecks not assignable to type
           ee.emit(name, data, error === '' ? 'Error' : error);
           return true;
         }
@@ -148,7 +157,8 @@ export function createEvents(
   const on = createProxy<'on', 'listen'>('listen', (implemented, key) =>
     implemented
       ? (callback) => {
-          ee.on(definition.listen?.[key], callback);
+          // @ts-expect-error strictNullChecks not assignable to type
+          ee.on(definition?.listen?.[key], callback);
           return true;
         }
       : () => false,
@@ -157,7 +167,8 @@ export function createEvents(
   const off = createProxy<'off', 'listen'>('listen', (implemented, key) =>
     implemented
       ? (callback) => {
-          ee.off(definition.listen?.[key], callback);
+          // @ts-expect-error strictNullChecks not assignable to type
+          ee.off(definition?.listen?.[key], callback);
           return true;
         }
       : () => false,

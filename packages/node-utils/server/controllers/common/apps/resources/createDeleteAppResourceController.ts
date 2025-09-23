@@ -11,7 +11,10 @@ export function createDeleteAppResourceController(options: Options): Middleware 
 
     const { checkAppPermissions, deleteAppResource, getApp, getAppResource } = options;
 
-    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+    const app = await getApp({
+      context: ctx,
+      query: { attributes: ['demoMode', 'id'], where: { id: appId } },
+    });
 
     const findOptions: FindOptions = {
       where: {

@@ -12,7 +12,8 @@ describe('validateString', () => {
       requirements: [{ required: true }, { minLength: 1 }],
     };
 
-    expect(validateString(field, null, remap)).toStrictEqual(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
+    expect(validateString(field, null, remap)).toStrictEqual(field.requirements?.[0]);
   });
 
   it('should should return undefined if it validates correctly', () => {
@@ -22,6 +23,7 @@ describe('validateString', () => {
       requirements: [{ required: true }, { minLength: 1 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, 'hello', remap)).toBeUndefined();
   });
 
@@ -32,6 +34,7 @@ describe('validateString', () => {
       requirements: [{ required: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, null, remap)).toBeUndefined();
   });
 
@@ -42,7 +45,9 @@ describe('validateString', () => {
       requirements: [{ prohibited: true }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, 'h', remap)).toStrictEqual(field.requirements[0]);
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, '', remap)).toBeUndefined();
   });
 
@@ -53,6 +58,7 @@ describe('validateString', () => {
       requirements: [{ prohibited: false }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, 'h', remap)).toBeUndefined();
   });
 
@@ -63,7 +69,9 @@ describe('validateString', () => {
       requirements: [{ minLength: 1 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, 'h', remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, '', remap)).toStrictEqual(field.requirements[0]);
   });
 
@@ -74,7 +82,9 @@ describe('validateString', () => {
       requirements: [{ maxLength: 1 }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, 'h', remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, 'hh', remap)).toStrictEqual(field.requirements[0]);
   });
 
@@ -85,7 +95,9 @@ describe('validateString', () => {
       requirements: [{ regex: 'abc' }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, 'abc', remap)).toBeUndefined();
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, 'abd', remap)).toStrictEqual(field.requirements[0]);
   });
 
@@ -96,6 +108,7 @@ describe('validateString', () => {
       requirements: [{ regex: 'abc', flags: 'i' }],
     };
 
+    // @ts-expect-error strictNullChecks not assignable to type
     expect(validateString(field, 'ABC', remap)).toBeUndefined();
   });
 });

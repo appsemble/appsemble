@@ -54,14 +54,17 @@ export function FileInput({
 
   const handleInput = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>, val: string): void => {
-      const copy = [].concat(value);
+      const copy = ([] as unknown[]).concat(value);
       const index = Number(event.currentTarget.name.split('.').pop());
       if (val == null) {
         copy.splice(index, 1);
       } else {
         copy[index] = val;
       }
-      onChange({ currentTarget: { name } } as unknown as Event, copy);
+      onChange(
+        { currentTarget: { name } } as unknown as Event,
+        copy as (Blob | string)[] | Blob | string,
+      );
     },
     [name, onChange, value],
   );
@@ -129,7 +132,7 @@ export function FileInput({
             errorLinkRef={errorLinkRef}
             field={field}
             formDataLoading={formDataLoading}
-            formValues={null}
+            formValues={{}}
             handleFileEntryReady={handleFileEntryReady}
             name={`${name}.${(value as string[]).length}`}
             onChange={handleInput}

@@ -57,5 +57,5 @@ export function toOData(fields: Field[], values: FilterValues, defaultFilter?: s
   if (defaultFilter) {
     queries.push(defaultFilter);
   }
-  return queries.length === 1 ? queries[0] : queries.map((query) => `(${query})`).join(' and ');
+  return queries.length === 1 ? queries[0]! : queries.map((query) => `(${query})`).join(' and ');
 }

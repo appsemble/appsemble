@@ -41,7 +41,7 @@ bootstrap(
     ];
     const patchSizeList = ['x-small', 'small', 'medium', 'large', 'x-large'];
 
-    const [barcode, setBarcode] = useState(null);
+    const [barcode, setBarcode] = useState<string | null>(null);
     const [codeType, setCodeType] = useState(barcodeType === 'multiple' ? 'code_128' : barcodeType);
     const [pSize, setPSize] = useState(patchSize === 'multiple' ? 'x-large' : patchSize);
 

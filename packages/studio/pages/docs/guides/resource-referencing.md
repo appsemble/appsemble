@@ -7,7 +7,7 @@ handles references between resources internally and performs validation as an ex
 relational databases.
 
 We specify resource references by mapping one of the resource’s properties to the name of another
-resource. Let’s look at the following example from the Triggers app:
+resource. Let’s look at the following example from the [Triggers app](/apps/1129/triggers):
 
 ```yaml copy validate resources-snippet
 resources:

@@ -22,6 +22,7 @@ export function validateString(
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
   values?: Values,
 ): StringRequirement {
+  // @ts-expect-error strictNullChecks not assignable to type
   return field.requirements?.find((requirement) => {
     if (
       Requirement.Required in requirement &&
@@ -46,14 +47,14 @@ export function validateString(
 
     if (
       Requirement.MaxLength in requirement &&
-      (value == null || value.length > remap(requirement.maxLength, values))
+      (value == null || value.length > remap(requirement.maxLength!, values))
     ) {
       return true;
     }
 
     if (
       Requirement.MinLength in requirement &&
-      (value == null || value.length < remap(requirement.minLength, values))
+      (value == null || value.length < remap(requirement.minLength!, values))
     ) {
       return true;
     }

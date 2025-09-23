@@ -32,6 +32,7 @@ it('should not validate before submitting', () => {
     </Form>,
   );
   const testForm = screen.getByTestId('test-submit');
+  // @ts-expect-error strictNullChecks not assignable to type
   userEvent.clear(testForm.children.item(0));
   fireEvent.submit(testForm);
   expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({}));

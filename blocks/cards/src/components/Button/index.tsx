@@ -42,7 +42,7 @@ export function ButtonComponent({
   },
   index,
   item,
-}: ButtonComponentProps): VNode {
+}: ButtonComponentProps): VNode | null {
   const {
     actions,
     utils: { isMobile, remap },
@@ -53,10 +53,10 @@ export function ButtonComponent({
     [field.disabled, index, item, remap],
   );
   const hide = useMemo(
-    () => Boolean(remap(field.hide ?? null, item, { index })),
+    () => Boolean(remap(field.hide, item, { index })),
     [field.hide, item, index, remap],
   );
-  const action = actions[field.onClick];
+  const action = field.onClick ? actions[field.onClick] : actions.onClick;
   const className = classNames('button', classname, `is-${isMobile ? 'small' : size}`, {
     'is-rounded': rounded,
     'is-fullwidth': fullwidth,

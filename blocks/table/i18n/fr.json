@@ -1,4 +1,5 @@
 {
   "emptyMessage": "Aucune donnée disponible.",
-  "error": "Une erreur s'est produite lors de la récupération des données"
+  "error": "Une erreur s'est produite lors de la récupération des données",
+  "submitChecked": ""
 }

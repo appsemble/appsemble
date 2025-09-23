@@ -51,7 +51,7 @@ bootstrap(({ events, parameters: { color = 'dark', id = 'id' }, utils }) => {
 
     // Zip old and new items for easy comparison. Use the new data as the source of truth. The id
     // parameter is used to make them represent the same entity.
-    const zipped = newData.map<[Item, Item]>((newItem) => {
+    const zipped = newData.map<[Item | undefined, Item]>((newItem) => {
       const oldItem = (oldData as Item[]).find((o) => o[id] === newItem[id]);
       return [oldItem, newItem];
     });

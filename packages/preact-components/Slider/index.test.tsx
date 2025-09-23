@@ -7,7 +7,7 @@ it('should render an input element', () => {
   const onChange = vi.fn();
   render(<Slider data-testid="slider-test" onChange={onChange} value="hmm" />);
   const testSlider = screen.getByTestId('slider-test');
-  expect(testSlider.attributes.getNamedItem('type').value).toBe('range');
+  expect(testSlider.attributes.getNamedItem('type')?.value).toBe('range');
   expect(testSlider).toMatchSnapshot();
 });
 

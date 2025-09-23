@@ -88,9 +88,11 @@ export function StringInput({
           <option key={item.value} value={item.value} />
         ))}
       </datalist>
+      {/* @ts-expect-error strictNullChecks */}
       <InputField {...commonProps} list={`${name}-datalist`} type={format} />
     </>
   ) : (
+    // @ts-expect-error strictNullChecks
     <InputField {...commonProps} type={format} value={value as string} />
   );
 }

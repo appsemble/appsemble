@@ -72,7 +72,8 @@ export function SentryForm({
       formData.set('comments', values.comments);
       formData.set('email', values.email);
       formData.set('name', values.name);
-      await axios.post('https://sentry.io/api/embed/error-page/', formData, {
+      const { host } = new URL(decodeURI(dsn));
+      await axios.post(`https://${dsn ? host : 'sentry.io'}/api/embed/error-page/`, formData, {
         params: { eventId: eventId || captureMessage('Feedback', 'info'), dsn },
       });
       setSubmitted(true);

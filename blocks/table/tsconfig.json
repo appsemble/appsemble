@@ -2,7 +2,8 @@
   "extends": "@appsemble/tsconfig/preact",
   "compilerOptions": {
     "strictFunctionTypes": false,
-    "strictNullChecks": false,
-    "types": ["@appsemble/webpack-config/types"]
+    "strictNullChecks": true,
+    "types": ["@appsemble/webpack-config/types"],
+    "lib": ["dom", "dom.iterable", "esnext"]
   }
 }

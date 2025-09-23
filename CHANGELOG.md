@@ -2,12 +2,55 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.21](https://gitlab.com/appsemble/appsemble/-/releases/0.34.21)] - 2025-09-19
+
+## \[[0.34.20](https://gitlab.com/appsemble/appsemble/-/releases/0.34.20)] - 2025-09-19
+
+## \[[0.34.19](https://gitlab.com/appsemble/appsemble/-/releases/0.34.19)] - 2025-09-19
+
+## \[[0.34.18](https://gitlab.com/appsemble/appsemble/-/releases/0.34.18)] - 2025-09-19
+
+### Fixed
+
+- React-components: Invert `allowPristine` field for the `SimpleSubmit` and `SimpleModalFooter`
+  components.
+
+## \[[0.34.18-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.34.18-test.1)] - 2025-09-19
+
+## \[[0.34.18-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.34.18-test.0)] - 2025-09-18
+
+### Fixed
+
+- Server: Importing resources from CSV files with assetIds fail.
+
+## \[[0.34.17](https://gitlab.com/appsemble/appsemble/-/releases/0.34.17)] - 2025-09-18
+
+### Added
+
+- Block(`table`): Add new field `checkbox` to select data.
+
+### Fixed
+
+- App: Close the modal in `dialog` action without errors.
+- React-components: Use sentry api URL from the sentryDSN.
+- Service-worker: Clear cache on resource position updates.
+
+## \[[0.34.16](https://gitlab.com/appsemble/appsemble/-/releases/0.34.16)] - 2025-09-11
+
+### Added
+
+- App: Add debug button to app navigation. Improve app debug page.
+
+### Fixed
+
+- Block(`form`): Fix selection option min-width.
+
 ## \[[0.34.15](https://gitlab.com/appsemble/appsemble/-/releases/0.34.15)] - 2025-09-09
 
 ### Changed
 
 - Server: Invert dry-run logic for commands to be on by default, replacing the confusing
-  --no-dry-run flag with the more standard --dry-run.
+  \--no-dry-run flag with the more standard --dry-run.
 
 ## \[[0.34.15-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.34.15-test.1)] - 2025-09-04
 

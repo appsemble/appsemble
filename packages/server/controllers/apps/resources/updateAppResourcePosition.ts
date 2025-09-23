@@ -16,7 +16,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
 
-  const app = await App.findByPk(appId);
+  const app = await App.findByPk(appId, { attributes: ['definition', 'demoMode'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
   const resourceDefinition = getResourceDefinition(app.definition, resourceType);
   const { query } = parseQuery({ $filter, resourceDefinition });
@@ -119,8 +119,8 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
       : ((prevResourcePosition ?? 0) + nextResourcePosition) / 2;
   // If there is a collision, reset the positions.
   if (
-    nextResourcePosition &&
-    (updatedPosition >= nextResourcePosition || updatedPosition <= (prevResourcePosition ?? 0))
+    (nextResourcePosition && updatedPosition >= nextResourcePosition) ||
+    updatedPosition <= (prevResourcePosition ?? 0)
   ) {
     const resetPositionResources = await Resource.findAll({
       attributes: ['id'],
@@ -128,7 +128,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
       order: [['Position', 'ASC']],
     });
     resetPositionResources.map(async (resource, index) => {
-      await resource.update({ Position: index });
+      await resource.update({ Position: (index + 1) * 10 });
     });
   }
   await oldResource.update({ Position: updatedPosition });

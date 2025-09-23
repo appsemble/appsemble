@@ -32,7 +32,7 @@ function getIconSize(url: string): Promise<[number, number]> {
       }),
     );
   }
-  return sizeMap.get(url);
+  return sizeMap.get(url)!;
 }
 
 /**

@@ -22,6 +22,7 @@ export function validateMarkdown(
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
   values?: Values,
 ): StringRequirement {
+  // @ts-expect-error strictNullChecks not assignable to type
   return field.requirements?.find((requirement) => {
     if (
       Requirement.Required in requirement &&

@@ -73,6 +73,24 @@ export interface StringField extends BaseField {
   };
 }
 
+export interface CheckBox extends BaseField {
+  checkbox: {
+    /**
+     * Whether the checkbox should be disabled.
+     *
+     * If the resulting remapper value is truthy, the button will be disabled.
+     */
+    disabled?: Remapper;
+
+    /**
+     * The size of the checkbox.
+     *
+     * @default "normal"
+     */
+    size?: BulmaSize;
+  };
+}
+
 export interface Button extends BaseField {
   /**
    * The name of the action to trigger when clicking on this field.
@@ -252,12 +270,17 @@ declare module '@appsemble/sdk' {
      * The message to display when the data to display is empty.
      */
     emptyMessage: never;
+
+    /**
+     * The text on the button that is used to submit the checked data.
+     */
+    submitChecked: never;
   }
   interface Parameters {
     /**
      * A list of fields to display.
      */
-    fields: (Button | Dropdown | Field | Image | RepeatedField | StringField)[];
+    fields: (Button | CheckBox | Dropdown | Field | Image | RepeatedField | StringField)[];
 
     /**
      * Caption text for the table.
@@ -284,6 +307,11 @@ declare module '@appsemble/sdk' {
     onClick: never;
 
     /**
+     * The action that is triggered when checked data is submitted.
+     */
+    onSubmitChecked: never;
+
+    /**
      * Custom action mapping.
      */
     [key: string]: never;
@@ -301,5 +329,10 @@ declare module '@appsemble/sdk' {
      * This event is emitted when one of the columns is clicked for sorting.
      */
     sorted: never;
+
+    /**
+     * This event is emitted when an item is checked or unchecked.
+     */
+    checked: never;
   }
 }

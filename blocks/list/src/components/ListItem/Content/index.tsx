@@ -50,12 +50,12 @@ export function ContentComponent({
 
   return (
     <div>
-      {'image' in content ? (
+      {content && 'image' in content ? (
         <figure className={`image ${styles.image}`}>
           <Image field={content.image} index={index} isVisible={isVisible} item={item} />
         </figure>
       ) : null}
-      {'fields' in content
+      {content && 'fields' in content
         ? content.fields?.map((field) => {
             let value;
             let label;
