@@ -7,15 +7,15 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
-} from '../../../models/index.js';
-import { setArgv } from '../../../utils/argv.js';
-import { createServer } from '../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
+} from '../../../../models/index.js';
+import { setArgv } from '../../../../utils/argv.js';
+import { createServer } from '../../../../utils/createServer.js';
+import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
 let user: User;
@@ -72,9 +72,9 @@ describe('patchAppMemberProperties', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+    const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
       UserId: user.id,
       role: PredefinedAppRole.Member,
     });
@@ -121,9 +121,9 @@ describe('patchAppMemberProperties', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+    const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
       UserId: user.id,
       role: PredefinedAppRole.Member,
       properties: { foo: 'bar', number: 33 },

@@ -5,8 +5,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   User,
@@ -84,8 +84,8 @@ describe('queryAppMembers', () => {
       OrganizationId: organization.id,
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      AppId: app.id,
       userId: user.id,
       name: 'Test Member',
       email: 'member@example.com',
@@ -168,8 +168,8 @@ describe('queryAppMembers', () => {
       timezone: 'whatever',
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      AppId: app.id,
       userId: user1.id,
       demo: true,
       name: 'Test Member',
@@ -178,7 +178,6 @@ describe('queryAppMembers', () => {
     });
 
     await AppMember.create({
-      AppId: app.id,
       userId: user2.id,
       demo: true,
       name: 'Test Member',
@@ -187,7 +186,6 @@ describe('queryAppMembers', () => {
     });
 
     await AppMember.create({
-      AppId: app.id,
       userId: user3.id,
       demo: true,
       name: 'Test Member',
@@ -283,10 +281,10 @@ describe('queryAppMembers', () => {
       timezone: 'whatever',
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
       UserId: user1.id,
       demo: true,
-      AppId: app.id,
       name: 'Test Member',
       email: 'staff@example.com',
       role: 'Staff',
@@ -294,7 +292,6 @@ describe('queryAppMembers', () => {
 
     await AppMember.create({
       UserId: user2.id,
-      AppId: app.id,
       demo: true,
       name: 'Test Member',
       email: 'manager@example.com',
@@ -302,7 +299,6 @@ describe('queryAppMembers', () => {
     });
 
     await AppMember.create({
-      AppId: app.id,
       demo: true,
       name: 'Test Not Filtered',
       email: 'notFiltered@example.com',
@@ -383,8 +379,8 @@ describe('queryAppMembers', () => {
       timezone: 'whatever',
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      AppId: app.id,
       userId: user1.id,
       demo: true,
       name: 'Test Member',
@@ -393,7 +389,6 @@ describe('queryAppMembers', () => {
     });
 
     await AppMember.create({
-      AppId: app.id,
       userId: user2.id,
       demo: true,
       name: 'Test Member',
@@ -470,8 +465,8 @@ describe('queryAppMembers', () => {
       timezone: 'whatever',
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      AppId: app.id,
       userId: user1.id,
       demo: true,
       name: 'Test Member',
@@ -480,7 +475,6 @@ describe('queryAppMembers', () => {
     });
 
     await AppMember.create({
-      AppId: app.id,
       userId: user2.id,
       demo: true,
       name: 'Test Member',

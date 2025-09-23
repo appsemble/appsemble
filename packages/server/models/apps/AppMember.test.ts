@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { App, AppMember, Organization } from './index.js';
+import { App, getAppDB, Organization } from '../index.js';
 
 describe('AppMember', () => {
   beforeEach(async () => {
@@ -31,10 +31,10 @@ describe('AppMember', () => {
   });
 
   it('should throw if the phone number is not valid', async () => {
+    const { AppMember } = await getAppDB(1);
     await expect(
       AppMember.create({
         email: 'test@example.com',
-        AppId: 1,
         role: 'Admin',
         phoneNumber: '+31 6 1234 567',
       }),
@@ -42,9 +42,9 @@ describe('AppMember', () => {
   });
 
   it('should use NL as default country code', async () => {
+    const { AppMember } = await getAppDB(1);
     const member = await AppMember.create({
       email: 'test@example.com',
-      AppId: 1,
       role: 'Admin',
       phoneNumber: '06 1234 5678',
     });

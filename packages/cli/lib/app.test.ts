@@ -32,7 +32,6 @@ const {
   App,
   AppCollection,
   AppCollectionApp,
-  AppMember,
   AppMessages,
   AppScreenshot,
   BlockVersion,
@@ -336,6 +335,7 @@ describe('app', () => {
       vi.useFakeTimers();
       const app = await App.findOne({ attributes: ['id', 'definition'] });
       expect(app).not.toBeNull();
+      const { AppMember } = await getAppDB(app!.id);
       const members = await AppMember.findAll({
         attributes: ['id', 'name', 'email', 'role', 'timezone', 'seed', 'demo'],
         where: { demo: true, seed: true },
@@ -1234,6 +1234,7 @@ describe('app', () => {
         members: true,
       });
       await app.reload({ attributes: ['id'] });
+      const { AppMember } = await getAppDB(app!.id);
       const appMembers = await AppMember.findAll({
         attributes: ['id', 'name', 'email', 'role', 'timezone', 'seed', 'demo'],
         where: { demo: true, AppId: app.id, seed: true },
