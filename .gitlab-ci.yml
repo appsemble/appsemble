@@ -849,8 +849,8 @@ staging:
   rules:
     - if: $CI_COMMIT_BRANCH == 'staging'
   environment:
-    name: staging-do
-    url: https://staging.appsemble.nl
+    name: staging
+    url: https://appsemble.eu
   variables:
     GIT_STRATEGY: none
   script:
@@ -1017,7 +1017,7 @@ provision review:
     INCREMENT: patch
     IDENTIFIER: ''
     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
-    APPSEMBLE_STAGING_DOMAIN: 'staging.appsemble.nl'
+    APPSEMBLE_STAGING_DOMAIN: 'appsemble.eu'
   needs:
     - review
     - npm_ci
@@ -1049,7 +1049,7 @@ provision staging:
   script:
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context staging
-    - npm run appsemble -- config set remote https://staging.appsemble.nl
+    - npm run appsemble -- config set remote https://appsemble.eu
     - npm run appsemble -- -vv block publish blocks/*
     - apt-get update
     - apt-get install --yes git gnupg yq
@@ -1101,7 +1101,7 @@ provision production:
 #     - if: $CI_COMMIT_TAG
 #   variables:
 #     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
-#     APPSEMBLE_STAGING_DOMAIN: 'staging.appsemble.nl'
+#     APPSEMBLE_STAGING_DOMAIN: 'appsemble.eu'
 #   script:
 #     - npm run scripts -- wait-for-ssl
 #     - npx -- lhci collect
