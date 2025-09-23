@@ -3,7 +3,7 @@ import { DataTypes, Op, QueryTypes, type Sequelize, type Transaction } from 'seq
 
 import { getAppDB } from '../../models/index.js';
 
-export const key = '0.33.0';
+export const key = '0.35.0';
 
 const appTables = [
   { name: 'AppBlockStyle' },

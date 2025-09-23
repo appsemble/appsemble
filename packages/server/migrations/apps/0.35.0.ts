@@ -1,11 +1,11 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 
-export const key = '0.33.0';
+export const key = '0.35.0';
 
 /*
  * Summary:
- * - Create all tables from production database snapshot from 0.33.3
+ * - Create all tables from production database snapshot from 0.34.16
  */
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
