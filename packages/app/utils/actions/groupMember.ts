@@ -2,7 +2,7 @@ import { type GroupInvite, type GroupMember } from '@appsemble/types';
 import axios from 'axios';
 
 import { type ActionCreator } from './index.js';
-import { apiUrl } from '../settings.js';
+import { apiUrl, appId } from '../settings.js';
 
 export const groupMemberInvite: ActionCreator<'group.member.invite'> = ({
   definition,
@@ -23,7 +23,7 @@ export const groupMemberInvite: ActionCreator<'group.member.invite'> = ({
     const role = remap(definition.role, data);
 
     const { data: response } = await axios.post<GroupInvite[]>(
-      `${apiUrl}/api/groups/${id}/invites?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+      `${apiUrl}/api/apps/${appId}/groups/${id}/invites?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
       { email, role },
     );
 
@@ -48,7 +48,7 @@ export const groupMemberQuery: ActionCreator<'group.member.query'> = ({
     const id = remap(definition.id, data);
 
     const { data: response } = await axios.get<GroupMember[]>(
-      `${apiUrl}/api/groups/${id}/members?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+      `${apiUrl}/api/apps/${appId}/groups/${id}/members?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
     );
 
     return response;
@@ -72,7 +72,7 @@ export const groupMemberDelete: ActionCreator<'group.member.delete'> = ({
     const id = remap(definition.id, data);
 
     await axios.delete(
-      `${apiUrl}/api/group-members/${id}?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+      `${apiUrl}/api/apps/${appId}/group-members/${id}?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
     );
   },
 ];
@@ -95,7 +95,7 @@ export const groupMemberRoleUpdate: ActionCreator<'group.member.role.update'> = 
     const role = remap(definition.role, data);
 
     const { data: response } = await axios.put<GroupMember>(
-      `${apiUrl}/api/group-members/${id}/role?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+      `${apiUrl}/api/apps/${appId}/group-members/${id}/role?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
       {
         role,
       },

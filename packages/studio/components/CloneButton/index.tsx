@@ -14,7 +14,7 @@ import {
 import { type App, OrganizationPermission, type Template } from '@appsemble/types';
 import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactNode, useCallback, useMemo } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -40,6 +40,8 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
   const redirect = useLocationString();
   const { hash } = useLocation();
   const { organizations, userInfo } = useUser();
+  const [hasClonableResources, setHasClonableResources] = useState<boolean>(false);
+  const [hasClonableAssets, setHasClonableAssets] = useState<boolean>(false);
 
   const createOrganizations =
     organizations?.filter((org) =>
@@ -59,6 +61,15 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
     }),
     [app, organizationId],
   );
+
+  useEffect(() => {
+    (async () => {
+      const resourcesResult = await axios.get(`/api/apps/${app.id}/clonable-resources`);
+      setHasClonableResources(resourcesResult.data);
+      const assetsResult = await axios.get(`/api/apps/${app.id}/clonable-assets`);
+      setHasClonableAssets(assetsResult.data);
+    })();
+  }, [app.id]);
 
   const cloneApp = useCallback(
     async (values: Template) => {
@@ -146,7 +157,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
               <option value="unlisted">{formatMessage(messages.unlisted)}</option>
               <option value="private">{formatMessage(messages.private)}</option>
             </SimpleFormField>
-            {app.hasClonableResources ? (
+            {hasClonableResources ? (
               <SimpleFormField
                 component={CheckboxField}
                 label={<FormattedMessage {...messages.resources} />}
@@ -154,7 +165,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
                 title={<FormattedMessage {...messages.resourcesDescription} />}
               />
             ) : null}
-            {app.hasClonableAssets ? (
+            {hasClonableAssets ? (
               <SimpleFormField
                 component={CheckboxField}
                 label={<FormattedMessage {...messages.assets} />}

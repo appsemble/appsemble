@@ -4,9 +4,9 @@ import webpush from 'web-push';
 
 import {
   type App,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -53,16 +53,15 @@ describe('deleteAppSeedResources', () => {
   it('should delete seed resources in all apps', async () => {
     authorizeStudio();
 
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       seed: true,
     });
 
     await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       seed: true,
     });
@@ -71,7 +70,6 @@ describe('deleteAppSeedResources', () => {
 
     const seedResources = await Resource.findAll({
       where: {
-        AppId: app.id,
         seed: true,
       },
     });
@@ -83,30 +81,27 @@ describe('deleteAppSeedResources', () => {
     await app.update({ demoMode: true });
     authorizeStudio();
 
+    const { Resource } = await getAppDB(app.id);
     await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       seed: true,
     });
 
     await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       seed: true,
     });
 
     await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       ephemeral: true,
     });
 
     await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       ephemeral: true,
     });
@@ -115,7 +110,6 @@ describe('deleteAppSeedResources', () => {
 
     const seedResources = await Resource.findAll({
       where: {
-        AppId: app.id,
         seed: true,
       },
     });
@@ -124,7 +118,6 @@ describe('deleteAppSeedResources', () => {
 
     const ephemeralResources = await Resource.findAll({
       where: {
-        AppId: app.id,
         ephemeral: true,
       },
     });
@@ -135,23 +128,21 @@ describe('deleteAppSeedResources', () => {
   it('should delete seed resources with references in all apps', async () => {
     authorizeStudio();
 
+    const { Resource } = await getAppDB(app.id);
     const testResource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       seed: true,
     });
 
     const testResourceB = await Resource.create({
       type: 'testResourceB',
-      AppId: app.id,
       data: { foo: 'I am Foo.', testResourceId: testResource.id },
       seed: true,
     });
 
     await Resource.create({
       type: 'testResourceBB',
-      AppId: app.id,
       data: { foo: 'I am Foo.', testResourceBId: testResourceB.id },
       seed: true,
     });
@@ -160,7 +151,6 @@ describe('deleteAppSeedResources', () => {
 
     const seedResources = await Resource.findAll({
       where: {
-        AppId: app.id,
         seed: true,
       },
     });
@@ -172,44 +162,39 @@ describe('deleteAppSeedResources', () => {
     await app.update({ demoMode: true });
     authorizeStudio();
 
+    const { Resource } = await getAppDB(app.id);
     const seedTestResource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       seed: true,
     });
 
     const seedTestResourceB = await Resource.create({
       type: 'testResourceB',
-      AppId: app.id,
       data: { foo: 'I am Foo.', testResourceId: seedTestResource.id },
       seed: true,
     });
 
     await Resource.create({
       type: 'testResourceBB',
-      AppId: app.id,
       data: { foo: 'I am Foo.', testResourceBId: seedTestResourceB.id },
       seed: true,
     });
 
     const ephemeralTestResource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
       ephemeral: true,
     });
 
     const ephemeralTestResourceB = await Resource.create({
       type: 'testResourceB',
-      AppId: app.id,
       data: { foo: 'I am Foo.', testResourceId: ephemeralTestResource.id },
       seed: true,
     });
 
     await Resource.create({
       type: 'testResourceBB',
-      AppId: app.id,
       data: { foo: 'I am Foo.', testResourceBId: ephemeralTestResourceB.id },
       seed: true,
     });
@@ -218,7 +203,6 @@ describe('deleteAppSeedResources', () => {
 
     const seedResources = await Resource.findAll({
       where: {
-        AppId: app.id,
         seed: true,
       },
     });
@@ -227,7 +211,6 @@ describe('deleteAppSeedResources', () => {
 
     const ephemeralResources = await Resource.findAll({
       where: {
-        AppId: app.id,
         ephemeral: true,
       },
     });

@@ -5,8 +5,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   User,
@@ -83,9 +83,9 @@ describe('queryAppMembers', () => {
       OrganizationId: organization.id,
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      UserId: user.id,
-      AppId: app.id,
+      userId: user.id,
       name: 'Test Member',
       email: 'member@example.com',
       role: 'Admin',
@@ -165,25 +165,23 @@ describe('queryAppMembers', () => {
       timezone: 'whatever',
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      UserId: user1.id,
-      AppId: app.id,
+      userId: user1.id,
       name: 'Test Member',
       email: 'user@example.com',
       role: 'User',
     });
 
     await AppMember.create({
-      UserId: user2.id,
-      AppId: app.id,
+      userId: user2.id,
       name: 'Test Member',
       email: 'staff@example.com',
       role: 'Staff',
     });
 
     await AppMember.create({
-      UserId: user3.id,
-      AppId: app.id,
+      userId: user3.id,
       name: 'Test Member',
       email: 'manager@example.com',
       role: 'Manager',
@@ -370,17 +368,16 @@ describe('queryAppMembers', () => {
       timezone: 'whatever',
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      UserId: user1.id,
-      AppId: app.id,
+      userId: user1.id,
       name: 'Test Member',
       email: 'staff@example.com',
       role: 'Staff',
     });
 
     await AppMember.create({
-      UserId: user2.id,
-      AppId: app.id,
+      userId: user2.id,
       name: 'Test Member',
       email: 'manager@example.com',
       role: 'Manager',
@@ -454,17 +451,16 @@ describe('queryAppMembers', () => {
       timezone: 'whatever',
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      UserId: user1.id,
-      AppId: app.id,
+      userId: user1.id,
       name: 'Test Member',
       email: 'staff@example.com',
       role: 'Staff',
     });
 
     await AppMember.create({
-      UserId: user2.id,
-      AppId: app.id,
+      userId: user2.id,
       name: 'Test Member',
       email: 'manager@example.com',
       role: 'Manager',

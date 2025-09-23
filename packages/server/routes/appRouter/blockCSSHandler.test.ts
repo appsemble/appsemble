@@ -4,7 +4,7 @@ import Koa from 'koa';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { appRouter } from './index.js';
-import { App, AppBlockStyle, Organization } from '../../models/index.js';
+import { App, getAppDB, Organization } from '../../models/index.js';
 import { setArgv } from '../../utils/argv.js';
 
 describe('blockCSSHandler', () => {
@@ -30,8 +30,8 @@ describe('blockCSSHandler', () => {
       vapidPrivateKey: '',
       vapidPublicKey: '',
     });
+    const { AppBlockStyle } = await getAppDB(app.id);
     await AppBlockStyle.create({
-      AppId: app.id,
       block: '@foo/bar',
       style: 'body { color: cyan; }',
     });

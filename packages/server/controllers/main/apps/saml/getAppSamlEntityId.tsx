@@ -4,7 +4,7 @@ import { type Context } from 'koa';
 import { toXml } from 'xast-util-to-xml';
 import { x as h } from 'xastscript';
 
-import { AppSamlSecret } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
 import { NS } from '../../../../utils/saml.js';
 
@@ -13,10 +13,15 @@ export async function getAppSamlEntityId(ctx: Context): Promise<void> {
     path,
     pathParams: { appId, appSamlSecretId },
   } = ctx;
+  const app = await App.findOne({
+    where: { id: appId },
+  });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
+  const { AppSamlSecret } = await getAppDB(appId);
   const secret = await AppSamlSecret.findOne({
     attributes: ['spCertificate'],
-    where: { AppId: appId, id: appSamlSecretId },
+    where: { id: appSamlSecretId },
   });
 
   assertKoaCondition(secret != null, ctx, 404, 'SAML secret not found');

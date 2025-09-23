@@ -2,12 +2,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  App,
-  AppOAuth2Secret,
-  Organization,
-  OrganizationMember,
-} from '../../../../../models/index.js';
+import { App, getAppDB, Organization, OrganizationMember } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { createTestUser } from '../../../../../utils/test/authorization.js';
@@ -61,8 +56,8 @@ describe('getAppOAuth2Secret', () => {
   });
 
   it('should return a partial OAuth2 secret', async () => {
+    const { AppOAuth2Secret } = await getAppDB(app.id);
     const secret = await AppOAuth2Secret.create({
-      AppId: app.id,
       authorizationUrl: 'https://example.com/oauth/authorize',
       clientId: 'example_client_id',
       clientSecret: 'example_client_secret',

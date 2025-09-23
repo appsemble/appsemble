@@ -10,7 +10,7 @@ import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { App, Asset, initDB, Resource } from '../models/index.js';
+import { App, getAppDB, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { reseedResourcesRecursively } from '../utils/resource.js';
 import { handleDBError } from '../utils/sqlUtils.js';
@@ -53,171 +53,145 @@ export async function handler(): Promise<void> {
     logger.warn('Features related to file uploads will not work correctly!');
   }
 
-  const demoAssetsToDestroy = await Asset.findAll({
-    attributes: ['id', 'name', 'AppId'],
-    where: {
-      ephemeral: true,
-    },
-  });
+  const date = new Date();
 
-  logger.info('Cleaning up ephemeral assets from demo apps.');
+  const demoApps = await App.findAll({ attributes: ['id'], where: { demoMode: true } });
+  await Promise.all(
+    demoApps.map(async (demoApp) => {
+      const { Asset, Resource, sequelize } = await getAppDB(demoApp.id);
 
-  const demoAssetsToDestroyByApp: Record<string, string[]> = {};
-  for (const asset of demoAssetsToDestroy) {
-    demoAssetsToDestroyByApp[asset.AppId] = [
-      ...(demoAssetsToDestroyByApp[asset.AppId] || []),
-      asset.id,
-    ];
-  }
+      logger.info(`Cleaning up ephemeral assets from demo app ${demoApp.id}.`);
 
-  for (const [appId, assetIds] of Object.entries(demoAssetsToDestroyByApp)) {
-    try {
-      await deleteS3Files(`app-${appId}`, assetIds);
-    } catch (error) {
-      logger.error(error);
-    }
-  }
+      const demoAssetsToDestroy = await Asset.findAll({
+        attributes: ['id', 'name'],
+        where: { ephemeral: true },
+      });
 
-  const demoAssetsDeletionResult = await Asset.destroy({
-    where: {
-      id: { [Op.in]: demoAssetsToDestroy.map((asset) => asset.id) },
-    },
-  });
+      try {
+        await deleteS3Files(
+          `app-${demoApp.id}`,
+          demoAssetsToDestroy.map((a) => a.id),
+        );
+      } catch (error) {
+        logger.error(error);
+      }
 
-  logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
+      const demoAssetsDeletionResult = await Asset.destroy({
+        where: {
+          id: { [Op.in]: demoAssetsToDestroy.map((asset) => asset.id) },
+        },
+      });
 
-  const demoAssetsToReseed = await Asset.findAll({
-    attributes: ['id', 'mime', 'filename', 'name', 'AppId', 'ResourceId'],
-    include: [
-      {
-        model: App,
+      logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
+
+      const demoAssetsToReseed = await Asset.findAll({
+        attributes: ['id', 'mime', 'filename', 'data', 'name', 'ResourceId'],
+        where: { OriginalId: null, seed: true },
+      });
+
+      logger.info(`Reseeding ephemeral assets into demo app ${demoApp.id}.`);
+
+      for (const asset of demoAssetsToReseed) {
+        const { id, ...values } = asset.dataValues;
+        const appId = asset.App!.id;
+        const created = await Asset.create({
+          ...values,
+          ephemeral: true,
+          seed: false,
+        });
+        const stream = await getS3File(`app-${appId}`, id);
+        const stats = await getS3FileStats(`app-${appId}`, id);
+        await uploadS3File(`app-${appId}`, created.id, stream, stats.size);
+      }
+
+      logger.info(
+        `Reseeded ${demoAssetsToReseed.length} ephemeral assets into demo app ${demoApp.id}.`,
+      );
+
+      const demoResourcesToDestroy = await Resource.findAll({
         attributes: ['id'],
         where: {
-          demoMode: true,
+          [Op.or]: [{ seed: false, expires: { [Op.lt]: date } }, { ephemeral: true }],
         },
-        required: true,
-      },
-    ],
-    where: {
-      seed: true,
-    },
-  });
+      });
 
-  logger.info('Reseeding ephemeral assets into demo apps.');
+      logger.info(
+        `Cleaning up ephemeral resources and resources with an expiry date earlier than ${date.toISOString()} from demo app ${demoApp.id}.`,
+      );
 
-  for (const asset of demoAssetsToReseed) {
-    const { id, ...values } = asset.dataValues;
-    const appId = asset.App!.id;
-    const created = await Asset.create({
-      ...values,
-      ephemeral: true,
-      seed: false,
-    });
-    const stream = await getS3File(`app-${appId}`, id);
-    const stats = await getS3FileStats(`app-${appId}`, id);
-    await uploadS3File(`app-${appId}`, created.id, stream, stats.size);
-  }
-
-  logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets into demo apps.`);
-
-  const date = new Date();
-  const demoResourcesToDestroy = await Resource.findAll({
-    attributes: ['id'],
-    where: {
-      [Op.or]: [{ seed: false, expires: { [Op.lt]: date } }, { ephemeral: true }],
-    },
-  });
-
-  logger.info(
-    `Cleaning up ephemeral resources and resources with an expiry date earlier than ${date.toISOString()} from demo apps.`,
-  );
-
-  const demoResourcesDeletionResult = await Resource.destroy({
-    where: {
-      id: { [Op.in]: demoResourcesToDestroy.map((resource) => resource.id) },
-    },
-  });
-
-  logger.info(`Removed ${demoResourcesDeletionResult} ephemeral resources.`);
-
-  const demoResourcesToReseed = await Resource.findAll({
-    attributes: ['type', 'data', 'AppId', 'AuthorId'],
-    include: [
-      {
-        model: App,
-        attributes: ['id', 'definition'],
+      const demoResourcesDeletionResult = await Resource.destroy({
         where: {
-          demoMode: true,
+          id: { [Op.in]: demoResourcesToDestroy.map((resource) => resource.id) },
         },
-        required: true,
-      },
-    ],
-    where: {
-      seed: true,
-    },
-  });
+      });
 
-  logger.info('Reseeding ephemeral resources into demo apps.');
+      logger.info(`Removed ${demoResourcesDeletionResult} ephemeral resources.`);
 
-  const resourcesByApp: Record<string, Resource[]> = {};
-  for (const resource of demoResourcesToReseed) {
-    resourcesByApp[resource.App!.id] = [...(resourcesByApp[resource.App!.id] ?? []), resource];
-  }
+      const demoResourcesToReseed = await Resource.findAll({
+        attributes: ['type', 'data', 'AuthorId'],
+        where: { seed: true },
+      });
 
-  for (const appResources of Object.values(resourcesByApp)) {
-    await reseedResourcesRecursively(appResources[0].App!.definition, appResources);
-  }
+      logger.info(`Reseeding ephemeral resources into demo app ${demoApp.id}.`);
 
-  logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources into demo apps.`);
+      await reseedResourcesRecursively(demoApp.definition, Resource, demoResourcesToReseed);
 
-  const assetsToDestroy = await Asset.findAll({
-    attributes: ['id', 'name'],
-    where: {
-      ephemeral: true,
-    },
-  });
-
-  logger.info('Cleaning up ephemeral assets from regular apps.');
-
-  const assetsToDestroyByApp: Record<string, string[]> = {};
-  for (const asset of assetsToDestroy) {
-    assetsToDestroyByApp[asset.AppId] = [...(assetsToDestroyByApp[asset.AppId] || []), asset.id];
-  }
-
-  for (const [appId, assetIds] of Object.entries(assetsToDestroyByApp)) {
-    try {
-      await deleteS3Files(`app-${appId}`, assetIds);
-    } catch (error) {
-      logger.error(error);
-    }
-  }
-
-  const assetsDeletionResult = await Asset.destroy({
-    where: {
-      id: { [Op.in]: assetsToDestroy.map((asset) => asset.id) },
-    },
-  });
-
-  logger.info(`Removed ${assetsDeletionResult} assets.`);
-
-  const resourcesToDestroy = await Resource.findAll({
-    attributes: ['id'],
-    where: {
-      [Op.or]: [{ expires: { [Op.lt]: date } }, { ephemeral: true }],
-    },
-  });
-
-  logger.info(
-    `Cleaning up ephemeral resources and resources with an expiry date earlier than ${date.toISOString()} from regular apps.`,
+      logger.info(
+        `Reseeded ${demoResourcesToReseed.length} ephemeral resources into demo app ${demoApp.id}.`,
+      );
+      await sequelize.close();
+    }),
   );
 
-  const resourcesDeletionResult = await Resource.destroy({
-    where: {
-      id: { [Op.in]: resourcesToDestroy.map((resource) => resource.id) },
-    },
-  });
+  const apps = await App.findAll({ attributes: ['id'], where: { demoMode: false } });
+  await Promise.all(
+    apps.map(async (app) => {
+      const { Asset, Resource, sequelize } = await getAppDB(app.id);
+      const assetsToDestroy = await Asset.findAll({
+        attributes: ['id', 'name'],
+        where: { ephemeral: true },
+      });
 
-  logger.info(`Removed ${resourcesDeletionResult} resources.`);
+      logger.info(`Cleaning up ephemeral assets from regular app ${app.id}.`);
+
+      try {
+        await deleteS3Files(
+          `app-${app.id}`,
+          assetsToDestroy.map((a) => a.id),
+        );
+      } catch (error) {
+        logger.error(error);
+      }
+
+      const assetsDeletionResult = await Asset.destroy({
+        where: {
+          id: { [Op.in]: assetsToDestroy.map((asset) => asset.id) },
+        },
+      });
+
+      logger.info(`Removed ${assetsDeletionResult} assets.`);
+
+      const resourcesToDestroy = await Resource.findAll({
+        attributes: ['id'],
+        where: {
+          [Op.or]: [{ expires: { [Op.lt]: date } }, { ephemeral: true }],
+        },
+      });
+
+      logger.info(
+        `Cleaning up ephemeral resources and resources with an expiry date earlier than ${date.toISOString()} from regular app ${app.id}.`,
+      );
+
+      const resourcesDeletionResult = await Resource.destroy({
+        where: {
+          id: { [Op.in]: resourcesToDestroy.map((resource) => resource.id) },
+        },
+      });
+
+      logger.info(`Removed ${resourcesDeletionResult} resources.`);
+      await sequelize.close();
+    }),
+  );
 
   await db.close();
   process.exit();

@@ -6,7 +6,8 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  Asset,
+  type Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -60,20 +61,18 @@ describe('deleteAppAssets', () => {
   });
 
   it('should delete existing assets', async () => {
+    const { Asset } = await getAppDB(app.id);
     const assetA = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
     await uploadS3File(`app-${app.id}`, assetA.id, Buffer.from('buffer'));
     const assetB = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
     await uploadS3File(`app-${app.id}`, assetB.id, Buffer.from('buffer'));
     const assetC = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
@@ -136,20 +135,18 @@ describe('deleteAppAssets', () => {
   });
 
   it('should soft delete assets', async () => {
+    const { Asset } = await getAppDB(app.id);
     const assetA = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
     await uploadS3File(`app-${app.id}`, assetA.id, Buffer.from('buffer'));
     const assetB = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
     await uploadS3File(`app-${app.id}`, assetB.id, Buffer.from('buffer'));
     const assetC = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
@@ -169,13 +166,11 @@ describe('deleteAppAssets', () => {
     });
     expect(assets).toMatchObject([
       {
-        AppId: app.id,
         mime: 'application/octet-stream',
         filename: 'test.bin',
         deleted: expect.any(Date),
       },
       {
-        AppId: app.id,
         mime: 'application/octet-stream',
         filename: 'test.bin',
         deleted: expect.any(Date),
@@ -184,20 +179,18 @@ describe('deleteAppAssets', () => {
   });
 
   it('should delete items from cache when an asset is deleted', async () => {
+    const { Asset } = await getAppDB(app.id);
     const assetA = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
     await uploadS3File(`app-${app.id}`, assetA.id, Buffer.from('buffer'));
     const assetB = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
     await uploadS3File(`app-${app.id}`, assetB.id, Buffer.from('buffer'));
     const assetC = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
@@ -236,20 +229,18 @@ describe('deleteAppAssets', () => {
       OrganizationId: organization.id,
     });
 
+    const { Asset } = await getAppDB(appB.id);
     const asset = await Asset.create({
-      AppId: appB.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
     });
     const assetB = await Asset.create({
-      AppId: appB.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
     });
     await Asset.create({
-      AppId: appB.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
@@ -273,20 +264,18 @@ describe('deleteAppAssets', () => {
   });
 
   it('should ignore non-existent IDs when deleting multiple existing assets', async () => {
+    const { Asset } = await getAppDB(app.id);
     const assetA = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
     await uploadS3File(`app-${app.id}`, assetA.id, Buffer.from('buffer'));
     const assetB = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
     await uploadS3File(`app-${app.id}`, assetB.id, Buffer.from('buffer'));
     const assetC = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
@@ -361,9 +350,9 @@ describe('deleteAppAssets', () => {
     });
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
+    const { Asset } = await getAppDB(app.id);
     const seedAsset = await Asset.findOne({
       where: {
-        AppId: app.id,
         seed: true,
         ephemeral: false,
       },
@@ -387,9 +376,9 @@ describe('deleteAppAssets', () => {
     });
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
+    const { Asset } = await getAppDB(app.id);
     const seedAsset = await Asset.findOne({
       where: {
-        AppId: app.id,
         seed: true,
         ephemeral: false,
       },
@@ -398,7 +387,6 @@ describe('deleteAppAssets', () => {
 
     const ephemeralAsset = await Asset.findOne({
       where: {
-        AppId: app.id,
         seed: false,
         ephemeral: true,
       },

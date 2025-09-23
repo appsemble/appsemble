@@ -3,7 +3,7 @@ import { DataTypes, type Sequelize, Transaction } from 'sequelize';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
 import { migrate, type Migration } from './migrate.js';
-import { getDB, Meta } from '../models/index.js';
+import { getDB } from '../models/index.js';
 
 let m000: Migration;
 let m001: Migration;
@@ -25,22 +25,26 @@ describe('migrate', () => {
   });
 
   it('should fail if multiple meta entries are found', async () => {
+    const db = getDB();
+    const { Meta } = db.models;
     await Meta.create({ version: '0.0.0' });
     await Meta.create({ version: '1.2.3' });
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
-    await expect(migrate(null, [])).rejects.toThrow(AppsembleError);
+    await expect(migrate(db, null, [])).rejects.toThrow(AppsembleError);
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
-    await expect(migrate(null, [])).rejects.toThrow(
-      'Multiple Meta entries found. The database requires a manual fix.',
+    await expect(migrate(db, null, [])).rejects.toThrow(
+      `Multiple Meta entries found. The ${db.getDatabaseName()} database requires a manual fix.`,
     );
   });
 
   it('should apply all migrations to database if no meta version is present', async () => {
+    const { Meta } = getDB().models;
     vi.spyOn(Meta, 'create');
     vi.spyOn(Meta, 'update');
-    await migrate('1.0.0', migrations);
+    const db = getDB();
+    await migrate(db, '1.0.0', migrations);
     expect(m000.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
     expect(m001.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
     expect(m002.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
@@ -64,9 +68,11 @@ describe('migrate', () => {
   });
 
   it('should downgrade if the given version is lower than the database meta version', async () => {
+    const { Meta } = getDB().models;
     vi.spyOn(Meta, 'update');
-    await Meta.create({ version: '0.1.0' });
-    await migrate('0.0.2', migrations);
+    await Meta.create({ version: '1.0.0' });
+    const db = getDB();
+    await migrate(db, '0.0.1', migrations);
     expect(m000.up).not.toHaveBeenCalled();
     expect(m001.up).not.toHaveBeenCalled();
     expect(m002.up).not.toHaveBeenCalled();
@@ -75,26 +81,29 @@ describe('migrate', () => {
     expect(m100.up).not.toHaveBeenCalled();
     expect(m000.down).not.toHaveBeenCalled();
     expect(m001.down).not.toHaveBeenCalled();
-    expect(m002.down).not.toHaveBeenCalled();
+    expect(m002.down).toHaveBeenCalledWith(expect.any(Transaction), getDB());
     expect(m003.down).toHaveBeenCalledWith(expect.any(Transaction), getDB());
     expect(m010.down).toHaveBeenCalledWith(expect.any(Transaction), getDB());
-    expect(m100.down).not.toHaveBeenCalled();
+    expect(m100.down).toHaveBeenCalledWith(expect.any(Transaction), getDB());
+    expect(Meta.update).toHaveBeenCalledWith({ version: m010.key }, expect.any(Object));
     expect(Meta.update).toHaveBeenCalledWith({ version: m003.key }, expect.any(Object));
     expect(Meta.update).toHaveBeenCalledWith({ version: m002.key }, expect.any(Object));
     const updatedMeta = await Meta.findAll({ raw: true });
-    expect(updatedMeta).toStrictEqual([{ version: '0.0.2' }]);
+    expect(updatedMeta).toStrictEqual([{ version: '0.0.1' }]);
   });
 
   it('should upgrade if the given version is higher than the database meta version', async () => {
+    const db = getDB();
+    const { Meta } = db.models;
     vi.spyOn(Meta, 'update');
     await Meta.create({ version: '0.0.1' });
-    await migrate('0.1.0', migrations);
+    await migrate(db, '1.0.0', migrations);
     expect(m000.up).not.toHaveBeenCalled();
     expect(m001.up).not.toHaveBeenCalled();
     expect(m002.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
     expect(m003.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
     expect(m010.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
-    expect(m100.up).not.toHaveBeenCalled();
+    expect(m100.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
     expect(m000.down).not.toHaveBeenCalled();
     expect(m001.down).not.toHaveBeenCalled();
     expect(m002.down).not.toHaveBeenCalled();
@@ -104,11 +113,13 @@ describe('migrate', () => {
     expect(Meta.update).toHaveBeenCalledWith({ version: m002.key }, expect.any(Object));
     expect(Meta.update).toHaveBeenCalledWith({ version: m003.key }, expect.any(Object));
     expect(Meta.update).toHaveBeenCalledWith({ version: m010.key }, expect.any(Object));
+    expect(Meta.update).toHaveBeenCalledWith({ version: m100.key }, expect.any(Object));
     const updatedMeta = await Meta.findAll({ raw: true });
-    expect(updatedMeta).toStrictEqual([{ version: '0.1.0' }]);
+    expect(updatedMeta).toStrictEqual([{ version: '1.0.0' }]);
   });
 
   it('should run downgrades in sequence', async () => {
+    const { Meta } = getDB().models;
     await Meta.create({ version: '0.0.3' });
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     let resolve: () => void = () => {};
@@ -117,7 +128,8 @@ describe('migrate', () => {
         resolve = r;
       }),
     );
-    const pendingMigration = migrate('0.0.1', migrations);
+    const db = getDB();
+    const pendingMigration = migrate(db, '0.0.1', migrations);
     expect(m002.down).not.toHaveBeenCalled();
     resolve();
     await pendingMigration;
@@ -125,6 +137,7 @@ describe('migrate', () => {
   });
 
   it('should run upgrades in sequence', async () => {
+    const { Meta } = getDB().models;
     await Meta.create({ version: '0.0.1' });
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     let resolve: () => void = () => {};
@@ -133,7 +146,8 @@ describe('migrate', () => {
         resolve = r;
       }),
     );
-    const pendingMigration = migrate('0.0.2', migrations);
+    const db = getDB();
+    const pendingMigration = migrate(db, '0.0.2', migrations);
     expect(m002.up).not.toHaveBeenCalled();
     resolve();
     await pendingMigration;
@@ -163,7 +177,8 @@ describe('migrate', () => {
         down: vi.fn(),
       };
 
-      await migrate('0.24.13', [m02412, m02413]);
+      const db = getDB();
+      await migrate(db, '0.24.13', [m02412, m02413]);
 
       expect((await getDB().query('SELECT * FROM "Test";'))[0]).toStrictEqual([]);
       expect(m02412.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
@@ -197,7 +212,8 @@ describe('migrate', () => {
         down: vi.fn(),
       };
 
-      await expect(migrate('0.24.13', [m02412, m02413])).rejects.toThrow('test');
+      const db = getDB();
+      await expect(migrate(db, '0.24.13', [m02412, m02413])).rejects.toThrow('test');
       await expect(getDB().query('SELECT * FROM "Test";')).rejects.toThrow(
         'relation "Test" does not exist',
       );
@@ -219,18 +235,22 @@ describe('migrate', () => {
       };
       const m02413 = { key: '0.24.13', up: vi.fn(), down: vi.fn() };
 
-      await expect(migrate('0.24.13', [m02412, m02413])).rejects.toThrow('test');
+      const db = getDB();
+      await expect(migrate(db, '0.24.13', [m02412, m02413])).rejects.toThrow('test');
 
       expect(m02412.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
       expect(m02413.up).not.toHaveBeenCalled();
       expect(m02412.down).not.toHaveBeenCalled();
       expect(m02413.down).not.toHaveBeenCalled();
 
-      expect(logger.warn).toHaveBeenCalledWith('No old database meta information was found.');
+      expect(logger.warn).toHaveBeenCalledWith(
+        `No old database meta information was found for database ${db.getDatabaseName()}.`,
+      );
       expect(logger.warn).toHaveBeenCalledWith(
         'Upgrade to 0.24.12 unsuccessful, not committing. Please make sure to start from an empty database.',
       );
 
+      const { Meta } = getDB().models;
       const metas = await Meta.findAll({ raw: true });
       expect(metas).toStrictEqual([]);
     });
@@ -246,14 +266,17 @@ describe('migrate', () => {
         down: vi.fn(),
       };
 
-      await expect(migrate('0.24.13', [m02412, m02413])).rejects.toThrow('test');
+      const db = getDB();
+      await expect(migrate(db, '0.24.13', [m02412, m02413])).rejects.toThrow('test');
 
       expect(m02412.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
       expect(m02413.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
       expect(m02412.down).not.toHaveBeenCalled();
       expect(m02413.down).not.toHaveBeenCalled();
 
-      expect(logger.warn).toHaveBeenCalledWith('No old database meta information was found.');
+      expect(logger.warn).toHaveBeenCalledWith(
+        `No old database meta information was found for database ${db.getDatabaseName()}.`,
+      );
       expect(logger.warn).toHaveBeenCalledWith(
         'Upgrade to 0.24.13 unsuccessful, not committing. Current database version 0.24.12.',
       );
@@ -264,11 +287,13 @@ consider contacting \`support@appsemble.com\` to report the migration issue,
 and include the stacktrace.`,
       );
 
+      const { Meta } = getDB().models;
       const metas = await Meta.findAll({ raw: true });
       expect(metas).toStrictEqual([{ version: '0.24.12' }]);
     });
 
     it('should log downgrade migration failure instructions', async () => {
+      const { Meta } = getDB().models;
       await Meta.create({ version: '0.24.13' });
       vi.spyOn(logger, 'warn');
       const m02412 = { key: '0.24.12', up: vi.fn(), down: vi.fn() };
@@ -280,7 +305,8 @@ and include the stacktrace.`,
         }),
       };
 
-      await expect(migrate('0.24.12', [m02412, m02413])).rejects.toThrow('test');
+      const db = getDB();
+      await expect(migrate(db, '0.24.12', [m02412, m02413])).rejects.toThrow('test');
 
       expect(m02412.up).not.toHaveBeenCalled();
       expect(m02413.up).not.toHaveBeenCalled();

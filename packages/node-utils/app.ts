@@ -55,7 +55,7 @@ export async function getRemapperContext(
 
   const appVariables = await getAppVariables({ context, app });
 
-  const appMemberInfo = await getCurrentAppMember({ context });
+  const appMemberInfo = await getCurrentAppMember({ context, app });
 
   const cache = objectCache(
     (message) =>

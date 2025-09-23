@@ -4,7 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  AppWebhookSecret,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -62,11 +62,11 @@ describe('getAppWebhookSecrets', () => {
   });
 
   it('should get app webhook secret', async () => {
+    const { AppWebhookSecret } = await getAppDB(app.id);
     const secret = await AppWebhookSecret.create({
       name: 'Test webhook',
       webhookName: 'test',
       secret: 'c6a5e780dee8e2f1f576538c8',
-      AppId: app.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/secrets/webhook/${secret.id}`);

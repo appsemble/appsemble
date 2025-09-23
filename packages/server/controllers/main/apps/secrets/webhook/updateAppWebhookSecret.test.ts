@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  AppWebhookSecret,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -64,17 +64,16 @@ describe('updateAppWebhookSecret', () => {
   });
 
   it('should update a single app webhook secret', async () => {
+    const { AppWebhookSecret } = await getAppDB(app.id);
     await AppWebhookSecret.create({
       name: 'Test webhook',
       webhookName: 'test',
       secret: 'c6a5e780dee8e2f1f576538c8',
-      AppId: app.id,
     });
     const secret2 = await AppWebhookSecret.create({
       name: 'Test webhook',
       webhookName: 'test',
       secret: 'g2a3ca7494c1aad9e5e56a6c3',
-      AppId: app.id,
     });
 
     const response = await request.put(`/api/apps/${app.id}/secrets/webhook/${secret2.id}`, {
@@ -97,11 +96,11 @@ describe('updateAppWebhookSecret', () => {
   });
 
   it('should not allow directly updating the secret', async () => {
+    const { AppWebhookSecret } = await getAppDB(app.id);
     const secret = await AppWebhookSecret.create({
       name: 'Test webhook',
       webhookName: 'test',
       secret: 'c6a5e780dee8e2f1f576538c8',
-      AppId: app.id,
     });
 
     const response = await request.put(`/api/apps/${app.id}/secrets/webhook/${secret.id}`, {

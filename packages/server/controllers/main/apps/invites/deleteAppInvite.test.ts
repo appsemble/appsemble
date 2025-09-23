@@ -2,13 +2,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  App,
-  AppInvite,
-  Organization,
-  OrganizationMember,
-  User,
-} from '../../../../models/index.js';
+import { App, getAppDB, Organization, OrganizationMember, User } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
@@ -68,8 +62,8 @@ describe('deleteAppInvite', () => {
   });
 
   it('should delete a single app invite', async () => {
+    const { AppInvite } = await getAppDB(app.id);
     await AppInvite.create({
-      AppId: app.id,
       email: 'test@example.com',
       key: 'test-key',
       role: 'User',
@@ -101,8 +95,8 @@ describe('deleteAppInvite', () => {
   });
 
   it('should check for organization member permissions', async () => {
+    const { AppInvite } = await getAppDB(app.id);
     await AppInvite.create({
-      AppId: app.id,
       email: 'test@example.com',
       key: 'test-key',
       role: 'User',
