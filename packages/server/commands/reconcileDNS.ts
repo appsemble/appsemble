@@ -42,7 +42,7 @@ export function builder(yargs: Argv): Argv {
       default: true,
     })
     .option('skip-custom-domains', {
-      desc: 'If specified, ingresses for custom domains of apps and app collections will not be created.',
+      desc: 'If specified, certificates for ingresses for custom domains of apps and app collections will not be issued.',
       type: 'boolean',
       default: false,
     });

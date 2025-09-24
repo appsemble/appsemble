@@ -407,8 +407,8 @@ export interface Argv {
   dryRun: boolean;
 
   /**
-   * If specified, ingresses for custom domains of apps and app collections will not be created when
-   * reconciling dns
+   * If specified, certificates for ingresses for custom domains of apps and app collections will
+   * not be issued
    *
    * @default false
    */
