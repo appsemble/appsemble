@@ -177,7 +177,7 @@
     },
     "skipCustomDomains": {
       "type": "boolean",
-      "description": "If specified, ingresses for custom domains of apps and app collections will not be created when reconciling dns"
+      "description": "If specified, certificates for ingresses for custom domains of apps and app collections will not be issued"
     },
     "migrateDefinitions": {
       "type": "object",

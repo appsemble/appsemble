@@ -429,7 +429,7 @@ export async function configureDNS(): Promise<void> {
     const { domain, sslCertificate, sslKey } = app;
 
     if (domain) {
-      await createIngress(domain, Boolean(sslCertificate && sslKey));
+      await createIngress(domain, Boolean(sslCertificate && sslKey) || argv.skipCustomDomains);
       if (sslKey && sslCertificate) {
         await createSSLSecret(domain, sslCertificate, sslKey);
       }
@@ -458,9 +458,9 @@ export async function configureDNS(): Promise<void> {
     const { domain } = collection;
 
     if (domain) {
-      await createIngress(domain);
+      await createIngress(domain, argv.skipCustomDomains);
       if (!domain.startsWith('www.')) {
-        await createIngress(`www.${domain}`, false, domain);
+        await createIngress(`www.${domain}`, argv.skipCustomDomains, domain);
       }
     }
     const oldDomain = collection.previous('domain') as string;
@@ -546,28 +546,24 @@ export async function reconcileDNS({
 
   const appDomains = new Set<string>();
   const appDomainCertificates = new Map<string, { sslKey: string; sslCertificate: string }>();
-  if (!skipCustomDomains) {
-    for await (const { domain, sslCertificate, sslKey } of iterTable(App, {
-      attributes: ['domain', 'sslKey', 'sslCertificate'],
-      where: { domain: { [Op.not]: '' } },
-    })) {
-      appDomains.add(domain!);
-      if (sslCertificate && sslKey) {
-        appDomainCertificates.set(domain!, { sslCertificate, sslKey });
-      }
+  for await (const { domain, sslCertificate, sslKey } of iterTable(App, {
+    attributes: ['domain', 'sslKey', 'sslCertificate'],
+    where: { domain: { [Op.not]: '' } },
+  })) {
+    appDomains.add(domain!);
+    if (sslCertificate && sslKey) {
+      appDomainCertificates.set(domain!, { sslCertificate, sslKey });
     }
   }
 
   const appCollectionDomains = new Set<string>();
-  if (!skipCustomDomains) {
-    for await (const { domain } of iterTable(AppCollection, {
-      attributes: ['domain'],
-      where: { domain: { [Op.not]: '' } },
-    })) {
-      appCollectionDomains.add(domain!);
-      if (!domain!.startsWith('www.')) {
-        appCollectionDomains.add(`www.${domain}`);
-      }
+  for await (const { domain } of iterTable(AppCollection, {
+    attributes: ['domain'],
+    where: { domain: { [Op.not]: '' } },
+  })) {
+    appCollectionDomains.add(domain!);
+    if (!domain!.startsWith('www.')) {
+      appCollectionDomains.add(`www.${domain}`);
     }
   }
 
@@ -600,7 +596,11 @@ export async function reconcileDNS({
       name.startsWith('www.') && appCollectionDomains.has(name.slice(4))
         ? name.slice(4)
         : undefined;
-    await createIngress(name, Boolean(appDomainCertificates.has(name)), redirect);
+    await createIngress(
+      name,
+      Boolean(appDomainCertificates.has(name) || skipCustomDomains),
+      redirect,
+    );
     if (appDomainCertificates.has(name)) {
       const { sslCertificate, sslKey } = appDomainCertificates.get(name)!;
       await createSSLSecret(name, sslCertificate, sslKey);

@@ -26,7 +26,12 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ['start', '-vv']
+          args:
+            - start
+          {{- if .Values.skipCustomDomains }}
+            - --skip-custom-domains
+          {{- end }}
+            - -vv
           securityContext:
             readOnlyRootFilesystem: true
           ports:
