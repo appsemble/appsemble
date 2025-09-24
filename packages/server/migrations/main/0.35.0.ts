@@ -383,7 +383,10 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       scimActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
       locale: { type: DataTypes.STRING },
       timezone: { type: DataTypes.STRING },
+      phoneNumber: { type: DataTypes.STRING },
       demo: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+      seed: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+      ephemeral: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
       AppId: {
@@ -403,12 +406,17 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     },
     { transaction },
   );
-  await queryInterface.addIndex('AppMember', ['email', 'AppId'], {
+  await queryInterface.addIndex('AppMember', ['AppId', 'email', 'ephemeral'], {
     name: 'UniqueAppMemberEmailIndex',
     unique: true,
     transaction,
   });
-  await queryInterface.addIndex('AppMember', ['UserId', 'AppId'], {
+  await queryInterface.addIndex('AppMember', ['AppId', 'phoneNumber'], {
+    name: 'UniqueAppMemberPhoneNumberIndex',
+    unique: true,
+    transaction,
+  });
+  await queryInterface.addIndex('AppMember', ['AppId', 'UserId'], {
     name: 'UniqueAppMemberIndex',
     unique: true,
     transaction,
