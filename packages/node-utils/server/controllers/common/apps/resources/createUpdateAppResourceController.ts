@@ -20,7 +20,7 @@ export function createUpdateAppResourceController(options: Options): Middleware 
 
     const app = await getApp({
       context: ctx,
-      query: { attributes: ['id', 'demoMode', 'definition'], where: { id: appId } },
+      query: { attributes: ['id', 'demoMode', 'definition', 'template'], where: { id: appId } },
     });
 
     const findOptions: FindOptions = {
