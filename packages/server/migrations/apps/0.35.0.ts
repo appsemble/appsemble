@@ -62,15 +62,23 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       scimActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
       locale: { type: DataTypes.STRING },
       timezone: { type: DataTypes.STRING },
+      phoneNumber: { type: DataTypes.STRING },
       demo: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+      seed: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+      ephemeral: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
       userId: { type: DataTypes.UUID },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
     },
     { transaction },
   );
-  await queryInterface.addIndex('AppMember', ['email'], {
+  await queryInterface.addIndex('AppMember', ['email', 'ephemeral'], {
     name: 'UniqueAppMemberEmailIndex',
+    unique: true,
+    transaction,
+  });
+  await queryInterface.addIndex('AppMember', ['phoneNumber'], {
+    name: 'UniqueAppMemberPhoneNumberIndex',
     unique: true,
     transaction,
   });
