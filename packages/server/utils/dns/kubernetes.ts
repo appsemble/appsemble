@@ -536,7 +536,8 @@ async function getIngressHosts(): Promise<{ hosts: string[]; name: string }[]> {
  */
 export async function reconcileDNS({
   dryRun = true,
-}: { dryRun?: boolean | undefined } = {}): Promise<void> {
+  skipCustomDomains = false,
+}: { dryRun?: boolean | undefined; skipCustomDomains?: boolean | undefined } = {}): Promise<void> {
   const { hostname } = new URL(argv.host);
   const orgWildcards = new Set<string>();
   for await (const { id } of iterTable(Organization, { attributes: ['id'] })) {
@@ -545,24 +546,28 @@ export async function reconcileDNS({
 
   const appDomains = new Set<string>();
   const appDomainCertificates = new Map<string, { sslKey: string; sslCertificate: string }>();
-  for await (const { domain, sslCertificate, sslKey } of iterTable(App, {
-    attributes: ['domain', 'sslKey', 'sslCertificate'],
-    where: { domain: { [Op.not]: '' } },
-  })) {
-    appDomains.add(domain!);
-    if (sslCertificate && sslKey) {
-      appDomainCertificates.set(domain!, { sslCertificate, sslKey });
+  if (!skipCustomDomains) {
+    for await (const { domain, sslCertificate, sslKey } of iterTable(App, {
+      attributes: ['domain', 'sslKey', 'sslCertificate'],
+      where: { domain: { [Op.not]: '' } },
+    })) {
+      appDomains.add(domain!);
+      if (sslCertificate && sslKey) {
+        appDomainCertificates.set(domain!, { sslCertificate, sslKey });
+      }
     }
   }
 
   const appCollectionDomains = new Set<string>();
-  for await (const { domain } of iterTable(AppCollection, {
-    attributes: ['domain'],
-    where: { domain: { [Op.not]: '' } },
-  })) {
-    appCollectionDomains.add(domain!);
-    if (!domain!.startsWith('www.')) {
-      appCollectionDomains.add(`www.${domain}`);
+  if (!skipCustomDomains) {
+    for await (const { domain } of iterTable(AppCollection, {
+      attributes: ['domain'],
+      where: { domain: { [Op.not]: '' } },
+    })) {
+      appCollectionDomains.add(domain!);
+      if (!domain!.startsWith('www.')) {
+        appCollectionDomains.add(`www.${domain}`);
+      }
     }
   }
 

@@ -40,6 +40,11 @@ export function builder(yargs: Argv): Argv {
       desc: 'If set, the command will only log the changes that would be made, but not actually make them.',
       type: 'boolean',
       default: true,
+    })
+    .option('skip-custom-domains', {
+      desc: 'If specified, ingresses for custom domains of apps and app collections will not be created.',
+      type: 'boolean',
+      default: false,
     });
 }
 export async function handler(): Promise<void> {
@@ -57,6 +62,6 @@ export async function handler(): Promise<void> {
     handleDBError(error as Error);
   }
 
-  await reconcileDNS({ dryRun: argv.dryRun });
+  await reconcileDNS({ dryRun: argv.dryRun, skipCustomDomains: argv.skipCustomDomains });
   process.exit();
 }

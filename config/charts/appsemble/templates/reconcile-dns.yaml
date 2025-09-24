@@ -21,6 +21,9 @@ spec:
           args:
             - reconcile-dns
             - --no-dry-run
+            {{ - if .Values.skipCustomDomains }}
+            - --skip-custom-domains
+            {{ - end }}
             - -vv
           env:
 {{ include "appsemble.postgres" . | indent 12 }}

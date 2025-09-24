@@ -405,6 +405,14 @@ export interface Argv {
    * @default true
    */
   dryRun: boolean;
+
+  /**
+   * If specified, ingresses for custom domains of apps and app collections will not be created when
+   * reconciling dns
+   *
+   * @default false
+   */
+  skipCustomDomains: boolean;
 }
 
 const defaults: Argv = {
@@ -505,6 +513,7 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   s3SecretKey: undefined,
   dryRun: true,
+  skipCustomDomains: false,
 };
 
 export const argv = { ...defaults };
