@@ -7,20 +7,23 @@ import {
 } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { AppMember } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { getAppMemberInfo, parseAppMemberProperties } from '../../../../utils/appMember.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
 export async function patchAppMemberProperties(ctx: Context): Promise<void> {
   const {
-    pathParams: { appMemberId },
+    pathParams: { appId, appMemberId },
     queryParams: { selectedGroupId },
     request: {
       body: { properties },
     },
     user: authSubject,
   } = ctx;
+  const app = await App.findByPk(appId);
+  assertKoaCondition(app != null, ctx, 404, 'App not found.');
 
+  const { AppMember } = await getAppDB(appId);
   const appMember = await AppMember.findByPk(appMemberId, {
     attributes: {
       exclude: ['password'],
@@ -38,7 +41,7 @@ export async function patchAppMemberProperties(ctx: Context): Promise<void> {
 
   await checkAuthSubjectAppPermissions({
     context: ctx,
-    appId: appMember.AppId,
+    appId,
     requiredPermissions: [AppPermission.PatchAppMemberProperties],
     groupId: selectedGroupId,
   });
@@ -48,7 +51,7 @@ export async function patchAppMemberProperties(ctx: Context): Promise<void> {
       properties: { ...appMember.properties, ...parseAppMemberProperties(properties) },
     });
 
-    ctx.body = getAppMemberInfo(updatedAppMember);
+    ctx.body = getAppMemberInfo(appId, updatedAppMember);
   } catch (error: any) {
     if (error instanceof AppMemberPropertiesError) {
       logger.error(error);

@@ -4,10 +4,9 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,
-  AppSubscription,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -90,15 +89,14 @@ describe('getAppSubscription', () => {
     const app = await defaultApp(organization.id);
     const appMember = await createTestAppMember(app.id);
 
+    const { AppSubscription, Resource } = await getAppDB(app.id);
     await AppSubscription.create({
-      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
     });
 
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'person',
       data: { foo: 'I am Foo.' },
     });

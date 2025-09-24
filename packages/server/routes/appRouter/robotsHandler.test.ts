@@ -5,8 +5,8 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { appRouter } from './index.js';
 import { setArgv } from '../../index.js';
-import { App } from '../../models/App.js';
-import { Organization } from '../../models/Organization.js';
+import { App } from '../../models/main/App.js';
+import { Organization } from '../../models/main/Organization.js';
 
 describe('robotsHandler', () => {
   beforeAll(async () => {

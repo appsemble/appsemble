@@ -9,7 +9,7 @@ import {
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { isMatch } from 'matcher';
 
-import { AppServiceSecret } from '../models/index.js';
+import { type AppServiceSecret, getAppDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { checkAppPermissions } from '../utils/authorization.js';
 import { decrypt, encrypt } from '../utils/crypto.js';
@@ -19,14 +19,12 @@ export async function applyAppServiceSecrets({
   axiosConfig,
   context,
 }: ApplyAppServiceSecretsParams): Promise<RawAxiosRequestConfig> {
+  const { AppServiceSecret } = await getAppDB(app.id!);
   // XXX: this is not a copy, intent unclear
   const newAxiosConfig = axiosConfig;
 
   const publicSecrets = await AppServiceSecret.count({
-    where: {
-      AppId: app.id,
-      public: true,
-    },
+    where: { public: true },
   });
   if (!context.user && !publicSecrets) {
     return newAxiosConfig;
@@ -34,9 +32,7 @@ export async function applyAppServiceSecrets({
   await checkAppPermissions({ context, appId: app.id!, requiredPermissions: [] });
 
   const appServiceSecrets = (
-    await AppServiceSecret.findAll({
-      where: { AppId: app.id, ...(context.user ? {} : { public: true }) },
-    })
+    await AppServiceSecret.findAll({ where: { ...(context.user ? {} : { public: true }) } })
   ).map<AppServiceSecret>((secret) => secret.toJSON());
 
   logger.silly('Service Secrets:');

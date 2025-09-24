@@ -4,12 +4,9 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,
-  AppMember,
-  AppSubscription,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
-  ResourceSubscription,
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -92,8 +89,8 @@ describe('updateAppSubscription', () => {
     const app = await defaultApp(organization.id);
     const appMember = await createTestAppMember(app.id);
 
+    const { AppSubscription } = await getAppDB(app.id);
     await AppSubscription.create({
-      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
@@ -141,13 +138,13 @@ describe('updateAppSubscription', () => {
     const app = await defaultApp(organization.id);
     const appMember = await createTestAppMember(app.id);
 
+    const { AppMember, AppSubscription, Resource } = await getAppDB(app.id);
     await AppSubscription.create({
-      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
     });
-    const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
+    const { id } = await Resource.create({ type: 'person', data: {} });
 
     authorizeAppMember(app, appMember);
 
@@ -202,8 +199,8 @@ describe('updateAppSubscription', () => {
     const app = await defaultApp(organization.id);
     const appMember = await createTestAppMember(app.id);
 
+    const { AppSubscription, ResourceSubscription } = await getAppDB(app.id);
     const subscription = await AppSubscription.create({
-      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
@@ -249,13 +246,13 @@ describe('updateAppSubscription', () => {
     const app = await defaultApp(organization.id);
     const appMember = await createTestAppMember(app.id);
 
+    const { AppSubscription, Resource, ResourceSubscription } = await getAppDB(app.id);
     const subscription = await AppSubscription.create({
-      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
     });
-    const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
+    const { id } = await Resource.create({ type: 'person', data: {} });
 
     await ResourceSubscription.create({
       AppSubscriptionId: subscription.id,
@@ -327,8 +324,8 @@ describe('updateAppSubscription', () => {
     const app = await defaultApp(organization.id);
     const appMember = await createTestAppMember(app.id);
 
+    const { AppSubscription } = await getAppDB(app.id);
     await AppSubscription.create({
-      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
@@ -393,13 +390,13 @@ describe('updateAppSubscription', () => {
     const app = await defaultApp(organization.id);
     const appMember = await createTestAppMember(app.id);
 
+    const { AppSubscription, Resource } = await getAppDB(app.id);
     await AppSubscription.create({
-      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
     });
-    const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
+    const { id } = await Resource.create({ type: 'person', data: {} });
 
     authorizeAppMember(app, appMember);
     await request.patch(`/api/apps/${app.id}/subscriptions`, {

@@ -6,11 +6,10 @@ import {
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
-import { App, Asset, ResourceVersion, transactional } from '../models/index.js';
-import { Resource } from '../models/Resource.js';
+import { App, getAppDB } from '../models/index.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
-export function updateAppResource({
+export async function updateAppResource({
   app,
   context,
   deletedAssetIds,
@@ -20,26 +19,22 @@ export function updateAppResource({
   resource,
   resourceDefinition,
 }: UpdateAppResourceParams): Promise<ResourceInterface | null> {
-  return transactional(async (transaction) => {
-    const member = await getCurrentAppMember({ context });
+  const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(app.id!);
+  const member = await getCurrentAppMember({ context, app });
 
-    const persistedApp = (await App.findOne({
-      where: {
-        id: app.id,
-      },
-    }))!;
+  const persistedApp = (await App.findOne({ where: { id: app.id } }))!;
 
-    const { $clonable: clonable, $expires: expires, ...data } = resource as Record<string, unknown>;
+  const { $clonable: clonable, $expires: expires, ...data } = resource as Record<string, unknown>;
 
+  return sequelize.transaction(async (transaction) => {
     const oldResource = (await Resource.findOne({
-      where: {
-        id,
-      },
+      where: { id },
       include: [
         { association: 'Author', attributes: ['id', 'name'], required: false },
         { model: Asset, attributes: ['id'], required: false },
         { association: 'Group', attributes: ['id', 'name'], required: false },
       ],
+      transaction,
     }))!;
 
     const oldData = oldResource.data;
@@ -60,7 +55,6 @@ export function updateAppResource({
         preparedAssets.map((asset) => ({
           ...asset,
           ...getCompressedFileMeta(asset),
-          AppId: app.id,
           ResourceId: id,
           AppMemberId: member?.sub,
           seed: newResource.seed,
@@ -98,13 +92,13 @@ export function updateAppResource({
     }
 
     const reloaded = await newResource.reload({
-      include: [{ association: 'Editor' }, { association: 'App', attributes: ['template'] }],
+      include: [{ association: 'Editor' }],
       transaction,
     });
 
     processReferenceHooks(persistedApp, newResource, 'update', options, context);
     processHooks(persistedApp, newResource, 'update', options, context);
 
-    return reloaded.toJSON({ exclude: reloaded.App!.template ? ['$seed'] : undefined });
+    return reloaded.toJSON({ exclude: app.template ? ['$seed'] : undefined });
   });
 }

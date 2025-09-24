@@ -2,7 +2,7 @@ import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { App, AppInvite, User } from '../../../../models/index.js';
+import { App, getAppDB, User } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
@@ -12,11 +12,9 @@ export async function resendAppInvite(ctx: Context): Promise<void> {
     pathParams: { appId },
     request,
   } = ctx;
-
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId', 'definition', 'domain', 'path'],
   });
-
   assertKoaCondition(app != null, ctx, 404, 'App not found.');
 
   await checkUserOrganizationPermissions({
@@ -25,14 +23,9 @@ export async function resendAppInvite(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateAppInvites],
   });
 
+  const { AppInvite } = await getAppDB(appId);
   const email = request.body.email.toLowerCase();
-  const existingAppInvite = await AppInvite.findOne({
-    where: {
-      AppId: appId,
-      email,
-    },
-    include: [User],
-  });
+  const existingAppInvite = await AppInvite.findOne({ where: { email } });
 
   assertKoaCondition(
     existingAppInvite != null,
@@ -41,6 +34,8 @@ export async function resendAppInvite(ctx: Context): Promise<void> {
     'This person was not invited previously.',
   );
 
+  const user = await User.findByPk(existingAppInvite.userId, { attributes: ['name', 'locale'] });
+
   const url = new URL('/App-Invite', getAppUrl(app));
   url.searchParams.set('token', existingAppInvite.key);
 
@@ -48,15 +43,15 @@ export async function resendAppInvite(ctx: Context): Promise<void> {
     await mailer.sendTranslatedEmail({
       appId,
       to: {
-        ...(existingAppInvite.User ? { name: existingAppInvite.User.name } : {}),
+        ...(user ? { name: user.name } : {}),
         email,
       },
       emailName: 'appInvite',
       ...(app.definition.defaultLanguage ? { locale: app.definition.defaultLanguage } : {}),
-      ...(existingAppInvite.User ? { locale: existingAppInvite.User.locale } : {}),
+      ...(user ? { locale: user.locale } : {}),
       values: {
         link: (text) => `[${text}](${String(url)})`,
-        name: existingAppInvite.User?.name || 'null',
+        name: user?.name || 'null',
         appName: app.definition.name,
       },
     });

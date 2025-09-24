@@ -2,7 +2,7 @@ import { assertKoaCondition, updateNamespacedSecret } from '@appsemble/node-util
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { App, AppServiceSecret } from '../../../../../models/index.js';
+import { App, getAppDB } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
@@ -13,11 +13,7 @@ export async function createAppServiceSecret(ctx: Context): Promise<void> {
     pathParams: { appId },
     request: { body },
   } = ctx;
-
-  const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'path'],
-  });
-
+  const app = await App.findByPk(appId, { attributes: ['OrganizationId', 'path'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
@@ -28,11 +24,11 @@ export async function createAppServiceSecret(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateAppSecrets],
   });
 
+  const { AppServiceSecret } = await getAppDB(appId);
   const { authenticationMethod, ca, id, identifier, name, scope, tokenUrl, urlPatterns } =
     await AppServiceSecret.create({
       ...body,
       secret: encrypt(body.secret, argv.aesSecret),
-      AppId: appId,
     });
 
   // Create in the cluster

@@ -20,7 +20,6 @@ export function createDeleteAppResourceController(options: Options): Middleware 
       where: {
         id: resourceId,
         type: resourceType,
-        AppId: appId,
         GroupId: selectedGroupId ?? null,
         expires: { or: [{ gt: new Date() }, { eq: null }] },
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),

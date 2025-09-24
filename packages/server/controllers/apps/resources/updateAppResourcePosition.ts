@@ -2,7 +2,7 @@ import { assertKoaCondition, getResourceDefinition } from '@appsemble/node-utils
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, Resource } from '../../../models/index.js';
+import { App, getAppDB } from '../../../models/index.js';
 import { checkAppPermissions } from '../../../utils/authorization.js';
 import { parseQuery } from '../../../utils/resource.js';
 
@@ -15,14 +15,13 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     },
     user: authSubject,
   } = ctx;
-
+  const { Resource } = await getAppDB(appId);
   const app = await App.findByPk(appId, { attributes: ['definition', 'demoMode'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
   const resourceDefinition = getResourceDefinition(app.definition, resourceType);
-  const { query } = parseQuery({ $filter, resourceDefinition });
+  const { query } = parseQuery({ $filter, resourceDefinition, tableName: 'Resource' });
   const commonFindOptions = {
     ...(query ? { query } : {}),
-    AppId: appId,
     type: resourceType,
     GroupId: selectedGroupId ?? null,
     ...(app.demoMode ? { ephemeral: true, seed: false } : {}),
@@ -124,7 +123,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   ) {
     const resetPositionResources = await Resource.findAll({
       attributes: ['id'],
-      where: { type: resourceType, AppId: appId },
+      where: { type: resourceType },
       order: [['Position', 'ASC']],
     });
     resetPositionResources.map(async (resource, index) => {

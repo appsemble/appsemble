@@ -10,7 +10,11 @@ import { createTestUser } from '../../../utils/test/authorization.js';
 let organization: Organization;
 let user: User;
 
-const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
+const argv = {
+  host: 'http://localhost',
+  secret: 'test',
+  aesSecret: 'testSecret',
+};
 
 describe('queryApps', () => {
   beforeAll(async () => {

@@ -3,9 +3,9 @@ import { type Context } from 'koa';
 
 import {
   App,
-  AppMember,
-  AppOAuth2Authorization,
-  AppOAuth2Secret,
+  type AppMember,
+  type AppOAuth2Authorization,
+  getAppDB,
 } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { handleUniqueAppMemberEmailIndex } from '../../../../../utils/auth.js';
@@ -40,25 +40,18 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     // It is VERY important to include domain here
     // It is used to verify the oauth2 redirectUrl
     attributes: ['id', 'path', 'OrganizationId', 'definition', 'domain'],
-    include: [
-      {
-        attributes: ['id', 'tokenUrl', 'clientId', 'clientSecret', 'remapper', 'userInfoUrl'],
-        model: AppOAuth2Secret,
-        where: { id: appOAuth2SecretId },
-        required: false,
-      },
-    ],
+  });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
+
+  const { AppMember, AppOAuth2Authorization, AppOAuth2Secret } = await getAppDB(appId);
+  const appOAuth2Secrets = await AppOAuth2Secret.findAll({
+    attributes: ['id', 'tokenUrl', 'clientId', 'clientSecret', 'remapper', 'userInfoUrl'],
+    where: { id: appOAuth2SecretId },
   });
 
-  assertKoaCondition(app != null, ctx, 404, 'App not found');
-  assertKoaCondition(
-    app.AppOAuth2Secrets != null && app.AppOAuth2Secrets.length > 0,
-    ctx,
-    404,
-    'OAuth2 secret not found',
-  );
+  assertKoaCondition(appOAuth2Secrets.length > 0, ctx, 404, 'OAuth2 secret not found');
 
-  const [secret] = app.AppOAuth2Secrets;
+  const [secret] = appOAuth2Secrets;
   const {
     access_token: accessToken,
     id_token: idToken,
@@ -101,7 +94,6 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     const role = app.definition.security?.default?.role;
     try {
       appMember = await AppMember.create({
-        AppId: appId,
         role,
         name,
         email,

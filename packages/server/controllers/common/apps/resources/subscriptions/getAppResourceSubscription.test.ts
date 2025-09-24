@@ -4,10 +4,9 @@ import webpush from 'web-push';
 
 import {
   type App,
-  AppSubscription,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   type User,
 } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
@@ -57,15 +56,14 @@ describe('getAppResourceSubscription', () => {
 
   it('should fetch resource subscriptions', async () => {
     const appMember = await createTestAppMember(app.id);
+    const { AppSubscription, Resource } = await getAppDB(1);
     await AppSubscription.create({
-      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
     });
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
     authorizeAppMember(app, appMember);
@@ -96,15 +94,14 @@ describe('getAppResourceSubscription', () => {
 
   it('should return normally if user is not subscribed to the specific resource', async () => {
     const appMember = await createTestAppMember(app.id);
+    const { AppSubscription, Resource } = await getAppDB(1);
     await AppSubscription.create({
-      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
     });
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
@@ -129,8 +126,8 @@ describe('getAppResourceSubscription', () => {
   it('should 404 if resource is not found', async () => {
     const appMember = await createTestAppMember(app.id);
 
+    const { AppSubscription } = await getAppDB(1);
     await AppSubscription.create({
-      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
@@ -157,9 +154,9 @@ describe('getAppResourceSubscription', () => {
   it('should return 200 if user is not subscribed', async () => {
     const appMember = await createTestAppMember(app.id);
 
+    const { Resource } = await getAppDB(1);
     const resource = await Resource.create({
       type: 'testResource',
-      AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
     authorizeAppMember(app, appMember);

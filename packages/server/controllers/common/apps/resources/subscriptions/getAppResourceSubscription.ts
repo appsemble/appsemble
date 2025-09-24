@@ -1,50 +1,36 @@
 import { assertKoaCondition, getResourceDefinition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import {
-  App,
-  AppSubscription,
-  Resource,
-  ResourceSubscription,
-} from '../../../../../models/index.js';
+import { App, getAppDB } from '../../../../../models/index.js';
 
 export async function getAppResourceSubscription(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
     query: { endpoint },
   } = ctx;
+  const { AppSubscription, Resource, ResourceSubscription } = await getAppDB(appId);
+  const app = await App.findByPk(appId, { attributes: ['definition'] });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  const app = await App.findByPk(appId, {
-    attributes: ['definition'],
+  const appResource = await Resource.findByPk(resourceId, { attributes: ['id'] });
+
+  const appSubscriptions = await AppSubscription.findAll({
+    attributes: ['id'],
     include: [
       {
-        model: Resource,
-        attributes: ['id'],
-        where: { id: resourceId },
+        model: ResourceSubscription,
+        where: { type: resourceType, ResourceId: resourceId },
         required: false,
-      },
-      {
-        attributes: ['id'],
-        model: AppSubscription,
-        include: [
-          {
-            model: ResourceSubscription,
-            where: { type: resourceType, ResourceId: resourceId },
-            required: false,
-          },
-        ],
-        required: false,
-        where: { endpoint },
       },
     ],
+    where: { endpoint },
   });
-  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   getResourceDefinition(app.definition, resourceType, ctx);
 
-  assertKoaCondition(app.Resources.length > 0, ctx, 404, 'Resource not found.');
+  assertKoaCondition(appResource != null, ctx, 404, 'Resource not found.');
 
-  const subscriptions = app.AppSubscriptions?.[0]?.ResourceSubscriptions ?? [];
+  const subscriptions = appSubscriptions[0]?.ResourceSubscriptions ?? [];
   const result: any = { id: resourceId, update: false, delete: false };
 
   for (const { action } of subscriptions) {

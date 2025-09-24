@@ -1,7 +1,7 @@
 import { assertKoaCondition, getResourceDefinition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, Resource } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { options } from '../../../../options/options.js';
 import { checkAppPermissions } from '../../../../utils/authorization.js';
 import {
@@ -16,7 +16,7 @@ export async function deleteAppResources(ctx: Context): Promise<void> {
     queryParams: { selectedGroupId },
     request: { body },
   } = ctx;
-
+  const { Resource } = await getAppDB(appId);
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'id'],
   });
@@ -37,7 +37,6 @@ export async function deleteAppResources(ctx: Context): Promise<void> {
       where: {
         id: body.slice(deletedAmount, deletedAmount + 100),
         type: resourceType,
-        AppId: appId,
         GroupId: selectedGroupId ?? null,
       },
       limit: 100,

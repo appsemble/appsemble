@@ -1,16 +1,7 @@
-import { type AppAccount } from '@appsemble/types';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 
-import {
-  App,
-  AppMember,
-  AppOAuth2Authorization,
-  AppOAuth2Secret,
-  AppSamlAuthorization,
-  AppSamlSecret,
-  Organization,
-} from '../../../../../../models/index.js';
+import { App, getAppDB, Organization } from '../../../../../../models/index.js';
 import { applyAppMessages, parseLanguage } from '../../../../../../utils/app.js';
 import { getAppMemberInfo, getAppMemberSSO } from '../../../../../../utils/appMember.js';
 
@@ -42,12 +33,25 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
           ],
         },
       },
-      {
-        model: AppMember,
-        attributes: {
-          exclude: ['picture'],
-        },
-        where: { UserId: authSubject!.id },
+      ...includeOptions,
+    ],
+  });
+
+  ctx.body = await Promise.all(
+    apps.map(async (app) => {
+      applyAppMessages(app, language, baseLanguage);
+
+      const {
+        AppMember,
+        AppOAuth2Authorization,
+        AppOAuth2Secret,
+        AppSamlAuthorization,
+        AppSamlSecret,
+      } = await getAppDB(app.id);
+
+      const appMember = await AppMember.findOne({
+        attributes: { exclude: ['picture'] },
+        where: { userId: authSubject!.id },
         include: [
           {
             model: AppSamlAuthorization,
@@ -60,20 +64,17 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
             include: [AppOAuth2Secret],
           },
         ],
-      },
-      ...includeOptions,
-    ],
-  });
+      });
 
-  ctx.body = apps.map((app) => {
-    applyAppMessages(app, language, baseLanguage);
+      if (!appMember) {
+        return {};
+      }
 
-    const appMember = app.AppMembers[0];
-
-    return {
-      app: app.toJSON(),
-      appMemberInfo: getAppMemberInfo(appMember),
-      sso: getAppMemberSSO(appMember),
-    };
-  }) as AppAccount[];
+      return {
+        app: app.toJSON(),
+        appMemberInfo: getAppMemberInfo(app.id, appMember),
+        sso: getAppMemberSSO(appMember),
+      };
+    }),
+  );
 }

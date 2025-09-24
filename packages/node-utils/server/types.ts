@@ -257,6 +257,7 @@ export interface GetCspParams {
 
 export interface GetCurrentAppMemberParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  app: App;
 }
 
 export interface GetCurrentAppMemberGroupsParams {
@@ -304,6 +305,7 @@ export interface ReloadUserParams {
 }
 
 export interface ParseQueryParams {
+  tableName: string;
   $filter: string;
   $orderby: string;
   resourceDefinition: ResourceDefinition;

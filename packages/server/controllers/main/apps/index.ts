@@ -10,6 +10,7 @@ export * from './secrets/index.js';
 export * from './snapshots/index.js';
 export * from './variables/index.js';
 export * from './assets/index.js';
+export * from './groups/index.js';
 export * from './invites/index.js';
 export * from './webhooks/index.js';
 export * from './demo-members/index.js';

@@ -15,7 +15,7 @@ let testApp: AxiosTestInstance;
 let user: models.User;
 let organization: models.Organization;
 
-const { App, AppBlockStyle, BlockVersion, Organization, OrganizationMember, Theme } = models;
+const { App, BlockVersion, Organization, OrganizationMember, Theme, getAppDB } = models;
 
 describe('block', () => {
   beforeAll(() => {
@@ -192,10 +192,10 @@ export const string = 'with-icon';
         testApp.defaults.baseURL!,
         false,
       );
+      const { AppBlockStyle } = await getAppDB(app.id);
       const style = (await AppBlockStyle.findOne())!;
       expect(style.dataValues).toMatchInlineSnapshot(`
         {
-          "AppId": 1,
           "block": "@appsemble/test",
           "created": 1970-01-01T00:00:00.000Z,
           "style": ".tux {
@@ -219,6 +219,7 @@ export const string = 'with-icon';
       await expect(() =>
         traverseBlockThemes(resolveFixture('apps/test'), app.id, testApp.defaults.baseURL!, false),
       ).rejects.toThrow('Request failed with status code 404');
+      const { AppBlockStyle } = await getAppDB(app.id);
       const style = await AppBlockStyle.findOne();
       expect(style).toBeNull();
     });

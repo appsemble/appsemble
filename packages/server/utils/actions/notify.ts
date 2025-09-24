@@ -2,6 +2,8 @@ import { defaultLocale, type NotifyActionDefinition, remap } from '@appsemble/la
 import { getRemapperContext } from '@appsemble/node-utils';
 
 import { type ServerActionParameters } from './index.js';
+import { getAppDB } from '../../models/index.js';
+import { sendNotification } from '../sendNotification.js';
 
 export async function notify({
   action,
@@ -11,7 +13,7 @@ export async function notify({
   internalContext,
   options,
 }: ServerActionParameters<NotifyActionDefinition>): Promise<any> {
-  const { sendNotifications } = options;
+  const { AppSubscription } = await getAppDB(app.id);
 
   const remapperContext = await getRemapperContext(
     app.toJSON(),
@@ -25,11 +27,19 @@ export async function notify({
   });
 
   const to = remap(action.to, data, remapperContext) as string;
+
+  await app?.reload({ attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'] });
+  const appSubscriptions = await AppSubscription.findAll({
+    attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+    ...(to === 'all' ? {} : { where: { AppMemberId: to } }),
+  });
+
   const title = remap(action.title, data, remapperContext) as string;
   const body = remap(action.body, data, remapperContext) as string;
   const link = remap(action.link, data, remapperContext) as string;
 
-  await sendNotifications({ app: app.toJSON(), to, title, body, link });
-
+  for (const subscription of appSubscriptions) {
+    sendNotification(app, subscription, { title, body, link });
+  }
   return data;
 }

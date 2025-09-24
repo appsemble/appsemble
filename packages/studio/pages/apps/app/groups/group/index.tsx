@@ -46,20 +46,20 @@ export function GroupPage(): ReactNode {
   const { organizations } = useUser();
   const { groupId } = useParams<{ groupId: string }>();
 
-  const groupResult = useData<Group>(`/api/groups/${groupId}`);
+  const groupResult = useData<Group>(`/api/apps/${app.id}/groups/${groupId}`);
 
   const {
     data: members,
     error: membersError,
     loading: membersLoading,
     setData: setMembers,
-  } = useData<GroupMember[]>(`/api/groups/${groupId}/members`);
+  } = useData<GroupMember[]>(`/api/apps/${app.id}/groups/${groupId}/members`);
 
   const {
     data: invites,
     loading: invitesLoading,
     setData: setInvites,
-  } = useData<GroupInvite[]>(`/api/groups/${groupId}/invites`);
+  } = useData<GroupInvite[]>(`/api/apps/${app.id}/groups/${groupId}/invites`);
 
   useMeta(groupResult.data?.name || groupId);
 
@@ -80,32 +80,35 @@ export function GroupPage(): ReactNode {
 
   const onEditMember = useCallback(
     async ({ id }: GroupMember, role: any) => {
-      const { data: updated } = await axios.put<GroupMember>(`/api/group-members/${id}/role`, {
-        role,
-      });
+      const { data: updated } = await axios.put<GroupMember>(
+        `/api/apps/${app.id}/group-members/${id}/role`,
+        {
+          role,
+        },
+      );
       setMembers((prevMembers) =>
         prevMembers.map((member) => (member.id === id ? updated : member)),
       );
     },
-    [setMembers],
+    [app.id, setMembers],
   );
 
   const onEditGroup = useCallback(
     async ({ annotations, name }: typeof defaultValues) => {
-      const { data } = await axios.patch<Group>(`/api/groups/${groupId}`, {
+      const { data } = await axios.patch<Group>(`/api/apps/${app.id}/groups/${groupId}`, {
         name,
         annotations: Object.fromEntries(annotations),
       });
       editGroupModal.disable();
       groupResult.setData(data);
     },
-    [editGroupModal, groupResult, groupId],
+    [app.id, groupId, editGroupModal, groupResult],
   );
 
   const onDelete = useCallback(async () => {
-    await axios.delete(`/api/groups/${groupId}`);
+    await axios.delete(`/api/apps/${app.id}/groups/${groupId}`);
     navigate(pathname.replace(`/groups/${groupId}`, '/groups'), { replace: true });
-  }, [navigate, groupId, pathname]);
+  }, [app.id, groupId, navigate, pathname]);
 
   const onDeleteClick = useConfirmation({
     title: <FormattedMessage {...messages.deletingGroup} />,
@@ -117,10 +120,10 @@ export function GroupPage(): ReactNode {
 
   const onRemoveGroupMember = useCallback(
     async ({ id }: GroupMember) => {
-      await axios.delete(`/api/group-members/${id}`);
+      await axios.delete(`/api/apps/${app.id}/group-members/${id}`);
       setMembers((prevMembers) => prevMembers.filter((member) => member.id !== id));
     },
-    [setMembers],
+    [app.id, setMembers],
   );
   const {
     userInfo: { email: currentUserEmail },
@@ -128,12 +131,12 @@ export function GroupPage(): ReactNode {
 
   const onDeleteGroupInvite = useCallback(
     async (invite: GroupInvite) => {
-      await axios.delete(`/api/groups/${groupId}/invites`, {
+      await axios.delete(`/api/apps/${app.id}/groups/${groupId}/invites`, {
         data: invite,
       });
       setInvites((prevInvites) => prevInvites.filter((i) => i.email !== invite.email));
     },
-    [groupId, setInvites],
+    [app.id, groupId, setInvites],
   );
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);

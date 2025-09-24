@@ -1,7 +1,7 @@
 import { assertKoaCondition, scimAssert } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember, Group, GroupMember, transactional } from '../../../../../models/index.js';
+import { App, type AppMember, getAppDB, type Group } from '../../../../../models/index.js';
 import { getCaseInsensitive } from '../../../../../utils/object.js';
 import { convertAppMemberToScimUser } from '../../../../../utils/scim.js';
 
@@ -10,7 +10,12 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
     pathParams: { appId },
     request: { body },
   } = ctx;
+  const app = await App.findOne({
+    where: { id: appId, attributes: ['id'] },
+  });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
+  const { AppMember, Group, GroupMember, sequelize } = await getAppDB(appId);
   const externalId = getCaseInsensitive(body, 'externalid');
   scimAssert(typeof externalId === 'string', ctx, 400, 'Expected externalId to be string');
 
@@ -56,9 +61,9 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
 
   let group: Group | null;
   if (managerId) {
-    group = await Group.findOne({ where: { AppId: appId, name: managerId } });
+    group = await Group.findOne({ where: { name: managerId } });
   }
-  const managerGroup = await Group.findOne({ where: { AppId: appId, name: externalId } });
+  const managerGroup = await Group.findOne({ where: { name: externalId } });
   const defaultRole = (await App.findByPk(appId, { attributes: ['definition'] }))?.definition
     .security?.default?.role;
 
@@ -70,10 +75,9 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
   );
   try {
     let member: AppMember | undefined;
-    await transactional(async (transaction) => {
+    await sequelize.transaction(async (transaction) => {
       member = await AppMember.create(
         {
-          AppId: appId,
           role: defaultRole,
           email: userName,
           name: formattedName,
@@ -88,9 +92,9 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
 
       if (managerId) {
         if (!group) {
-          group = await Group.create({ AppId: appId, name: managerId }, { transaction });
+          group = await Group.create({ name: managerId }, { transaction });
           const groupManager = await AppMember.findOne({
-            where: { AppId: appId, scimExternalId: group.name },
+            where: { scimExternalId: group.name },
           });
 
           if (groupManager) {
@@ -127,7 +131,7 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
         );
       }
     });
-    ctx.body = convertAppMemberToScimUser(member!);
+    ctx.body = convertAppMemberToScimUser(appId, member!);
   } catch {
     scimAssert(false, ctx, 409, 'Conflict');
   }

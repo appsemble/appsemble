@@ -1,7 +1,7 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppSubscription, ResourceSubscription } from '../../../models/index.js';
+import { App, getAppDB } from '../../../models/index.js';
 
 export async function updateAppSubscription(ctx: Context): Promise<void> {
   const {
@@ -12,32 +12,27 @@ export async function updateAppSubscription(ctx: Context): Promise<void> {
     user: appMember,
   } = ctx;
 
-  const app = await App.findByPk(appId, {
-    attributes: [],
-    include: [
-      {
-        attributes: ['id', 'AppMemberId'],
-        model: AppSubscription,
-        include: [
-          {
-            model: ResourceSubscription,
-            where: {
-              type: resource,
-              action,
-              ResourceId: resourceId === undefined ? null : resourceId,
-            },
-            required: false,
-          },
-        ],
-        required: false,
-        where: { endpoint },
-      },
-    ],
-  });
-
+  const app = await App.findByPk(appId, { attributes: ['id'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  const [appSubscription] = app.AppSubscriptions;
+  const { AppSubscription, ResourceSubscription } = await getAppDB(appId);
+  const appSubscriptions = await AppSubscription.findAll({
+    attributes: ['id', 'AppMemberId'],
+    include: [
+      {
+        model: ResourceSubscription,
+        where: {
+          type: resource,
+          action,
+          ResourceId: resourceId === undefined ? null : resourceId,
+        },
+        required: false,
+      },
+    ],
+    where: { endpoint },
+  });
+
+  const [appSubscription] = appSubscriptions;
   assertKoaCondition(appSubscription != null, ctx, 404, 'Subscription not found');
 
   if (appMember?.id && !appSubscription.AppMemberId) {

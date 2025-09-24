@@ -6,13 +6,12 @@ import { stringify } from 'yaml';
 
 import {
   App,
-  AppBlockStyle,
   AppMessages,
   AppReadme,
   AppScreenshot,
   AppSnapshot,
-  Asset,
-  Resource,
+  getAppDB,
+  type Resource,
 } from '../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 
@@ -34,7 +33,6 @@ export async function exportApp(ctx: Context): Promise<void> {
       'visibility',
     ],
     include: [
-      { model: AppBlockStyle, required: false },
       { model: AppMessages, required: false },
       { model: AppSnapshot, as: 'AppSnapshots', order: [['created', 'DESC']], limit: 1 },
       { model: AppScreenshot, as: 'AppScreenshots' },
@@ -43,6 +41,9 @@ export async function exportApp(ctx: Context): Promise<void> {
   });
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
+
+  const { AppBlockStyle, Asset, Resource } = await getAppDB(appId);
+  const appBlockStyles = await AppBlockStyle.findAll();
 
   if (app.visibility === 'private' || !app.showAppDefinition) {
     await checkUserOrganizationPermissions({
@@ -70,12 +71,10 @@ export async function exportApp(ctx: Context): Promise<void> {
     }
   }
 
-  if (app.AppBlockStyles !== undefined) {
-    for (const block of app.AppBlockStyles) {
-      const [orgName, blockName] = block.block.split('/');
-      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
-      theme.file(`${orgName}/${blockName}/index.css`, block.style);
-    }
+  for (const block of appBlockStyles) {
+    const [orgName, blockName] = block.block.split('/');
+    // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
+    theme.file(`${orgName}/${blockName}/index.css`, block.style);
   }
 
   if (screenshots && app.AppScreenshots?.length) {
@@ -137,11 +136,9 @@ export async function exportApp(ctx: Context): Promise<void> {
       organizationId: app.OrganizationId,
       requiredPermissions: [OrganizationPermission.QueryAppResources],
     });
-    await app.reload({
-      include: [Resource],
-    });
+    const appResources = await Resource.findAll();
     const splitResources = new Map<string, Resource[]>();
-    for (const resource of app.Resources) {
+    for (const resource of appResources) {
       if (!splitResources.has(resource.type)) {
         splitResources.set(resource.type, []);
       }
@@ -161,10 +158,8 @@ export async function exportApp(ctx: Context): Promise<void> {
       organizationId: app.OrganizationId,
       requiredPermissions: [OrganizationPermission.QueryAppAssets],
     });
-    await app.reload({
-      include: [Asset],
-    });
-    for (const asset of app.Assets) {
+    const appAssets = await Asset.findAll();
+    for (const asset of appAssets) {
       zip.file(`assets/${asset.filename}`, await getS3File(`app-${app.id}`, asset.id));
     }
   }

@@ -3,7 +3,7 @@ import { type AppMessages as AppMessagesInterface } from '@appsemble/types';
 import tags from 'language-tags';
 import { Op } from 'sequelize';
 
-import { AppMessages } from '../models/AppMessages.js';
+import { AppMessages } from '../models/main/AppMessages.js';
 
 export function getAppMessages({
   app,

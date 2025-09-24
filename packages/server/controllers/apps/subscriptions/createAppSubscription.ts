@@ -1,7 +1,7 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppSubscription } from '../../../models/index.js';
+import { App, getAppDB } from '../../../models/index.js';
 
 export async function createAppSubscription(ctx: Context): Promise<void> {
   const {
@@ -11,13 +11,11 @@ export async function createAppSubscription(ctx: Context): Promise<void> {
     },
     user: appMember,
   } = ctx;
-
-  const app = await App.findByPk(appId, { attributes: [], include: [AppSubscription] });
-
+  const app = await App.findByPk(appId, { attributes: ['id'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
+  const { AppSubscription } = await getAppDB(appId);
   await AppSubscription.create({
-    AppId: appId,
     endpoint,
     p256dh: keys.p256dh,
     auth: keys.auth,

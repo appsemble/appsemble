@@ -2,18 +2,17 @@ import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { App, AppOAuth2Secret } from '../../../../../models/index.js';
+import { App, getAppDB } from '../../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 
 export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
   const { appId } = ctx.pathParams;
 
-  const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
-    include: [AppOAuth2Secret],
-  });
-
+  const app = await App.findByPk(appId, { attributes: ['OrganizationId'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
+
+  const { AppOAuth2Secret } = await getAppDB(appId);
+  const appOAuth2Secrets = await AppOAuth2Secret.findAll();
 
   await checkUserOrganizationPermissions({
     context: ctx,
@@ -21,5 +20,5 @@ export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.QueryAppSecrets],
   });
 
-  ctx.body = app.AppOAuth2Secrets;
+  ctx.body = appOAuth2Secrets;
 }

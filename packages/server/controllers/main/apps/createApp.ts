@@ -18,15 +18,17 @@ import { literal } from 'sequelize';
 import webpush from 'web-push';
 import { parse } from 'yaml';
 
-import { App, AppMember, AppSnapshot, Organization, transactional } from '../../../models/index.js';
+import { App, AppSnapshot, getAppDB, Organization, transactional } from '../../../models/index.js';
 import {
   createAppReadmes,
   createAppScreenshots,
   handleAppValidationError,
   setAppPath,
 } from '../../../utils/app.js';
+import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
+import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 
 export async function createApp(ctx: Context): Promise<void> {
@@ -37,6 +39,11 @@ export async function createApp(ctx: Context): Promise<void> {
         controllerCode,
         controllerImplementations,
         coreStyle,
+        dbHost,
+        dbName,
+        dbPassword,
+        dbPort,
+        dbUser,
         demoMode,
         domain,
         googleAnalyticsID,
@@ -115,7 +122,24 @@ export async function createApp(ctx: Context): Promise<void> {
       controllerImplementations,
       displayAppMemberName: false,
       displayInstallationPrompt: false,
+      dbName,
+      dbHost,
+      dbPort,
+      dbUser,
     };
+
+    if (dbPassword) {
+      if (!argv.aesSecret && process.env.NODE_ENV === 'production') {
+        throw new AppsembleError(
+          'Missing aes secret env variable. This is insecure and should be allowed only in development!',
+        );
+      }
+      result.dbPassword = encrypt(
+        dbPassword,
+        argv.aesSecret || 'Local Appsemble development AES secret',
+      );
+    }
+
     result.containers = definition.containers;
     result.registry = definition.registry;
     if (icon) {
@@ -128,54 +152,31 @@ export async function createApp(ctx: Context): Promise<void> {
 
     await setAppPath(ctx, result, path);
 
-    let record: App;
+    let createdApp: App;
     try {
-      let rec: App | undefined;
-      await transactional(async (transaction) => {
-        rec = await App.create(result, { transaction });
+      createdApp = await transactional(async (transaction) => {
+        const app = await App.create(result, { transaction });
 
-        rec.AppSnapshots = [await AppSnapshot.create({ AppId: rec.id, yaml }, { transaction })];
+        app.AppSnapshots = [await AppSnapshot.create({ AppId: app.id, yaml }, { transaction })];
 
-        rec.AppScreenshots = screenshots?.length
-          ? await createAppScreenshots(rec.id, screenshots, transaction, ctx)
+        app.AppScreenshots = screenshots?.length
+          ? await createAppScreenshots(app.id, screenshots, transaction, ctx)
           : [];
 
-        rec.AppReadmes = readmes?.length
-          ? await createAppReadmes(rec.id, readmes, transaction)
+        app.AppReadmes = readmes?.length
+          ? await createAppReadmes(app.id, readmes, transaction)
           : [];
-
-        if (rec.definition.resources) {
-          Object.entries(rec.definition.resources ?? {}).map(
-            ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
-              if (positioning && enforceOrderingGroupByFields) {
-                createDynamicIndexes(
-                  enforceOrderingGroupByFields,
-                  rec!.id,
-                  resourceType,
-                  transaction,
-                );
-              }
-            },
-          );
-        }
 
         if (dryRun === 'true') {
           // Manually calling `await transaction.rollback()` causes an error
           // when the transaction goes out of scope.
           throw new AppsembleError('Dry run');
         }
+
+        return app;
       });
-      record = rec!;
-      if (record.definition.cron && record.definition.security?.cron) {
-        const identifier = Math.random().toString(36).slice(2);
-        const cronEmail = `cron-${identifier}@example.com`;
-        record.AppMembers = [
-          await AppMember.create({ AppId: record.id, role: 'cron', email: cronEmail }),
-        ];
-      }
     } catch (error: unknown) {
-      // AppsembleError is only thrown when dryRun is set, meaning it’s only used to test
-      if (error instanceof AppsembleError) {
+      if (error instanceof AppsembleError && error.message === 'Dry run') {
         ctx.status = 204;
         return;
       }
@@ -183,19 +184,61 @@ export async function createApp(ctx: Context): Promise<void> {
       throw error;
     }
 
-    const containerDefinitions = record.containers;
+    const { AppMember, sequelize: appDB } = await getAppDB(createdApp.id);
+    try {
+      await appDB.transaction(async (appTransaction) => {
+        if (createdApp.definition.resources) {
+          Object.entries(createdApp.definition.resources ?? {}).map(
+            ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
+              if (positioning && enforceOrderingGroupByFields) {
+                createDynamicIndexes(
+                  enforceOrderingGroupByFields,
+                  createdApp.id,
+                  resourceType,
+                  appTransaction,
+                );
+              }
+            },
+          );
+        }
+
+        if (createdApp.definition.cron && createdApp.definition.security?.cron) {
+          const identifier = Math.random().toString(36).slice(2);
+          const cronEmail = `cron-${identifier}@example.com`;
+          await AppMember.create(
+            { role: 'cron', email: cronEmail },
+            { transaction: appTransaction },
+          );
+        }
+
+        if (dryRun === 'true') {
+          throw new AppsembleError('Dry run');
+        }
+      });
+    } catch (error) {
+      // AppsembleError is only thrown when dryRun is set, meaning it’s only used to test
+      if (error instanceof AppsembleError) {
+        await App.destroy({ where: { id: createdApp.id }, force: true });
+        ctx.status = 204;
+        return;
+      }
+
+      throw error;
+    }
+
+    const containerDefinitions = createdApp.containers;
 
     if (containerDefinitions && containerDefinitions.length > 0) {
       await updateCompanionContainers(
         containerDefinitions,
-        record.path,
-        String(record.id),
-        record.registry,
+        createdApp.path,
+        String(createdApp.id),
+        createdApp.registry,
       );
     }
 
-    record.Organization = organization;
-    ctx.body = record.toJSON();
+    createdApp.Organization = organization;
+    ctx.body = createdApp.toJSON();
     ctx.status = 201;
   } catch (error: unknown) {
     // @ts-expect-error Messed up

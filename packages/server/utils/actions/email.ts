@@ -5,7 +5,7 @@ import { type SendMailOptions } from 'nodemailer';
 import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
-import { Asset } from '../../models/index.js';
+import { getAppDB } from '../../models/index.js';
 import { iterTable } from '../database.js';
 import { renderEmail } from '../email/renderEmail.js';
 
@@ -52,6 +52,7 @@ export async function email({
   mailer,
   options,
 }: ServerActionParameters<EmailActionDefinition>): Promise<any> {
+  const { Asset } = await getAppDB(app.id);
   const remapperContext = await getRemapperContext(
     app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
@@ -107,7 +108,6 @@ export async function email({
     };
     for await (const asset of iterTable(Asset, {
       where: {
-        AppId: app.id,
         [Op.or]: {
           id: commonQuery,
           name: commonQuery,

@@ -6,8 +6,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppBlockStyle,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -121,8 +121,9 @@ describe('setAppBlockStyle', () => {
 
     expect(responseB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
+    const { AppBlockStyle } = await getAppDB(id);
     const style = await AppBlockStyle.findOne({
-      where: { AppId: id, block: '@appsemble/testblock' },
+      where: { block: '@appsemble/testblock' },
     });
     expect(style).toBeNull();
   });

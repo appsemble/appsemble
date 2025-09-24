@@ -4,8 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
-  OAuth2AuthorizationCode,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -63,9 +62,9 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
+    const { AppMember, OAuth2AuthorizationCode } = await getAppDB(app.id);
     const member = await AppMember.create({
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       email: user.primaryEmail,
       consent: new Date(),
       role: 'User',
@@ -88,7 +87,6 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     const { code } = response.data;
     const authCode = await OAuth2AuthorizationCode.findOne({ raw: true, where: { code } });
     expect(authCode).toStrictEqual({
-      AppId: app.id,
       code,
       expires: new Date('2000-01-01T00:10:00.000Z'),
       redirectUri: 'http://app.org.localhost:9999',
@@ -129,9 +127,9 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
       vapidPrivateKey: '',
     });
 
+    const { AppMember } = await getAppDB(app2.id);
     await AppMember.create({
-      AppId: app2.id,
-      UserId: user.id,
+      userId: user.id,
       email: user.primaryEmail,
       consent: new Date(),
       role: 'User',
@@ -171,10 +169,10 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
+    const { AppMember, OAuth2AuthorizationCode } = await getAppDB(app.id);
     const member = await AppMember.create({
       email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       consent: new Date(),
       role: 'User',
     });
@@ -196,7 +194,6 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     const { code } = response.data;
     const authCode = await OAuth2AuthorizationCode.findOne({ raw: true, where: { code } });
     expect(authCode).toStrictEqual({
-      AppId: app.id,
       code,
       expires: new Date('2000-01-01T00:10:00.000Z'),
       redirectUri: 'http://app.example:9999',

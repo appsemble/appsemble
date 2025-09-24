@@ -3,7 +3,7 @@ import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, AppMember } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { getAppMemberInfo, parseMemberFilterQuery } from '../../../../utils/appMember.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
@@ -12,7 +12,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
     pathParams: { appId },
     queryParams: { $filter: parsedFilter, roles, selectedGroupId },
   } = ctx;
-
+  const { AppMember } = await getAppDB(appId);
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId', 'definition', 'demoMode'],
   });
@@ -38,7 +38,6 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
 
   const filter = parseMemberFilterQuery(parsedFilter ?? '');
   const commonFilters = {
-    AppId: appId,
     demo: false,
     ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
   };
@@ -52,5 +51,5 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
 
   ctx.body = appMembers
     .filter((appMember) => appMember.role !== 'cron')
-    .map((appMember) => getAppMemberInfo(appMember));
+    .map((appMember) => getAppMemberInfo(appId, appMember));
 }

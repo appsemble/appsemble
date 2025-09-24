@@ -9,6 +9,7 @@ import {
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
+  useData,
   useLocationString,
 } from '@appsemble/react-components';
 import { type App, OrganizationPermission, type Template } from '@appsemble/types';
@@ -40,6 +41,8 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
   const redirect = useLocationString();
   const { hash } = useLocation();
   const { organizations, userInfo } = useUser();
+  const { data: hasClonableResources } = useData<boolean>(`/api/apps/${app.id}/clonable-resources`);
+  const { data: hasClonableAssets } = useData<boolean>(`/api/apps/${app.id}/clonable-assets`);
 
   const createOrganizations =
     organizations?.filter((org) =>
@@ -146,7 +149,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
               <option value="unlisted">{formatMessage(messages.unlisted)}</option>
               <option value="private">{formatMessage(messages.private)}</option>
             </SimpleFormField>
-            {app.hasClonableResources ? (
+            {hasClonableResources ? (
               <SimpleFormField
                 component={CheckboxField}
                 label={<FormattedMessage {...messages.resources} />}
@@ -154,7 +157,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
                 title={<FormattedMessage {...messages.resourcesDescription} />}
               />
             ) : null}
-            {app.hasClonableAssets ? (
+            {hasClonableAssets ? (
               <SimpleFormField
                 component={CheckboxField}
                 label={<FormattedMessage {...messages.assets} />}

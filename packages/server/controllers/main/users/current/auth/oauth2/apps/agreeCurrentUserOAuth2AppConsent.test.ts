@@ -4,7 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  OAuth2AuthorizationCode,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -78,9 +78,9 @@ describe('agreeCurrentUserOAuth2AppConsent', () => {
     });
 
     const { code } = response.data;
+    const { OAuth2AuthorizationCode } = await getAppDB(app.id);
     const authCode = await OAuth2AuthorizationCode.findOne({ raw: true, where: { code } });
     expect(authCode).toStrictEqual({
-      AppId: app.id,
       code,
       expires: new Date('2000-01-01T00:10:00.000Z'),
       redirectUri: 'http://app.org.localhost:9999',
@@ -122,9 +122,9 @@ describe('agreeCurrentUserOAuth2AppConsent', () => {
     });
 
     const { code } = response.data;
+    const { OAuth2AuthorizationCode } = await getAppDB(app.id);
     const authCode = await OAuth2AuthorizationCode.findOne({ raw: true, where: { code } });
     expect(authCode).toStrictEqual({
-      AppId: app.id,
       code,
       expires: new Date('2000-01-01T00:10:00.000Z'),
       redirectUri: 'http://app.example:9999',

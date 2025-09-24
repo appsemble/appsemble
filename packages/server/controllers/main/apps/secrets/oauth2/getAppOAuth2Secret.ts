@@ -1,16 +1,16 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppOAuth2Secret } from '../../../../../models/index.js';
+import { App, getAppDB } from '../../../../../models/index.js';
 
 export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
   const { appId, appOAuth2SecretId } = ctx.pathParams;
+  const { AppOAuth2Secret } = await getAppDB(appId);
 
   const app = await App.findByPk(appId, { attributes: ['id'] });
-
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  const appOAuth2Secret = await AppOAuth2Secret.findOne({
+  const appOAuth2Secret = await AppOAuth2Secret.findByPk(appOAuth2SecretId, {
     attributes: {
       exclude: [
         'clientSecret',
@@ -24,10 +24,6 @@ export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
         'userInfoUrl',
         'AppId',
       ],
-    },
-    where: {
-      AppId: appId,
-      id: appOAuth2SecretId,
     },
   });
 

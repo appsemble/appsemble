@@ -8,11 +8,9 @@ import webpush from 'web-push';
 
 import {
   type App,
-  Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
-  ResourceVersion,
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -162,10 +160,10 @@ describe('updateAppResources', () => {
       }),
     );
 
+    const { Asset } = await getAppDB(app.id);
     const assets = await Asset.findAll({ raw: true });
     expect(assets).toStrictEqual([
       expect.objectContaining({
-        AppId: app.id,
         ResourceId: 1,
         GroupId: null,
         AppMemberId: null,
@@ -267,8 +265,8 @@ describe('updateAppResources', () => {
   });
 
   it('should keep an old resource version including data if history is true', async () => {
+    const { Resource, ResourceVersion } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testHistoryTrue',
       data: { string: 'rev1' },
     });
@@ -304,8 +302,8 @@ describe('updateAppResources', () => {
   });
 
   it('should keep an old resource version including data if history.data is true', async () => {
+    const { Resource, ResourceVersion } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testHistoryDataTrue',
       data: { string: 'rev1' },
     });
@@ -341,8 +339,8 @@ describe('updateAppResources', () => {
   });
 
   it('should keep an old resource version excluding data if history.data is false', async () => {
+    const { Resource, ResourceVersion } = await getAppDB(app.id);
     const resource = await Resource.create({
-      AppId: app.id,
       type: 'testHistoryDataFalse',
       data: { string: 'rev1' },
     });

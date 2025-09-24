@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -59,8 +59,8 @@ describe('deleteAppAsset', () => {
   });
 
   it('should delete existing assets', async () => {
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
@@ -73,8 +73,8 @@ describe('deleteAppAsset', () => {
   });
 
   it('should soft-delete assets', async () => {
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
@@ -87,7 +87,6 @@ describe('deleteAppAsset', () => {
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     const deletedAsset = await Asset.findByPk(assetId, { paranoid: false });
     expect(deletedAsset).toMatchObject({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       deleted: expect.any(Date),
@@ -100,8 +99,8 @@ describe('deleteAppAsset', () => {
       { where: { UserId: user.id } },
     );
 
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
@@ -143,8 +142,8 @@ describe('deleteAppAsset', () => {
       OrganizationId: organization.id,
     });
 
+    const { Asset } = await getAppDB(appB.id);
     const asset = await Asset.create({
-      AppId: appB.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),

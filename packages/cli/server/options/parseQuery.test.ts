@@ -6,6 +6,7 @@ import { parseQuery } from './parseQuery.js';
 describe('parseQuery', () => {
   it('should parse the query correctly with valid parameters', () => {
     const queryParams = {
+      tableName: 'Resource',
       $filter: "AuthorId eq 1 and (Title ne 'example' or Year gt 2020)",
       $orderby: 'Title asc,Year desc',
       resourceDefinition: {} as ResourceDefinition,
@@ -33,6 +34,7 @@ describe('parseQuery', () => {
 
   it('should parse the query with special characters in $orderby', () => {
     const queryParams = {
+      tableName: 'Resource',
       $filter: "Title eq 'example'",
       $orderby: 'Title asc,$author/id desc',
       resourceDefinition: {} as ResourceDefinition,

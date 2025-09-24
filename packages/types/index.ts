@@ -312,16 +312,6 @@ export interface App {
   };
 
   /**
-   * Whether the app has clonable resources.
-   */
-  hasClonableResources?: boolean;
-
-  /**
-   * Whether the app has clonable assets.
-   */
-  hasClonableAssets?: boolean;
-
-  /**
    * A list of URLs to app screenshots
    */
   screenshotUrls?: string[];
@@ -402,6 +392,26 @@ export interface App {
    * The version of the app.
    */
   version?: number;
+
+  /**
+   * The name of the app database.
+   */
+  dbName: string;
+
+  /**
+   * The host of the app database.
+   */
+  dbHost: string;
+
+  /**
+   * The port of the app database.
+   */
+  dbPort: number;
+
+  /**
+   * The user of the app database.
+   */
+  dbUser: string;
 }
 
 /**

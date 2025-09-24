@@ -2,7 +2,7 @@ import { type Context } from 'koa';
 import { type Compare, parse } from 'scim2-parse-filter';
 import { col, fn, where, type WhereOptions } from 'sequelize';
 
-import { AppMember, Group, GroupMember } from '../../../../../models/index.js';
+import { type AppMember, getAppDB } from '../../../../../models/index.js';
 import { convertAppMemberToScimUser } from '../../../../../utils/scim.js';
 
 export async function getAppScimUsers(ctx: Context): Promise<void> {
@@ -10,7 +10,7 @@ export async function getAppScimUsers(ctx: Context): Promise<void> {
     pathParams: { appId },
     queryParams: { count = 50, filter, startIndex = 1 },
   } = ctx;
-
+  const { AppMember, Group, GroupMember } = await getAppDB(appId);
   const parsedFilter = filter ? (parse(filter) as Compare) : undefined;
   const include = [
     {
@@ -28,7 +28,7 @@ export async function getAppScimUsers(ctx: Context): Promise<void> {
     count: number;
     rows: AppMember[];
   }> {
-    const whereClause: WhereOptions<any> = { AppId: appId };
+    const whereClause: WhereOptions<any> = {};
     const attribute = queryFilter.attrPath.toLowerCase();
     const value =
       typeof queryFilter.compValue === 'string'
@@ -47,8 +47,6 @@ export async function getAppScimUsers(ctx: Context): Promise<void> {
     }
 
     if (Object.keys(whereClause).length > 0) {
-      whereClause.AppId = appId;
-
       const members = await AppMember.findAndCountAll({
         limit: count,
         offset: startIndex - 1,
@@ -66,7 +64,6 @@ export async function getAppScimUsers(ctx: Context): Promise<void> {
     : await AppMember.findAndCountAll({
         limit: count,
         offset: startIndex - 1,
-        where: { AppId: appId },
         include,
       });
 
@@ -75,6 +72,6 @@ export async function getAppScimUsers(ctx: Context): Promise<void> {
     totalResults: members.count,
     startIndex,
     itemsPerPage: members.rows.length,
-    Resources: members.rows.map(convertAppMemberToScimUser),
+    Resources: members.rows.map((member) => convertAppMemberToScimUser(appId, member)),
   };
 }
