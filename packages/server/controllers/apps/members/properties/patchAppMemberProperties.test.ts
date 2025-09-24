@@ -15,7 +15,11 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { createTestUser } from '../../../../utils/test/authorization.js';
+import {
+  authorizeAppMember,
+  createTestAppMember,
+  createTestUser,
+} from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
 let user: User;
@@ -70,10 +74,11 @@ describe('patchAppMemberProperties', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+    const owner = await createTestAppMember(app.id);
+    authorizeAppMember(app, owner);
     const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
-      email: user.primaryEmail,
-      userId: user.id,
+      email: 'test2@example.com',
       role: PredefinedAppRole.Member,
     });
 
@@ -117,10 +122,11 @@ describe('patchAppMemberProperties', () => {
       vapidPrivateKey: '',
       definition: {},
     });
+    await createTestAppMember(app.id);
+    authorizeAppMember(app);
     const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
-      email: user.primaryEmail,
-      userId: user.id,
+      email: 'test2@example.com',
       role: PredefinedAppRole.Member,
       properties: { foo: 'bar', number: 33 },
     });
