@@ -35,7 +35,8 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   logger.info('Add column `dbPassword` to `App` table');
   await queryInterface.addColumn('App', 'dbPassword', { type: DataTypes.BLOB }, { transaction });
 
-  for (const app of await App.findAll()) {
+  for (const app of await App.findAll({ transaction })) {
+    logger.info(`Setting default db params for app ${app.id}`);
     await app.update(
       {
         dbHost: argv.databaseHost || process.env.DATABASE_HOST || 'localhost',
