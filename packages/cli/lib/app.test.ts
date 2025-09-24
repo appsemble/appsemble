@@ -1237,7 +1237,7 @@ describe('app', () => {
       const { AppMember } = await getAppDB(app!.id);
       const appMembers = await AppMember.findAll({
         attributes: ['id', 'name', 'email', 'role', 'timezone', 'seed', 'demo'],
-        where: { demo: true, AppId: app.id, seed: true },
+        where: { demo: true, seed: true },
       });
       expect(appMembers.map((member) => member.dataValues)).toStrictEqual(parsedAppMembers);
     });

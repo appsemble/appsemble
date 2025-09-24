@@ -363,7 +363,6 @@ describe('registerAppMemberWithEmail', () => {
     });
     const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      AppId: app.id,
       UserId: user.id,
       role: 'User',
       email: 'test@example.com',
@@ -413,7 +412,7 @@ describe('registerAppMemberWithEmail', () => {
 
     const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.findOne({
-      where: { AppId: app.id, phoneNumber: '+31 6 12345678' },
+      where: { phoneNumber: '+31 6 12345678' },
     });
     expect(appMember?.dataValues).toMatchObject({
       email: 'test@example.com',

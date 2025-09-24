@@ -1,12 +1,19 @@
 import { type AppMemberPropertyDefinition } from '@appsemble/lang-sdk';
-import { AppMemberPropertiesError, AppsembleError } from '@appsemble/node-utils';
+import {
+  AppMemberPropertiesError,
+  AppsembleError,
+  PhoneNumberValidationError,
+} from '@appsemble/node-utils';
 import { type App } from '@appsemble/types';
 import { Validator } from 'jsonschema';
+import { isValidPhoneNumber } from 'libphonenumber-js';
+import { parsePhoneNumber } from 'libphonenumber-js/min';
 import { has } from 'lodash-es';
 import { type OpenAPIV3 } from 'openapi-types';
 import {
   AllowNull,
   BeforeCreate,
+  BeforeUpdate,
   Column,
   CreatedAt,
   DataType,
@@ -377,6 +384,32 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
       const memberCount = await AppMember.count({ where: { role: 'cron' } });
       if (memberCount > 0) {
         throw new AppsembleError('App member with role `cron` already exists for this app');
+      }
+    }
+
+    @BeforeCreate
+    @BeforeUpdate
+    static validatePhoneNumber(instance: AppMember): void {
+      if (!instance.phoneNumber) {
+        return;
+      }
+      if (!isValidPhoneNumber(instance.phoneNumber, 'NL')) {
+        throw new PhoneNumberValidationError('Invalid Phone Number');
+      }
+      Object.assign(instance, {
+        phoneNumber: parsePhoneNumber(instance.phoneNumber, 'NL').format('INTERNATIONAL'),
+      });
+    }
+
+    @BeforeCreate
+    @BeforeUpdate
+    static validateSeedAppMember(instance: AppMember): void {
+      if (!instance.seed) {
+        return;
+      }
+
+      if (instance.seed && !instance.demo) {
+        throw new AppsembleError('Seed app members can only exist in demo apps');
       }
     }
   }

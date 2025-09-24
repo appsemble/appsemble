@@ -80,7 +80,7 @@ describe('patchAppMemberProperties', () => {
     });
 
     const response = await request.put(
-      `/api/app-members/${appMember.id}/properties`,
+      `/api/apps/${app.id}/app-members/${appMember.id}/properties`,
       createFormData({ properties: { test: 'Property', foo: 'bar' } }),
     );
 
@@ -130,7 +130,7 @@ describe('patchAppMemberProperties', () => {
     });
 
     const { status } = await request.put(
-      `/api/app-members/${appMember.id}/properties`,
+      `/api/apps/${app.id}/app-members/${appMember.id}/properties`,
       createFormData({ properties: { foo: 'test' } }),
     );
     expect(status).toBe(200);

@@ -62,11 +62,14 @@ describe('getCurrentAppMember', () => {
       { sub: expect.stringMatching(uuid4Pattern) },
       `
       {
+        "$ephemeral": false,
+        "$seed": false,
         "demo": false,
         "email": "test@example.com",
         "email_verified": false,
         "locale": "en",
         "name": "Test App Member",
+        "phoneNumber": null,
         "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
         "properties": {},
         "role": "Member",
