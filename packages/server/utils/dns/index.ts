@@ -45,8 +45,11 @@ export async function cleanupDNS(): Promise<void> {
  *
  * @param options Options for the reconciliation.
  */
-export async function reconcileDNS({ dryRun = true } = {}): Promise<void> {
-  await getImplementation()?.reconcileDNS({ dryRun });
+export async function reconcileDNS({
+  dryRun = true,
+  skipCustomDomains = false,
+} = {}): Promise<void> {
+  await getImplementation()?.reconcileDNS({ dryRun, skipCustomDomains });
 }
 
 /**
