@@ -103,7 +103,6 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
         phoneNumber: parsePhoneNumber(phoneNumber, 'NL').format('INTERNATIONAL'),
       },
     });
-    console.log(parsePhoneNumber(phoneNumber, 'NL').format('INTERNATIONAL'), phoneNumberExists)
     assertKoaCondition(
       !phoneNumberExists,
       ctx,
