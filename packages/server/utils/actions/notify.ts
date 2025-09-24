@@ -14,7 +14,6 @@ export async function notify({
   options,
 }: ServerActionParameters<NotifyActionDefinition>): Promise<any> {
   const { AppSubscription } = await getAppDB(app.id);
-  const { sendNotifications } = options;
 
   const remapperContext = await getRemapperContext(
     app.toJSON(),

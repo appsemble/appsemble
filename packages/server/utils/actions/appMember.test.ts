@@ -4,7 +4,7 @@ import { type AppMemberInfo, type AppMemberQueryAction } from '@appsemble/lang-s
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { appMemberQuery } from './appMember.js';
-import { App, type AppMember, getAppDB, Organization } from '../../models/index.js';
+import { App, getAppDB, Organization } from '../../models/index.js';
 import { options } from '../../options/options.js';
 import { handleAction } from '../action.js';
 import { argv, setArgv } from '../argv.js';

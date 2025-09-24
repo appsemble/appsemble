@@ -34,7 +34,9 @@ export async function sendAppNotifications(ctx: Context): Promise<void> {
 
   try {
     await Promise.all(
-      appSubscriptions.map((subscription) => sendNotification(app, subscription, { title, body, link })),
+      appSubscriptions.map((subscription) =>
+        sendNotification(app, subscription, { title, body, link }),
+      ),
     );
   } catch (error) {
     logger.error(error);
