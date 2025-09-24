@@ -175,6 +175,10 @@
       "type": ["string", "null"],
       "description": "If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`"
     },
+    "skipCustomDomains": {
+      "type": "boolean",
+      "description": "If specified, ingresses for custom domains of apps and app collections will not be created when reconciling dns"
+    },
     "migrateDefinitions": {
       "type": "object",
       "additionalProperties": false,

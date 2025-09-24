@@ -886,6 +886,7 @@ staging:
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts-max-age=\"31536000\""
       --set "migrateTo=next"
       --set "oauthSecret=oauth2"
+      --set "skipCustomDomains=true"
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "postgresql.primary.resources.requests.cpu=250m"
       --set "postgresql.primary.resources.requests.memory=1Gi"

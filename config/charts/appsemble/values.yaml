@@ -67,6 +67,8 @@ gitlab:
 
 migrateTo: null
 
+skipCustomDomains: false
+
 migrateDefinitions:
   validate: true
   save: false
