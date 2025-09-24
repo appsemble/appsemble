@@ -1,6 +1,10 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 
+import { App } from '../../models/index.js';
+import { argv } from '../../utils/argv.js';
+import { encrypt } from '../../utils/crypto.js';
+
 export const key = '0.34.17';
 
 /**
@@ -30,6 +34,21 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
   logger.info('Add column `dbPassword` to `App` table');
   await queryInterface.addColumn('App', 'dbPassword', { type: DataTypes.BLOB }, { transaction });
+
+  for (const app of await App.findAll()) {
+    await app.update(
+      {
+        dbHost: argv.databaseHost || process.env.DATABASE_HOST || 'localhost',
+        dbPort: argv.databasePort || Number(process.env.DATABASE_PORT) || 54_321,
+        dbUser: argv.databaseUser || process.env.DATABASE_USER || 'admin',
+        dbPassword: encrypt(
+          argv.databasePassword || process.env.DATABASE_PASSWORD || 'password',
+          argv.aesSecret || 'Local Appsemble development AES secret',
+        ),
+      },
+      { transaction },
+    );
+  }
 }
 
 /**
