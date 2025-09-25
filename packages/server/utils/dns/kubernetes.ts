@@ -598,7 +598,7 @@ export async function reconcileDNS({
         : undefined;
     await createIngress(
       name,
-      Boolean(appDomainCertificates.has(name) || skipCustomDomains),
+      appDomainCertificates.has(name) || (!orgWildcards.has(name) && skipCustomDomains),
       redirect,
     );
     if (appDomainCertificates.has(name)) {
