@@ -71,7 +71,11 @@ export async function handler(): Promise<void> {
   }
 
   for (const [appId, assetIds] of Object.entries(demoAssetsToDestroyByApp)) {
-    await deleteS3Files(`app-${appId}`, assetIds);
+    try {
+      await deleteS3Files(`app-${appId}`, assetIds);
+    } catch (error) {
+      logger.error(error);
+    }
   }
 
   const demoAssetsDeletionResult = await Asset.destroy({
@@ -181,7 +185,11 @@ export async function handler(): Promise<void> {
   }
 
   for (const [appId, assetIds] of Object.entries(assetsToDestroyByApp)) {
-    await deleteS3Files(`app-${appId}`, assetIds);
+    try {
+      await deleteS3Files(`app-${appId}`, assetIds);
+    } catch (error) {
+      logger.error(error);
+    }
   }
 
   const assetsDeletionResult = await Asset.destroy({
