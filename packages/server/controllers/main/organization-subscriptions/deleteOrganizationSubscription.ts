@@ -1,7 +1,7 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { OrganizationSubscription } from '../../../models/OrganizationSubscription.js';
+import { OrganizationSubscription } from '../../../models/main/OrganizationSubscription.js';
 
 export async function deleteOrganizationSubscription(ctx: Context): Promise<void> {
   const {

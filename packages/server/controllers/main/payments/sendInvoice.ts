@@ -8,7 +8,7 @@ import { Decimal } from 'decimal.js';
 import { type Context } from 'koa';
 
 import { Organization, OrganizationSubscription } from '../../../models/index.js';
-import { Invoice } from '../../../models/Invoice.js';
+import { Invoice } from '../../../models/main/Invoice.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { calculateSubscriptionPrice } from '../../../utils/calculateVat.js';
 import { createInvoice } from '../../../utils/createPdfInvoice.js';

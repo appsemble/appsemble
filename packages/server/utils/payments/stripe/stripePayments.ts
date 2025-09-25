@@ -4,7 +4,7 @@ import { Decimal } from 'decimal.js';
 import { isEqual, pickBy } from 'lodash-es';
 import Stripe from 'stripe';
 
-import { type Invoice } from '../../../models/Invoice.js';
+import { type Invoice } from '../../../models/main/Invoice.js';
 import { type Organization } from '../../../models/main/Organization.js';
 import { argv } from '../../argv.js';
 import { parseAddress } from '../../parseAddress.js';

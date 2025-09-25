@@ -10,7 +10,7 @@ import {
   Organization,
   OrganizationSubscription,
 } from '../../../models/index.js';
-import { Invoice } from '../../../models/Invoice.js';
+import { Invoice } from '../../../models/main/Invoice.js';
 import { argv } from '../../../utils/argv.js';
 import { Mailer } from '../../../utils/email/Mailer.js';
 

@@ -5,7 +5,7 @@ import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
 import { initDB } from '../models/index.js';
-import { OrganizationSubscription } from '../models/OrganizationSubscription.js';
+import { OrganizationSubscription } from '../models/main/OrganizationSubscription.js';
 import { argv } from '../utils/argv.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 

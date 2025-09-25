@@ -8,7 +8,7 @@ import { type Argv } from 'yargs';
 import { databaseBuilder } from './builder/database.js';
 import { getExpiringOrganizationSubscriptions } from './getExpiringOrganizationSubscriptions.js';
 import { initDB, Organization } from '../models/index.js';
-import { Invoice } from '../models/Invoice.js';
+import { Invoice } from '../models/main/Invoice.js';
 import { argv } from '../utils/argv.js';
 import { calculateSubscriptionPrice } from '../utils/calculateVat.js';
 import { createInvoice } from '../utils/createPdfInvoice.js';

@@ -26,7 +26,7 @@ import {
   OrganizationMember,
   User,
 } from '../index.js';
-import { OrganizationSubscription } from '../OrganizationSubscription.js';
+import { OrganizationSubscription } from './OrganizationSubscription.js';
 
 @Table({ tableName: 'Organization', paranoid: true })
 export class Organization extends Model {

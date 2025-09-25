@@ -8,8 +8,8 @@ import dayjs from 'dayjs';
 import { Decimal } from 'decimal.js';
 import salesTax from 'sales-tax';
 
-import { Coupon } from '../models/Coupon.js';
-import { type OrganizationSubscription } from '../models/OrganizationSubscription.js';
+import { Coupon } from '../models/main/Coupon.js';
+import { type OrganizationSubscription } from '../models/main/OrganizationSubscription.js';
 
 export interface PricingInfo {
   /**

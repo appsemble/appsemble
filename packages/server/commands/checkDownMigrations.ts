@@ -57,7 +57,10 @@ export async function handler(): Promise<void> {
     }
   }
 
-  await db.models.Organization.create({ id: 'appsemble' });
+  await db.query(`
+    INSERT INTO "Organization" ("id", "created", "updated")
+    VALUES ('appsemble', NOW(), NOW());
+  `);
   await db.models.App.create({
     OrganizationId: 'appsemble',
     definition: {},

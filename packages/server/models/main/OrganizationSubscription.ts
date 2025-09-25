@@ -15,7 +15,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { Organization } from './main/Organization.js';
+import { Organization } from './Organization.js';
 
 @Table({ tableName: 'OrganizationSubscription' })
 export class OrganizationSubscription extends Model {

@@ -4,7 +4,7 @@ import { Decimal } from 'decimal.js';
 import tags from 'language-tags';
 import { PDFDocument, type PDFFont, type PDFPage, rgb, StandardFonts } from 'pdf-lib';
 
-import { type Invoice } from '../models/Invoice.js';
+import { type Invoice } from '../models/main/Invoice.js';
 
 async function generateHeader(
   page: PDFPage,

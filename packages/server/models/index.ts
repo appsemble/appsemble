@@ -68,9 +68,6 @@ import {
   createSamlLoginRequestModel,
   type SamlLoginRequestGlobal as SamlLoginRequest,
 } from './apps/SamlLoginRequest.js';
-import { Coupon } from './Coupon.js';
-import { Invoice } from './Invoice.js';
-import { InvoiceTransaction } from './InvoiceTransaction.js';
 import { App } from './main/App.js';
 import { AppCollection } from './main/AppCollection.js';
 import { AppCollectionApp } from './main/AppCollectionApp.js';
@@ -83,19 +80,22 @@ import { AppSnapshot } from './main/AppSnapshot.js';
 import { BlockAsset } from './main/BlockAsset.js';
 import { BlockMessages } from './main/BlockMessages.js';
 import { BlockVersion } from './main/BlockVersion.js';
+import { Coupon } from './main/Coupon.js';
 import { EmailAuthorization } from './main/EmailAuthorization.js';
+import { Invoice } from './main/Invoice.js';
+import { InvoiceTransaction } from './main/InvoiceTransaction.js';
 import { Meta } from './main/Meta.js';
 import { OAuth2ClientCredentials } from './main/OAuth2ClientCredentials.js';
 import { OAuthAuthorization } from './main/OAuthAuthorization.js';
 import { Organization } from './main/Organization.js';
 import { OrganizationInvite } from './main/OrganizationInvite.js';
 import { OrganizationMember } from './main/OrganizationMember.js';
+import { OrganizationSubscription } from './main/OrganizationSubscription.js';
 import { ResetPasswordToken } from './main/ResetPasswordToken.js';
 import { Theme } from './main/Theme.js';
 import { Training } from './main/Training.js';
 import { TrainingCompleted } from './main/TrainingCompleted.js';
 import { User } from './main/User.js';
-import { OrganizationSubscription } from './OrganizationSubscription.js';
 import { migrations } from '../migrations/apps/index.js';
 import { argv } from '../utils/argv.js';
 import { decrypt } from '../utils/crypto.js';
@@ -313,7 +313,11 @@ export async function initAppDB(
     throw new Error('initAppDB() was called multiple times within the same context.');
   }
 
-  const app = (await mainDB.models.App.findOne({ where: { id: appId }, transaction })) as App;
+  const app = (await mainDB.models.App.findOne({
+    attributes: ['id', 'dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword'],
+    where: { id: appId },
+    transaction,
+  })) as App;
 
   if (!app) {
     throw new Error('App not found');
