@@ -52,7 +52,10 @@ export class OrganizationSubscription extends Model {
   @Column(DataType.STRING)
   OrganizationId?: string;
 
-  @BelongsTo(() => Organization)
+  @BelongsTo(() => Organization, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   Organization?: Awaited<Organization>;
 
   @CreatedAt
