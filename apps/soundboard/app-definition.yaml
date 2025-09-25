@@ -33,7 +33,7 @@ pages:
   - name: Soundboard
     blocks:
       - type: data-loader
-        version: 0.34.22-test.1
+        version: 0.34.22-test.2
         actions:
           onLoad:
             type: resource.query
@@ -42,14 +42,14 @@ pages:
           emit:
             data: sound
       - type: audio
-        version: 0.34.22-test.1
+        version: 0.34.22-test.2
         parameters:
           src: { prop: asset }
         events:
           listen:
             onAudio: onClick
       - type: tiles
-        version: 0.34.22-test.1
+        version: 0.34.22-test.2
         actions:
           onClick:
             type: event
