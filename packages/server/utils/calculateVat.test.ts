@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { calculateSubscriptionPrice } from './calculateVat.js';
 import { Coupon, OrganizationSubscription } from '../models/index.js';
-import { Organization } from '../models/Organization.js';
+import { Organization } from '../models/main/Organization.js';
 
 let organization: Organization;
 let subscription: OrganizationSubscription;

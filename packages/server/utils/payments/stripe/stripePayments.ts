@@ -5,7 +5,7 @@ import { isEqual, pickBy } from 'lodash-es';
 import Stripe from 'stripe';
 
 import { type Invoice } from '../../../models/Invoice.js';
-import { type Organization } from '../../../models/Organization.js';
+import { type Organization } from '../../../models/main/Organization.js';
 import { argv } from '../../argv.js';
 import { parseAddress } from '../../parseAddress.js';
 import { type Payments } from '../payments.js';

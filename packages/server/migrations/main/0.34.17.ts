@@ -35,20 +35,24 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   logger.info('Add column `dbPassword` to `App` table');
   await queryInterface.addColumn('App', 'dbPassword', { type: DataTypes.BLOB }, { transaction });
 
-  for (const app of await App.findAll({ transaction })) {
-    logger.info(`Setting default db params for app ${app.id}`);
-    await app.update(
-      {
-        dbHost: argv.databaseHost || process.env.DATABASE_HOST || 'localhost',
-        dbPort: argv.databasePort || Number(process.env.DATABASE_PORT) || 54_321,
-        dbUser: argv.databaseUser || process.env.DATABASE_USER || 'admin',
-        dbPassword: encrypt(
-          argv.databasePassword || process.env.DATABASE_PASSWORD || 'password',
-          argv.aesSecret || 'Local Appsemble development AES secret',
-        ),
-      },
-      { transaction },
-    );
+  for (const app of await App.findAll({ attributes: ['id'], transaction })) {
+    try {
+      logger.info(`Setting default db params for app ${app.id}`);
+      await app.update(
+        {
+          dbHost: argv.databaseHost || process.env.DATABASE_HOST || 'localhost',
+          dbPort: argv.databasePort || Number(process.env.DATABASE_PORT) || 54_321,
+          dbUser: argv.databaseUser || process.env.DATABASE_USER || 'admin',
+          dbPassword: encrypt(
+            argv.databasePassword || process.env.DATABASE_PASSWORD || 'password',
+            argv.aesSecret || 'Local Appsemble development AES secret',
+          ),
+        },
+        { transaction },
+      );
+    } catch (error: any) {
+      logger.info('loggedError:', error);
+    }
   }
 }
 

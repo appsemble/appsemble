@@ -158,7 +158,7 @@ export async function createApp(ctx: Context): Promise<void> {
       createdApp = await transactional(async (transaction) => {
         const app = await App.create(result, { transaction });
 
-        await checkAppLimit(ctx, createdApp);
+        await checkAppLimit(ctx, app);
 
         app.AppSnapshots = [await AppSnapshot.create({ AppId: app.id, yaml }, { transaction })];
 

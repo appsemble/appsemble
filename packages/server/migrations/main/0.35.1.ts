@@ -3,7 +3,7 @@ import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 
 import { Organization } from '../../models/index.js';
 
-export const key = '0.34.18';
+export const key = '0.35.1';
 
 /**
  * Summary:

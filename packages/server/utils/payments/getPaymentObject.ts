@@ -2,7 +2,7 @@ import { PaymentProvider } from '@appsemble/types';
 
 import { type Payments } from './payments.js';
 import { StripePayments } from './stripe/stripePayments.js';
-import { App } from '../../models/App.js';
+import { App } from '../../models/main/App.js';
 import { argv } from '../../utils/argv.js';
 import { decrypt } from '../crypto.js';
 

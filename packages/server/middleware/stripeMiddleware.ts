@@ -4,7 +4,7 @@ import type compose from 'koa-compose';
 import getRawBody from 'raw-body';
 import Stripe from 'stripe';
 
-import { App } from '../models/App.js';
+import { App } from '../models/main/App.js';
 import { argv } from '../utils/argv.js';
 import { decrypt } from '../utils/crypto.js';
 

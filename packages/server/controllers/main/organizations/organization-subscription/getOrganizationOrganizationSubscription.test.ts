@@ -5,8 +5,8 @@ import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { User } from '../../../../models/index.js';
-import { Organization } from '../../../../models/Organization.js';
-import { OrganizationMember } from '../../../../models/OrganizationMember.js';
+import { Organization } from '../../../../models/main/Organization.js';
+import { OrganizationMember } from '../../../../models/main/OrganizationMember.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';

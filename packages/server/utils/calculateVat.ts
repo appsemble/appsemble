@@ -60,6 +60,7 @@ export async function calculateSubscriptionPrice(
   const startDate = dayjs(activationDate) || dayjs();
   let basePrice = new Decimal(subscriptionPlan.price);
   let couponDiscount = new Decimal(0);
+  let discountedPrice = new Decimal(subscriptionPlan.price);
   let activeSubscriptionDiscount = new Decimal(0);
 
   if (period === SubscriptionRenewalPeriod.Year) {
@@ -80,7 +81,7 @@ export async function calculateSubscriptionPrice(
       if (activeSubscriptionDiscount.greaterThan(basePrice)) {
         activeSubscriptionDiscount = basePrice;
       }
-      basePrice = basePrice.minus(activeSubscriptionDiscount);
+      discountedPrice = basePrice.minus(activeSubscriptionDiscount);
     }
   }
 
@@ -101,7 +102,9 @@ export async function calculateSubscriptionPrice(
   const pricingInfo = await salesTax.getAmountWithSalesTax(
     countryCode,
     vatIdNumber,
-    basePrice.greaterThan(couponDiscount) ? basePrice.minus(couponDiscount).toNumber() : 0,
+    discountedPrice.greaterThan(couponDiscount)
+      ? discountedPrice.minus(couponDiscount).toNumber()
+      : 0,
   );
 
   return {
@@ -114,8 +117,8 @@ export async function calculateSubscriptionPrice(
       .toDecimalPlaces(2)
       .toFixed(2),
     couponDiscount: couponDiscount.toDecimalPlaces(2).toFixed(2),
-    priceWithCoupon: basePrice.greaterThan(couponDiscount)
-      ? basePrice.minus(couponDiscount).toDecimalPlaces(2).toFixed(2)
+    priceWithCoupon: discountedPrice.greaterThan(couponDiscount)
+      ? discountedPrice.minus(couponDiscount).toDecimalPlaces(2).toFixed(2)
       : '0.00',
   };
 }
