@@ -83,7 +83,7 @@ export async function handler(): Promise<void> {
   logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
 
   const demoAssetsToReseed = await Asset.findAll({
-    attributes: ['id', 'mime', 'filename', 'data', 'name', 'AppId', 'ResourceId'],
+    attributes: ['id', 'mime', 'filename', 'name', 'AppId', 'ResourceId'],
     include: [
       {
         model: App,
@@ -103,7 +103,7 @@ export async function handler(): Promise<void> {
   logger.info('Reseeding ephemeral assets into demo apps.');
 
   for (const asset of demoAssetsToReseed) {
-    const { data, id, ...values } = asset.dataValues;
+    const { id, ...values } = asset.dataValues;
     const appId = asset.App!.id;
     const created = await Asset.create({
       ...values,
