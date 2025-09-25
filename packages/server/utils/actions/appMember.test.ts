@@ -113,6 +113,7 @@ describe('appMemberQuery', () => {
         demo: false,
         $seed: false,
         $ephemeral: false,
+        unverifiedEmail: undefined,
       },
       {
         sub: expect.any(String),
@@ -128,6 +129,7 @@ describe('appMemberQuery', () => {
         demo: false,
         $seed: false,
         $ephemeral: false,
+        unverifiedEmail: undefined,
       },
     ]);
   });

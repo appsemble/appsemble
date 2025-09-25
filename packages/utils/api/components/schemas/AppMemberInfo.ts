@@ -45,5 +45,10 @@ export const AppMemberInfo: OpenAPIV3.NonArraySchemaObject = {
       description: 'The custom properties of the app member.',
       additionalProperties: true,
     },
+    unverifiedEmail: {
+      type: 'string',
+      description:
+        'Unverified email of the app member which will replace the main email when verified',
+    },
   },
 };

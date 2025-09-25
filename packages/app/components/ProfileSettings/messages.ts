@@ -70,4 +70,49 @@ export const messages = defineMessages({
     id: 'app.kxImXw',
     defaultMessage: 'Supported',
   },
+  oldPassword: {
+    id: 'app.J+buBa',
+    defaultMessage: 'Old Password',
+  },
+  newPassword: {
+    id: 'app.Ev6SEF',
+    defaultMessage: 'New Password',
+  },
+  changePassword: {
+    id: 'app.QiKKFz',
+    defaultMessage: 'Change Password',
+  },
+  updatedEmail: {
+    id: 'app.t+2d4F',
+    defaultMessage: 'Updated Email',
+  },
+  changeEmail: {
+    id: 'app.lo21n8',
+    defaultMessage: 'Update Email Address',
+  },
+  password: {
+    id: 'app.5sg7KC',
+    defaultMessage: 'Password',
+  },
+  actions: {
+    id: 'app.wL7VAE',
+    defaultMessage: 'Actions',
+  },
+  email: {
+    id: 'app.sy+pv5',
+    defaultMessage: 'Email',
+  },
+  verified: {
+    id: 'app.Z8971h',
+    defaultMessage: 'Verified',
+  },
+  emailSuccess: {
+    id: 'app.aCZVRl',
+    defaultMessage:
+      'Successfully registered new email, once you verify your email your existing email will be replaced',
+  },
+  emailError: {
+    id: 'app.o5vQ3R',
+    defaultMessage: 'Something went wrong trying to register this email',
+  },
 });

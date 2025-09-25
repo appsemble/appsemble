@@ -8,6 +8,10 @@ import {
 } from './apps/AppBlockStyle.js';
 import { type AppInviteGlobal as AppInvite, createAppInviteModel } from './apps/AppInvite.js';
 import { type AppMemberGlobal as AppMember, createAppMemberModel } from './apps/AppMember.js';
+import {
+  type AppMemberEmailAuthorizationGlobal as AppMemberEmailAuthorization,
+  createAppMemberEmailAuthorizationModel,
+} from './apps/AppMemberEmailAuthorization.js';
 import { type AppMetaGlobal as AppMeta, createAppMetaModel } from './apps/AppMeta.js';
 import {
   type AppOAuth2AuthorizationGlobal as AppOAuth2Authorization,
@@ -127,6 +131,7 @@ export {
   type AppInvite,
   type AppOAuth2Authorization,
   type AppOAuth2Secret,
+  type AppMemberEmailAuthorization,
   AppRating,
   AppReadme,
   type AppSamlAuthorization,
@@ -275,6 +280,7 @@ export interface AppModels {
   AppBlockStyle: Repository<AppBlockStyle>;
   AppInvite: Repository<AppInvite>;
   AppMember: Repository<AppMember>;
+  AppMemberEmailAuthorization: Repository<AppMemberEmailAuthorization>;
   AppOAuth2Authorization: Repository<AppOAuth2Authorization>;
   AppOAuth2Secret: Repository<AppOAuth2Secret>;
   AppSamlAuthorization: Repository<AppSamlAuthorization>;
@@ -365,6 +371,7 @@ export async function initAppDB(
       AppBlockStyle: createAppBlockStyleModel(appDB),
       AppInvite: createAppInviteModel(appDB),
       AppMember: createAppMemberModel(appDB),
+      AppMemberEmailAuthorization: createAppMemberEmailAuthorizationModel(appDB),
       Meta: createAppMetaModel(appDB),
       AppOAuth2Authorization: createAppOAuth2AuthorizationModel(appDB),
       AppOAuth2Secret: createAppOAuth2SecretModel(appDB),
