@@ -948,8 +948,8 @@ production:
   variables:
     GIT_STRATEGY: none
   script:
-    - kubectl config use-context "$CI_PROJECT_PATH:production-do"
-    - kubectl config set-context --current --namespace appsemble
+    - kubectl config use-context "$CI_PROJECT_PATH:production"
+    - kubectl config set-context --current --namespace default
     - helm repo add appsemble https://charts.appsemble.com
     # Prevent a finished job without chart actually serving.
     - |
@@ -983,9 +983,6 @@ production:
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "global.postgresql.auth.existingSecret=$POSTGRESQL_SECRET"
-      --set "global.postgresql.auth.database=$POSTGRESQL_DATABASE"
-      --set "global.postgresql.auth.username=$POSTGRESQL_USERNAME"
-      --set "global.postgresql.service.ports.postgresql=$POSTGRESQL_PORT"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=1G"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/force-ssl-redirect=\"true\""
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/ssl-redirect=\"true\""
@@ -999,8 +996,13 @@ production:
       --set "ingress.tls.wildcardSecretName=appsemble-tls-wildcard"
       --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
-      --set "postgresql.enabled=false"
+      --set "postgresql.enabled=true"
       --set 'postgresSSL=true'
+      --set "importData.remoteStorage.url=$S3_REMOTE_STORAGE_URL"
+      --set "importData.remoteStorage.existingAccessKeySecret=s3-access-key-secret"
+      --set "importData.remoteStorage.region=$S3_REGION"
+      --set "importData.remoteStorage.location=$BACKUPS_LOCATION"
+      --set "importData.remoteStorage.filename=$PROD_BACKUP_NAME"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
