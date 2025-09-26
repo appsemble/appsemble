@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/wordcloud",
-  "version": "0.34.22-test.2",
+  "version": "0.34.22-test.3",
   "private": true,
   "description": "A block that displays data in a wordcloud",
   "homepage": "https://appsemble.app",
@@ -17,8 +17,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.34.22-test.2",
-    "@appsemble/sdk": "0.34.22-test.2",
+    "@appsemble/preact": "0.34.22-test.3",
+    "@appsemble/sdk": "0.34.22-test.3",
     "@types/wordcloud": "^1.0.0",
     "preact": "^10.0.0",
     "wordcloud": "^1.0.0"

@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.22-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.3)] - 2025-09-26
+
+### Added
+
+- E2e: Added `addAppToAppCollection` fixture.
+- E2e: Added `aliasAppDomain` fixture.
+- E2e: Added `clickAppSideMenuItemOnPage` fixture.
+- E2e: Added `clickAppSideMenuItem` fixture.
+- E2e: Added `createOrganization` fixture.
+- E2e: Added `deleteApp` fixture.
+- E2e: Added `deleteOrganization` fixture.
+- E2e: Added `loginUserOnPage` fixture.
+- E2e: Added `uploadAppMessages` fixture.
+
+### Changed
+
+- E2e: Added `level` parameter to the `randomTestId` fixture to choose the level of detail.
+- E2e: The `visitApp` fixture now returns the URL of the live app.
+
 ## \[[0.34.22-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.2)] - 2025-09-25
 
 ## \[[0.34.22-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.1)] - 2025-09-25

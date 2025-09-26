@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.34.22-test.2
-appVersion: 0.34.22-test.2
+version: 0.34.22-test.3
+appVersion: 0.34.22-test.3
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,8 +31,30 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "E2e: Added addAppToAppCollection fixture."
+    - kind: added
+      description: "E2e: Added aliasAppDomain fixture."
+    - kind: added
+      description: "E2e: Added clickAppSideMenuItemOnPage fixture."
+    - kind: added
+      description: "E2e: Added clickAppSideMenuItem fixture."
+    - kind: added
+      description: "E2e: Added createOrganization fixture."
+    - kind: added
+      description: "E2e: Added deleteApp fixture."
+    - kind: added
+      description: "E2e: Added deleteOrganization fixture."
+    - kind: added
+      description: "E2e: Added loginUserOnPage fixture."
+    - kind: added
+      description: "E2e: Added uploadAppMessages fixture."
+    - kind: changed
+      description: "E2e: Added level parameter to the randomTestId fixture to choose
+        the level of detail."
+    - kind: changed
+      description: "E2e: The visitApp fixture now returns the URL of the live app."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
