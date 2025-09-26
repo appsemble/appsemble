@@ -981,7 +981,11 @@ production:
       --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
       --set "postgresql.enabled=true"
-      --set 'postgresSSL=true'
+      --set 'postgresSSL=false'
+      --set "postgresql.primary.resources.requests.cpu=250m"
+      --set "postgresql.primary.resources.requests.memory=1Gi"
+      --set "postgresql.primary.resources.limits.cpu=1"
+      --set "postgresql.primary.resources.limits.memory=2Gi"
       --set "importData.remoteStorage.url=$S3_REMOTE_STORAGE_URL"
       --set "importData.remoteStorage.existingAccessKeySecret=s3-access-key-secret"
       --set "importData.remoteStorage.region=$S3_REGION"
