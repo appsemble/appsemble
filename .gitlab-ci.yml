@@ -871,7 +871,7 @@ staging:
     - rm mailpit.key mailpit.crt
     - helm install staging ./public/appsemble-*.tgz
       --atomic
-      --timeout 15m0s
+      --timeout 30m0s
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
