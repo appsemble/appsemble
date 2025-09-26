@@ -90,6 +90,8 @@ export class LanguageHandlers {
     this.yamlSettings.documents.onDidChangeContent((change) =>
       this.cancelLimitExceededWarnings(change.document.uri),
     );
+    // Remove
+    // this.yamlSettings.documents.onDidChangeContent(() => this.updateBlockSchemas());
     this.yamlSettings.documents.onDidClose((event) =>
       this.cancelLimitExceededWarnings(event.document.uri),
     );

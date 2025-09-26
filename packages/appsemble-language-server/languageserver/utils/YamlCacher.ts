@@ -2,26 +2,29 @@ import { type TextDocument } from 'vscode-languageserver-textdocument';
 import { type Document, LineCounter, parseDocument } from 'yaml';
 
 interface DocAndCounter {
-  doc: Document.Parsed;
-  counter: LineCounter;
+  readonly doc: Document.Parsed;
+  readonly counter: LineCounter;
+}
+
+interface CacheEntry {
+  readonly version: number;
+  readonly doc: Document.Parsed;
+  readonly lineCounter: LineCounter;
 }
 
 export class YamlCacher {
-  private lastVersion = 0;
-
-  private cachedDoc?: Document.Parsed;
-
-  private lineCounter?: LineCounter;
+  private documentMap = new Map<string, CacheEntry>();
 
   parseOrGetCached(textDocument: TextDocument): DocAndCounter {
-    const { version } = textDocument;
-    if (version <= this.lastVersion && this.cachedDoc) {
-      return { doc: this.cachedDoc, counter: this.lineCounter! };
+    const { uri, version } = textDocument;
+    const cached = this.documentMap.get(uri);
+    if (cached && version <= cached.version) {
+      return { doc: cached.doc, counter: cached.lineCounter };
     }
-    this.lastVersion = version;
     const yaml = textDocument.getText();
-    this.lineCounter = new LineCounter();
-    this.cachedDoc = parseDocument(yaml, { lineCounter: this.lineCounter });
-    return { doc: this.cachedDoc, counter: this.lineCounter };
+    const lineCounter = new LineCounter();
+    const doc = parseDocument(yaml, { lineCounter });
+    this.documentMap.set(uri, { version, doc, lineCounter });
+    return { doc, counter: lineCounter };
   }
 }

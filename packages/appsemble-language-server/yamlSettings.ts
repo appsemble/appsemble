@@ -19,11 +19,15 @@ import { type ISchemaAssociations } from './requestTypes.js';
 
 // Client settings interface to grab settings relevant for the language server
 export interface Settings {
+  appsemble: {
+    /**
+     * Base url for Appsemble API access
+     */
+    blockRegistryBaseUrl?: string;
+  };
   yaml: {
     format: CustomFormatterOptions;
     schemas: JSONSchemaSettings[];
-    // TODO: nvm
-    // schemas: Record<string, string>;
     validate: boolean;
     hover: boolean;
     completion: boolean;
@@ -157,6 +161,8 @@ export class SettingsState {
   hasWsChangeWatchedFileDynamicRegistration = false;
 
   fileExtensions: string[] = ['.yml', '.yaml'];
+
+  blockRegistryBaseUrl = 'https://appsemble.app';
 }
 
 export class TextDocumentTestManager extends TextDocuments<TextDocument> {

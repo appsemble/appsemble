@@ -2,7 +2,7 @@
  *  Copyright (c) Red Hat, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *-------------------------------------------------------------------------------------------- */
-import { AppValidator, schemas, validateAppDefinition } from '@appsemble/lang-sdk';
+import { AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import { type Connection } from 'vscode-languageserver';
 import { type TextDocument } from 'vscode-languageserver-textdocument';
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types';
@@ -12,7 +12,8 @@ import { removeDuplicatesObj } from 'yaml-language-server/lib/esm/languageservic
 import { type LanguageService } from 'yaml-language-server/lib/esm/languageservice/yamlLanguageService.js';
 
 import { type SettingsState } from '../../yamlSettings.js';
-import { YamlCacher } from '../utils/YamlCacher.js';
+import { type BlockManifestCacher } from '../utils/BlockManifestCacher.js';
+import { type YamlCacher } from '../utils/YamlCacher.js';
 
 function validatorRangeToDiagnosticRange(
   counter: LineCounter,
@@ -41,12 +42,16 @@ export class ValidationHandler {
 
   private readonly yamlCacher: YamlCacher;
 
+  private readonly blockManifestCacher: BlockManifestCacher;
+
   private readonly appValidator: AppValidator;
 
   constructor(
     connection: Connection,
     languageService: LanguageService,
     yamlSettings: SettingsState,
+    yamlCacher: YamlCacher,
+    blockManifestCacher: BlockManifestCacher,
   ) {
     this.connection = connection;
     this.languageService = languageService;
@@ -60,8 +65,17 @@ export class ValidationHandler {
       this.connection.sendDiagnostics({ uri: event.document.uri, diagnostics: [] });
     });
 
-    this.yamlCacher = new YamlCacher();
     this.appValidator = new AppValidator();
+    this.yamlCacher = yamlCacher;
+    this.blockManifestCacher = blockManifestCacher;
+  }
+
+  handleSettingsUpdate(): void {
+    this.blockManifestCacher.apiUrl = this.yamlSettings.blockRegistryBaseUrl;
+
+    for (const document of this.yamlSettings.documents.all()) {
+      this.validate(document);
+    }
   }
 
   validate(textDocument: TextDocument): void {
@@ -72,7 +86,7 @@ export class ValidationHandler {
     }, this.yamlSettings.validationDelayMs);
   }
 
-  async validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
+  private async validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
     if (!textDocument) {
       return [];
     }
@@ -84,16 +98,17 @@ export class ValidationHandler {
 
     const { counter, doc } = this.yamlCacher.parseOrGetCached(textDocument);
     const definition = doc.toJS({ maxAliasCount: 10_000 });
-    this.connection.console.info(`Validating ${JSON.stringify(definition)}`);
+    this.connection.console.info(`Validating ${textDocument.uri}`);
     const validatorResult = this.appValidator.validateApp(definition);
     const validationResult = await validateAppDefinition(
       definition,
-      // TODO: please implement!
-      () => [],
+      (blocks) => this.blockManifestCacher.getCachedBlockVersions(blocks),
       undefined,
       validatorResult,
     );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    this.connection.console.debug(
+      `Blocks are: ${JSON.stringify(this.blockManifestCacher.blocks.entries())}`,
+    );
     const errors: Diagnostic[] = validationResult.errors
       .map((error) => {
         const node = doc.getIn(error.path, true);
@@ -109,13 +124,7 @@ export class ValidationHandler {
         } as Diagnostic;
       })
       .filter((x) => x != null);
-    this.connection.console.info(`errors are ${errors}`);
     const diagnostics: Diagnostic[] = [...errors];
-    //
-    // TODO: get cached YAML using textDocument.version and similar logic to
-    // `../../../studio/components/MonacoEditor/appValidation/worker.ts`
-    // and pass that to `validateAppDefinition`
-    //
     for (const diagnosticItem of diagnosticResults) {
       // Convert all warnings to errors
       if (diagnosticItem.severity === 2) {

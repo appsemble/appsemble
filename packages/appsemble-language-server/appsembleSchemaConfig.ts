@@ -1,6 +1,6 @@
 import { schemas } from '@appsemble/lang-sdk';
 import { type Schema } from 'jsonschema';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, set } from 'lodash-es';
 import { type SchemaConfiguration } from 'yaml-language-server';
 import { type JSONSchema } from 'yaml-language-server/lib/esm/languageservice/jsonSchema.js';
 
@@ -38,26 +38,25 @@ interface CreateAppsembleSchemaConfigOptions {
 
 export function createAppsembleSchemaConfig({
   referenceUri,
-}: CreateAppsembleSchemaConfigOptions = {}): SchemaConfiguration {
-  return {
-    uri: referenceUri ?? 'appsemble://schema.json',
-    fileMatch: ['app-definition.yaml'],
-    schema: {
-      $ref: '#/components/schemas/AppDefinition',
-      components: {
-        // Whatever ingests this from yaml-language-server's languageService,
-        // we really don't trust it!
-        // Evil stuff would happen if you don't deep clone this, never remove that part.
-        // (N.B: We should also deep-freeze the schemas object in lang-sdk to make sure code crashes
-        // before it messes with the schemas, but that's not a hard necessity.)
-        // Evil stuff in question: schemas somehow become recursive exactly along $ref lines.
-        // Some part of the languageService mangles the schemas object in place to make $refs real.
-        // Problem with that: any other thing that uses the schemas now has to handle a circular
-        // object.
-        // Say goodbye to JSON.stringify working
-        // and hello to "Maximum call stack size exceeded" when you try to use a schema validator
-        schemas: mapValues(cloneDeep(schemas), addMarkdownDescriptions),
-      },
-    } as JSONSchema,
-  };
+}: CreateAppsembleSchemaConfigOptions = {}): SchemaConfiguration[] {
+  const clonedSchemas = cloneDeep(schemas);
+  set(clonedSchemas, 'BlockDefinition.allOf', [{ $ref: 'appsemble://availBlocksRef.json' }]);
+
+  return [
+    {
+      uri: 'appsemble://schema.json',
+      fileMatch: ['app-definition.yaml'],
+      schema: {
+        id: 'appsemble://schema.json',
+        url: referenceUri,
+        $ref: '#/components/schemas/AppDefinition',
+        components: {
+          // Don't pass schemas you want to use outside of  the languageService
+          // to the languageService..
+          // It *will* mutate them
+          schemas: mapValues(clonedSchemas, addMarkdownDescriptions),
+        },
+      } as JSONSchema,
+    },
+  ];
 }

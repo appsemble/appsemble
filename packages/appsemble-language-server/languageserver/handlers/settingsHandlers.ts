@@ -76,8 +76,10 @@ export class SettingsHandler {
       { section: '[yaml]' },
       { section: 'editor' },
       { section: 'files' },
+      { section: 'appsemble' },
     ]);
     const settings: Readonly<Settings> = {
+      appsemble: config[5] ?? {},
       yaml: config[0],
       http: {
         proxy: config[1]?.proxy ?? '',
@@ -186,6 +188,10 @@ export class SettingsHandler {
       this.yamlSettings.indentation = ' '.repeat(tabSize);
     }
 
+    if (settings.appsemble.blockRegistryBaseUrl) {
+      this.yamlSettings.blockRegistryBaseUrl = settings.appsemble.blockRegistryBaseUrl;
+    }
+
     this.updateConfiguration();
 
     // Dynamically enable & disable the formatter
@@ -264,6 +270,7 @@ export class SettingsHandler {
     }
 
     if (this.yamlSettings.schemaConfigurationSettings) {
+      this.connection.console.info('Applying schemaConfigurationSettings');
       for (const schema of this.yamlSettings.schemaConfigurationSettings) {
         let uri = schema.uri as string | undefined;
         if (!uri && schema.schema) {
@@ -298,12 +305,13 @@ export class SettingsHandler {
       );
     }
 
+    this.connection.console.info(
+      `Applying languageSettings with N schemas: ${languageSettings.schemas?.length}`,
+    );
+
     this.languageService.configure(languageSettings);
 
-    // Revalidate any open text documents
-    for (const document of this.yamlSettings.documents.all()) {
-      this.validationHandler.validate(document);
-    }
+    this.validationHandler.handleSettingsUpdate();
   }
 
   /**

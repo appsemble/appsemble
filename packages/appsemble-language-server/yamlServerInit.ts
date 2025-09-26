@@ -16,18 +16,28 @@ import { workspaceFoldersChanged } from 'yaml-language-server/lib/esm/languagese
 import {
   getLanguageService as getCustomLanguageService,
   type LanguageService,
-  type SchemaRequestService,
   type WorkspaceContextService,
 } from 'yaml-language-server/lib/esm/languageservice/yamlLanguageService.js';
 
+import { createAppsembleSchemaConfig } from './appsembleSchemaConfig.js';
+import { BlockSchemaRequestHandler } from './BlockSchemaRequestHandler.js';
 import { YamlCommands } from './commands.js';
 import { commandExecutor } from './languageserver/commandExecutor.js';
+import { BlockRegistryHandlers } from './languageserver/handlers/blockRegistryHandlers.js';
 import { LanguageHandlers } from './languageserver/handlers/languageHandlers.js';
 import { NotificationHandlers } from './languageserver/handlers/notificationHandlers.js';
 import { RequestHandlers } from './languageserver/handlers/requestHandlers.js';
 import { SettingsHandler } from './languageserver/handlers/settingsHandlers.js';
 import { ValidationHandler } from './languageserver/handlers/validationHandlers.js';
 import { WorkspaceHandlers } from './languageserver/handlers/workspaceHandlers.js';
+import { BlockManifestCacher } from './languageserver/utils/BlockManifestCacher.js';
+import { YamlCacher } from './languageserver/utils/YamlCacher.js';
+import { ConnectionLogger, type Logger } from './Logger.js';
+import {
+  SchemaRequestChainOfResponsibility,
+  type SchemaRequestWrapper,
+} from './SchemaRequestWrapper.js';
+import { StaticSchemaRequestHandler } from './StaticSchemaRequestHandler.js';
 import { type SettingsState } from './yamlSettings.js';
 
 async function exists(filePath: string): Promise<boolean> {
@@ -49,30 +59,67 @@ export class YAMLServerInit {
 
   settingsHandler!: SettingsHandler;
 
+  blockRegistryHandler!: BlockRegistryHandlers;
+
   private readonly connection: Connection;
 
   private yamlSettings: SettingsState;
 
   private workspaceContext: WorkspaceContextService;
 
-  private schemaRequestService: SchemaRequestService;
+  private schemaRequestWrapper: SchemaRequestWrapper;
 
   private telemetry: Telemetry;
+
+  private readonly logger: Logger;
+
+  private readonly yamlCacher: YamlCacher;
+
+  private readonly blockManifestCacher: BlockManifestCacher;
+
+  private readonly blockSchemaRequestHandler: BlockSchemaRequestHandler;
 
   constructor(
     connection: Connection,
     yamlSettings: SettingsState,
     workspaceContext: WorkspaceContextService,
-    schemaRequestService: SchemaRequestService,
+    schemaRequestWrapper: SchemaRequestWrapper,
     telemetry: Telemetry,
   ) {
     this.connection = connection;
     this.yamlSettings = yamlSettings;
     this.workspaceContext = workspaceContext;
-    this.schemaRequestService = schemaRequestService;
+    this.schemaRequestWrapper = schemaRequestWrapper;
     this.telemetry = telemetry;
 
     this.yamlSettings.documents.listen(this.connection);
+
+    this.logger = new ConnectionLogger(this.connection);
+
+    this.yamlCacher = new YamlCacher();
+    this.blockManifestCacher = new BlockManifestCacher(
+      this.yamlSettings.blockRegistryBaseUrl,
+      this.logger,
+    );
+
+    const referenceUri = 'https://appsemble.app/en/docs/reference';
+    const staticSchemaRequestHandler = new StaticSchemaRequestHandler(
+      createAppsembleSchemaConfig({
+        referenceUri,
+      }).filter(({ uri }) => uri === 'appsemble://schema.json'),
+      this.logger,
+    );
+    this.blockSchemaRequestHandler = new BlockSchemaRequestHandler(
+      this.blockManifestCacher,
+      this.logger,
+    );
+    this.schemaRequestWrapper = new SchemaRequestChainOfResponsibility(
+      [staticSchemaRequestHandler, this.blockSchemaRequestHandler, this.schemaRequestWrapper],
+      this.logger,
+    );
+    this.yamlSettings.schemaConfigurationSettings = createAppsembleSchemaConfig({
+      referenceUri,
+    });
 
     /**
      * Run when the client connects to the server after it is activated.
@@ -124,8 +171,11 @@ export class YAMLServerInit {
   // eslint-disable-next-line require-await
   async connectionInitialized(params: InitializeParams): Promise<InitializeResult> {
     this.yamlSettings.capabilities = params.capabilities;
+    this.connection.console.info(
+      `[DEBUG] schemaRequestWrapper is ${this.schemaRequestWrapper.constructor.name}`,
+    );
     this.languageService = getCustomLanguageService({
-      schemaRequestService: this.schemaRequestService,
+      schemaRequestService: this.schemaRequestWrapper.handle.bind(this.schemaRequestWrapper),
       workspaceContext: this.workspaceContext,
       connection: this.connection,
       yamlSettings: this.yamlSettings as SettingsState & {
@@ -220,6 +270,8 @@ export class YAMLServerInit {
       this.connection,
       this.languageService,
       this.yamlSettings,
+      this.yamlCacher,
+      this.blockManifestCacher,
     );
     this.settingsHandler = new SettingsHandler(
       this.connection,
@@ -244,5 +296,13 @@ export class YAMLServerInit {
     ).registerHandlers();
     new RequestHandlers(this.connection, this.languageService).registerHandlers();
     new WorkspaceHandlers(this.connection, commandExecutor).registerHandlers();
+    this.blockRegistryHandler = new BlockRegistryHandlers(
+      this.yamlSettings,
+      this.yamlCacher,
+      this.blockSchemaRequestHandler,
+      this.languageService,
+      this.logger,
+    );
+    this.blockRegistryHandler.registerHandlers();
   }
 }

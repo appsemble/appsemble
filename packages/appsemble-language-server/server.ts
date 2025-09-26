@@ -8,15 +8,12 @@
 
 import { readFile } from 'node:fs/promises';
 
-import { type Connection, createConnection, ProposedFeatures } from 'vscode-languageserver/node.js';
-import {
-  schemaRequestHandler,
-  workspaceContext,
-} from 'yaml-language-server/lib/esm/languageservice/services/schemaRequestHandler.js';
+import { createConnection, ProposedFeatures } from 'vscode-languageserver/node.js';
+import { workspaceContext } from 'yaml-language-server/lib/esm/languageservice/services/schemaRequestHandler.js';
 import { convertErrorToTelemetryMsg } from 'yaml-language-server/lib/esm/languageservice/utils/objects.js';
 
-import { createAppsembleSchemaConfig } from './appsembleSchemaConfig.js';
 import { TelemetryImpl } from './languageserver/telemetry.js';
+import { DefaultSchemaRequestWrapper } from './SchemaRequestWrapper.js';
 import { YAMLServerInit } from './yamlServerInit.js';
 import { SettingsState } from './yamlSettings.js';
 
@@ -44,10 +41,7 @@ console.error = (arg) => {
 };
 
 const yamlSettings = new SettingsState();
-yamlSettings.schemaConfigurationSettings = [
-  createAppsembleSchemaConfig({ referenceUri: 'https://appsemble.app/en/docs/reference' }),
-];
-yamlSettings.schemaStoreEnabled = false;
+yamlSettings.schemaStoreEnabled = true;
 
 const fileSystem = {
   async readFile(fsPath: string, encoding?: string) {
@@ -56,23 +50,8 @@ const fileSystem = {
   },
 };
 
-/**
- * Handles schema content requests given the schema URI
- *
- * @param conn the connection to use for the request
- * @param uri can be a local file, vscode request, http(s) request or a custom request
- */
-const schemaRequestHandlerWrapper = (conn: Connection, uri: string): Promise<string> =>
-  schemaRequestHandler(
-    conn,
-    uri,
-    yamlSettings.workspaceFolders,
-    yamlSettings.workspaceRoot!,
-    yamlSettings.useVSCodeContentRequest,
-    fileSystem,
-  );
+const schemaRequestWrapper = new DefaultSchemaRequestWrapper(connection, yamlSettings, fileSystem);
 
-const schemaRequestService = schemaRequestHandlerWrapper.bind(null, connection);
 const telemetry = new TelemetryImpl(connection);
 
 connection.console.log('Starting Appsemble language server');
@@ -81,6 +60,6 @@ new YAMLServerInit(
   connection,
   yamlSettings,
   workspaceContext,
-  schemaRequestService,
+  schemaRequestWrapper,
   telemetry,
 ).start();
