@@ -4,9 +4,9 @@ an event.
 
 ### Images
 
-![QR code of https://appsemble.app](https://gitlab.com/appsemble/appsemble/-/raw/0.34.22-test.3/config/assets/qr-scan_res.jpg)
+![QR code of https://appsemble.app](https://gitlab.com/appsemble/appsemble/-/raw/0.34.22-test.4/config/assets/qr-scan_res.jpg)
 
-![Highlighted QR code of https://appsemble.app](https://gitlab.com/appsemble/appsemble/-/raw/0.34.22-test.3/config/assets/qr-scan_res2.jpg)
+![Highlighted QR code of https://appsemble.app](https://gitlab.com/appsemble/appsemble/-/raw/0.34.22-test.4/config/assets/qr-scan_res2.jpg)
 
 These pictures show the video stream. The text below is a text element that shows the content of the
 `foundQr` event.
