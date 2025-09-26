@@ -1,0 +1,8 @@
+{
+  "id": "test-org",
+  "name": "Test org",
+  "description": "Organization description",
+  "website": "https://appsemble.com",
+  "email": "support@appsemble.com",
+  "iconUrl": null
+}

@@ -1,0 +1,11 @@
+[
+  {
+    "id": "test-org",
+    "name": "Test org",
+    "role": "Owner",
+    "description": "Organization description",
+    "website": "https://appsemble.com",
+    "email": "support@appsemble.com",
+    "iconUrl": null
+  }
+]

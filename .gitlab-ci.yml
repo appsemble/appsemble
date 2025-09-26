@@ -351,6 +351,7 @@ validate-snippets:
   interruptible: true
   needs:
     - build docker image
+    - npm_ci
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_COMMIT_TAG
@@ -394,7 +395,6 @@ validate-snippets:
         S3_SECRET_KEY: password
         migrateTo: next
   script:
-    - npm ci
     - npm run scripts seed-account --
       --name $BOT_ACCOUNT_NAME
       --email $BOT_ACCOUNT_EMAIL
@@ -415,12 +415,13 @@ validate-snippets:
 #  End 2 End Stage                                                                               #
 ###################################################################################################
 
-e2e:
+e2e node:
   stage: end 2 end
   image: mcr.microsoft.com/playwright:v1.51.1-jammy@sha256:79da45705a7c3f147c435ac6d0beeddf2e132f53263cb27bed90beafbb2e552b
   interruptible: true
   needs:
     - build docker image
+    - npm_ci
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_COMMIT_TAG
@@ -465,19 +466,7 @@ e2e:
         S3_SECRET_KEY: password
         migrateTo: next
         E2E: true
-  before_script:
-    - apt-get update && apt-get install -y curl dnsutils
-    - |
-      echo "Aliasing app domains to appsemble..."
-      APPSEMBLE_IP=$(getent hosts appsemble | awk '{ print $1 }')
-      for APP_NAME in ./apps/*/; do
-        APP_NAME=$(basename "$APP_NAME")
-        CUSTOM_ALIAS="${APP_NAME}.appsemble.appsemble"
-        echo "$APPSEMBLE_IP $CUSTOM_ALIAS" >> /etc/hosts
-        echo "Added alias: $CUSTOM_ALIAS -> $APPSEMBLE_IP"
-      done
   script:
-    - npm ci
     - npm run scripts seed-account --
       --name $BOT_ACCOUNT_NAME
       --email $BOT_ACCOUNT_EMAIL
@@ -493,15 +482,10 @@ e2e:
       --name Appsemble
       --website https://appsemble.com
     - npm run appsemble -- block publish 'blocks/*'
-    - npm run appsemble -- app publish 'apps/empty' --modify-context
-    - npm run appsemble -- app publish 'apps/holidays' --modify-context
-    - npm run appsemble -- app publish 'apps/notes' --modify-context
-    - npm run appsemble -- app publish 'apps/person' --modify-context
-    - npm run appsemble -- app publish 'apps/survey' --modify-context
-    - npm run appsemble -- app publish 'apps/unlittered' --modify-context
     - npm --workspace @appsemble/types run prepack
     - npm --workspace @appsemble/lang-sdk run prepack
-    - npm --workspace @appsemble/e2e run e2e -- --max-failures 6
+    - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+  parallel: 6
   artifacts:
     expose_as: Playwright videos
     when: always
@@ -511,7 +495,7 @@ e2e:
       junit: packages/e2e/results.xml
 
 # Apps under SLA are supported through Appsemble core changes
-e2e apps obligatory:
+e2e SLA apps:
   allow_failure: false
   stage: end 2 end
   needs:
@@ -536,30 +520,30 @@ e2e apps obligatory:
     branch: main
 
 # Allow failure as we don't support these anymore
-e2e apps manual:
-  when: manual
-  allow_failure: true
-  stage: end 2 end
-  needs:
-    - build docker image
-  rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-    - if: $CI_COMMIT_TAG
-  inherit:
-    variables: false
-  variables:
-    APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
-  parallel:
-    matrix:
-      - PROJECT:
-          - 'appsemble/apps/template'
-          - 'appsemble/apps/eindhoven'
-          - 'appsemble/apps/amersfoort'
-          - 'appsemble/apps/tbvwonen'
-  trigger:
-    project: $PROJECT
-    strategy: depend
-    branch: main
+# e2e SLA apps deprecated:
+#   when: manual
+#   allow_failure: true
+#   stage: end 2 end
+#   needs:
+#     - build docker image
+#   rules:
+#     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+#     - if: $CI_COMMIT_TAG
+#   inherit:
+#     variables: false
+#   variables:
+#     APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+#   parallel:
+#     matrix:
+#       - PROJECT:
+#           - 'appsemble/apps/template'
+#           - 'appsemble/apps/eindhoven'
+#           - 'appsemble/apps/amersfoort'
+#           - 'appsemble/apps/tbvwonen'
+#   trigger:
+#     project: $PROJECT
+#     strategy: depend
+#     branch: main
 
 ###################################################################################################
 #  Publish Stage                                                                                  #

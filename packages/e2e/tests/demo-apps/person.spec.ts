@@ -1,8 +1,32 @@
+import { readFile } from 'node:fs/promises';
+
+import { type AppsembleMessages } from '@appsemble/types';
+
 import { expect, test } from '../../index.js';
 
+let appId: number;
+let organizationId: string;
+
 test.describe('Person', () => {
+  test.beforeAll(async ({ createApp, createOrganization, randomTestId, uploadAppMessages }) => {
+    const appDefinition = await readFile('../../apps/person/app-definition.yaml', 'utf8');
+    const englishTranslations = JSON.parse(
+      await readFile('../../apps/person/i18n/en.json', 'utf8'),
+    ) as AppsembleMessages;
+    organizationId = (await createOrganization({ id: randomTestId() })).id;
+
+    appId = (await createApp(organizationId, appDefinition)).id!;
+
+    await uploadAppMessages(appId, 'en', englishTranslations);
+  });
+
+  test.afterAll(async ({ deleteApp, deleteOrganization }) => {
+    await deleteApp(appId);
+    await deleteOrganization(organizationId);
+  });
+
   test.beforeEach(async ({ page, visitApp }) => {
-    await visitApp('person');
+    await visitApp(appId);
     await page.waitForURL('**/person-registration-form');
   });
 

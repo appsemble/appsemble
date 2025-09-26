@@ -5,6 +5,7 @@ import { test as appCollectionFixtures } from './app-collection/index.js';
 import { test as demoAppFixtures } from './demo-app/index.js';
 import { test as groupFixtures } from './group/index.js';
 import { test as liveAppFixtures } from './live-app/index.js';
+import { test as organizationFixtures } from './organization/index.js';
 import { test as resourceFixtures } from './resource/index.js';
 import { test as studioFixtures } from './studio/index.js';
 import { test as testUtilsFixtures } from './test-utils/index.js';
@@ -16,6 +17,7 @@ export const test = mergeTests(
   demoAppFixtures,
   groupFixtures,
   liveAppFixtures,
+  organizationFixtures,
   resourceFixtures,
   studioFixtures,
   testUtilsFixtures,

@@ -1,0 +1,25 @@
+{
+  "actions": {
+    "onLoad": {
+      "description": "Action that gets dispatched when a new filter gets applied.\n\nThis also gets called during the initial load."
+    }
+  },
+  "description": "Test block short description.",
+  "events": {
+    "emit": {
+      "data": {
+        "description": "Event that gets emitted once the `onLoad` action has finished.\n\nIt can be triggered again by sending a `refresh` event."
+      }
+    }
+  },
+  "examples": ["type: noop"],
+  "iconUrl": null,
+  "longDescription": "Test block long description.",
+  "name": "@test-org/test-block",
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "additionalProperties": false
+  },
+  "version": "0.0.0"
+}
