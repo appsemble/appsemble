@@ -42,7 +42,7 @@ pages:
   - name: Person List
     blocks:
       - type: data-loader
-        version: 0.34.22-test.4
+        version: 0.34.22-test.5
         actions:
           onLoad:
             type: resource.query
@@ -53,7 +53,7 @@ pages:
           listen:
             refresh: refreshPeople
       - type: table
-        version: 0.34.22-test.4
+        version: 0.34.22-test.5
         parameters:
           fields:
             - value: { prop: firstName }
@@ -68,7 +68,7 @@ pages:
           listen:
             data: data
       - type: action-button
-        version: 0.34.22-test.4
+        version: 0.34.22-test.5
         parameters:
           icon: plus
         actions:
@@ -76,7 +76,7 @@ pages:
             to: Person Registration Form
             type: link
       - type: button-list
-        version: 0.34.22-test.4
+        version: 0.34.22-test.5
         parameters:
           buttons:
             - label: Delete All People
@@ -108,7 +108,7 @@ pages:
   - name: Person Registration Form
     blocks:
       - type: form
-        version: 0.34.22-test.4
+        version: 0.34.22-test.5
         actions:
           onSubmit:
             type: resource.create
@@ -144,7 +144,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.34.22-test.4
+        version: 0.34.22-test.5
         actions:
           onLoad:
             type: resource.get
@@ -153,7 +153,7 @@ pages:
           emit:
             data: data
       - type: detail-viewer
-        version: 0.34.22-test.4
+        version: 0.34.22-test.5
         parameters:
           fields:
             - value: { prop: firstName }
