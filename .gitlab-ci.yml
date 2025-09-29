@@ -796,6 +796,14 @@ review:
     - tar -xvf stripe.tar.gz
     - mv stripe /usr/local/bin/
     - stripe -v
+    - |
+      WEBHOOK_URL="https://$CI_MERGE_REQUEST_IID.appsemble.review/api/payments/accept-payment"
+
+      WEBHOOK_ID=$(stripe webhook_endpoints list --limit 20 --api-key "$STRIPE_API_SECRET_KEY" | \
+        jq -r --arg url "$WEBHOOK_URL" '.data[] | select(.url==$url) | .id')
+      if [ -n "$WEBHOOK_ID" ]; then
+        stripe webhook_endpoints delete "$WEBHOOK_ID" --api-key "$STRIPE_API_SECRET_KEY" --confirm
+      fi
     - kubectl delete secret stripe-webhook-secret-$CI_MERGE_REQUEST_IID || true
     - |
       export STRIPE_WEBHOOK_SECRET=$(stripe webhook_endpoints create \
@@ -1208,3 +1216,15 @@ cleanup review environments:
     - kubectl get ingress --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete ingress {} || true
     # Delete all secrets for review environments
     - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete secret {} || true
+    # Delete all Stripe webhooks for review environments
+    - apk add --no-cache curl jq tar
+    - LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
+    - URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
+    - curl -L -o stripe.tar.gz "$URL"
+    - tar -xvf stripe.tar.gz
+    - mv stripe /usr/local/bin/
+    - stripe -v
+    - |
+      stripe webhook_endpoints list --limit 20 --api-key "$STRIPE_API_SECRET_KEY" \
+      | jq -r '.data[].id' \
+      | xargs -I{} stripe webhook_endpoints delete {} --api-key "$STRIPE_API_SECRET_KEY" --confirm
