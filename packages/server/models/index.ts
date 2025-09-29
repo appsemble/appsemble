@@ -314,7 +314,7 @@ export async function initAppDB(
   }
 
   const app = (await mainDB.models.App.findOne({
-    attributes: ['id', 'dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword'],
+    attributes: ['id', 'dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword', 'definition'],
     where: { id: appId },
     transaction,
   })) as App;
