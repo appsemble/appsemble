@@ -55,7 +55,7 @@ spec:
                   {{ .Values.provision.organization.subscription | squote }},
                   NOW(),
                   NOW()
-                );
+                ) ON CONFLICT ("OrganizationId") DO UPDATE SET "subscriptionPlan" = {{ .Values.provision.organization.subscription | squote }}, updated = NOW();
 
                 INSERT INTO "OrganizationMember" ("UserId", "OrganizationId", role, created, updated) VALUES (
                   {{ $userId | squote }},
