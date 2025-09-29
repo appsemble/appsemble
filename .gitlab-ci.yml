@@ -849,7 +849,6 @@ review:
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
-      --set "stripeApiSecretKey=stripe-api-secret-key"
 
 # Stop a review environment.
 stop review:
@@ -955,8 +954,6 @@ staging:
       --set "minio.apiIngress.hostname=api.minio.appsemble.eu"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
-      --set "stripeWebhookSecret=stripe-webhook-secret"
-      --set "stripeApiSecretKey=stripe-api-secret-key"
 
 production:
   image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
@@ -1040,8 +1037,6 @@ production:
       --set "minio.apiIngress.hostname=api.minio.appsemble.app"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
-      --set "stripeWebhookSecret=stripe-webhook-secret"
-      --set "stripeApiSecretKey=stripe-api-secret-key"
       --wait
 
 ###################################################################################################
