@@ -39,30 +39,16 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.35.11-test.4",
     "@appsemble/lang-sdk": "0.35.11-test.4",
-    "@odata/parser": "^0.2.14",
+    "@appsemble/types": "0.35.11-test.4",
     "axios": "^1.0.0",
-    "cron-parser": "^4.0.0",
-    "date-fns": "^2.0.0",
-    "fast-deep-equal": "^3.0.0",
-    "fast-xml-parser": "^5.0.8",
-    "ics": "^3.0.0",
-    "intl-messageformat": "^10.0.0",
-    "jsonschema": "~1.4.1",
     "langmap": "^0.0.16",
-    "language-tags": "^1.0.0",
-    "lcm": "^0.0.3",
     "openapi-types": "^12.0.0",
-    "parse-duration": "^1.0.0",
     "postcss": "^8.0.0",
-    "type-fest": "^4.0.0",
-    "yaml": "^2.0.0"
+    "type-fest": "^4.0.0"
   },
   "devDependencies": {
     "@types/langmap": "0.0.3",
-    "@types/language-tags": "1.0.4",
-    "@types/lcm": "0.0.2",
     "bulma": "=0.9.3",
     "koas-core": "0.7.0",
     "vitest": "2.1.9"

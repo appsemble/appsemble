@@ -406,7 +406,7 @@ validate-snippets:
         S3_SECRET_KEY: password
         migrateTo: next
   script:
-    - npm run scripts seed-account --
+    - npm run scripts create-user --
       --name $BOT_ACCOUNT_NAME
       --email $BOT_ACCOUNT_EMAIL
       --password $BOT_ACCOUNT_PASSWORD
@@ -478,7 +478,7 @@ e2e node:
         migrateTo: next
         E2E: true
   script:
-    - npm run scripts seed-account --
+    - npm run scripts create-user --
       --name $BOT_ACCOUNT_NAME
       --email $BOT_ACCOUNT_EMAIL
       --password $BOT_ACCOUNT_PASSWORD

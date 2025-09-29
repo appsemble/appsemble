@@ -3,6 +3,8 @@ import yargs, { type CommandModule } from 'yargs';
 
 import * as build from './commands/build.js';
 import * as cleanupEnvironments from './commands/cleanup-environments.js';
+import * as createUser from './commands/create-user.js';
+import * as deleteUser from './commands/delete-user.js';
 import * as dockerMetadata from './commands/docker-metadata.js';
 import * as extractMessages from './commands/extract-messages.js';
 import * as getReleaseNotes from './commands/get-release-notes.js';
@@ -10,7 +12,6 @@ import * as githubRelease from './commands/github-release.js';
 import * as gitlabRelease from './commands/gitlab-release.js';
 import * as release from './commands/release.js';
 import * as rewriteMessages from './commands/rewrite-messages.js';
-import * as seedAccount from './commands/seed-account.js';
 import * as seedSubscription from './commands/seed-subscription.js';
 import * as twitter from './commands/twitter.js';
 import * as validateDocs from './commands/validate-docs.js';
@@ -40,7 +41,8 @@ yargs()
   .command(gitlabRelease)
   .command(release as unknown as CommandModule)
   .command(rewriteMessages)
-  .command(seedAccount as unknown as CommandModule)
+  .command(createUser as unknown as CommandModule)
+  .command(deleteUser as unknown as CommandModule)
   .command(seedSubscription as unknown as CommandModule)
   .command(twitter)
   .command(validatePackagedExports as unknown as CommandModule)
