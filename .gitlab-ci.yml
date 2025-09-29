@@ -934,6 +934,7 @@ staging:
       --set "postgresql.primary.resources.limits.cpu=1"
       --set "postgresql.primary.resources.limits.memory=2Gi"
       --set "provision.organization.id=appsemble"
+      --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
       --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.user.email=$BOT_ACCOUNT_EMAIL"

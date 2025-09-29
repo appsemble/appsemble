@@ -308,7 +308,7 @@
           "type": "object",
           "description": "The organization to provision.",
           "additionalProperties": false,
-          "required": ["id"],
+          "required": ["id", "subscription"],
           "properties": {
             "id": {
               "type": "string",
