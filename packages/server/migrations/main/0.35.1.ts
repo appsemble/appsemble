@@ -162,6 +162,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     'preferredPaymentProvider',
     {
       type: DataTypes.ENUM('stripe'),
+      values: ['stripe'],
       defaultValue: 'stripe',
     },
     { transaction },
@@ -332,6 +333,11 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
 
   logger.info('Remove column preferredPaymentProvider from `Organization` table');
   await queryInterface.removeColumn('Organization', 'preferredPaymentProvider', { transaction });
+
+  logger.info('Removing type enum enum_Organization_preferredPaymentProvider');
+  await queryInterface.sequelize.query('DROP TYPE "enum_Organization_preferredPaymentProvider";', {
+    transaction,
+  });
 
   logger.info('Remove column vatIdNumber from `Organization` table');
   await queryInterface.removeColumn('Organization', 'vatIdNumber', { transaction });

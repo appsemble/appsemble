@@ -6,6 +6,8 @@ import { databaseBuilder } from './builder/database.js';
 import { migrations as appMigrations } from '../migrations/apps/index.js';
 import { migrations } from '../migrations/main/index.js';
 import { getAppDB } from '../models/index.js';
+import { argv } from '../utils/argv.js';
+import { encrypt } from '../utils/crypto.js';
 import { logDBDebugInstructions, migrate } from '../utils/migrate.js';
 import { apply, handleDiff } from '../utils/migrateDiff.js';
 import { handleDBError } from '../utils/sqlUtils.js';
@@ -61,12 +63,21 @@ export async function handler(): Promise<void> {
     INSERT INTO "Organization" ("id", "created", "updated")
     VALUES ('appsemble', NOW(), NOW());
   `);
-  await db.models.App.create({
-    OrganizationId: 'appsemble',
-    definition: {},
-    vapidPublicKey: '',
-    vapidPrivateKey: '',
-  });
+
+  await db.query(
+    `
+    INSERT INTO "App" ("id", "OrganizationId", "definition", "vapidPublicKey", "vapidPrivateKey", "dbHost", "dbPort", "dbUser", "dbPassword",  "created", "updated")
+    VALUES (1, 'appsemble', '{}', '', '', '${argv.databaseHost || process.env.DATABASE_HOST || 'localhost'}', ${argv.databasePort || Number(process.env.DATABASE_PORT) || 54_321}, '${argv.databaseUser || process.env.DATABASE_USER || 'admin'}', :dbPassword, NOW(), NOW());
+  `,
+    {
+      replacements: {
+        dbPassword: encrypt(
+          argv.databasePassword || process.env.DATABASE_PASSWORD || 'password',
+          argv.aesSecret || 'Local Appsemble development AES secret',
+        ),
+      },
+    },
+  );
 
   try {
     const { sequelize: appDB } = await getAppDB(1);
