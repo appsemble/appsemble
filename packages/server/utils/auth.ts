@@ -9,12 +9,8 @@ import { argv } from './argv.js';
 import { type Mailer } from './email/Mailer.js';
 import {
   type App,
-  AppMember,
-  AppOAuth2Authorization,
-  AppOAuth2Secret,
-  AppSamlAuthorization,
-  AppSamlSecret,
   EmailAuthorization,
+  getAppDB,
   OrganizationMember,
   User,
 } from '../models/index.js';
@@ -88,6 +84,14 @@ export async function handleUniqueAppMemberEmailIndex(
    */
   handleAuthorization: (data: { email: string; user: boolean; logins: string }) => Promisable<void>,
 ): Promise<void> {
+  const {
+    AppMember,
+    AppOAuth2Authorization,
+    AppOAuth2Secret,
+    AppSamlAuthorization,
+    AppSamlSecret,
+  } = await getAppDB(ctx.pathParams.appId);
+
   if (
     error instanceof UniqueConstraintError &&
     'constraint' in error.parent &&
@@ -100,7 +104,7 @@ export async function handleUniqueAppMemberEmailIndex(
       `Account linking is only allowed to a verified account. Please verify your email ${email}.`,
     );
     const memberToLink = await AppMember.findOne({
-      where: { AppId: ctx.pathParams.appId, email },
+      where: { email },
       attributes: ['id', 'email', 'UserId'],
       include: [
         {
@@ -123,7 +127,7 @@ export async function handleUniqueAppMemberEmailIndex(
     });
     const data = {
       email,
-      user: Boolean(memberToLink?.UserId),
+      user: Boolean(memberToLink?.userId),
       password: Boolean(hasPassword),
       logins: [
         ...(memberToLink?.AppOAuth2Authorizations.map(

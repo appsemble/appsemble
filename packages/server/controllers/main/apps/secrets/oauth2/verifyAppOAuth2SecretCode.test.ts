@@ -7,10 +7,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
-  AppOAuth2Authorization,
-  AppOAuth2Secret,
-  OAuth2AuthorizationCode,
+  type AppOAuth2Secret,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -69,8 +67,8 @@ describe('verifyAppOAuth2SecretCode', () => {
       role: PredefinedOrganizationRole.Owner,
     });
 
+    const { AppOAuth2Secret } = await getAppDB(app.id);
     secret = await AppOAuth2Secret.create({
-      AppId: app.id,
       authorizationUrl: 'https://example.com/oauth/authorize',
       clientId: 'example_client_id',
       clientSecret: 'example_client_secret',
@@ -218,11 +216,11 @@ describe('verifyAppOAuth2SecretCode', () => {
     `,
     );
 
+    const { OAuth2AuthorizationCode } = await getAppDB(app.id);
     const auth = await OAuth2AuthorizationCode.findOne({
       where: { code: response.data.code },
     });
     expect(auth).toMatchObject({
-      AppId: app.id,
       AppMemberId: expect.any(String),
       code: expect.any(String),
       expires: expect.any(Date),
@@ -262,9 +260,9 @@ describe('verifyAppOAuth2SecretCode', () => {
         zoneinfo: undefined,
       },
     ]);
+    const { AppMember, AppOAuth2Authorization } = await getAppDB(app.id);
     const appMember = await AppMember.create({
-      UserId: getTestUser().id,
-      AppId: app.id,
+      userId: getTestUser().id,
       role: 'Test',
       ...oauth2User,
     });
@@ -299,6 +297,7 @@ describe('verifyAppOAuth2SecretCode', () => {
     `,
     );
 
+    const { OAuth2AuthorizationCode } = await getAppDB(app.id);
     const auth = await OAuth2AuthorizationCode.findOne({
       where: { code: response.data.code },
     });
@@ -306,7 +305,6 @@ describe('verifyAppOAuth2SecretCode', () => {
       expires: expect.any(Date),
       redirectUri: 'http://test-app.testorganization.localhost',
       scope: 'resources:manage',
-      AppId: app.id,
       code: expect.any(String),
       AppMemberId: expect.any(String),
     });
@@ -367,6 +365,7 @@ describe('verifyAppOAuth2SecretCode', () => {
     `,
     );
 
+    const { AppMember, OAuth2AuthorizationCode } = await getAppDB(app.id);
     const auth = (await OAuth2AuthorizationCode.findOne({
       where: { code: response.data.code },
     }))!;
@@ -374,7 +373,6 @@ describe('verifyAppOAuth2SecretCode', () => {
       expires: expect.any(Date),
       redirectUri: 'http://test-app.testorganization.localhost',
       scope: 'resources:manage',
-      AppId: app.id,
       AppMemberId: expect.any(String),
       code: response.data.code,
     });
@@ -383,10 +381,9 @@ describe('verifyAppOAuth2SecretCode', () => {
     expect(member).toMatchObject({
       created: expect.any(Date),
       locale: null,
-      AppId: 1,
       consent: null,
       password: null,
-      UserId: null,
+      userId: null,
       demo: false,
       name: 'User',
       email: 'user@example.com',

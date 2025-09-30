@@ -429,7 +429,7 @@ export async function configureDNS(): Promise<void> {
     const { domain, sslCertificate, sslKey } = app;
 
     if (domain) {
-      await createIngress(domain, Boolean(sslCertificate && sslKey));
+      await createIngress(domain, Boolean(sslCertificate && sslKey) || argv.skipCustomDomains);
       if (sslKey && sslCertificate) {
         await createSSLSecret(domain, sslCertificate, sslKey);
       }
@@ -458,9 +458,9 @@ export async function configureDNS(): Promise<void> {
     const { domain } = collection;
 
     if (domain) {
-      await createIngress(domain);
+      await createIngress(domain, argv.skipCustomDomains);
       if (!domain.startsWith('www.')) {
-        await createIngress(`www.${domain}`, false, domain);
+        await createIngress(`www.${domain}`, argv.skipCustomDomains, domain);
       }
     }
     const oldDomain = collection.previous('domain') as string;
@@ -536,7 +536,8 @@ async function getIngressHosts(): Promise<{ hosts: string[]; name: string }[]> {
  */
 export async function reconcileDNS({
   dryRun = true,
-}: { dryRun?: boolean | undefined } = {}): Promise<void> {
+  skipCustomDomains = false,
+}: { dryRun?: boolean | undefined; skipCustomDomains?: boolean | undefined } = {}): Promise<void> {
   const { hostname } = new URL(argv.host);
   const orgWildcards = new Set<string>();
   for await (const { id } of iterTable(Organization, { attributes: ['id'] })) {
@@ -595,7 +596,11 @@ export async function reconcileDNS({
       name.startsWith('www.') && appCollectionDomains.has(name.slice(4))
         ? name.slice(4)
         : undefined;
-    await createIngress(name, Boolean(appDomainCertificates.has(name)), redirect);
+    await createIngress(
+      name,
+      appDomainCertificates.has(name) || (!orgWildcards.has(name) && skipCustomDomains),
+      redirect,
+    );
     if (appDomainCertificates.has(name)) {
       const { sslCertificate, sslKey } = appDomainCertificates.get(name)!;
       await createSSLSecret(name, sslCertificate, sslKey);

@@ -21,7 +21,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
 
     const app = await getApp({
       context: ctx,
-      query: { attributes: ['definition', 'demoMode', 'id'], where: { id: appId } },
+      query: { attributes: ['definition', 'demoMode', 'id', 'template'], where: { id: appId } },
     });
 
     const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx, view);
@@ -52,7 +52,6 @@ export function createQueryAppResourcesController(options: Options): Middleware 
           where,
           {
             type: resourceType,
-            AppId: appId,
             GroupId: selectedGroupId ?? null,
             expires: { or: [{ gt: new Date() }, null] },
             ...(app.demoMode && !isSameOrigin ? { seed: false, ephemeral: true } : {}),

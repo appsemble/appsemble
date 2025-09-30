@@ -161,6 +161,34 @@ In the project’s root `package.json` you can define the following properties u
 
 These can also be used as CLI parameters.
 
+## Stripe
+
+Stripe is used as a payment provider and there are some things that need to be configured in order
+to test it locally, but also so it can run in production. If you want to use Stripe in test mode,
+all you need to do is replace the `Webhook secret` and `Private key` with the test versions (test
+private key starts wtih `sk_test`).
+
+### Live environment set-up
+
+1. Grab a `private key` from Stripe dashboard
+2. Configure a `webhook` by opening `Stripe dashboard` > `developer console` > `webhooks` >
+   `add destination`
+3. Select relevant events we want to receive webhooks for
+   ('checkout.session.async_payment_failed`, `checkout.session.async_payment_succeeded`, `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`and`invoice.payment_succeeded`)
+4. Destination type: `Webhook endpoint`
+5. Provide our api endpoint - `https://appsemble.app/api/payments/accept-payment` for production
+6. `Webhook secret` should now be shown
+7. `Webhook secret` and `private key` need to be uploaded to `environment variables`
+
+### Local testing
+
+It is also possible to test Stripe locally. [Stripe CLI](https://docs.stripe.com/stripe-cli) needs
+to be used for this. From here you can either install `VScode Stripe` extension which provides UI
+for all the actions or use the CLI directly from the command line.
+
+With the Stripe CLI you can expose an endpoint on your machine that will receive webhooks from
+`Stripe` allowing you to test the full payment flow. You can also manually trigger different events.
+
 ## License
 
 [LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.34.22-test.5/LICENSE.md) ©

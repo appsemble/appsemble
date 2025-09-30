@@ -2,6 +2,7 @@
 import { configureAxios, configureLogger, handleError, version } from '@appsemble/node-utils';
 import yargs, { type CommandModule } from 'yargs';
 
+import * as chargeOrganizationSubscriptions from './commands/chargeOrganizationSubscriptions.js';
 import * as checkDownMigrations from './commands/checkDownMigrations.js';
 import * as checkMigrations from './commands/checkMigrations.js';
 import * as cleanup from './commands/cleanup.js';
@@ -62,6 +63,7 @@ const parser = yargs()
   .command(migrate as CommandModule)
   .command(migrateAppDefinitions as CommandModule)
   .command(cleanupSoftDeletedRecords)
+  .command(chargeOrganizationSubscriptions as CommandModule)
   .fail(handleError)
   .help('help', 'Show this help message.')
   .alias('h', 'help')

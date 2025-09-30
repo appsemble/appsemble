@@ -3,6 +3,7 @@ import {
   type AppConfigEntry,
   type AppMessages as AppMessagesType,
   type App as AppType,
+  SubscriptionPlanType,
 } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -10,17 +11,12 @@ import { parse } from 'yaml';
 
 import {
   App,
-  AppBlockStyle,
   AppMessages,
-  AppOAuth2Secret,
-  AppSamlSecret,
-  AppServiceSecret,
   AppSnapshot,
-  AppVariable,
-  Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
+  OrganizationSubscription,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
@@ -92,16 +88,24 @@ describe('createAppFromTemplate', () => {
       path: 'test-template-3',
       visibility: 'private',
     });
-    await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'foo' }, clonable: true });
-    await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'bar' } });
+    const {
+      AppBlockStyle,
+      AppOAuth2Secret,
+      AppSamlSecret,
+      AppServiceSecret,
+      AppVariable,
+      Asset,
+      Resource,
+    } = await getAppDB(t2.id);
+    await Resource.create({ type: 'test', data: { name: 'foo' }, clonable: true });
+    await Resource.create({ type: 'test', data: { name: 'bar' } });
     const asset1 = await Asset.create({
-      AppId: t2.id,
       name: 'test-clonable',
       clonable: true,
     });
     vi.useRealTimers();
     await uploadS3File(`app-${t2.id}`, asset1.id, Buffer.from('test'));
-    const asset2 = await Asset.create({ AppId: t2.id, name: 'test' });
+    const asset2 = await Asset.create({ name: 'test' });
     await uploadS3File(`app-${t2.id}`, asset2.id, Buffer.from('test'));
     await AppMessages.create({
       AppId: t2.id,
@@ -116,12 +120,10 @@ describe('createAppFromTemplate', () => {
       },
     });
     await AppVariable.create({
-      AppId: t2.id,
       name: 'test',
       value: 'test',
     });
     await AppOAuth2Secret.create({
-      AppId: t2.id,
       name: 'test',
       authorizationUrl: 'authorizationUrl',
       tokenUrl: 'tokenUrl',
@@ -133,7 +135,6 @@ describe('createAppFromTemplate', () => {
       scope: 'scope',
     });
     await AppSamlSecret.create({
-      AppId: t2.id,
       name: 'test',
       idpCertificate: 'idpCertificate',
       entityId: 'entityId',
@@ -146,7 +147,6 @@ describe('createAppFromTemplate', () => {
       nameAttribute: 'nameAttribute',
     });
     await AppServiceSecret.create({
-      AppId: t2.id,
       name: 'test',
       urlPatterns: 'urlPatterns',
       authenticationMethod: 'custom-header',
@@ -154,13 +154,10 @@ describe('createAppFromTemplate', () => {
       secret: Buffer.from('secret'),
       tokenUrl: 'tokenUrl',
     });
-    t2.AppBlockStyles = [
-      await AppBlockStyle.create({
-        AppId: t2.id,
-        block: '@appsemble/test',
-        style: 'a { color: red; }',
-      }),
-    ];
+    await AppBlockStyle.create({
+      block: '@appsemble/test',
+      style: 'a { color: red; }',
+    });
 
     // Make sure the latest snapshot is used.
     const snapshot1 = await AppSnapshot.create({
@@ -242,7 +239,8 @@ describe('createAppFromTemplate', () => {
     });
 
     const { id } = response.data;
-    const resources = await Resource.findAll({ where: { AppId: id, type: 'test' } });
+    const { Resource } = await getAppDB(id!);
+    const resources = await Resource.findAll({ where: { type: 'test' } });
 
     expect(resources.map((r) => r.data)).toStrictEqual([{ name: 'foo' }]);
   });
@@ -260,7 +258,8 @@ describe('createAppFromTemplate', () => {
     });
 
     const { id } = response.data;
-    const assets = await Asset.findAll({ where: { AppId: id } });
+    const { Asset } = await getAppDB(id!);
+    const assets = await Asset.findAll();
 
     for (const asset of assets) {
       expect(asset.name).toBe('test-clonable');
@@ -282,11 +281,15 @@ describe('createAppFromTemplate', () => {
     });
 
     const { id } = response.data;
-    const app = (await App.findByPk(id, { include: [{ model: AppBlockStyle }] }))!;
+    const app = (await App.findByPk(id))!;
 
+    const { AppBlockStyle } = await getAppDB(id!);
+    const { AppBlockStyle: TemplateAppBlockStyle } = await getAppDB(id!);
+    const appBlockStyles = await AppBlockStyle.findAll();
+    const templateAppBlockStyles = await TemplateAppBlockStyle.findAll();
     expect(app.coreStyle).toStrictEqual(template.coreStyle);
     expect(app.sharedStyle).toStrictEqual(template.sharedStyle);
-    expect(app.AppBlockStyles[0].style).toStrictEqual(template.AppBlockStyles[0].style);
+    expect(appBlockStyles[0].style).toStrictEqual(templateAppBlockStyles[0].style);
   });
 
   it('should copy app messages when cloning an app', async () => {
@@ -324,7 +327,7 @@ describe('createAppFromTemplate', () => {
     const { data: variables } = await request.get<AppConfigEntry[]>(`/api/apps/${id}/variables`);
 
     expect(variables[0]).toStrictEqual({
-      id: 2,
+      id: 1,
       name: 'test',
       value: 'test',
     });
@@ -344,11 +347,9 @@ describe('createAppFromTemplate', () => {
 
     const { id } = response.data;
 
+    const { AppOAuth2Secret, AppSamlSecret, AppServiceSecret } = await getAppDB(id!);
     const appServiceSecret = (await AppServiceSecret.findOne({
       attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
-      where: {
-        AppId: id,
-      },
     }))!;
 
     expect(appServiceSecret.toJSON()).toStrictEqual({
@@ -372,9 +373,6 @@ describe('createAppFromTemplate', () => {
         'entityId',
         'ssoUrl',
       ],
-      where: {
-        AppId: id,
-      },
     }))!;
 
     expect(appSamlSecret.toJSON()).toStrictEqual({
@@ -382,7 +380,7 @@ describe('createAppFromTemplate', () => {
       emailVerifiedAttribute: null,
       entityId: 'entityId',
       icon: 'icon',
-      id: 2,
+      id: 1,
       name: 'test',
       nameAttribute: 'nameAttribute',
       ssoUrl: 'ssoUrl',
@@ -404,9 +402,6 @@ describe('createAppFromTemplate', () => {
         'clientId',
         'clientSecret',
       ],
-      where: {
-        AppId: id,
-      },
     });
 
     expect(appOAuth2Secret).toMatchObject({
@@ -530,5 +525,69 @@ describe('createAppFromTemplate', () => {
       statusCode: 403,
       message: 'User is not a member of this organization.',
     });
+  });
+
+  it('should not create a new app using a template when app limit is reached', async () => {
+    authorizeStudio();
+    const apps = await App.findAll({ where: { OrganizationId: 'testorganization' } });
+    for (const app of apps) {
+      app.visibility = 'public';
+      await app.save();
+    }
+    await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-3',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: 'testorganization',
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const response = await request.post<AppType>('/api/app-templates', {
+      templateId: templates[0].id,
+      name: 'Test app 2',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      visibility: 'public',
+    });
+
+    expect(response.status).toBe(403);
+  });
+
+  it('should create a new app using a template when default app limit is reached but a subscription is active', async () => {
+    authorizeStudio();
+    const subscription = await OrganizationSubscription.findOne({
+      where: { OrganizationId: 'testorganization' },
+    });
+    expect(subscription).not.toBeNull();
+    subscription!.subscriptionPlan = SubscriptionPlanType.Basic;
+    subscription!.save();
+    const apps = await App.findAll({ where: { OrganizationId: 'testorganization' } });
+    for (const app of apps) {
+      app.visibility = 'public';
+      await app.save();
+    }
+    await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-3',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: 'testorganization',
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const response = await request.post<AppType>('/api/app-templates', {
+      templateId: templates[0].id,
+      name: 'Test app 2',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      visibility: 'public',
+    });
+
+    expect(response.status).toBe(201);
   });
 });

@@ -13,7 +13,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactNode, useCallback } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -37,6 +37,14 @@ interface EmailFormParameters {
   emailSecure: boolean;
 }
 
+interface PaymentFormParameters {
+  stripeApiSecretKey: string;
+  stripeWebhookSecret: string;
+  successUrl: string;
+  cancelUrl: string;
+  enablePayments: boolean;
+}
+
 export function SecretsPage(): ReactNode {
   useMeta(messages.title);
   const { app, setApp } = useApp();
@@ -45,6 +53,23 @@ export function SecretsPage(): ReactNode {
   const emailSettingsResult = useData<
     Omit<EmailFormParameters, 'emailPassword'> & { emailPassword: boolean }
   >(`/api/apps/${app.id}/email`);
+  const paymentSettingsResult = useData<
+    Omit<PaymentFormParameters, 'stripeApiSecretKey' | 'stripeWebhookSecret'> & {
+      stripeWebhookSecret: boolean;
+      stripeApiSecretKey: boolean;
+    }
+  >(`/api/apps/${app.id}/payment`);
+  const [enablePayments, setEnablePayments] = useState<boolean>(
+    paymentSettingsResult?.data?.enablePayments || false,
+  );
+  useEffect(() => {
+    if (paymentSettingsResult?.data?.enablePayments !== undefined) {
+      setEnablePayments(paymentSettingsResult.data.enablePayments);
+    }
+  }, [paymentSettingsResult?.data?.enablePayments]);
+  const toggleEnablePayments = useCallback(() => {
+    setEnablePayments(!enablePayments);
+  }, [setEnablePayments, enablePayments]);
 
   const onClickOAuth2Checkbox = useCallback(async () => {
     const formData = new FormData();
@@ -74,6 +99,23 @@ export function SecretsPage(): ReactNode {
       });
     },
     [app, emailSettingsResult, formatMessage, push],
+  );
+
+  const onSavePaymentSettings = useCallback(
+    async (values: PaymentFormParameters) => {
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(values)) {
+        formData.set(key, value);
+      }
+      await axios.patch(`/api/apps/${app.id}/payment`, formData);
+      push({ color: 'success', body: formatMessage(messages.paymentUpdateSuccess) });
+      paymentSettingsResult.setData({
+        ...values,
+        stripeApiSecretKey: Boolean(values.stripeApiSecretKey),
+        stripeWebhookSecret: Boolean(values.stripeWebhookSecret),
+      });
+    },
+    [app, paymentSettingsResult, formatMessage, push],
   );
 
   const onClickLoginCheckbox = useCallback(async () => {
@@ -184,6 +226,73 @@ export function SecretsPage(): ReactNode {
                 required={Boolean(
                   emailSettings.emailHost || emailSettings.emailUser || emailSettings.emailPassword,
                 )}
+              />
+              <SimpleFormError>
+                {() => <FormattedMessage {...messages.submitError} />}
+              </SimpleFormError>
+              <SimpleSubmit>
+                <FormattedMessage {...messages.submit} />
+              </SimpleSubmit>
+            </SimpleForm>
+          )}
+        </AsyncDataView>
+      </Collapsible>
+      <Collapsible collapsed={false} title={<FormattedMessage {...messages.paymentSettings} />}>
+        <AsyncDataView
+          errorMessage={<FormattedMessage {...messages.emailSettingsError} />}
+          loadingMessage={<FormattedMessage {...messages.emailLoading} />}
+          result={paymentSettingsResult}
+        >
+          {(paymentSettings) => (
+            <SimpleForm
+              defaultValues={{
+                ...paymentSettings,
+                stripeApiSecretKey: '',
+                stripeWebhookSecret: '',
+              }}
+              onSubmit={onSavePaymentSettings}
+            >
+              <SimpleFormField
+                component={CheckboxField}
+                help={<FormattedMessage {...messages.enablePaymentsDescription} />}
+                name="enablePayments"
+                onChange={toggleEnablePayments}
+              />
+              <SimpleFormField
+                autoComplete="stripe-api-secret-key"
+                component={PasswordField}
+                disabled={!enablePayments}
+                help={<FormattedMessage {...messages.stripeApiSecretKeyDescription} />}
+                label={<FormattedMessage {...messages.stripeApiSecretKey} />}
+                name="stripeApiSecretKey"
+                placeholder="●●●●●●●●●●●"
+                required={enablePayments}
+              />
+              <SimpleFormField
+                autoComplete="stripe-webhook-secret"
+                component={PasswordField}
+                disabled={!enablePayments}
+                help={<FormattedMessage {...messages.stripeWebhookSecretDescription} />}
+                label={<FormattedMessage {...messages.stripeWebhookSecret} />}
+                name="stripeWebhookSecret"
+                placeholder="●●●●●●●●●●●"
+                required
+              />
+              <SimpleFormField
+                autoComplete="off"
+                disabled={!enablePayments}
+                help={<FormattedMessage {...messages.successUrlDescription} />}
+                label={<FormattedMessage {...messages.successUrl} />}
+                name="successUrl"
+                required
+              />
+              <SimpleFormField
+                autoComplete="off"
+                disabled={!enablePayments}
+                help={<FormattedMessage {...messages.cancelUrlDescription} />}
+                label={<FormattedMessage {...messages.cancelUrl} />}
+                name="cancelUrl"
+                required
               />
               <SimpleFormError>
                 {() => <FormattedMessage {...messages.submitError} />}

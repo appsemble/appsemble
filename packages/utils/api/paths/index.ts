@@ -4,12 +4,6 @@ import { pathItems as appCollectionsAppCollectionIdApps } from './app-collection
 import { pathItems as appCollectionsAppCollectionIdExpertProfileImage } from './app-collections/appCollectionId/expert/profileImage.js';
 import { pathItems as appCollectionsAppCollectionIdHeaderImage } from './app-collections/appCollectionId/headerImage.js';
 import { pathItems as appCollectionsAppCollectionId } from './app-collections/appCollectionId.js';
-import { pathItems as appInvitesTokenRespond } from './app-invites/token/respond.js';
-import { pathItems as appInvitesToken } from './app-invites/token.js';
-import { pathItems as appMembersAppMemberIdPicture } from './app-members/appMemberId/picture.js';
-import { pathItems as appMembersAppMemberIdProperties } from './app-members/appMemberId/properties.js';
-import { pathItems as appMembersAppMemberIdRole } from './app-members/appMemberId/role.js';
-import { pathItems as appMembersAppMemberId } from './app-members/appMemberId.js';
 import { pathItems as appCollections } from './appCollections.js';
 import { pathItems as appsAppIdActionsPath } from './apps/appId/actions/path.js';
 import { pathItems as appsAppIdAssetsAssetId } from './apps/appId/assets/assetId.js';
@@ -22,22 +16,41 @@ import { pathItems as appsAppIdAuthEmailResendVerification } from './apps/appId/
 import { pathItems as appsAppIdAuthEmailResetPassword } from './apps/appId/auth/email/resetPassword.js';
 import { pathItems as appsAppIdAuthEmailVerify } from './apps/appId/auth/email/verify.js';
 import { pathItems as appsAppIdBroadcast } from './apps/appId/broadcast.js';
+import { pathItems as appsAppIdClonableAssets } from './apps/appId/clonable-assets.js';
+import { pathItems as appsAppIdClonableResources } from './apps/appId/clonable-resources.js';
 import { pathItems as appsAppIdDemoGroups } from './apps/appId/demo-groups.js';
 import { pathItems as appsAppIdDemoMembers } from './apps/appId/demo-members.js';
 import { pathItems as appsAppIdEmail } from './apps/appId/email.js';
 import { pathItems as appsAppIdExport } from './apps/appId/export.js';
+import { pathItems as groupInvitesTokenRespond } from './apps/appId/group-invites/token/respond.js';
+import { pathItems as groupInvitesToken } from './apps/appId/group-invites/token.js';
+import { pathItems as groupsMembersGroupMemberIdRole } from './apps/appId/group-members/groupMemberId/role.js';
+import { pathItems as groupsMembersGroupMemberId } from './apps/appId/group-members/groupMemberId.js';
+import { pathItems as groupsGroupIdInvitesResend } from './apps/appId/groups/groupId/invites/resend.js';
+import { pathItems as groupsGroupIdInvites } from './apps/appId/groups/groupId/invites.js';
+import { pathItems as groupsGroupIdMembers } from './apps/appId/groups/groupId/members.js';
+import { pathItems as groupsGroupId } from './apps/appId/groups/groupId.js';
 import { pathItems as appsAppIdGroups } from './apps/appId/groups.js';
 import { pathItems as appsAppIdIcon } from './apps/appId/icon.js';
 import { pathItems as appsAppIdInvitesResend } from './apps/appId/invites/resend.js';
+import { pathItems as appsAppIdAppInvitesTokenRespond } from './apps/appId/invites/token/respond.js';
+import { pathItems as appsAppIdAppInvitesToken } from './apps/appId/invites/token.js';
 import { pathItems as appsAppIdInvites } from './apps/appId/invites.js';
 import { pathItems as appsAppIdLock } from './apps/appId/lock.js';
 import { pathItems as appsAppIdMaskableIcon } from './apps/appId/maskableIcon.js';
+import { pathItems as appsAppIdAppMembersAppMemberIdPicture } from './apps/appId/members/appMemberId/picture.js';
+import { pathItems as appsAppIdAppMembersAppMemberIdProperties } from './apps/appId/members/appMemberId/properties.js';
+import { pathItems as appsAppIdAppMembersAppMemberIdRole } from './apps/appId/members/appMemberId/role.js';
+import { pathItems as appsAppIdAppMembersAppMemberId } from './apps/appId/members/appMemberId.js';
 import { pathItems as appsAppIdMembersCurrentGroups } from './apps/appId/members/current/groups.js';
 import { pathItems as appsAppIdMembersCurrentLink } from './apps/appId/members/current/link.js';
 import { pathItems as appsAppIdMembersCurrent } from './apps/appId/members/current.js';
 import { pathItems as appsAppIdMembers } from './apps/appId/members.js';
 import { pathItems as appsAppIdMessagesLanguage } from './apps/appId/messages/language.js';
 import { pathItems as appsAppIdMessages } from './apps/appId/messages.js';
+import { pathItems as acceptAppPayment } from './apps/appId/payments/acceptPayment.js';
+import { pathItems as createAppCheckout } from './apps/appId/payments/createCheckout.js';
+import { pathItems as appsAppIdPayments } from './apps/appId/paymentSettings.js';
 import { pathItems as appsAppIdQuotasEmail } from './apps/appId/quotas/emails.js';
 import { pathItems as appsAppIdRatings } from './apps/appId/ratings.js';
 import { pathItems as appsAppIdReadmesReadmeId } from './apps/appId/readmes/readmeId.js';
@@ -104,14 +117,6 @@ import { pathItems as blocksOrganizationIdBlockIdVersions } from './blocks/organ
 import { pathItems as blocksOrganizationIdBlockId } from './blocks/organizationId/blockId.js';
 import { pathItems as blocks } from './blocks.js';
 import { pathItems as containersAppIdLogsContainer } from './containerLogs.js';
-import { pathItems as groupInvitesTokenRespond } from './group-invites/token/respond.js';
-import { pathItems as groupInvitesToken } from './group-invites/token.js';
-import { pathItems as groupsMembersGroupMemberIdRole } from './group-members/groupMemberId/role.js';
-import { pathItems as groupsMembersGroupMemberId } from './group-members/groupMemberId.js';
-import { pathItems as groupsGroupIdInvitesResend } from './groups/groupId/invites/resend.js';
-import { pathItems as groupsGroupIdInvites } from './groups/groupId/invites.js';
-import { pathItems as groupsGroupIdMembers } from './groups/groupId/members.js';
-import { pathItems as groupsGroupId } from './groups/groupId.js';
 import { pathItems as health } from './health.js';
 import { pathItems as messagesLanguage } from './messages/language.js';
 import { pathItems as messages } from './messages.js';
@@ -127,8 +132,13 @@ import { pathItems as organizationsOrganizationIdInvites } from './organizations
 import { pathItems as organizationsOrganizationIdMembersMemberIdRole } from './organizations/organizationId/members/memberId/role.js';
 import { pathItems as organizationsOrganizationIdMembersMemberId } from './organizations/organizationId/members/memberId.js';
 import { pathItems as organizationsOrganizationIdMembers } from './organizations/organizationId/members.js';
+import { pathItems as organizationsOrganizationIdOrganizationSubscriptionPrice } from './organizations/organizationId/organizationSubscriptionPrice.js';
+import { pathItems as organizationsOrganizationIdOrganizationSubscription } from './organizations/organizationId/subscription.js';
 import { pathItems as organizationsOrganizationId } from './organizations/organizationId.js';
 import { pathItems as organizations } from './organizations.js';
+import { pathItems as organizationSubscriptionsOrganizationSubscriptionId } from './organizationSubscriptions/organizationSubscriptionId.js';
+import { pathItems as acceptPayment } from './payments/acceptPayment.js';
+import { pathItems as sendInvoice } from './payments/payment.js';
 import { pathItems as ssl } from './ssl.js';
 import { pathItems as timezones } from './timezones.js';
 import { pathItems as completedTrainings } from './trainings/completedTrainings.js';
@@ -158,13 +168,16 @@ export const paths = {
   '/api/app-collections/{appCollectionId}/header-image': appCollectionsAppCollectionIdHeaderImage,
   '/api/app-collections/{appCollectionId}': appCollectionsAppCollectionId,
   '/api/app-collections': appCollections,
-  '/api/app-invites/{token}/respond': appInvitesTokenRespond,
-  '/api/app-invites/{token}': appInvitesToken,
-  '/api/app-members/{appMemberId}/picture': appMembersAppMemberIdPicture,
-  '/api/app-members/{appMemberId}/properties': appMembersAppMemberIdProperties,
-  '/api/app-members/{appMemberId}/role': appMembersAppMemberIdRole,
-  '/api/app-members/{appMemberId}': appMembersAppMemberId,
+  '/api/apps/{appId}/app-invites/{token}/respond': appsAppIdAppInvitesTokenRespond,
+  '/api/apps/{appId}/app-invites/{token}': appsAppIdAppInvitesToken,
+  '/api/apps/{appId}/app-members/{appMemberId}/picture': appsAppIdAppMembersAppMemberIdPicture,
+  '/api/apps/{appId}/app-members/{appMemberId}/properties':
+    appsAppIdAppMembersAppMemberIdProperties,
+  '/api/apps/{appId}/app-members/{appMemberId}/role': appsAppIdAppMembersAppMemberIdRole,
+  '/api/apps/{appId}/app-members/{appMemberId}': appsAppIdAppMembersAppMemberId,
   '/api/apps/{appId}/actions/{path}': appsAppIdActionsPath,
+  '/api/apps/{appId}/clonable-assets': appsAppIdClonableAssets,
+  '/api/apps/{appId}/clonable-resources': appsAppIdClonableResources,
   // XXX: Temporary workaround until this is fixed in Koas
   // See https://gitlab.com/remcohaszing/koas/-/issues/2
   '/api/apps/{appId}/assets/\\$count': appsAppIdAssets$Count,
@@ -174,9 +187,12 @@ export const paths = {
   '/api/apps/{appId}/demo-groups': appsAppIdDemoGroups,
   '/api/apps/{appId}/demo-members': appsAppIdDemoMembers,
   '/api/apps/{appId}/email': appsAppIdEmail,
+  '/api/apps/{appId}/payment': appsAppIdPayments,
+  '/api/apps/{appId}/accept-payment': acceptAppPayment,
   '/api/apps/{appId}/export': appsAppIdExport,
   '/api/apps/{appId}/groups': appsAppIdGroups,
   '/api/apps/{appId}/icon': appsAppIdIcon,
+  '/api/apps/{appId}/create-checkout': createAppCheckout,
   '/api/apps/{appId}/invites/resend': appsAppIdInvitesResend,
   '/api/apps/{appId}/invites': appsAppIdInvites,
   '/api/apps/{appId}/lock': appsAppIdLock,
@@ -274,6 +290,8 @@ export const paths = {
   '/api/blocks': blocks,
   '/api/containers/{appId}/logs/{container}': containersAppIdLogsContainer,
   '/api/health': health,
+  '/api/payments/send-invoice': sendInvoice,
+  '/api/payments/accept-payment': acceptPayment,
   '/api/messages/{language}': messagesLanguage,
   '/api/messages': messages,
   '/api/organization-invites/{token}/respond': organizationInvitesTokenRespond,
@@ -290,17 +308,23 @@ export const paths = {
   '/api/organizations/{organizationId}/members/{organizationMemberId}':
     organizationsOrganizationIdMembersMemberId,
   '/api/organizations/{organizationId}/members': organizationsOrganizationIdMembers,
+  '/api/organizations/{organizationId}/subscription':
+    organizationsOrganizationIdOrganizationSubscription,
+  '/api/organizations/{organizationId}/subscription/price':
+    organizationsOrganizationIdOrganizationSubscriptionPrice,
   '/api/organizations/{organizationId}': organizationsOrganizationId,
   '/api/organizations': organizations,
+  '/api/organization-subscriptions/{organizationSubscriptionId}':
+    organizationSubscriptionsOrganizationSubscriptionId,
   '/api/ssl': ssl,
-  '/api/group-invites/{token}/respond': groupInvitesTokenRespond,
-  '/api/group-invites/{token}': groupInvitesToken,
-  '/api/group-members/{groupMemberId}/role': groupsMembersGroupMemberIdRole,
-  '/api/group-members/{groupMemberId}': groupsMembersGroupMemberId,
-  '/api/groups/{groupId}/invites/resend': groupsGroupIdInvitesResend,
-  '/api/groups/{groupId}/invites': groupsGroupIdInvites,
-  '/api/groups/{groupId}/members': groupsGroupIdMembers,
-  '/api/groups/{groupId}': groupsGroupId,
+  '/api/apps/{appId}/group-invites/{token}/respond': groupInvitesTokenRespond,
+  '/api/apps/{appId}/group-invites/{token}': groupInvitesToken,
+  '/api/apps/{appId}/group-members/{groupMemberId}/role': groupsMembersGroupMemberIdRole,
+  '/api/apps/{appId}/group-members/{groupMemberId}': groupsMembersGroupMemberId,
+  '/api/apps/{appId}/groups/{groupId}/invites/resend': groupsGroupIdInvitesResend,
+  '/api/apps/{appId}/groups/{groupId}/invites': groupsGroupIdInvites,
+  '/api/apps/{appId}/groups/{groupId}/members': groupsGroupIdMembers,
+  '/api/apps/{appId}/groups/{groupId}': groupsGroupId,
   '/api/timezones': timezones,
   '/api/trainings/completed': completedTrainings,
   '/api/trainings/completed/{trainingId}': completeTraining,

@@ -3,7 +3,7 @@ import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { syncTrainings } from './syncTrainings.js';
-import { Training } from '../models/Training.js';
+import { Training } from '../models/main/Training.js';
 
 const basePath = 'training-test';
 const chapterPath = `${basePath}/test-chapter`;

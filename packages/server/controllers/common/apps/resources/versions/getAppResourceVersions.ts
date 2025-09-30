@@ -1,7 +1,7 @@
 import { assertKoaCondition, getResourceDefinition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember, Resource, ResourceVersion } from '../../../../../models/index.js';
+import { App, getAppDB } from '../../../../../models/index.js';
 import { checkAppPermissions } from '../../../../../options/checkAppPermissions.js';
 
 export async function getAppResourceVersions(ctx: Context): Promise<void> {
@@ -9,9 +9,7 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
     pathParams: { appId, resourceId, resourceType },
     queryParams: { selectedGroupId },
   } = ctx;
-
   const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId', 'definition'] });
-
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkAppPermissions({
@@ -21,9 +19,9 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
     groupId: selectedGroupId,
   });
 
+  const { AppMember, Resource, ResourceVersion } = await getAppDB(appId);
   const resource = await Resource.findOne({
     where: {
-      AppId: appId,
       id: resourceId,
       type: resourceType,
       GroupId: selectedGroupId ?? null,

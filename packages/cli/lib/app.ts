@@ -1128,6 +1128,31 @@ interface PublishAppParams {
    * The environment for the custom Sentry DSN for the app.
    */
   sentryEnvironment?: string;
+
+  /**
+   * The name of the external app database.
+   */
+  dbName?: string;
+
+  /**
+   * The host of the external app database.
+   */
+  dbHost?: string;
+
+  /**
+   * The port of the external app database.
+   */
+  dbPort?: number;
+
+  /**
+   * The user of the external app database.
+   */
+  dbUser?: string;
+
+  /**
+   * The password of the external app database.
+   */
+  dbPassword?: string;
 }
 
 /**
@@ -1202,6 +1227,11 @@ export async function publishApp({
   const resources = appsembleContext.resources ?? options.resources;
   const members = appsembleContext.members ?? options.members;
   const appLock = appsembleContext.appLock || 'unlocked';
+  const dbName = appsembleContext.dbName ?? options.dbName;
+  const dbHost = appsembleContext.dbHost ?? options.dbHost;
+  const dbPort = appsembleContext.dbPort ?? options.dbPort;
+  const dbUser = appsembleContext.dbUser ?? options.dbUser;
+  const { dbPassword } = options;
 
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App organization: ${organizationId}`);
@@ -1221,6 +1251,26 @@ export async function publishApp({
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   formData.append('locked', appLock);
+
+  if (dbName) {
+    formData.append('dbName', dbName);
+  }
+
+  if (dbHost) {
+    formData.append('dbHost', dbHost);
+  }
+
+  if (dbPort) {
+    formData.append('dbPort', dbPort);
+  }
+
+  if (dbUser) {
+    formData.append('dbUser', dbUser);
+  }
+
+  if (dbPassword) {
+    formData.append('dbPassword', dbPassword);
+  }
 
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
@@ -1457,6 +1507,31 @@ interface UpdateAppParams {
    * The environment for the custom Sentry DSN for the app.
    */
   sentryEnvironment?: string;
+
+  /**
+   * The name of the external app database.
+   */
+  dbName?: string;
+
+  /**
+   * The host of the external app database.
+   */
+  dbHost?: string;
+
+  /**
+   * The port of the external app database.
+   */
+  dbPort?: number;
+
+  /**
+   * The user of the external app database.
+   */
+  dbUser?: string;
+
+  /**
+   * The password of the external app database.
+   */
+  dbPassword?: string;
 }
 
 /**
@@ -1529,6 +1604,11 @@ export async function updateApp({
   const members = appsembleContext.members ?? options.members;
   const assets = appsembleContext.assets ?? options.assets;
   const { appLock } = appsembleContext;
+  const dbName = appsembleContext.dbName ?? options.dbName;
+  const dbHost = appsembleContext.dbHost ?? options.dbHost;
+  const dbPort = appsembleContext.dbPort ?? options.dbPort;
+  const dbUser = appsembleContext.dbUser ?? options.dbUser;
+  const { dbPassword } = options;
 
   logger.info(`App id: ${id}`);
   logger.verbose(`App remote: ${remote}`);
@@ -1546,6 +1626,26 @@ export async function updateApp({
   formData.append('demoMode', String(demoMode));
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
+
+  if (dbName) {
+    formData.append('dbName', dbName);
+  }
+
+  if (dbHost) {
+    formData.append('dbHost', dbHost);
+  }
+
+  if (dbPort) {
+    formData.append('dbPort', dbPort);
+  }
+
+  if (dbUser) {
+    formData.append('dbUser', dbUser);
+  }
+
+  if (dbPassword) {
+    formData.append('dbPassword', dbPassword);
+  }
 
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;

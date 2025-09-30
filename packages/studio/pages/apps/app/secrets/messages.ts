@@ -106,4 +106,58 @@ export const messages = defineMessages({
     defaultMessage:
       'Bring your own SSL certificate to secure your app. Find out more from the <link>documentation</link>.',
   },
+  paymentSettings: {
+    id: 'studio.Ar3oN9',
+    defaultMessage: 'Payment settings',
+  },
+  paymentSettingsError: {
+    id: 'studio.PCxAlQ',
+    defaultMessage: 'Something went wrong trying to fetch payment settings.',
+  },
+  paymentLoading: {
+    id: 'studio.9F2+AK',
+    defaultMessage: 'Loading payment settings...',
+  },
+  paymentUpdateSuccess: {
+    id: 'studio.XuZJvq',
+    defaultMessage: 'Successfully updated payment settings',
+  },
+  stripeApiSecretKeyDescription: {
+    id: 'studio.Askm/X',
+    defaultMessage: 'API key used by the app to access your Stripe account.',
+  },
+  stripeApiSecretKey: {
+    id: 'studio.+B//bs',
+    defaultMessage: 'Stripe API key',
+  },
+  stripeWebhookSecretDescription: {
+    id: 'studio.pyYEl7',
+    defaultMessage: 'Secret used for verifying incoming Stripe webhooks',
+  },
+  stripeWebhookSecret: {
+    id: 'studio.iN4q1l',
+    defaultMessage: 'Stripe secret',
+  },
+  successUrl: {
+    id: 'studio.KKcB2l',
+    defaultMessage: 'Success URL',
+  },
+  successUrlDescription: {
+    id: 'studio.PNifr6',
+    defaultMessage:
+      'URL to which the user will be redirected after successfully completing the payment.',
+  },
+  cancelUrl: {
+    id: 'studio.6UUyhT',
+    defaultMessage: 'Cancel URL',
+  },
+  cancelUrlDescription: {
+    id: 'studio.iDmp8S',
+    defaultMessage:
+      'URL to which the user will be redirected after failing to complete the payment.',
+  },
+  enablePaymentsDescription: {
+    id: 'studio.IXOEh/',
+    defaultMessage: 'Whether you want payments enabled in your app.',
+  },
 });

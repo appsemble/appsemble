@@ -333,6 +333,16 @@ export enum OrganizationPermission {
    * The permission to send manual push notifications for an app.
    */
   PushAppNotifications,
+
+  /**
+   * The permission to manage organization subscriptions.
+   */
+  ManageOrganizationSubscriptions,
+
+  /**
+   * The permission to query organization subscriptions.
+   */
+  QueryOrganizationSubscriptions,
 }
 
 export const appOrganizationPermissionMapping: {

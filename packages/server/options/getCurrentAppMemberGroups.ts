@@ -7,5 +7,5 @@ export function getCurrentAppMemberGroups({
   app,
   context: { user: authSubject },
 }: GetCurrentAppMemberGroupsParams): Promise<Group[] | null> {
-  return authSubject ? getAppMemberGroups(authSubject!.id, app.id!) : Promise.resolve(null);
+  return authSubject ? getAppMemberGroups(app.id!, authSubject!.id) : Promise.resolve(null);
 }

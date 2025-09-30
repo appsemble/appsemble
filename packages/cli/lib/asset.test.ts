@@ -14,7 +14,7 @@ let user: models.User;
 let organization: models.Organization;
 let testApp: AxiosTestInstance;
 
-const { App, Asset, Organization, OrganizationMember } = models;
+const { App, Organization, OrganizationMember, getAppDB } = models;
 
 describe('asset', () => {
   beforeAll(() => {
@@ -66,6 +66,7 @@ describe('asset', () => {
         remote: testApp.defaults.baseURL!,
         seed: false,
       });
+      const { Asset } = await getAppDB(app.id);
       const asset = (await Asset.findOne())!;
       expect(asset).toStrictEqual(
         expect.objectContaining({

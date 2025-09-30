@@ -1,7 +1,14 @@
-import { type AppDefinition, AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
+  type AppDefinition,
+  AppValidator,
+  type ResourceDefinition,
+  validateAppDefinition,
+} from '@appsemble/lang-sdk';
+import {
+  AppsembleError,
   assertKoaCondition,
   handleValidatorResult,
+  logger,
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
@@ -13,12 +20,11 @@ import { parse } from 'yaml';
 
 import {
   App,
-  AppMember,
   AppReadme,
   AppScreenshot,
   AppSnapshot,
+  getAppDB,
   Organization,
-  Resource,
   transactional,
 } from '../../../models/index.js';
 import {
@@ -29,6 +35,7 @@ import {
 import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
+import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
@@ -41,6 +48,11 @@ export async function patchApp(ctx: Context): Promise<void> {
         controllerCode,
         controllerImplementations,
         coreStyle,
+        dbHost,
+        dbName,
+        dbPassword,
+        dbPort,
+        dbUser,
         demoMode,
         displayAppMemberName,
         displayInstallationPrompt,
@@ -74,7 +86,6 @@ export async function patchApp(ctx: Context): Promise<void> {
     },
     user,
   } = ctx;
-
   const result: Partial<App> = {};
 
   const dbApp = await App.findOne({
@@ -107,6 +118,13 @@ export async function patchApp(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, dbApp);
 
+  const { AppMember, Resource: OldResource, sequelize: oldAppDB } = await getAppDB(appId);
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  let Resource = OldResource;
+  let appDB = oldAppDB;
+
+  await checkAppLimit(ctx, dbApp, visibility);
+
   try {
     const permissionsToCheck: OrganizationPermission[] = [];
     if (yaml) {
@@ -128,21 +146,12 @@ export async function patchApp(ctx: Context): Promise<void> {
 
       result.definition = definition;
       if (definition.cron && definition.security?.cron) {
-        const appMember = await AppMember.findOne({
-          where: {
-            AppId: appId,
-            role: 'cron',
-          },
-        });
+        const appMember = await AppMember.findOne({ where: { role: 'cron' } });
 
         if (!appMember) {
           const identifier = Math.random().toString(36).slice(2);
           const cronEmail = `cron-${identifier}@example.com`;
-          await AppMember.create({
-            email: cronEmail,
-            role: 'cron',
-            AppId: appId,
-          });
+          await AppMember.create({ email: cronEmail, role: 'cron' });
         }
       }
       // Make the actual update
@@ -268,6 +277,34 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.iconBackground = iconBackground;
     }
 
+    if (dbName) {
+      result.dbName = dbName;
+    }
+
+    if (dbHost) {
+      result.dbHost = dbHost;
+    }
+
+    if (dbPort) {
+      result.dbPort = dbPort;
+    }
+
+    if (dbUser) {
+      result.dbUser = dbUser;
+    }
+
+    if (dbPassword) {
+      if (!argv.aesSecret && process.env.NODE_ENV === 'production') {
+        throw new AppsembleError(
+          'Missing aes secret env variable. This is insecure and should be allowed only in development!',
+        );
+      }
+      result.dbPassword = encrypt(
+        dbPassword,
+        argv.aesSecret || 'Local Appsemble development AES secret',
+      );
+    }
+
     result.controllerCode = ['', undefined].includes(controllerCode) ? null : controllerCode;
     result.controllerImplementations = ['', undefined].includes(controllerImplementations)
       ? null
@@ -314,34 +351,53 @@ export async function patchApp(ctx: Context): Promise<void> {
         );
         dbApp.AppSnapshots = [snapshot];
       }
-      if (result.definition?.resources) {
-        for (const [key, { enforceOrderingGroupByFields, positioning }] of Object.entries(
-          result.definition.resources,
-        )) {
-          if (positioning) {
-            let group: string[] | undefined;
-            if (enforceOrderingGroupByFields) {
-              createDynamicIndexes(enforceOrderingGroupByFields, appId, key, transaction);
-              group = enforceOrderingGroupByFields.map((field) => `data.${field}`);
-            }
-            const resourcesToUpdate = await Resource.findAll({
-              where: { AppId: appId, type: key },
-              // Reset positions every time the app is updated
-              order: [...(group ?? []), ['Position', 'ASC'], ['updated', 'DESC']],
-              transaction,
-            });
-            await Resource.update(
-              { Position: null },
-              { where: { AppId: appId, type: key }, transaction },
-            );
 
-            for (const [i, element] of resourcesToUpdate.entries()) {
-              // If we start with 0, insertion at top becomes impossible unless we move the first
-              // item.
-              await element.update({ Position: (i + 1) * 10 }, { transaction });
+      const { Resource: NewAppResource, sequelize: newAppDB } = await getAppDB(
+        appId,
+        undefined,
+        transaction,
+        true,
+      );
+
+      Resource = NewAppResource;
+      appDB = newAppDB;
+
+      if (result.definition?.resources) {
+        await appDB.transaction(async (appTransaction) => {
+          for (const [key, { enforceOrderingGroupByFields, positioning }] of Object.entries(
+            result.definition?.resources as Record<string, ResourceDefinition>,
+          )) {
+            if (positioning) {
+              let group: string[] | undefined;
+              try {
+                if (enforceOrderingGroupByFields) {
+                  createDynamicIndexes(enforceOrderingGroupByFields, appId, key, appTransaction);
+                  group = enforceOrderingGroupByFields.map((field) => `data.${field}`);
+                }
+                const resourcesToUpdate = await Resource.findAll({
+                  where: { type: key },
+                  // Reset positions every time the app is updated
+                  order: [...(group ?? []), ['Position', 'ASC'], ['updated', 'DESC']],
+                  transaction: appTransaction,
+                });
+                await Resource.update(
+                  { Position: null },
+                  { where: { type: key }, transaction: appTransaction },
+                );
+
+                for (const [i, element] of resourcesToUpdate.entries()) {
+                  // If we start with 0, insertion at top becomes impossible unless we move the
+                  // first item.
+                  await element.update({ Position: (i + 1) * 10 }, { transaction: appTransaction });
+                }
+              } catch (error) {
+                logger.error(error);
+                await appTransaction.rollback();
+                await transaction.rollback();
+              }
             }
           }
-        }
+        });
       }
 
       if (screenshots?.length) {

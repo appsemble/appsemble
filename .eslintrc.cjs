@@ -83,7 +83,7 @@ module.exports = {
       },
     },
     {
-      files: ['packages/server/migrations/*'],
+      files: ['packages/server/migrations/**/*'],
       rules: {
         '@typescript-eslint/naming-convention': 'off',
       },
@@ -147,6 +147,16 @@ module.exports = {
         'jest-formatting/padding-around-before-each-blocks': 'error',
         'jest-formatting/padding-around-describe-blocks': 'error',
         'jest-formatting/padding-around-test-blocks': 'error',
+      },
+    },
+    {
+      files: [
+        'packages/server/utils/payments/stripe/**',
+        'packages/utils/api/paths/payments/**',
+        'packages/utils/api/paths/apps/appId/payments/**',
+      ],
+      rules: {
+        '@typescript-eslint/naming-convention': 'off',
       },
     },
   ],

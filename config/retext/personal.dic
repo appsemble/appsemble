@@ -38,6 +38,10 @@ uncategorize/categorize
 unconfigure/reconfigure
 validator
 workspace/mare
+IBAN
+KNAB
+RABO
+sepa
 
 # Technical slang and libraries
 .editorconfig
@@ -218,3 +222,7 @@ mdel
 beforeinstallprompt
 bfcache
 togg
+IBAN
+KNAB
+RABO
+sepa

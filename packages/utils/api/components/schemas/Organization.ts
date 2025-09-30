@@ -36,5 +36,42 @@ export const Organization: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: 'The URL used to fetch the organization’s icon.',
     },
+    preferredPaymentProvider: {
+      type: 'string',
+      description: 'The preferred payment provider of the organization.',
+    },
+    vatIdNumber: {
+      type: 'string',
+      description: 'The VAT id number of the organization.',
+    },
+    streetName: {
+      type: 'string',
+      description: 'Street name that will appear on the invoice.',
+    },
+    houseNumber: {
+      type: 'string',
+      description: 'House number of the organization,',
+    },
+    city: {
+      type: 'string',
+      description: 'City where the organization is located',
+    },
+    zipCode: {
+      type: 'string',
+      description: 'Zip code of the organization',
+    },
+    countryCode: {
+      type: 'string',
+      description: 'Country code of the country where the organization is located',
+    },
+    invoiceReference: {
+      type: 'string',
+      description: 'The reference identifier that will appear on the invoices.',
+    },
+    stripeCustomerId: {
+      type: 'string',
+      description:
+        'Stripe internal ID of the customer used to match it with the organization in our database.',
+    },
   },
 };

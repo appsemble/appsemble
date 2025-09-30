@@ -190,6 +190,9 @@
     "nosniff",
     "typname",
     "psql",
-    "formcomp"
+    "formcomp",
+    "Klokgebouw",
+    "DATEONLY",
+    "klarna"
   ]
 }

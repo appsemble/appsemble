@@ -59,7 +59,10 @@ describe('dns', () => {
     it('should delegate reconcileDNS to kubernetes if the app domain strategy is kubernetes-ingress', async () => {
       setArgv({ appDomainStrategy: 'kubernetes-ingress' });
       await reconcileDNS();
-      expect(kubernetes.reconcileDNS).toHaveBeenCalledWith({ dryRun: true });
+      expect(kubernetes.reconcileDNS).toHaveBeenCalledWith({
+        dryRun: true,
+        skipCustomDomains: false,
+      });
     });
 
     it('should not delegate reconcileDNS to kubernetes if the app domain strategy is undefined', async () => {

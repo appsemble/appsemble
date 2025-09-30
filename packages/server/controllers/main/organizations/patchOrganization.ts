@@ -9,7 +9,21 @@ export async function patchOrganization(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId },
     request: {
-      body: { description, email, icon, name, website },
+      body: {
+        city,
+        countryCode,
+        description,
+        email,
+        houseNumber,
+        icon,
+        invoiceReference,
+        name,
+        preferredPaymentProvider,
+        streetName,
+        vatIdNumber,
+        website,
+        zipCode,
+      },
     },
   } = ctx;
 
@@ -44,6 +58,39 @@ export async function patchOrganization(ctx: Context): Promise<void> {
     result.website = website || null;
   }
 
+  if (preferredPaymentProvider !== undefined) {
+    result.preferredPaymentProvider = preferredPaymentProvider || null;
+  }
+
+  if (countryCode !== undefined) {
+    result.countryCode = countryCode || null;
+    result.vatIdNumber = undefined;
+  }
+
+  if (vatIdNumber !== undefined) {
+    result.vatIdNumber = vatIdNumber || null;
+  }
+
+  if (streetName !== undefined) {
+    result.streetName = streetName || null;
+  }
+
+  if (houseNumber !== undefined) {
+    result.houseNumber = houseNumber || null;
+  }
+
+  if (city !== undefined) {
+    result.city = city || null;
+  }
+
+  if (zipCode !== undefined) {
+    result.zipCode = zipCode || null;
+  }
+
+  if (invoiceReference !== undefined) {
+    result.invoiceReference = invoiceReference || null;
+  }
+
   const updated = await organization.update(result);
 
   ctx.body = {
@@ -55,5 +102,13 @@ export async function patchOrganization(ctx: Context): Promise<void> {
     iconUrl: updated.icon
       ? `/api/organizations/${organization.id}/icon?updated=${updated.updated.toISOString()}`
       : null,
+    preferredPaymentProvider: updated.preferredPaymentProvider,
+    vatIdNumber: updated.vatIdNumber,
+    streetName: updated.streetName,
+    houseNumber: updated.houseNumber,
+    city: updated.city,
+    zipCode: updated.zipCode,
+    countryCode: updated.countryCode,
+    invoiceReference: updated.invoiceReference,
   };
 }

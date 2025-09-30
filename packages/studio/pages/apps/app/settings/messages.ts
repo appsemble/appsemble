@@ -133,6 +133,11 @@ export const messages = defineMessages({
     id: 'studio.iCOmfv',
     defaultMessage: 'Something went wrong when trying to update the settings.',
   },
+  updateFailAppLimit: {
+    id: 'studio.07b/vz',
+    defaultMessage:
+      'Update failed due to reaching the limit for publishing apps please upgrade your subscription or delist another app.',
+  },
   deleteSuccess: {
     id: 'studio.IJ+Fig',
     defaultMessage: 'Successfully deleted app {name}',

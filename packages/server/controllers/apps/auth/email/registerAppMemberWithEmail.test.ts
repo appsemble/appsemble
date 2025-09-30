@@ -7,8 +7,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -127,6 +127,7 @@ describe('registerAppMemberWithEmail', () => {
     `,
     );
 
+    const { AppMember } = await getAppDB(app.id);
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
 
     expect(m.password).not.toBe('password');
@@ -166,6 +167,7 @@ describe('registerAppMemberWithEmail', () => {
     `,
     );
 
+    const { AppMember } = await getAppDB(app.id);
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
     expect(m.name).toBe('Me');
   });
@@ -184,9 +186,10 @@ describe('registerAppMemberWithEmail', () => {
       }),
     );
 
+    const { AppMember } = await getAppDB(app.id);
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
 
-    const responseB = await request.get(`/api/app-members/${m.id}/picture`, {
+    const responseB = await request.get(`/api/apps/${app.id}/app-members/${m.id}/picture`, {
       responseType: 'arraybuffer',
     });
     expect(response).toMatchInlineSnapshot(
@@ -265,9 +268,9 @@ describe('registerAppMemberWithEmail', () => {
   it('should not register duplicate email addresses', async () => {
     const app = await createDefaultAppWithSecurity(organization);
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
       role: 'User',
       email: 'test@example.com',
     });
@@ -358,8 +361,8 @@ describe('registerAppMemberWithEmail', () => {
         members: { phoneNumber: { enable: true } },
       },
     });
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      AppId: app.id,
       UserId: user.id,
       role: 'User',
       email: 'test@example.com',
@@ -407,8 +410,9 @@ describe('registerAppMemberWithEmail', () => {
 
     expect(response.status).toBe(201);
 
+    const { AppMember } = await getAppDB(app.id);
     const appMember = await AppMember.findOne({
-      where: { AppId: app.id, phoneNumber: '+31 6 12345678' },
+      where: { phoneNumber: '+31 6 12345678' },
     });
     expect(appMember?.dataValues).toMatchObject({
       email: 'test@example.com',

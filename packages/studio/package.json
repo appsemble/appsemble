@@ -56,6 +56,7 @@
     "classnames": "^2.0.0",
     "elkjs": "^0.9.0",
     "fast-deep-equal": "^3.0.0",
+    "i18n-iso-countries": "^7.14.0",
     "indent-string": "^5.0.0",
     "intl-messageformat": "^10.0.0",
     "jsonschema": "~1.4.1",

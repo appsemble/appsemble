@@ -11,11 +11,9 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
-  AppMember,
-  Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -114,8 +112,8 @@ describe('reseedDemoApp', () => {
       OrganizationId: organization.id,
     });
 
+    const { Asset, Resource } = await getAppDB(1);
     const { id: seedResourceId } = await Resource.create({
-      AppId: 1,
       type: 'tasks',
       seed: true,
       data: {
@@ -124,7 +122,6 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: ephemeralResourceId } = await Resource.create({
-      AppId: 1,
       type: 'tasks',
       ephemeral: true,
       data: {
@@ -133,14 +130,12 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: seedAssetId } = await Asset.create({
-      AppId: 1,
       name: 'tasks',
       seed: true,
     });
     await uploadS3File(`app-${appId}`, seedAssetId, createFixtureStream('standing.png'));
 
     const { id: ephemeralAssetId } = await Asset.create({
-      AppId: 1,
       name: 'tasks',
       ephemeral: true,
     });
@@ -151,7 +146,6 @@ describe('reseedDemoApp', () => {
     const seedResource = await Resource.findOne({
       where: {
         id: seedResourceId,
-        AppId: appId,
         seed: true,
       },
     });
@@ -165,7 +159,6 @@ describe('reseedDemoApp', () => {
 
     const oldEphemeralResource = await Resource.findOne({
       where: {
-        AppId: appId,
         id: ephemeralResourceId,
       },
     });
@@ -174,7 +167,6 @@ describe('reseedDemoApp', () => {
 
     const newEphemeralResource = await Resource.findOne({
       where: {
-        AppId: appId,
         ephemeral: true,
       },
     });
@@ -191,7 +183,6 @@ describe('reseedDemoApp', () => {
       attributes: ['name', 'seed', 'ephemeral'],
       where: {
         id: seedAssetId,
-        AppId: appId,
         seed: true,
       },
     });
@@ -209,7 +200,6 @@ describe('reseedDemoApp', () => {
 
     const oldEphemeralAsset = await Asset.findOne({
       where: {
-        AppId: appId,
         id: ephemeralAssetId,
       },
     });
@@ -220,7 +210,6 @@ describe('reseedDemoApp', () => {
     const newEphemeralAsset = (await Asset.findOne({
       attributes: ['id', 'name', 'seed', 'ephemeral'],
       where: {
-        AppId: appId,
         ephemeral: true,
       },
     }))!;
@@ -273,8 +262,8 @@ describe('reseedDemoApp', () => {
       OrganizationId: organization.id,
     });
 
+    const { AppMember, Asset, Resource } = await getAppDB(1);
     await Resource.create({
-      AppId: 1,
       type: 'tasks',
       seed: true,
       data: {
@@ -283,7 +272,6 @@ describe('reseedDemoApp', () => {
     });
 
     await Resource.create({
-      AppId: 1,
       type: 'tasks',
       seed: true,
       data: {
@@ -292,7 +280,6 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: ephemeralResource1Id } = await Resource.create({
-      AppId: 1,
       type: 'tasks',
       ephemeral: true,
       data: {
@@ -301,7 +288,6 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: ephemeralResource2Id } = await Resource.create({
-      AppId: 1,
       type: 'tasks',
       ephemeral: true,
       data: {
@@ -310,14 +296,12 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: seedAssetId } = await Asset.create({
-      AppId: 1,
       name: 'tasks',
       seed: true,
     });
     await uploadS3File(`app-${appId}`, seedAssetId, createFixtureStream('standing.png'));
 
     const { id: ephemeralAssetId } = await Asset.create({
-      AppId: 1,
       name: 'tasks',
       ephemeral: true,
     });
@@ -326,7 +310,6 @@ describe('reseedDemoApp', () => {
     await AppMember.create({
       email: user.primaryEmail,
       UserId: user.id,
-      AppId: appId,
       role: 'test',
       properties: {
         completedTasks: [ephemeralResource1Id, ephemeralResource2Id],
@@ -337,9 +320,6 @@ describe('reseedDemoApp', () => {
 
     const appMember = (await AppMember.findOne({
       attributes: ['properties'],
-      where: {
-        AppId: appId,
-      },
     }))!;
 
     expect(appMember.dataValues).toMatchInlineSnapshot(`
@@ -358,9 +338,6 @@ describe('reseedDemoApp', () => {
 
     const updatedAppMember = await AppMember.findOne({
       attributes: ['properties'],
-      where: {
-        AppId: appId,
-      },
     });
 
     expect(updatedAppMember).toMatchInlineSnapshot(`
@@ -374,7 +351,6 @@ describe('reseedDemoApp', () => {
 
     const seedResources = await Resource.findAll({
       where: {
-        AppId: appId,
         seed: true,
       },
     });
@@ -392,14 +368,12 @@ describe('reseedDemoApp', () => {
 
     const oldEphemeralResource1 = await Resource.findOne({
       where: {
-        AppId: appId,
         id: ephemeralResource1Id,
       },
     });
 
     const oldEphemeralResource2 = await Resource.findOne({
       where: {
-        AppId: appId,
         id: ephemeralResource2Id,
       },
     });
@@ -409,7 +383,6 @@ describe('reseedDemoApp', () => {
 
     const newEphemeralResources = await Resource.findAll({
       where: {
-        AppId: appId,
         ephemeral: true,
       },
     });
@@ -431,7 +404,6 @@ describe('reseedDemoApp', () => {
       attributes: ['name', 'seed', 'ephemeral'],
       where: {
         id: seedAssetId,
-        AppId: appId,
         seed: true,
       },
     });
@@ -449,7 +421,6 @@ describe('reseedDemoApp', () => {
 
     const oldEphemeralAsset = await Asset.findOne({
       where: {
-        AppId: appId,
         id: ephemeralAssetId,
       },
     });
@@ -460,7 +431,6 @@ describe('reseedDemoApp', () => {
     const newEphemeralAsset = (await Asset.findOne({
       attributes: ['id', 'name', 'seed', 'ephemeral'],
       where: {
-        AppId: appId,
         ephemeral: true,
       },
     }))!;
@@ -528,8 +498,8 @@ describe('reseedDemoApp', () => {
       OrganizationId: organization.id,
     });
 
+    const { Resource } = await getAppDB(1);
     await Resource.create({
-      AppId: 1,
       type: 'survey',
       seed: true,
       data: {
@@ -538,7 +508,6 @@ describe('reseedDemoApp', () => {
     });
 
     await Resource.create({
-      AppId: 1,
       type: 'survey',
       seed: true,
       data: {
@@ -547,7 +516,6 @@ describe('reseedDemoApp', () => {
     });
 
     await Resource.create({
-      AppId: 1,
       type: 'answer',
       seed: true,
       data: {
@@ -557,7 +525,6 @@ describe('reseedDemoApp', () => {
     });
 
     await Resource.create({
-      AppId: 1,
       type: 'answer',
       seed: true,
       data: {
@@ -567,7 +534,6 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: ephemeralSurvey1Id } = await Resource.create({
-      AppId: 1,
       type: 'survey',
       ephemeral: true,
       data: {
@@ -576,7 +542,6 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: ephemeralSurvey2Id } = await Resource.create({
-      AppId: 1,
       type: 'tasks',
       ephemeral: true,
       data: {
@@ -585,7 +550,6 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: ephemeralAnswer1Id } = await Resource.create({
-      AppId: 1,
       type: 'survey',
       ephemeral: true,
       data: {
@@ -595,7 +559,6 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: ephemeralAnswer2Id } = await Resource.create({
-      AppId: 1,
       type: 'tasks',
       ephemeral: true,
       data: {
@@ -608,7 +571,6 @@ describe('reseedDemoApp', () => {
 
     const seedResources = await Resource.findAll({
       where: {
-        AppId: appId,
         seed: true,
       },
     });
@@ -646,28 +608,24 @@ describe('reseedDemoApp', () => {
 
     const oldEphemeralSurvey1 = await Resource.findOne({
       where: {
-        AppId: appId,
         id: ephemeralSurvey1Id,
       },
     });
 
     const oldEphemeralSurvey2 = await Resource.findOne({
       where: {
-        AppId: appId,
         id: ephemeralSurvey2Id,
       },
     });
 
     const oldEphemeralAnswer1 = await Resource.findOne({
       where: {
-        AppId: appId,
         id: ephemeralAnswer1Id,
       },
     });
 
     const oldEphemeralAnswer2 = await Resource.findOne({
       where: {
-        AppId: appId,
         id: ephemeralAnswer2Id,
       },
     });
@@ -679,7 +637,6 @@ describe('reseedDemoApp', () => {
 
     const newEphemeralResources = await Resource.findAll({
       where: {
-        AppId: appId,
         ephemeral: true,
       },
     });
@@ -732,8 +689,8 @@ describe('reseedDemoApp', () => {
       OrganizationId: organization.id,
     });
 
+    const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
-      AppId: app.id,
       email: 'test@example.com',
       name: 'Test',
       demo: true,
@@ -743,7 +700,6 @@ describe('reseedDemoApp', () => {
     });
 
     await AppMember.create({
-      AppId: app.id,
       email: 'test2@example.com',
       name: 'Test 2',
       demo: true,
@@ -753,7 +709,6 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: ephemeral1Id } = await AppMember.create({
-      AppId: app.id,
       email: 'test@example.com',
       name: 'Test',
       demo: true,
@@ -763,7 +718,6 @@ describe('reseedDemoApp', () => {
     });
 
     const { id: ephemeral2Id } = await AppMember.create({
-      AppId: app.id,
       email: 'test2@example.com',
       name: 'Test 2',
       demo: true,

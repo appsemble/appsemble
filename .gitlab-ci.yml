@@ -242,7 +242,8 @@ stylelint:
 test node:
   extends: .npm
   services:
-    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+    - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+      alias: postgres
     - name: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
       alias: minio
       command: ['server', '/data']
@@ -253,7 +254,11 @@ test node:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+    DATABASE_NAME: testAppsemble
+    DATABASE_HOST: postgres
+    DATABASE_PORT: 5432
+    DATABASE_USER: admin
+    DATABASE_PASSWORD: password
     S3_HOST: 'minio'
     S3_PORT: 9000
   stage: test
@@ -289,15 +294,15 @@ check migrations:
   stage: test
   interruptible: true
   services:
-    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+    - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+      alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
-    - npm run appsemble -- check-migrations
+    - npm run appsemble -- check-migrations --database-name testAppsemble --database-host postgres --database-port 5432 --database-user admin --database-password password
 
 # Check down migrations
 check down migrations:
@@ -305,15 +310,15 @@ check down migrations:
   stage: test
   interruptible: true
   services:
-    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+    - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+      alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
-    - npm run appsemble -- check-down-migrations
+    - npm run appsemble -- check-down-migrations --database-name testAppsemble --database-host postgres --database-port 5432 --database-user admin --database-password password
 
 # Fuzz test migrations for anomalous up and down migration failures
 fuzz migrations:
@@ -321,14 +326,14 @@ fuzz migrations:
   stage: test
   interruptible: true
   services:
-    - postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+    - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
+      alias: postgres
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
-    - npm run appsemble -- fuzz-migrations
+    - npm run appsemble -- fuzz-migrations --database-name testAppsemble --database-host postgres --database-port 5432 --database-user admin --database-password password
 
 include:
   # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Container-Scanning.gitlab-ci.yml
@@ -481,10 +486,16 @@ e2e node:
       --icon packages/server/assets/appsemble.png
       --name Appsemble
       --website https://appsemble.com
+    - npm run scripts seed-subscription --
+      --subscription enterprise
+      --organization appsemble
     - npm run appsemble -- block publish 'blocks/*'
     - npm --workspace @appsemble/types run prepack
     - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+    - npm run scripts seed-subscription --
+      --organization appsemble
+      --subscription standard
   parallel: 6
   artifacts:
     expose_as: Playwright videos
@@ -777,6 +788,34 @@ review:
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
+    # Stripe webhook setup
+    - apk add --no-cache curl jq tar
+    - LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
+    - URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
+    - curl -L -o stripe.tar.gz "$URL"
+    - tar -xvf stripe.tar.gz
+    - mv stripe /usr/local/bin/
+    - stripe -v
+    - |
+      WEBHOOK_URL="https://$CI_MERGE_REQUEST_IID.appsemble.review/api/payments/accept-payment"
+
+      WEBHOOK_ID=$(stripe webhook_endpoints list --limit 20 --api-key "$STRIPE_API_SECRET_KEY" | \
+        jq -r --arg url "$WEBHOOK_URL" '.data[] | select(.url==$url) | .id')
+      if [ -n "$WEBHOOK_ID" ]; then
+        stripe webhook_endpoints delete "$WEBHOOK_ID" --api-key "$STRIPE_API_SECRET_KEY" --confirm
+      fi
+    - kubectl delete secret stripe-webhook-secret-$CI_MERGE_REQUEST_IID || true
+    - |
+      export STRIPE_WEBHOOK_SECRET=$(stripe webhook_endpoints create \
+        --url https://$CI_MERGE_REQUEST_IID.appsemble.review/api/payments/accept-payment \
+        --enabled-events checkout.session.async_payment_failed \
+        --enabled-events checkout.session.async_payment_succeeded \
+        --enabled-events checkout.session.completed \
+        --enabled-events invoice.paid \
+        --enabled-events invoice.payment_failed \
+        --enabled-events invoice.payment_succeeded \
+        --api-key "$STRIPE_API_SECRET_KEY" | jq -r '.secret')
+    - kubectl create secret generic stripe-webhook-secret-$CI_MERGE_REQUEST_IID --from-literal=stripe-webhook-secret="$STRIPE_WEBHOOK_SECRET"
     # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --debug
@@ -796,6 +835,7 @@ review:
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
       --set "postgresql.primary.persistence.size=1Gi"
       --set "provision.organization.id=appsemble"
+      --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
       --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
@@ -816,6 +856,7 @@ review:
       --set "minio.apiIngress.hostname=api.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
 
 # Stop a review environment.
 stop review:
@@ -849,13 +890,12 @@ staging:
   rules:
     - if: $CI_COMMIT_BRANCH == 'staging'
   environment:
-    name: staging-do
-    url: https://staging.appsemble.review
+    name: staging
+    url: https://appsemble.eu
   variables:
     GIT_STRATEGY: none
   script:
-    - kubectl config use-context "$CI_PROJECT_PATH:development"
-    - kubectl config set-context --current --namespace staging
+    - kubectl config use-context "$CI_PROJECT_PATH:staging"
     # This is the only way to make sure staging can be overwritten
     - helm delete staging || true
     - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
@@ -867,7 +907,7 @@ staging:
     - rm mailpit.key mailpit.crt
     - helm install staging ./public/appsemble-*.tgz
       --atomic
-      --timeout 15m0s
+      --timeout 30m0s
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
@@ -876,7 +916,7 @@ staging:
       --set "image.tag=staging"
       --set "ingress.clusterIssuer=acme-issuer-dev"
       --set "ingress.enabled=true"
-      --set "ingress.host=staging.appsemble.eu"
+      --set "ingress.host=appsemble.eu"
       --set "ingress.tls.secretName=staging-tls"
       --set "ingress.tls.wildcardSecretName=staging-tls-wildcard"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=1G"
@@ -887,8 +927,14 @@ staging:
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts-max-age=\"31536000\""
       --set "migrateTo=next"
       --set "oauthSecret=oauth2"
+      --set "skipCustomDomains=true"
       --set "postgresql.fullnameOverride=staging-postgresql"
+      --set "postgresql.primary.resources.requests.cpu=250m"
+      --set "postgresql.primary.resources.requests.memory=1Gi"
+      --set "postgresql.primary.resources.limits.cpu=1"
+      --set "postgresql.primary.resources.limits.memory=2Gi"
       --set "provision.organization.id=appsemble"
+      --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
       --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
@@ -903,7 +949,7 @@ staging:
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
-      --set "sentry.allowedDomains={*.appsemble.eu}"
+      --set "sentry.allowedDomains={*.appsemble.en}"
       --set "sentry.environment=staging"
       --set "sentry.secret=sentry"
       --set "quotas.appEmail.enabled=true"
@@ -912,9 +958,9 @@ staging:
       --set "mailpit.mailpit.smtp.tls.secretName=staging-mailpit-tls"
       --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
       --set "minio.fullnameOverride=staging-minio"
-      --set "minio.ingress.hostname=console.minio.staging.appsemble.eu"
+      --set "minio.ingress.hostname=console.minio.appsemble.eu"
       --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
-      --set "minio.apiIngress.hostname=api.minio.staging.appsemble.eu"
+      --set "minio.apiIngress.hostname=api.minio.appsemble.eu"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
 
@@ -1018,7 +1064,7 @@ provision review:
     INCREMENT: patch
     IDENTIFIER: ''
     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
-    APPSEMBLE_STAGING_DOMAIN: 'staging.appsemble.eu'
+    APPSEMBLE_STAGING_DOMAIN: 'appsemble.eu'
   needs:
     - review
     - npm_ci
@@ -1050,7 +1096,7 @@ provision staging:
   script:
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context staging
-    - npm run appsemble -- config set remote https://staging.appsemble.eu
+    - npm run appsemble -- config set remote https://appsemble.eu
     - npm run appsemble -- -vv block publish blocks/*
     - apt-get update
     - apt-get install --yes git gnupg yq
@@ -1102,7 +1148,7 @@ provision production:
 #     - if: $CI_COMMIT_TAG
 #   variables:
 #     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
-#     APPSEMBLE_STAGING_DOMAIN: 'staging.appsemble.eu'
+#     APPSEMBLE_STAGING_DOMAIN: 'appsemble.eu'
 #   script:
 #     - npm run scripts -- wait-for-ssl
 #     - npx -- lhci collect
@@ -1171,3 +1217,15 @@ cleanup review environments:
     - kubectl get ingress --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete ingress {} || true
     # Delete all secrets for review environments
     - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete secret {} || true
+    # Delete all Stripe webhooks for review environments
+    - apk add --no-cache curl jq tar
+    - LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
+    - URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
+    - curl -L -o stripe.tar.gz "$URL"
+    - tar -xvf stripe.tar.gz
+    - mv stripe /usr/local/bin/
+    - stripe -v
+    - |
+      stripe webhook_endpoints list --limit 20 --api-key "$STRIPE_API_SECRET_KEY" \
+      | jq -r '.data[].id' \
+      | xargs -I{} stripe webhook_endpoints delete {} --api-key "$STRIPE_API_SECRET_KEY" --confirm

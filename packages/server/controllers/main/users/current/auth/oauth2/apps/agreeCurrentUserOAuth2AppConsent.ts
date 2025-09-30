@@ -1,7 +1,7 @@
 import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember, EmailAuthorization, User } from '../../../../../../../models/index.js';
+import { App, EmailAuthorization, getAppDB, User } from '../../../../../../../models/index.js';
 import {
   checkAppSecurityPolicy,
   handleUniqueAppMemberEmailIndex,
@@ -16,18 +16,17 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
     },
     user: authSubject,
   } = ctx;
-
   const user = (await User.findByPk(authSubject!.id))!;
 
   const app = await App.findByPk(appId, {
     attributes: ['domain', 'definition', 'id', 'path', 'OrganizationId'],
   });
-
   assertKoaCondition(app != null, ctx, 404, 'App not found');
+
+  const { AppMember } = await getAppDB(appId);
   let appMember = await AppMember.findOne({
     where: {
-      AppId: app.id,
-      UserId: user.id,
+      userId: user.id,
     },
   });
 
@@ -50,8 +49,7 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
 
     try {
       appMember = await AppMember.create({
-        AppId: app.id,
-        UserId: user.id,
+        userId: user.id,
         name: user.name,
         email: user.primaryEmail,
         timezone: user.timezone,

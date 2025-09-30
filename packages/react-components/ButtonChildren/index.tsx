@@ -1,4 +1,4 @@
-import { type BulmaSize } from '@appsemble/types';
+import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type ReactNode } from 'react';
 
@@ -31,6 +31,11 @@ interface ButtonChildrenProps {
    * The size modifier that should be used for the button’s icons.
    */
   readonly iconSizeModifier?: '2x' | '3x' | 'lg';
+
+  /**
+   * The color that should be used for the button's icons.
+   */
+  readonly iconColor?: BulmaColor;
 }
 
 /**
@@ -41,15 +46,20 @@ interface ButtonChildrenProps {
 export function ButtonChildren({
   children,
   icon,
+  iconColor,
   iconPosition,
   iconSize,
   iconSizeModifier,
 }: ButtonChildrenProps): ReactNode {
   return icon ? (
     <>
-      {iconPosition === 'left' && <Icon icon={icon} iconSize={iconSizeModifier} size={iconSize} />}
+      {iconPosition === 'left' && (
+        <Icon color={iconColor} icon={icon} iconSize={iconSizeModifier} size={iconSize} />
+      )}
       {children ? <span>{children}</span> : null}
-      {iconPosition === 'right' && <Icon icon={icon} iconSize={iconSizeModifier} size={iconSize} />}
+      {iconPosition === 'right' && (
+        <Icon color={iconColor} icon={icon} iconSize={iconSizeModifier} size={iconSize} />
+      )}
     </>
   ) : (
     (children as ReactNode)

@@ -90,6 +90,10 @@ export const tags: OpenAPIV3.TagObject[] = [
     description: 'Operations related to organizations',
   },
   {
+    name: 'organization-subscription',
+    description: 'Operations related to organizationSubscriptions',
+  },
+  {
     name: 'rating',
     description: 'Operations related to ratings',
   },

@@ -4,7 +4,9 @@ import {
   FileUpload,
   Input,
   Message,
+  type MinimalHTMLElement,
   Select,
+  SelectField,
   SimpleForm,
   SimpleFormField,
   SimpleSubmit,
@@ -13,9 +15,18 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type App, type AppCollection } from '@appsemble/types';
+import { type App, type AppCollection, PaymentProvider } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import countries from 'i18n-iso-countries';
+import {
+  type ChangeEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 
@@ -59,6 +70,8 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
   const [fetchedApps, setFetchedApps] = useState<App[]>([]);
   const [fetchedAppCollections, setFetchedAppCollections] = useState<AppCollection[]>([]);
   const [fetchedBlocks, setFetchedBlocks] = useState<Block[]>([]);
+  const [country, setCountry] = useState<string>(organization.countryCode || '');
+  const countryNames = countries.getNames('en');
 
   const fetch = useCallback(async () => {
     const apps = await axios.get(`/api/organizations/${organization.id}/apps`);
@@ -86,6 +99,13 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
       push(formatMessage(messages.errorDelete));
     }
   };
+
+  const changeCountry = useCallback(
+    (event: ChangeEvent<MinimalHTMLElement>) => {
+      setCountry(event.target.value);
+    },
+    [setCountry],
+  );
 
   const deleteOrganizationBody = (): ReactNode => (
     <div>
@@ -126,12 +146,38 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
   });
 
   const onEditOrganization = useCallback(
-    async ({ description, email, icon, name, website, websiteProtocol }: typeof defaultValues) => {
+    async ({
+      city,
+      countryCode,
+      description,
+      email,
+      houseNumber,
+      icon,
+      invoiceReference,
+      name,
+      preferredPaymentProvider,
+      streetName,
+      vatIdNumber,
+      website,
+      websiteProtocol,
+      zipCode,
+    }: typeof defaultValues) => {
       const formData = new FormData();
       formData.set('name', name);
       formData.set('description', description);
       formData.set('email', email);
       formData.set('website', website ? `${websiteProtocol}://${website}` : '');
+      formData.set('vatIdNumber', vatIdNumber);
+      formData.set('streetName', streetName);
+      formData.set('houseNumber', houseNumber);
+      formData.set('city', city);
+      formData.set('zipCode', zipCode);
+      formData.set('countryCode', countryCode);
+      formData.set('invoiceReference', invoiceReference);
+
+      if (preferredPaymentProvider === PaymentProvider.Stripe) {
+        formData.set('preferredPaymentProvider', PaymentProvider.Stripe);
+      }
 
       if (icon) {
         formData.set('icon', icon);
@@ -140,10 +186,40 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
       await axios.patch(`/api/organizations/${organization.id}`, formData);
       setOrganizations((organizations) =>
         organizations.map((org) =>
-          org.id === organization.id ? { ...org, name, description, website, email } : org,
+          org.id === organization.id
+            ? {
+                ...org,
+                name,
+                description,
+                website,
+                email,
+                preferredPaymentProvider,
+                vatIdNumber,
+                streetName,
+                houseNumber,
+                city,
+                zipCode,
+                countryCode,
+                invoiceReference,
+              }
+            : org,
         ),
       );
-      onChangeOrganization({ ...organization, name, description, website, email });
+      onChangeOrganization({
+        ...organization,
+        name,
+        description,
+        website,
+        email,
+        preferredPaymentProvider,
+        vatIdNumber,
+        streetName,
+        houseNumber,
+        city,
+        zipCode,
+        countryCode,
+        invoiceReference,
+      });
     },
     [organization, setOrganizations, onChangeOrganization],
   );
@@ -158,6 +234,14 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
       websiteProtocol: organization.website?.startsWith('http://') ? 'http' : 'https',
       description: organization.description || '',
       icon: null as null,
+      preferredPaymentProvider: organization.preferredPaymentProvider || PaymentProvider.Stripe,
+      vatIdNumber: organization.vatIdNumber || '',
+      streetName: organization.streetName || '',
+      houseNumber: organization.houseNumber || '',
+      city: organization.city || '',
+      zipCode: organization.zipCode || '',
+      countryCode: organization.countryCode || '',
+      invoiceReference: organization.invoiceReference || '',
     }),
     [organization],
   );
@@ -208,6 +292,69 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
           label={<FormattedMessage {...messages.logo} />}
           name="icon"
           preview={<IconPreview organization={organization} />}
+        />
+        <SimpleFormField
+          component={SelectField}
+          help={<FormattedMessage {...messages.descriptionPreferredPaymentProvider} />}
+          icon="info"
+          label={<FormattedMessage {...messages.preferredPaymentProvider} />}
+          name="preferredPaymentProvider"
+        >
+          <option value={PaymentProvider.Stripe}>Stripe</option>
+        </SimpleFormField>
+        <SimpleFormField
+          component={SelectField}
+          help={<FormattedMessage {...messages.descriptionCountry} />}
+          label={<FormattedMessage {...messages.country} />}
+          name="countryCode"
+          onChange={changeCountry}
+        >
+          <option value="">
+            <FormattedMessage {...messages.selectCountry} />
+          </option>
+          {Object.entries(countryNames).map(([code, name]) => (
+            <option key={code} value={code}>
+              {name}
+            </option>
+          ))}
+        </SimpleFormField>
+        {country === 'NL' ? null : (
+          <SimpleFormField
+            help={<FormattedMessage {...messages.descriptionVatIdNumber} />}
+            label={<FormattedMessage {...messages.vatIdNumber} />}
+            maxLength={20}
+            name="vatIdNumber"
+          />
+        )}
+        <SimpleFormField
+          help={<FormattedMessage {...messages.descriptionStreetName} />}
+          label={<FormattedMessage {...messages.streetName} />}
+          maxLength={20}
+          name="streetName"
+        />
+        <SimpleFormField
+          help={<FormattedMessage {...messages.descriptionHouseNumber} />}
+          label={<FormattedMessage {...messages.houseNumber} />}
+          maxLength={20}
+          name="houseNumber"
+        />
+        <SimpleFormField
+          help={<FormattedMessage {...messages.descriptionCity} />}
+          label={<FormattedMessage {...messages.city} />}
+          maxLength={20}
+          name="city"
+        />
+        <SimpleFormField
+          help={<FormattedMessage {...messages.descriptionZipCode} />}
+          label={<FormattedMessage {...messages.zipCode} />}
+          maxLength={20}
+          name="zipCode"
+        />
+        <SimpleFormField
+          help={<FormattedMessage {...messages.descriptionInvoiceReference} />}
+          label={<FormattedMessage {...messages.invoiceReference} />}
+          maxLength={100}
+          name="invoiceReference"
         />
         <SimpleSubmit>
           <FormattedMessage {...messages.submit} />

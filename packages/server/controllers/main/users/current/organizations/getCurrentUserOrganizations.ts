@@ -14,6 +14,14 @@ export async function getCurrentUserOrganizations(ctx: Context): Promise<void> {
       'website',
       'email',
       'updated',
+      'preferredPaymentProvider',
+      'vatIdNumber',
+      'streetName',
+      'houseNumber',
+      'city',
+      'zipCode',
+      'countryCode',
+      'invoiceReference',
       [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
     ],
     include: [{ model: User, where: { id: user.id } }],
@@ -29,5 +37,13 @@ export async function getCurrentUserOrganizations(ctx: Context): Promise<void> {
     iconUrl: org.get('hasIcon')
       ? `/api/organizations/${org.id}/icon?updated=${org.updated.toISOString()}`
       : null,
+    preferredPaymentProvider: org.preferredPaymentProvider,
+    vatIdNumber: org.vatIdNumber,
+    streetName: org.streetName,
+    houseNumber: org.houseNumber,
+    city: org.city,
+    zipCode: org.zipCode,
+    countryCode: org.countryCode,
+    invoiceReference: org.invoiceReference,
   }));
 }

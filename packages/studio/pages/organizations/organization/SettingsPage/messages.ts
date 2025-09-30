@@ -104,4 +104,80 @@ export const messages = defineMessages({
     id: 'studio.9rXRSk',
     defaultMessage: 'The website of your organization.',
   },
+  descriptionPreferredPaymentProvider: {
+    defaultMessage: 'The payment provider you want to use.',
+    id: 'studio.vGE/z+',
+  },
+  preferredPaymentProvider: {
+    defaultMessage: 'Preferred payment provider',
+    id: 'studio.Fj9LvW',
+  },
+  descriptionVatIdNumber: {
+    defaultMessage: 'Your VAT id number.',
+    id: 'studio.+NUiCV',
+  },
+  descriptionStreetName: {
+    id: 'studio.oGJyuC',
+    defaultMessage: 'Street name that will be used for invoicing.',
+  },
+  streetName: {
+    id: 'studio.WrhuAL',
+    defaultMessage: 'Street name',
+  },
+  descriptionHouseNumber: {
+    id: 'studio.dLb8Qw',
+    defaultMessage: 'House number that will be used for invoicing.',
+  },
+  houseNumber: {
+    id: 'studio.GyoFyL',
+    defaultMessage: 'House number',
+  },
+  descriptionCity: {
+    id: 'studio.+R3lK1',
+    defaultMessage: 'City that will be used for invoicing.',
+  },
+  city: {
+    id: 'studio.TE4fIS',
+    defaultMessage: 'City',
+  },
+  descriptionZipCode: {
+    id: 'studio.Vo8m5X',
+    defaultMessage: 'Zip code that will be used for invoicing.',
+  },
+  zipCode: {
+    id: 'studio.2gnKy+',
+    defaultMessage: 'Zip code',
+  },
+  selectCountry: {
+    id: 'studio.EEdOfh',
+    defaultMessage: 'Select a country',
+  },
+  descriptionCountry: {
+    id: 'studio.pOPPD9',
+    defaultMessage: 'Country that will be used for invoicing.',
+  },
+  country: {
+    id: 'studio.vONi+O',
+    defaultMessage: 'Country',
+  },
+  descriptionCustomerName: {
+    id: 'studio.vfLJpn',
+    defaultMessage: 'Customer/company name that will be printed on the invoice.',
+  },
+  customerName: {
+    id: 'studio.61Xs6O',
+    defaultMessage: 'Customer name',
+  },
+  vatIdNumber: {
+    defaultMessage: 'VAT id number',
+    id: 'studio.5Y4+LR',
+  },
+  descriptionInvoiceReference: {
+    defaultMessage: 'Reference that will be shown on invoices.',
+    id: 'studio.IZqJT1',
+  },
+  invoiceReference: {
+    defaultMessage: 'Invoice reference',
+    id: 'studio.u8z2PJ',
+  },
 });

@@ -9,8 +9,8 @@ import { type Configuration } from 'webpack';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { migrations } from '../migrations/index.js';
-import { initDB } from '../models/index.js';
+import { migrations } from '../migrations/main/index.js';
+import { getDB, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { configureDNS } from '../utils/dns/index.js';
@@ -75,6 +75,12 @@ export function builder(yargs: Argv): Argv {
     .option('gitlab-client-secret', {
       desc: 'The secret key to be used for GitLab OAuth2.',
       implies: ['gitlab-client-id'],
+    })
+    .option('stripe-api-secret-key', {
+      desc: 'The API key for stripe.',
+    })
+    .option('stripe-webhook-secret', {
+      desc: 'The stripe webhook secret',
     })
     .option('secret', {
       desc: 'Secret key used to sign JWTs and cookies',
@@ -163,7 +169,8 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
   }
 
   if (argv.migrateTo) {
-    await migrate(argv.migrateTo, migrations);
+    const db = getDB();
+    await migrate(db, argv.migrateTo, migrations);
   }
 
   try {

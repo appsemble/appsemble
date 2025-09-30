@@ -26,7 +26,12 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ['start', '-vv']
+          args:
+            - start
+          {{- if .Values.skipCustomDomains }}
+            - --skip-custom-domains
+          {{- end }}
+            - -vv
           securityContext:
             readOnlyRootFilesystem: true
           ports:
@@ -47,6 +52,7 @@ spec:
 {{ include "appsemble.postgres" . | indent 12 }}
 {{ include "appsemble.s3" . | indent 12 }}
 {{ include "appsemble.sentry" . | indent 12 }}
+{{ include "appsemble.stripeWebhookSecret" . | indent 12 }}
             - name: HOST
               {{ if .Values.ingress.enabled -}}
               value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
@@ -145,6 +151,13 @@ spec:
                 secretKeyRef:
                   name: {{ . | quote }}
                   key: imap-copy-to-sent-folder
+            {{- end }}
+            {{- with .Values.stripeApiSecretKey }}
+            - name: STRIPE_API_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: stripe-api-secret-key
             {{- end }}
             {{- with .Values.adminApiSecret }}
             - name: ADMIN_API_SECRET

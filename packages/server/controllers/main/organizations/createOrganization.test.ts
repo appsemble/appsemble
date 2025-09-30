@@ -1,5 +1,5 @@
 import { createFormData, organizationBlocklist, readFixture } from '@appsemble/node-utils';
-import { PredefinedOrganizationRole } from '@appsemble/types';
+import { PaymentProvider, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -91,6 +91,48 @@ describe('createOrganization', () => {
         ],
         iconUrl: '/api/organizations/foo/icon?updated=1970-01-01T00:00:00.000Z',
         invites: [],
+      },
+    });
+  });
+
+  it('should create a new organization with payment information', async () => {
+    authorizeStudio();
+    const formData = createFormData({
+      id: 'foo',
+      name: 'Foooo',
+      preferredPaymentProvider: PaymentProvider.Stripe,
+      vatIdNumber: 'number123',
+      streetName: 'street',
+      houseNumber: '1',
+      city: 'Eindhoven',
+      zipCode: '1234AD',
+      countryCode: 'NL',
+      invoiceReference: 'employee name',
+    });
+    const response = await request.post('/api/organizations', formData);
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        id: 'foo',
+        name: 'Foooo',
+        members: [
+          {
+            id: expect.any(String),
+            name: 'Test User',
+            primaryEmail: 'test@example.com',
+            role: PredefinedOrganizationRole.Owner,
+          },
+        ],
+        invites: [],
+        preferredPaymentProvider: 'stripe',
+        vatIdNumber: 'number123',
+        streetName: 'street',
+        houseNumber: '1',
+        city: 'Eindhoven',
+        zipCode: '1234AD',
+        countryCode: 'NL',
+        invoiceReference: 'employee name',
       },
     });
   });

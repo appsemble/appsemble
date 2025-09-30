@@ -5,8 +5,8 @@ import { compare } from 'bcrypt';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -72,7 +72,8 @@ describe('requestAppMemberPasswordReset', () => {
       email: data.email,
     });
 
-    const m = (await AppMember.findOne({ where: { email: data.email, AppId: app.id } }))!;
+    const { AppMember } = await getAppDB(app.id);
+    const m = (await AppMember.findOne({ where: { email: data.email } }))!;
     const responseB = await request.post(`/api/apps/${app.id}/auth/email/reset-password`, {
       token: m.resetKey,
       password: 'newPassword',
@@ -113,8 +114,10 @@ describe('requestAppMemberPasswordReset', () => {
       email: data.email,
     });
 
-    let memberA = await AppMember.findOne({ where: { email: data.email, AppId: appA.id } });
-    let memberB = await AppMember.findOne({ where: { email: data.email, AppId: appB.id } });
+    const { AppMember: AppMemberA } = await getAppDB(appA.id);
+    const { AppMember: AppMemberB } = await getAppDB(appB.id);
+    let memberA = await AppMemberA.findOne({ where: { email: data.email } });
+    let memberB = await AppMemberB.findOne({ where: { email: data.email } });
 
     // Assert resetKey is generated for appA and not for appB
     expect(memberA!.resetKey).not.toBeNull();
@@ -146,8 +149,8 @@ describe('requestAppMemberPasswordReset', () => {
       email: data.email,
     });
 
-    memberA = await AppMember.findOne({ where: { email: data.email, AppId: appA.id } });
-    memberB = await AppMember.findOne({ where: { email: data.email, AppId: appB.id } });
+    memberA = await AppMemberA.findOne({ where: { email: data.email } });
+    memberB = await AppMemberB.findOne({ where: { email: data.email } });
 
     // Assert resetKey is generated for appB and not for appA
     expect(memberB!.resetKey).not.toBeNull();

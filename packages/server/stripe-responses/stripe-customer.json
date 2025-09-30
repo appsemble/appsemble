@@ -1,0 +1,35 @@
+{
+  "id": "cus_RydwphZezwTVAI",
+  "object": "customer",
+  "address": {
+    "city": "city",
+    "country": "NL",
+    "line1": "12 main street",
+    "line2": null,
+    "postal_code": "1234AB",
+    "state": null
+  },
+  "balance": 0,
+  "created": 1742467750,
+  "currency": null,
+  "default_source": null,
+  "delinquent": false,
+  "description": null,
+  "discount": null,
+  "email": "test+test_mode@test.test",
+  "invoice_prefix": "A01C8D42",
+  "invoice_settings": {
+    "custom_fields": null,
+    "default_payment_method": null,
+    "footer": null,
+    "rendering_options": null
+  },
+  "livemode": false,
+  "metadata": {},
+  "name": "test customer",
+  "phone": null,
+  "preferred_locales": [],
+  "shipping": null,
+  "tax_exempt": "none",
+  "test_clock": null
+}

@@ -23,7 +23,7 @@ import { serializeResource } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
-import { Asset, Resource, ResourceVersion, transactional } from '../../models/index.js';
+import { getAppDB } from '../../models/index.js';
 import {
   parseQuery,
   processHooks,
@@ -39,13 +39,13 @@ export async function get({
   internalContext,
   options,
 }: ServerActionParameters<ResourceGetActionDefinition>): Promise<unknown> {
+  const { Resource } = await getAppDB(app.id);
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const body = (remap(action.body ?? null, data, internalContext) ?? data) as Record<
     string,
     unknown
   >;
-
   if (!body?.id) {
     throw new Error('Missing id');
   }
@@ -61,7 +61,6 @@ export async function get({
     where: {
       id: body.id,
       type: action.resource,
-      AppId: app.id,
       expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
     },
   });
@@ -98,6 +97,7 @@ export async function query({
   internalContext,
   options,
 }: ServerActionParameters<ResourceQueryActionDefinition>): Promise<unknown> {
+  const { Resource } = await getAppDB(app.id);
   const { view } = action;
   const queryRemapper = action?.query ?? app.definition.resources?.[action.resource]?.query?.query;
 
@@ -107,7 +107,7 @@ export async function query({
 
   const resourceDefinition = getResourceDefinition(app.definition, action.resource, context, view);
 
-  const parsed = parseQuery({ ...queryParams, resourceDefinition });
+  const parsed = parseQuery({ ...queryParams, resourceDefinition, tableName: 'Resource' });
   const include = queryParams?.$select?.split?.(',').map((s) => s.trim());
 
   const resources = await Resource.findAll({
@@ -121,7 +121,6 @@ export async function query({
         parsed.query,
         {
           type: action.resource,
-          AppId: app.id,
           expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
         },
       ],
@@ -168,11 +167,11 @@ export async function create({
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
-
   if (context.is && context.is('multipart/form-data')) {
     Object.assign(context.request, { body: serializeServerResource(body) });
   } else {
     Object.assign(context, { body: serializeResource(body) });
+    Object.assign(context, { request: {} });
   }
 
   const [processedBody, preparedAssets] = processResourceBody(
@@ -212,6 +211,7 @@ export async function update({
   internalContext,
   options,
 }: ServerActionParameters<ResourceUpdateActionDefinition>): Promise<unknown> {
+  const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(app.id);
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const body = (remap(action.body ?? null, actionData, internalContext) ?? actionData) as Record<
@@ -229,7 +229,6 @@ export async function update({
     where: {
       id: body.id,
       type: action.resource,
-      AppId: app.id,
     },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
   });
@@ -244,6 +243,7 @@ export async function update({
     Object.assign(context.request, { body: serializeServerResource(body) });
   } else {
     Object.assign(context, { body: serializeResource(body) });
+    Object.assign(context, { request: {} });
   }
 
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
@@ -262,7 +262,7 @@ export async function update({
     ...data
   } = updatedResource as Record<string, unknown>;
 
-  await transactional((transaction) => {
+  await sequelize.transaction((transaction) => {
     const oldData = resource.data;
     const previousEditorId = resource.EditorId;
     const promises: Promise<unknown>[] = [
@@ -275,7 +275,6 @@ export async function update({
           preparedAssets.map((asset) => ({
             ...asset,
             ...getCompressedFileMeta(asset),
-            AppId: app.id,
             ResourceId: resource.id,
           })),
           { logging: false, transaction },
@@ -317,6 +316,7 @@ export async function patch({
   internalContext,
   options,
 }: ServerActionParameters<ResourcePatchActionDefinition>): Promise<unknown> {
+  const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(app.id);
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const body = (remap(action.body ?? null, actionData, internalContext) ?? actionData) as Record<
@@ -331,11 +331,7 @@ export async function patch({
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const resource = await Resource.findOne({
-    where: {
-      id: body.id,
-      type: action.resource,
-      AppId: app.id,
-    },
+    where: { id: body.id, type: action.resource },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
   });
 
@@ -350,6 +346,7 @@ export async function patch({
     Object.assign(context.request, { body: serializeServerResource(body) });
   } else {
     Object.assign(context, { body: serializeResource(body) });
+    Object.assign(context, { request: {} });
   }
 
   const [patchedResource, preparedAssets, deletedAssetIds] = processResourceBody(
@@ -369,7 +366,7 @@ export async function patch({
     ...data
   } = patchedResource as Record<string, unknown>;
 
-  await transactional((transaction) => {
+  await sequelize.transaction((transaction) => {
     const oldData = resource.data;
     const patchedData = { ...oldData, ...data };
     const previousEditorId = resource.EditorId;
@@ -383,7 +380,6 @@ export async function patch({
           preparedAssets.map((asset) => ({
             ...asset,
             ...getCompressedFileMeta(asset),
-            AppId: app.id,
             ResourceId: resource.id,
           })),
           { logging: false, transaction },
@@ -422,6 +418,7 @@ export async function remove({
   internalContext,
   options,
 }: ServerActionParameters<ResourceDeleteActionDefinition>): Promise<unknown> {
+  const { Asset, Resource } = await getAppDB(app.id);
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const body = (remap(action.body ?? null, data, internalContext) ?? data) as Record<
@@ -436,11 +433,7 @@ export async function remove({
   }
 
   const resource = await Resource.findOne({
-    where: {
-      id: body.id,
-      type: action.resource,
-      AppId: app.id,
-    },
+    where: { id: body.id, type: action.resource },
     include: [
       {
         model: Asset,
@@ -469,14 +462,12 @@ export async function removeAll({
   context,
   options,
 }: ServerActionParameters<ResourceDeleteAllActionDefinition>): Promise<unknown> {
+  const { Asset, Resource } = await getAppDB(app.id);
   getResourceDefinition(app.definition, action.resource, context);
 
   const resources = await Resource.findAll({
     attributes: ['id'],
-    where: {
-      type: action.resource,
-      AppId: app.id,
-    },
+    where: { type: action.resource },
   });
 
   let deletedAmount = 0;
@@ -515,6 +506,7 @@ export async function removeBulk({
   data,
   options,
 }: ServerActionParameters<ResourceDeleteBulkActionDefinition>): Promise<unknown> {
+  const { Asset, Resource } = await getAppDB(app.id);
   const body = data as number[];
 
   getResourceDefinition(app.definition, action.resource, context);
@@ -525,7 +517,6 @@ export async function removeBulk({
       where: {
         id: body.slice(deletedAmount, deletedAmount + 100),
         type: action.resource,
-        AppId: app.id,
       },
       include: [
         {

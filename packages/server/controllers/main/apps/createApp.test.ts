@@ -1,7 +1,11 @@
 import { getRandomValues } from 'node:crypto';
 
 import { createFixtureStream, createFormData } from '@appsemble/node-utils';
-import { type App as AppType, PredefinedOrganizationRole } from '@appsemble/types';
+import {
+  type App as AppType,
+  PredefinedOrganizationRole,
+  SubscriptionPlanType,
+} from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
@@ -10,18 +14,21 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import {
   App,
-  AppMember,
   AppScreenshot,
   BlockAsset,
   BlockMessages,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
+  OrganizationSubscription,
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
+import { decrypt } from '../../../utils/crypto.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
+import { createTestDBWithUser } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;
@@ -183,12 +190,12 @@ describe('createApp', () => {
       }),
     );
     expect(response.status).toBe(201);
+    const { AppMember } = await getAppDB(response.data.id!);
     const foundMember = (await AppMember.findOne({
-      where: { AppId: response.data.id, role: 'cron' },
+      where: { role: 'cron' },
     }))!;
     expect(foundMember.dataValues).toMatchObject({
       email: expect.stringMatching('cron.*example'),
-      AppId: response.data.id,
       role: 'cron',
     });
   });
@@ -2478,5 +2485,225 @@ describe('createApp', () => {
       }
     `);
     expect(appCount).toBe(0);
+  });
+
+  it('should use argv for database parameters if present', async () => {
+    const databaseName = process.env.DATABASE_NAME || 'appsemble';
+    const databaseHost = process.env.DATABASE_HOST || 'localhost';
+    const databasePort = Number(process.env.DATABASE_PORT) || 54_321;
+    const databaseUser = process.env.DATABASE_USER || 'admin';
+    const databasePassword = process.env.DATABASE_PASSWORD || 'password';
+    setArgv({
+      ...argv,
+      databaseName,
+      databaseHost,
+      databasePort,
+      databaseUser,
+      databasePassword,
+    });
+    authorizeStudio();
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    const app = await App.findByPk(response.data.id, {
+      attributes: ['dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword'],
+    });
+    expect(app?.get()).toStrictEqual(
+      expect.objectContaining({
+        dbName: null,
+        dbHost: databaseHost,
+        dbPort: databasePort,
+        dbUser: databaseUser,
+      }),
+    );
+    expect(decrypt(app!.dbPassword, 'testSecret')).toBe(databasePassword);
+  });
+
+  it('should fallback to process.env for database parameters if argv not present', async () => {
+    const databaseName = process.env.DATABASE_NAME || 'appsemble';
+    const databaseHost = process.env.DATABASE_HOST || 'localhost';
+    const databasePort = Number(process.env.DATABASE_PORT) || 54_321;
+    const databaseUser = process.env.DATABASE_USER || 'admin';
+    const databasePassword = process.env.DATABASE_PASSWORD || 'password';
+
+    process.env.DATABASE_NAME = databaseName;
+    process.env.DATABASE_HOST = databaseHost;
+    process.env.DATABASE_PORT = String(databasePort);
+    process.env.DATABASE_USER = databaseUser;
+    process.env.DATABASE_PASSWORD = databasePassword;
+    authorizeStudio();
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    const app = await App.findByPk(response.data.id, {
+      attributes: ['dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword'],
+    });
+    expect(app?.get()).toStrictEqual(
+      expect.objectContaining({
+        dbName: null,
+        dbHost: databaseHost,
+        dbPort: databasePort,
+        dbUser: databaseUser,
+      }),
+    );
+    expect(decrypt(app!.dbPassword, 'testSecret')).toBe(databasePassword);
+  });
+
+  it('should use passed database parameters if present', async () => {
+    vi.useRealTimers();
+    authorizeStudio();
+    const dbUser = 'app-admin';
+    const dbPassword = 'app-password';
+    const dbName = 'app-db';
+    const appDB = await createTestDBWithUser({ dbUser, dbPassword, dbName });
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+        ...appDB,
+        dbPassword,
+      }),
+    );
+    const app = await App.findByPk(response.data.id, {
+      attributes: ['dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword'],
+    });
+    expect(app?.get()).toStrictEqual(expect.objectContaining(appDB));
+    expect(decrypt(app!.dbPassword, 'testSecret')).toBe(dbPassword);
+  });
+
+  it('should not create a new app using a template when app limit is reached', async () => {
+    authorizeStudio();
+    await App.create(
+      {
+        definition: { name: 'Test App 1', defaultPage: 'Test Page' },
+        path: 'test-app-1',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        definition: { name: 'Test App 2', defaultPage: 'Test Page' },
+        path: 'test-app-2',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-3',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        yaml: stripIndent(`
+          name: test app 4
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+        visibility: 'public',
+      }),
+    );
+
+    expect(response.status).toBe(403);
+  });
+
+  it('should create a new app using a template when default app limit is reached but a subscription is active', async () => {
+    authorizeStudio();
+    const subscription = await OrganizationSubscription.findOne({
+      where: { OrganizationId: 'testorganization' },
+    });
+    expect(subscription).not.toBeNull();
+    subscription!.subscriptionPlan = SubscriptionPlanType.Basic;
+    subscription!.save();
+    const apps = await App.findAll({ where: { OrganizationId: 'testorganization' } });
+    for (const app of apps) {
+      app.visibility = 'public';
+      await app.save();
+    }
+    await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-3',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: 'testorganization',
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        yaml: stripIndent(`
+          name: test app 4
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+        visbility: 'public',
+      }),
+      { params: { dryRun: true } },
+    );
+
+    expect(response.status).toBe(204);
   });
 });

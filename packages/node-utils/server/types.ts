@@ -89,6 +89,7 @@ declare module 'koas-parameters' {
     groupMemberId: string;
     appMemberId: string;
     organizationId: string;
+    organizationSubscriptionId: number;
     path: string;
     resourceId: number;
     resourceType: string;
@@ -116,14 +117,21 @@ declare module 'koas-parameters' {
     filter: string;
     $orderby?: string;
     $select: string;
+    organizationId: string;
     $top: number;
     $skip: number;
     code: string;
     count: number;
+    period: string;
+    subscriptionType: string;
+    price: string;
+    locale: string;
+    couponCode: string;
     startIndex: number;
     view: string;
     resources: boolean;
     assets: boolean;
+    organizationSubscriptionExpiresWithin: number;
     screenshots: boolean;
     readmes: boolean;
     roles?: string;
@@ -257,6 +265,7 @@ export interface GetCspParams {
 
 export interface GetCurrentAppMemberParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  app: App;
 }
 
 export interface GetCurrentAppMemberGroupsParams {
@@ -304,6 +313,7 @@ export interface ReloadUserParams {
 }
 
 export interface ParseQueryParams {
+  tableName: string;
   $filter: string;
   $orderby: string;
   resourceDefinition: ResourceDefinition;

@@ -77,7 +77,7 @@ export function AddGroupMemberModal({
     setSubmitting(true);
     try {
       const { data } = await axios.post<GroupInvite[]>(
-        `/api/groups/${groupId}/invites`,
+        `/api/apps/${app.id}/groups/${groupId}/invites`,
         invites.filter(({ email }) => email),
       );
       onInvited(data);
@@ -89,7 +89,7 @@ export function AddGroupMemberModal({
     state.disable();
     setSubmitting(false);
     setInvites([defaultInvite]);
-  }, [defaultInvite, formatMessage, groupId, invites, onInvited, push, state]);
+  }, [app.id, defaultInvite, formatMessage, groupId, invites, onInvited, push, state]);
 
   const onChange = useCallback(
     (

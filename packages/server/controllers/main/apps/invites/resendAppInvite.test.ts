@@ -4,13 +4,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  App,
-  AppInvite,
-  Organization,
-  OrganizationMember,
-  User,
-} from '../../../../models/index.js';
+import { App, getAppDB, Organization, OrganizationMember, User } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
@@ -66,8 +60,8 @@ describe('resendAppInvite', () => {
   });
 
   it('should resend an invitation', async () => {
+    const { AppInvite } = await getAppDB(app.id);
     await AppInvite.create({
-      AppId: app.id,
       email: 'test@example.com',
       key: 'test-key',
       role: 'User',
@@ -97,8 +91,8 @@ describe('resendAppInvite', () => {
   it('should resend an invitation with the default app language if present', async () => {
     app = await app.update({ definition: { ...app.definition, defaultLanguage: 'nl' } });
 
+    const { AppInvite } = await getAppDB(app.id);
     await AppInvite.create({
-      AppId: app.id,
       email: 'test@example.com',
       key: 'test-key',
       role: 'User',
@@ -134,12 +128,12 @@ describe('resendAppInvite', () => {
       name: 'John Doe',
     });
 
+    const { AppInvite } = await getAppDB(app.id);
     await AppInvite.create({
-      AppId: app.id,
       email: newUser.primaryEmail,
       key: 'test-key',
       role: 'User',
-      UserId: newUser.id,
+      userId: newUser.id,
     });
 
     authorizeStudio();
@@ -175,12 +169,12 @@ describe('resendAppInvite', () => {
       name: 'John Doe',
     });
 
+    const { AppInvite } = await getAppDB(app.id);
     await AppInvite.create({
-      AppId: app.id,
       email: newUser.primaryEmail,
       key: 'test-key',
       role: 'User',
-      UserId: newUser.id,
+      userId: newUser.id,
     });
 
     authorizeStudio();
@@ -212,8 +206,8 @@ describe('resendAppInvite', () => {
       { where: { UserId: user.id } },
     );
 
+    const { AppInvite } = await getAppDB(app.id);
     await AppInvite.create({
-      AppId: app.id,
       email: 'test@example.com',
       key: 'test-key',
       role: 'User',

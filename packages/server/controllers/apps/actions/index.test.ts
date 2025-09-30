@@ -6,7 +6,7 @@ import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axi
 import Koa, { type ParameterizedContext } from 'koa';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, Asset, Organization } from '../../../models/index.js';
+import { App, getAppDB, Organization } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { createTestUser } from '../../../utils/test/authorization.js';
@@ -674,8 +674,8 @@ describe('actions', () => {
     it('should attach using objects', async () => {
       const spy = vi.spyOn(server.context.mailer, 'sendEmail');
       const buffer = Buffer.from(JSON.stringify({ test: 'test' }));
+      const { Asset } = await getAppDB(1);
       const asset = await Asset.create({
-        AppId: 1,
         mime: 'application/json',
         filename: 'test.json',
       });
@@ -781,8 +781,8 @@ describe('actions', () => {
     it('should attach existing assets', async () => {
       const spy = vi.spyOn(server.context.mailer, 'sendEmail');
       const buffer = Buffer.from('test');
+      const { Asset } = await getAppDB(1);
       const asset = await Asset.create({
-        AppId: 1,
         mime: 'text/plain',
         filename: 'test.txt',
       });
@@ -827,15 +827,14 @@ describe('actions', () => {
     it('should attach existing assets by name', async () => {
       const spy = vi.spyOn(server.context.mailer, 'sendEmail');
       const buffer = Buffer.from('test');
+      const { Asset } = await getAppDB(1);
       const asset = await Asset.create({
-        AppId: 1,
         mime: 'text/plain',
         filename: 'test.txt',
         name: 'test',
       });
       await uploadS3File(`app-${1}`, asset.id, buffer);
       const asset2 = await Asset.create({
-        AppId: 1,
         mime: 'text/plain',
         filename: 'test2.txt',
       });

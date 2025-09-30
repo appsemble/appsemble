@@ -6,9 +6,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  AppMember,
-  Group,
-  GroupMember,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -77,8 +75,9 @@ describe('getGroups', () => {
   });
 
   it('should return a list of groups', async () => {
-    const groupA = await Group.create({ name: 'A', AppId: app.id });
-    const groupB = await Group.create({ name: 'B', AppId: app.id });
+    const { Group } = await getAppDB(app.id);
+    const groupA = await Group.create({ name: 'A' });
+    const groupB = await Group.create({ name: 'B' });
 
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/groups`);
@@ -93,16 +92,16 @@ describe('getGroups', () => {
   });
 
   it('should include the role of the user', async () => {
+    const { AppMember, Group, GroupMember } = await getAppDB(app.id);
     const appMember = await AppMember.create({
       email: user.primaryEmail,
-      UserId: user.id,
+      userId: user.id,
       timezone: 'Europe/Amsterdam',
-      AppId: app.id,
       role: PredefinedAppRole.Member,
     });
-    const groupA = await Group.create({ name: 'A', AppId: app.id });
-    const groupB = await Group.create({ name: 'B', AppId: app.id });
-    const groupC = await Group.create({ name: 'C', AppId: app.id });
+    const groupA = await Group.create({ name: 'A' });
+    const groupB = await Group.create({ name: 'B' });
+    const groupC = await Group.create({ name: 'C' });
 
     await GroupMember.bulkCreate([
       { role: PredefinedAppRole.Member, AppMemberId: appMember.id, GroupId: groupA.id },

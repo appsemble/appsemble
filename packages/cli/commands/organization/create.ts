@@ -1,6 +1,7 @@
 import { type ReadStream } from 'node:fs';
 
 import { authenticate } from '@appsemble/node-utils';
+import { type PaymentProvider } from '@appsemble/types';
 import { type Argv } from 'yargs';
 
 import { coerceFile } from '../../lib/coercers.js';
@@ -14,6 +15,14 @@ interface CreateOrganizationArguments extends BaseArguments {
   name: string;
   website: string;
   icon: ReadStream;
+  preferredPaymentProvider: PaymentProvider;
+  vatIdNumber: string;
+  streetName: string;
+  houseNumber: string;
+  city: string;
+  zipCode: string;
+  countryCode: string;
+  invoiceReference: string;
 }
 
 export const command = 'create <id>';
@@ -40,26 +49,66 @@ export function builder(yargs: Argv): Argv<any> {
     .option('icon', {
       describe: 'The file location of the icon representing the organization.',
       coerce: coerceFile,
+    })
+    .option('preferredPaymentProvider', {
+      describe: 'The preferred payment provider of the organization.',
+    })
+    .option('vatIdNumber', {
+      describe: 'The VAT id number of the organization.',
+    })
+    .option('streetName', {
+      describe: 'Street name of the organization',
+    })
+    .option('houseNumber', {
+      describe: 'House number of the organization',
+    })
+    .option('city', {
+      describe: 'City of the organization',
+    })
+    .option('zipCode', {
+      describe: 'Zip code of the organization',
+    })
+    .option('countryCode', {
+      describe: 'Country code of the country where the organization is located',
+    })
+    .option('invoiceReference', {
+      describe: 'Optional reference the organization can set to appear on the invoice.',
     });
 }
 
 export async function handler({
+  city,
   clientCredentials,
+  countryCode,
   description: desc,
   email,
+  houseNumber,
   icon,
   id,
+  invoiceReference,
   name,
+  preferredPaymentProvider,
   remote,
+  streetName,
+  vatIdNumber,
   website,
+  zipCode,
 }: CreateOrganizationArguments): Promise<void> {
   await authenticate(remote, 'organizations:write', clientCredentials);
   await createOrganization({
     description: desc,
     email,
+    invoiceReference,
     icon,
     id,
     name,
+    preferredPaymentProvider,
     website,
+    streetName,
+    houseNumber,
+    city,
+    zipCode,
+    countryCode,
+    vatIdNumber,
   });
 }

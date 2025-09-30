@@ -116,8 +116,8 @@ export function CreateAppButton({ className }: { readonly className?: string }):
         >
           <SimpleFormError>
             {({ error }) =>
-              axios.isAxiosError(error) && error.response?.status === 409 ? (
-                <FormattedMessage {...messages.nameConflict} />
+              axios.isAxiosError(error) && error.response?.status === 403 ? (
+                <FormattedMessage {...messages.createFailAppLimit} />
               ) : (
                 <FormattedMessage {...messages.error} />
               )

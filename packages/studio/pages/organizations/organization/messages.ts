@@ -33,4 +33,12 @@ export const messages = defineMessages({
     id: 'studio.iKi9+h',
     defaultMessage: 'App collections',
   },
+  subscriptions: {
+    id: 'studio.J+dIsA',
+    defaultMessage: 'Subscriptions',
+  },
+  invoices: {
+    id: 'studio.6dqYnF',
+    defaultMessage: 'Invoices',
+  },
 });

@@ -171,6 +171,24 @@ export interface Argv {
   sslCert: string;
 
   // //////////////////////////////////////////////////////////////////////////////////////////// //
+  // Stripe                                                                                       //
+  // //////////////////////////////////////////////////////////////////////////////////////////// //
+  /**
+   * The Stripe API key to use.
+   */
+  stripeApiSecretKey: string;
+
+  /**
+   * The Stripe secret to use for verifying incoming requests.
+   */
+  stripeWebhookSecret: string;
+
+  /**
+   * Whether to update recorded Stripe responses used for tests.
+   */
+  updateStripeResponses: boolean;
+
+  // //////////////////////////////////////////////////////////////////////////////////////////// //
   // SMTP                                                                                         //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   /**
@@ -405,6 +423,14 @@ export interface Argv {
    * @default true
    */
   dryRun: boolean;
+
+  /**
+   * If specified, certificates for ingresses for custom domains of apps and app collections will
+   * not be issued
+   *
+   * @default false
+   */
+  skipCustomDomains: boolean;
 }
 
 const defaults: Argv = {
@@ -432,7 +458,8 @@ const defaults: Argv = {
   ingressClassName: 'nginx',
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   databaseHost: undefined,
-  databasePort: 5432,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  databasePort: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   databaseUser: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
@@ -450,6 +477,11 @@ const defaults: Argv = {
   sslKey: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sslCert: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  stripeApiSecretKey: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  stripeWebhookSecret: undefined,
+  updateStripeResponses: false,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpFrom: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
@@ -505,6 +537,7 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   s3SecretKey: undefined,
   dryRun: true,
+  skipCustomDomains: false,
 };
 
 export const argv = { ...defaults };

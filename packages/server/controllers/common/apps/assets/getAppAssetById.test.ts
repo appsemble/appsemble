@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  Asset,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -59,8 +59,8 @@ describe('getAppAssetById', () => {
   });
 
   it('should be able to fetch an asset', async () => {
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
@@ -82,8 +82,8 @@ describe('getAppAssetById', () => {
   });
 
   it('should be able to fetch an by name', async () => {
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.mp3',
       name: 'test-asset',
@@ -104,9 +104,8 @@ describe('getAppAssetById', () => {
   });
 
   it('should fallback to the asset id as the filename', async () => {
-    const asset = await Asset.create({
-      AppId: app.id,
-    });
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create();
 
     await uploadS3File(`app-${app.id}`, asset.id, Buffer.from('buffer'));
 
@@ -124,8 +123,8 @@ describe('getAppAssetById', () => {
   });
 
   it('should determine the file extension based on the mime type', async () => {
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      AppId: app.id,
       mime: 'text/plain',
     });
 
@@ -164,8 +163,8 @@ describe('getAppAssetById', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
+    const { Asset } = await getAppDB(appB.id);
     const asset = await Asset.create({
-      AppId: appB.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
@@ -186,8 +185,8 @@ describe('getAppAssetById', () => {
   });
 
   it('should not fetch deleted assets', async () => {
+    const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });

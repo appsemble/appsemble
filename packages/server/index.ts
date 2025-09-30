@@ -4,6 +4,7 @@ import './types.js';
  * These are exported, so @appsemble/cli can wrap them.
  */
 export { setArgv } from './utils/argv.js';
+export { decrypt } from './utils/crypto.js';
 export { handler as start } from './commands/start.js';
 export { handler as migrate } from './commands/migrate.js';
 export { handler as migrateAppDefinitions } from './commands/migrateAppDefinitions.js';
@@ -16,11 +17,12 @@ export { handler as runCronJobs } from './commands/runCronJobs.js';
 export { handler as scaleContainers } from './commands/scaleContainers.js';
 export { handler as fuzzMigrations } from './commands/fuzzMigrations.js';
 export { handler as synchronizeTrainings } from './commands/synchronizeTrainings.js';
+export { handler as chargeOrganizationSubscriptions } from './commands/chargeOrganizationSubscriptions.js';
 
 /**
  * These are exported, so @appsemble/cli can use them for integration testing.
  */
-export { setupTestDatabase, rootDB } from './utils/test/testSchema.js';
+export { setupTestDatabase, getRootDB, createTestDBWithUser } from './utils/test/testSchema.js';
 export {
   authorizeClientCredentials,
   createTestAppMember,

@@ -3,6 +3,7 @@ import { OrganizationPermission } from './permissions.js';
 const OrganizationMemberPermissions = [
   OrganizationPermission.QueryApps,
   OrganizationPermission.QueryOrganizationMembers,
+  OrganizationPermission.QueryOrganizationSubscriptions,
 ];
 
 const OrganizationAppTranslatorPermissions = [
@@ -114,6 +115,7 @@ const OrganizationOwnerPermissions = [
   OrganizationPermission.DeleteOrganizations,
   OrganizationPermission.RemoveOrganizationMembers,
   OrganizationPermission.UpdateOrganizationMemberRoles,
+  OrganizationPermission.ManageOrganizationSubscriptions,
 ];
 
 export enum PredefinedOrganizationRole {

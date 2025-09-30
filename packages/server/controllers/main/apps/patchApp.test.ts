@@ -1,26 +1,36 @@
 import { createFormData } from '@appsemble/node-utils';
-import { type App as AppType, PredefinedOrganizationRole } from '@appsemble/types';
+import {
+  type App as AppType,
+  PredefinedOrganizationRole,
+  SubscriptionPlanType,
+} from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import stripIndent from 'strip-indent';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,
-  AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
-  Resource,
+  OrganizationSubscription,
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
+import { decrypt, encrypt } from '../../../utils/crypto.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
+import { createTestDBWithUser } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;
 
-const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
+const argv = {
+  host: 'http://localhost',
+  secret: 'test',
+  aesSecret: 'testSecret',
+};
 
 describe('patchApp', () => {
   beforeAll(async () => {
@@ -174,11 +184,11 @@ describe('patchApp', () => {
       OrganizationId: organization.id,
     });
 
+    const { Resource } = await getAppDB(app.id);
     await Resource.bulkCreate(
       Array.from(Array.from({ length: 10 }).keys()).map((entry) => ({
         type: 'testResource',
         data: { foo: `bar ${entry}` },
-        AppId: app.id,
       })),
     );
     authorizeStudio(user);
@@ -210,7 +220,6 @@ describe('patchApp', () => {
       await Resource.findAll({
         attributes: ['id', 'Position', 'type'],
         where: {
-          AppId: app.id,
           type: 'testResource',
         },
       })
@@ -246,11 +255,11 @@ describe('patchApp', () => {
       OrganizationId: organization.id,
     });
 
+    const { Resource } = await getAppDB(app.id);
     await Resource.bulkCreate(
       Array.from(Array.from({ length: 10 }).keys()).map((entry) => ({
         type: 'testResource',
         data: { foo: `bar ${entry}`, numericFoo: entry % 2 === 0 ? 0 : entry },
-        AppId: app.id,
         Position: (entry + 1) * 10,
       })),
     );
@@ -285,7 +294,6 @@ describe('patchApp', () => {
       await Resource.findAll({
         attributes: ['id', 'data', 'Position', 'type'],
         where: {
-          AppId: app.id,
           type: 'testResource',
         },
         order: [['Position', 'ASC']],
@@ -1495,7 +1503,8 @@ describe('patchApp', () => {
       { raw: true },
     );
     authorizeStudio();
-    const member = await AppMember.findOne({ where: { AppId: app.id, role: 'cron' } });
+    const { AppMember } = await getAppDB(app.id);
+    const member = await AppMember.findOne({ where: { role: 'cron' } });
     expect(member).toBeNull();
     const response = await request.patch(
       `/api/apps/${app.id}`,
@@ -1520,9 +1529,8 @@ describe('patchApp', () => {
       }),
     );
     expect(response.status).toBe(200);
-    const foundMember = (await AppMember.findOne({ where: { AppId: app.id, role: 'cron' } }))!;
+    const foundMember = (await AppMember.findOne({ where: { role: 'cron' } }))!;
     expect(foundMember.dataValues).toMatchObject({
-      AppId: app.id,
       role: 'cron',
       email: expect.stringMatching('cron.*example'),
     });
@@ -1826,8 +1834,6 @@ describe('patchApp', () => {
         "enableSelfRegistration": true,
         "enableUnsecuredServiceSecrets": false,
         "googleAnalyticsID": null,
-        "hasClonableAssets": undefined,
-        "hasClonableResources": undefined,
         "hasIcon": false,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
@@ -1952,5 +1958,208 @@ describe('patchApp', () => {
       ",
       }
     `);
+  });
+
+  it('should use passed database parameters if present', async () => {
+    vi.useRealTimers();
+    const dbUser = 'app-admin';
+    const dbPassword = 'app-password';
+    const dbName = 'app-db';
+    const appDB = await createTestDBWithUser({ dbUser, dbPassword, dbName });
+    const app = await App.create(
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        ...appDB,
+        dbPassword: encrypt(dbPassword, argv.aesSecret),
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const patchedDBUser = 'patched-app-admin';
+    const patchedDBPassword = 'patched-app-password';
+    const patchedDBName = 'patched-app-db';
+    const patchedAppDB = await createTestDBWithUser({
+      dbUser: patchedDBUser,
+      dbPassword: patchedDBPassword,
+      dbName: patchedDBName,
+    });
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        ...patchedAppDB,
+        dbPassword: patchedDBPassword,
+      }),
+    );
+    const updatedApp = await App.findByPk(response.data.id, {
+      attributes: ['dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword'],
+    });
+    expect(updatedApp?.get()).toStrictEqual(expect.objectContaining(patchedAppDB));
+    expect(decrypt(updatedApp!.dbPassword, argv.aesSecret)).toBe(patchedDBPassword);
+  });
+
+  it('should not update the app if app limit is reached', async () => {
+    await App.create(
+      {
+        definition: { name: 'Test App 1', defaultPage: 'Test Page' },
+        path: 'test-app',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        definition: { name: 'Test App 2', defaultPage: 'Test Page' },
+        path: 'test-app-2',
+        vapidPublicKey: 'c',
+        vapidPrivateKey: 'd',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-3',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const testApp = await App.create(
+      {
+        definition: { name: 'Test App 4', defaultPage: 'Test Page' },
+        path: 'test-app-4',
+        vapidPublicKey: 'g',
+        vapidPrivateKey: 'h',
+        OrganizationId: organization.id,
+        visibility: 'unlisted',
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${testApp.id}`,
+      createFormData({ visibility: 'public' }),
+    );
+
+    expect(response.status).toBe(403);
+    expect(response.data.message).toBe('App limit reached.');
+  });
+
+  it('should update the app if app limit is not reached', async () => {
+    await App.create(
+      {
+        definition: { name: 'Test App 1', defaultPage: 'Test Page' },
+        path: 'test-app',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        definition: { name: 'Test App 2', defaultPage: 'Test Page' },
+        path: 'test-app-2',
+        vapidPublicKey: 'c',
+        vapidPrivateKey: 'd',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const testApp = await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-4',
+        vapidPublicKey: 'g',
+        vapidPrivateKey: 'h',
+        OrganizationId: organization.id,
+        visibility: 'unlisted',
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${testApp.id}`,
+      createFormData({ visibility: 'public' }),
+    );
+
+    expect(response.status).toBe(200);
+  });
+
+  it('should update the app if the organization has a subscription, increasing app limit.', async () => {
+    const subscription = await OrganizationSubscription.findOne({
+      where: { OrganizationId: organization.id },
+    });
+    expect(subscription).not.toBeNull();
+    subscription!.subscriptionPlan = SubscriptionPlanType.Basic;
+    subscription!.save();
+    await App.create(
+      {
+        definition: { name: 'Test App 1', defaultPage: 'Test Page' },
+        path: 'test-app',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        definition: { name: 'Test App 2', defaultPage: 'Test Page' },
+        path: 'test-app-2',
+        vapidPublicKey: 'c',
+        vapidPrivateKey: 'd',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+        path: 'test-app-3',
+        vapidPublicKey: 'e',
+        vapidPrivateKey: 'f',
+        OrganizationId: organization.id,
+        visibility: 'public',
+      },
+      { raw: true },
+    );
+    const testApp = await App.create(
+      {
+        definition: { name: 'Test App 4', defaultPage: 'Test Page' },
+        path: 'test-app-4',
+        vapidPublicKey: 'g',
+        vapidPrivateKey: 'h',
+        OrganizationId: organization.id,
+        visibility: 'unlisted',
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${testApp.id}`,
+      createFormData({ visibility: 'public' }),
+    );
+
+    expect(response.status).toBe(200);
   });
 });

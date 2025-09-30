@@ -14,7 +14,7 @@ context:
   staging:
     id: 10
     organization: appsemble
-    remote: https://staging.appsemble.eu
+    remote: https://appsemble.eu
     visibility: public
   e2e:
     organization: appsemble

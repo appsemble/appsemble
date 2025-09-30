@@ -273,4 +273,12 @@ export const messages = defineMessages({
     id: 'studio.+7+1T0',
     defaultMessage: 'The permission to send manual push notifications for an app.',
   },
+  ManageOrganizationSubscriptions: {
+    id: 'studio.7MEwoZ',
+    defaultMessage: 'The permission to manage subscriptions.',
+  },
+  QueryOrganizationSubscriptions: {
+    id: 'studio.wui5o0',
+    defaultMessage: 'The permission to view subscriptions.',
+  },
 });

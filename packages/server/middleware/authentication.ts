@@ -4,11 +4,11 @@ import { compare } from 'bcrypt';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { Op } from 'sequelize';
 
-import { AppWebhookSecret } from '../models/AppWebhookSecret.js';
 import {
   App,
-  AppMember,
+  type AppMember,
   EmailAuthorization,
+  getAppDB,
   OAuth2ClientCredentials,
   User,
 } from '../models/index.js';
@@ -52,7 +52,11 @@ export function authentication(): SecurityOptions {
 
       // @ts-expect-error Messed up
       const app = (await App.findByPk(id)).toJSON();
+      if (!app) {
+        return;
+      }
 
+      const { AppMember } = await getAppDB(app.id!);
       const appMember = await AppMember.findByPk(sub, {
         attributes: ['id'],
       });
@@ -129,9 +133,9 @@ export function authentication(): SecurityOptions {
         return;
       }
 
+      const { AppWebhookSecret } = await getAppDB(Number(match[1])!);
       const appWebhookSecrets = await AppWebhookSecret.findAll({
         where: {
-          AppId: Number(match[1]),
           webhookName: match[2],
         },
         attributes: ['secret'],

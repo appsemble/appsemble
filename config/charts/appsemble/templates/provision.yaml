@@ -50,6 +50,13 @@ spec:
                   NOW()
                 ) ON CONFLICT (id) DO NOTHING;
 
+                INSERT INTO "OrganizationSubscription" ("OrganizationId", "subscriptionPlan", created, updated) VALUES (
+                  {{ .Values.provision.organization.id | squote }},
+                  {{ .Values.provision.organization.subscription | squote }},
+                  NOW(),
+                  NOW()
+                ) ON CONFLICT ("OrganizationId") DO UPDATE SET "subscriptionPlan" = {{ .Values.provision.organization.subscription | squote }}, updated = NOW();
+
                 INSERT INTO "OrganizationMember" ("UserId", "OrganizationId", role, created, updated) VALUES (
                   {{ $userId | squote }},
                   {{ .Values.provision.organization.id | squote }},

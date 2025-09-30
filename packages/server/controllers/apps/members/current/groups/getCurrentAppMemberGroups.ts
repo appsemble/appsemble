@@ -1,7 +1,7 @@
 import { type AppMemberGroup } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { Group, GroupMember } from '../../../../../models/index.js';
+import { getAppDB } from '../../../../../models/index.js';
 import { checkAppMemberAppPermissions } from '../../../../../utils/authorization.js';
 
 export async function getCurrentAppMemberGroups(ctx: Context): Promise<void> {
@@ -10,15 +10,17 @@ export async function getCurrentAppMemberGroups(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
 
+  const { Group, GroupMember } = await getAppDB(appId);
+
   await checkAppMemberAppPermissions({ context: ctx, appId, requiredPermissions: [] });
 
   const groups = await Group.findAll({
-    where: { AppId: appId },
     include: [
       {
         model: GroupMember,
         where: { AppMemberId: authSubject!.id },
         required: true,
+        as: 'Members',
       },
     ],
   });

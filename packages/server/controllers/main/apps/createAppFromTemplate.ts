@@ -15,20 +15,15 @@ import { parseDocument } from 'yaml';
 
 import {
   App,
-  AppBlockStyle,
   AppMessages,
-  AppOAuth2Secret,
   AppReadme,
-  AppSamlSecret,
   AppScreenshot,
-  AppServiceSecret,
   AppSnapshot,
-  AppVariable,
-  Asset,
-  Resource,
+  getAppDB,
 } from '../../../models/index.js';
 import { setAppPath } from '../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 
 export async function createAppFromTemplate(ctx: Context): Promise<void> {
@@ -69,19 +64,22 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       'sslKey',
     ],
     include: [
-      { model: Resource, where: { clonable: true }, required: false },
-      { model: Asset, where: { clonable: true }, required: false },
       { model: AppMessages, required: false },
-      { model: AppBlockStyle, required: false },
       { model: AppSnapshot, limit: 1, order: [['created', 'desc']] },
       { model: AppScreenshot, required: false },
       { model: AppReadme, required: false },
-      { model: AppVariable, required: false },
-      { model: AppOAuth2Secret, required: false },
-      { model: AppSamlSecret, required: false },
-      { model: AppServiceSecret, required: false },
     ],
   });
+
+  const {
+    AppBlockStyle: TemplateAppBlockStyle,
+    AppOAuth2Secret: TemplateAppOAuth2Secret,
+    AppSamlSecret: TemplateAppSamlSecret,
+    AppServiceSecret: TemplateAppServiceSecret,
+    AppVariable: TemplateAppVariable,
+    Asset: TemplateAsset,
+    Resource: TemplateResource,
+  } = await getAppDB(templateId);
 
   await checkUserOrganizationPermissions({
     context: ctx,
@@ -120,30 +118,91 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       scimToken: Buffer.from('placeholder'),
       scimEnabled: template.scimEnabled,
       OrganizationId: organizationId,
-      ...(resources && {
-        Resources: template.Resources.map(({ data, seed, type }) => ({
-          type,
-          data,
-          seed,
-        })) as Resource[],
-      }),
-      ...(assets && {
-        Assets: template.Assets.map(({ filename, id, mime, name: assetName, seed }) => ({
+      AppMessages: ([] as AppMessages[]).concat(template.AppMessages),
+    };
+
+    await setAppPath(ctx, result, path);
+
+    for (const m of result.AppMessages!) {
+      delete m.messages?.app?.name;
+      delete m.messages?.app?.description;
+    }
+    await checkAppLimit(ctx, result);
+    const record = await App.create(result, { include: [AppMessages, AppScreenshot, AppReadme] });
+
+    const {
+      AppBlockStyle: RecordAppBlockStyle,
+      AppOAuth2Secret: RecordAppOAuth2Secret,
+      AppSamlSecret: RecordAppSamlSecret,
+      AppServiceSecret: RecordAppServiceSecret,
+      AppVariable: RecordAppVariables,
+      Asset: RecordAsset,
+      Resource: RecordResource,
+    } = await getAppDB(record.id);
+
+    const templateAppBlockStyles = await TemplateAppBlockStyle.findAll();
+    if (templateAppBlockStyles.length) {
+      await RecordAppBlockStyle.bulkCreate(
+        templateAppBlockStyles.map((blockStyle) => ({
+          AppId: record.id,
+          block: blockStyle.block,
+          style: blockStyle.style,
+        })),
+      );
+    }
+
+    if (assets) {
+      const templateAssets = await TemplateAsset.findAll({ where: { clonable: true } });
+      const recordAssets = await RecordAsset.bulkCreate(
+        templateAssets.map(({ filename, id, mime, name: assetName, seed }) => ({
           id,
           mime,
           filename,
           name: assetName,
           seed,
-        })) as Asset[],
-      }),
-      ...(variables && {
-        AppVariables: template.AppVariables.map(({ name: variableName, value }) => ({
+        })),
+      );
+      for (const templateAsset of templateAssets) {
+        const templateStream = await getS3File(`app-${template.id}`, templateAsset.id);
+        const templateStats = await getS3FileStats(`app-${template.id}`, templateAsset.id);
+        const createdAsset = recordAssets.find((asset) => asset.name === templateAsset.name);
+        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
+        await uploadS3File(`app-${record.id}`, createdAsset.id, templateStream, templateStats.size);
+      }
+    }
+
+    if (resources) {
+      const templateResources = await TemplateResource.findAll({ where: { clonable: true } });
+      await RecordResource.bulkCreate(
+        templateResources.map(({ data, seed, type }) => ({
+          type,
+          data,
+          seed,
+        })),
+      );
+      Object.entries(template.definition.resources ?? {}).map(
+        ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
+          if (positioning && enforceOrderingGroupByFields) {
+            createDynamicIndexes(enforceOrderingGroupByFields, record.id, resourceType);
+          }
+        },
+      );
+    }
+
+    if (variables) {
+      const templateAppVariables = await TemplateAppVariable.findAll();
+      await RecordAppVariables.bulkCreate(
+        templateAppVariables.map(({ name: variableName, value }) => ({
           name: variableName,
           value,
-        })) as AppVariable[],
-      }),
-      ...(secrets && {
-        AppOAuth2Secrets: template.AppOAuth2Secrets.map(
+        })),
+      );
+    }
+
+    if (secrets) {
+      const templateAppOAuth2Secrets = await TemplateAppOAuth2Secret.findAll();
+      await RecordAppOAuth2Secret.bulkCreate(
+        templateAppOAuth2Secrets.map(
           ({
             authorizationUrl,
             icon,
@@ -163,24 +222,12 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
             clientId: '',
             clientSecret: '',
           }),
-        ) as AppOAuth2Secret[],
-        AppServiceSecrets: template.AppServiceSecrets.map(
-          ({
-            authenticationMethod,
-            identifier,
-            name: appServiceSecretName,
-            tokenUrl,
-            urlPatterns,
-          }) => ({
-            name: appServiceSecretName,
-            urlPatterns,
-            authenticationMethod,
-            identifier,
-            tokenUrl,
-            secret: Buffer.from('placeholder'),
-          }),
-        ) as AppServiceSecret[],
-        AppSamlSecrets: template.AppSamlSecrets.map(
+        ),
+      );
+
+      const templateAppSamlSecrets = await TemplateAppSamlSecret.findAll();
+      await RecordAppSamlSecret.bulkCreate(
+        templateAppSamlSecrets.map(
           ({
             emailAttribute,
             entityId,
@@ -202,50 +249,27 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
             nameAttribute,
             objectIdAttribute,
           }),
-        ) as AppSamlSecret[],
-      }),
-      AppMessages: ([] as AppMessages[]).concat(template.AppMessages),
-    };
+        ),
+      );
 
-    await setAppPath(ctx, result, path);
-
-    for (const m of result.AppMessages!) {
-      delete m.messages?.app?.name;
-      delete m.messages?.app?.description;
-    }
-    const record = await App.create(
-      { ...result, Assets: result.Assets?.map(({ id, ...rest }) => rest) },
-      {
-        include: [
-          Resource,
-          Asset,
-          AppMessages,
-          AppScreenshot,
-          AppReadme,
-          AppVariable,
-          AppOAuth2Secret,
-          AppServiceSecret,
-          AppSamlSecret,
-        ],
-      },
-    );
-
-    if (result.Assets) {
-      for (const templateAsset of result.Assets) {
-        const templateStream = await getS3File(`app-${template.id}`, templateAsset.id);
-        const templateStats = await getS3FileStats(`app-${template.id}`, templateAsset.id);
-        const createdAsset = record.Assets.find((asset) => asset.name === templateAsset.name);
-        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-        await uploadS3File(`app-${record.id}`, createdAsset.id, templateStream, templateStats.size);
-      }
-    }
-    if (resources) {
-      Object.entries(template.definition.resources ?? {}).map(
-        ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
-          if (positioning && enforceOrderingGroupByFields) {
-            createDynamicIndexes(enforceOrderingGroupByFields, record.id, resourceType);
-          }
-        },
+      const templateAppServiceSecrets = await TemplateAppServiceSecret.findAll();
+      await RecordAppServiceSecret.bulkCreate(
+        templateAppServiceSecrets.map(
+          ({
+            authenticationMethod,
+            identifier,
+            name: appServiceSecretName,
+            tokenUrl,
+            urlPatterns,
+          }) => ({
+            name: appServiceSecretName,
+            urlPatterns,
+            authenticationMethod,
+            identifier,
+            tokenUrl,
+            secret: Buffer.from('placeholder'),
+          }),
+        ),
       );
     }
 
@@ -260,15 +284,6 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       yaml: String(doc),
     });
     record.AppSnapshots = [snapshot];
-    if (template.AppBlockStyles.length) {
-      await AppBlockStyle.bulkCreate(
-        template.AppBlockStyles.map((blockStyle) => ({
-          AppId: record.id,
-          block: blockStyle.block,
-          style: blockStyle.style,
-        })),
-      );
-    }
 
     if (template.definition.containers && template.definition.containers.length > 0) {
       await updateCompanionContainers(

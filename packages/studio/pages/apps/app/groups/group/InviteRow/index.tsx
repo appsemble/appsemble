@@ -6,6 +6,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { useApp } from '../../../index.js';
 
 interface InviteRowProps {
   /**
@@ -34,6 +35,7 @@ export function InviteRow({
   mayInvite,
   onDelete,
 }: InviteRowProps): ReactNode {
+  const { app } = useApp();
   const { formatMessage } = useIntl();
   const { groupId } = useParams<{ groupId: string }>();
   const push = useMessages();
@@ -43,7 +45,7 @@ export function InviteRow({
 
   const resendInvitation = useCallback(async () => {
     try {
-      await axios.post(`/api/groups/${groupId}/invites/resend`, {
+      await axios.post(`/api/apps/${app.id}/groups/${groupId}/invites/resend`, {
         email: invite.email,
       });
     } catch {
@@ -52,7 +54,7 @@ export function InviteRow({
     }
     setResent(true);
     push({ body: formatMessage(messages.resendSuccess), color: 'info' });
-  }, [formatMessage, push, invite, groupId]);
+  }, [push, formatMessage, app.id, groupId, invite.email]);
 
   const deleteInvite = useCallback(() => onDelete(invite), [invite, onDelete]);
 

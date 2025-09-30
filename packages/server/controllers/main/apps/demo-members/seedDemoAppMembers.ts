@@ -4,7 +4,7 @@ import { type AppMemberInfo, OrganizationPermission } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { type Context } from 'koa';
 
-import { App, AppMember } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { getAppMemberInfo, parseAppMemberProperties } from '../../../../utils/appMember.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
@@ -37,10 +37,10 @@ export async function seedDemoAppMembers(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateAppInvites],
   });
 
+  const { AppMember } = await getAppDB(appId);
   const filteredMembers = validateAppMemberRoles(app.definition, body);
   const createdMembers = await AppMember.bulkCreate(
     filteredMembers.map(({ name, properties, role, zoneinfo: timezone }) => ({
-      AppId: appId,
       email: `demo-${Math.random().toString(36).slice(2)}@example.com`,
       role,
       emailVerified: true,
@@ -56,7 +56,6 @@ export async function seedDemoAppMembers(ctx: Context): Promise<void> {
 
   const createdEphemeralMembers = await AppMember.bulkCreate(
     createdMembers.map(({ email, locale, name, properties, role, timezone }) => ({
-      AppId: appId,
       email,
       locale,
       name,
@@ -69,5 +68,5 @@ export async function seedDemoAppMembers(ctx: Context): Promise<void> {
       properties: parseAppMemberProperties(properties ?? {}),
     })),
   );
-  ctx.body = createdEphemeralMembers.map((member) => getAppMemberInfo(member));
+  ctx.body = createdEphemeralMembers.map((member) => getAppMemberInfo(appId, member));
 }

@@ -4,8 +4,8 @@ import { addYears } from 'date-fns';
 import { type Context } from 'koa';
 import forge from 'node-forge';
 
-import { DEFAULT_SAML_EMAIL_ATTRIBUTE } from '../../../../../models/AppSamlSecret.js';
-import { App, AppSamlSecret } from '../../../../../models/index.js';
+import { DEFAULT_SAML_EMAIL_ATTRIBUTE } from '../../../../../models/apps/AppSamlSecret.js';
+import { App, getAppDB } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
@@ -15,12 +15,7 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
     pathParams: { appId },
     request: { body },
   } = ctx;
-
-  const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
-    include: [{ model: AppSamlSecret }],
-  });
-
+  const app = await App.findByPk(appId, { attributes: ['OrganizationId'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
@@ -53,10 +48,10 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
   cert.setIssuer(attrs);
   cert.sign(privateKey);
 
+  const { AppSamlSecret } = await getAppDB(appId);
   const secret = { ...body, spCertificate: forge.pki.certificateToPem(cert).trim() };
   const { id } = await AppSamlSecret.create({
     ...secret,
-    AppId: appId,
     spPrivateKey: forge.pki.privateKeyToPem(privateKey).trim(),
     spPublicKey: forge.pki.publicKeyToPem(publicKey).trim(),
     emailAttribute: secret.emailAttribute || DEFAULT_SAML_EMAIL_ATTRIBUTE,

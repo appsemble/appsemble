@@ -58,6 +58,10 @@ oauthSecret: null
 
 secretSecret: appsemble
 
+stripeApiSecretKey: stripe-api-secret-key
+
+stripeWebhookSecret: stripe-webhook-secret
+
 cronjob:
   jobsHistoryLimit: 3
 
@@ -66,6 +70,8 @@ gitlab:
   env: null
 
 migrateTo: null
+
+skipCustomDomains: false
 
 migrateDefinitions:
   validate: true

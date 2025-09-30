@@ -8,8 +8,9 @@ import yargs, { type CommandModule } from 'yargs';
 import * as app from './commands/app/index.js';
 import * as asset from './commands/asset/index.js';
 import * as block from './commands/block/index.js';
+import * as chargeOrganizationSubscriptions from './commands/chargeOrganizationSubscriptions.js';
 import * as checkDownMigrations from './commands/checkDownMigrations.js';
-import * as checkMigrations from './commands/checkMigrations.js';
+import * as checkAppMigrations from './commands/checkMigrations.js';
 import * as cleanupDemoAppMembers from './commands/cleanupDemoAppMembers.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
 import * as cleanupSoftDeletedRecords from './commands/cleanupSoftDeletedRecords.js';
@@ -63,7 +64,7 @@ let parser = yargs(process.argv.slice(2))
   .command(cleanupResourcesAndAssets as unknown as CommandModule)
   .command(cleanupDemoAppMembers as unknown as CommandModule)
   .command(cleanupSoftDeletedRecords as unknown as CommandModule)
-  .command(checkMigrations as unknown as CommandModule)
+  .command(checkAppMigrations as unknown as CommandModule)
   .command(checkDownMigrations as unknown as CommandModule)
   .command(fuzzMigrations as unknown as CommandModule)
   .command(config)
@@ -78,6 +79,7 @@ let parser = yargs(process.argv.slice(2))
   .command(synchronizeTrainings as unknown as CommandModule)
   .command(serve as unknown as CommandModule)
   .command(scaleContainers as unknown as CommandModule)
+  .command(chargeOrganizationSubscriptions as unknown as CommandModule)
   .command(group)
   .demandCommand(1)
   // .strict() isn’t used because of https://github.com/yargs/yargs/issues/2058

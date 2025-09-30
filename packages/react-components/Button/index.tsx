@@ -36,6 +36,11 @@ type ButtonProps<C extends ElementType = 'button'> = ComponentPropsWithoutRef<C>
      * The size modifier that should be used for the button’s icons.
      */
     readonly iconSizeModifier?: '2x' | '3x' | 'lg';
+
+    /**
+     * The color that should be used for the button's icons.
+     */
+    readonly iconColor?: BulmaColor;
   };
 
 /**
@@ -49,6 +54,7 @@ export function Button<C extends ElementType = 'button'>({
   color,
   component: Component = 'button' as C,
   icon,
+  iconColor,
   iconPosition = 'left',
   iconSize,
   iconSizeModifier,
@@ -74,6 +80,7 @@ export function Button<C extends ElementType = 'button'>({
     >
       <ButtonChildren
         icon={icon}
+        iconColor={iconColor}
         iconPosition={iconPosition}
         iconSize={iconSize}
         iconSizeModifier={iconSizeModifier}

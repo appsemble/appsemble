@@ -18,7 +18,22 @@ import {
 export async function createOrganization(ctx: Context): Promise<void> {
   const {
     request: {
-      body: { description, email, icon, id, name, website },
+      body: {
+        city,
+        countryCode,
+        description,
+        email,
+        houseNumber,
+        icon,
+        id,
+        invoiceReference,
+        name,
+        preferredPaymentProvider,
+        streetName,
+        vatIdNumber,
+        website,
+        zipCode,
+      },
     },
     user: authSubject,
   } = ctx;
@@ -66,6 +81,14 @@ export async function createOrganization(ctx: Context): Promise<void> {
       description,
       website,
       icon: icon ? await uploadToBuffer(icon.path) : null,
+      preferredPaymentProvider,
+      vatIdNumber,
+      city,
+      countryCode,
+      houseNumber,
+      streetName,
+      zipCode,
+      invoiceReference,
     });
 
     await OrganizationMember.create({
@@ -92,6 +115,14 @@ export async function createOrganization(ctx: Context): Promise<void> {
         },
       ],
       invites: [],
+      preferredPaymentProvider: organization.preferredPaymentProvider,
+      vatIdNumber: organization.vatIdNumber,
+      streetName: organization.streetName,
+      houseNumber: organization.houseNumber,
+      city: organization.city,
+      zipCode: organization.zipCode,
+      countryCode: organization.countryCode,
+      invoiceReference: organization.invoiceReference,
     };
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
