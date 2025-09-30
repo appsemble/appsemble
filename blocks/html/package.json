@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/html",
-  "version": "0.34.22-test.6",
+  "version": "0.35.0",
   "private": true,
   "description": "A block that can render HTML with basic templating.",
   "homepage": "https://appsemble.app",
@@ -17,7 +17,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.34.22-test.6",
-    "@appsemble/utils": "0.34.22-test.6"
+    "@appsemble/sdk": "0.35.0",
+    "@appsemble/utils": "0.35.0"
   }
 }

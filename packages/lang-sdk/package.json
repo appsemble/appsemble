@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/lang-sdk",
-  "version": "0.34.22-test.6",
+  "version": "0.35.0",
   "description": "Language SDK for Appsemble",
   "keywords": [
     "app",
