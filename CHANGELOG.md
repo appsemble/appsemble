@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.34.22-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.6)] - 2025-09-30
+
+### Changed
+
+- Utils: **Breaking** All app groups related endpoints are now prefixed by `/apps/<app-id>`.
+- Utils: **Breaking** All app invite related endpoints are now prefixed by `/apps/<app-id>`.
+- Utils: **Breaking** All app member related endpoints are now prefixed by `/apps/<app-id>`.
+
 ## \[[0.34.22-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.5)] - 2025-09-26
 
 ## \[[0.34.22-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.4)] - 2025-09-26
