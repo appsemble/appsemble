@@ -91,7 +91,7 @@ pages:
             type: resource.query
             resource: bicycles
       - type: list
-        version: 0.35.0
+        version: 0.35.1
         events:
           listen:
             data: bicycleInventory
