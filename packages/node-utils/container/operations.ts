@@ -139,7 +139,7 @@ export async function updateCompanionContainers(
   registry?: string,
 ): Promise<void> {
   // If testing, don't create Kubernetes resources
-  if (process.env.TEST) {
+  if (process.env.NODE_ENV !== 'production') {
     return;
   }
 
