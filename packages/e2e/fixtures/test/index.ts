@@ -1,7 +1,8 @@
 import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-import { expect, mergeTests } from '@playwright/test';
+import { expect, mergeTests, request } from '@playwright/test';
 
 import { test as appFixtures } from './app/index.js';
 import { test as appCollectionFixtures } from './app-collection/index.js';
@@ -67,4 +68,17 @@ export const authenticatedTest = baseTest.extend<{}, { workerStorageState: strin
     },
     { scope: 'worker' },
   ],
+
+  async request({ baseURL, storageState }, use) {
+    const accessToken = JSON.parse(await readFile(String(storageState), 'utf8')).origins[0]
+      .localStorage[1].value;
+    const newRequest = await request.newContext({
+      baseURL,
+      extraHTTPHeaders: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    await use(newRequest);
+    await newRequest.dispose();
+  },
 });

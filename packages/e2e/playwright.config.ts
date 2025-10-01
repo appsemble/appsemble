@@ -8,8 +8,8 @@ const { APPSEMBLE_REVIEW_DOMAIN, APPSEMBLE_STAGING_DOMAIN, CI, CI_MERGE_REQUEST_
  */
 export default defineConfig({
   testMatch: '**/*.spec.ts',
-  // Tests aren't fully isolated so they shouldn't run in parallel
-  fullyParallel: false,
+  // Run tests in parallel
+  fullyParallel: true,
   // Fail the build on CI if you accidentally left test.only in the source code.
   forbidOnly: Boolean(CI),
   // Retry on CI only

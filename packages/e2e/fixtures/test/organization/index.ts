@@ -44,9 +44,6 @@ export const test = base.extend<OrganizationFixtures>({
 
       const response = await request.post('/api/organizations', {
         multipart: formData,
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-        },
       });
       expect(response.status()).toBe(201);
 
@@ -56,11 +53,7 @@ export const test = base.extend<OrganizationFixtures>({
 
   async deleteOrganization({ request }, use) {
     await use(async (id) => {
-      const response = await request.delete(`/api/organizations/${id}`, {
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-        },
-      });
+      const response = await request.delete(`/api/organizations/${id}`);
       expect(response.status()).toBe(200);
     });
   },

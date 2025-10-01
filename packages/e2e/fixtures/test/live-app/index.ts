@@ -104,9 +104,6 @@ export const test = base.extend<LiveAppFixtures>({
             redirectUri: url,
             scope: 'openid',
           },
-          headers: {
-            Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-          },
         },
       );
       expect(response.status()).toBe(201);
