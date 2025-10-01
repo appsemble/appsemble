@@ -1,6 +1,6 @@
-import { expect, test } from '../../index.js';
+import { createUser, deleteUser } from '@appsemble/node-utils';
 
-const { BOT_ACCOUNT_EMAIL, BOT_ACCOUNT_PASSWORD } = process.env;
+import { expect, baseTest as test } from '../../index.js';
 
 test.describe('Apps', () => {
   // Prevent worker from being logged in automatically
@@ -22,11 +22,22 @@ test.describe('Apps', () => {
     await expect(page.getByRole('heading', { name: 'All Apps', exact: true })).toBeVisible();
   });
 
-  test('should display “My Apps” when logged in', async ({ loginUser, page }) => {
-    expect(BOT_ACCOUNT_EMAIL && BOT_ACCOUNT_PASSWORD).not.toBeUndefined();
-    await loginUser(BOT_ACCOUNT_EMAIL!, BOT_ACCOUNT_PASSWORD!);
+  test('should display “My Apps” when logged in', async ({
+    browser,
+    loginUserOnPage,
+    randomTestId,
+  }) => {
+    const name = 'Test user';
+    const email = `${randomTestId(1)}@test.com`;
+    const password = '12345';
+    await createUser(name, email, password);
+    const page = await browser.newPage({ storageState: undefined });
+
+    await loginUserOnPage(email, password, page);
 
     await expect(page.getByRole('heading', { name: 'My Apps', exact: true })).toBeVisible();
+
+    await deleteUser(email);
   });
 
   test('should render list of apps', async ({ page }) => {

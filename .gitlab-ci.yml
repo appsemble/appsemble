@@ -498,6 +498,8 @@ e2e node:
     - npm run appsemble -- block publish 'blocks/*'
     - npm --workspace @appsemble/types run prepack
     - npm --workspace @appsemble/lang-sdk run prepack
+    - npm --workspace @appsemble/utils run prepack
+    - npm --workspace @appsemble/node-utils run prepack
     - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
     - npm run scripts seed-subscription --
       --organization appsemble

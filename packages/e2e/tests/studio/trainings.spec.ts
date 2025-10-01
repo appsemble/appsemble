@@ -1,15 +1,12 @@
 import { type TrainingStatus } from '@appsemble/types';
 
-import { expect, test } from '../../index.js';
+import { expect, authenticatedTest as test } from '../../index.js';
 
 test.describe('Training', () => {
   test.beforeEach(async ({ page, resetTrainingProgress }) => {
     await resetTrainingProgress();
     await page.goto('/en/trainings');
   });
-
-  // We only have 1 account, so tests can influence each other
-  test.describe.configure({ mode: 'serial' });
 
   test("should show 'Training' in breadcrumbs", async ({ page }) => {
     await expect(

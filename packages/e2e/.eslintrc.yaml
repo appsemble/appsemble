@@ -1,2 +1,4 @@
 extends:
   - plugin:playwright/playwright-test
+rules:
+  'playwright/no-standalone-expect': off

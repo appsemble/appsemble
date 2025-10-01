@@ -1,4 +1,4 @@
-import { expect, test } from '../../../fixtures/index.js';
+import { expect, authenticatedTest as test } from '../../../fixtures/index.js';
 
 const organization = 'Appsemble';
 const email = 'test+test_mode@test.com';

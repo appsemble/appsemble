@@ -38,6 +38,15 @@ test('should navigate to app', async ({ visitApp }) => {
 });
 ```
 
+## Development
+
+This package depends on other packages in the Appsemble monorepo. To make sure all tests run
+normally, go to each Appsemble dependency and run the following command:
+
+```sh
+npm run prepack
+```
+
 ## Appsemble end-to-end tests
 
 To run end to end tests, run:

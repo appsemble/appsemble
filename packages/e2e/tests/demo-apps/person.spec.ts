@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 import { type AppsembleMessages } from '@appsemble/types';
 
-import { expect, test } from '../../index.js';
+import { expect, authenticatedTest as test } from '../../index.js';
 
 let appId: number;
 let organizationId: string;

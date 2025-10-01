@@ -1,6 +1,6 @@
 import { type Page } from '@playwright/test';
 
-import { expect, test } from '../../index.js';
+import { expect, baseTest as test } from '../../index.js';
 
 const { BOT_ACCOUNT_EMAIL, BOT_ACCOUNT_PASSWORD } = process.env;
 

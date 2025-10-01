@@ -1,4 +1,4 @@
-import { expect, test } from '../../../index.js';
+import { expect, authenticatedTest as test } from '../../../index.js';
 
 test.describe('App invite', () => {
   test.fixme('should work', async ({ page }) => {
