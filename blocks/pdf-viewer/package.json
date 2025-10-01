@@ -2,7 +2,7 @@
   "name": "@appsemble/pdf-viewer",
   "private": true,
   "type": "module",
-  "version": "0.35.1",
+  "version": "0.35.2",
   "description": "A block to view PDFs in your browser, is triggered by events data.",
   "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
@@ -17,8 +17,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.35.1",
-    "@appsemble/sdk": "0.35.1",
+    "@appsemble/preact": "0.35.2",
+    "@appsemble/sdk": "0.35.2",
     "preact": "^10.0.0"
   }
 }
