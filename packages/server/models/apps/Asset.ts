@@ -104,8 +104,6 @@ export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
     updated!: Date;
 
     @DeletedAt
-    @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
-    @Index({ name: 'UniqueAssetWithGroupId', unique: true })
     deleted?: Date;
 
     @AllowNull(true)
