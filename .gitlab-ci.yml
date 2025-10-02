@@ -131,6 +131,12 @@ build docker image:
       --build-arg "version=$CI_COMMIT_REF_NAME"
       --build-arg "date=$CI_JOB_STARTED_AT" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    # Extract dist/ from the built image for sourcemap uploads to Sentry
+    - mkdir -p dist
+    - docker run --rm -v $(pwd)/dist:/host/dist "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" cp -r /app/dist /host/
+  artifacts:
+    paths:
+      - dist/
 
 # Build the npm packages that should be published.
 pack:
@@ -687,9 +693,11 @@ publish npm:
 
 # Perform various post release actions.
 sentry release:
-  needs: []
+  needs:
+    - job: build docker image
+      artifacts: true
   image:
-    name: getsentry/sentry-cli:2@sha256:2a60d341709d8ae040b842556c66f98443cc6d59101cab751f9811f3a1df9362
+    name: getsentry/sentry-cli:2
     entrypoint: [/bin/sh, -c]
   stage: publish
   rules:
@@ -697,6 +705,7 @@ sentry release:
   script:
     - sentry-cli releases new --finalize "$CI_COMMIT_TAG"
     - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
+    - sentry-cli releases files upload-sourcemaps dist/
 
 # Create a test pre-release
 release test:
