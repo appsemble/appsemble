@@ -438,8 +438,10 @@ export async function configureDNS(): Promise<void> {
     if (!oldDomain) {
       return;
     }
-    const name = normalize(oldDomain);
-    await deleteIngress(name);
+    if (oldDomain === domain) {
+      return;
+    }
+    await deleteIngress(oldDomain);
   });
 
   App.afterDestroy('dns', async (app) => {
@@ -447,8 +449,7 @@ export async function configureDNS(): Promise<void> {
     if (!domain) {
       return;
     }
-    const name = normalize(domain);
-    await deleteIngress(name);
+    await deleteIngress(domain);
   });
 
   /**
@@ -467,8 +468,10 @@ export async function configureDNS(): Promise<void> {
     if (!oldDomain) {
       return;
     }
-    const name = normalize(oldDomain);
-    await deleteIngress(name);
+    if (oldDomain === domain) {
+      return;
+    }
+    await deleteIngress(oldDomain);
   });
 
   AppCollection.afterDestroy('dns', async (collection) => {
@@ -476,10 +479,9 @@ export async function configureDNS(): Promise<void> {
     if (!domain) {
       return;
     }
-    const name = normalize(domain);
-    await deleteIngress(name);
+    await deleteIngress(domain);
     if (!domain.startsWith('www.')) {
-      await deleteIngress(normalize(`www.${domain}`));
+      await deleteIngress(`www.${domain}`);
     }
   });
 }
