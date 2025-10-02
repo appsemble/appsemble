@@ -43,9 +43,7 @@ test.describe('Payments', () => {
 
     await expect(page.getByText('Select type of')).toBeVisible();
     await expect(
-      page.getByText(
-        'Total subscription priceActive subscription discountCoupon discountTotal price',
-      ),
+      page.getByText('Total subscription priceActive subscription discountTotal price'),
     ).toBeVisible();
     await page.getByRole('button', { name: 'Checkout ' }).click();
 
@@ -59,9 +57,7 @@ test.describe('Payments', () => {
     await page.getByRole('button').getByText('Continue').click();
 
     await expect(
-      page.getByText(
-        'Total subscription priceActive subscription discountCoupon discountVAT 21%Total price',
-      ),
+      page.getByText('Total subscription priceActive subscription discountVAT 21%Total price'),
     ).toBeVisible();
 
     // eslint-disable-next-line playwright/no-conditional-in-test
