@@ -209,7 +209,7 @@ export function BillingInformationBox({
         name="invoiceReference"
       />
       <FormButtons>
-        <SimpleSubmit allowPristine={false}>
+        <SimpleSubmit>
           <FormattedMessage {...messages.submit} />
         </SimpleSubmit>
       </FormButtons>

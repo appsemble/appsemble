@@ -541,11 +541,6 @@ export interface Organization {
   iconUrl: string;
 
   /**
-   * The preferred payment provider of the organization.
-   */
-  preferredPaymentProvider: PaymentProvider;
-
-  /**
    * The vat id number of the organization.
    */
   vatIdNumber: string;

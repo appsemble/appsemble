@@ -18,7 +18,6 @@ export async function patchOrganization(ctx: Context): Promise<void> {
         icon,
         invoiceReference,
         name,
-        preferredPaymentProvider,
         streetName,
         vatIdNumber,
         website,
@@ -56,10 +55,6 @@ export async function patchOrganization(ctx: Context): Promise<void> {
 
   if (website !== undefined) {
     result.website = website || null;
-  }
-
-  if (preferredPaymentProvider !== undefined) {
-    result.preferredPaymentProvider = preferredPaymentProvider || null;
   }
 
   if (countryCode !== undefined) {
@@ -102,7 +97,6 @@ export async function patchOrganization(ctx: Context): Promise<void> {
     iconUrl: updated.icon
       ? `/api/organizations/${organization.id}/icon?updated=${updated.updated.toISOString()}`
       : null,
-    preferredPaymentProvider: updated.preferredPaymentProvider,
     vatIdNumber: updated.vatIdNumber,
     streetName: updated.streetName,
     houseNumber: updated.houseNumber,

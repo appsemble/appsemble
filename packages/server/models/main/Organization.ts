@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { PaymentProvider, SubscriptionPlanType } from '@appsemble/types';
+import { SubscriptionPlanType } from '@appsemble/types';
 import {
   AfterBulkCreate,
   AfterCreate,
@@ -8,7 +8,6 @@ import {
   Column,
   CreatedAt,
   DataType,
-  Default,
   DeletedAt,
   HasMany,
   HasOne,
@@ -51,10 +50,6 @@ export class Organization extends Model {
 
   @Column(DataType.STRING)
   stripeCustomerId?: string;
-
-  @Default(PaymentProvider.Stripe)
-  @Column(DataType.ENUM(PaymentProvider.Stripe))
-  preferredPaymentProvider?: PaymentProvider;
 
   @AllowNull(true)
   @Column(DataType.STRING)

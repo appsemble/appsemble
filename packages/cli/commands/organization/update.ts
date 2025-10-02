@@ -1,7 +1,6 @@
 import { type ReadStream } from 'node:fs';
 
 import { authenticate } from '@appsemble/node-utils';
-import { type PaymentProvider } from '@appsemble/types';
 import { type Argv } from 'yargs';
 
 import { coerceFile } from '../../lib/coercers.js';
@@ -15,7 +14,6 @@ interface UpdateOrganizationArguments extends BaseArguments {
   icon: ReadStream;
   name: string;
   website: string;
-  preferredPaymentProvider: PaymentProvider;
   vatIdNumber: string;
   streetName: string;
   houseNumber: string;
@@ -49,9 +47,6 @@ export function builder(yargs: Argv): Argv<any> {
     .option('icon', {
       describe: 'The file location of the icon representing the organization.',
       coerce: coerceFile,
-    })
-    .option('preferredPaymentProvider', {
-      describe: 'The preferred payment provider of the organization.',
     })
     .option('vatIdNumber', {
       describe: 'The VAT id number of the organization.',
@@ -87,7 +82,6 @@ export async function handler({
   id,
   invoiceReference,
   name,
-  preferredPaymentProvider,
   remote,
   streetName,
   vatIdNumber,
@@ -102,7 +96,6 @@ export async function handler({
     icon,
     id,
     name,
-    preferredPaymentProvider,
     website,
     streetName,
     houseNumber,
