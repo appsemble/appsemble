@@ -44,3 +44,4 @@ export * from './getValidTrainings.js';
 export * from './PhoneNumberValidationError.js';
 export * from './createUser.js';
 export * from './deleteUser.js';
+export * from './updateSubscription.js';

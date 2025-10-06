@@ -12,8 +12,8 @@ import * as githubRelease from './commands/github-release.js';
 import * as gitlabRelease from './commands/gitlab-release.js';
 import * as release from './commands/release.js';
 import * as rewriteMessages from './commands/rewrite-messages.js';
-import * as seedSubscription from './commands/seed-subscription.js';
 import * as twitter from './commands/twitter.js';
+import * as updateSubscription from './commands/update-subscription.js';
 import * as validateDocs from './commands/validate-docs.js';
 import * as validatePackagedExports from './commands/validate-packaged-exports.js';
 import * as validate from './commands/validate.js';
@@ -43,7 +43,7 @@ yargs()
   .command(rewriteMessages)
   .command(createUser as unknown as CommandModule)
   .command(deleteUser as unknown as CommandModule)
-  .command(seedSubscription as unknown as CommandModule)
+  .command(updateSubscription as unknown as CommandModule)
   .command(twitter)
   .command(validatePackagedExports as unknown as CommandModule)
   .command(validateDocs as unknown as CommandModule)

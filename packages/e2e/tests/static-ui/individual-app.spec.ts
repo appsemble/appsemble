@@ -1,17 +1,20 @@
+import { createUser } from '@appsemble/node-utils';
 import { type Page } from '@playwright/test';
 
 import { expect, baseTest as test } from '../../index.js';
 
-const { BOT_ACCOUNT_EMAIL, BOT_ACCOUNT_PASSWORD } = process.env;
-
 let page: Page;
 
 test.describe('Individual app', () => {
-  test.beforeAll(async ({ browser, loginUserOnPage }) => {
+  test.beforeAll(async ({ browser, loginUserOnPage, randomTestId }) => {
+    const name = 'Test user';
+    const email = `${randomTestId()}@test.com`;
+    const password = '1';
+    await createUser(name, email, password);
+
     page = await browser.newPage({ storageState: undefined });
 
-    expect(BOT_ACCOUNT_EMAIL && BOT_ACCOUNT_PASSWORD).not.toBeUndefined();
-    await loginUserOnPage(BOT_ACCOUNT_EMAIL!, BOT_ACCOUNT_PASSWORD!, page);
+    await loginUserOnPage(email, password, page);
   });
 
   test.afterAll(async () => {

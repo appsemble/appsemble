@@ -14,8 +14,8 @@ export default defineConfig({
   forbidOnly: Boolean(CI),
   // Retry on CI only
   retries: CI ? 2 : 0,
-  // Concurrent tests run better on CI in general
-  workers: 1,
+  // Amount of workers to run tests with
+  workers: CI ? 2 : 1,
   // Reporter to use. See https://playwright.dev/docs/test-reporters
   reporter: [['junit', { outputFile: 'results.xml' }]],
   // Prevent the pipeline from timing out

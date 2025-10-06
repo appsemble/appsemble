@@ -28,9 +28,10 @@ test.describe('Apps', () => {
     randomTestId,
   }) => {
     const name = 'Test user';
-    const email = `${randomTestId(1)}@test.com`;
-    const password = '12345';
+    const email = `${randomTestId()}@test.com`;
+    const password = '1';
     await createUser(name, email, password);
+
     const page = await browser.newPage({ storageState: undefined });
 
     await loginUserOnPage(email, password, page);
