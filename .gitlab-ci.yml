@@ -938,7 +938,6 @@ staging:
       --set "oauthSecret=oauth2"
       --set "skipCustomDomains=true"
       --set "postgresql.fullnameOverride=staging-postgresql"
-      --set 'postgresql.primary.persistence.size=20Gi'
       --set 'minio.persistence.size=20Gi'
       --set "postgresql.primary.resources.requests.cpu=250m"
       --set "postgresql.primary.resources.requests.memory=1Gi"
@@ -1039,7 +1038,6 @@ production:
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
       --set "postgresql.enabled=true"
       --set 'postgresSSL=false'
-      --set 'postgresql.primary.persistence.size=20Gi'
       --set 'minio.persistence.size=20Gi'
       --set "postgresql.primary.resources.requests.cpu=250m"
       --set "postgresql.primary.resources.requests.memory=1Gi"
