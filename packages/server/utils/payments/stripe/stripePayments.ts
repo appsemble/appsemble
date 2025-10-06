@@ -249,7 +249,9 @@ export class StripePayments implements Payments {
         automatic_tax: { enabled: true },
         tax_id_collection: { enabled: true },
         locale: locale ? (locale as Stripe.Checkout.SessionCreateParams['locale']) : 'auto',
-        payment_method_types: ['paypal', 'ideal', 'card', 'klarna'],
+        // TODO enable paypal when it's enabled in Stripe dashboard
+        // payment_method_types: ['paypal', 'ideal', 'card', 'klarna'],
+        payment_method_types: ['ideal', 'card', 'klarna'],
       });
       return { id: checkoutSession.id, paymentUrl: checkoutSession?.url };
     } catch (error) {
