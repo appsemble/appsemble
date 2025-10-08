@@ -273,8 +273,7 @@ describe('importApp', () => {
           $updated: expect.any(String),
           iconUrl: expect.any(String),
         },
-      },
-      `
+      }, `
       HTTP/1.1 201 Created
       Content-Type: application/json; charset=utf-8
 
@@ -336,6 +335,7 @@ describe('importApp', () => {
         "iconUrl": Any<String>,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
         "path": "test-app",
         "sentryDsn": null,
         "sentryEnvironment": null,
@@ -369,8 +369,7 @@ describe('importApp', () => {
                 type: string
       ",
       }
-    `,
-    );
+    `);
     // The faker time is needed for the rest of the tests to pass after using useRealTimers.
     vi.useFakeTimers();
   });
@@ -421,8 +420,7 @@ describe('importApp', () => {
           $updated: expect.any(String),
           iconUrl: expect.any(String),
         },
-      },
-      `
+      }, `
       HTTP/1.1 201 Created
       Content-Type: application/json; charset=utf-8
 
@@ -461,6 +459,7 @@ describe('importApp', () => {
         "iconUrl": Any<String>,
         "id": 2,
         "locked": "unlocked",
+        "metaPixelID": null,
         "path": "test-app-2",
         "sentryDsn": null,
         "sentryEnvironment": null,
@@ -480,8 +479,7 @@ describe('importApp', () => {
               version: 0.0.0
       ",
       }
-    `,
-    );
+    `);
     // The faker time is needed for the rest of the tests to pass after using useRealTimers.
     vi.useFakeTimers();
   });
