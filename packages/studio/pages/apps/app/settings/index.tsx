@@ -1,6 +1,7 @@
 import {
   domainPattern,
   googleAnalyticsIDPattern,
+  metaPixelIDPattern,
   normalize,
   toUpperCase,
 } from '@appsemble/lang-sdk';
@@ -83,6 +84,7 @@ export function SettingsPage(): ReactNode {
       maskableIcon: null,
       domain: app.domain || '',
       googleAnalyticsID: app.googleAnalyticsID || '',
+      metaPixelID: app.metaPixelID || '',
       sentryDsn: app.sentryDsn || '',
       sentryEnvironment: app.sentryEnvironment || '',
       icon: null,
@@ -103,6 +105,7 @@ export function SettingsPage(): ReactNode {
     form.set('emailName', values.emailName);
     form.set('domain', values.domain);
     form.set('googleAnalyticsID', values.googleAnalyticsID);
+    form.set('metaPixelID', values.metaPixelID);
     form.set('sentryDsn', values.sentryDsn);
     form.set('sentryEnvironment', values.sentryEnvironment);
     form.set('path', values.path);
@@ -338,6 +341,33 @@ export function SettingsPage(): ReactNode {
             preprocess={toUpperCase}
             validityMessages={{
               patternMismatch: <FormattedMessage {...messages.googleAnalyticsError} />,
+            }}
+          />
+          <SimpleFormField
+            disabled={app.locked !== 'unlocked'}
+            help={
+              <FormattedMessage
+                {...messages.metaPixelIDDescription}
+                values={{
+                  link: (link) => (
+                    <Link
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      to="../../../docs/guides/analytics"
+                    >
+                      {link}
+                    </Link>
+                  ),
+                }}
+              />
+            }
+            label={<FormattedMessage {...messages.metaPixelIDLabel} />}
+            maxLength={15}
+            name="metaPixelID"
+            pattern={metaPixelIDPattern}
+            preprocess={toUpperCase}
+            validityMessages={{
+              patternMismatch: <FormattedMessage {...messages.metaPixelError} />,
             }}
           />
           <SimpleFormField

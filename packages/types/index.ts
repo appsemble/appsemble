@@ -282,6 +282,11 @@ export interface App {
   googleAnalyticsID?: string;
 
   /**
+   * The Meta Pixel ID of the app.
+   */
+  metaPixelID?: string;
+
+  /**
    * Whether the app is currently locked.
    */
   locked: AppLock;

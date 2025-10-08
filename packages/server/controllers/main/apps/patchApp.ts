@@ -69,6 +69,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         icon,
         iconBackground,
         maskableIcon,
+        metaPixelID,
         path,
         readmes,
         screenshots,
@@ -215,6 +216,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (googleAnalyticsID !== undefined) {
       result.googleAnalyticsID = googleAnalyticsID;
+    }
+
+    if (metaPixelID !== undefined) {
+      result.metaPixelID = metaPixelID;
     }
 
     if (showAppDefinition !== undefined) {

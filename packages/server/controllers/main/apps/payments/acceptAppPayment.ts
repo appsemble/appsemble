@@ -1,3 +1,4 @@
+import { assertKoaCondition } from '@appsemble/node-utils';
 import axios from 'axios';
 import { type Context } from 'koa';
 
@@ -12,10 +13,14 @@ export async function acceptAppPayment(ctx: Context): Promise<void> {
     where: { webhookName: 'accept-payment' },
     attributes: ['secret'],
   });
+
+  assertKoaCondition(webhookSecret != null, ctx, 401, 'Missing webhook secret for accept-payment');
+
   axios.post(`${argv.host}/api/apps/${appId}/webhooks/accept-payment`, ctx.request.body, {
     headers: {
       Authorization: `Bearer ${Buffer.from(webhookSecret?.dataValues.secret).toString('hex')}`,
     },
   });
+
   ctx.body = {};
 }

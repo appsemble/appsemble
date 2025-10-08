@@ -168,6 +168,9 @@ export class App extends Model {
   googleAnalyticsID?: string;
 
   @Column(DataType.STRING)
+  metaPixelID?: string;
+
+  @Column(DataType.STRING)
   sentryDsn?: string;
 
   @Column(DataType.STRING)
@@ -376,6 +379,7 @@ export class App extends Model {
       emailName: this.emailName,
       domain: this.domain || null,
       googleAnalyticsID: this.googleAnalyticsID,
+      metaPixelID: this.metaPixelID,
       path: this.path,
       visibility: this.visibility,
       template: this.template,
