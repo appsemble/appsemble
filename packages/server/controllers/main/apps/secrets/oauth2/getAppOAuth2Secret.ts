@@ -22,7 +22,6 @@ export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
         'tokenUrl',
         'updated',
         'userInfoUrl',
-        'AppId',
       ],
     },
   });
