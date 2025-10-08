@@ -295,6 +295,7 @@ describe('indexHandler', () => {
             "iconUrl": null,
             "id": 1,
             "locked": "unlocked",
+            "metaPixelID": null,
             "path": "app",
             "sentryDsn": null,
             "sentryEnvironment": null,
