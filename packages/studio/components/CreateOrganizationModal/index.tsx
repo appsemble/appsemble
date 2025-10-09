@@ -260,8 +260,11 @@ export function CreateOrganizationModal({
         name="icon"
         preview={<IconPreview organization={{ iconUrl: null } as Organization} />}
       />
-      <Collapsible collapsed={false} title={<FormattedMessage {...messages.payments} />}>
-        <FormattedMessage {...messages.paymentsHelp} />
+      <Collapsible
+        collapsed={false}
+        help={<FormattedMessage {...messages.paymentsHelp} />}
+        title={<FormattedMessage {...messages.payments} />}
+      >
         <SimpleFormField
           component={SelectField}
           help={<FormattedMessage {...messages.descriptionCountry} />}
