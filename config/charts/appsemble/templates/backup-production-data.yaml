@@ -1,0 +1,37 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "appsemble.fullname" . }}-backup-production-data
+  labels:
+    {{ include "appsemble.labels" . }}
+spec:
+  schedule: 0 2 * * * # Run every day at 02:00:00
+  successfulJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            {{ include "appsemble.gitlab" . | indent 12 }}
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: {{ include "appsemble.fullname" . }}-cronjob-backup-production-data
+              image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                readOnlyRootFilesystem: true
+              args:
+                - backup-production-data
+                - -vv
+              env:
+                - name: AES_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: { { .Values.secretSecret | quote } }
+                      key: aes-secret
+{{ include "appsemble.postgres" . | indent 16 }}
+{{ include "appsemble.s3" . | indent 16 }}
+{{ end }}

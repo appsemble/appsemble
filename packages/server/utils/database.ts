@@ -27,3 +27,22 @@ export async function* iterTable<M extends Model>(
     offset += length;
   }
 }
+
+export function buildPostgresUri({
+  dbHost,
+  dbName,
+  dbPassword,
+  dbPort,
+  dbUser,
+  ssl,
+}: {
+  dbHost: string;
+  dbName: string;
+  dbPassword: string;
+  dbPort: number | string;
+  dbUser: string;
+  ssl?: boolean;
+}): string {
+  const base = `postgresql://${encodeURIComponent(dbUser)}:${encodeURIComponent(dbPassword)}@${dbHost}:${dbPort}/${dbName}`;
+  return ssl ? `${base}?sslmode=require` : base;
+}

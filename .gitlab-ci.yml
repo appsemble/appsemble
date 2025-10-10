@@ -12,10 +12,6 @@ stages:
   - performance
   - backup
 
-variables:
-  BACKUPS_LOCATION: hetzner-s3:appsemble/backups
-  PROD_BACKUP_NAME: appsemble_prod_backup
-
 workflow:
   rules:
     # By default, run jobs for every merge request.
@@ -951,11 +947,6 @@ staging:
       --set "provision.user.name=$BOT_ACCOUNT_NAME"
       --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.user.timezone=Europe/Amsterdam"
-      --set "importData.remoteStorage.url=$S3_REMOTE_STORAGE_URL"
-      --set "importData.remoteStorage.existingAccessKeySecret=s3-access-key-secret"
-      --set "importData.remoteStorage.region=$S3_REGION"
-      --set "importData.remoteStorage.location=$BACKUPS_LOCATION"
-      --set "importData.remoteStorage.filename=$PROD_BACKUP_NAME"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
@@ -1057,6 +1048,7 @@ production:
       --set "minio.apiIngress.hostname=api.minio.appsemble.app"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "backups.url=$S3_REMOTE_STORAGE_URL"
       --wait
 
 ###################################################################################################
@@ -1169,30 +1161,6 @@ provision production:
 #     when: always
 #     paths:
 #       - .lighthouseci
-
-###################################################################################################
-#  Backup Stage                                                                                   #
-###################################################################################################
-
-backup production data:
-  stage: backup
-  image: postgres:17-alpine@sha256:3406990b6e4c7192317b6fdc5680498744f6142f01f0287f4ee0420d8c74063c
-  tags:
-    - sole-occupant
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
-      when: manual
-  allow_failure: true
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - apk add --no-cache rclone
-    - rclone config create hetzner-s3 s3 url $S3_REMOTE_STORAGE_URL vendor other access_key_id $S3_ACCESS_KEY_ID endpoint $S3_REMOTE_STORAGE_URL secret_access_key $S3_SECRET_ACCESS_KEY region $S3_REGION provider Other
-    - LATEST_TARGET="${PROD_BACKUP_NAME}.sql.gz"
-    - VERSIONED_TARGET="${PROD_BACKUP_NAME}_$(date '+%Y%m%d%H%M').sql.gz"
-    - pg_dump "$PRODUCTION_DB_URL" | gzip > "$VERSIONED_TARGET"
-    - rclone copy -v -I "$VERSIONED_TARGET" "$BACKUPS_LOCATION"
-    - rclone copyto -v -I "$VERSIONED_TARGET" "$BACKUPS_LOCATION/$LATEST_TARGET"
 
 ###################################################################################################
 #  Cleanup Stage                                                                                  #

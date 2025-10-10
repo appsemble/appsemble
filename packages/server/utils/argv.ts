@@ -431,6 +431,13 @@ export interface Argv {
    * @default false
    */
   skipCustomDomains: boolean;
+
+  /**
+   * The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz
+   *
+   * @default undefined
+   */
+  appsembleBackupFile?: string;
 }
 
 const defaults: Argv = {
@@ -538,6 +545,8 @@ const defaults: Argv = {
   s3SecretKey: undefined,
   dryRun: true,
   skipCustomDomains: false,
+  appsembleBackupFile: undefined,
+  appBackupFile: undefined,
 };
 
 export const argv = { ...defaults };

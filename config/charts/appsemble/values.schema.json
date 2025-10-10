@@ -322,42 +322,6 @@
         }
       }
     },
-    "importData": {
-      "type": "object",
-      "description": "Configuration for importing data.",
-      "additionalProperties": false,
-      "required": ["remoteStorage"],
-      "properties": {
-        "remoteStorage": {
-          "type": "object",
-          "description": "The configuration for the remote storage.",
-          "additionalProperties": false,
-          "required": ["url", "existingAccessKeySecret", "location", "filename"],
-          "properties": {
-            "url": {
-              "type": "string",
-              "description": "The url of the remote s3 storage."
-            },
-            "existingAccessKeySecret": {
-              "type": "string",
-              "description": "The name of the access key secret for the remote s3 storage."
-            },
-            "region": {
-              "type": "string",
-              "description": "The region for the remote s3 storage."
-            },
-            "location": {
-              "type": "string",
-              "description": "The directory of the data."
-            },
-            "filename": {
-              "type": "string",
-              "description": "The name of the data file."
-            }
-          }
-        }
-      }
-    },
     "mailpit": {
       "type": "object"
     },
