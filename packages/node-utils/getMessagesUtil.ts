@@ -16,7 +16,7 @@ export async function getMessagesUtil(
   ctx: Context,
   language: string,
   appId: number,
-  merge: string[] | string,
+  merge: string[] | string | undefined,
   { getApp, getAppMessages, getBlockMessages }: Options,
   override: string[] | string = 'true',
 ): Promise<Record<string, any>> {
@@ -48,9 +48,24 @@ export async function getMessagesUtil(
       );
     }).app,
   );
-  const appMessages = (await getAppMessages({ context: ctx, app, language })).filter((item) =>
-    Object.keys(item.messages.app ?? {}).filter((key) => !(key in extractedMessages)),
-  );
+
+  const appMessages = (await getAppMessages({ context: ctx, app, language })).map((item) => {
+    const appMsg = item.messages.app ?? {};
+    const filtered = Object.fromEntries(
+      Object.entries(appMsg).filter(([k]) => {
+        const blockMatch = /^(pages\.[\dA-Za-z-]+(\..+)?)\.blocks\.\d+.+/.test(k);
+        const emailMatch =
+          /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|welcome)\.(body|subject)/.test(
+            k,
+          );
+        if (blockMatch || emailMatch) {
+          return true;
+        }
+        return extractedMessages.includes(k);
+      }),
+    );
+    return { ...item, messages: { ...item.messages, app: filtered } };
+  });
   const coreMessages = await getAppsembleMessages(lang, baseLang);
 
   const messages: AppsembleMessages = {
