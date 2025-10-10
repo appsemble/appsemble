@@ -53,7 +53,7 @@ further inspection.
 
 On the first retry of a failed job, its trace will be uploaded to the same directory. This trace can
 be viewed locally, or it can be uploaded to the
-[online trace viewer](https://trace.playwright.dev/). This shows you step-by-step whawt happened
+[online trace viewer](https://trace.playwright.dev/). This shows you step-by-step what happened
 during the test as if you ran it using `ui mode`.
 
 The end to end tests use the following environment variables:

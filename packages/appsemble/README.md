@@ -14,7 +14,7 @@
 
 ## Installation
 
-It’s recommended to install [`@appsemle/cli`](https://www.npmjs.com/package/@appsemble/cli) instead.
+It’s recommended to install [`@appsemble/cli`](https://www.npmjs.com/package/@appsemble/cli) instead.
 
 ```sh
 npm install @appsemble/cli

@@ -166,7 +166,7 @@ These can also be used as CLI parameters.
 Stripe is used as a payment provider and there are some things that need to be configured in order
 to test it locally, but also so it can run in production. If you want to use Stripe in test mode,
 all you need to do is replace the `Webhook secret` and `Private key` with the test versions (test
-private key starts wtih `sk_test`).
+private key starts with `sk_test`).
 
 ### Live environment set-up
 
