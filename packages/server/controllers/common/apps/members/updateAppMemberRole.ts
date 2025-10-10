@@ -21,9 +21,7 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
   const { AppMember } = await getAppDB(appId);
 
   const appMember = await AppMember.findByPk(appMemberId, {
-    attributes: {
-      exclude: ['password'],
-    },
+    attributes: { exclude: ['password'] },
   });
 
   assertKoaCondition(appMember != null, ctx, 404, 'App member not found');

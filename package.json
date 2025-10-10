@@ -28,7 +28,8 @@
       "prettier --check"
     ],
     "*.{js,md,ts,tsx}": [
-      "eslint"
+      "eslint",
+      "npx -- cspell"
     ],
     "**/*.ts?(x)": [
       "npx --workspaces tsc --noEmit"

@@ -64,6 +64,14 @@ export interface AppsembleContext {
   googleAnalyticsId?: string;
 
   /**
+   * The Meta Pixel ID that should be used for the app.
+   *
+   * If `metaPixelId` is specified, this will override `--meta-pixel-id` passed on the
+   * command line.
+   */
+  metaPixelId?: string;
+
+  /**
    * The custom Sentry DSN for the app.
    *
    * If `sentryDsn` is specified, this will override `--sentry-dsn` passed on the command line.

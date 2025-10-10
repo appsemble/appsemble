@@ -121,6 +121,19 @@ export const messages = defineMessages({
     id: 'studio.slZvEA',
     defaultMessage: 'This needs to be a valid Google Analytics ID',
   },
+  metaPixelIDLabel: {
+    id: 'studio.y7GjxX',
+    defaultMessage: 'Meta Pixel ID',
+  },
+  metaPixelIDDescription: {
+    id: 'studio.//39+D',
+    defaultMessage:
+      'If this is specified, Meta Pixel will be applied to your app. For more information, please refer to the <link>documentation</link>.',
+  },
+  metaPixelError: {
+    id: 'studio.TGLI74',
+    defaultMessage: 'This needs to be a valid Meta Pixel ID',
+  },
   saveChanges: {
     id: 'studio.X0ha1a',
     defaultMessage: 'Save changes',

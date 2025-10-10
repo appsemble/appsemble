@@ -24,6 +24,7 @@ export function getCsp({
       'data:',
       sentryOrigin ?? false,
       sentryDsn ? 'https://sentry.io' : false,
+      app.metaPixelID ? 'https://graph.facebook.com' : false,
     ],
     'default-src': ["'self'"],
     'script-src': [
@@ -31,10 +32,11 @@ export function getCsp({
       `'nonce-${nonce}'`,
       settingsHash,
       app.googleAnalyticsID ? 'https://www.googletagmanager.com' : false,
+      app.metaPixelID ? 'https://connect.facebook.net' : false,
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],
-    'img-src': ['*', 'blob:', 'data:', host],
+    'img-src': ['*', 'blob:', 'data:', host, app.metaPixelID ? 'https://www.facebook.com' : false],
     'media-src': ['*', 'blob:', 'data:', host],
     'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     'font-src': ['*', 'data:'],

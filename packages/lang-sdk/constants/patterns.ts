@@ -38,6 +38,12 @@ export const domainPattern = new RegExp(`^(${partialNormalized.source}+\\.)+[a-z
 export const googleAnalyticsIDPattern = /^(|UA-\d{4,10}-\d{1,4}|G-[\dA-Z]{4,})$/;
 
 /**
+ * A pattern to match a Meta (Facebook) Pixel ID or an empty string.
+ * Meta Pixel IDs are numeric strings, usually 5–20 digits.
+ */
+export const metaPixelIDPattern = /^(|\d{5,20})$/;
+
+/**
  * A pattern which matches a UUID 4.
  */
 export const uuid4Pattern = /^[\d[a-f]{8}-[\da-f]{4}-4[\da-f]{3}-[\da-f]{4}-[\d[a-f]{12}$/;

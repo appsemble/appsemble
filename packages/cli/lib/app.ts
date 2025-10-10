@@ -1120,6 +1120,11 @@ interface PublishAppParams {
   googleAnalyticsId?: string;
 
   /**
+   * The ID to use for Meta Pixel for the app.
+   */
+  metaPixelId?: string;
+
+  /**
    * The custom Sentry DSN for the app.
    */
   sentryDsn?: string;
@@ -1223,6 +1228,7 @@ export async function publishApp({
   const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
+  const metaPixelId = appsembleContext.metaPixelId ?? options.metaPixelId;
   const assets = appsembleContext.assets ?? options.assets;
   const resources = appsembleContext.resources ?? options.resources;
   const members = appsembleContext.members ?? options.members;
@@ -1299,6 +1305,11 @@ export async function publishApp({
   if (googleAnalyticsId) {
     logger.info('Using Google Analytics');
     formData.append('googleAnalyticsID', googleAnalyticsId);
+  }
+
+  if (metaPixelId) {
+    logger.info('Using Meta Pixel');
+    formData.append('metaPixelID', metaPixelId);
   }
 
   let authScope = 'apps:write';
@@ -1499,6 +1510,11 @@ interface UpdateAppParams {
   googleAnalyticsId?: string;
 
   /**
+   * The ID to use for Meta Pixel for the app.
+   */
+  metaPixelId?: string;
+
+  /**
    * The custom Sentry DSN for the app.
    */
   sentryDsn?: string;
@@ -1600,6 +1616,7 @@ export async function updateApp({
   const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
+  const metaPixelId = appsembleContext.metaPixelId ?? options.metaPixelId;
   const resources = appsembleContext.resources ?? options.resources;
   const members = appsembleContext.members ?? options.members;
   const assets = appsembleContext.assets ?? options.assets;
@@ -1674,6 +1691,11 @@ export async function updateApp({
   if (googleAnalyticsId) {
     logger.info('Using Google Analytics');
     formData.append('googleAnalyticsID', googleAnalyticsId);
+  }
+
+  if (metaPixelId) {
+    logger.info('Using Meta Pixel');
+    formData.append('metaPixelID', metaPixelId);
   }
 
   let authScope = 'apps:write';

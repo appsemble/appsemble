@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.35.7](https://gitlab.com/appsemble/appsemble/-/releases/0.35.7)] - 2025-10-08
+
+### Added
+
+- Cli: Add support for Meta Pixel.
+- Server: Add support for Meta Pixel.
+- Studio: Add support for Meta Pixel.
+
 ## \[[0.35.6](https://gitlab.com/appsemble/appsemble/-/releases/0.35.6)] - 2025-10-06
 
 ## \[[0.35.5](https://gitlab.com/appsemble/appsemble/-/releases/0.35.5)] - 2025-10-06

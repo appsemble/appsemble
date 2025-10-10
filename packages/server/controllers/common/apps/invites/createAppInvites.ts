@@ -100,7 +100,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
             key,
             role: invite.role,
           }
-        : { email: invite.email, role: invite.role, key, AppId: appId };
+        : { email: invite.email, role: invite.role, key };
     }),
   );
 

@@ -6,7 +6,7 @@ import {
 import { Op } from 'sequelize';
 
 import { App, AppSnapshot, BlockAsset, BlockVersion, getAppDB } from '../models/index.js';
-import { createGtagCode } from '../utils/render.js';
+import { createGtagCode, createMetaPixelCode } from '../utils/render.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
 export async function createSettings({
@@ -53,6 +53,7 @@ export async function createSettings({
       'enableSelfRegistration',
       'demoMode',
       'googleAnalyticsID',
+      'metaPixelID',
       'controllerCode',
       'controllerImplementations',
       'displayAppMemberName',
@@ -124,6 +125,9 @@ export async function createSettings({
       appUpdated: persistedApp.updated.toISOString(),
       e2e: process.env.E2E,
     },
-    app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : undefined,
+    [
+      ...(app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : []),
+      ...(app.metaPixelID ? createMetaPixelCode(app.metaPixelID) : []),
+    ],
   );
 }
