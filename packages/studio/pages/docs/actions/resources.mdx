@@ -73,7 +73,7 @@ fetch the `person` resource.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.35.8
+    version: 0.35.9
     actions:
       onLoad:
         type: resource.get
@@ -93,7 +93,7 @@ example of how you can use this action to fetch the `person` resource.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.35.8
+    version: 0.35.9
     actions:
       onLoad:
         type: resource.history.get
@@ -124,7 +124,7 @@ Here is an example of how you can use this action to update the positions of a r
 ```yaml
 blocks:
   - type: list
-    version: 0.35.8-test.8
+    version: 0.35.9-test.8
     actions:
       onDrop:
         type: resource.update.positions
@@ -151,7 +151,7 @@ fetch all `person` resources.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.35.8
+    version: 0.35.9
     actions:
       onLoad:
         type: resource.query
@@ -171,7 +171,7 @@ fetch the number of resources.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.35.8
+    version: 0.35.9
     actions:
       onLoad:
         type: resource.count
@@ -190,7 +190,7 @@ you can use this action to create a new resource of type person.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.35.8
+    version: 0.35.9
     actions:
       onSubmit:
         type: resource.create
@@ -211,7 +211,7 @@ example of how you can use this action to update an existing resource of type pe
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.35.8
+    version: 0.35.9
     parameters:
       fields:
         - type: string
@@ -249,7 +249,7 @@ resource of type person using this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.35.8
+    version: 0.35.9
     parameters:
       fields:
         - type: string
@@ -276,7 +276,7 @@ person resource, you can use the following block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.35.8
+    version: 0.35.9
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -309,7 +309,7 @@ To delete all person resources, you can use the following block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.35.8
+    version: 0.35.9
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -343,7 +343,7 @@ following block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.35.8
+    version: 0.35.9
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -374,7 +374,7 @@ use this action to subscribe to all the updates made to the resource person:
 ```yaml validate blocks-snippet
 blocks:
   - type: table
-    version: 0.35.8
+    version: 0.35.9
     parameters:
       fields:
         - value: { prop: firstName }
@@ -398,7 +398,7 @@ to unsubscribe to the delete notifications related to resource person.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.35.8
+    version: 0.35.9
     parameters:
       icon: bell-slash
     actions:
@@ -419,7 +419,7 @@ action.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.35.8
+    version: 0.35.9
     parameters:
       icon: toggle-on
     actions:
@@ -439,7 +439,7 @@ example of usage of this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.35.8
+    version: 0.35.9
     parameters:
       icon: envelope
     actions:
