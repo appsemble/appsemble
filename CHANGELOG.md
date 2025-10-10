@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.35.8](https://gitlab.com/appsemble/appsemble/-/releases/0.35.8)] - 2025-10-10
+
+### Fixed
+
+- Server: Updating messages from the studio.
+
 ## \[[0.35.7](https://gitlab.com/appsemble/appsemble/-/releases/0.35.7)] - 2025-10-08
 
 ### Added

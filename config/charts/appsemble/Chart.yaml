@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.35.7
-appVersion: 0.35.7
+version: 0.35.8
+appVersion: 0.35.8
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,12 +32,8 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: |
-    - kind: added
-      description: "Cli: Add support for Meta Pixel."
-    - kind: added
-      description: "Server: Add support for Meta Pixel."
-    - kind: added
-      description: "Studio: Add support for Meta Pixel."
+    - kind: fixed
+      description: "Server: Updating messages from the studio."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
