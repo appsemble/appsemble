@@ -64,7 +64,7 @@ These variables are only used in specific blocks.
 These themes are only seen on mobile versions of the app.
 
 | Variable      | Purpose                                                                                                                         |
-| ------------- |---------------------------------------------------------------------------------------------------------------------------------|
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `splashColor` | The background color of the splash screen                                                                                       |
 | `themeColor`  | The background color of the notification window at the top of the screen, and the splash screen if `splashColor` is not defined |
 
