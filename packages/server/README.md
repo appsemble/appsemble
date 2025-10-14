@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.35.10-test.0/config/assets/logo.svg) Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.35.10/config/assets/logo.svg) Appsemble Server
 
 > The official Appsemble Docker image
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.35.10-test.0/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.35.10-test.0)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.35.10/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.35.10)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -191,5 +191,5 @@ With the Stripe CLI you can expose an endpoint on your machine that will receive
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.35.10-test.0/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.35.10/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

@@ -1,5 +1,5 @@
 name: Remappers
-description: This app contains every Remapper currently in Appsemble as of (0.35.10-test.0)
+description: This app contains every Remapper currently in Appsemble as of (0.35.10)
 defaultPage: Introduction
 layout:
   enabledSettings:
@@ -43,7 +43,7 @@ resources:
           type: string
 
 anchors:
-  - &block-version 0.35.10-test.0
+  - &block-version 0.35.10
 
 pages:
   - name: Introduction
