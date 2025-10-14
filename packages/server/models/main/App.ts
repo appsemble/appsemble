@@ -207,6 +207,10 @@ export class App extends Model {
   successUrl?: string | null;
 
   @AllowNull(true)
+  @Column(DataType.ARRAY(DataType.STRING))
+  supportedLanguages?: string[];
+
+  @AllowNull(true)
   @Column(DataType.STRING)
   cancelUrl?: string | null;
 
@@ -430,6 +434,7 @@ export class App extends Model {
       controllerImplementations: this.controllerImplementations,
       skipGroupInvites: this.skipGroupInvites,
       version: (this.AppSnapshots || [{ id: -1 }]).at(-1)?.id,
+      supportedLanguages: this.supportedLanguages,
     };
 
     return omit(result, omittedValues) as AppType;

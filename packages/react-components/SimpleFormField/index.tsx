@@ -72,7 +72,7 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
   );
 
   const internalOnChange = useCallback(
-    (event: ChangeEvent<MinimalHTMLElement>, currentValue = event.currentTarget.value) => {
+    (event: ChangeEvent<HTMLSelectElement>, currentValue = event.currentTarget.value) => {
       const val = preprocess ? preprocess(currentValue, values) : currentValue;
       if (onChange) {
         onChange(event, val);

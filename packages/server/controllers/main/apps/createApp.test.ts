@@ -146,6 +146,9 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
         "version": 1,
         "visibility": "unlisted",
@@ -162,6 +165,29 @@ describe('createApp', () => {
     `);
     const { data: retrieved } = await request.get(`/api/apps/${createdResponse.data.id}`);
     expect(retrieved).toStrictEqual(createdResponse.data);
+  });
+
+  it('should create an app with supportedLanguages', async () => {
+    authorizeStudio();
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        supportedLanguages: ['en', 'nl'],
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    expect(response.status).toBe(201);
+    expect(response.data.supportedLanguages).toStrictEqual(['en', 'nl']);
   });
 
   it('should create an app member with role `cron` if the security definition has cron defined', async () => {
@@ -320,6 +346,9 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
         "version": 1,
         "visibility": "unlisted",
@@ -527,6 +556,9 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
         "version": 1,
         "visibility": "unlisted",
@@ -596,6 +628,9 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
         "version": 1,
         "visibility": "unlisted",
@@ -665,6 +700,9 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
         "version": 1,
         "visibility": "unlisted",
@@ -734,6 +772,9 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
         "version": 1,
         "visibility": "unlisted",
@@ -809,6 +850,9 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
         "version": 1,
         "visibility": "unlisted",
@@ -898,6 +942,9 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
         "version": 1,
         "visibility": "unlisted",
@@ -997,6 +1044,9 @@ describe('createApp', () => {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
                 },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
+                },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
                 },
@@ -1085,6 +1135,9 @@ describe('createApp', () => {
                 "sharedStyle": {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
+                },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
                 },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
@@ -1209,6 +1262,9 @@ describe('createApp', () => {
                 "sharedStyle": {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
+                },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
                 },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
@@ -1492,6 +1548,9 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
         "version": 2,
         "visibility": "unlisted",
@@ -1586,6 +1645,9 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
         "version": 1,
         "visibility": "unlisted",
@@ -1675,6 +1737,9 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
         "version": 1,
         "visibility": "unlisted",
@@ -1799,6 +1864,9 @@ describe('createApp', () => {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
                 },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
+                },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
                 },
@@ -1920,6 +1988,9 @@ describe('createApp', () => {
                 "sharedStyle": {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
+                },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
                 },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
@@ -2221,6 +2292,9 @@ describe('createApp', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": [
+            "en",
+          ],
           "template": false,
           "version": 1,
           "visibility": "unlisted",

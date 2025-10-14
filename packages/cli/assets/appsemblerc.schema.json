@@ -207,6 +207,13 @@
           "dbUser": {
             "type": "string",
             "description": "The user of the external app database."
+          },
+          "supportedLanguages": {
+            "type": "array",
+            "description": "Languages officially supported by the app",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }

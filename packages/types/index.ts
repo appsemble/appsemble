@@ -462,6 +462,11 @@ export interface App {
    * The user of the app database.
    */
   dbUser: string;
+
+  /**
+   * The languages supported by an app.
+   */
+  supportedLanguages?: string[];
 }
 
 /**

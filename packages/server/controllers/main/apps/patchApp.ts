@@ -80,6 +80,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         showAppsembleLogin,
         showAppsembleOAuth2Login,
         skipGroupInvites,
+        supportedLanguages,
         template,
         visibility,
         yaml,
@@ -296,6 +297,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (dbUser) {
       result.dbUser = dbUser;
+    }
+
+    if (supportedLanguages?.length) {
+      result.supportedLanguages = supportedLanguages;
     }
 
     if (dbPassword) {

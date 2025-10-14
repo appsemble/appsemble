@@ -266,4 +266,12 @@ export const messages = defineMessages({
     id: 'studio.UGq/Er',
     defaultMessage: 'Whether to skip sending group invite emails and add group members directly',
   },
+  supportedLanguages: {
+    id: 'studio.KLr1Qo',
+    defaultMessage: 'Supported Languages',
+  },
+  supportedLanguagesHelp: {
+    id: 'studio.q+JBOt',
+    defaultMessage: 'Languages officially supported by the app',
+  },
 });

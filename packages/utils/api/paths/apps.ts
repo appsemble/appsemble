@@ -68,6 +68,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 type: 'string',
                 description: 'The custom style to apply to all parts of app.',
               },
+              supportedLanguages: {
+                $ref: '#/components/schemas/App/properties/supportedLanguages',
+              },
               screenshots: {
                 type: 'array',
                 description: 'Screenshots to showcase in the store',

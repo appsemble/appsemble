@@ -130,5 +130,13 @@ domain fall back to use the Appsemble server Sentry DSN.
       type: 'string',
       description: 'Appsemble SDK interfaces implementations',
     },
+    supportedLanguages: {
+      type: 'array',
+      description: 'Supported languages for an app',
+      items: {
+        type: 'string',
+        minLength: 2,
+      },
+    },
   },
 };

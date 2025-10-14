@@ -3,6 +3,7 @@ import {
   type CreateSettingsParams,
   createSettings as createUtilsSettings,
 } from '@appsemble/node-utils';
+import { defaultLocale } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { App, AppSnapshot, BlockAsset, BlockVersion, getAppDB } from '../models/index.js';
@@ -58,6 +59,7 @@ export async function createSettings({
       'controllerImplementations',
       'displayAppMemberName',
       'displayInstallationPrompt',
+      'supportedLanguages',
     ],
     where: { id: app.id },
     include: [
@@ -124,6 +126,9 @@ export async function createSettings({
       sentryEnvironment,
       appUpdated: persistedApp.updated.toISOString(),
       e2e: process.env.E2E,
+      supportedLanguages: persistedApp.supportedLanguages ?? [
+        persistedApp.definition.defaultLanguage ?? defaultLocale,
+      ],
     },
     [
       ...(app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : []),

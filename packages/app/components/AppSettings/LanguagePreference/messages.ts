@@ -5,4 +5,8 @@ export const messages = defineMessages({
     id: 'app.swaMky',
     defaultMessage: 'Preferred language for this app',
   },
+  supported: {
+    id: 'app.kxImXw',
+    defaultMessage: 'Supported',
+  },
 });

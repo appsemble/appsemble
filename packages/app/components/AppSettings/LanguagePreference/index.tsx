@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import { languages } from '../../../utils/settings.js';
+import { languages, supportedLanguages } from '../../../utils/settings.js';
 
 export function LanguagePreference(): ReactNode {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ export function LanguagePreference(): ReactNode {
     >
       {languages.map((language) => (
         <option key={language} value={language}>
-          {getLanguageDisplayName(language)}
+          {`${getLanguageDisplayName(language)} ${supportedLanguages.includes(language) ? <FormattedMessage {...messages.supported} /> : null}`}
         </option>
       ))}
     </SelectField>
