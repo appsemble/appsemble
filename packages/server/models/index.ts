@@ -333,47 +333,13 @@ export async function initAppDB(
       )) as { exists: boolean }[][];
 
       if (!exists) {
-        await mainDB.query(`CREATE DATABASE "${appDBName}"`);
+        const [[{ exists: templateExists }]] = (await mainDB.query(
+          "SELECT EXISTS (SELECT FROM pg_database WHERE datname = 'app_template');",
+        )) as { exists: boolean }[][];
 
-        const temp = new Sequelize({
-          database: appDBName,
-          host: app.dbHost,
-          port: app.dbPort,
-          password: decrypt(
-            app.dbPassword,
-            argv.aesSecret || 'Local Appsemble development AES secret',
-          ),
-          username: app.dbUser,
-          logging: logSQL,
-          dialect: 'postgres',
-          dialectOptions: {
-            ssl: argv.databaseSsl && { rejectUnauthorized: false },
-          },
-        });
-
-        try {
-          // Ensure that the owner of the public schema in the newly created app db is the same as
-          // the db user of the main database so appsemble can manage the schema
-          await temp.query(`
-            DO $$
-            DECLARE
-              schema_owner text;
-            BEGIN
-              SELECT nspowner::regrole INTO schema_owner
-              FROM pg_namespace
-              WHERE nspname = 'public';
-
-              IF schema_owner IS DISTINCT FROM '${app.dbUser}' THEN
-                EXECUTE format('ALTER SCHEMA public OWNER TO %I', '${app.dbUser}');
-              END IF;
-            END
-            $$;
-          `);
-        } catch (error: any) {
-          logger.warn('Could not update schema owner for %s: %s', appDBName, error.message);
-        } finally {
-          await temp.close();
-        }
+        await mainDB.query(
+          `CREATE DATABASE "${appDBName}" ${templateExists ? 'WITH TEMPLATE app_template' : ''}`,
+        );
       }
     } catch (err) {
       logger.error(err);
