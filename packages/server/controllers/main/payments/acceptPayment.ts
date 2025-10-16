@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { InvoiceStatus } from '@appsemble/types';
+import { InvoiceStatus, PredefinedOrganizationRole } from '@appsemble/types';
 import dayjs from 'dayjs';
 import { type Context } from 'koa';
 import { type SendMailOptions } from 'nodemailer';
@@ -9,6 +9,7 @@ import {
   InvoiceTransaction,
   Organization,
   OrganizationSubscription,
+  User,
 } from '../../../models/index.js';
 import { Invoice } from '../../../models/main/Invoice.js';
 import { argv } from '../../../utils/argv.js';
@@ -44,8 +45,18 @@ export async function acceptPayment(ctx: Context): Promise<void> {
       status: event.type,
     });
     transaction.save();
-    const organization = await Organization.findByPk(invoice!.organizationId);
+    const organization = await Organization.findByPk(invoice!.organizationId, {
+      include: [
+        {
+          model: User,
+          required: false,
+        },
+      ],
+    });
     assertKoaError(!(organization && organization?.email), ctx, 404, 'Organization not found.');
+    const owner = organization?.Users?.find(
+      (user: User) => user.OrganizationMember?.role === PredefinedOrganizationRole.Owner,
+    );
     const attachments: SendMailOptions['attachments'] = [];
     attachments.push({
       filename: 'Invoice.pdf',
@@ -59,7 +70,7 @@ export async function acceptPayment(ctx: Context): Promise<void> {
       },
       emailName: 'subscriptionConfirmation',
       attachments,
-      locale: 'EN',
+      locale: owner?.locale,
       values: {
         name: organization!.name,
       },

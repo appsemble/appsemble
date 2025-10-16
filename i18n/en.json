@@ -207,7 +207,7 @@
   "server.emails.subscriptionChargeFailed.subject": "Appsemble subscription",
   "server.emails.subscriptionConfirmation.body": "{name, select, null {Hello,} other {Hello {name},}}\n\n A payment for Appsemble subscription has been collected from your account. Details are included in the PDF invoice attached below.\n\nKind regards,\n\n_The Appsemble Group_",
   "server.emails.subscriptionConfirmation.subject": "Appsemble subscription confirmation",
-  "server.emails.subscriptionNotice.body": "{name, select, null {Hello,} other {Hello {name},}}\n\n A payment for Appsemble subscription will be collected from your account in two days.\n\nKind regards,\n\n_The Appsemble Team_",
+  "server.emails.subscriptionNotice.body": "{name, select, null {Hello,} other {Hello {name},}}\n\n A payment for Appsemble subscription will be collected from your account in two days.\n\nKind regards,\n\n_The Appsemble Group_",
   "server.emails.subscriptionNotice.subject": "Appsemble subscription",
   "server.emails.welcome.body": "{name, select, null {Hello,} other {Hello {name},}}\n\nThank you for registering your account. Before you can use your account, we need to verify your email address.\n\nPlease click <link>here</link> to verify your email address.\n\nKind regards,\n\n_{appName, select, null {The Appsemble Team} other {{appName}}}_",
   "server.emails.welcome.subject": "Welcome to {appName, select, null {Appsemble} other {{appName}}}",
