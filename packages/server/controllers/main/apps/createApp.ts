@@ -133,7 +133,7 @@ export async function createApp(ctx: Context): Promise<void> {
       dbUser,
       supportedLanguages: supportedLanguages?.length
         ? supportedLanguages
-        : (definition.defaultLanguage ?? [defaultLocale]),
+        : [definition.defaultLanguage ?? defaultLocale],
     };
 
     if (dbPassword) {

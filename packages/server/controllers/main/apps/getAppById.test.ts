@@ -113,6 +113,7 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "visibility": "unlisted",
       }
@@ -201,6 +202,7 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": 2,
         "visibility": "unlisted",
@@ -259,6 +261,7 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "visibility": "unlisted",
       }
@@ -319,6 +322,7 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "visibility": "unlisted",
       }
@@ -375,6 +379,7 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "visibility": "unlisted",
       }
@@ -431,6 +436,7 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -490,6 +496,7 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App

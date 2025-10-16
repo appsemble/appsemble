@@ -14,12 +14,14 @@ context:
     resources: true
     assets: true
     assetsClonable: true
+    supportedLanguages: ['en', 'nl']
   review:
     organization: appsemble
     visibility: public
     resources: true
     assets: true
     assetsClonable: true
+    supportedLanguages: ['en', 'nl']
   staging:
     id: 369
     organization: appsemble
@@ -28,6 +30,7 @@ context:
     resources: true
     assets: true
     assetsClonable: true
+    supportedLanguages: ['en', 'nl']
   e2e:
     organization: appsemble
     visibility: public

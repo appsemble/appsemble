@@ -11,11 +11,14 @@ context:
     remote: https://appsemble.app
     visibility: public
     id: 1191
+    supportedLanguages: ['en', 'nl']
   review:
     organization: appsemble
     visibility: public
+    supportedLanguages: ['en', 'nl']
   staging:
     organization: appsemble
     remote: https://appsemble.eu
     visibility: public
     id: 1191
+    supportedLanguages: ['en', 'nl']
