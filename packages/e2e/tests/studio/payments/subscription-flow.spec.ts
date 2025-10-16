@@ -14,7 +14,7 @@ test.describe('Payments', () => {
   test('should cancel a subscription', async ({ page }) => {
     await page.goto(`/en/organizations/${organization.toLowerCase()}/subscriptions`);
     await page
-      .locator('.card:has-text("STANDARD")')
+      .locator('.card:has-text("ENTERPRISE")')
       .getByRole('button', { name: 'Cancel' })
       .click();
     await page.getByLabel('Cancellation reason(Optional)').fill('Not happy.');
@@ -30,7 +30,10 @@ test.describe('Payments', () => {
 
   (CI ? test.skip : test)('should confirm correct redirect by extension', async ({ page }) => {
     await page.goto(`/en/organizations/${organization.toLowerCase()}/subscriptions`);
-    await page.locator('.card:has-text("STANDARD")').getByRole('link', { name: 'Extend' }).click();
+    await page
+      .locator('.card:has-text("ENTERPRISE")')
+      .getByRole('link', { name: 'Extend' })
+      .click();
     await expect(page).toHaveTitle('Activate · Appsemble', { timeout: 10_000 });
   });
 
