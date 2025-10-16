@@ -1099,6 +1099,11 @@ interface PublishAppParams {
   members?: boolean;
 
   /**
+   * Languages officially supported by the app
+   */
+  supportedLanguages?: string[];
+
+  /**
    * Whether assets from the `assets` directory should be published after publishing the app.
    */
   assets?: boolean;
@@ -1232,6 +1237,7 @@ export async function publishApp({
   const assets = appsembleContext.assets ?? options.assets;
   const resources = appsembleContext.resources ?? options.resources;
   const members = appsembleContext.members ?? options.members;
+  const supportedLanguages = appsembleContext.supportedLanguages ?? options.supportedLanguages;
   const appLock = appsembleContext.appLock || 'unlocked';
   const dbName = appsembleContext.dbName ?? options.dbName;
   const dbHost = appsembleContext.dbHost ?? options.dbHost;
@@ -1276,6 +1282,10 @@ export async function publishApp({
 
   if (dbPassword) {
     formData.append('dbPassword', dbPassword);
+  }
+
+  if (supportedLanguages?.length) {
+    formData.append('supportedLanguages', JSON.stringify(supportedLanguages));
   }
 
   if (icon) {
@@ -1475,6 +1485,11 @@ interface UpdateAppParams {
   members?: boolean;
 
   /**
+   * Languages officially supported by the app
+   */
+  supportedLanguages?: string[];
+
+  /**
    * Whether assets from the `assets` directory should be published after publishing the app.
    */
   assets?: boolean;
@@ -1619,6 +1634,7 @@ export async function updateApp({
   const metaPixelId = appsembleContext.metaPixelId ?? options.metaPixelId;
   const resources = appsembleContext.resources ?? options.resources;
   const members = appsembleContext.members ?? options.members;
+  const supportedLanguages = appsembleContext.supportedLanguages ?? options.supportedLanguages;
   const assets = appsembleContext.assets ?? options.assets;
   const { appLock } = appsembleContext;
   const dbName = appsembleContext.dbName ?? options.dbName;
@@ -1662,6 +1678,10 @@ export async function updateApp({
 
   if (dbPassword) {
     formData.append('dbPassword', dbPassword);
+  }
+
+  if (supportedLanguages?.length) {
+    formData.append('supportedLanguages', JSON.stringify(supportedLanguages));
   }
 
   if (icon) {
@@ -1834,6 +1854,11 @@ interface PatchAppParams {
   displayInstallationPrompt?: boolean;
 
   /**
+   * Languages officially supported by the app
+   */
+  supportedLanguages?: string[];
+
+  /**
    * Whether the Appsemble OAuth2 login method should be shown.
    */
   showAppsembleOAuth2Login?: boolean;
@@ -1851,6 +1876,9 @@ interface PatchAppParams {
 
 export async function patchApp({ id, remote, ...options }: PatchAppParams): Promise<void> {
   const formData = new FormData();
+  if (options.supportedLanguages?.length) {
+    formData.append('supportedLanguages', JSON.stringify(options.supportedLanguages));
+  }
   if (options.path !== undefined) {
     logger.info(`Setting app path to ${options.path}`);
     formData.append('path', options.path);

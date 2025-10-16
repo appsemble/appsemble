@@ -1,6 +1,7 @@
 import {
   type AppDefinition,
   AppValidator,
+  defaultLocale,
   normalize,
   validateAppDefinition,
 } from '@appsemble/lang-sdk';
@@ -58,6 +59,7 @@ export async function createApp(ctx: Context): Promise<void> {
         sentryEnvironment,
         sharedStyle,
         showAppDefinition = true,
+        supportedLanguages,
         template = false,
         visibility,
         yaml,
@@ -129,6 +131,9 @@ export async function createApp(ctx: Context): Promise<void> {
       dbHost,
       dbPort,
       dbUser,
+      supportedLanguages: supportedLanguages?.length
+        ? supportedLanguages
+        : [definition.defaultLanguage ?? defaultLocale],
     };
 
     if (dbPassword) {

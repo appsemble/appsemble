@@ -21,6 +21,7 @@ export const {
   showAppsembleOAuth2Login,
   showDemoLogin,
   snapshotId,
+  supportedLanguages,
   vapidPublicKey,
 } = window.settings;
 // @ts-expect-error This is intentional

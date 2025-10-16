@@ -10,6 +10,7 @@ import { AppVariablesProvider } from '../AppVariablesProvider/index.js';
 import { DemoAppMembersProvider } from '../DemoAppMembersProvider/index.js';
 import { ErrorFallback } from '../ErrorFallback/index.js';
 import { InstallationTracker } from '../InstallationTracker/index.js';
+import { LanguageUnsupportedBanner } from '../LanguageUnsupportedBanner/index.js';
 import { MenuProvider } from '../MenuProvider/index.js';
 import { PageTracker } from '../PageTracker/index.js';
 import { PermissionRequest } from '../PermissionRequest/index.js';
@@ -37,6 +38,7 @@ export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactNode {
                 <AppMemberProvider>
                   <DemoAppMembersProvider>
                     <MenuProvider>
+                      <LanguageUnsupportedBanner />
                       <InstallationTracker />
                       <PermissionRequest />
                       <AppRoutes />

@@ -154,6 +154,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": 1,
         "visibility": "private",
@@ -168,6 +169,29 @@ describe('patchApp', () => {
               ",
       }
     `);
+  });
+
+  it('should update the supportedLanguages of an app', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+      },
+      path: 'test-app',
+      supportedLanguages: ['en'],
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+    const { data, status } = await request.patch<AppType>(
+      `/api/apps/${app.id}`,
+      createFormData({
+        supportedLanguages: ['en', 'nl'],
+      }),
+    );
+    expect(status).toBe(200);
+    expect(data.supportedLanguages).toStrictEqual(['en', 'nl']);
   });
 
   it('should assign the positions to resources if enabled in the app definition', async () => {
@@ -458,6 +482,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": -1,
         "visibility": "unlisted",
@@ -613,6 +638,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": -1,
         "visibility": "unlisted",
@@ -676,6 +702,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": -1,
         "visibility": "unlisted",
@@ -739,6 +766,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": -1,
         "visibility": "unlisted",
@@ -807,6 +835,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": -1,
         "visibility": "unlisted",
@@ -936,6 +965,9 @@ describe('patchApp', () => {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
                 },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
+                },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
                 },
@@ -1024,6 +1056,9 @@ describe('patchApp', () => {
                 "sharedStyle": {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
+                },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
                 },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
@@ -1472,6 +1507,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": -1,
         "visibility": "unlisted",
@@ -1748,6 +1784,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": -1,
         "visibility": "unlisted",
@@ -1800,6 +1837,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": -1,
         "visibility": "unlisted",
@@ -1862,6 +1900,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": -1,
         "visibility": "unlisted",
@@ -1913,6 +1952,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": -1,
         "visibility": "unlisted",
@@ -1962,6 +2002,7 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
         "version": -1,
         "visibility": "unlisted",

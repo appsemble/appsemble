@@ -17,10 +17,12 @@ import {
   SimpleFormField,
   SimpleSubmit,
   useConfirmation,
+  useData,
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
 import { type App, type SSLStatus } from '@appsemble/types';
+import { getLanguageDisplayName } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
@@ -76,6 +78,7 @@ export function SettingsPage(): ReactNode {
   }
 
   const sslStatus = useSSLStatus(...domains);
+  const languageIds = useData<string[]>(`/api/apps/${app.id}/messages`);
 
   // This is needed, because the app domain may be null.
   const defaultValues = useMemo<FormValues>(
@@ -96,6 +99,7 @@ export function SettingsPage(): ReactNode {
       displayAppMemberName: app.displayAppMemberName || false,
       displayInstallationPrompt: app.displayInstallationPrompt || false,
       skipGroupInvites: app.skipGroupInvites || false,
+      supportedLanguages: app.supportedLanguages,
     }),
     [app],
   );
@@ -115,6 +119,7 @@ export function SettingsPage(): ReactNode {
     form.set('displayAppMemberName', String(values.displayAppMemberName));
     form.set('displayInstallationPrompt', String(values.displayInstallationPrompt));
     form.set('skipGroupInvites', String(values.skipGroupInvites));
+    form.set('supportedLanguages', JSON.stringify(values.supportedLanguages));
     if (values.icon !== app.iconUrl) {
       form.set('icon', values.icon);
     }
@@ -383,6 +388,27 @@ export function SettingsPage(): ReactNode {
             label={<FormattedMessage {...messages.sentryEnvironmentLabel} />}
             name="sentryEnvironment"
           />
+          <SimpleFormField
+            component={SelectField}
+            disabled={app.locked !== 'unlocked'}
+            help={<FormattedMessage {...messages.supportedLanguagesHelp} />}
+            label={<FormattedMessage {...messages.supportedLanguages} />}
+            multiple
+            name="supportedLanguages"
+            preprocess={(selectedValue, oldValues) => {
+              const { supportedLanguages } = oldValues;
+              if (supportedLanguages.includes(selectedValue)) {
+                return (supportedLanguages as string[]).filter((lang) => lang !== selectedValue);
+              }
+              return [selectedValue, ...supportedLanguages];
+            }}
+          >
+            {languageIds.data?.map((lang) => (
+              <option key={lang} value={lang}>
+                {getLanguageDisplayName(lang)}
+              </option>
+            ))}
+          </SimpleFormField>
           <FormButtons>
             <SimpleSubmit color="primary" disabled={app.locked !== 'unlocked'} type="submit">
               <FormattedMessage {...messages.saveChanges} />

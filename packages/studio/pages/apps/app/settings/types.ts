@@ -17,4 +17,5 @@ export interface FormValues {
   displayAppMemberName: boolean;
   displayInstallationPrompt: boolean;
   skipGroupInvites: boolean;
+  supportedLanguages: string[];
 }

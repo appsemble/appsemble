@@ -14,13 +14,16 @@ context:
     remote: https://appsemble.app
     visibility: public
     resources: true
+    supportedLanguages: ['en', 'nl']
   review:
     organization: appsemble
     visibility: public
     resources: true
+    supportedLanguages: ['en', 'nl']
   staging:
     id: 1129
     organization: appsemble
     remote: https://appsemble.eu
     visibility: public
     resources: true
+    supportedLanguages: ['en', 'nl']

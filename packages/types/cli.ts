@@ -191,6 +191,11 @@ export interface AppsembleContext {
    * The user of the external app database.
    */
   dbUser?: string;
+
+  /**
+   * Languages officially supported by the app
+   */
+  supportedLanguages?: string[];
 }
 
 export interface AppsembleRC {
