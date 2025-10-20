@@ -187,7 +187,7 @@ describe('patchApp', () => {
     const { data, status } = await request.patch<AppType>(
       `/api/apps/${app.id}`,
       createFormData({
-        supportedLanguages: ['en', 'nl'],
+        supportedLanguages: JSON.stringify(['en', 'nl']),
       }),
     );
     expect(status).toBe(200);

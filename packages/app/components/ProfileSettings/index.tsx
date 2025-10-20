@@ -18,7 +18,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { PicturePreview } from './PicturePreview/index.js';
-import { apiUrl, appId, languages } from '../../utils/settings.js';
+import { apiUrl, appId, languages, supportedLanguages } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 
@@ -157,7 +157,9 @@ export function ProfileSettings(): ReactNode {
         >
           {languages.map((language) => (
             <option key={language} value={language}>
-              {getLanguageDisplayName(language)}
+              {supportedLanguages.includes(language)
+                ? `${getLanguageDisplayName(language)} (${formatMessage(messages.supported)})`
+                : getLanguageDisplayName(language)}
             </option>
           ))}
         </SimpleFormField>
