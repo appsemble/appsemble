@@ -7,21 +7,23 @@ import { sentryDsn, sentryEnvironment } from './utils/settings.js';
 
 setupSentry(sentryDsn, sentryEnvironment);
 
-let serviceWorkerRegistration: ServiceWorkerRegistration | null = null;
+// WebPack does not allow it
+// eslint-disable-next-line unicorn/prefer-top-level-await
+const serviceWorkerRegistrationPromise = (async () => {
+  if (!('serviceWorker' in navigator)) {
+    // eslint-disable-next-line no-console
+    console.warn('Service workers not supported in this environment.');
+    return null;
+  }
 
-if ('serviceWorker' in navigator) {
   try {
-    serviceWorkerRegistration = await navigator.serviceWorker.register('/service-worker.js');
+    return await navigator.serviceWorker.register('/service-worker.js');
   } catch (err) {
     // eslint-disable-next-line no-console
     console.warn('Service worker registration failed:', err);
+    return null;
   }
-} else {
-  // eslint-disable-next-line no-console
-  console.warn('Service workers not supported in this environment.');
-}
-
-const serviceWorkerRegistrationPromise = Promise.resolve(serviceWorkerRegistration);
+})();
 
 createRoot(document.getElementById('app')!).render(
   <App serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise} />,
