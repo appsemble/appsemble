@@ -39,7 +39,7 @@
     ]
   },
   "overrides": {
-    "axios": "~1.2.0"
+    "axios": "~1.12.0"
   },
   "devDependencies": {
     "@lhci/cli": "0.14.0",
