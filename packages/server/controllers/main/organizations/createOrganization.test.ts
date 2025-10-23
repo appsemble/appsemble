@@ -55,6 +55,7 @@ describe('createOrganization', () => {
       data: {
         id: 'foo',
         name: 'Foooo',
+        locale: 'en',
         members: [
           {
             id: expect.any(String),

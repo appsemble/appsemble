@@ -27,6 +27,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
         icon,
         id,
         invoiceReference,
+        locale,
         name,
         streetName,
         vatIdNumber,
@@ -78,6 +79,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
       name,
       email,
       description,
+      locale,
       website,
       icon: icon ? await uploadToBuffer(icon.path) : null,
       vatIdNumber,
@@ -103,6 +105,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
         : null,
       description: organization.description,
       website: organization.website,
+      locale: organization.locale,
       email: organization.email,
       members: [
         {

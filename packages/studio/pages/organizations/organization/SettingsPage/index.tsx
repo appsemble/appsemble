@@ -36,6 +36,7 @@ import { Collapsible } from '../../../../components/Collapsible/index.js';
 import { IconPreview } from '../../../../components/IconPreview/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 import { type Block, type Organization } from '../../../../types.js';
+import { supportedOrganizationLanguages } from '../../../../utils/constants.js';
 
 interface SettingsPageProps {
   /**
@@ -155,6 +156,7 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
       houseNumber,
       icon,
       invoiceReference,
+      locale,
       name,
       streetName,
       vatIdNumber,
@@ -166,6 +168,7 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
       formData.set('name', name);
       formData.set('description', description);
       formData.set('email', email);
+      formData.set('locale', locale);
       formData.set('website', website ? `${websiteProtocol}://${website}` : '');
       formData.set('vatIdNumber', vatIdNumber);
       formData.set('streetName', streetName);
@@ -189,6 +192,7 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
                 description,
                 website,
                 email,
+                locale,
                 vatIdNumber,
                 streetName,
                 houseNumber,
@@ -206,6 +210,7 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
         description,
         website,
         email,
+        locale,
         vatIdNumber,
         streetName,
         houseNumber,
@@ -227,6 +232,7 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
       website: organization.website?.replace(/^https?:\/\//, '') || '',
       websiteProtocol: organization.website?.startsWith('http://') ? 'http' : 'https',
       description: organization.description || '',
+      locale: organization.locale || 'en',
       icon: null as null,
       vatIdNumber: organization.vatIdNumber || '',
       streetName: organization.streetName || '',
@@ -276,6 +282,20 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
           maxLength={160}
           name="description"
         />
+        <SimpleFormField
+          component={SelectField}
+          help={<FormattedMessage {...messages.preferredLanguageHelp} />}
+          icon="language"
+          label={<FormattedMessage {...messages.preferredLanguage} />}
+          name="locale"
+          required
+        >
+          {Object.entries(supportedOrganizationLanguages).map(([code, name]) => (
+            <option key={code} value={code}>
+              {name}
+            </option>
+          ))}
+        </SimpleFormField>
         <SimpleFormField
           accept="image/jpeg, image/png, image/tiff, image/webp"
           component={FileUpload}

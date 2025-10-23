@@ -19,6 +19,7 @@ export interface Organization {
   description: string;
   website: string;
   email: string;
+  locale: string;
   iconUrl: string;
   vatIdNumber: string;
   streetName: string;

@@ -541,6 +541,11 @@ export interface Organization {
   email: string;
 
   /**
+   * The locale that is used for administrative organization emails.
+   */
+  locale: string;
+
+  /**
    * The URL at which the organization’s icon can be found.
    */
   iconUrl: string;

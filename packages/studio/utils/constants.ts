@@ -11,3 +11,11 @@ export const supportedLanguages = {
   ru: 'Russian (русский)',
   en: 'English',
 };
+
+/**
+ * The supported languages for administrative organization emails in Appsemble.
+ */
+export const supportedOrganizationLanguages = {
+  nl: 'Dutch (Nederlands)',
+  en: 'English',
+};

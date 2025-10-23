@@ -8,6 +8,7 @@ import {
   Column,
   CreatedAt,
   DataType,
+  Default,
   DeletedAt,
   HasMany,
   HasOne,
@@ -47,6 +48,11 @@ export class Organization extends Model {
 
   @Column(DataType.BLOB)
   icon?: Buffer;
+
+  @AllowNull(false)
+  @Default('en')
+  @Column(DataType.STRING)
+  locale?: string;
 
   @Column(DataType.STRING)
   stripeCustomerId?: string;

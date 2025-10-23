@@ -18,6 +18,7 @@ import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
+import { supportedOrganizationLanguages } from '../../utils/constants.js';
 import { Collapsible } from '../Collapsible/index.js';
 import { IconPreview } from '../IconPreview/index.js';
 import { useUser } from '../UserProvider/index.js';
@@ -89,6 +90,7 @@ const defaults = {
   email: '',
   id: '',
   name: '',
+  locale: 'en',
   website: '',
   websiteProtocol: 'https',
   icon: null as File,
@@ -144,6 +146,7 @@ export function CreateOrganizationModal({
       icon,
       id,
       invoiceReference,
+      locale,
       name,
       streetName,
       vatIdNumber,
@@ -157,6 +160,7 @@ export function CreateOrganizationModal({
       formData.set('description', description);
       formData.set('email', email);
       formData.set('website', website ? `${websiteProtocol}://${website}` : '');
+      formData.set('locale', locale);
       formData.set('vatIdNumber', vatIdNumber);
       formData.set('invoiceReference', invoiceReference);
       formData.set('streetName', streetName);
@@ -250,6 +254,20 @@ export function CreateOrganizationModal({
         label={<FormattedMessage {...messages.description} />}
         name="description"
       />
+      <SimpleFormField
+        component={SelectField}
+        help={<FormattedMessage {...messages.preferredLanguageHelp} />}
+        icon="language"
+        label={<FormattedMessage {...messages.preferredLanguage} />}
+        name="locale"
+        required
+      >
+        {Object.entries(supportedOrganizationLanguages).map(([code, name]) => (
+          <option key={code} value={code}>
+            {name}
+          </option>
+        ))}
+      </SimpleFormField>
       <SimpleFormField
         accept="image/jpeg, image/png, image/tiff, image/webp"
         component={FileUpload}
