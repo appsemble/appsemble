@@ -56,9 +56,9 @@
     "lcm": "^0.0.3"
   },
   "devDependencies": {
-    "@types/language-tags": "^1.0.0",
-    "@types/lcm": "^0.0.2",
-    "vitest": "^2.0.0"
+    "@types/language-tags": "1.0.4",
+    "@types/lcm": "0.0.2",
+    "vitest": "2.1.9"
   },
   "engines": {
     "node": ">=20"

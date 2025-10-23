@@ -693,7 +693,7 @@ sentry release:
     - job: build docker image
       artifacts: true
   image:
-    name: getsentry/sentry-cli:2
+    name: getsentry/sentry-cli:2@sha256:2a60d341709d8ae040b842556c66f98443cc6d59101cab751f9811f3a1df9362
     entrypoint: [/bin/sh, -c]
   stage: publish
   rules:
