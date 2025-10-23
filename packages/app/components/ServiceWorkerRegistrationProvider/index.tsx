@@ -20,7 +20,7 @@ import { apiUrl, appId, e2e, vapidPublicKey } from '../../utils/settings.js';
 
 interface ServiceWorkerRegistrationProviderProps {
   readonly children: ReactNode;
-  readonly serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
+  readonly serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration | null>;
 }
 
 // @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks)
@@ -60,12 +60,16 @@ export function ServiceWorkerRegistrationProvider({
       }
 
       const registration = await serviceWorkerRegistrationPromise;
-      if (registration?.waiting) {
+      if (!registration) {
+        return;
+      }
+
+      if (registration.waiting) {
         // eslint-disable-next-line unicorn/require-post-message-target-origin
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       } else {
         // Trigger SW to check for updates
-        await registration?.update();
+        await registration.update();
       }
     } catch (error) {
       setServiceWorkerError(error as Error);
@@ -103,21 +107,23 @@ export function ServiceWorkerRegistrationProvider({
   useEffect(() => {
     serviceWorkerRegistrationPromise
       .then((registration) => {
-        if (registration) {
-          // Listen for new SW installation
-          // eslint-disable-next-line no-param-reassign
-          registration.onupdatefound = () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.onstatechange = () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // eslint-disable-next-line unicorn/require-post-message-target-origin
-                  newWorker.postMessage({ type: 'SKIP_WAITING' });
-                }
-              };
-            }
-          };
+        if (!registration) {
+          return;
         }
+
+        // Listen for new SW installation
+        // eslint-disable-next-line no-param-reassign
+        registration.onupdatefound = () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.onstatechange = () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // eslint-disable-next-line unicorn/require-post-message-target-origin
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+              }
+            };
+          }
+        };
 
         // Kick off initial update
         update();
@@ -150,6 +156,9 @@ export function ServiceWorkerRegistrationProvider({
       }[] = [],
     ) => {
       const registration = await serviceWorkerRegistrationPromise;
+      if (!registration) {
+        return null;
+      }
 
       if (window.Notification?.permission !== 'granted') {
         const newPermission = await requestPermission();
@@ -158,7 +167,7 @@ export function ServiceWorkerRegistrationProvider({
         }
       }
 
-      let sub = await registration?.pushManager?.getSubscription();
+      let sub = await registration.pushManager.getSubscription();
 
       if (!sub) {
         const options = {
@@ -166,7 +175,7 @@ export function ServiceWorkerRegistrationProvider({
           userVisibleOnly: true,
         };
 
-        sub = await registration?.pushManager?.subscribe(options);
+        sub = await registration.pushManager.subscribe(options);
         const { endpoint, keys } = sub.toJSON();
         await axios.post(`${apiUrl}/api/apps/${appId}/subscriptions`, { endpoint, keys });
 
@@ -210,7 +219,7 @@ export function ServiceWorkerRegistrationProvider({
 
   useEffect(() => {
     if (serviceWorkerError) {
-      captureMessage('Service worker registration failed.');
+      captureMessage('Unexpected service worker error.');
       captureException(serviceWorkerError);
     }
   }, [serviceWorkerError]);

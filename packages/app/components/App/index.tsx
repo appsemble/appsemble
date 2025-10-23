@@ -17,7 +17,7 @@ import { PermissionRequest } from '../PermissionRequest/index.js';
 import { ServiceWorkerRegistrationProvider } from '../ServiceWorkerRegistrationProvider/index.js';
 
 interface AppProps {
-  readonly serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
+  readonly serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration | null>;
 }
 
 /**
