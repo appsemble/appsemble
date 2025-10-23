@@ -97,9 +97,6 @@ export const test = base.extend<AppFixtures>({
 
       const response = await request.post('/api/apps', {
         multipart: formData,
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-        },
       });
       expect(response.status()).toBe(201);
 
@@ -126,9 +123,6 @@ export const test = base.extend<AppFixtures>({
 
       const response = await request.patch(`/api/apps/${appId}`, {
         multipart: formData,
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-        },
       });
       expect(response.status()).toBe(200);
 
@@ -140,11 +134,7 @@ export const test = base.extend<AppFixtures>({
 
   async deleteApp({ request }, use) {
     await use(async (appId) => {
-      const response = await request.delete(`/api/apps/${appId}`, {
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-        },
-      });
+      const response = await request.delete(`/api/apps/${appId}`);
 
       expect(response.status()).toBe(204);
     });
@@ -181,9 +171,6 @@ export const test = base.extend<AppFixtures>({
 
       const response = await request.post(`/api/apps/${appId}/messages`, {
         data: appMessages,
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-        },
       });
 
       expect(response.status()).toBe(201);

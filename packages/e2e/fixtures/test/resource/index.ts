@@ -43,9 +43,6 @@ export const test = base.extend<ResourceFixtures>({
 
       const response = await request.post(`/api/apps/${appId}/resources/${type}`, {
         multipart: formData,
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-        },
       });
       expect(response.status()).toBe(201);
 
@@ -57,11 +54,7 @@ export const test = base.extend<ResourceFixtures>({
 
   async deleteAllResources({ request }, use) {
     await use(async (appId) => {
-      const response = await request.delete(`/api/apps/${appId}/resources`, {
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-        },
-      });
+      const response = await request.delete(`/api/apps/${appId}/resources`);
       expect(response.status()).toBe(204);
     });
   },

@@ -17,22 +17,14 @@ export interface TrainingFixtures {
 export const test = base.extend<TrainingFixtures>({
   async resetTrainingProgress({ request }, use) {
     await use(async () => {
-      const response = await request.delete('/api/trainings/completed', {
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-        },
-      });
+      const response = await request.delete('/api/trainings/completed');
       expect(response.status()).toBe(204);
     });
   },
 
   async completeTraining({ request }, use) {
     await use(async (trainingId) => {
-      const response = await request.post(`/api/trainings/completed/${trainingId}`, {
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-        },
-      });
+      const response = await request.post(`/api/trainings/completed/${trainingId}`);
       expect(response.status()).toBe(201);
     });
   },

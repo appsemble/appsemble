@@ -406,7 +406,7 @@ validate-snippets:
         S3_SECRET_KEY: password
         migrateTo: next
   script:
-    - npm run scripts seed-account --
+    - npm run scripts create-user --
       --name $BOT_ACCOUNT_NAME
       --email $BOT_ACCOUNT_EMAIL
       --password $BOT_ACCOUNT_PASSWORD
@@ -478,7 +478,7 @@ e2e node:
         migrateTo: next
         E2E: true
   script:
-    - npm run scripts seed-account --
+    - npm run scripts create-user --
       --name $BOT_ACCOUNT_NAME
       --email $BOT_ACCOUNT_EMAIL
       --password $BOT_ACCOUNT_PASSWORD
@@ -492,16 +492,12 @@ e2e node:
       --icon packages/server/assets/appsemble.png
       --name Appsemble
       --website https://appsemble.com
-    - npm run scripts seed-subscription --
-      --subscription enterprise
-      --organization appsemble
     - npm run appsemble -- block publish 'blocks/*'
     - npm --workspace @appsemble/types run prepack
     - npm --workspace @appsemble/lang-sdk run prepack
+    - npm --workspace @appsemble/utils run prepack
+    - npm --workspace @appsemble/node-utils run prepack
     - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
-    - npm run scripts seed-subscription --
-      --organization appsemble
-      --subscription standard
   parallel: 6
   artifacts:
     expose_as: Playwright videos

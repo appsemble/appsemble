@@ -8,14 +8,14 @@ const { APPSEMBLE_REVIEW_DOMAIN, APPSEMBLE_STAGING_DOMAIN, CI, CI_MERGE_REQUEST_
  */
 export default defineConfig({
   testMatch: '**/*.spec.ts',
-  // Tests aren't fully isolated so they shouldn't run in parallel
-  fullyParallel: false,
+  // Run tests in parallel
+  fullyParallel: true,
   // Fail the build on CI if you accidentally left test.only in the source code.
   forbidOnly: Boolean(CI),
   // Retry on CI only
   retries: CI ? 2 : 0,
-  // Concurrent tests run better on CI in general
-  workers: 1,
+  // Amount of workers to run tests with
+  workers: CI ? 2 : 1,
   // Reporter to use. See https://playwright.dev/docs/test-reporters
   reporter: [['junit', { outputFile: 'results.xml' }]],
   // Prevent the pipeline from timing out
@@ -56,21 +56,29 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
       fullyParallel: true,
     },
-    { name: 'setup', testMatch: /.*\.setup\.ts/ },
+    {
+      name: 'create-accounts',
+      testMatch: /create-accounts\.setup\.ts/,
+      teardown: 'teardown-accounts',
+    },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], storageState: '.auth/user.json' },
-      dependencies: ['setup'],
+      testIgnore: '**/static-ui/**',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['create-accounts'],
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'], storageState: '.auth/user.json' },
-      dependencies: ['setup'],
+      testIgnore: '**/static-ui/**',
+      use: { ...devices['Desktop Firefox'] },
+      dependencies: ['create-accounts'],
     },
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'], storageState: '.auth/user.json' },
-      dependencies: ['setup'],
+      testIgnore: '**/static-ui/**',
+      use: { ...devices['Desktop Safari'] },
+      dependencies: ['create-accounts'],
     },
+    { name: 'teardown-accounts', testMatch: /teardown-accounts\.setup\.ts/ },
   ],
 });

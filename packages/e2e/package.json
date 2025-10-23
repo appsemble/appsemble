@@ -38,16 +38,16 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/utils": "0.35.11-test.4",
-    "@appsemble/types": "0.35.11-test.4",
     "@appsemble/lang-sdk": "0.35.11-test.4",
-    "jwt-decode": "^4.0.0",
-    "@fortawesome/fontawesome-free": "^6.0.0",
+    "@appsemble/node-utils": "^0.35.11-test.4",
+    "@appsemble/types": "0.35.11-test.4",
     "@playwright/test": "1.51.1",
-    "bulma": "=0.9.3",
     "strip-indent": "^4.0.0"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "eslint-plugin-playwright": "^2.2.2"
   }
 }

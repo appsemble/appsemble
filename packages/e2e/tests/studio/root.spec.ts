@@ -1,4 +1,4 @@
-import { expect, test } from '../../index.js';
+import { expect, authenticatedTest as test } from '../../index.js';
 
 test('should allow to switch languages', async ({ page }) => {
   await page.goto('/en/apps');

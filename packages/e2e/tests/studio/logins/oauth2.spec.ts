@@ -1,6 +1,6 @@
 import { type App, type AppOAuth2Secret } from '@appsemble/types';
 
-import { expect, test } from '../../../index.js';
+import { expect, authenticatedTest as test } from '../../../index.js';
 
 let app: App;
 let secret: AppOAuth2Secret;

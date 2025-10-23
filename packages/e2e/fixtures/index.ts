@@ -1,2 +1,2 @@
-export { expect } from './expect/index.js';
-export { test } from './test/index.js';
+export * from './expect/index.js';
+export * from './test/index.js';
