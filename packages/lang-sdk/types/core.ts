@@ -110,6 +110,11 @@ export interface AppDefinition {
      * The settings for displaying the app logo.
      */
     logo?: AppLogo;
+
+    /**
+     * The settings for displaying a tag in the header.
+     */
+    headerTag?: HeaderTag;
   };
 
   /**
@@ -388,6 +393,18 @@ export interface AppMemberPropertyDefinition {
   reference?: {
     resource: string;
   };
+}
+
+export interface HeaderTag {
+  /**
+   * The text to be displayed in the tag.
+   */
+  text: Remapper;
+
+  /**
+   * Whether to hide the tag.
+   */
+  hide: Remapper;
 }
 
 export interface AppLogo {
