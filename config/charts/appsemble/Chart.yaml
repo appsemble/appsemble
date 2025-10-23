@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.35.11-test.4
-appVersion: 0.35.11-test.4
+version: 0.35.11
+appVersion: 0.35.11
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,8 +31,16 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Scripts: Add delete-user command."
+    - kind: changed
+      description: "Scripts: Make the timezone and clientCredentials parameters in the
+        create-user command optional."
+    - kind: changed
+      description: "Scripts: Rename seed-account to create-user."
+    - kind: changed
+      description: "Scripts: Rename seed-subscription to update-subscription."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

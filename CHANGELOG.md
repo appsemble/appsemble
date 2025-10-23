@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.35.11](https://gitlab.com/appsemble/appsemble/-/releases/0.35.11)] - 2025-10-23
+
+### Added
+
+- Scripts: Add `delete-user` command.
+
+### Changed
+
+- Scripts: Make the `timezone` and `clientCredentials` parameters in the `create-user` command
+  optional.
+- Scripts: Rename `seed-account` to `create-user`.
+- Scripts: Rename `seed-subscription` to `update-subscription`.
+
 ## \[[0.35.11-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.35.11-test.4)] - 2025-10-16
 
 ## \[[0.35.11-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.35.11-test.3)] - 2025-10-14
