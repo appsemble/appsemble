@@ -76,7 +76,7 @@
     "jsdom": "22.1.0",
     "vitest": "2.1.9",
     "react-is": "18.3.1",
-    "@types/react-is": "^18.0.0",
+    "@types/react-is": "18.3.1",
     "@testing-library/react": "16.3.0"
   }
 }
