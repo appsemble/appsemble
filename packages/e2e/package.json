@@ -48,6 +48,6 @@
     "node": ">=20"
   },
   "devDependencies": {
-    "eslint-plugin-playwright": "^2.2.2"
+    "eslint-plugin-playwright": "2.2.2"
   }
 }
