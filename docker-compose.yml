@@ -24,7 +24,7 @@ services:
       - /var/lib/postgresql/data
 
   pgadmin:
-    image: dpage/pgadmin4@sha256:bd71932cb1ef94719e783f0eed42c227bc67877a7c7e076c7092738711e5f4d4
+    image: dpage/pgadmin4@sha256:5d9624a93634d1c5e595619cc57b1d330758120d1baf445fa97300c0c1fc3c0a
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: info@appsemble.com
