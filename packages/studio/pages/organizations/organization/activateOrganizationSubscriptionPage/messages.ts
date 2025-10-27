@@ -61,14 +61,6 @@ export const messages = defineMessages({
     id: 'studio.BJ2TKX',
     defaultMessage: 'Checkout',
   },
-  descriptionPreferredPaymentProvider: {
-    defaultMessage: 'The payment provider you want to use.',
-    id: 'studio.vGE/z+',
-  },
-  preferredPaymentProvider: {
-    defaultMessage: 'Preferred payment provider',
-    id: 'studio.Fj9LvW',
-  },
   descriptionVatIdNumber: {
     defaultMessage: 'Your VAT id number.',
     id: 'studio.+NUiCV',

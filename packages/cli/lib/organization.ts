@@ -1,7 +1,6 @@
 import { type ReadStream } from 'node:fs';
 
 import { logger } from '@appsemble/node-utils';
-import { type PaymentProvider } from '@appsemble/types';
 import axios from 'axios';
 import FormData from 'form-data';
 
@@ -12,7 +11,6 @@ interface OrganizationArguments {
   icon: ReadStream;
   name: string;
   website: string;
-  preferredPaymentProvider: PaymentProvider;
   vatIdNumber: string | null;
   streetName: string | null;
   houseNumber: string | null;
@@ -32,7 +30,6 @@ export async function createOrganization({
   id,
   invoiceReference,
   name,
-  preferredPaymentProvider,
   streetName,
   vatIdNumber,
   website,
@@ -64,11 +61,6 @@ export async function createOrganization({
   if (website) {
     logger.info(`Setting website to ${website}`);
     formData.append('website', website);
-  }
-
-  if (preferredPaymentProvider) {
-    logger.info(`Setting preferred payment provider to ${preferredPaymentProvider}`);
-    formData.append('preferredPaymentProvider', preferredPaymentProvider);
   }
 
   if (vatIdNumber) {
@@ -126,7 +118,6 @@ export async function updateOrganization({
   id,
   invoiceReference,
   name,
-  preferredPaymentProvider,
   streetName,
   vatIdNumber,
   website,
@@ -159,11 +150,6 @@ export async function updateOrganization({
   if (website) {
     logger.info(`Setting website to ${website}`);
     formData.append('website', website);
-  }
-
-  if (preferredPaymentProvider) {
-    logger.info(`Setting preferred payment provider to ${preferredPaymentProvider}`);
-    formData.append('preferredPaymentProvider', preferredPaymentProvider);
   }
 
   if (vatIdNumber) {
@@ -220,7 +206,6 @@ export async function upsertOrganization({
   id,
   invoiceReference,
   name,
-  preferredPaymentProvider,
   streetName,
   vatIdNumber,
   website,
@@ -235,7 +220,6 @@ export async function upsertOrganization({
       id,
       name,
       website,
-      preferredPaymentProvider,
       vatIdNumber,
       streetName,
       houseNumber,
@@ -253,7 +237,6 @@ export async function upsertOrganization({
         id,
         name,
         website,
-        preferredPaymentProvider,
         vatIdNumber,
         streetName,
         houseNumber,

@@ -73,14 +73,6 @@ export const messages = defineMessages({
     id: 'studio.G5EJ8b',
     defaultMessage: 'Select logo',
   },
-  descriptionPreferredPaymentProvider: {
-    defaultMessage: 'The payment provider you want to use.',
-    id: 'studio.vGE/z+',
-  },
-  preferredPaymentProvider: {
-    defaultMessage: 'Preferred payment provider',
-    id: 'studio.Fj9LvW',
-  },
   descriptionVatIdNumber: {
     defaultMessage: 'Your VAT id number.',
     id: 'studio.+NUiCV',
@@ -148,5 +140,14 @@ export const messages = defineMessages({
   invoiceReference: {
     defaultMessage: 'Invoice reference',
     id: 'studio.u8z2PJ',
+  },
+  payments: {
+    defaultMessage: 'Payments',
+    id: 'studio.iYc3Ld',
+  },
+  paymentsHelp: {
+    defaultMessage:
+      'Settings in this section are related to payments concerning Appsemble subscriptions. Configuring in-app payments for your apps is done on App level, in app settings.',
+    id: 'studio.hFIbId',
   },
 });

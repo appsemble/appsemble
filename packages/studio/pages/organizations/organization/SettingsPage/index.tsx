@@ -15,7 +15,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type App, type AppCollection, PaymentProvider } from '@appsemble/types';
+import { type App, type AppCollection } from '@appsemble/types';
 import axios from 'axios';
 import countries from 'i18n-iso-countries';
 import {
@@ -32,6 +32,7 @@ import { useNavigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { Collapsible } from '../../../../components/Collapsible/index.js';
 import { IconPreview } from '../../../../components/IconPreview/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 import { type Block, type Organization } from '../../../../types.js';
@@ -155,7 +156,6 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
       icon,
       invoiceReference,
       name,
-      preferredPaymentProvider,
       streetName,
       vatIdNumber,
       website,
@@ -175,10 +175,6 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
       formData.set('countryCode', countryCode);
       formData.set('invoiceReference', invoiceReference);
 
-      if (preferredPaymentProvider === PaymentProvider.Stripe) {
-        formData.set('preferredPaymentProvider', PaymentProvider.Stripe);
-      }
-
       if (icon) {
         formData.set('icon', icon);
       }
@@ -193,7 +189,6 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
                 description,
                 website,
                 email,
-                preferredPaymentProvider,
                 vatIdNumber,
                 streetName,
                 houseNumber,
@@ -211,7 +206,6 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
         description,
         website,
         email,
-        preferredPaymentProvider,
         vatIdNumber,
         streetName,
         houseNumber,
@@ -234,7 +228,6 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
       websiteProtocol: organization.website?.startsWith('http://') ? 'http' : 'https',
       description: organization.description || '',
       icon: null as null,
-      preferredPaymentProvider: organization.preferredPaymentProvider || PaymentProvider.Stripe,
       vatIdNumber: organization.vatIdNumber || '',
       streetName: organization.streetName || '',
       houseNumber: organization.houseNumber || '',
@@ -293,73 +286,72 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
           name="icon"
           preview={<IconPreview organization={organization} />}
         />
-        <SimpleFormField
-          component={SelectField}
-          help={<FormattedMessage {...messages.descriptionPreferredPaymentProvider} />}
-          icon="info"
-          label={<FormattedMessage {...messages.preferredPaymentProvider} />}
-          name="preferredPaymentProvider"
-        >
-          <option value={PaymentProvider.Stripe}>Stripe</option>
-        </SimpleFormField>
-        <SimpleFormField
-          component={SelectField}
-          help={<FormattedMessage {...messages.descriptionCountry} />}
-          label={<FormattedMessage {...messages.country} />}
-          name="countryCode"
-          onChange={changeCountry}
-        >
-          <option value="">
-            <FormattedMessage {...messages.selectCountry} />
-          </option>
-          {Object.entries(countryNames).map(([code, name]) => (
-            <option key={code} value={code}>
-              {name}
-            </option>
-          ))}
-        </SimpleFormField>
-        {country === 'NL' ? null : (
-          <SimpleFormField
-            help={<FormattedMessage {...messages.descriptionVatIdNumber} />}
-            label={<FormattedMessage {...messages.vatIdNumber} />}
-            maxLength={20}
-            name="vatIdNumber"
-          />
-        )}
-        <SimpleFormField
-          help={<FormattedMessage {...messages.descriptionStreetName} />}
-          label={<FormattedMessage {...messages.streetName} />}
-          maxLength={20}
-          name="streetName"
-        />
-        <SimpleFormField
-          help={<FormattedMessage {...messages.descriptionHouseNumber} />}
-          label={<FormattedMessage {...messages.houseNumber} />}
-          maxLength={20}
-          name="houseNumber"
-        />
-        <SimpleFormField
-          help={<FormattedMessage {...messages.descriptionCity} />}
-          label={<FormattedMessage {...messages.city} />}
-          maxLength={20}
-          name="city"
-        />
-        <SimpleFormField
-          help={<FormattedMessage {...messages.descriptionZipCode} />}
-          label={<FormattedMessage {...messages.zipCode} />}
-          maxLength={20}
-          name="zipCode"
-        />
-        <SimpleFormField
-          help={<FormattedMessage {...messages.descriptionInvoiceReference} />}
-          label={<FormattedMessage {...messages.invoiceReference} />}
-          maxLength={100}
-          name="invoiceReference"
-        />
         <SimpleSubmit>
           <FormattedMessage {...messages.submit} />
         </SimpleSubmit>
       </SimpleForm>
+      <Collapsible collapsed={false} title={<FormattedMessage {...messages.payments} />}>
+        <FormattedMessage {...messages.paymentsHelp} />
+        <SimpleForm defaultValues={defaultValues} onSubmit={onEditOrganization}>
+          <SimpleFormField
+            component={SelectField}
+            help={<FormattedMessage {...messages.descriptionCountry} />}
+            label={<FormattedMessage {...messages.country} />}
+            name="countryCode"
+            onChange={changeCountry}
+          >
+            <option value="">
+              <FormattedMessage {...messages.selectCountry} />
+            </option>
+            {Object.entries(countryNames).map(([code, name]) => (
+              <option key={code} value={code}>
+                {name}
+              </option>
+            ))}
+          </SimpleFormField>
+          {country === 'NL' ? null : (
+            <SimpleFormField
+              help={<FormattedMessage {...messages.descriptionVatIdNumber} />}
+              label={<FormattedMessage {...messages.vatIdNumber} />}
+              maxLength={20}
+              name="vatIdNumber"
+            />
+          )}
+          <SimpleFormField
+            help={<FormattedMessage {...messages.descriptionStreetName} />}
+            label={<FormattedMessage {...messages.streetName} />}
+            maxLength={20}
+            name="streetName"
+          />
+          <SimpleFormField
+            help={<FormattedMessage {...messages.descriptionHouseNumber} />}
+            label={<FormattedMessage {...messages.houseNumber} />}
+            maxLength={20}
+            name="houseNumber"
+          />
+          <SimpleFormField
+            help={<FormattedMessage {...messages.descriptionCity} />}
+            label={<FormattedMessage {...messages.city} />}
+            maxLength={20}
+            name="city"
+          />
+          <SimpleFormField
+            help={<FormattedMessage {...messages.descriptionZipCode} />}
+            label={<FormattedMessage {...messages.zipCode} />}
+            maxLength={20}
+            name="zipCode"
+          />
+          <SimpleFormField
+            help={<FormattedMessage {...messages.descriptionInvoiceReference} />}
+            label={<FormattedMessage {...messages.invoiceReference} />}
+            maxLength={100}
+            name="invoiceReference"
+          />
+          <SimpleSubmit>
+            <FormattedMessage {...messages.submit} />
+          </SimpleSubmit>
+        </SimpleForm>
+      </Collapsible>
       {organization.role === 'Owner' ? (
         <Content>
           <Message

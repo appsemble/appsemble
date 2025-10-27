@@ -2,6 +2,7 @@ import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import {
   getSubscriptionPlanByName,
   OrganizationPermission,
+  PaymentProvider,
   SubscriptionRenewalPeriod,
 } from '@appsemble/types';
 import { Decimal } from 'decimal.js';
@@ -92,7 +93,7 @@ export async function sendInvoice(ctx: Context): Promise<void> {
   }
   assertKoaError(!invoice, ctx, 500, 'Problem creating invoice.');
 
-  const payments = await getPaymentObject(organization!.preferredPaymentProvider!);
+  const payments = await getPaymentObject(PaymentProvider.Stripe);
 
   const stripeCustomerId = await payments.createOrUpdateCustomer(organization!);
   assertKoaError(!stripeCustomerId, ctx, 500, 'Problem creating customer.');

@@ -48,9 +48,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
               website: {
                 $ref: '#/components/schemas/Organization/properties/website',
               },
-              preferredPaymentProvider: {
-                $ref: '#/components/schemas/Organization/properties/preferredPaymentProvider',
-              },
               vatIdNumber: {
                 $ref: '#/components/schemas/Organization/properties/vatIdNumber',
               },

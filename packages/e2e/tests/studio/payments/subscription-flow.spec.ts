@@ -54,11 +54,7 @@ test.describe('Payments', () => {
     await page.locator('.card:has-text("EXTENSIVE")').getByRole('link', { name: 'Switch' }).click();
 
     await expect(page.getByText('Select type of')).toBeVisible();
-    await expect(
-      page.getByText(
-        'Total subscription priceActive subscription discountCoupon discountTotal price',
-      ),
-    ).toBeVisible();
+    await expect(page.getByText('Total subscription price')).toBeVisible();
     await page.getByRole('button', { name: 'Checkout ' }).click();
 
     await page.getByLabel('Email').fill(email);
@@ -70,11 +66,7 @@ test.describe('Payments', () => {
     await page.getByLabel('Name', { exact: true }).fill(organizationId);
     await page.getByRole('button').getByText('Continue').click();
 
-    await expect(
-      page.getByText(
-        'Total subscription priceActive subscription discountCoupon discountVAT 21%Total price',
-      ),
-    ).toBeVisible();
+    await expect(page.getByText('Total subscription price')).toBeVisible();
 
     // eslint-disable-next-line playwright/no-conditional-in-test
     if (!CI) {

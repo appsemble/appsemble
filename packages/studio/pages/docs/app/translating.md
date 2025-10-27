@@ -29,7 +29,7 @@ date formatting, number formatting and more.
 Appsemble provides default translations for the core parts of an app, the part that is provided by
 Appsemble itself without any further configuration. Generally speaking, this includes messages such
 as error messages, menu options and block messages. The languages that are maintained by the
-Appsemble group are English and Dutch, with support for crowd-sourced translations via Weblate which
+Appsemble team are English and Dutch, with support for crowd-sourced translations via Weblate which
 can be found [here](https://hosted.weblate.org/projects/appsemble/#languages).
 
 It is possible to provide translations for the core messages or overwrite existing ones using the
@@ -133,7 +133,7 @@ After filling in the translations, make sure to click the `Save` button at the b
 ## Translating using the Appsemble CLI
 
 An alternative method for providing an app with translations is to use the Appsemble CLI. This is
-what the Appsemble group uses to keep the translations from Weblate, as well as the English and
+what the Appsemble team uses to keep the translations from Weblate, as well as the English and
 Dutch translations up to date.
 
 This section assumes that the entire app structure is defined locally.

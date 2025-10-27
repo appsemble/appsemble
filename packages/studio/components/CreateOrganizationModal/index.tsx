@@ -10,7 +10,7 @@ import {
   SimpleModalFooter,
   type Toggle,
 } from '@appsemble/react-components';
-import { type Organization, PaymentProvider, PredefinedOrganizationRole } from '@appsemble/types';
+import { type Organization, PredefinedOrganizationRole } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import countries from 'i18n-iso-countries';
@@ -18,6 +18,7 @@ import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
+import { Collapsible } from '../Collapsible/index.js';
 import { IconPreview } from '../IconPreview/index.js';
 import { useUser } from '../UserProvider/index.js';
 
@@ -91,7 +92,6 @@ const defaults = {
   website: '',
   websiteProtocol: 'https',
   icon: null as File,
-  preferredPaymentProvider: PaymentProvider.Stripe,
   vatIdNumber: '',
   streetName: '',
   houseNumber: '',
@@ -145,7 +145,6 @@ export function CreateOrganizationModal({
       id,
       invoiceReference,
       name,
-      preferredPaymentProvider,
       streetName,
       vatIdNumber,
       website,
@@ -158,7 +157,6 @@ export function CreateOrganizationModal({
       formData.set('description', description);
       formData.set('email', email);
       formData.set('website', website ? `${websiteProtocol}://${website}` : '');
-      formData.set('preferredPaymentProvider', preferredPaymentProvider);
       formData.set('vatIdNumber', vatIdNumber);
       formData.set('invoiceReference', invoiceReference);
       formData.set('streetName', streetName);
@@ -262,72 +260,68 @@ export function CreateOrganizationModal({
         name="icon"
         preview={<IconPreview organization={{ iconUrl: null } as Organization} />}
       />
-      <SimpleFormField
-        component={SelectField}
-        disabled={disabled}
-        help={<FormattedMessage {...messages.descriptionPreferredPaymentProvider} />}
-        icon="info"
-        label={<FormattedMessage {...messages.preferredPaymentProvider} />}
-        name="preferredPaymentProvider"
+      <Collapsible
+        collapsed={false}
+        help={<FormattedMessage {...messages.paymentsHelp} />}
+        title={<FormattedMessage {...messages.payments} />}
       >
-        <option value={PaymentProvider.Stripe}>Stripe</option>
-      </SimpleFormField>
-      <SimpleFormField
-        component={SelectField}
-        help={<FormattedMessage {...messages.descriptionCountry} />}
-        label={<FormattedMessage {...messages.country} />}
-        name="countryCode"
-        onChange={changeCountry}
-      >
-        <option value="">
-          <FormattedMessage {...messages.selectCountry} />
-        </option>
-        {Object.entries(countryNames).map(([code, name]) => (
-          <option key={code} value={code}>
-            {name}
+        <SimpleFormField
+          component={SelectField}
+          help={<FormattedMessage {...messages.descriptionCountry} />}
+          label={<FormattedMessage {...messages.country} />}
+          name="countryCode"
+          onChange={changeCountry}
+        >
+          <option value="">
+            <FormattedMessage {...messages.selectCountry} />
           </option>
-        ))}
-      </SimpleFormField>
-      {country === 'NL' ? null : (
+          {Object.entries(countryNames).map(([code, name]) => (
+            <option key={code} value={code}>
+              {name}
+            </option>
+          ))}
+        </SimpleFormField>
+        {country === 'NL' ? null : (
+          <SimpleFormField
+            disabled={disabled}
+            help={<FormattedMessage {...messages.descriptionVatIdNumber} />}
+            icon="info"
+            label={<FormattedMessage {...messages.vatIdNumber} />}
+            name="vatIdNumber"
+          />
+        )}
+        <SimpleFormField
+          help={<FormattedMessage {...messages.descriptionStreetName} />}
+          label={<FormattedMessage {...messages.streetName} />}
+          maxLength={20}
+          name="streetName"
+        />
+        <SimpleFormField
+          help={<FormattedMessage {...messages.descriptionHouseNumber} />}
+          label={<FormattedMessage {...messages.houseNumber} />}
+          maxLength={20}
+          name="houseNumber"
+        />
+        <SimpleFormField
+          help={<FormattedMessage {...messages.descriptionCity} />}
+          label={<FormattedMessage {...messages.city} />}
+          maxLength={20}
+          name="city"
+        />
+        <SimpleFormField
+          help={<FormattedMessage {...messages.descriptionZipCode} />}
+          label={<FormattedMessage {...messages.zipCode} />}
+          maxLength={20}
+          name="zipCode"
+        />
         <SimpleFormField
           disabled={disabled}
-          help={<FormattedMessage {...messages.descriptionVatIdNumber} />}
+          help={<FormattedMessage {...messages.descriptionInvoiceReference} />}
           icon="info"
-          label={<FormattedMessage {...messages.vatIdNumber} />}
-          name="vatIdNumber"
+          label={<FormattedMessage {...messages.invoiceReference} />}
+          name="invoiceReference"
         />
-      )}
-      <SimpleFormField
-        help={<FormattedMessage {...messages.descriptionStreetName} />}
-        label={<FormattedMessage {...messages.streetName} />}
-        maxLength={20}
-        name="streetName"
-      />
-      <SimpleFormField
-        help={<FormattedMessage {...messages.descriptionHouseNumber} />}
-        label={<FormattedMessage {...messages.houseNumber} />}
-        maxLength={20}
-        name="houseNumber"
-      />
-      <SimpleFormField
-        help={<FormattedMessage {...messages.descriptionCity} />}
-        label={<FormattedMessage {...messages.city} />}
-        maxLength={20}
-        name="city"
-      />
-      <SimpleFormField
-        help={<FormattedMessage {...messages.descriptionZipCode} />}
-        label={<FormattedMessage {...messages.zipCode} />}
-        maxLength={20}
-        name="zipCode"
-      />
-      <SimpleFormField
-        disabled={disabled}
-        help={<FormattedMessage {...messages.descriptionInvoiceReference} />}
-        icon="info"
-        label={<FormattedMessage {...messages.invoiceReference} />}
-        name="invoiceReference"
-      />
+      </Collapsible>
     </ModalCard>
   );
 }

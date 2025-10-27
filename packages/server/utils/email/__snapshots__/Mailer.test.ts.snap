@@ -40,7 +40,7 @@ exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > en > should rend
 <p>Hello,</p>
 <p>Your app Test App has hit its email quota limit.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Group</em></p>
+<p><em>The Appsemble Team</em></p>
 </body>
 </html>
 ",
@@ -51,7 +51,7 @@ Your app Test App has hit its email quota limit.
 
 Kind regards,
 
-_The Appsemble Group_
+_The Appsemble Team_
 ",
   "to": "test@example.com",
 }
@@ -73,7 +73,7 @@ exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > en > should rend
 <p>Hello John Doe,</p>
 <p>Your app Test App has hit its email quota limit.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Group</em></p>
+<p><em>The Appsemble Team</em></p>
 </body>
 </html>
 ",
@@ -84,7 +84,7 @@ Your app Test App has hit its email quota limit.
 
 Kind regards,
 
-_The Appsemble Group_
+_The Appsemble Team_
 ",
   "to": "John Doe <test@example.com>",
 }
@@ -403,7 +403,7 @@ exports[`Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdd
 <p><strong>Didn’t request this email?</strong>.</p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Group</em></p>
+<p><em>The Appsemble Team</em></p>
 </body>
 </html>
 ",
@@ -420,7 +420,7 @@ No worries! Your address may have been entered by mistake. If you ignore or dele
 
 Kind regards,
 
-_The Appsemble Group_
+_The Appsemble Team_
 ",
   "to": "test@example.com",
 }
@@ -445,7 +445,7 @@ exports[`Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdd
 <p><strong>Didn’t request this email?</strong>.</p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Group</em></p>
+<p><em>The Appsemble Team</em></p>
 </body>
 </html>
 ",
@@ -462,7 +462,7 @@ No worries! Your address may have been entered by mistake. If you ignore or dele
 
 Kind regards,
 
-_The Appsemble Group_
+_The Appsemble Team_
 ",
   "to": "John Doe <test@example.com>",
 }
@@ -798,7 +798,7 @@ exports[`Mailer > sendTranslatedEmail > organizationInvite > en > should render 
 <p>Joining an organization allows you to view private applications as well as create and edit apps belonging to an organization.</p>
 <p>You can accept or decline this invitation by following <a href="https://example.com">this link</a>.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Group</em></p>
+<p><em>The Appsemble Team</em></p>
 </body>
 </html>
 ",
@@ -813,7 +813,7 @@ You can accept or decline this invitation by following [this link](https://examp
 
 Kind regards,
 
-_The Appsemble Group_
+_The Appsemble Team_
 ",
   "to": "test@example.com",
 }
@@ -837,7 +837,7 @@ exports[`Mailer > sendTranslatedEmail > organizationInvite > en > should render 
 <p>Joining an organization allows you to view private applications as well as create and edit apps belonging to an organization.</p>
 <p>You can accept or decline this invitation by following <a href="https://example.com">this link</a>.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Group</em></p>
+<p><em>The Appsemble Team</em></p>
 </body>
 </html>
 ",
@@ -852,7 +852,7 @@ You can accept or decline this invitation by following [this link](https://examp
 
 Kind regards,
 
-_The Appsemble Group_
+_The Appsemble Team_
 ",
   "to": "John Doe <test@example.com>",
 }
