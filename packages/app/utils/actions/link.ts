@@ -39,6 +39,11 @@ export const link: ActionCreator<'link'> = ({
         if (urlRegex.test(remappedLink)) {
           return remappedLink;
         }
+
+        if (isAppLink(remappedLink)) {
+          return `/${params.lang}${remappedLink}`;
+        }
+
         [toBase, toSub] = [].concat(remappedLink ?? pages[0].name);
       } else {
         // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
