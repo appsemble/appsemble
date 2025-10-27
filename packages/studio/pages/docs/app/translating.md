@@ -133,8 +133,8 @@ After filling in the translations, make sure to click the `Save` button at the b
 ## Translating using the Appsemble CLI
 
 An alternative method for providing an app with translations is to use the Appsemble CLI. This is
-what the Appsemble team uses to keep the translations from Weblate, as well as the English and
-Dutch translations up to date.
+what the Appsemble team uses to keep the translations from Weblate, as well as the English and Dutch
+translations up to date.
 
 This section assumes that the entire app structure is defined locally.
 
