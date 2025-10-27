@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.35.11",
+  "version": "0.35.12",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -40,10 +40,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.35.11",
-    "@appsemble/types": "0.35.11",
-    "@appsemble/utils": "0.35.11",
-    "@appsemble/lang-sdk": "0.35.11",
+    "@appsemble/node-utils": "0.35.12",
+    "@appsemble/types": "0.35.12",
+    "@appsemble/utils": "0.35.12",
+    "@appsemble/lang-sdk": "0.35.12",
     "@cacheable/node-cache": "^1.0.0",
     "@formatjs/fast-memoize": "^2.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",

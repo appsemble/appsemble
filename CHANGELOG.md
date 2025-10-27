@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.35.12](https://gitlab.com/appsemble/appsemble/-/releases/0.35.12)] - 2025-10-27
+
+### Added
+
+- App: Allow remapping to an app predefined page in the link action.
+
 ## \[[0.35.11](https://gitlab.com/appsemble/appsemble/-/releases/0.35.11)] - 2025-10-23
 
 ### Added
