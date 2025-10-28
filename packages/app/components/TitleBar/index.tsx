@@ -1,6 +1,6 @@
-import { normalize } from '@appsemble/lang-sdk';
+import { normalize, remap, type RemapperContext } from '@appsemble/lang-sdk';
 import { Portal, SideMenuButton } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -12,6 +12,7 @@ import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { GroupDropdown } from '../GroupDropdown/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
@@ -28,10 +29,32 @@ interface AppBarProps {
  */
 export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { definition, demoMode } = useAppDefinition();
-  const { appMemberGroups, appMemberRole, appMemberSelectedGroup, isLoggedIn } = useAppMember();
+  const { appMemberGroups, appMemberInfo, appMemberRole, appMemberSelectedGroup, isLoggedIn } =
+    useAppMember();
+  const { getVariable } = useAppVariables();
   const { page } = usePage();
-  const { getAppMessage } = useAppMessages();
+  const { getAppMessage, getMessage } = useAppMessages();
   const { lang: locale } = useParams();
+  const remapperContext = useMemo(
+    () =>
+      ({
+        appId,
+        appUrl: window.location.origin,
+        url: window.location.href,
+        getMessage,
+        getVariable,
+        appMemberInfo,
+        context: { name: page?.name },
+        locale,
+      }) as RemapperContext,
+    [appMemberInfo, getMessage, getVariable, locale, page],
+  );
+  const headerTagText = remap(
+    definition.layout?.headerTag?.text ?? null,
+    {},
+    remapperContext,
+  ) as string;
+  const headerTagHide = remap(definition.layout?.headerTag?.hide ?? null, {}, remapperContext);
 
   const navigation = (page?.navigation || definition?.layout?.navigation) ?? 'left-menu';
   const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;
@@ -59,7 +82,10 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
               />
             </Link>
           ) : null}
-          <h2 className="navbar-item title is-4">{!hideName && (children || appName)}</h2>
+          <h2 className="navbar-item title is-4 mb-0">{!hideName && (children || appName)}</h2>
+          {headerTagHide ? null : (
+            <span className="tag is-warning is-rounded">{headerTagText}</span>
+          )}
         </div>
         {demoMode ? (
           <div className="tag is-rounded is-warning mx-1 my-1">

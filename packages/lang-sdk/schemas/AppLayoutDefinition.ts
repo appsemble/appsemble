@@ -71,5 +71,20 @@ If this is omitted, a collapsable side navigation menu will be rendered on the l
         asset: { type: 'string' },
       },
     },
+    headerTag: {
+      type: 'object',
+      description: 'Header text to be shown in a tag next to the page name',
+      additionalProperties: false,
+      properties: {
+        text: {
+          description: 'Text to be shown inside the tag',
+          $ref: '#/components/schemas/RemapperDefinition',
+        },
+        hide: {
+          description: 'Whether to hide the tag',
+          $ref: '#/components/schemas/RemapperDefinition',
+        },
+      },
+    },
   },
 };

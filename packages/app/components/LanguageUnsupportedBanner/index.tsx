@@ -8,7 +8,7 @@ import { supportedLanguages } from '../../utils/settings.js';
 
 export function LanguageUnsupportedBanner(): ReactNode {
   const { lang } = useParams();
-  const supportedLanguagesString = supportedLanguages.join(', ');
+  const supportedLanguagesString = supportedLanguages?.join(', ');
   const divRef = useRef<HTMLDivElement>(null);
   const onClickDismiss = useCallback(() => {
     localStorage.setItem(`dismissedBanner-${lang}`, 'true');
@@ -18,7 +18,7 @@ export function LanguageUnsupportedBanner(): ReactNode {
     () => localStorage.getItem(`dismissedBanner-${lang}`) === 'true',
     [lang],
   );
-  return dismissedBanner || supportedLanguages.includes(lang!) ? null : (
+  return dismissedBanner || supportedLanguages?.includes(lang!) ? null : (
     <Message color="warning">
       <div className="is-flex is-justify-content-space-between is-align-items-center" ref={divRef}>
         <span>
