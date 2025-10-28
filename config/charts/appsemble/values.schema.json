@@ -327,6 +327,30 @@
     },
     "minio": {
       "type": "object"
+    },
+    "backups": {
+      "type": "object",
+      "description": "The s3 configuration for where the appsemble database backups will be stored",
+      "additionalProperties": false,
+      "required": ["enabled", "existingSecret"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "bucket": {
+          "type": "string",
+          "description": "The name of the backups bucket"
+        },
+        "filename": {
+          "type": "string",
+          "description": "The prefix for the backup files before their timestamp"
+        },
+        "host": { "type": "string" },
+        "port": { "type": "number" },
+        "secure": { "type": "boolean" },
+        "existingSecret": {
+          "type": "string",
+          "description": "The name of the existing kubernetes secret to get the access key and secret key from. Must contain access-key and secret-key"
+        }
+      }
     }
   }
 }

@@ -33,5 +33,5 @@ spec:
                       name: {{ .Values.secretSecret | quote }}
                       key: aes-secret
 {{ include "appsemble.postgres" . | indent 16 }}
-{{ include "appsemble.s3" . | indent 16 }}
+{{ include "appsemble.backups" . | indent 16 }}
 {{ end }}

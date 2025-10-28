@@ -29,7 +29,7 @@ ingress:
   tls:
     {}
     # secretName: chart-example-tls
-    # wildcardSecretName: chart-example-tls-wildcard
+  # wildcardSecretName: chart-example-tls-wildcard
 
 resources:
   {}
@@ -38,7 +38,7 @@ resources:
   #  memory: 128Mi
   # requests:
   #  cpu: 100m
-  #  memory: 128Mi
+#  memory: 128Mi
 
 nodeSelector: {}
 
@@ -146,3 +146,11 @@ minio:
     enabled: true
     tls: true
     ingressClassName: nginx
+
+backups:
+  enabled: true
+  bucket: appsemble-backups
+  filename: appsemble_backup
+  port: 443
+  secure: true
+  existingSecret: backups-secret

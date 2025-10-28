@@ -433,11 +433,60 @@ export interface Argv {
   skipCustomDomains: boolean;
 
   /**
+   * The name of the bucket to store backups in
+   *
+   * @default appsemble-backups
+   */
+  backupsBucket: string;
+
+  /**
+   * The prefix for the backup files before their timestamp
+   *
+   * @default appsemble_backup
+   */
+  backupsFilename?: string;
+
+  /**
+   * The host of the Amazon S3 compatible object storage server for the backups
+   *
+   * default undefined
+   */
+  backupsHost: string;
+
+  /**
+   * The port of the Amazon S3 compatible object storage server for the backups
+   *
+   * default 443
+   */
+  backupsPort?: number;
+
+  /**
+   * Whether ssl should be used for the Amazon S3 compatible object storage server for the backups
+   *
+   * default true
+   */
+  backupsSecure?: boolean;
+
+  /**
+   * The access key of the Amazon S3 compatible object storage server for the backups
+   *
+   * default undefined
+   */
+  backupsAccessKey: string;
+
+  /**
+   * The secret key of the Amazon S3 compatible object storage server for the backups
+   *
+   * default undefined
+   */
+  backupsSecretKey: string;
+
+  /**
    * The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz
    *
    * @default undefined
    */
-  appsembleBackupFile?: string;
+  restoreBackupFilename: string;
 }
 
 const defaults: Argv = {
@@ -545,8 +594,18 @@ const defaults: Argv = {
   s3SecretKey: undefined,
   dryRun: true,
   skipCustomDomains: false,
-  appsembleBackupFile: undefined,
-  appBackupFile: undefined,
+  backupsBucket: 'appsemble-backups',
+  backupsFilename: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  backupsHost: undefined,
+  backupsPort: 443,
+  backupsSecure: true,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  backupsAccessKey: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  backupsSecretKey: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  restoreBackupFilename: undefined,
 };
 
 export const argv = { ...defaults };

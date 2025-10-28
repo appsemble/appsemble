@@ -18,7 +18,7 @@ export const description =
   'Restore appsemble data from a specified backup for the main database and app databases';
 
 export function builder(yargs: Argv): Argv {
-  return databaseBuilder(yargs).option('appsembleBackupFile', {
+  return databaseBuilder(yargs).option('restoreBackupFilename', {
     type: 'string',
     describe:
       'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz',
@@ -94,7 +94,6 @@ async function restoreDatabaseFromS3(
 }
 
 export async function handler(): Promise<void> {
-  const { appsembleBackupFile } = argv;
   let db;
 
   const adminUri = buildPostgresUri({
@@ -123,25 +122,23 @@ export async function handler(): Promise<void> {
 
   try {
     initS3Client({
-      endPoint: argv.s3Host,
-      port: argv.s3Port,
-      useSSL: argv.s3Secure,
-      accessKey: argv.s3AccessKey,
-      secretKey: argv.s3SecretKey,
+      endPoint: argv.backupsHost,
+      port: argv.backupsPort,
+      useSSL: argv.backupsSecure,
+      accessKey: argv.backupsAccessKey,
+      secretKey: argv.backupsSecretKey,
     });
   } catch (error: unknown) {
     logger.warn(`S3Error: ${error}`);
     logger.warn('Features related to file uploads will not work correctly!');
   }
 
-  const bucket = 'appsemble-backups';
-
   let failed = false;
 
   // Backup main database
   try {
     logger.info('Restoring main database...');
-    const key = `main/${appsembleBackupFile}`;
+    const key = `main/${argv.restoreBackupFilename}`;
     const mainDbUrl = buildPostgresUri({
       dbUser: argv.databaseUser,
       dbPassword: argv.databasePassword,
@@ -150,7 +147,7 @@ export async function handler(): Promise<void> {
       dbName: argv.databaseName,
       ssl: argv.databaseSsl,
     });
-    await restoreDatabaseFromS3(mainDbUrl, bucket, key);
+    await restoreDatabaseFromS3(mainDbUrl, argv.backupsBucket, key);
   } catch (err) {
     failed = true;
     logger.error('Failed to restore main database:', err);
@@ -172,9 +169,9 @@ export async function handler(): Promise<void> {
         ssl: argv.databaseSsl,
       });
 
-      const key = `apps/${app.id}/${appsembleBackupFile}`;
+      const key = `apps/${app.id}/${argv.restoreBackupFilename}`;
       await recreateDatabase(app.dbName ?? `app-${app.id}`, adminUri);
-      await restoreDatabaseFromS3(appDbUrl, bucket, key);
+      await restoreDatabaseFromS3(appDbUrl, argv.backupsBucket, key);
     } catch (err) {
       failed = true;
       logger.error(`Failed to restore app ${app.id} database:`, err);

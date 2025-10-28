@@ -68,18 +68,17 @@ export async function handler(): Promise<void> {
 
   try {
     initS3Client({
-      endPoint: argv.s3Host,
-      port: argv.s3Port,
-      useSSL: argv.s3Secure,
-      accessKey: argv.s3AccessKey,
-      secretKey: argv.s3SecretKey,
+      endPoint: argv.backupsHost,
+      port: argv.backupsPort,
+      useSSL: argv.backupsSecure,
+      accessKey: argv.backupsAccessKey,
+      secretKey: argv.backupsSecretKey,
     });
   } catch (error: unknown) {
     logger.warn(`S3Error: ${error}`);
     logger.warn('Features related to file uploads will not work correctly!');
   }
 
-  const bucket = 'appsemble-backups';
   const timestamp = new Date().toISOString().replaceAll(/[.:TZ-]/g, '');
 
   let failed = false;
@@ -87,7 +86,7 @@ export async function handler(): Promise<void> {
   // Backup main database
   try {
     logger.info('Backing up main database...');
-    const key = `main/appsemble_prod_backup_${timestamp}.sql.gz`;
+    const key = `main/${argv.backupsFilename}_${timestamp}.sql.gz`;
     const mainDbUrl = buildPostgresUri({
       dbUser: argv.databaseUser,
       dbPassword: argv.databasePassword,
@@ -96,7 +95,7 @@ export async function handler(): Promise<void> {
       dbName: argv.databaseName,
       ssl: argv.databaseSsl,
     });
-    await backupDatabaseToS3(mainDbUrl, bucket, key);
+    await backupDatabaseToS3(mainDbUrl, argv.backupsBucket, key);
   } catch (err) {
     failed = true;
     logger.error('Failed to back up main database:', err);
@@ -120,8 +119,8 @@ export async function handler(): Promise<void> {
         ssl: argv.databaseSsl,
       });
 
-      const key = `apps/${app.id}/appsemble_prod_backup_${timestamp}.sql.gz`;
-      await backupDatabaseToS3(appDbUrl, bucket, key);
+      const key = `apps/${app.id}/${argv.backupsFilename}_${timestamp}.sql.gz`;
+      await backupDatabaseToS3(appDbUrl, argv.backupsBucket, key);
     } catch (err) {
       failed = true;
       logger.error(`Failed to back up app ${app.id} database:`, err);
