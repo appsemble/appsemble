@@ -17,6 +17,7 @@ const AppGroupMembersManagerPermissions = [
   AppPermission.QueryGroupMembers,
   AppPermission.RemoveGroupMembers,
   AppPermission.UpdateGroupMemberRoles,
+  AppPermission.CreateGroupMembers,
 ];
 
 const AppGroupsManagerPermissions = [

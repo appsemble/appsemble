@@ -36,6 +36,7 @@ export type ActionDefinition =
   | EmailActionDefinition
   | EventActionDefinition
   | FlowToActionDefinition
+  | GroupMemberCreateActionDefinition
   | GroupMemberDeleteActionDefinition
   | GroupMemberInviteActionDefinition
   | GroupMemberQueryActionDefinition
@@ -96,6 +97,7 @@ export type ActionName =
   | 'flow.finish'
   | 'flow.next'
   | 'flow.to'
+  | 'group.member.create'
   | 'group.member.delete'
   | 'group.member.invite'
   | 'group.member.query'
@@ -509,6 +511,24 @@ export interface GroupMemberInviteActionDefinition
 
   /**
    * The role of the invited group member.
+   */
+  role: Remapper;
+}
+
+export interface GroupMemberCreateActionDefinition
+  extends BaseActionDefinition<'group.member.create'> {
+  /**
+   * The ID of the group to add the user to.
+   */
+  id: Remapper;
+
+  /**
+   * The id of the app member to add.
+   */
+  appMemberId: Remapper;
+
+  /**
+   * The role of the group member.
    */
   role: Remapper;
 }

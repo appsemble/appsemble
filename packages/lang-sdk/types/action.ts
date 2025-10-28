@@ -81,6 +81,7 @@ export type Action =
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
   | BaseAction<'flow.to'>
+  | BaseAction<'group.member.create'>
   | BaseAction<'group.member.delete'>
   | BaseAction<'group.member.invite'>
   | BaseAction<'group.member.query'>

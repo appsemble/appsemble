@@ -23,6 +23,7 @@ import { event } from './event.js';
 import * as flow from './flow.js';
 import { groupQuery } from './group.js';
 import {
+  groupMemberCreate,
   groupMemberDelete,
   groupMemberInvite,
   groupMemberQuery,
@@ -114,6 +115,7 @@ export const actionCreators: ActionCreators = {
   'storage.update': storage.update,
   'storage.delete': storage.remove,
   'group.query': groupQuery,
+  'group.member.create': groupMemberCreate,
   'group.member.invite': groupMemberInvite,
   'group.member.query': groupMemberQuery,
   'group.member.delete': groupMemberDelete,

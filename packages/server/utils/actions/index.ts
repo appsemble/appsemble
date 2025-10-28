@@ -79,6 +79,7 @@ export const actions = {
   'storage.subtract': noop,
   'storage.update': noop,
   'storage.delete': noop,
+  'group.member.create': noop,
   'group.member.invite': noop,
   'group.member.delete': noop,
   'group.member.role.update': noop,

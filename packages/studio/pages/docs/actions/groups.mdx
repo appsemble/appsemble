@@ -73,6 +73,37 @@ blocks:
           type: log
 ```
 
+### group.member.create<Side name="group.member.create" />
+
+<ActionRef action={referenceSchemas.groupActions['group.member.create']} />
+
+This action allows a user with sufficient permissions to add app members to a group. Unlike the
+`group.member.invite` action, this action does not create an invite but creates a new group member
+with the specified **appMemberId** and **id**. Similar to the `group.member.invite` action, this
+action validates the specified role. This action requires the `$group:member:invite` app permission.
+Here is an example of how you can use this action.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: form
+    version: 0.35.12
+    parameters:
+      fields:
+        - name: appMemberId
+          label: { translate: appMemberId }
+          type: string
+          requirements: [required: true]
+        - name: id
+          type: hidden
+        - name: role
+          type: string
+    actions:
+      onSubmit:
+        type: group.member.create
+        onSuccess:
+          type: log
+```
+
 ### group.member.query<Side name="group.member.query" />
 
 <ActionRef action={referenceSchemas.groupActions['group.member.query']} />

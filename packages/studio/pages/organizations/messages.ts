@@ -249,6 +249,10 @@ export const messages = defineMessages({
     id: 'studio.FUKP1D',
     defaultMessage: 'The permission to remove group members.',
   },
+  CreateGroupMembers: {
+    id: 'studio.wprTdD',
+    defaultMessage: 'The permission to add app members to groups',
+  },
   UpdateGroupMemberRoles: {
     id: 'studio.VYTzq3',
     defaultMessage: 'The permission to update group member roles.',
