@@ -300,7 +300,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     }
 
     if (supportedLanguages?.length) {
-      result.supportedLanguages = supportedLanguages;
+      result.supportedLanguages = JSON.parse(supportedLanguages);
     }
 
     if (dbPassword) {

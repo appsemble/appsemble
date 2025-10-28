@@ -186,7 +186,7 @@ HTMLCollection [
           <option
             value="en"
           >
-            English
+            English (Supported)
           </option>
           <option
             value="nl"
@@ -436,7 +436,7 @@ HTMLCollection [
           <option
             value="en"
           >
-            English
+            English (Supported)
           </option>
           <option
             value="nl"

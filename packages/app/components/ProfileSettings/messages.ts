@@ -66,4 +66,8 @@ export const messages = defineMessages({
     id: 'app.mXiD5u',
     defaultMessage: 'Phone Number',
   },
+  supported: {
+    id: 'app.kxImXw',
+    defaultMessage: 'Supported',
+  },
 });
