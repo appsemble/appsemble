@@ -36,10 +36,10 @@ describe('getStudioMessages', () => {
   });
 
   it('should return 404 on languages that aren’t supported', async () => {
-    const result = await request('/api/messages/ko-kr');
+    const result = await request('/api/messages/kv-ru');
     expect(result).toMatchObject({
       status: 404,
-      data: { message: 'Language “ko-kr” could not be found' },
+      data: { message: 'Language “kv-ru” could not be found' },
     });
   });
 
