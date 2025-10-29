@@ -4,3 +4,4 @@ export * from './members/index.js';
 export * from './invites/index.js';
 export * from './resources/index.js';
 export * from './subscriptions/index.js';
+export * from './groups/index.js';

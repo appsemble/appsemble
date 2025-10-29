@@ -80,6 +80,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/StorageUpdateActionDefinition' },
         { $ref: '#/components/schemas/StorageDeleteActionDefinition' },
         { $ref: '#/components/schemas/GroupMemberInviteActionDefinition' },
+        { $ref: '#/components/schemas/GroupMemberCreateActionDefinition' },
         { $ref: '#/components/schemas/GroupMemberQueryActionDefinition' },
         { $ref: '#/components/schemas/GroupMemberDeleteActionDefinition' },
         { $ref: '#/components/schemas/GroupMemberRoleUpdateActionDefinition' },

@@ -47,9 +47,8 @@ export const groupMemberQuery: ActionCreator<'group.member.query'> = ({
 
     const id = remap(definition.id, data);
 
-    const { data: response } = await axios.get<GroupMember[]>(
-      `${apiUrl}/api/apps/${appId}/groups/${id}/members?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
-    );
+    const url = `${apiUrl}/api/apps/${appId}/groups/${id}/members${getAppMemberSelectedGroup() ? `?selectedGroupId=${getAppMemberSelectedGroup().id}` : ''}`;
+    const { data: response } = await axios.get<GroupMember[]>(url);
 
     return response;
   },
@@ -99,6 +98,32 @@ export const groupMemberRoleUpdate: ActionCreator<'group.member.role.update'> = 
       {
         role,
       },
+    );
+
+    return response;
+  },
+];
+
+export const groupMemberCreate: ActionCreator<'group.member.create'> = ({
+  definition,
+  getAppMemberInfo,
+  remap,
+}) => [
+  async (data) => {
+    const appMemberInfo = getAppMemberInfo();
+
+    if (!appMemberInfo?.sub) {
+      // App member is not logged in, do nothing.
+      return data;
+    }
+
+    const id = remap(definition.id, data);
+    const appMemberId = remap(definition.appMemberId, data);
+    const role = remap(definition.role, data);
+
+    const { data: response } = await axios.post<GroupInvite[]>(
+      `${apiUrl}/api/apps/${appId}/groups/${id}/members`,
+      { id: appMemberId, role },
     );
 
     return response;

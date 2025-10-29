@@ -5,6 +5,7 @@ import { GroupMemberInviteActionDefinition } from '../../schemas/actions/GroupMe
 import { GroupMemberQueryActionDefinition } from '../../schemas/actions/GroupMemberQueryActionDefinition.js';
 import { GroupMemberRoleUpdateActionDefinition } from '../../schemas/actions/GroupMemberRoleUpdateActionDefinition.js';
 import { GroupQueryActionDefinition } from '../../schemas/actions/GroupQueryActionDefinition.js';
+import { GroupMemberCreateActionDefinition } from '../../schemas/index.js';
 
 export const groupActions: Record<string, OpenAPIV3.SchemaObject> = {
   'group.query': GroupQueryActionDefinition,
@@ -12,4 +13,5 @@ export const groupActions: Record<string, OpenAPIV3.SchemaObject> = {
   'group.member.query': GroupMemberQueryActionDefinition,
   'group.member.delete': GroupMemberDeleteActionDefinition,
   'group.member.role.update': GroupMemberRoleUpdateActionDefinition,
+  'group.member.create': GroupMemberCreateActionDefinition,
 };

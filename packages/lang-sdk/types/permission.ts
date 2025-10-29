@@ -50,6 +50,12 @@ export enum AppPermission {
   CreateGroupInvites = '$group:member:invite',
 
   /**
+   * The permission to add new members to a group.
+   *
+   */
+  CreateGroupMembers = '$group:member:create',
+
+  /**
    * The permission to query app members.
    */
   QueryGroupMembers = '$group:member:query',

@@ -45,6 +45,7 @@ export * from './actions/FlowCancelActionDefinition.js';
 export * from './actions/FlowFinishActionDefinition.js';
 export * from './actions/FlowNextActionDefinition.js';
 export * from './actions/FlowToActionDefinition.js';
+export * from './actions/GroupMemberCreateActionDefinition.js';
 export * from './actions/GroupMemberDeleteActionDefinition.js';
 export * from './actions/GroupMemberInviteActionDefinition.js';
 export * from './actions/GroupMemberQueryActionDefinition.js';

@@ -41,5 +41,6 @@ export async function createSettings({
     appUpdated: appsembleApp.$updated,
     logins: [],
     development: true,
+    supportedLanguages: ['en'],
   });
 }
