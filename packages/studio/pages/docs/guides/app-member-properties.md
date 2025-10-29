@@ -73,7 +73,7 @@ pages:
   - name: Updates
     blocks:
       - type: html
-        version: 0.35.12
+        version: 0.35.13
         parameters:
           placeholders:
             headerContent: Grand Restaurant

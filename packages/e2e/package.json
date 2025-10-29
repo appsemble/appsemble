@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/e2e",
-  "version": "0.35.12",
+  "version": "0.35.13",
   "description": "End-to-end tests used for testing Appsemble apps in an existing environment.",
   "keywords": [
     "app",
@@ -38,9 +38,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.35.12",
-    "@appsemble/node-utils": "0.35.12",
-    "@appsemble/types": "0.35.12",
+    "@appsemble/lang-sdk": "0.35.13",
+    "@appsemble/node-utils": "0.35.13",
+    "@appsemble/types": "0.35.13",
     "@playwright/test": "1.51.1",
     "strip-indent": "^4.0.0"
   },

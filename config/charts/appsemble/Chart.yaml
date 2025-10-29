@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.35.12
-appVersion: 0.35.12
+version: 0.35.13
+appVersion: 0.35.13
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,9 +31,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "App: Allow remapping to an app predefined page in the link action."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
