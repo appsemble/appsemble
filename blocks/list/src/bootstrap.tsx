@@ -29,6 +29,58 @@ export function List({
     utils: { isMobile },
   } = useBlock();
 
+  useEffect(() => {
+    const container: Document | HTMLElement = document;
+    let rafId: number | null = null;
+
+    function startScrollUp(): void {
+      if (rafId != null) {
+        return;
+      }
+      const step = (): void => {
+        window.scrollBy({ top: -8, left: 0, behavior: 'auto' });
+        rafId = requestAnimationFrame(step);
+      };
+      rafId = requestAnimationFrame(step);
+    }
+
+    function stopScrollUp(): void {
+      if (rafId != null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    }
+
+    function onDragEnter(e: DragEvent): void {
+      const target = e.target as Element | null;
+      if (target?.classList?.contains('navbar-brand')) {
+        startScrollUp();
+      }
+    }
+
+    function onDragLeave(e: DragEvent): void {
+      const target = e.target as Element | null;
+      if (target?.classList?.contains('navbar-brand')) {
+        stopScrollUp();
+      }
+    }
+
+    function onDragEnd(): void {
+      stopScrollUp();
+    }
+
+    container.addEventListener('dragenter', onDragEnter as EventListener);
+    container.addEventListener('dragleave', onDragLeave as EventListener);
+    container.addEventListener('dragend', onDragEnd as EventListener);
+
+    return () => {
+      stopScrollUp();
+      container.removeEventListener('dragenter', onDragEnter as EventListener);
+      container.removeEventListener('dragleave', onDragLeave as EventListener);
+      container.removeEventListener('dragend', onDragEnd as EventListener);
+    };
+  }, []);
+
   const renderItems = useCallback(
     (items: Item[], spaced?: boolean): VNode => {
       const itemList: Item[] = items;
@@ -38,9 +90,9 @@ export function List({
         setDraggedItemIndex(index);
       };
 
-      const handleDrop = async (index: number): Promise<void> => {
+      const handleDrop = async (index: number | null): Promise<void> => {
         setIsDragging(false);
-        if (draggedItemIndex == null || draggedItemIndex === index) {
+        if (draggedItemIndex == null || index == null || draggedItemIndex === index) {
           return;
         }
 
@@ -136,7 +188,6 @@ export function List({
               draggable={isDragging && onDrop ? onDrop.type !== 'noop' : undefined}
               key={item.id ?? index}
               onDragEnd={() => {
-                // @ts-expect-error strictNullCheck
                 handleDrop(currentLine);
                 setCurrentLine(null);
               }}
