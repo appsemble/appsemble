@@ -103,7 +103,7 @@
     "concat-stream": "2.0.0",
     "vitest": "2.1.9",
     "sequelize": "6.37.7",
-    "minio": "8.0.5"
+    "minio": "8.0.6"
   },
   "optionalDependencies": {
     "keytar": "^7.0.0"
