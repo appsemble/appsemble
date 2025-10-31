@@ -135,16 +135,16 @@ export const messages = defineMessages({
     defaultMessage: 'This needs to be a valid Meta Pixel ID',
   },
   msClarityIDLabel: {
-    id: 'studio.y7GjxX',
+    id: 'studio.ZUMv1d',
     defaultMessage: 'MS Clarity Project ID',
   },
   msClarityIDDescription: {
-    id: 'studio.//39+D',
+    id: 'studio.u4ctdO',
     defaultMessage:
       'If this is specified, MS Clarity will be applied to your app. For more information, please refer to the <link>documentation</link>.',
   },
   msClarityError: {
-    id: 'studio.TGLI74',
+    id: 'studio.4e71es',
     defaultMessage: 'This needs to be a valid MS Clarity Project ID',
   },
   saveChanges: {

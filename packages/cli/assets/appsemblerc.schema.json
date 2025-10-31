@@ -176,6 +176,10 @@
             "type": "string",
             "description": "The Meta Pixel ID that should be used for the app.\n\nIf metaPixelId is specified, this will override --meta-pixel-id passed on the command line."
           },
+          "msClarityId": {
+            "type": "string",
+            "description": "The MS Clarity ID that should be used for the app.\n\nIf msClarityId is specified, this will override --ms-clarity-id passed on the command line."
+          },
           "resources": {
             "type": "boolean",
             "description": "Whether to publish resources from the resources directory.\n\nIf resources is specified, this will override --resources passed on the command line."
