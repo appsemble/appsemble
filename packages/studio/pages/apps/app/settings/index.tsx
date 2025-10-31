@@ -2,6 +2,7 @@ import {
   domainPattern,
   googleAnalyticsIDPattern,
   metaPixelIDPattern,
+  msClarityIDPattern,
   normalize,
   toUpperCase,
 } from '@appsemble/lang-sdk';
@@ -88,6 +89,7 @@ export function SettingsPage(): ReactNode {
       domain: app.domain || '',
       googleAnalyticsID: app.googleAnalyticsID || '',
       metaPixelID: app.metaPixelID || '',
+      msClarityID: app.msClarityID || '',
       sentryDsn: app.sentryDsn || '',
       sentryEnvironment: app.sentryEnvironment || '',
       icon: null,
@@ -110,6 +112,7 @@ export function SettingsPage(): ReactNode {
     form.set('domain', values.domain);
     form.set('googleAnalyticsID', values.googleAnalyticsID);
     form.set('metaPixelID', values.metaPixelID);
+    form.set('msClarityID', values.msClarityID);
     form.set('sentryDsn', values.sentryDsn);
     form.set('sentryEnvironment', values.sentryEnvironment);
     form.set('path', values.path);
@@ -373,6 +376,33 @@ export function SettingsPage(): ReactNode {
             preprocess={toUpperCase}
             validityMessages={{
               patternMismatch: <FormattedMessage {...messages.metaPixelError} />,
+            }}
+          />
+          <SimpleFormField
+            disabled={app.locked !== 'unlocked'}
+            help={
+              <FormattedMessage
+                {...messages.msClarityIDDescription}
+                values={{
+                  link: (link) => (
+                    <Link
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      to="../../../docs/guides/analytics"
+                    >
+                      {link}
+                    </Link>
+                  ),
+                }}
+              />
+            }
+            label={<FormattedMessage {...messages.msClarityIDLabel} />}
+            maxLength={15}
+            name="msClarityID"
+            pattern={msClarityIDPattern}
+            preprocess={toUpperCase}
+            validityMessages={{
+              patternMismatch: <FormattedMessage {...messages.msClarityError} />,
             }}
           />
           <SimpleFormField

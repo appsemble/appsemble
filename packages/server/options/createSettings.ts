@@ -7,7 +7,7 @@ import { defaultLocale } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { App, AppSnapshot, BlockAsset, BlockVersion, getAppDB } from '../models/index.js';
-import { createGtagCode, createMetaPixelCode } from '../utils/render.js';
+import { createGtagCode, createMetaPixelCode, createMSClarityCode } from '../utils/render.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
 export async function createSettings({
@@ -55,6 +55,7 @@ export async function createSettings({
       'demoMode',
       'googleAnalyticsID',
       'metaPixelID',
+      'msClarityID',
       'controllerCode',
       'controllerImplementations',
       'displayAppMemberName',
@@ -133,6 +134,7 @@ export async function createSettings({
     [
       ...(app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : []),
       ...(app.metaPixelID ? createMetaPixelCode(app.metaPixelID) : []),
+      ...(app.msClarityID ? createMSClarityCode(app.msClarityID) : []),
     ],
   );
 }

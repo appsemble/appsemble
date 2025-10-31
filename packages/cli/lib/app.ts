@@ -1130,6 +1130,11 @@ interface PublishAppParams {
   metaPixelId?: string;
 
   /**
+   * The ID to use for MS Clarity for the app.
+   */
+  msClarityId?: string;
+
+  /**
    * The custom Sentry DSN for the app.
    */
   sentryDsn?: string;
@@ -1234,6 +1239,7 @@ export async function publishApp({
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
   const metaPixelId = appsembleContext.metaPixelId ?? options.metaPixelId;
+  const msClarityId = appsembleContext.msClarityId ?? options.msClarityId;
   const assets = appsembleContext.assets ?? options.assets;
   const resources = appsembleContext.resources ?? options.resources;
   const members = appsembleContext.members ?? options.members;
@@ -1320,6 +1326,11 @@ export async function publishApp({
   if (metaPixelId) {
     logger.info('Using Meta Pixel');
     formData.append('metaPixelID', metaPixelId);
+  }
+
+  if (msClarityId) {
+    logger.info('Using MS Clarity');
+    formData.append('msClarityID', msClarityId);
   }
 
   let authScope = 'apps:write';
@@ -1530,6 +1541,11 @@ interface UpdateAppParams {
   metaPixelId?: string;
 
   /**
+   * The ID to use for MS Clarity for the app.
+   */
+  msClarityId?: string;
+
+  /**
    * The custom Sentry DSN for the app.
    */
   sentryDsn?: string;
@@ -1632,6 +1648,7 @@ export async function updateApp({
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
   const metaPixelId = appsembleContext.metaPixelId ?? options.metaPixelId;
+  const msClarityId = appsembleContext.msClarityId ?? options.msClarityId;
   const resources = appsembleContext.resources ?? options.resources;
   const members = appsembleContext.members ?? options.members;
   const supportedLanguages = appsembleContext.supportedLanguages ?? options.supportedLanguages;
@@ -1716,6 +1733,11 @@ export async function updateApp({
   if (metaPixelId) {
     logger.info('Using Meta Pixel');
     formData.append('metaPixelID', metaPixelId);
+  }
+
+  if (msClarityId) {
+    logger.info('Using MS Clarity');
+    formData.append('msClarityID', msClarityId);
   }
 
   let authScope = 'apps:write';

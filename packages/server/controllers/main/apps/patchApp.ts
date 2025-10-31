@@ -70,6 +70,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         iconBackground,
         maskableIcon,
         metaPixelID,
+        msClarityID,
         path,
         readmes,
         screenshots,
@@ -221,6 +222,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (metaPixelID !== undefined) {
       result.metaPixelID = metaPixelID;
+    }
+
+    if (msClarityID !== undefined) {
+      result.msClarityID = msClarityID;
     }
 
     if (showAppDefinition !== undefined) {
