@@ -26,8 +26,8 @@
   },
   "main": "index.cjs",
   "peerDependencies": {
-    "eslint": "^8.55.0",
-    "@typescript-eslint/parser": "^6.0.0"
+    "eslint": "9.38.0",
+    "@typescript-eslint/parser": "8.46.2"
   },
   "engines": {
     "node": ">=20"
