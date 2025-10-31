@@ -287,6 +287,11 @@ export interface App {
   metaPixelID?: string;
 
   /**
+   * The MS Clarity ID of the app.
+   */
+  msClarityID?: string;
+
+  /**
    * Whether the app is currently locked.
    */
   locked: AppLock;

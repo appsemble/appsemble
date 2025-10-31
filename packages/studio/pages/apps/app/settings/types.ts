@@ -4,6 +4,7 @@ export interface FormValues {
   emailName: string;
   googleAnalyticsID: string;
   metaPixelID: string;
+  msClarityID: string;
   sentryDsn: string;
   sentryEnvironment: string;
   icon: File | string;

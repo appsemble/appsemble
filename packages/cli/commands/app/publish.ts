@@ -30,6 +30,7 @@ interface PublishAppArguments extends BaseArguments {
   sentryEnvironment: string;
   googleAnalyticsId: string;
   metaPixelId: string;
+  msClarityId: string;
   dbName: string;
   dbHost: string;
   dbPort: number;
@@ -116,6 +117,9 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('meta-pixel-id', {
       describe: 'The ID for Meta Pixel for the app.',
+    })
+    .option('ms-clarity-id', {
+      describe: 'The ID for MS Clarity for the app.',
     })
     .option('sentry-dsn', {
       describe: 'The custom Sentry DSN for the app.',

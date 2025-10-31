@@ -171,6 +171,9 @@ export class App extends Model {
   metaPixelID?: string;
 
   @Column(DataType.STRING)
+  msClarityID?: string;
+
+  @Column(DataType.STRING)
   sentryDsn?: string;
 
   @Column(DataType.STRING)

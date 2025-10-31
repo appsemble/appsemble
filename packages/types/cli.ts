@@ -72,6 +72,14 @@ export interface AppsembleContext {
   metaPixelId?: string;
 
   /**
+   * The MS Clarity ID that should be used for the app.
+   *
+   * If `msClarityId` is specified, this will override `--ms-clarity-id` passed on the
+   * command line.
+   */
+  msClarityId?: string;
+
+  /**
    * The custom Sentry DSN for the app.
    *
    * If `sentryDsn` is specified, this will override `--sentry-dsn` passed on the command line.
