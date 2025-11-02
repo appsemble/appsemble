@@ -12,10 +12,10 @@
 
 ## Installation
 
-It’s recommended to install `eslint-plugin-appsemble` during development.
+It’s recommended to install `@appsemble/eslint-plugin` during development.
 
 ```sh
-npm install eslint-plugin-appsemble
+npm install @appsemble/eslint-plugin
 ```
 
 ## Usage

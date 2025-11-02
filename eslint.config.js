@@ -1,11 +1,12 @@
+
+import remcohaszing from '@remcohaszing/eslint';
+import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+import vitest from '@vitest/eslint-plugin';
 import { defineConfig } from 'eslint/config';
-import { default as formatjs } from 'eslint-plugin-formatjs';
-import { default as vitest } from '@vitest/eslint-plugin';
-import { default as appsemble } from 'eslint-plugin-appsemble';
-import { default as typescriptEslint } from '@typescript-eslint/eslint-plugin';
-import { default as tsParser } from '@typescript-eslint/parser';
+import formatjs from 'eslint-plugin-formatjs';
+import appsemble from './packages/eslint-plugin/index.js';
 import { BasicAnnotationsReader } from 'ts-json-schema-generator';
-import { default as remcohaszing } from '@remcohaszing/eslint';
 
 export default defineConfig([
   remcohaszing,

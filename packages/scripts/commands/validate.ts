@@ -19,7 +19,7 @@ export const description = 'Validate all workspaces have a proper configuration'
 /**
  * A list of packages that are released without a scoped package name.
  */
-const unscopedPackageNames = new Set(['appsemble', 'create-appsemble', 'eslint-plugin-appsemble']);
+const unscopedPackageNames = new Set(['appsemble', 'create-appsemble']);
 
 /**
  * The license in the project root.
