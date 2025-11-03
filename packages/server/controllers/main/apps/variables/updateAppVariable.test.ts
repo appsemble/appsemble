@@ -99,7 +99,7 @@ describe('updateAppVariable', () => {
     `);
   });
 
-  it('should not allow duplicate variable names', async () => {
+  it('should update the value of a variable and keep the name', async () => {
     const { AppVariable } = await getAppDB(app.id);
     await AppVariable.create({
       name: 'Test variable',
@@ -112,7 +112,35 @@ describe('updateAppVariable', () => {
 
     const response = await request.put(`/api/apps/${app.id}/variables/2`, {
       name: 'Test variable 2',
+      value: 'Test value 3',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "id": 2,
+        "name": "Test variable 2",
+        "value": "Test value 3",
+      }
+    `);
+  });
+
+  it('should not allow duplicate variable names', async () => {
+    const { AppVariable } = await getAppDB(app.id);
+    await AppVariable.create({
+      name: 'Test variable',
+      value: 'Test value',
+    });
+    await AppVariable.create({
+      name: 'Test variable 2',
       value: 'Test value 2',
+    });
+
+    const response = await request.put(`/api/apps/${app.id}/variables/2`, {
+      name: 'Test variable',
+      value: 'Test value updated',
     });
 
     expect(response).toMatchInlineSnapshot(`
@@ -121,7 +149,7 @@ describe('updateAppVariable', () => {
 
       {
         "error": "Bad Request",
-        "message": "App variable with name Test variable 2 already exists",
+        "message": "App variable with name Test variable already exists",
         "statusCode": 400,
       }
     `);
