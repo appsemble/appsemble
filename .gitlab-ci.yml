@@ -36,7 +36,7 @@ workflow:
   interruptible: true
   services:
     - docker:dind@sha256:ea9d20492ca1caaaba78e68453433895d256173c79281756e88b745647fcbcfd
-  image: docker@sha256:24173119fa6d1b5b4a27ab164fa7863deb66574ee5b90fef3b85dc888ef1a7e6
+  image: docker@sha256:ea9d20492ca1caaaba78e68453433895d256173c79281756e88b745647fcbcfd
   dependencies: []
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
@@ -166,7 +166,7 @@ pack:
 
 # Package the Helm chart
 helm package:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   stage: build
   needs: []
   script:
@@ -201,7 +201,7 @@ eslint:
 
 # Lint Helm charts.
 helm lint:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   stage: test
   needs: []
   script:
@@ -209,7 +209,7 @@ helm lint:
 
 # Lint shell scripts
 shellcheck:
-  image: koalaman/shellcheck-alpine@sha256:71e5a217c94204e164da3a89cc83ac0212dc06549f37af61b298273036bbab6f
+  image: koalaman/shellcheck-alpine@sha256:910c5e32131ea6457204174be41799bdd43da8bbdbfbcd734ee99cfabb39291d
   stage: test
   needs: []
   script:
@@ -632,7 +632,7 @@ publish docker:
 
 # Publish the Helm chart to https://charts.appsemble.com
 publish helm:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   needs:
     - helm package
   stage: publish
@@ -865,7 +865,7 @@ review:
 
 # Stop a review environment.
 stop review:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   dependencies: []
   stage: deploy
   rules:
@@ -886,7 +886,7 @@ stop review:
 
 # Deploy the Docker image for main to the staging environment.
 staging:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   stage: deploy
   needs:
     - build docker image
@@ -971,7 +971,7 @@ staging:
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
 
 production:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   stage: deploy
   needs:
     - publish docker
@@ -1196,7 +1196,7 @@ backup production data:
 
 # Stop and cleanup all review environments.
 cleanup review environments:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   dependencies: []
   stage: cleanup
   rules:
