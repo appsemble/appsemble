@@ -83,7 +83,7 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
             </Link>
           ) : null}
           <h2 className="navbar-item title is-4 mb-0">{!hideName && (children || appName)}</h2>
-          {headerTagHide ? null : (
+          {headerTagHide || !headerTagText ? null : (
             <span className="tag is-warning is-rounded">{headerTagText}</span>
           )}
         </div>
