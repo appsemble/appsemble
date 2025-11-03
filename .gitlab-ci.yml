@@ -166,7 +166,7 @@ pack:
 
 # Package the Helm chart
 helm package:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   stage: build
   needs: []
   script:
@@ -201,7 +201,7 @@ eslint:
 
 # Lint Helm charts.
 helm lint:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   stage: test
   needs: []
   script:
@@ -632,7 +632,7 @@ publish docker:
 
 # Publish the Helm chart to https://charts.appsemble.com
 publish helm:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   needs:
     - helm package
   stage: publish
@@ -865,7 +865,7 @@ review:
 
 # Stop a review environment.
 stop review:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   dependencies: []
   stage: deploy
   rules:
@@ -886,7 +886,7 @@ stop review:
 
 # Deploy the Docker image for main to the staging environment.
 staging:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   stage: deploy
   needs:
     - build docker image
@@ -971,7 +971,7 @@ staging:
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
 
 production:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   stage: deploy
   needs:
     - publish docker
@@ -1196,7 +1196,7 @@ backup production data:
 
 # Stop and cleanup all review environments.
 cleanup review environments:
-  image: dtzar/helm-kubectl:3@sha256:569fbcea3ad1bdb26c953dc76e24591e9ac06abaf577e9f9167a0517e7669425
+  image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
   dependencies: []
   stage: cleanup
   rules:
