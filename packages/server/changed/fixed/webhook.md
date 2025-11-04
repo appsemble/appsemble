@@ -1,1 +1,1 @@
-Check app demo mode in serverside webhook calls
+Check app demo mode in server action webhook calls
