@@ -161,6 +161,7 @@ Configure the environment variables for Appsemble to enable backups.
       name: {{ . | quote }}
       key: secret-key
 {{- end }}
+{{- end }}
 {{- end -}}
 
 
