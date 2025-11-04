@@ -12,7 +12,7 @@
   },
   "blocks": {
     "@appsemble/form": {
-      "0.35.15": {
+      "0.35.16-test.0": {
         "submitLabel": "Dalje"
       }
     }

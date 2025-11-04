@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/action-button",
-  "version": "0.35.15",
+  "version": "0.35.16-test.0",
   "private": true,
   "description": "A simple button that performs an action when clicked.",
   "homepage": "https://appsemble.app",
@@ -17,6 +17,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.35.15"
+    "@appsemble/sdk": "0.35.16-test.0"
   }
 }
