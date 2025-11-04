@@ -7,6 +7,7 @@ import yargs, { type CommandModule } from 'yargs';
 
 import * as app from './commands/app/index.js';
 import * as asset from './commands/asset/index.js';
+import * as backupProductionData from './commands/backupProductionData.js';
 import * as block from './commands/block/index.js';
 import * as chargeOrganizationSubscriptions from './commands/chargeOrganizationSubscriptions.js';
 import * as checkDownMigrations from './commands/checkDownMigrations.js';
@@ -23,6 +24,7 @@ import * as migrate from './commands/migrate.js';
 import * as migrateAppDefinitions from './commands/migrateAppDefinitions.js';
 import * as organization from './commands/organization/index.js';
 import * as resource from './commands/resource/index.js';
+import * as restoreDataFromBackup from './commands/restoreDataFromBackup.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
 import * as serve from './commands/serve.js';
@@ -62,6 +64,8 @@ let parser = yargs(process.argv.slice(2))
   .command(asset)
   .command(block)
   .command(cleanupResourcesAndAssets as unknown as CommandModule)
+  .command(backupProductionData as unknown as CommandModule)
+  .command(restoreDataFromBackup as unknown as CommandModule)
   .command(cleanupDemoAppMembers as unknown as CommandModule)
   .command(cleanupSoftDeletedRecords as unknown as CommandModule)
   .command(checkAppMigrations as unknown as CommandModule)

@@ -135,6 +135,37 @@ Configure the environment variables for Appsemble to connect with the Minio inst
 
 
 {{/*
+Configure the environment variables for Appsemble to enable backups.
+*/}}
+{{- define "appsemble.backups" -}}
+{{- if .Values.backups.enabled }}
+- name: BACKUPS_BUCKET
+  value: {{ .Values.backups.bucket | quote }}
+- name: BACKUPS_FILENAME
+  value: {{ .Values.backups.filename | quote }}
+- name: BACKUPS_HOST
+  value: {{ .Values.backups.host | quote }}
+- name: BACKUPS_PORT
+  value: {{ .Values.backups.port | quote }}
+- name: BACKUPS_SECURE
+  value: {{ .Values.backups.secure | quote }}
+{{- with .Values.backups.existingSecret }}
+- name: BACKUPS_ACCESS_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ . | quote }}
+      key: access-key
+- name: BACKUPS_SECRET_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ . | quote }}
+      key: secret-key
+{{- end }}
+{{- end }}
+{{- end -}}
+
+
+{{/*
 Configure the environment variable for Appsemble to authenticate incoming Stripe webhooks.
 */}}
 {{- define "appsemble.stripeWebhookSecret" -}}

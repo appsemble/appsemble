@@ -18,6 +18,7 @@ ${PROMPT} ${COMMAND} @appsemble/server
  */
 export async function serverImport<
   T extends
+    | 'backupProductionData'
     | 'chargeOrganizationSubscriptions'
     | 'checkDownMigrations'
     | 'checkMigrations'
@@ -27,6 +28,7 @@ export async function serverImport<
     | 'fuzzMigrations'
     | 'migrate'
     | 'migrateAppDefinitions'
+    | 'restoreDataFromBackup'
     | 'runCronJobs'
     | 'scaleContainers'
     | 'setArgv'
