@@ -24,7 +24,7 @@ export const rule = createRule({
         const { expression } = node;
         const { range } = expression;
 
-        function reportProblemWithFix() {
+        function reportProblemWithFix(): void {
           context.report({
             node,
             messageId: 'preferIndex',

@@ -44,7 +44,3 @@ public/
 *.tsbuildinfo
 !*.config.js
 !*rc.js
-
-# Eslint plugin javascript files
-!/packages/eslint-plugin/*.js
-!/packages/eslint-plugin/**/*.js

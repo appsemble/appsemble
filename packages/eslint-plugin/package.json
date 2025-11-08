@@ -24,12 +24,25 @@
   "engines": {
     "node": ">=20"
   },
-  "main": "index.js",
+  "exports": {
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
+  },
   "scripts": {
     "prepack": "tsc --noEmit false",
     "test": "vitest"
   },
+  "dependencies": {
+    "@typescript-eslint/types": "^8.46.2",
+    "@typescript-eslint/utils": "^8.46.2"
+  },
+  "devDependencies": {
+    "@types/eslint": "^9.6.1"
+  },
   "peerDependencies": {
+    "@typescript-eslint/parser": "8.46.2",
     "eslint": "^9.38.0"
   }
 }

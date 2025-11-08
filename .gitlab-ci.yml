@@ -211,6 +211,7 @@ eslint:
   extends: .npm
   stage: test
   script:
+    - npm --workspace @appsemble/eslint-plugin run prepack
     - npx -- eslint --format gitlab .
   artifacts:
     reports:
