@@ -34,7 +34,7 @@ services:
 
   # MinIO service for assets
   minio:
-    image: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
+    image: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
     restart: always
     environment:
       MINIO_ROOT_USER: admin
@@ -48,7 +48,7 @@ services:
 
   # MinIO test service for assets
   minio-test:
-    image: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
+    image: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
     restart: always
     environment:
       MINIO_ROOT_USER: admin
