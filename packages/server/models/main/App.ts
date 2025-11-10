@@ -387,6 +387,7 @@ export class App extends Model {
       domain: this.domain || null,
       googleAnalyticsID: this.googleAnalyticsID,
       metaPixelID: this.metaPixelID,
+      msClarityID: this.msClarityID,
       path: this.path,
       visibility: this.visibility,
       template: this.template,
