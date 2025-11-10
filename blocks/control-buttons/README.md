@@ -5,4 +5,4 @@ to a previous page.
 
 ### Images
 
-![Control buttons screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.35.16/config/assets/control-buttons.png)
+![Control buttons screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.35.17/config/assets/control-buttons.png)
