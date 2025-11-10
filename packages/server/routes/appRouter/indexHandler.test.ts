@@ -296,6 +296,7 @@ describe('indexHandler', () => {
             "id": 1,
             "locked": "unlocked",
             "metaPixelID": null,
+            "msClarityID": null,
             "path": "app",
             "sentryDsn": null,
             "sentryEnvironment": null,
