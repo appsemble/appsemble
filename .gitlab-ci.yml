@@ -246,7 +246,7 @@ test node:
   services:
     - name: postgres:15@sha256:b8e11f8a8b383e19589a086a78b10f9ca69a39d6c9dcdd9342a8697544e8b3a0
       alias: postgres
-    - name: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
+    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
       alias: minio
       command: ['server', '/data']
       variables:
@@ -377,7 +377,7 @@ validate-snippets:
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
 
-    - name: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
+    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
@@ -448,7 +448,7 @@ e2e node:
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
 
-    - name: minio/minio:latest@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
+    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
