@@ -1,6 +1,7 @@
 {
   "app": {
     "description": "",
+    "emails.appInvite.body": "",
     "name": "",
     "pages.test-page": ""
   }

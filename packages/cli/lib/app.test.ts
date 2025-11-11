@@ -2658,6 +2658,34 @@ describe('app', () => {
       );
     });
 
+    it('should not delete the email messages', async () => {
+      const initialMessages = JSON.parse(
+        String(await readFixture('apps/test-messages/i18n/en.json')),
+      );
+      expect(initialMessages).toMatchObject({
+        app: {
+          'emails.appInvite.body': 'test invite body',
+          description: '',
+          name: 'Test App',
+          'pages.test-page': 'Test Page',
+        },
+      });
+      await writeAppMessages(resolveFixture('apps/test-messages'), ['en'], [], 'json');
+      const messages = JSON.parse(String(await readFixture('apps/test-messages/i18n/en.json')));
+      expect(messages).toMatchObject({
+        app: {
+          'emails.appInvite.body': 'test invite body',
+          description: '',
+          name: 'Test App',
+          'pages.test-page': 'Test Page',
+        },
+      });
+      await writeFile(
+        resolveFixture('apps/test-messages/i18n/en.json'),
+        JSON.stringify(initialMessages, null, '\t'),
+      );
+    });
+
     it('should throw if the language file does not exist', async () => {
       await expect(() =>
         writeAppMessages(resolveFixture('apps/test-messages'), ['hr'], [], 'json'),

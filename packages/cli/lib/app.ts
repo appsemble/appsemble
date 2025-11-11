@@ -909,6 +909,13 @@ export async function writeAppMessages(
     const appMessagePrefixes = Object.keys(newAppMessages);
     for (const [key, message] of Object.entries(oldMessages.app ?? {})) {
       const match = /^(pages\.[\dA-Za-z-]+(\..+)?)\.blocks\.\d+.+/.exec(key);
+      const emailMatch =
+        /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|welcome)\.(body|subject)/.test(
+          key,
+        );
+      if (emailMatch) {
+        newAppMessages[key] = message;
+      }
       if (!match) {
         continue;
       }
