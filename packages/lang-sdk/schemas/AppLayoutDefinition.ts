@@ -86,5 +86,11 @@ If this is omitted, a collapsable side navigation menu will be rendered on the l
         },
       },
     },
+    titleBarText: {
+      description:
+        'Whether to display app name or the page name in the title bar, displays pageName by default',
+      type: 'string',
+      enum: ['appName', 'pageName'],
+    },
   },
 };
