@@ -175,7 +175,7 @@ describe('createApp', () => {
       createFormData({
         OrganizationId: organization.id,
         icon: createFixtureStream('nodejs-logo.png'),
-        supportedLanguages: ['en', 'nl'],
+        supportedLanguages: JSON.stringify(['en', 'nl']),
         yaml: stripIndent(`
           name: Test App
           defaultPage: Test Page
