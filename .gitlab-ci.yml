@@ -205,7 +205,7 @@ helm lint:
 
 # Lint shell scripts
 shellcheck:
-  image: koalaman/shellcheck-alpine@sha256:910c5e32131ea6457204174be41799bdd43da8bbdbfbcd734ee99cfabb39291d
+  image: koalaman/shellcheck-alpine@sha256:07e08a5aa7019dfa72f894b3aa0ab878571056cf414bf2bd68f85961cc3a5375
   stage: test
   needs: []
   script:
