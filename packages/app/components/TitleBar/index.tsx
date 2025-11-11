@@ -60,6 +60,7 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;
 
   const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, definition);
+  const displayAppName = (definition?.layout?.titleBarText || 'pageName') === 'appName';
 
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
@@ -82,7 +83,9 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
               />
             </Link>
           ) : null}
-          <h2 className="navbar-item title is-4 mb-0">{!hideName && (children || appName)}</h2>
+          <h2 className="navbar-item title is-4 mb-0">
+            {displayAppName ? appName : !hideName && (children || appName)}
+          </h2>
           {headerTagHide || !headerTagText ? null : (
             <span className="tag is-warning is-rounded">{headerTagText}</span>
           )}

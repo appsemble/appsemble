@@ -115,6 +115,12 @@ export interface AppDefinition {
      * The settings for displaying a tag in the header.
      */
     headerTag?: HeaderTag;
+
+    /**
+     * Whether to display app name or the page name in the title bar, displays pageName by default
+     *
+     */
+    titleBarText?: 'appName' | 'pageName';
   };
 
   /**
