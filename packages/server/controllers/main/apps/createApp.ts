@@ -69,6 +69,8 @@ export async function createApp(ctx: Context): Promise<void> {
     },
   } = ctx;
 
+  const supportedLanguagesArray = JSON.parse(supportedLanguages ?? '[]');
+
   const organization = await Organization.findByPk(OrganizationId, {
     attributes: {
       include: ['id', 'name', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
@@ -133,8 +135,8 @@ export async function createApp(ctx: Context): Promise<void> {
       dbHost,
       dbPort,
       dbUser,
-      supportedLanguages: supportedLanguages?.length
-        ? supportedLanguages
+      supportedLanguages: supportedLanguagesArray.length
+        ? supportedLanguagesArray
         : [definition.defaultLanguage ?? defaultLocale],
     };
 
