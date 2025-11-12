@@ -100,6 +100,11 @@ export interface RemapperContext {
   pageData?: unknown;
 
   /**
+   * Translated name of the current page.
+   */
+  pageName?: string;
+
+  /**
    * The OpenID compatible userinfo object for the current app member.
    */
   appMemberInfo: AppMemberInfo;
@@ -244,6 +249,9 @@ const mapperImplementations: MapperImplementations = {
     }
     if (prop === 'url') {
       return context.url;
+    }
+    if (prop === 'name') {
+      return context.pageName;
     }
     throw new Error(`Unknown page property: ${prop}`);
   },

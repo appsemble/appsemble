@@ -128,8 +128,9 @@ export interface Remappers {
    *
    * - `data`: Get the current page data.
    * - `url`: Get the URL of the current page.
+   * - `name`: Get the translated name of the current page.
    */
-  page: 'data' | 'url';
+  page: 'data' | 'name' | 'url';
 
   /**
    * Get a property from the context.
