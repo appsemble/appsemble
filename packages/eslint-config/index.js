@@ -7,12 +7,14 @@ import formatjs from 'eslint-plugin-formatjs';
 import appsemble from '@appsemble/eslint-plugin';
 import { BasicAnnotationsReader } from 'ts-json-schema-generator';
 
-import react from './rules/react.js';
-import jsxA11y from './rules/jsx-a11y.js';
+import react from './configs/react.js';
+import jsxA11y from './configs/jsx-a11y.js';
+import preact from './configs/preact.js';
 
 export default defineConfig([
   ...react,
   ...jsxA11y,
+  ...preact,
   {
     extends: [remcohaszing],
 
@@ -31,9 +33,7 @@ export default defineConfig([
       '@stylistic/multiline-comment-style': 'off',
       '@stylistic/quotes': 'off',
       '@typescript-eslint/class-methods-use-this': 'off',
-      '@typescript-eslint/no-restricted-types': 'off',
       '@typescript-eslint/no-unsafe-function-type': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-useless-constructor': 'off',
       '@typescript-eslint/no-wrapper-object-types': 'off',
       'logical-assignment-operators': 'off',
