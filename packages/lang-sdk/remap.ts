@@ -515,6 +515,14 @@ const mapperImplementations: MapperImplementations = {
       }),
     ) ?? [],
 
+  'array.range'(countRemapper, input, context) {
+    const count = remap(countRemapper, input, context);
+    if (typeof count !== 'number' || !Number.isInteger(count) || count < 0) {
+      return [];
+    }
+    return Array.from({ length: count }, (item, idx) => idx);
+  },
+
   'array.contains'(mapper, input, context) {
     if (!Array.isArray(input)) {
       return false;

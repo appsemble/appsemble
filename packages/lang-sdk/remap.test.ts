@@ -1205,6 +1205,41 @@ describe('array.flatten', () => {
   });
 });
 
+describe('array.range', () => {
+  runTests({
+    'should create an array of numbers from 0 to N-1': {
+      input: null,
+      mappers: { 'array.range': 5 },
+      expected: [0, 1, 2, 3, 4],
+    },
+    'should work with a dynamic count from input': {
+      input: 3,
+      mappers: { 'array.range': { root: null } },
+      expected: [0, 1, 2],
+    },
+    'should return an empty array for count 0': {
+      input: null,
+      mappers: { 'array.range': 0 },
+      expected: [],
+    },
+    'should return an empty array for negative count': {
+      input: null,
+      mappers: { 'array.range': -5 },
+      expected: [],
+    },
+    'should return an empty array for non-integer count': {
+      input: null,
+      mappers: { 'array.range': 3.14 },
+      expected: [],
+    },
+    'should return an empty array for non-numeric count': {
+      input: null,
+      mappers: { 'array.range': 'foo' },
+      expected: [],
+    },
+  });
+});
+
 describe('array', () => {
   runTests({
     'return undefined if not in the context of array.map': {

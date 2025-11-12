@@ -256,6 +256,14 @@ export interface Remappers {
   'array.map': Remapper;
 
   /**
+   * Creates an array of numbers from 0 to N-1.
+   *
+   * @example
+   * { "array.range": 5 } // returns [0, 1, 2, 3, 4]
+   */
+  'array.range': Remapper;
+
+  /**
    * Filters out unique entries from an array.
    *
    * The value Remapper is applied to each entry in the array,

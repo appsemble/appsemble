@@ -30,6 +30,21 @@ this problem, we use the \`null.strip\` remapper to remove any null values which
 array.
 `,
   },
+  'array.range': {
+    $ref: '#/components/schemas/RemapperDefinition',
+    description: `
+Creates an array of numbers from 0 to N-1, where N is the resolved value of the remapper.
+This is useful for creating a dynamically-sized array.
+
+If the resolved value is not a non-negative integer, an empty array is returned.
+
+${schemaExample('array.range')}
+
+It's particularly powerful when combined with \`array.map\` to generate a list of arbitrary elements.
+
+${schemaExample('array.range.map', { input: 'pretty' })}
+`,
+  },
   'array.join': {
     type: 'string',
     description: `Join the items of an array using the input separator, a comma(,) is used if no separator is provided.

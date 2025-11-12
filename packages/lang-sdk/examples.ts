@@ -16,6 +16,9 @@ type CustomRemapperKeys =
   | 'app.locale'
   | 'app.url'
   | 'array.map.1'
+  | 'array.range.1'
+  | 'array.range.map'
+  | 'array.range'
   | 'if.else'
   | 'if.then'
   | 'None';
@@ -318,6 +321,44 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
         name: 'Otto',
         occupation: 'Scientist',
       },
+    ],
+  },
+  'array.range': {
+    input: null,
+    remapper: {
+      'array.range': 4,
+    },
+    result: [0, 1, 2, 3],
+  },
+  'array.range.1': {
+    input: 5,
+    remapper: {
+      'array.range': { root: null },
+    },
+    result: [0, 1, 2, 3, 4],
+  },
+  'array.range.map': {
+    input: 3,
+    remapper: [
+      { 'array.range': { root: null } },
+      {
+        'array.map': {
+          'object.from': {
+            index: { array: 'item' },
+            message: {
+              'string.format': {
+                template: 'Item {i}',
+                values: { i: { array: 'item' } },
+              },
+            },
+          },
+        },
+      },
+    ],
+    result: [
+      { index: 0, message: 'Item 0' },
+      { index: 1, message: 'Item 1' },
+      { index: 2, message: 'Item 2' },
     ],
   },
   'array.omit': {
