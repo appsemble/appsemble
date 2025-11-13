@@ -67,6 +67,7 @@ function runTests(tests: Record<string, TestCase>): void {
         pageData: { hello: 'Page data' },
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         appMemberInfo,
+        pageName: 'Test Page',
       });
       expect(result).toStrictEqual(expected);
     },
@@ -137,6 +138,14 @@ describe('page', () => {
       input: {},
       mappers: { page: 'data' },
       expected: { hello: 'Page data' },
+    },
+  });
+
+  runTests({
+    'return page name': {
+      input: {},
+      mappers: { page: 'name' },
+      expected: 'Test Page',
     },
   });
 });

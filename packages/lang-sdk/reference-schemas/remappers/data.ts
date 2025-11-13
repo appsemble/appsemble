@@ -150,12 +150,13 @@ The result of this is a flow page where each page shows the question’s title.
 `,
   },
   page: {
-    enum: ['data', 'url'],
+    enum: ['data', 'name', 'url'],
     description: `Gives actual information about the current page. This remapper gives access to the following
 information:
 
 - \`data\`: Current page data (FlowPage)
 - \`url\`: Full URL of the current page
+- \`name\`: Translated name of the current page.
 
 Example:
 

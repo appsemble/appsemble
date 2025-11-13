@@ -189,6 +189,10 @@ export function Page(): ReactNode {
         getMessage,
         getVariable,
         pageData: data,
+        pageName: getAppMessage({
+          id: prefix ?? undefined,
+          defaultMessage: pageDefinition?.name,
+        }).format() as string,
         appMemberInfo: appMemberInfoRef.current,
         context,
         history,
@@ -200,7 +204,16 @@ export function Page(): ReactNode {
         // @ts-expect-error 2322 unknown is not assignable to type (strictNullChecks)
         tabRef,
       }),
-    [getMessage, getVariable, data, appMemberInfoRef, lang],
+    [
+      getAppMessage,
+      getMessage,
+      getVariable,
+      data,
+      appMemberInfoRef,
+      lang,
+      pageDefinition?.name,
+      prefix,
+    ],
   );
   const showDialog = useCallback((d: ShowDialogParams) => {
     setDialog(d);
