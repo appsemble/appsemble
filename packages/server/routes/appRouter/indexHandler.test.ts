@@ -219,7 +219,7 @@ describe('indexHandler', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-NnfhkfyMQqbhX/LkO/wZjQ0LpRQSoaJOTdj57aWuNR8=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+      Content-Security-Policy: conneAAAAAAAAAAAAAAAAAAAAAA==fault-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'self' 'sha256-NnfhkfyMQqbhX/LkO/wZjQ0LpRQSoaJOTdj57aWuNR8=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
       Content-Type: text/html; charset=utf-8
 
       {
