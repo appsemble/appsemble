@@ -17,7 +17,7 @@ import mustache from 'mustache';
  */
 export function createSettings(
   settings: unknown,
-  nonce: string | null,
+  nonce?: string,
   statements: string[] = [],
 ): [digest: string, script: string] {
   const script = [`window.settings=${JSON.stringify(settings)}`, ...statements].join(';');

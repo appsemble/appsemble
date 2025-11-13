@@ -132,7 +132,7 @@ export async function createSettings({
         persistedApp.definition.defaultLanguage ?? defaultLocale,
       ],
     },
-    Boolean(app.metaPixelID) || Boolean(app.msClarityID) ? nonce: null,
+    Boolean(app.metaPixelID) || Boolean(app.msClarityID) ? nonce : undefined,
     [
       ...(app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : []),
       ...(app.metaPixelID ? createMetaPixelCode(app.metaPixelID) : []),
