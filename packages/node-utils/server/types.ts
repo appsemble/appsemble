@@ -253,6 +253,7 @@ export interface CreateSettingsParams {
   controllerDefinition?: ControllerDefinition;
   hostname: string;
   languages: string[];
+  nonce: string;
 }
 
 export interface GetCspParams {
