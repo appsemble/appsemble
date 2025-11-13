@@ -32,6 +32,7 @@ export function getCsp({
     'script-src': [
       "'self'",
       `'nonce-${nonce}'`,
+      "'strict-dynamic'",
       settingsHash,
       app.googleAnalyticsID ? 'https://www.googletagmanager.com' : false,
       app.metaPixelID ? 'https://connect.facebook.net' : false,
