@@ -22,10 +22,7 @@ export function createSettings(
 ): [digest: string, script: string] {
   const script = [`window.settings=${JSON.stringify(settings)}`, ...statements].join(';');
   const hash = createHash('sha256').update(script, 'utf8').digest('base64');
-  return [
-    `'sha256-${hash}'`,
-    nonce ? `<script nonce="${nonce}">${script}</script>` : `<script>${script}</script>`,
-  ];
+  return [`'sha256-${hash}'`, `<script>${script}</script>`];
 }
 
 export async function render(
