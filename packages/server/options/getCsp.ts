@@ -20,8 +20,7 @@ export function getCsp({
   const scriptSrc: (string | false)[] = requiresDynamicScripts
     ? [
         "'self'",
-        `'nonce-${nonce}'`,
-        "'strict-dynamic'",
+        "'unsafe-inline'",
         app.googleAnalyticsID ? 'https://www.googletagmanager.com' : false,
         app.metaPixelID ? 'https://connect.facebook.net' : false,
         app.msClarityID ? 'https://www.clarity.ms' : false,
@@ -30,6 +29,7 @@ export function getCsp({
       ]
     : [
         "'self'",
+        `'nonce-${nonce}'`,
         settingsHash,
         app.googleAnalyticsID ? 'https://www.googletagmanager.com' : false,
         process.env.NODE_ENV !== 'production' && "'unsafe-eval'",

@@ -221,7 +221,7 @@ describe('indexHandler', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'self' 'sha256-NnfhkfyMQqbhX/LkO/wZjQ0LpRQSoaJOTdj57aWuNR8=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+      Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-NnfhkfyMQqbhX/LkO/wZjQ0LpRQSoaJOTdj57aWuNR8=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
       Content-Type: text/html; charset=utf-8
 
       {
@@ -347,6 +347,212 @@ describe('indexHandler', () => {
           "noIndex": true,
           "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
           "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.js","b2.css"]},{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.js","a1.css"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]}</script>",
+          "themeColor": "#ffffff",
+        },
+        "filename": "app/index.html",
+      }
+    `);
+  });
+
+  it('should render the index page with dynamic scripts', async () => {
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [
+              { type: '@test/a', version: '0.0.0' },
+              { type: 'a', version: '0.1.0' },
+              { type: 'a', version: '0.1.0' },
+            ],
+          },
+          {
+            name: 'Test Page with Flow',
+            type: 'flow',
+            steps: [
+              {
+                blocks: [
+                  { type: 'a', version: '0.1.0' },
+                  {
+                    type: 'a',
+                    version: '0.1.1',
+                    actions: { whatever: { blocks: [{ type: '@test/b', version: '0.0.2' }] } },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+      msClarityID: '1234123123',
+    });
+    await AppMessages.bulkCreate([
+      {
+        AppId: app.id,
+        language: 'en',
+        messages: '{ greet: Hi! }',
+      },
+      {
+        AppId: app.id,
+        language: 'nl',
+        messages: '{ greet: Hoi! }',
+      },
+    ]);
+
+    const response = await request.get('/');
+
+    const nonce = 'AAAAAAAAAAAAAAAAAAAAAA==';
+
+    response.data.data = {
+      ...response.data.data,
+      nonce,
+    };
+
+    const csp = response.headers['content-security-policy'] as string;
+    if (csp.includes('nonce-')) {
+      const responseNonce = csp.slice(csp.indexOf('nonce-') + 6, csp.indexOf('nonce-') + 30);
+      response.headers['content-security-policy'] = csp.replace(responseNonce, nonce);
+    }
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Security-Policy: connect-src * blob: data: https://clarity.ms https://www.clarity.ms; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example https://clarity.ms https://www.clarity.ms; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clarity.ms https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+      Content-Type: text/html; charset=utf-8
+
+      {
+        "data": {
+          "app": {
+            "$created": "1970-01-01T00:00:00.000Z",
+            "$updated": "1970-01-01T00:00:00.000Z",
+            "OrganizationId": "test",
+            "controllerCode": null,
+            "controllerImplementations": null,
+            "coreStyle": "",
+            "definition": {
+              "name": "Test App",
+              "pages": [
+                {
+                  "blocks": [
+                    {
+                      "type": "@test/a",
+                      "version": "0.0.0",
+                    },
+                    {
+                      "type": "a",
+                      "version": "0.1.0",
+                    },
+                    {
+                      "type": "a",
+                      "version": "0.1.0",
+                    },
+                  ],
+                  "name": "Test Page",
+                },
+                {
+                  "name": "Test Page with Flow",
+                  "steps": [
+                    {
+                      "blocks": [
+                        {
+                          "type": "a",
+                          "version": "0.1.0",
+                        },
+                        {
+                          "actions": {
+                            "whatever": {
+                              "blocks": [
+                                {
+                                  "type": "@test/b",
+                                  "version": "0.0.2",
+                                },
+                              ],
+                            },
+                          },
+                          "type": "a",
+                          "version": "0.1.1",
+                        },
+                      ],
+                    },
+                  ],
+                  "type": "flow",
+                },
+              ],
+            },
+            "demoMode": false,
+            "displayAppMemberName": false,
+            "displayInstallationPrompt": false,
+            "domain": null,
+            "emailName": null,
+            "enableSelfRegistration": true,
+            "enableUnsecuredServiceSecrets": false,
+            "googleAnalyticsID": null,
+            "hasIcon": false,
+            "hasMaskableIcon": false,
+            "iconBackground": "#ffffff",
+            "iconUrl": null,
+            "id": 1,
+            "locked": "unlocked",
+            "metaPixelID": null,
+            "msClarityID": "1234123123",
+            "path": "app",
+            "sentryDsn": null,
+            "sentryEnvironment": null,
+            "sharedStyle": "",
+            "showAppDefinition": false,
+            "showAppsembleLogin": false,
+            "showAppsembleOAuth2Login": true,
+            "skipGroupInvites": false,
+            "supportedLanguages": null,
+            "template": false,
+            "visibility": "unlisted",
+            "yaml": "name: Test App
+      pages:
+        - name: Test Page
+          blocks:
+            - type: "@test/a"
+              version: 0.0.0
+            - type: a
+              version: 0.1.0
+            - type: a
+              version: 0.1.0
+        - name: Test Page with Flow
+          type: flow
+          steps:
+            - blocks:
+                - type: a
+                  version: 0.1.0
+                - type: a
+                  version: 0.1.1
+                  actions:
+                    whatever:
+                      blocks:
+                        - type: "@test/b"
+                          version: 0.0.2
+      ",
+          },
+          "appUpdated": "1970-01-01T00:00:00.000Z",
+          "appUrl": "http://app.test.host.example/",
+          "bulmaURL": "/bulma/0.9.3/bulma.min.css?dangerColor=%23ff2800&fontFamily=Open+Sans&fontSource=google&infoColor=%23a7d0ff&linkColor=%230440ad&primaryColor=%235393ff&splashColor=%23ffffff&successColor=%231fd25b&themeColor=%23ffffff&tileLayer=https%3A%2F%2F%7Bs%7D.tile.openstreetmap.org%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D.png&warningColor=%23fed719",
+          "faURL": "/fa/6.7.2/css/all.min.css",
+          "host": "http://host.example",
+          "locale": "en",
+          "locales": [
+            "nl",
+          ],
+          "noIndex": true,
+          "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
+          "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.js","b2.css"]},{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.js","a1.css"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]};(function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "1234123123");</script>",
           "themeColor": "#ffffff",
         },
         "filename": "app/index.html",
