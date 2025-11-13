@@ -64,6 +64,8 @@ export function createIndexHandler({
 
     const identifiableBlocks = getAppBlocks(app.definition);
 
+    const nonce = randomBytes(16).toString('base64');
+
     const [settingsHash, settings] = await createSettings({
       context: ctx,
       app,
@@ -71,9 +73,8 @@ export function createIndexHandler({
       hostname,
       identifiableBlocks,
       languages,
+      nonce,
     });
-
-    const nonce = randomBytes(16).toString('base64');
 
     const csp = getCsp({ app, settingsHash, hostname, host, nonce });
     ctx.set('Content-Security-Policy', makeCSP(csp));

@@ -214,12 +214,14 @@ describe('indexHandler', () => {
     };
 
     const csp = response.headers['content-security-policy'] as string;
-    const responseNonce = csp.slice(csp.indexOf('nonce-') + 6, csp.indexOf('nonce-') + 30);
-    response.headers['content-security-policy'] = csp.replace(responseNonce, nonce);
+    if (csp.includes('nonce-')) {
+      const responseNonce = csp.slice(csp.indexOf('nonce-') + 6, csp.indexOf('nonce-') + 30);
+      response.headers['content-security-policy'] = csp.replace(responseNonce, nonce);
+    }
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-NnfhkfyMQqbhX/LkO/wZjQ0LpRQSoaJOTdj57aWuNR8=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+      Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'self' 'sha256-NnfhkfyMQqbhX/LkO/wZjQ0LpRQSoaJOTdj57aWuNR8=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
       Content-Type: text/html; charset=utf-8
 
       {

@@ -15,6 +15,26 @@ export function getCsp({
     app.sentryEnvironment,
   );
 
+  const requiresDynamicScripts = Boolean(app.msClarityID) || Boolean(app.metaPixelID);
+
+  const scriptSrc: (string | false)[] = requiresDynamicScripts
+    ? [
+        "'self'",
+        `'nonce-${nonce}'`,
+        "'strict-dynamic'",
+        app.googleAnalyticsID ? 'https://www.googletagmanager.com' : false,
+        app.metaPixelID ? 'https://connect.facebook.net' : false,
+        app.msClarityID ? 'https://www.clarity.ms' : false,
+        app.msClarityID ? 'https://clarity.ms' : false,
+        process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
+      ]
+    : [
+        "'self'",
+        settingsHash,
+        app.googleAnalyticsID ? 'https://www.googletagmanager.com' : false,
+        process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
+      ];
+
   return {
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     'report-uri': [reportUri],
@@ -29,17 +49,7 @@ export function getCsp({
       app.msClarityID ? 'https://clarity.ms' : false,
     ],
     'default-src': ["'self'"],
-    'script-src': [
-      "'self'",
-      `'nonce-${nonce}'`,
-      settingsHash,
-      app.googleAnalyticsID ? 'https://www.googletagmanager.com' : false,
-      app.metaPixelID ? 'https://connect.facebook.net' : false,
-      app.msClarityID ? 'https://www.clarity.ms' : false,
-      app.msClarityID ? 'https://clarity.ms' : false,
-      // This is needed for Webpack.
-      process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
-    ],
+    'script-src': scriptSrc,
     'img-src': [
       '*',
       'blob:',

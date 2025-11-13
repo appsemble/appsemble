@@ -16,6 +16,7 @@ export async function createSettings({
   hostname,
   identifiableBlocks,
   languages,
+  nonce,
 }: CreateSettingsParams): Promise<[digest: string, script: string]> {
   const { AppOAuth2Secret, AppSamlSecret } = await getAppDB(app.id!);
   const blockManifests = await BlockVersion.findAll({
@@ -131,6 +132,7 @@ export async function createSettings({
         persistedApp.definition.defaultLanguage ?? defaultLocale,
       ],
     },
+    Boolean(app.metaPixelID) || Boolean(app.msClarityID) ? nonce : undefined,
     [
       ...(app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : []),
       ...(app.metaPixelID ? createMetaPixelCode(app.metaPixelID) : []),
