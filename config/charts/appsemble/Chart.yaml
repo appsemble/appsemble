@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.35.17
-appVersion: 0.35.17
+version: 0.35.18
+appVersion: 0.35.18
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,7 +32,10 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: |
-    []
+    - kind: fixed
+      description: "Block(list): Scrolling upwards when dragging an item."
+    - kind: fixed
+      description: "Cli: app extract-messages command deletes emails messages."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

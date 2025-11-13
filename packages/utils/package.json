@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.35.17",
+  "version": "0.35.18",
   "description": "Utility functions used in Appsemble internally",
   "keywords": [
     "app",
@@ -39,8 +39,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.35.17",
-    "@appsemble/types": "0.35.17",
+    "@appsemble/lang-sdk": "0.35.18",
+    "@appsemble/types": "0.35.18",
     "axios": "^1.0.0",
     "langmap": "^0.0.16",
     "openapi-types": "^12.0.0",

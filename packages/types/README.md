@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.35.17/config/assets/logo.svg) Appsemble Types
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.35.18/config/assets/logo.svg) Appsemble Types
 
 > Reusable TypeScript types
 
 [![npm](https://img.shields.io/npm/v/@appsemble/types)](https://www.npmjs.com/package/@appsemble/types)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.35.17/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.35.17)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.35.18/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.35.18)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -26,5 +26,5 @@ not guaranteed.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.35.17/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.35.18/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

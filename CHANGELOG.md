@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.35.18](https://gitlab.com/appsemble/appsemble/-/releases/0.35.18)] - 2025-11-13
+
+### Fixed
+
+- Block(`list`): Scrolling upwards when dragging an item.
+- Cli: `app extract-messages` command deletes emails messages.
+
 ## \[[0.35.17](https://gitlab.com/appsemble/appsemble/-/releases/0.35.17)] - 2025-11-10
 
 ## \[[0.35.16](https://gitlab.com/appsemble/appsemble/-/releases/0.35.16)] - 2025-11-04
