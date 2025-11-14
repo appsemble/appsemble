@@ -423,7 +423,7 @@ describe('indexHandler', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Content-Security-Policy: connect-src * blob: data: https://clarity.ms https://www.clarity.ms; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example https://clarity.ms https://www.clarity.ms; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clarity.ms https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+      Content-Security-Policy: connect-src * blob: data: https://clarity.ms https://www.clarity.ms; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example https://clarity.ms https://www.clarity.ms; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clarity.ms https://scripts.clarity.ms https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
       Content-Type: text/html; charset=utf-8
 
       {
