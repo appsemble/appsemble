@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.35.19/config/assets/logo.svg) Appsemble
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.35.20/config/assets/logo.svg) Appsemble
 
 > Quickly run Appsemble CLI using `npx`
 
 [![npm](https://img.shields.io/npm/v/appsemble)](https://www.npmjs.com/package/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.35.19/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.35.19)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.35.20/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.35.20)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -31,5 +31,5 @@ For more information, see [`@appsemble/cli`](https://www.npmjs.com/package/@apps
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.35.19/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.35.20/LICENSE.md) ©
 [Appsemble](https://appsemble.com)
