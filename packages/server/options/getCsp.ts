@@ -25,6 +25,7 @@ export function getCsp({
         app.metaPixelID ? 'https://connect.facebook.net' : false,
         app.msClarityID ? 'https://www.clarity.ms' : false,
         app.msClarityID ? 'https://clarity.ms' : false,
+        app.msClarityID ? 'https://scripts.clarity.ms' : false,
         process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
       ]
     : [
