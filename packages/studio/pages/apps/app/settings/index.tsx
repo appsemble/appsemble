@@ -400,7 +400,6 @@ export function SettingsPage(): ReactNode {
             maxLength={15}
             name="msClarityID"
             pattern={msClarityIDPattern}
-            preprocess={toUpperCase}
             validityMessages={{
               patternMismatch: <FormattedMessage {...messages.msClarityError} />,
             }}
