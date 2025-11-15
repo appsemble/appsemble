@@ -5,7 +5,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 import globals from 'globals';
 
-import { getReactRules } from '../rules/react.js';
+import { getReactRules } from '../utils/getReactRules.js';
 import jsxRules from '../rules/jsx-a11y.js';
 
 export default defineConfig([
@@ -17,8 +17,9 @@ export default defineConfig([
       'jsx-a11y': jsxA11y,
     },
     settings: {
-      version: "detect",
-      defaultVersion: "18.0",
+      version: 'detect',
+      defaultVersion: '18',
+      pragma: 'React',
     },
     languageOptions: {
       parserOptions: {
@@ -32,8 +33,7 @@ export default defineConfig([
     },
     rules: {
       ...jsxRules,
-      ...getReactRules('react')
+      ...getReactRules('react'),
     },
   },
 ]);
-

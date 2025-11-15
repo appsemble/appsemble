@@ -1,9 +1,0 @@
-extends:
-  - remcohaszing/react
-  - remcohaszing/web
-rules:
-  formatjs/enforce-id:
-    - error
-    - idInterpolationPattern: 'app.[sha512:contenthash:base64:6]'
-  react/prop-types: off
-  unicorn/prefer-node-protocol: off

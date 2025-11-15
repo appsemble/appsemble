@@ -34,11 +34,11 @@ const elements = [
   'spacer',
   'strike',
   'tt',
-  'xmp'
-]
+  'xmp',
+];
 
 export default elements.map((element) => ({
   element,
   message:
-    'https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Obsolete_and_deprecated_elements'
-}))
+    'https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Obsolete_and_deprecated_elements',
+}));

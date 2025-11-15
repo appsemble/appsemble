@@ -199,4 +199,4 @@ export default {
    * https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/main/docs/rules/tabindex-no-positive.md
    */
   'jsx-a11y/tabindex-no-positive': 'error',
-}
+};

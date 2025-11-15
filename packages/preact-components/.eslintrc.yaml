@@ -1,5 +1,0 @@
-extends:
-  - remcohaszing/preact
-rules:
-  react/prop-types: off
-  react/sort-comp: off

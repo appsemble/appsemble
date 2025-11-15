@@ -1,30 +1,15 @@
 // Rules copied from https://github.com/remcohaszing/eslint/blob/v10.0.0/utils/react.js
 
-import obsoleteHTMLElements from "./obsoleteHTMLElements.js"
+import obsoleteHTMLElements from '../utils/obsoleteHTMLElements.js';
 
-/**
- * Get rules from `eslint-plugin-react` for a given context.
- *
- * @param {string} context One of `'jsx'`, `'preact'`, or `'react'`.
- */
-export function getReactRules(context) {
-  const contextRules = {}
-  for (const [rule, config] of Object.entries(rules)) {
-    if (config[context] !== 'off') {
-      contextRules[rule] = config[context]
-    }
-  }
-  return contextRules
-}
-
-export const rules = {
+export default {
   /**
    * https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/boolean-prop-naming.md
    */
   'react/boolean-prop-naming': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -33,7 +18,7 @@ export const rules = {
   'react/button-has-type': {
     jsx: ['error', { button: true, submit: true, reset: false }],
     preact: ['error', { button: true, submit: true, reset: false }],
-    react: ['error', { button: true, submit: true, reset: false }]
+    react: ['error', { button: true, submit: true, reset: false }],
   },
 
   /**
@@ -42,7 +27,7 @@ export const rules = {
   'react/default-props-match-prop-types': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -51,7 +36,7 @@ export const rules = {
   'react/destructuring-assignment': {
     jsx: 'off',
     preact: ['error', 'always', { ignoreClassFields: true }],
-    react: ['error', 'always', { ignoreClassFields: true }]
+    react: ['error', 'always', { ignoreClassFields: true }],
   },
 
   /**
@@ -60,7 +45,7 @@ export const rules = {
   'react/display-name': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -69,7 +54,7 @@ export const rules = {
   'react/forbid-component-props': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -78,7 +63,7 @@ export const rules = {
   'react/forbid-dom-props': {
     jsx: ['error', { forbid: [{ propName: 'style', message: 'Use a CSS class instead' }] }],
     preact: ['error', { forbid: [{ propName: 'style', message: 'Use a CSS class instead' }] }],
-    react: ['error', { forbid: [{ propName: 'style', message: 'Use a CSS class instead' }] }]
+    react: ['error', { forbid: [{ propName: 'style', message: 'Use a CSS class instead' }] }],
   },
 
   /**
@@ -87,7 +72,7 @@ export const rules = {
   'react/forbid-elements': {
     jsx: ['error', { forbid: obsoleteHTMLElements }],
     preact: ['error', { forbid: obsoleteHTMLElements }],
-    react: ['error', { forbid: obsoleteHTMLElements }]
+    react: ['error', { forbid: obsoleteHTMLElements }],
   },
 
   /**
@@ -96,7 +81,7 @@ export const rules = {
   'react/forbid-foreign-prop-types': {
     jsx: 'off',
     preact: 'off',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -105,7 +90,7 @@ export const rules = {
   'react/forbid-prop-types': {
     jsx: 'off',
     preact: 'off',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -115,12 +100,12 @@ export const rules = {
     jsx: 'off',
     preact: [
       'error',
-      { namedComponents: 'function-declaration', unnamedComponents: 'arrow-function' }
+      { namedComponents: 'function-declaration', unnamedComponents: 'arrow-function' },
     ],
     react: [
       'error',
-      { namedComponents: 'function-declaration', unnamedComponents: 'arrow-function' }
-    ]
+      { namedComponents: 'function-declaration', unnamedComponents: 'arrow-function' },
+    ],
   },
 
   /**
@@ -129,7 +114,7 @@ export const rules = {
   'react/hook-use-state': {
     jsx: 'off',
     preact: ['error', { allowDestructuredState: true }],
-    react: ['error', { allowDestructuredState: true }]
+    react: ['error', { allowDestructuredState: true }],
   },
 
   /**
@@ -138,7 +123,7 @@ export const rules = {
   'react/iframe-missing-sandbox': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -147,7 +132,7 @@ export const rules = {
   'react/jsx-boolean-value': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -158,7 +143,7 @@ export const rules = {
   'react/jsx-child-element-spacing': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -169,7 +154,7 @@ export const rules = {
   'react/jsx-closing-bracket-location': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -180,7 +165,7 @@ export const rules = {
   'react/jsx-closing-tag-location': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -189,7 +174,7 @@ export const rules = {
   'react/jsx-curly-brace-presence': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -200,7 +185,7 @@ export const rules = {
   'react/jsx-curly-newline': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -211,7 +196,7 @@ export const rules = {
   'react/jsx-curly-spacing': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -222,7 +207,7 @@ export const rules = {
   'react/jsx-equals-spacing': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -231,7 +216,7 @@ export const rules = {
   'react/jsx-filename-extension': {
     jsx: ['error', { allow: 'as-needed', extensions: ['.jsx', '.tsx'] }],
     preact: ['error', { allow: 'as-needed', extensions: ['.jsx', '.tsx'] }],
-    react: ['error', { allow: 'as-needed', extensions: ['.jsx', '.tsx'] }]
+    react: ['error', { allow: 'as-needed', extensions: ['.jsx', '.tsx'] }],
   },
 
   /**
@@ -242,7 +227,7 @@ export const rules = {
   'react/jsx-first-prop-new-line': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -253,7 +238,7 @@ export const rules = {
   'react/jsx-fragments': {
     jsx: 'off',
     preact: 'off',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -262,7 +247,7 @@ export const rules = {
   'react/jsx-handler-names': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -273,7 +258,7 @@ export const rules = {
   'react/jsx-indent': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -284,7 +269,7 @@ export const rules = {
   'react/jsx-indent-props': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -293,7 +278,7 @@ export const rules = {
   'react/jsx-key': {
     jsx: 'off',
     preact: ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true }],
-    react: ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true }]
+    react: ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true }],
   },
 
   /**
@@ -302,7 +287,7 @@ export const rules = {
   'react/jsx-max-depth': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -313,7 +298,7 @@ export const rules = {
   'react/jsx-max-props-per-line': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -322,7 +307,7 @@ export const rules = {
   'react/jsx-newline': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -331,7 +316,7 @@ export const rules = {
   'react/jsx-no-bind': {
     jsx: 'off',
     preact: ['error', { allowArrowFunctions: true, ignoreRefs: true }],
-    react: ['error', { allowArrowFunctions: true, ignoreRefs: true }]
+    react: ['error', { allowArrowFunctions: true, ignoreRefs: true }],
   },
 
   /**
@@ -340,7 +325,7 @@ export const rules = {
   'react/jsx-no-comment-textnodes': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -349,7 +334,7 @@ export const rules = {
   'react/jsx-no-constructed-context-values': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -358,7 +343,7 @@ export const rules = {
   'react/jsx-no-duplicate-props': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -367,7 +352,7 @@ export const rules = {
   'react/jsx-no-literals': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -376,7 +361,7 @@ export const rules = {
   'react/jsx-no-leaked-render': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -385,7 +370,7 @@ export const rules = {
   'react/jsx-no-script-url': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -394,7 +379,7 @@ export const rules = {
   'react/jsx-no-target-blank': {
     jsx: ['error', { forms: true }],
     preact: ['error', { forms: true }],
-    react: ['error', { forms: true }]
+    react: ['error', { forms: true }],
   },
 
   /**
@@ -403,7 +388,7 @@ export const rules = {
   'react/jsx-no-undef': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -412,7 +397,7 @@ export const rules = {
   'react/jsx-no-useless-fragment': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -423,7 +408,7 @@ export const rules = {
   'react/jsx-one-expression-per-line': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -432,7 +417,7 @@ export const rules = {
   'react/jsx-pascal-case': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -443,7 +428,7 @@ export const rules = {
   'react/jsx-props-no-multi-spaces': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -452,7 +437,7 @@ export const rules = {
   'react/jsx-props-no-spreading': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -463,7 +448,7 @@ export const rules = {
   'react/jsx-sort-default-props': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -472,7 +457,7 @@ export const rules = {
   'react/jsx-sort-props': {
     jsx: ['error', { ignoreCase: true }],
     preact: ['error', { ignoreCase: true }],
-    react: ['error', { ignoreCase: true }]
+    react: ['error', { ignoreCase: true }],
   },
 
   /**
@@ -483,7 +468,7 @@ export const rules = {
   'react/jsx-space-before-closing': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -494,7 +479,7 @@ export const rules = {
   'react/jsx-tag-spacing': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -503,7 +488,7 @@ export const rules = {
   'react/jsx-uses-react': {
     jsx: 'error',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -512,7 +497,7 @@ export const rules = {
   'react/jsx-uses-vars': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -523,7 +508,7 @@ export const rules = {
   'react/jsx-wrap-multilines': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -532,7 +517,7 @@ export const rules = {
   'react/no-access-state-in-setstate': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -541,7 +526,7 @@ export const rules = {
   'react/no-adjacent-inline-elements': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -550,7 +535,7 @@ export const rules = {
   'react/no-array-index-key': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -559,7 +544,7 @@ export const rules = {
   'react/no-arrow-function-lifecycle': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -568,7 +553,7 @@ export const rules = {
   'react/no-children-prop': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -577,7 +562,7 @@ export const rules = {
   'react/no-danger': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -586,7 +571,7 @@ export const rules = {
   'react/no-danger-with-children': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -595,7 +580,7 @@ export const rules = {
   'react/no-deprecated': {
     jsx: 'off',
     preact: 'off',
-    react: 'warn'
+    react: 'warn',
   },
 
   /**
@@ -604,7 +589,7 @@ export const rules = {
   'react/no-did-mount-set-state': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -613,7 +598,7 @@ export const rules = {
   'react/no-did-update-set-state': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -622,7 +607,7 @@ export const rules = {
   'react/no-direct-mutation-state': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -631,7 +616,7 @@ export const rules = {
   'react/no-find-dom-node': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -640,7 +625,7 @@ export const rules = {
   'react/no-is-mounted': {
     jsx: 'off',
     preact: 'off',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -649,7 +634,7 @@ export const rules = {
   'react/no-invalid-html-attribute': {
     jsx: 'off',
     preact: 'off',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -660,7 +645,7 @@ export const rules = {
   'react/no-multi-comp': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -669,7 +654,7 @@ export const rules = {
   'react/no-namespace': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -678,7 +663,7 @@ export const rules = {
   'react/no-object-type-as-default-prop': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -687,7 +672,7 @@ export const rules = {
   'react/no-redundant-should-component-update': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -696,7 +681,7 @@ export const rules = {
   'react/no-render-return-value': {
     jsx: 'off',
     preact: 'off',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -705,7 +690,7 @@ export const rules = {
   'react/no-set-state': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -714,7 +699,7 @@ export const rules = {
   'react/no-string-refs': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -723,7 +708,7 @@ export const rules = {
   'react/no-this-in-sfc': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -732,7 +717,7 @@ export const rules = {
   'react/no-typos': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -741,7 +726,7 @@ export const rules = {
   'react/no-unescaped-entities': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -750,7 +735,7 @@ export const rules = {
   'react/no-unknown-property': {
     jsx: 'off',
     preact: ['error', { ignore: ['class'] }],
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -759,7 +744,7 @@ export const rules = {
   'react/no-unsafe': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -768,7 +753,7 @@ export const rules = {
   'react/no-unused-class-component-methods': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -777,7 +762,7 @@ export const rules = {
   'react/no-unused-prop-types': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -786,7 +771,7 @@ export const rules = {
   'react/no-unused-state': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -795,7 +780,7 @@ export const rules = {
   'react/no-will-update-set-state': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -804,7 +789,7 @@ export const rules = {
   'react/prefer-es6-class': {
     jsx: 'off',
     preact: 'off',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -813,7 +798,7 @@ export const rules = {
   'react/prefer-exact-props': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -822,7 +807,7 @@ export const rules = {
   'react/prefer-read-only-props': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -831,7 +816,7 @@ export const rules = {
   'react/prefer-stateless-function': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -840,7 +825,7 @@ export const rules = {
   'react/prop-types': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -849,7 +834,7 @@ export const rules = {
   'react/react-in-jsx-scope': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -858,7 +843,7 @@ export const rules = {
   'react/require-default-props': {
     jsx: 'off',
     preact: ['error', { forbidDefaultForRequired: true, ignoreFunctionalComponents: true }],
-    react: ['error', { forbidDefaultForRequired: true, ignoreFunctionalComponents: true }]
+    react: ['error', { forbidDefaultForRequired: true, ignoreFunctionalComponents: true }],
   },
 
   /**
@@ -867,7 +852,7 @@ export const rules = {
   'react/require-optimization': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -876,7 +861,7 @@ export const rules = {
   'react/require-render-return': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -885,7 +870,7 @@ export const rules = {
   'react/self-closing-comp': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -905,10 +890,10 @@ export const rules = {
           'lifecycle',
           'instance-methods',
           'everything-else',
-          'render'
-        ]
-      }
-    ]
+          'render',
+        ],
+      },
+    ],
   },
 
   /**
@@ -917,7 +902,7 @@ export const rules = {
   'react/sort-default-props': {
     jsx: ['off', { ignoreCase: true }],
     preact: ['error', { ignoreCase: true }],
-    react: ['error', { ignoreCase: true }]
+    react: ['error', { ignoreCase: true }],
   },
 
   /**
@@ -926,7 +911,7 @@ export const rules = {
   'react/sort-prop-types': {
     jsx: ['off', { ignoreCase: true }],
     preact: ['error', { ignoreCase: true }],
-    react: ['error', { ignoreCase: true }]
+    react: ['error', { ignoreCase: true }],
   },
 
   /**
@@ -935,7 +920,7 @@ export const rules = {
   'react/state-in-constructor': {
     jsx: 'off',
     preact: ['error', 'never'],
-    react: ['error', 'never']
+    react: ['error', 'never'],
   },
 
   /**
@@ -944,7 +929,7 @@ export const rules = {
   'react/static-property-placement': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -953,7 +938,7 @@ export const rules = {
   'react/style-prop-object': {
     jsx: 'off',
     preact: 'off',
-    react: 'off'
+    react: 'off',
   },
 
   /**
@@ -962,7 +947,7 @@ export const rules = {
   'react/void-dom-elements-no-children': {
     jsx: 'error',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -971,7 +956,7 @@ export const rules = {
   'react-hooks/rules-of-hooks': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
+    react: 'error',
   },
 
   /**
@@ -980,6 +965,6 @@ export const rules = {
   'react-hooks/exhaustive-deps': {
     jsx: 'off',
     preact: 'error',
-    react: 'error'
-  }
-}
+    react: 'error',
+  },
+};

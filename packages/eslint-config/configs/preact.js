@@ -3,8 +3,8 @@ import { defineConfig } from 'eslint/config';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 
-import jsxRules from '../rules/jsx-a11y.js'
-import { getReactRules } from '../rules/react.js';
+import jsxRules from '../rules/jsx-a11y.js';
+import { getReactRules } from '../utils/getReactRules.js';
 
 export default defineConfig([
   {
@@ -13,6 +13,11 @@ export default defineConfig([
       react,
       'react-hooks': reactHooks,
       'jsx-a11y': jsxA11y,
+    },
+    settings: {
+      version: 'detect',
+      defaultVersion: '18',
+      pragma: 'h',
     },
     languageOptions: {
       parserOptions: {
@@ -25,5 +30,5 @@ export default defineConfig([
       ...jsxRules,
       ...getReactRules('preact'),
     },
-  }
+  },
 ]);
