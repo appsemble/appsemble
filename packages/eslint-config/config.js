@@ -32,9 +32,9 @@ export default defineConfig([
       },
     },
   },
-  ...remcohaszing,
-  ...jsxA11y,
   {
+    extends: [remcohaszing],
+
     rules: {
       'unicorn/no-unnecessary-slice-end': 'off',
       'unicorn/prefer-global-this': 'off',
@@ -71,10 +71,15 @@ export default defineConfig([
       'unicorn/prefer-math-min-max': 'off',
       'unicorn/prefer-node-protocol': 'off',
       'unicorn/require-module-specifiers': 'off',
+      'unicorn/no-useless-undefined': 'error',
 
       '@typescript-eslint/no-invalid-void-type': 'error',
     },
   },
+
+  /**
+   * Global configs
+   */
   {
     plugins: {
       formatjs,
@@ -107,23 +112,17 @@ export default defineConfig([
       'unicorn/no-unsafe-regex': 'off',
       'unicorn/prefer-spread': 'off',
 
-      'no-constant-condition': 'error',
-    },
-  },
-  {
-    files: ['packages/block-interaction-tests/vitest.setup.ts', 'blocks/list/vitest.setup.ts'],
+      'unicorn/no-useless-undefined': 'error',
+      'no-param-reassign': [
+        'error',
+        {
+          props: true,
+          // Koa context.
+          ignorePropertyModificationsFor: ['ctx'],
+        },
+      ],
 
-    rules: {
-      'no-useless-constructor': 'off',
-      '@typescript-eslint/no-empty-function': 'off',
-      'class-methods-use-this': 'off',
-    },
-  },
-  {
-    files: ['packages/scripts/**'],
-
-    rules: {
-      'no-console': 'off',
+      'no-constant-condition': ['error', { checkLoops: 'all' }],
     },
   },
   {
@@ -174,25 +173,11 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/create-appsemble/templates/**'],
-
-    rules: {
-      'import-x/no-extraneous-dependencies': 'off',
-    },
-  },
-  {
     files: ['**/__fixtures__/**'],
 
     rules: {
       'import-x/no-extraneous-dependencies': 'off',
       'n/no-extraneous-import': 'off',
-    },
-  },
-  {
-    files: ['packages/server/migrations/**/*'],
-
-    rules: {
-      '@typescript-eslint/naming-convention': 'off',
     },
   },
   {
@@ -203,6 +188,11 @@ export default defineConfig([
       'import-x/no-extraneous-dependencies': 'off',
       'n/no-extraneous-import': 'off',
     },
+  },
+  {
+    files: ['*.jsx', '*.tsx'],
+
+    extends: [jsxA11y],
   },
   {
     files: ['**/*.test.*'],
@@ -263,17 +253,10 @@ export default defineConfig([
       'jest-formatting/padding-around-test-blocks': 'error',
     },
   },
-  {
-    files: [
-      'packages/server/utils/payments/stripe/**',
-      'packages/utils/api/paths/payments/**',
-      'packages/utils/api/paths/apps/appId/payments/**',
-    ],
 
-    rules: {
-      '@typescript-eslint/naming-convention': 'off',
-    },
-  },
+  /**
+   * Package configs
+   */
   {
     files: ['packages/app/**'],
 
@@ -286,6 +269,22 @@ export default defineConfig([
       ],
       'react/prop-types': 'off',
       'unicorn/prefer-node-protocol': 'off',
+    },
+  },
+  {
+    files: ['packages/block-interaction-tests/vitest.setup.ts', 'blocks/list/vitest.setup.ts'],
+
+    rules: {
+      'no-useless-constructor': 'off',
+      '@typescript-eslint/no-empty-function': 'off',
+      'class-methods-use-this': 'off',
+    },
+  },
+  {
+    files: ['packages/create-appsemble/templates/**'],
+
+    rules: {
+      'import-x/no-extraneous-dependencies': 'off',
     },
   },
   {
@@ -318,20 +317,6 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/studio/**'],
-
-    extends: [react, web],
-
-    rules: {
-      'formatjs/enforce-id': [
-        'error',
-        { idInterpolationPattern: 'studio.[sha512:contenthash:base64:6]' },
-      ],
-      'react/prop-types': 'off',
-      'react/require-default-props': 'off',
-    },
-  },
-  {
     files: ['packages/react-components/**'],
 
     extends: [react, web],
@@ -347,6 +332,20 @@ export default defineConfig([
     },
   },
   {
+    files: ['packages/scripts/**'],
+
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
+    files: ['packages/server/migrations/**/*'],
+
+    rules: {
+      '@typescript-eslint/naming-convention': 'off',
+    },
+  },
+  {
     files: ['packages/service-worker/**'],
 
     extends: [web],
@@ -356,8 +355,219 @@ export default defineConfig([
     },
   },
   {
+    files: ['packages/studio/**'],
+
+    extends: [react, web],
+
+    rules: {
+      'formatjs/enforce-id': [
+        'error',
+        { idInterpolationPattern: 'studio.[sha512:contenthash:base64:6]' },
+      ],
+      'react/prop-types': 'off',
+      'react/require-default-props': 'off',
+    },
+  },
+  {
     files: ['packages/web-utils/**'],
 
     extends: [web],
+  },
+  {
+    files: [
+      'packages/server/utils/payments/stripe/**',
+      'packages/utils/api/paths/payments/**',
+      'packages/utils/api/paths/apps/appId/payments/**',
+    ],
+
+    rules: {
+      '@typescript-eslint/naming-convention': 'off',
+    },
+  },
+
+  /**
+   * Block configs
+   */
+  {
+    files: ['blocks/action-button/src/**'],
+
+    extends: [web],
+  },
+  {
+    files: ['blocks/audio/src/**'],
+
+    extends: [web],
+  },
+  {
+    files: ['blocks/button-list/src/**'],
+
+    extends: [preact],
+
+    rules: {
+      'react/prop-types': 'off',
+    },
+  },
+  {
+    files: ['blocks/cards/src/**'],
+
+    extends: [web],
+
+    rules: {
+      'react/forbid-dom-props': 'off',
+    },
+  },
+  {
+    files: ['blocks/chart/src/**'],
+
+    extends: [web],
+  },
+  {
+    files: ['blocks/control-buttons/src/**'],
+
+    extends: [preact],
+
+    rules: {
+      'react/prop-types': 'off',
+      'react/no-unknown-property': 'off',
+    },
+  },
+  {
+    files: ['blocks/data-loader/src/**'],
+
+    extends: [web],
+  },
+  {
+    files: ['blocks/data-notifier/src/**'],
+
+    extends: [web],
+  },
+  {
+    files: ['blocks/detail-viewer/src/**'],
+
+    extends: [preact],
+
+    rules: {
+      'react/prop-types': 'off',
+    },
+  },
+  {
+    files: ['blocks/feed/src/**'],
+
+    extends: [preact],
+
+    rules: {
+      'react/prop-types': 'off',
+    },
+  },
+  {
+    files: ['blocks/filter/src/**'],
+
+    extends: [preact],
+
+    rules: {
+      'react/prop-types': 'off',
+    },
+  },
+  {
+    files: ['blocks/form/src/**'],
+
+    extends: [preact],
+
+    rules: {
+      'react/prop-types': 'off',
+    },
+  },
+  {
+    files: ['blocks/html/src/**'],
+
+    extends: [web],
+  },
+  {
+    files: ['blocks/list/src/**'],
+
+    extends: [preact],
+
+    rules: {
+      'react/prop-types': 'off',
+    },
+  },
+  {
+    files: ['blocks/map/src/**'],
+
+    extends: [web],
+  },
+  {
+    files: ['blocks/markdown/src/**'],
+
+    extends: [web],
+  },
+  {
+    files: ['blocks/openai/src/**'],
+
+    extends: [preact],
+
+    rules: {
+      'react/prop-types': 'off',
+    },
+  },
+  {
+    files: ['blocks/paginator/src/**'],
+
+    extends: [preact],
+
+    rules: {
+      'react/prop-types': 'off',
+    },
+  },
+  {
+    files: ['blocks/stateful/src/**'],
+
+    extends: [preact],
+
+    rules: {
+      'react/prop-types': 'off',
+    },
+  },
+  {
+    files: ['blocks/stats/src/**'],
+
+    extends: [web],
+  },
+  {
+    files: ['blocks/table/src/**'],
+
+    extends: [preact],
+
+    rules: {
+      'react/prop-types': 'off',
+    },
+  },
+  {
+    files: ['blocks/tiles/src/**'],
+
+    extends: [web],
+
+    rules: {
+      'react/forbid-dom-props': 'off',
+    },
+  },
+  {
+    files: ['blocks/timer/src/**'],
+
+    extends: [web],
+  },
+  {
+    files: ['blocks/video/src/**'],
+
+    extends: [web],
+  },
+  {
+    files: ['blocks/wordcloud/src/**'],
+
+    extends: [web, preact],
+
+    rules: {
+      'react/prop-types': 'off',
+    },
   },
 ]);

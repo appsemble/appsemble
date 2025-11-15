@@ -17,9 +17,11 @@ export default defineConfig([
       'jsx-a11y': jsxA11y,
     },
     settings: {
-      version: 'detect',
-      defaultVersion: '18',
-      pragma: 'React',
+      react: {
+        version: 'detect',
+        defaultVersion: '18',
+        pragma: 'React',
+      },
     },
     languageOptions: {
       parserOptions: {
