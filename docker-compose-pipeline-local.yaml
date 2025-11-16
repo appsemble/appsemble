@@ -17,7 +17,7 @@ services:
 
   helm:
     container_name: helm
-    image: dtzar/helm-kubectl:3@sha256:73db688affcea1740a7421064b1cf49b16405b42ae8cd8fbc3dee55ec8e62be9
+    image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
     networks: [pipeline]
     tty: true
     stdin_open: true
