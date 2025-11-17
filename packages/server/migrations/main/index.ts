@@ -41,7 +41,7 @@ import * as m0_35_1 from './0.35.1.js';
 import * as m0_35_11 from './0.35.11.js';
 import * as m0_35_12 from './0.35.12.js';
 import * as m0_35_15 from './0.35.15.js';
-import * as m0_35_16 from './0.35.16.js';
+import * as m0_35_21 from './0.35.21.js';
 import * as m0_35_7 from './0.35.7.js';
 import { type Migration } from '../../utils/migrate.js';
 
@@ -90,5 +90,5 @@ export const migrations: Migration[] = [
   m0_35_11,
   m0_35_12,
   m0_35_15,
-  m0_35_16,
+  m0_35_21,
 ];
