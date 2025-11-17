@@ -13,6 +13,7 @@ export async function getCurrentUserOrganizations(ctx: Context): Promise<void> {
       'description',
       'website',
       'email',
+      'locale',
       'updated',
       'vatIdNumber',
       'streetName',
@@ -33,6 +34,7 @@ export async function getCurrentUserOrganizations(ctx: Context): Promise<void> {
     description: org.description,
     website: org.website,
     email: org.email,
+    locale: org.locale,
     iconUrl: org.get('hasIcon')
       ? `/api/organizations/${org.id}/icon?updated=${org.updated.toISOString()}`
       : null,

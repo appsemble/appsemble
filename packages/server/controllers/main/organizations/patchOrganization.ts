@@ -17,6 +17,7 @@ export async function patchOrganization(ctx: Context): Promise<void> {
         houseNumber,
         icon,
         invoiceReference,
+        locale,
         name,
         streetName,
         vatIdNumber,
@@ -51,6 +52,10 @@ export async function patchOrganization(ctx: Context): Promise<void> {
 
   if (email !== undefined) {
     result.email = email || null;
+  }
+
+  if (locale !== undefined) {
+    result.locale = locale || 'en';
   }
 
   if (website !== undefined) {
@@ -94,6 +99,7 @@ export async function patchOrganization(ctx: Context): Promise<void> {
     description: updated.description,
     website: updated.website,
     email: updated.name,
+    locale: updated.locale,
     iconUrl: updated.icon
       ? `/api/organizations/${organization.id}/icon?updated=${updated.updated.toISOString()}`
       : null,

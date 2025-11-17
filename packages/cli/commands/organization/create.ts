@@ -21,6 +21,7 @@ interface CreateOrganizationArguments extends BaseArguments {
   zipCode: string;
   countryCode: string;
   invoiceReference: string;
+  locale: string;
 }
 
 export const command = 'create <id>';
@@ -68,6 +69,9 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('invoiceReference', {
       describe: 'Optional reference the organization can set to appear on the invoice.',
+    })
+    .option('locale', {
+      describe: 'Locale of the organization in which subscription emails will be delivered.',
     });
 }
 
@@ -81,6 +85,7 @@ export async function handler({
   icon,
   id,
   invoiceReference,
+  locale,
   name,
   remote,
   streetName,
@@ -93,6 +98,7 @@ export async function handler({
     description: desc,
     email,
     invoiceReference,
+    locale,
     icon,
     id,
     name,

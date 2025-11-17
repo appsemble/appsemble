@@ -82,7 +82,7 @@ export async function sendInvoice(ctx: Context): Promise<void> {
       },
       { transaction },
     );
-    invoice.pdfInvoice = Buffer.from(await createInvoice(invoice));
+    invoice.pdfInvoice = Buffer.from(await createInvoice(invoice, organization?.locale));
     await invoice.save({ transaction });
     await transaction!.commit();
   } catch {

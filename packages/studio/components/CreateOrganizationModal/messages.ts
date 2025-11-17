@@ -150,4 +150,12 @@ export const messages = defineMessages({
       'Settings in this section are related to payments concerning Appsemble subscriptions. Configuring in-app payments for your apps is done on App level, in app settings.',
     id: 'studio.hFIbId',
   },
+  preferredLanguage: {
+    id: 'studio.R/13HH',
+    defaultMessage: 'Preferred language',
+  },
+  preferredLanguageHelp: {
+    id: 'studio.bL6DuQ',
+    defaultMessage: 'The preferred language to use for Organization related emails.',
+  },
 });

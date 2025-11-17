@@ -50,6 +50,7 @@ describe('organization', () => {
         zipCode: 'zip',
         countryCode: 'NL',
         invoiceReference: 'employee',
+        locale: 'en',
       });
       const organization = await Organization.findOne();
       expect(organization).toMatchObject({
@@ -58,6 +59,7 @@ describe('organization', () => {
         icon: await readFixture('apps/tux.png'),
         id: 'test',
         name: 'Test',
+        locale: 'en',
         website: 'https://example.com',
         vatIdNumber: 'number123123',
         streetName: 'street',
@@ -122,6 +124,7 @@ describe('organization', () => {
         website: null,
         icon: createFixtureStream('apps/tux.png'),
         vatIdNumber: 'number123',
+        locale: 'nl',
         streetName: 'street2',
         houseNumber: '1234',
         city: 'city2',
@@ -148,6 +151,7 @@ describe('organization', () => {
         "icon": Any<Buffer>,
         "id": "test",
         "invoiceReference": "employee2",
+        "locale": "nl",
         "name": "Test changed",
         "streetName": "street2",
         "stripeCustomerId": null,
