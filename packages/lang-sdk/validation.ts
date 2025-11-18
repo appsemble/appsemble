@@ -54,7 +54,9 @@ const resourceViewPermissionPattern = /^\$resource:[^:]+:(get|query):[^:]+$/;
  * @returns Whether or not the given link represents a link related to the Appsemble core.
  */
 export function isAppLink(link: Remapper | string[] | string): boolean {
-  return link === '/Login' || link === '/Settings';
+  return (
+    link === '/Login' || link === '/Settings' || link === '/Register' || link === '/Reset-Password'
+  );
 }
 
 function validateJSONSchema(schema: Schema, prefix: Prefix, report: Report): void {
