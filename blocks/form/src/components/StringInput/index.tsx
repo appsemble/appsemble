@@ -1,9 +1,9 @@
 import { useBlock } from '@appsemble/preact';
-import { InputField, TextAreaField } from '@appsemble/preact-components';
+import { IconButton, InputField, TextAreaField } from '@appsemble/preact-components';
 import { has } from '@appsemble/utils';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
-import { useMemo } from 'preact/hooks';
+import { useCallback, useMemo, useState } from 'preact/hooks';
 
 import { type InputProps, type StringField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
@@ -28,6 +28,10 @@ export function StringInput({
   readOnly,
 }: StringInputProps): VNode {
   const { utils } = useBlock();
+  const [hidePassword, setHidePassword] = useState(true);
+  const toggleHidePassword = useCallback(() => {
+    setHidePassword((prevValue) => !prevValue);
+  }, []);
   const {
     datalistEnabled = false,
     format,
@@ -59,6 +63,7 @@ export function StringInput({
 
   const remappedLabel = utils.remap(label, value) ?? name;
   const commonProps = {
+    control: <IconButton icon={hidePassword ? 'eye-slash' : 'eye'} onClick={toggleHidePassword} />,
     className: classNames('appsemble-string', className),
     disabled,
     error: dirty && error,
@@ -93,6 +98,10 @@ export function StringInput({
     </>
   ) : (
     // @ts-expect-error strictNullChecks
-    <InputField {...commonProps} type={format} value={value as string} />
+    <InputField
+      {...commonProps}
+      type={format === 'password' && !hidePassword ? 'text' : format}
+      value={value as string}
+    />
   );
 }
