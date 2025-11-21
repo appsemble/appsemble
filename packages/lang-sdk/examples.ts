@@ -8,6 +8,7 @@ export interface RemapperExample {
   input: unknown;
   remapper: unknown;
   result: unknown;
+  history?: unknown[];
   skip?: boolean;
 }
 
@@ -993,6 +994,83 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: [true, true, true, false, false],
   },
+  focus: {
+    input: null,
+    history: [
+      [
+        { id: 'customer1', name: 'Customer 1' },
+        { id: 'customer2', name: 'Customer 2' },
+        { id: 'customer3', name: 'Customer 3' },
+      ],
+      [
+        { id: 'orderA', customerId: 'customer1', value: 'Order A for Customer 1' },
+        { id: 'orderB', customerId: 'customer2', value: 'Order B for Customer 2' },
+        { id: 'orderC', customerId: 'customer1', value: 'Order C for Customer 1' },
+        { id: 'orderD', customerId: 'customer3', value: 'Order D for Customer 3' },
+        { id: 'orderE', customerId: 'customer1', value: 'Order E for Customer 1' },
+        { id: 'orderF', customerId: 'customer2', value: 'Order F for Customer 2' },
+      ],
+    ],
+    remapper: [
+      { history: 0 },
+      {
+        'array.map': {
+          focus: {
+            on: {
+              'object.from': {
+                currentCustomer: { array: 'item' },
+                allOrders: { history: 1 },
+              },
+            },
+            do: {
+              'object.from': {
+                id: { prop: 'id' },
+                name: { prop: 'name' },
+                associatedOrders: [
+                  { root: null },
+                  { prop: 'allOrders' },
+                  {
+                    'array.filter': {
+                      equals: [
+                        { prop: 'customerId' },
+                        [{ root: null }, { prop: 'currentCustomer' }, { prop: 'id' }],
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    ],
+    result: [
+      {
+        id: 'customer1',
+        name: 'Customer 1',
+        associatedOrders: [
+          { id: 'orderA', customerId: 'customer1', value: 'Order A for Customer 1' },
+          { id: 'orderC', customerId: 'customer1', value: 'Order C for Customer 1' },
+          { id: 'orderE', customerId: 'customer1', value: 'Order E for Customer 1' },
+        ],
+      },
+      {
+        id: 'customer2',
+        name: 'Customer 2',
+        associatedOrders: [
+          { id: 'orderB', customerId: 'customer2', value: 'Order B for Customer 2' },
+          { id: 'orderF', customerId: 'customer2', value: 'Order F for Customer 2' },
+        ],
+      },
+      {
+        id: 'customer3',
+        name: 'Customer 3',
+        associatedOrders: [
+          { id: 'orderD', customerId: 'customer3', value: 'Order D for Customer 3' },
+        ],
+      },
+    ],
+  },
   maths: {
     input: { version: 0 },
     remapper: {
@@ -1043,7 +1121,7 @@ export function createExampleContext(
   url: URL,
   lang: string,
   userInfo?: AppMemberInfo,
-  history?: [],
+  history?: unknown[],
 ): RemapperContext {
   return {
     getMessage: ({ defaultMessage }) =>

@@ -690,6 +690,61 @@ export interface Remappers {
     b: Remapper;
     operation: 'add' | 'divide' | 'mod' | 'multiply' | 'subtract';
   };
+
+  /**
+   * Executes a remapper chain with a temporary root context.
+   *
+   * This is useful for solving nested context problems, like performing a
+   * filter on one list that depends on a value from an outer loop.
+   *
+   * @example
+   *
+   * // Get all customers, and for each customer, find the orders belonging to that customer.
+   * // Assumes that `history: 1` is an array of all customers,
+   * // and `history: 2` is an array of all orders.
+   * {
+   *   'array.map': {
+   *     focus: {
+   *       on: {
+   *         'object.from': {
+   *           currentCustomer: { array: 'item' },
+   *           allOrders: { history: 1 },
+   *         },
+   *       },
+   *       do: {
+   *         'object.from': {
+   *           id: { prop: 'id' },
+   *           name: { prop: 'name' },
+   *           associatedOrders: [
+   *             { root: null },
+   *             { prop: 'allOrders' },
+   *             {
+   *               'array.filter': {
+   *                 equals: [
+   *                   { prop: 'customerId' },
+   *                   [{ root: null }, { prop: 'currentCustomer' }, { prop: 'id' }],
+   *                 ],
+   *               },
+   *             },
+   *           ],
+   *         },
+   *       },
+   *     },
+   *   },
+   * },
+   */
+  focus: {
+    /**
+     * A remapper that resolves to the object that will become the new `root`
+     * for the `do` remapper chain.
+     */
+    on: Remapper;
+
+    /**
+     * The remapper or chain of remappers to execute with the new focused `root`.
+     */
+    do: Remapper;
+  };
 }
 
 export type ObjectRemapper = RequireExactlyOne<Remappers>;

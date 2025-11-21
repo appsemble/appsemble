@@ -2027,9 +2027,14 @@ describe('maths', () => {
 
 describe.each(Object.entries(examples))(
   'should test remapper example: %s',
-  (name, { input, remapper, result: expected, skip }) => {
+  (name, { history, input, remapper, result: expected, skip }) => {
     it.skipIf(skip)('to be valid.', () => {
-      const context = createExampleContext(new URL('https://example.com'), 'en');
+      const context = createExampleContext(
+        new URL('https://example.com'),
+        'en',
+        undefined,
+        history,
+      );
       const result = remap(remapper as Remapper, input, context);
       expect(result).toStrictEqual(expected);
     });

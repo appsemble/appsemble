@@ -384,6 +384,11 @@ const mapperImplementations: MapperImplementations = {
     return remap(condition ? mappers.then : mappers.else, input, context);
   },
 
+  focus({ do: doRemapper, on }, input, context) {
+    const newRoot = remap(on, input, context);
+    return remap(doRemapper, input, { ...context, root: newRoot });
+  },
+
   match(mappers, input, context) {
     return (
       remap(
