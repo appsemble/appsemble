@@ -1422,7 +1422,7 @@ export async function publishApp({
   logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
 
-  // eslint-disable-next-line max-len
+  // eslint-disable-next-line @stylistic/max-len
   // @ts-expect-error 2454 Variable used before it was assigned, 2538 Undefined cannot be used as an index type
   const rcCollections = rc?.context?.[context]?.collections;
   if (Array.isArray(rcCollections)) {

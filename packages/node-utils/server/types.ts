@@ -57,10 +57,10 @@ declare module 'koa' {
 declare module 'koas-security' {
   interface Clients {
     app: { scope: string; app: App };
-    basic: {};
+    basic: object;
     cli: { scope: string };
-    studio: {};
-    webhook: {};
+    studio: object;
+    webhook: object;
   }
 
   interface Users {

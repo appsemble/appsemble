@@ -243,11 +243,11 @@ in `block.ts`:
 ```ts copy
 declare module '@appsemble/sdk' {
   interface EventEmitters {
-    click: {};
+    click: object;
   }
 
   interface EventListeners {
-    data: {};
+    data: object;
   }
 }
 ```

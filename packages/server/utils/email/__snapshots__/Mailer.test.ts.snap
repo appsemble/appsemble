@@ -24,9 +24,13 @@ Content-Transfer-Encoding: 7bit
 "
 `;
 
-exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 0 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 0 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 0 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 0 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -57,9 +61,13 @@ _The Appsemble Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 1 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 1 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 1 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 1 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -90,9 +98,13 @@ _The Appsemble Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 0 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 0 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 0 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 0 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -123,9 +135,13 @@ Het Appsemble Team\\_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 1 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 1 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 1 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 1 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -156,9 +172,13 @@ Het Appsemble Team\\_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > en > should render appMemberEmailChange 0 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > appMemberEmailChange > en > should render appMemberEmailChange 0 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > en > should render appMemberEmailChange 0 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > appMemberEmailChange > en > should render appMemberEmailChange 0 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -192,9 +212,13 @@ Kind regards
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > en > should render appMemberEmailChange 1 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > appMemberEmailChange > en > should render appMemberEmailChange 1 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > en > should render appMemberEmailChange 1 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > appMemberEmailChange > en > should render appMemberEmailChange 1 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -228,9 +252,13 @@ Kind regards
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should render appMemberEmailChange 0 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should render appMemberEmailChange 0 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should render appMemberEmailChange 0 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should render appMemberEmailChange 0 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -264,9 +292,13 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should render appMemberEmailChange 1 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should render appMemberEmailChange 1 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should render appMemberEmailChange 1 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should render appMemberEmailChange 1 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -300,9 +332,13 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 0 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 0 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 0 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 0 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -342,9 +378,13 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 1 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 1 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 1 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 1 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -384,9 +424,13 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 2 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 2 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 2 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 2 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -426,9 +470,13 @@ _The Appsemble Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 3 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 3 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 3 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > en > should render emailAdded 3 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -468,9 +516,13 @@ _The Appsemble Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 0 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 0 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 0 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 0 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -510,9 +562,13 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 1 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 1 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 1 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 1 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -552,9 +608,13 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 2 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 2 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 2 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 2 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -594,9 +654,13 @@ _Het Appsemble Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 3 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 3 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 3 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdded 3 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -636,9 +700,13 @@ _Het Appsemble Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > groupInvite > en > should render groupInvite 0 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > groupInvite > en > should render groupInvite 0 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > groupInvite > en > should render groupInvite 0 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > groupInvite > en > should render groupInvite 0 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -672,9 +740,13 @@ _The Test App Group_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > groupInvite > en > should render groupInvite 1 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > groupInvite > en > should render groupInvite 1 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > groupInvite > en > should render groupInvite 1 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > groupInvite > en > should render groupInvite 1 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -708,9 +780,13 @@ _The Test App Group_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > groupInvite > nl > should render groupInvite 0 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > groupInvite > nl > should render groupInvite 0 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > groupInvite > nl > should render groupInvite 0 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > groupInvite > nl > should render groupInvite 0 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -744,9 +820,13 @@ _Het Test App Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > groupInvite > nl > should render groupInvite 1 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > groupInvite > nl > should render groupInvite 1 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > groupInvite > nl > should render groupInvite 1 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > groupInvite > nl > should render groupInvite 1 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -780,9 +860,13 @@ _Het Test App Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > organizationInvite > en > should render organizationInvite 0 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > organizationInvite > en > should render organizationInvite 0 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > organizationInvite > en > should render organizationInvite 0 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > organizationInvite > en > should render organizationInvite 0 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -819,9 +903,13 @@ _The Appsemble Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > organizationInvite > en > should render organizationInvite 1 for locale en 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > organizationInvite > en > should render organizationInvite 1 for locale en 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > organizationInvite > en > should render organizationInvite 1 for locale en 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > organizationInvite > en > should render organizationInvite 1 for locale en 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -858,9 +946,13 @@ _The Appsemble Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 0 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 0 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 0 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 0 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -897,9 +989,13 @@ _Het Appsemble Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 1 for locale nl 1`] = `undefined`;
+exports[
+  `Mailer > sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 1 for locale nl 1`
+] = `undefined`;
 
-exports[`Mailer > sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 1 for locale nl 2`] = `
+exports[
+  `Mailer > sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 1 for locale nl 2`
+] = `
 {
   "attachments": [],
   "from": "Appsemble <test@example.com>",
@@ -936,7 +1032,8 @@ _Het Appsemble Team_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > resend > en > should render resend 0 for locale en 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > resend > en > should render resend 0 for locale en 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > resend > en > should render resend 0 for locale en 2`] = `
 {
@@ -978,7 +1075,8 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > resend > en > should render resend 1 for locale en 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > resend > en > should render resend 1 for locale en 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > resend > en > should render resend 1 for locale en 2`] = `
 {
@@ -1020,7 +1118,8 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > resend > nl > should render resend 0 for locale nl 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > resend > nl > should render resend 0 for locale nl 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > resend > nl > should render resend 0 for locale nl 2`] = `
 {
@@ -1062,7 +1161,8 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > resend > nl > should render resend 1 for locale nl 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > resend > nl > should render resend 1 for locale nl 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > resend > nl > should render resend 1 for locale nl 2`] = `
 {
@@ -1104,7 +1204,8 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > reset > en > should render reset 0 for locale en 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > reset > en > should render reset 0 for locale en 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > reset > en > should render reset 0 for locale en 2`] = `
 {
@@ -1143,7 +1244,8 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > reset > en > should render reset 1 for locale en 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > reset > en > should render reset 1 for locale en 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > reset > en > should render reset 1 for locale en 2`] = `
 {
@@ -1182,7 +1284,8 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > reset > nl > should render reset 0 for locale nl 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > reset > nl > should render reset 0 for locale nl 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > reset > nl > should render reset 0 for locale nl 2`] = `
 {
@@ -1221,7 +1324,8 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > reset > nl > should render reset 1 for locale nl 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > reset > nl > should render reset 1 for locale nl 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > reset > nl > should render reset 1 for locale nl 2`] = `
 {
@@ -1260,7 +1364,8 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > welcome > en > should render welcome 0 for locale en 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > welcome > en > should render welcome 0 for locale en 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > welcome > en > should render welcome 0 for locale en 2`] = `
 {
@@ -1296,7 +1401,8 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > welcome > en > should render welcome 1 for locale en 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > welcome > en > should render welcome 1 for locale en 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > welcome > en > should render welcome 1 for locale en 2`] = `
 {
@@ -1332,7 +1438,8 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > welcome > nl > should render welcome 0 for locale nl 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > welcome > nl > should render welcome 0 for locale nl 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > welcome > nl > should render welcome 0 for locale nl 2`] = `
 {
@@ -1368,7 +1475,8 @@ _Test App_
 }
 `;
 
-exports[`Mailer > sendTranslatedEmail > welcome > nl > should render welcome 1 for locale nl 1`] = `undefined`;
+exports[`Mailer > sendTranslatedEmail > welcome > nl > should render welcome 1 for locale nl 1`] =
+  `undefined`;
 
 exports[`Mailer > sendTranslatedEmail > welcome > nl > should render welcome 1 for locale nl 2`] = `
 {

@@ -180,6 +180,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
    * @param params Additional parameters, which depend on the grant type.
    */
   const login = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     async <P extends {}>(grantType: string, params: P) => {
       try {
         const [auth] = await fetchToken(grantType, params);

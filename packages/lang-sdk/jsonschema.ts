@@ -113,28 +113,28 @@ export function combineSchemas(...schemas: Schema[]): Schema {
     }
     if ('minimum' in schema) {
       result.minimum =
-        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore 2345 argument of type is not assignable to parameter of type
         // (strictNullChecks)
         'minimum' in result ? Math.max(result.minimum, schema.minimum) : schema.minimum;
     }
     if ('minLength' in schema) {
       result.minLength =
-        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore 2345 argument of type is not assignable to parameter of type
         // (strictNullChecks)
         'minLength' in result ? Math.max(result.minLength, schema.minLength) : schema.minLength;
     }
     if ('maximum' in schema) {
       result.maximum =
-        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore 2345 argument of type is not assignable to parameter of type
         // (strictNullChecks)
         'maximum' in result ? Math.min(result.maximum, schema.maximum) : schema.maximum;
     }
     if ('maxLength' in schema) {
       result.maxLength =
-        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore 2345 argument of type is not assignable to parameter of type
         // (strictNullChecks)
         'maxLength' in result ? Math.min(result.maxLength, schema.maxLength) : schema.maxLength;

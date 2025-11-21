@@ -61,7 +61,7 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
   ) => {
     const { formatDate } = useIntl();
     const inputRef = useRef<HTMLInputElement>();
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     const combinedRef = useCombinedRefs(ref, inputRef);
@@ -113,7 +113,7 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
       const handlers = picker.config.onChange;
 
       const handleChange = ([val]: Date[]): void => {
-        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore 2769 No overload matches this call (strictNullChecks)
         onChange?.({ target: current, currentTarget: current }, iso ? val.toISOString() : val);
       };

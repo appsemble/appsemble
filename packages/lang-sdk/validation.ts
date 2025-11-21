@@ -1033,7 +1033,7 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
       );
     }
   } else {
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 18048 variable is possibly undefined (strictNullChecks)
     checkRoleExists(security.default.role, ['security', 'default', 'role']);
   }
@@ -1608,7 +1608,7 @@ function validateEvents(
   };
 
   if (indexMap.has('controller')) {
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
     controllerEvents = { ...indexMap.get('controller') };
   }

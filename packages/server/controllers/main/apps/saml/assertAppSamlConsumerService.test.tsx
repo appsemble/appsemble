@@ -2,6 +2,7 @@ import { readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { toXml } from 'xast-util-to-xml';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { x as h } from 'xastscript';
 
 import { App, type AppSamlSecret, getAppDB, Organization } from '../../../../models/index.js';

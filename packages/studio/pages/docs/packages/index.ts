@@ -1,12 +1,12 @@
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
+// eslint-disable-next-line n/no-extraneous-import, import-x/no-extraneous-dependencies
 import Cli from '@appsemble/cli/README.md';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
+// eslint-disable-next-line n/no-extraneous-import, import-x/no-extraneous-dependencies
 import Preact from '@appsemble/preact/README.md';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
+// eslint-disable-next-line n/no-extraneous-import, import-x/no-extraneous-dependencies
 import Sdk from '@appsemble/sdk/README.md';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
+// eslint-disable-next-line n/no-extraneous-import, import-x/no-extraneous-dependencies
 import WebpackConfig from '@appsemble/webpack-config/README.md';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
+// eslint-disable-next-line n/no-extraneous-import, import-x/no-extraneous-dependencies
 import CreateAppsemble from 'create-appsemble/README.md';
 
 export function applyPackages<T>(documents: T[]): void {

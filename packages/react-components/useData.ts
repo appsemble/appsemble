@@ -49,8 +49,7 @@ export interface UseAxiosResult<T> {
 export function useData<T>(url: string): UseAxiosResult<T> {
   const [error, setError] = useState<AxiosError | undefined>();
   const [loading, setLoading] = useState(true);
-  // eslint-disable-next-line unicorn/no-useless-undefined
-  const [result, setResult] = useState<T | undefined>(undefined);
+  const [result, setResult] = useState<T | undefined>();
 
   const [refresher, setRefresher] = useState<Record<string, unknown>>();
 
@@ -59,22 +58,18 @@ export function useData<T>(url: string): UseAxiosResult<T> {
   useEffect(() => {
     const source = axios.CancelToken.source();
     setLoading(true);
-    // eslint-disable-next-line unicorn/no-useless-undefined
     setError(undefined);
-    // eslint-disable-next-line unicorn/no-useless-undefined
     setResult(undefined);
 
     axios
       .get<T>(url, { cancelToken: source.token })
       .then(({ data }) => {
         setResult(data);
-        // eslint-disable-next-line unicorn/no-useless-undefined
         setError(undefined);
         setLoading(false);
       })
       .catch((err) => {
         if (!axios.isCancel(err)) {
-          // eslint-disable-next-line unicorn/no-useless-undefined
           setResult(undefined);
           setError(err);
           setLoading(false);
@@ -92,7 +87,6 @@ export function useData<T>(url: string): UseAxiosResult<T> {
       refresh,
       setData(data: SetStateAction<T | undefined>) {
         setResult(data);
-        // eslint-disable-next-line unicorn/no-useless-undefined
         setError(undefined);
         setLoading(false);
       },

@@ -35,7 +35,6 @@ test.describe('Payments', () => {
     await page.getByLabel('Cancellation reason(Optional)').fill('Not happy.');
     await expect(page.getByRole('button', { name: 'Cancel subscription' })).toBeVisible();
 
-    // eslint-disable-next-line playwright/no-conditional-in-test
     if (!CI) {
       await page.getByRole('button', { name: 'Cancel subscription' }).click();
       await expect(page.getByText('Extend')).toBeVisible();
@@ -68,7 +67,6 @@ test.describe('Payments', () => {
 
     await expect(page.getByText('Total subscription price')).toBeVisible();
 
-    // eslint-disable-next-line playwright/no-conditional-in-test
     if (!CI) {
       await page.getByRole('button', { name: 'Summary ' }).click();
 

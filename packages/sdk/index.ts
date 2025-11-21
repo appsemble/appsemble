@@ -24,7 +24,7 @@ export type Remapper = object[] | boolean | number | object | string;
  *   }
  * }
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Actions {}
 
 /**
@@ -43,7 +43,7 @@ export interface Actions {}
  *   }
  * }
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Messages {}
 
 /**
@@ -59,7 +59,7 @@ export interface Messages {}
  *   }
  * }
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface EventEmitters {}
 
 /**
@@ -75,7 +75,7 @@ export interface EventEmitters {}
  *   }
  * }
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface EventListeners {}
 
 /**
@@ -95,7 +95,7 @@ export interface EventListeners {}
  *   }
  * }
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Parameters {}
 
 export type PageParameters = Record<string, string>;

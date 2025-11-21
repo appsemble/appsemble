@@ -24,11 +24,8 @@ export function setAppName(name: string): void {
   appName = name;
 }
 
-const comparators = ['gt', 'gte', 'lt', 'lte', 'eq', 'ne'] as const;
-type Comparator = (typeof comparators)[number];
-
-const expressions = ['and', 'or'] as const;
-type Expression = (typeof expressions)[number];
+type Comparator = 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'ne';
+type Expression = 'and' | 'or';
 
 function parseValue(value: string): Date | boolean | number | string {
   const toNumber = Number(value);

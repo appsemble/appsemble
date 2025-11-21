@@ -12,9 +12,9 @@ interface IconProps extends ComponentProps<'span'> {
   readonly solid?: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
-const iconSizeMap: { [size in IconProps['size']]: IconProps['iconSize'] } = {
+const iconSizeMap: Record<IconProps['size'], IconProps['iconSize']> = {
   small: undefined,
   medium: 'lg',
   large: '2x',

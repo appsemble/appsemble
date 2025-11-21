@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/eslint-config",
-  "version": "0.35.14",
+  "version": "0.35.20",
   "description": "Eslint configuration used internally at Appsemble.",
   "keywords": [
     "app",

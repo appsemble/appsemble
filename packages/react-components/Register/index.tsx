@@ -84,7 +84,7 @@ export function Register({ onRegister, phoneNumberDefinition }: RegisterProps): 
         />
       ) : null}
       <SimpleFormField
-        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore Messed up
         component={CheckboxField}
         name="subscribed"
