@@ -9,7 +9,6 @@ declare module 'jsonschema' {
   /**
    * See https://github.com/tdegrunt/jsonschema/pull/335
    */
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   interface Schema {
     default?: JsonValue;
     examples?: JsonArray;
