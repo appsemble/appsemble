@@ -91,14 +91,16 @@ export function ButtonComponent({
   );
 
   return (
-    <button
-      className={className}
-      disabled={disabled}
-      onClick={onClick}
-      title={remappedTitle}
-      type="button"
-    >
-      {content}
-    </button>
+    <div className="card-footer-item">
+      <button
+        className={className}
+        disabled={disabled}
+        onClick={onClick}
+        title={remappedTitle}
+        type="button"
+      >
+        {content}
+      </button>
+    </div>
   );
 }

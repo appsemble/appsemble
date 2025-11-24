@@ -51,11 +51,7 @@ export function CardContent({ index, item }: CardContentProps): VNode {
         <div className="content">{content}</div>
       </div>
       <footer className="card-footer">
-        {card.footer?.map((button) => (
-          <div className="card-footer-item">
-            <ButtonComponent field={button} index={index} item={item} />
-          </div>
-        ))}
+        {card.footer?.map((button) => <ButtonComponent field={button} index={index} item={item} />)}
       </footer>
     </div>
   );
