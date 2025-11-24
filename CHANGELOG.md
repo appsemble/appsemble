@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.35.21](https://gitlab.com/appsemble/appsemble/-/releases/0.35.21)] - 2025-11-24
+
+### Added
+
+- Block(`form`): Visibility toggle in password fields.
+- Preact-components: New component `Icon Button`.
+
+### Fixed
+
+- Lang-sdk: Validate `Register` and `Reset-Password` pages as app links.
+
 ## \[[0.35.20](https://gitlab.com/appsemble/appsemble/-/releases/0.35.20)] - 2025-11-14
 
 ## \[[0.35.19](https://gitlab.com/appsemble/appsemble/-/releases/0.35.19)] - 2025-11-13

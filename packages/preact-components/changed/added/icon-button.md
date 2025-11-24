@@ -1,1 +1,0 @@
-New component `Icon Button`.

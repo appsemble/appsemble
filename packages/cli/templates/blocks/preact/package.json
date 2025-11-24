@@ -5,8 +5,8 @@
     "*.css"
   ],
   "dependencies": {
-    "@appsemble/preact": "0.35.20",
-    "@appsemble/sdk": "0.35.20",
+    "@appsemble/preact": "0.35.21",
+    "@appsemble/sdk": "0.35.21",
     "preact": "^10.0.0"
   }
 }
