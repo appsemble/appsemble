@@ -73,14 +73,15 @@ describe('verifyAppMemberEmail', () => {
       }),
     );
 
-    const { AppMember } = await getAppDB(app.id);
+    const { AppMember, AppMemberEmailAuthorization } = await getAppDB(app.id);
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
 
     expect(m.emailVerified).toBe(false);
-    expect(m.emailKey).not.toBeNull();
+    const emailAuth = (await AppMemberEmailAuthorization.findByPk(m.id))!;
+    expect(emailAuth.key).not.toBeNull();
 
     const response = await request.post(`/api/apps/${app.id}/auth/email/verify`, {
-      token: m.emailKey,
+      token: emailAuth.key,
     });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -110,14 +111,15 @@ describe('verifyAppMemberEmail', () => {
       }),
     );
 
-    const { AppMember } = await getAppDB(app.id);
+    const { AppMember, AppMemberEmailAuthorization } = await getAppDB(app.id);
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
 
     expect(m.emailVerified).toBe(false);
-    expect(m.emailKey).not.toBeNull();
+    const emailAuth = (await AppMemberEmailAuthorization.findByPk(m.id))!;
+    expect(emailAuth.key).not.toBeNull();
 
     const { status } = await request.post(`/api/apps/${app.id}/auth/email/verify`, {
-      token: m.emailKey,
+      token: emailAuth.key,
     });
     expect(status).toBe(200);
     await m.reload();

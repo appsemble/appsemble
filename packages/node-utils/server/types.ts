@@ -140,6 +140,7 @@ declare module 'koas-parameters' {
     selectedGroupId: number;
     $own: boolean;
     delimiter?: string;
+    email: string;
   }
 }
 

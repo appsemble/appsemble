@@ -15,6 +15,7 @@ import { MenuProvider } from '../MenuProvider/index.js';
 import { PageTracker } from '../PageTracker/index.js';
 import { PermissionRequest } from '../PermissionRequest/index.js';
 import { ServiceWorkerRegistrationProvider } from '../ServiceWorkerRegistrationProvider/index.js';
+import { VerifyBanner } from '../VerifyBanner/index.js';
 
 interface AppProps {
   readonly serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration | null>;
@@ -39,6 +40,7 @@ export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactNode {
                   <DemoAppMembersProvider>
                     <MenuProvider>
                       <LanguageUnsupportedBanner />
+                      <VerifyBanner />
                       <InstallationTracker />
                       <PermissionRequest />
                       <AppRoutes />

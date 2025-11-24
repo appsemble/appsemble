@@ -8,10 +8,9 @@ export async function resendAppMemberEmailVerification(ctx: Context): Promise<vo
   const {
     mailer,
     pathParams: { appId },
-    request,
+    user: authInfo,
   } = ctx;
-  const { AppMember } = await getAppDB(appId);
-  const email = request.body.email.toLowerCase();
+  const { AppMember, AppMemberEmailAuthorization } = await getAppDB(appId);
 
   const app = await App.findByPk(appId, {
     attributes: [
@@ -29,33 +28,42 @@ export async function resendAppMemberEmailVerification(ctx: Context): Promise<vo
 
   assertKoaCondition(app != null, ctx, 404, 'App could not be found.');
 
-  const appMember = await AppMember.findOne({
-    where: { email },
+  const appMember = await AppMember.findByPk(authInfo!.id, {
     attributes: {
       exclude: ['picture'],
+    },
+    include: {
+      model: AppMemberEmailAuthorization,
+      where: {
+        verified: false,
+      },
+      required: false,
     },
   });
 
   assertKoaCondition(appMember != null, ctx, 404, 'App member with this email could not be found.');
 
   assertKoaCondition(
-    !appMember.emailVerified,
+    !appMember.emailVerified || Boolean(appMember.AppMemberEmailAuthorizations.length),
     ctx,
     400,
     'The email of this app member has already been verified.',
   );
 
   const url = new URL('/Verify', getAppUrl(app));
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  url.searchParams.set('token', appMember.emailKey);
+  url.searchParams.set(
+    'token',
+    appMember.AppMemberEmailAuthorizations?.[0]?.key ?? appMember.emailKey ?? '',
+  );
 
   mailer
     .sendTranslatedEmail({
       appId,
       emailName: 'resend',
       locale: appMember.locale,
-      to: appMember,
+      to: appMember.AppMemberEmailAuthorizations?.[0]
+        ? { email: appMember.AppMemberEmailAuthorizations?.[0]?.email, name: appMember.name }
+        : appMember,
       values: {
         link: (text) => `[${text}](${url})`,
         name: appMember.name || 'null',

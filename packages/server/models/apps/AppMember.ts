@@ -30,6 +30,7 @@ import {
 
 import { type ResourceGlobal } from './Resource.js';
 import {
+  type AppMemberEmailAuthorization,
   type AppModels,
   type AppOAuth2Authorization,
   type AppSamlAuthorization,
@@ -89,6 +90,8 @@ export class AppMemberGlobal extends Model {
   OAuth2AuthorizationCodes!: OAuth2AuthorizationCode[];
 
   AppSamlAuthorizations!: AppSamlAuthorization[];
+
+  AppMemberEmailAuthorizations!: AppMemberEmailAuthorization[];
 
   get hasPicture(): boolean {
     return this.get('hasPicture');
@@ -360,6 +363,7 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
     static associate(models: AppModels): void {
       AppMember.hasMany(models.GroupMember);
       AppMember.hasMany(models.AppOAuth2Authorization);
+      AppMember.hasMany(models.AppMemberEmailAuthorization);
       AppMember.hasMany(models.OAuth2AuthorizationCode, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',

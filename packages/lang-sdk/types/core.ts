@@ -11,7 +11,7 @@ import { type ViewRole } from './roles.js';
 import { type Security } from './security.js';
 import { type Theme } from './theme.js';
 
-export type SettingName = 'languages' | 'name' | 'phoneNumber' | 'picture';
+export type SettingName = 'email' | 'languages' | 'name' | 'password' | 'phoneNumber' | 'picture';
 
 export interface AppDefinition {
   /**

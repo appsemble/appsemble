@@ -36,6 +36,7 @@ export function getAppMemberInfo(appId: number, appMember: AppMember): AppMember
     phoneNumber: appMember.phoneNumber,
     $seed: appMember.seed,
     $ephemeral: appMember.ephemeral,
+    unverifiedEmail: appMember.AppMemberEmailAuthorizations?.[0]?.email,
   } as AppMemberInfo;
 }
 
@@ -59,8 +60,10 @@ export async function getAppMemberGroups(appId: number, id: string): Promise<Gro
 }
 
 export async function getAppMemberInfoById(appId: number, id: string): Promise<AppMemberInfo> {
-  const { AppMember } = await getAppDB(appId);
-  const appMember = await AppMember.findByPk(id);
+  const { AppMember, AppMemberEmailAuthorization } = await getAppDB(appId);
+  const appMember = await AppMember.findByPk(id, {
+    include: { model: AppMemberEmailAuthorization, required: false },
+  });
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return appMember ? getAppMemberInfo(appId, appMember) : null;
 }

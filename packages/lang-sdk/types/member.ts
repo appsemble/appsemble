@@ -65,4 +65,9 @@ export interface AppMemberInfo {
    * Whether this app member is a copy of a seed app member.
    */
   $ephemeral: boolean;
+
+  /**
+   * Unverified email of the user, this will replace the current email when verified.
+   */
+  unverifiedEmail?: string;
 }

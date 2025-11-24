@@ -30,7 +30,7 @@ If set to \`navigation\`, it will only be visible if \`login\` is also visible i
     enabledSettings: {
       type: 'array',
       items: {
-        enum: ['name', 'phoneNumber', 'picture', 'languages'],
+        enum: ['email', 'name', 'phoneNumber', 'picture', 'languages', 'password'],
       },
       description: 'A list of the settings to display on the settings page.',
     },
