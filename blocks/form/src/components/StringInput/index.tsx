@@ -63,7 +63,10 @@ export function StringInput({
 
   const remappedLabel = utils.remap(label, value) ?? name;
   const commonProps = {
-    control: <IconButton icon={hidePassword ? 'eye-slash' : 'eye'} onClick={toggleHidePassword} />,
+    control:
+      format === 'password' ? (
+        <IconButton icon={hidePassword ? 'eye-slash' : 'eye'} onClick={toggleHidePassword} />
+      ) : undefined,
     className: classNames('appsemble-string', className),
     disabled,
     error: dirty && error,
