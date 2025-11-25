@@ -12,7 +12,7 @@ services:
 
   # A database using tmpfs for faster test runs.
   postgres-test:
-    image: postgres:14@sha256:e7e9c0b3470ebff1b693f3a0a3302eb02505e62d67fc1b42c86c2811b4c6e451
+    image: postgres:14@sha256:ca25035f7e6f74552655a1c5e4a9eb21f85e9d316f1f70371f790ef70095dd58
     restart: always
     environment:
       POSTGRES_DB: appsemble
