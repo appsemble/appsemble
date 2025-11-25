@@ -46,7 +46,7 @@ describe('securityHandler', () => {
       headers: {
         'content-type': 'text/plain; charset=utf-8',
       },
-      data: expect.stringMatching(/^Contact: mailto:support@appsemble\.com\nExpires: .+/),
+      data: expect.stringMatching(/^Contact: mailto:security@appsemble\.com\nExpires: .+/),
     });
   });
 

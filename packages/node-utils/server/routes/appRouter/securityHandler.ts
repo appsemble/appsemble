@@ -8,6 +8,6 @@ export function createSecurityHandler({ getApp }: Options): Middleware {
     const app = await getApp({ context: ctx, query: { attributes: ['id', 'updated'] } });
     assertKoaCondition(app != null, ctx, 404, 'App not found');
     const expires = addDays(new Date(app.$updated ?? app.$created!), 180);
-    ctx.body = `Contact: mailto:support@appsemble.com\nExpires: ${expires}`;
+    ctx.body = `Contact: mailto:secutity@appsemble.com\nExpires: ${expires}`;
   };
 }
