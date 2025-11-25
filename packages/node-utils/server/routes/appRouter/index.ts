@@ -17,6 +17,7 @@ import { createManifestHandler } from './manifestHandler.js';
 import { createReadmeHandler } from './readmeHandler.js';
 import { createRobotsHandler } from './robotsHandler.js';
 import { createScreenshotHandler } from './screenshotHandler.js';
+import { createSecurityHandler } from './securityHandler.js';
 import { createServiceWorkerHandler } from './serviceWorkerHandler.js';
 import { createStaticHandler } from './staticHandler.js';
 
@@ -29,6 +30,10 @@ export function createAppRouter(options: Options): Middleware {
     {
       route: '/manifest.json',
       get: createManifestHandler(options),
+    },
+    {
+      route: '/.well-known/security.txt',
+      get: createSecurityHandler(options),
     },
     {
       route: '/robots.txt',
