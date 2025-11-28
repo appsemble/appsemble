@@ -2,6 +2,7 @@ default:
   image: node:20.18-bookworm-slim@sha256:ffc11dbf16dd0abcbb7b837410601b4d5592db2d03741e13a4a5336ab74d7ccb
 
 stages:
+  - security
   - cleanup
   - build
   - test
@@ -82,6 +83,26 @@ workflow:
       else
         echo "Push to main branch failed. Tags will not be pushed."
       fi
+
+###################################################################################################
+#  Security Stage                                                                                 #
+###################################################################################################
+
+secret-scan-mr:
+  stage: security
+  image: node:lts-bullseye
+  variables:
+    BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
+    HEAD_SHA: ${CI_COMMIT_SHA}
+  script:
+    - npm install -g gitleaks-secret-scanner
+    - gitleaks-secret-scanner --diff-mode ci --html-report scan-report-mr.html
+  artifacts:
+    when: always
+    paths: [scan-report-mr.html]
+    expire_in: 1 week
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
 ###################################################################################################
 #  Build Stage                                                                                    #
