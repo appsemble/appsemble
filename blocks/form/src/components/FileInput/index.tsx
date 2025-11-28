@@ -132,8 +132,7 @@ export function FileInput({
             errorLinkRef={errorLinkRef}
             field={field}
             formDataLoading={formDataLoading}
-            // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
-            // @ts-ignore breaks with multiple file entries if {} is passed
+            // @ts-expect-error breaks with multiple file entries if {} is passed
             // FIXME
             formValues={null}
             handleFileEntryReady={handleFileEntryReady}

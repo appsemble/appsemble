@@ -49,7 +49,8 @@ export function bootstrap(Component: ComponentType<BlockProps>): void {
  * @returns The wrapper component.
  * @deprecated Use `useBlock()` instead.
  */
-export function withBlock<P extends object>(
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export function withBlock<P extends {}>(
   Component: ComponentType<Omit<BlockProps, keyof P> & P>,
 ): ComponentType<P> {
   return (props: P) => (

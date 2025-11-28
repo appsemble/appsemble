@@ -57,10 +57,13 @@ declare module 'koa' {
 declare module 'koas-security' {
   interface Clients {
     app: { scope: string; app: App };
-    basic: object;
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    basic: {};
     cli: { scope: string };
-    studio: object;
-    webhook: object;
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    studio: {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    webhook: {};
   }
 
   interface Users {

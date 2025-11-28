@@ -24,8 +24,13 @@ export function setAppName(name: string): void {
   appName = name;
 }
 
-type Comparator = 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'ne';
-type Expression = 'and' | 'or';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const comparators = ['gt', 'gte', 'lt', 'lte', 'eq', 'ne'] as const;
+type Comparator = (typeof comparators)[number];
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const expressions = ['and', 'or'] as const;
+type Expression = (typeof expressions)[number];
 
 function parseValue(value: string): Date | boolean | number | string {
   const toNumber = Number(value);

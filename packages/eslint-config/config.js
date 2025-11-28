@@ -73,6 +73,9 @@ export default defineConfig([
       'unicorn/require-module-specifiers': 'off',
       'unicorn/no-useless-undefined': 'error',
 
+      // Turn off in favor of import-x/no-extraneous-dependencies
+      'n/no-extraneous-import': 'off',
+
       '@typescript-eslint/no-invalid-void-type': 'error',
     },
   },
@@ -190,7 +193,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['*.jsx', '*.tsx'],
+    files: ['**/*.jsx', '**/*.tsx'],
 
     extends: [jsxA11y],
   },
@@ -258,7 +261,7 @@ export default defineConfig([
    * Package configs
    */
   {
-    files: ['packages/app/**'],
+    files: ['packages/app/**', 'packages/app/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [react, web],
 
@@ -298,7 +301,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/preact'],
+    files: ['packages/preact/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -307,7 +310,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/preact-components'],
+    files: ['packages/preact-components/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -317,7 +320,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/react-components/**'],
+    files: ['packages/react-components/**', 'packages/react-components/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [react, web],
 
@@ -355,7 +358,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/studio/**'],
+    files: ['packages/studio/**', 'packages/studio/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [react, web],
 
@@ -399,7 +402,7 @@ export default defineConfig([
     extends: [web],
   },
   {
-    files: ['blocks/button-list/src/**'],
+    files: ['blocks/button-list/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -422,7 +425,7 @@ export default defineConfig([
     extends: [web],
   },
   {
-    files: ['blocks/control-buttons/src/**'],
+    files: ['blocks/control-buttons/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -442,7 +445,7 @@ export default defineConfig([
     extends: [web],
   },
   {
-    files: ['blocks/detail-viewer/src/**'],
+    files: ['blocks/detail-viewer/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -451,7 +454,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['blocks/feed/src/**'],
+    files: ['blocks/feed/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -460,7 +463,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['blocks/filter/src/**'],
+    files: ['blocks/filter/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -469,7 +472,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['blocks/form/src/**'],
+    files: ['blocks/form/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -483,7 +486,7 @@ export default defineConfig([
     extends: [web],
   },
   {
-    files: ['blocks/list/src/**'],
+    files: ['blocks/list/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -502,7 +505,7 @@ export default defineConfig([
     extends: [web],
   },
   {
-    files: ['blocks/openai/src/**'],
+    files: ['blocks/openai/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -511,7 +514,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['blocks/paginator/src/**'],
+    files: ['blocks/paginator/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -520,7 +523,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['blocks/stateful/src/**'],
+    files: ['blocks/stateful/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -534,7 +537,7 @@ export default defineConfig([
     extends: [web],
   },
   {
-    files: ['blocks/table/src/**'],
+    files: ['blocks/table/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [preact],
 
@@ -562,7 +565,7 @@ export default defineConfig([
     extends: [web],
   },
   {
-    files: ['blocks/wordcloud/src/**'],
+    files: ['blocks/wordcloud/src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 
     extends: [web, preact],
 

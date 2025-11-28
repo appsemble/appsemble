@@ -40,7 +40,8 @@ interface SimpleFormContext {
 const Context = createContext<SimpleFormContext>(null);
 export const SimpleFormProvider = Context.Provider;
 
-export function SimpleForm<T extends object>({
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export function SimpleForm<T extends {}>({
   children,
   defaultValues,
   onSubmit,
