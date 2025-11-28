@@ -90,7 +90,7 @@ workflow:
 
 secret-scan-mr:
   stage: security
-  image: node:lts-bullseye
+  image: node:lts-trixie
   variables:
     BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
     HEAD_SHA: ${CI_COMMIT_SHA}
