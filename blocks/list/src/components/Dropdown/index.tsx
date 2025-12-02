@@ -36,7 +36,7 @@ export function DropdownComponent({ field, index, item, record }: DropdownCompon
     <Dropdown
       asButton={false}
       icon={field.icon}
-      iconClassName="is-justify-content-end is-align-items-end"
+      iconClassName="is-align-items-center p-4 box"
       label={remap(field.label, item, { index }) as string}
     >
       {field.options.map((option, i) => {

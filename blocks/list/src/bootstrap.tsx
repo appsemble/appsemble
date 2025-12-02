@@ -17,6 +17,7 @@ export function List({
   utils,
 }: BlockProps & { readonly dataTestId?: string }): VNode | null {
   const [data, setData] = useState<Item[]>([]);
+  const [groups, setGroups] = useState<string[]>([]);
   const [groupedData, setGroupedData] = useState<Record<string, Item[]>>({});
   const [leftoverData, setLeftoverData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
@@ -263,7 +264,9 @@ export function List({
 
   useEffect(() => {
     if (data != null && groupBy) {
-      const newGroupedData: Record<string, Item[]> = {};
+      const newGroupedData: Record<string, Item[]> = groups.length
+        ? Object.fromEntries(groups.map((name) => [name, []]))
+        : {};
       const newLeftoverData: Item[] = [];
       for (const entry of data) {
         const groupName = entry[groupBy];
@@ -276,7 +279,7 @@ export function List({
       setGroupedData(newGroupedData);
       setLeftoverData(newLeftoverData);
     }
-  }, [data, groupBy]);
+  }, [data, groupBy, groups]);
 
   const loadData = useCallback(
     (d: any, err: string): void => {
@@ -304,6 +307,12 @@ export function List({
     const callback = (): void => setData([]);
     events.on.reset?.(callback);
     return () => events.off.data(callback);
+  }, [events]);
+
+  useEffect(() => {
+    const callback = (newGroups: any): void => setGroups(newGroups);
+    events.on.groups?.(callback);
+    return () => events.off.groups(callback);
   }, [events]);
 
   if (loading) {
