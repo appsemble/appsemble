@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.35.21
-appVersion: 0.35.21
+version: 0.35.22
+appVersion: 0.35.22
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,13 +31,21 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: >
+  artifacthub.io/changes: |
     - kind: added
-      description: "Block(form): Visibility toggle in password fields."
+      description: "Block(list): Support listening for ordered groups."
     - kind: added
-      description: "Preact-components: New component Icon Button."
+      description: "App: Add new setting to change passwords."
+    - kind: added
+      description: "App: Add new setting to update email of an app member."
+    - kind: added
+      description: "App: Add resend verification email banner."
+    - kind: added
+      description: "Server: Add /.well-known/security.txt for apps."
     - kind: fixed
-      description: "Lang-sdk: Validate Register and Reset-Password pages as app links."
+      description: "Block(form): Temporary fix for form file entries."
+    - kind: fixed
+      description: "Block(list): Style list block dropdown button."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

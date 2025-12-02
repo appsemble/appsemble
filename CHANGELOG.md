@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.35.22](https://gitlab.com/appsemble/appsemble/-/releases/0.35.22)] - 2025-12-02
+
+### Added
+
+- Block(`list`): Support listening for ordered groups.
+- App: Add new setting to change passwords.
+- App: Add new setting to update email of an app member.
+- App: Add resend verification email banner.
+- Server: Add `/.well-known/security.txt` for apps.
+
+### Fixed
+
+- Block(`form`): Temporary fix for form file entries.
+- Block(`list`): Style list block dropdown button.
+
 ## \[[0.35.21](https://gitlab.com/appsemble/appsemble/-/releases/0.35.21)] - 2025-11-24
 
 ### Added
