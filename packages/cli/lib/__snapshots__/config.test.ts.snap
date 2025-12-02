@@ -5382,6 +5382,9 @@ If you define this action the list items will be draggable.",
 
 Compatible data that is received will be displayed. Must be a set of data.",
       },
+      "groups": {
+        "description": "The event that emits the names of the groups to add grouped elements to in sorted order.",
+      },
       "reset": {
         "description": "The event that resets the list.
 

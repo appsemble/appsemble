@@ -312,7 +312,7 @@ export function List({
   useEffect(() => {
     const callback = (newGroups: any): void => setGroups(newGroups);
     events.on.groups?.(callback);
-    return () => events.off.groups(callback);
+    return () => events.off.groups?.(callback);
   }, [events]);
 
   if (loading) {

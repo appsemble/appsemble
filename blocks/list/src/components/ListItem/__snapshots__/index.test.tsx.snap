@@ -61,7 +61,7 @@ exports[`should render a list item component 1`] = `
           tabindex="-1"
         >
           <span
-            class="icon is-justify-content-end is-align-items-end"
+            class="icon is-align-items-center p-4 box"
           >
             <i />
           </span>
