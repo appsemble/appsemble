@@ -106,7 +106,7 @@
   },
   "devDependencies": {
     "@types/busboy": "1.5.4",
-    "@types/css-tree": "2.3.10",
+    "@types/css-tree": "2.3.11",
     "@types/koa-compress": "4.0.6",
     "@types/koa-range": "0.3.5",
     "@types/type-is": "1.6.7",
