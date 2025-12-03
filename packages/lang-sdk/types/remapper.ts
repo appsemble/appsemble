@@ -100,6 +100,16 @@ export interface Remappers {
   app: 'id' | 'locale' | 'url';
 
   /**
+   * Get group metadata.
+   * Supported properties:
+   *
+   * - `id`: Get the id of the selected group.
+   * - `role`: Role of the current app member in the group.
+   * - `name`: Get the name of the selected group.
+   */
+  group: 'id' | 'name' | 'role';
+
+  /**
    * Get property of the AppMember object.
    *
    * Supported properties:

@@ -1,5 +1,22 @@
 import { type AppRole } from './roles.js';
 
+export interface AppMemberGroup {
+  /**
+   * The ID of the group.
+   */
+  id: number;
+
+  /**
+   * The display name of the group.
+   */
+  name: string;
+
+  /**
+   * The role of the app member inside the group.
+   */
+  role: AppRole;
+}
+
 export interface AppMemberInfo {
   /**
    * The subject (end-user) identifier. This member is always present in a claims set.

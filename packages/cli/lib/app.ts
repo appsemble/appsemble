@@ -1106,6 +1106,11 @@ interface PublishAppParams {
   members?: boolean;
 
   /**
+   * Whether sending emails should be skipped for the group invites,
+   */
+  skipGroupInvites?: boolean;
+
+  /**
    * Languages officially supported by the app
    */
   supportedLanguages?: string[];
@@ -1256,6 +1261,7 @@ export async function publishApp({
   const dbHost = appsembleContext.dbHost ?? options.dbHost;
   const dbPort = appsembleContext.dbPort ?? options.dbPort;
   const dbUser = appsembleContext.dbUser ?? options.dbUser;
+  const skipGroupInvites = appsembleContext.skipGroupInvites ?? options.skipGroupInvites ?? false;
   const { dbPassword } = options;
 
   logger.verbose(`App remote: ${remote}`);
@@ -1276,6 +1282,7 @@ export async function publishApp({
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   formData.append('locked', appLock);
+  formData.append('skipGroupInvites', String(skipGroupInvites));
 
   if (dbName) {
     formData.append('dbName', dbName);
@@ -1503,6 +1510,11 @@ interface UpdateAppParams {
   members?: boolean;
 
   /**
+   * Whether sending emails should be skipped for the group invites.
+   */
+  skipGroupInvites?: boolean;
+
+  /**
    * Languages officially supported by the app
    */
   supportedLanguages?: string[];
@@ -1658,6 +1670,7 @@ export async function updateApp({
   const msClarityId = appsembleContext.msClarityId ?? options.msClarityId;
   const resources = appsembleContext.resources ?? options.resources;
   const members = appsembleContext.members ?? options.members;
+  const skipGroupInvites = appsembleContext.skipGroupInvites ?? options.skipGroupInvites;
   const supportedLanguages = appsembleContext.supportedLanguages ?? options.supportedLanguages;
   const assets = appsembleContext.assets ?? options.assets;
   const { appLock } = appsembleContext;
@@ -1712,6 +1725,10 @@ export async function updateApp({
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
     logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
     formData.append('icon', realIcon);
+  }
+
+  if (skipGroupInvites !== undefined) {
+    formData.append('skipGroupInvites', String(skipGroupInvites));
   }
 
   if (maskableIcon) {
@@ -1888,6 +1905,11 @@ interface PatchAppParams {
   supportedLanguages?: string[];
 
   /**
+   * Whether sending emails should be skipped for the group invites.
+   */
+  skipGroupInvites?: boolean;
+
+  /**
    * Whether the Appsemble OAuth2 login method should be shown.
    */
   showAppsembleOAuth2Login?: boolean;
@@ -1911,6 +1933,10 @@ export async function patchApp({ id, remote, ...options }: PatchAppParams): Prom
   if (options.path !== undefined) {
     logger.info(`Setting app path to ${options.path}`);
     formData.append('path', options.path);
+  }
+  if (options.skipGroupInvites !== undefined) {
+    logger.info(`Setting skipGroupInvites to ${options.skipGroupInvites}`);
+    formData.append('skipGroupInvites', String(options.skipGroupInvites));
   }
   if (options.force !== undefined) {
     formData.append('force', String(options.force));

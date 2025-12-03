@@ -136,6 +136,10 @@
             "description": "Whether the app-definition should be shown.\n\nIf showAppDefinition is specified, this will override --show-app-definition passed on the command line.",
             "type": "boolean"
           },
+          "skipGroupInvites": {
+            "description": "Whether sending emails should be skipped for the group invites.",
+            "type": "boolean"
+          },
           "template": {
             "description": "Whether the app should be a template app.\n\nIf template is specified, this will override --template passed on the command line.",
             "type": "boolean",

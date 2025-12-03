@@ -28,6 +28,20 @@ Example:
 ${schemaExample('app.url', { result: 'pretty', exclude: ['input'] })}
 `,
   },
+  group: {
+    enum: ['id', 'name', 'role'],
+    description: `Gives information about the currently selected group. Using this remapper you can
+get access to the following information:
+
+- \`id\`: ID of the group.
+- \`name\`: Name of the group.
+- \`role\`: Role of the current app member in the group.
+
+Example:
+
+${schemaExample('group', { result: 'pretty', exclude: ['input'] })}
+`,
+  },
   context: {
     type: 'string',
     description: `Gets a property from custom context passed by blocks. This property is specific to each block. To

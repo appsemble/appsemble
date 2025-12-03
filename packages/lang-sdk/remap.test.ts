@@ -3,7 +3,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createExampleContext, examples } from './examples.js';
 import { type AppConfigEntryValue, remap } from './remap.js';
-import { type AppMemberInfo, type Remapper } from './types/index.js';
+import {
+  type AppMemberGroup,
+  type AppMemberInfo,
+  PredefinedAppRole,
+  type Remapper,
+} from './types/index.js';
 
 /**
  * Stub the console types, since we don’t want to use dom or node types here.
@@ -43,6 +48,7 @@ interface TestCase {
   };
   variables?: { id: number; value: AppConfigEntryValue; name: string }[];
   appMemberInfo?: AppMemberInfo;
+  group?: AppMemberGroup;
   context?: Record<string, any>;
   history?: unknown[];
 }
@@ -50,7 +56,10 @@ interface TestCase {
 function runTests(tests: Record<string, TestCase>): void {
   it.each(Object.entries(tests))(
     'should %s',
-    (name, { appMemberInfo, context, expected, history, input, mappers, messages, variables }) => {
+    (
+      name,
+      { appMemberInfo, context, expected, group, history, input, mappers, messages, variables },
+    ) => {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
           // @ts-expect-error 2538 type undefined cannot be used as an index type
@@ -67,6 +76,7 @@ function runTests(tests: Record<string, TestCase>): void {
         pageData: { hello: 'Page data' },
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         appMemberInfo,
+        group,
         pageName: 'Test Page',
       });
       expect(result).toStrictEqual(expected);
@@ -100,6 +110,29 @@ describe('Nested arrays', () => {
       input: { value: 123 },
       mappers: [[[[[{ prop: 'value' }]]]]],
       expected: 123,
+    },
+  });
+});
+
+describe('group', () => {
+  runTests({
+    'return the group id': {
+      input: {},
+      mappers: { group: 'id' },
+      expected: 2,
+      group: { id: 2, name: 'Test Group', role: PredefinedAppRole.Member },
+    },
+    'return the group name': {
+      input: {},
+      mappers: { group: 'name' },
+      expected: 'Test Group',
+      group: { id: 2, name: 'Test Group', role: PredefinedAppRole.Member },
+    },
+    'return the role of the current app member in the group': {
+      input: {},
+      mappers: { group: 'role' },
+      expected: PredefinedAppRole.Member,
+      group: { id: 2, name: 'Test Group', role: PredefinedAppRole.Member },
     },
   });
 });

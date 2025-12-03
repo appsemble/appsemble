@@ -71,11 +71,12 @@ export function TabsPage({
         url: window.location.href,
         getMessage,
         getVariable,
+        group: appMemberSelectedGroup,
         appMemberInfo,
         context: { name: pageDefinition.name },
         locale: lang,
       }) as RemapperContext,
-    [appMemberInfo, getMessage, getVariable, lang, pageDefinition.name],
+    [appMemberInfo, appMemberSelectedGroup, getMessage, getVariable, lang, pageDefinition.name],
   );
 
   const checkSubPagePermissions = useCallback(

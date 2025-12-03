@@ -10,6 +10,7 @@ import { getDuration, processLocation } from './ics.js';
 import { mapValues } from './mapValues.js';
 import { has, stripNullValues } from './miscellaneous.js';
 import {
+  type AppMemberGroup,
   type AppMemberInfo,
   type ArrayRemapper,
   type Remapper,
@@ -63,6 +64,11 @@ export interface RemapperContext {
    * The id of the app whose context the remapper is run in.
    */
   appId: number;
+
+  /**
+   * The metadata of the group selected by the app member.
+   */
+  group: AppMemberGroup | undefined;
 
   /**
    * The current URL.
@@ -879,6 +885,8 @@ const mapperImplementations: MapperImplementations = {
     const message = context.getMessage({ id: remappedId });
     return message.format() || `{${remappedId}}`;
   },
+
+  group: (property, input, context) => context.group?.[property],
 
   'app.member': (property, input, context) => context.appMemberInfo?.[property],
 

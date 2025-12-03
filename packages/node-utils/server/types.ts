@@ -1,6 +1,7 @@
 import { type Readable } from 'node:stream';
 
 import {
+  type AppMemberGroup,
   type BlockDefinition,
   type ControllerDefinition,
   type CustomAppPermission,
@@ -270,6 +271,11 @@ export interface GetCurrentAppMemberParams {
   app: App;
 }
 
+export interface GetCurrentAppMemberSelectedGroupParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  app: App;
+}
+
 export interface GetCurrentAppMemberGroupsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
@@ -451,6 +457,9 @@ export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
 export interface Options {
   getCurrentAppMember: (params: GetCurrentAppMemberParams) => Promise<AppMemberInfo | null>;
+  getCurrentAppMemberSelectedGroup: (
+    params: GetCurrentAppMemberSelectedGroupParams,
+  ) => Promise<AppMemberGroup | null>;
   getCurrentAppMemberGroups: (params: GetCurrentAppMemberGroupsParams) => Promise<Group[] | null>;
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
