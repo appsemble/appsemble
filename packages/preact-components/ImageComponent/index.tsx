@@ -22,6 +22,7 @@ interface ImageComponentProps {
   /**
    * Is the image rounded.
    *
+   * @default false
    */
   readonly rounded?: boolean;
 

@@ -401,6 +401,7 @@ export interface Image {
   /**
    * Is image rounded.
    *
+   * @default false
    */
   rounded?: boolean;
 
@@ -1109,9 +1110,9 @@ export interface NumberField extends AbstractField, InlineField {
   /**
    * How to display the numeric field.
    *
-   * By default a `number` input field is displayed.
+   * @default number
    */
-  display?: 'slider';
+  display?: 'number' | 'slider';
 
   /**
    * If `display` is set to `slider`, these labels are displayed evenly spaced below the slider.
@@ -1530,6 +1531,8 @@ declare module '@appsemble/sdk' {
 
     /**
      * Whether the previous button should be shown.
+     *
+     * @default false
      */
     previous?: boolean;
 
@@ -1537,6 +1540,7 @@ declare module '@appsemble/sdk' {
      * Whether the submit button should not be visible, useful when the only field is an enum and
      * **onSelect** is defined
      *
+     * @default false
      */
     hideSubmitButton?: Remapper;
 
@@ -1583,6 +1587,8 @@ declare module '@appsemble/sdk' {
      * By default the form block will wait until event data is received.
      *
      * By setting this to `true`, this won’t happen.
+     *
+     * @default false
      */
     skipInitialLoad?: boolean;
 
