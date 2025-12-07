@@ -7,6 +7,6 @@ export const messages = defineMessages({
   },
   clean: {
     id: 'app.HvTaVW',
-    defaultMessage: 'Clean State',
+    defaultMessage: 'Clean state',
   },
 });

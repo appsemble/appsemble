@@ -3,7 +3,7 @@ import { defineMessages } from 'react-intl';
 export const messages = defineMessages({
   clone: {
     id: 'studio.b1tk6d',
-    defaultMessage: 'Clone App',
+    defaultMessage: 'Clone app',
   },
   error: {
     id: 'studio.GT6XtR',

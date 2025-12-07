@@ -35,7 +35,7 @@ export const messages = defineMessages({
   },
   resourceWarningTitle: {
     id: 'studio.bEmJ9Y',
-    defaultMessage: 'Deletion Warning',
+    defaultMessage: 'Deletion warning',
   },
   resourceWarning: {
     id: 'studio.GYTZhK',

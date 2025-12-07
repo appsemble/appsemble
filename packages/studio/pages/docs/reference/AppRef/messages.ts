@@ -3,7 +3,7 @@ import { defineMessages } from 'react-intl';
 export const messages = defineMessages({
   title: {
     id: 'studio.YlqNBR',
-    defaultMessage: 'App Reference',
+    defaultMessage: 'App reference',
   },
   description: {
     id: 'studio.JPqZ7P',

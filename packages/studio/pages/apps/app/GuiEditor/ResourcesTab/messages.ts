@@ -41,7 +41,7 @@ export const messages = defineMessages({
   },
   resourceName: {
     id: 'studio.fCCf9N',
-    defaultMessage: 'Resource Name',
+    defaultMessage: 'Resource name',
   },
   fields: {
     id: 'studio.iJMNSQ',
@@ -62,15 +62,15 @@ export const messages = defineMessages({
   },
   removeField: {
     id: 'studio.MVeTei',
-    defaultMessage: 'Remove Field',
+    defaultMessage: 'Remove field',
   },
   newField: {
     id: 'studio.gZD+CR',
-    defaultMessage: 'Add a new Field',
+    defaultMessage: 'Add a new field',
   },
   fieldName: {
     id: 'studio.TML/L4',
-    defaultMessage: 'Field Name',
+    defaultMessage: 'Field name',
   },
   fieldProperties: {
     id: 'studio.MFG1+P',
@@ -165,11 +165,11 @@ export const messages = defineMessages({
   },
   maximumLenght: {
     id: 'studio.EVa8ST',
-    defaultMessage: 'Maximum Length',
+    defaultMessage: 'Maximum length',
   },
   minimumLenght: {
     id: 'studio.WGj64n',
-    defaultMessage: 'Minimum Length',
+    defaultMessage: 'Minimum length',
   },
   maximum: {
     id: 'studio.BCzmdv',
@@ -189,15 +189,15 @@ export const messages = defineMessages({
   },
   relatedResource: {
     id: 'studio.QMUvie',
-    defaultMessage: 'Related Resource',
+    defaultMessage: 'Related resource',
   },
   selectRelatedResource: {
     id: 'studio.+nW2YO',
-    defaultMessage: 'Select Related Resource',
+    defaultMessage: 'Select related resource',
   },
   deletionWarning: {
     id: 'studio.bEmJ9Y',
-    defaultMessage: 'Deletion Warning',
+    defaultMessage: 'Deletion warning',
   },
   deletionWarningMessage: {
     id: 'studio.il/JE4',
@@ -206,7 +206,7 @@ export const messages = defineMessages({
   },
   updateWarning: {
     id: 'studio.XREHho',
-    defaultMessage: 'Resource Warning',
+    defaultMessage: 'Resource warning',
   },
   UpdateWarningMessage: {
     id: 'studio.fPH9wE',
@@ -219,10 +219,10 @@ export const messages = defineMessages({
   },
   openErd: {
     id: 'studio.Smajh0',
-    defaultMessage: 'Show Relationship Diagram',
+    defaultMessage: 'Show relationship diagram',
   },
   closeErd: {
     id: 'studio.7LZ4pL',
-    defaultMessage: 'Close Diagram',
+    defaultMessage: 'Close diagram',
   },
 });

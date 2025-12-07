@@ -27,7 +27,7 @@ export const messages = defineMessages({
   },
   defaultPageLabel: {
     id: 'studio.MWTx65',
-    defaultMessage: 'Default Page',
+    defaultMessage: 'Default page',
   },
   noneLabel: {
     id: 'studio.450Fty',
@@ -64,7 +64,7 @@ export const messages = defineMessages({
   },
   forceDeleteRole: {
     id: 'studio.47OZ7Y',
-    defaultMessage: 'Force Delete',
+    defaultMessage: 'Force delete',
   },
   deleteRoleReferences: {
     id: 'studio.RGtQNE',

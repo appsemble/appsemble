@@ -136,7 +136,7 @@ export const messages = defineMessages({
   },
   msClarityIDLabel: {
     id: 'studio.ZUMv1d',
-    defaultMessage: 'MS Clarity Project ID',
+    defaultMessage: 'MS Clarity project ID',
   },
   msClarityIDDescription: {
     id: 'studio.u4ctdO',
@@ -145,7 +145,7 @@ export const messages = defineMessages({
   },
   msClarityError: {
     id: 'studio.4e71es',
-    defaultMessage: 'This needs to be a valid MS Clarity Project ID',
+    defaultMessage: 'This needs to be a valid MS Clarity project ID',
   },
   saveChanges: {
     id: 'studio.X0ha1a',
@@ -256,7 +256,7 @@ export const messages = defineMessages({
   },
   displayAppMemberNameLabel: {
     id: 'studio.xWGGQF',
-    defaultMessage: 'Display App Member Name',
+    defaultMessage: 'Display app member name',
   },
   displayAppMemberNameDescription: {
     id: 'studio.ipo4aU',
@@ -265,7 +265,7 @@ export const messages = defineMessages({
   },
   displayInstallationPromptLabel: {
     id: 'studio.rQb2kK',
-    defaultMessage: 'Prompt App Install',
+    defaultMessage: 'Prompt app install',
   },
   displayInstallationPromptDescription: {
     id: 'studio.L5Cie6',
@@ -273,7 +273,7 @@ export const messages = defineMessages({
   },
   skipGroupInvitesLabel: {
     id: 'studio.vIs3fn',
-    defaultMessage: 'Skip Group Invites',
+    defaultMessage: 'Skip group invites',
   },
   skipGroupInvitesDescription: {
     id: 'studio.UGq/Er',
@@ -281,7 +281,7 @@ export const messages = defineMessages({
   },
   supportedLanguages: {
     id: 'studio.KLr1Qo',
-    defaultMessage: 'Supported Languages',
+    defaultMessage: 'Supported languages',
   },
   supportedLanguagesHelp: {
     id: 'studio.q+JBOt',

@@ -7,7 +7,7 @@ export const messages = defineMessages({
   },
   title: {
     id: 'studio.82ACU5',
-    defaultMessage: 'Extend Subscription',
+    defaultMessage: 'Extend subscription',
   },
   help: {
     id: 'studio.uV2tEV',

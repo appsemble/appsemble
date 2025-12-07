@@ -7,7 +7,7 @@ export const messages = defineMessages({
   },
   title: {
     id: 'studio.SKFWE+',
-    defaultMessage: 'Cancel Subscription',
+    defaultMessage: 'Cancel subscription',
   },
   help: {
     id: 'studio.8+1M5S',

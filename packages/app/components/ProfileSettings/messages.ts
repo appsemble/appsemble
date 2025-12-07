@@ -11,7 +11,7 @@ export const messages = defineMessages({
   },
   displayName: {
     id: 'app.pwlQEY',
-    defaultMessage: 'Display Name',
+    defaultMessage: 'Display name',
   },
   displayNameHelp: {
     id: 'app.VL5z0t',
@@ -19,7 +19,7 @@ export const messages = defineMessages({
   },
   saveProfile: {
     id: 'app.Wd+wHl',
-    defaultMessage: 'Save Profile',
+    defaultMessage: 'Save profile',
   },
   submitSuccess: {
     id: 'app.3zjiGZ',
@@ -47,7 +47,7 @@ export const messages = defineMessages({
   },
   clickPicture: {
     id: 'app.Z7RWBU',
-    defaultMessage: 'Click a Picture',
+    defaultMessage: 'Click a picture',
   },
   clickDescription: {
     id: 'app.1krH2X',
@@ -64,7 +64,7 @@ export const messages = defineMessages({
   },
   phoneNumber: {
     id: 'app.mXiD5u',
-    defaultMessage: 'Phone Number',
+    defaultMessage: 'Phone number',
   },
   supported: {
     id: 'app.kxImXw',
@@ -72,23 +72,23 @@ export const messages = defineMessages({
   },
   oldPassword: {
     id: 'app.J+buBa',
-    defaultMessage: 'Old Password',
+    defaultMessage: 'Old password',
   },
   newPassword: {
     id: 'app.Ev6SEF',
-    defaultMessage: 'New Password',
+    defaultMessage: 'New password',
   },
   changePassword: {
     id: 'app.QiKKFz',
-    defaultMessage: 'Change Password',
+    defaultMessage: 'Change password',
   },
   updatedEmail: {
     id: 'app.t+2d4F',
-    defaultMessage: 'Updated Email',
+    defaultMessage: 'Updated email',
   },
   changeEmail: {
     id: 'app.lo21n8',
-    defaultMessage: 'Update Email Address',
+    defaultMessage: 'Change email address',
   },
   password: {
     id: 'app.5sg7KC',

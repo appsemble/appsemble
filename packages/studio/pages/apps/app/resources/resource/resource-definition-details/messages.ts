@@ -7,7 +7,7 @@ export const messages = defineMessages({
   },
   title: {
     id: 'studio.bbCsiD',
-    defaultMessage: '{resourceName} Details',
+    defaultMessage: '{resourceName} details',
   },
   endpoints: {
     id: 'studio.cQyKR1',

@@ -7,7 +7,7 @@ export const messages = defineMessages({
   },
   defaultPageLabel: {
     id: 'studio.MWTx65',
-    defaultMessage: 'Default Page',
+    defaultMessage: 'Default page',
   },
   noneLabel: {
     id: 'studio.450Fty',
@@ -39,7 +39,7 @@ export const messages = defineMessages({
   },
   addInheritanceLabel: {
     id: 'studio.+a6mcJ',
-    defaultMessage: 'Inherit Role',
+    defaultMessage: 'Inherit role',
   },
   permissionsLabel: {
     id: 'studio.SFuk1v',
@@ -47,6 +47,6 @@ export const messages = defineMessages({
   },
   addPermissionLabel: {
     id: 'studio.NeXetG',
-    defaultMessage: 'Add Permission',
+    defaultMessage: 'Add permission',
   },
 });

@@ -3,7 +3,7 @@ import { defineMessages } from 'react-intl';
 export const messages = defineMessages({
   createApp: {
     id: 'studio.d5JTn+',
-    defaultMessage: 'Create new App',
+    defaultMessage: 'Create new app',
   },
   cancel: {
     id: 'studio.47FYwb',

@@ -11,7 +11,7 @@ export const messages = defineMessages({
   },
   importFile: {
     id: 'studio.yL26VP',
-    defaultMessage: 'Import From File',
+    defaultMessage: 'Import from file',
   },
   noFile: {
     id: 'studio.utbyMo',

@@ -11,7 +11,7 @@ export const messages = defineMessages({
   },
   clientSecretLabel: {
     id: 'studio.ASwJRg',
-    defaultMessage: 'Client Secret',
+    defaultMessage: 'Client secret',
   },
   clientSecretHelp: {
     id: 'studio.VRt6/G',

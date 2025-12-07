@@ -160,6 +160,6 @@ export const messages = defineMessages({
   },
   preferredLanguageHelp: {
     id: 'studio.bL6DuQ',
-    defaultMessage: 'The preferred language to use for Organization related emails.',
+    defaultMessage: 'The preferred language to use for organization related emails.',
   },
 });

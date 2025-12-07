@@ -9,7 +9,7 @@ HTMLCollection [
       class="label"
       for="name"
     >
-      Display Name
+      Display name
       <span
         class="is-pulled-right has-text-weight-normal"
       >
@@ -26,7 +26,7 @@ HTMLCollection [
         class="input"
         id="name"
         name="name"
-        placeholder="Display Name"
+        placeholder="Display name"
         value="Test User"
       />
       <span
@@ -131,7 +131,7 @@ HTMLCollection [
             class="button mr-1"
             type="button"
           >
-            Click a Picture
+            Click a picture
           </button>
           <button
             class="button"
@@ -227,7 +227,7 @@ HTMLCollection [
       class="label"
       for="name"
     >
-      Display Name
+      Display name
       <span
         class="is-pulled-right has-text-weight-normal"
       >
@@ -244,7 +244,7 @@ HTMLCollection [
         class="input"
         id="name"
         name="name"
-        placeholder="Display Name"
+        placeholder="Display name"
         value="Test User"
       />
       <span
@@ -269,7 +269,7 @@ HTMLCollection [
       class="label"
       for="phoneNumber"
     >
-      Phone Number
+      Phone number
       <span
         class="is-pulled-right has-text-weight-normal"
       >
@@ -285,7 +285,7 @@ HTMLCollection [
         class="input"
         id="phoneNumber"
         name="phoneNumber"
-        placeholder="Phone Number"
+        placeholder="Phone number"
         value=""
       />
       <span
@@ -388,7 +388,7 @@ HTMLCollection [
             class="button mr-1"
             type="button"
           >
-            Click a Picture
+            Click a picture
           </button>
           <button
             class="button"

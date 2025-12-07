@@ -149,7 +149,7 @@ export const messages = defineMessages({
   paymentSucceeded: {
     id: 'studio.+enqwl',
     defaultMessage:
-      'Payment has been received and your subscription is active. Your invoice will be delivered via provided Email.',
+      'Payment has been received and your subscription is active. Your invoice will be delivered via provided email.',
   },
   activate: {
     id: 'studio.AcxDgz',

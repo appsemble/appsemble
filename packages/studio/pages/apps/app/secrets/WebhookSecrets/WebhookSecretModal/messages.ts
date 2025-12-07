@@ -3,7 +3,7 @@ import { defineMessages } from 'react-intl';
 export const messages = defineMessages({
   modalTitle: {
     id: 'studio.5WC1DB',
-    defaultMessage: 'Webhook Secret',
+    defaultMessage: 'Webhook secret',
   },
   docs: {
     id: 'studio.9PjpLU',
@@ -11,7 +11,7 @@ export const messages = defineMessages({
   },
   webhookNameLabel: {
     id: 'studio.gxnmW0',
-    defaultMessage: 'Webhook Name',
+    defaultMessage: 'Webhook name',
   },
   webhookNameHelp: {
     id: 'studio.j8zOYp',

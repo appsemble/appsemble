@@ -39,7 +39,7 @@ export const messages = defineMessages({
   },
   cssPreview: {
     id: 'studio.YS/siD',
-    defaultMessage: 'Css Preview',
+    defaultMessage: 'CSS preview',
   },
   margin: {
     id: 'studio.lJK0aS',

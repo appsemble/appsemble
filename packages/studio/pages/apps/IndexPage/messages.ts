@@ -7,10 +7,10 @@ export const messages = defineMessages({
   },
   allApps: {
     id: 'studio.tcaeP9',
-    defaultMessage: 'All Apps',
+    defaultMessage: 'All apps',
   },
   myApps: {
     id: 'studio.7i+1XP',
-    defaultMessage: 'My Apps',
+    defaultMessage: 'My apps',
   },
 });

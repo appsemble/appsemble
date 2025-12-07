@@ -27,6 +27,6 @@ export const messages = defineMessages({
   },
   pfp: {
     id: 'studio.IKMcY6',
-    defaultMessage: 'Profile Picture',
+    defaultMessage: 'Profile picture',
   },
 });
