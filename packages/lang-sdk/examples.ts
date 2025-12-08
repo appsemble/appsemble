@@ -22,6 +22,9 @@ type CustomRemapperKeys =
   | 'array.range'
   | 'if.else'
   | 'if.then'
+  | 'date.startOfMonth'
+  | 'date.endOfMonth'
+  | 'date.set'
   | 'None';
 export type RemapperExampleKeys = CustomRemapperKeys | Exclude<keyof Remappers, 'app' | 'if'>;
 
@@ -476,6 +479,24 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: 'Tue Feb 11 2014 00:00:00',
     skip: true,
+  },
+
+  'date.startOfMonth': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.startOfMonth': null },
+    result: '2025-11-01T00:00:00.000Z',
+  },
+
+  'date.endOfMonth': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.endOfMonth': null },
+    result: '2025-11-30T23:59:59.999Z',
+  },
+
+  'date.set': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.set': { year: 2026, month: 1, day: 1 } },
+    result: '2026-02-01T12:00:00.000Z',
   },
 
   equals: {

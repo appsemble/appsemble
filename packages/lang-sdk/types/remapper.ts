@@ -182,6 +182,27 @@ export interface Remappers {
   'date.format'?: string;
 
   /**
+   * Takes a date, returns the first day of that month.
+   */
+  'date.startOfMonth': null;
+
+  /**
+   * Takes a date, returns the last day of that month.
+   */
+  'date.endOfMonth': null;
+
+  /**
+   * Sets parts of a date.
+   *
+   * Only the given parts are changed.
+   */
+  'date.set': {
+    year?: Remapper;
+    month?: Remapper;
+    day?: Remapper;
+  };
+
+  /**
    * Compare all computed remapper values against each other.
    *
    * Returns `true` if all entries are equal, otherwise `false`.

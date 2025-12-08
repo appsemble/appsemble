@@ -1,5 +1,14 @@
 import { filter, literalValues, param } from '@odata/parser';
-import { addMilliseconds, format, parse, parseISO } from 'date-fns';
+import {
+  addMilliseconds,
+  endOfMonth,
+  format,
+  parse,
+  parseISO,
+  set as setDate,
+  startOfMonth,
+} from 'date-fns';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import equal from 'fast-deep-equal';
 import { XMLParser } from 'fast-xml-parser';
 import { createEvent, type EventAttributes } from 'ics';
@@ -746,6 +755,59 @@ const mapperImplementations: MapperImplementations = {
           : parseISO(String(input));
 
     return args ? format(date, args) : date.toJSON();
+  },
+
+  'date.startOfMonth'(args, input) {
+    const date =
+      input instanceof Date
+        ? input
+        : typeof input === 'number'
+          ? new Date(input)
+          : parseISO(String(input));
+    // Convert to UTC-zoned date so startOfMonth operates in UTC
+    const zonedDate = utcToZonedTime(date, 'UTC');
+    const result = startOfMonth(zonedDate);
+    return zonedTimeToUtc(result, 'UTC').toJSON();
+  },
+
+  'date.endOfMonth'(args, input) {
+    const date =
+      input instanceof Date
+        ? input
+        : typeof input === 'number'
+          ? new Date(input)
+          : parseISO(String(input));
+    // Convert to UTC-zoned date so endOfMonth operates in UTC
+    const zonedDate = utcToZonedTime(date, 'UTC');
+    const result = endOfMonth(zonedDate);
+    return zonedTimeToUtc(result, 'UTC').toJSON();
+  },
+
+  'date.set'(args, input, context) {
+    const date =
+      input instanceof Date
+        ? input
+        : typeof input === 'number'
+          ? new Date(input)
+          : parseISO(String(input));
+
+    const remapped = mapValues(args, (mapper) => remap(mapper, input, context));
+
+    const setValues: { year?: number; month?: number; date?: number } = {};
+    if (typeof remapped.year === 'number') {
+      setValues.year = remapped.year;
+    }
+    if (typeof remapped.month === 'number') {
+      setValues.month = remapped.month;
+    }
+    if (typeof remapped.day === 'number') {
+      setValues.date = remapped.day;
+    }
+
+    // Convert to UTC-zoned date so set operates in UTC
+    const zonedDate = utcToZonedTime(date, 'UTC');
+    const result = setDate(zonedDate, setValues);
+    return zonedTimeToUtc(result, 'UTC').toJSON();
   },
 
   'null.strip': (args, input) => stripNullValues(input, args || {}),

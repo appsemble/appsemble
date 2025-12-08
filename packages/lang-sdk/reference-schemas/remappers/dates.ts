@@ -93,4 +93,35 @@ date.parse:
 \`\`\`
 `,
   },
+  'date.startOfMonth': {
+    enum: [null],
+    description: `Takes a date and returns the first day of that month.
+
+${schemaExample('date.startOfMonth')}
+`,
+  },
+  'date.endOfMonth': {
+    enum: [null],
+    description: `Takes a date and returns the last day of that month.
+
+${schemaExample('date.endOfMonth')}
+`,
+  },
+  'date.set': {
+    type: 'object',
+    description: `Sets parts of a date. Only the given parts are changed.
+
+${schemaExample('date.set')}`,
+    properties: {
+      year: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      month: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      day: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+    },
+  },
 };
