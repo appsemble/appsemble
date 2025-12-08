@@ -17,15 +17,15 @@ export class StaticSchemaRequestHandler implements SchemaRequestChainHandler {
   }
 
   handle(uri: string): Promise<string | null> {
-    this.logger.info(
+    this.logger.log(
       `Static schema request for ${uri} among ${this.schemas.map((s) => s.uri).join(', ')}`,
     );
     const schemaEntry = this.schemas.find((s) => s.uri.toLowerCase() === uri.toLowerCase());
     if (schemaEntry) {
-      this.logger.info(`Resolving ${uri} as ${JSON.stringify(schemaEntry.schema).slice(0, 100)}`);
+      this.logger.log(`Resolving ${uri} as ${JSON.stringify(schemaEntry.schema).slice(0, 100)}`);
       return Promise.resolve(JSON.stringify(schemaEntry.schema));
     }
-    this.logger.info(`No static schema found for ${uri}`);
+    this.logger.log(`No static schema found for ${uri}`);
     return Promise.resolve(null);
   }
 }

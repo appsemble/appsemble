@@ -32,7 +32,7 @@ import { ValidationHandler } from './languageserver/handlers/validationHandlers.
 import { WorkspaceHandlers } from './languageserver/handlers/workspaceHandlers.js';
 import { BlockManifestCacher } from './languageserver/utils/BlockManifestCacher.js';
 import { YamlCacher } from './languageserver/utils/YamlCacher.js';
-import { ConnectionLogger, type Logger } from './Logger.js';
+import { ConnectionLogger, connectionLoggerFactory, type Logger } from './Logger.js';
 import {
   SchemaRequestChainOfResponsibility,
   type SchemaRequestWrapper,
@@ -73,6 +73,8 @@ export class YAMLServerInit {
 
   private readonly logger: Logger;
 
+  private readonly traceLogger: Logger;
+
   private readonly yamlCacher: YamlCacher;
 
   private readonly blockManifestCacher: BlockManifestCacher;
@@ -95,11 +97,15 @@ export class YAMLServerInit {
     this.yamlSettings.documents.listen(this.connection);
 
     this.logger = new ConnectionLogger(this.connection);
+    this.traceLogger = connectionLoggerFactory({
+      connection: this.connection,
+      levelMappings: { log: 'debug' },
+    });
 
     this.yamlCacher = new YamlCacher();
     this.blockManifestCacher = new BlockManifestCacher(
       this.yamlSettings.blockRegistryBaseUrl,
-      this.logger,
+      this.traceLogger,
     );
 
     const referenceUri = 'https://appsemble.app/en/docs/reference';
@@ -107,15 +113,15 @@ export class YAMLServerInit {
       createAppsembleSchemaConfig({
         referenceUri,
       }).filter(({ uri }) => uri === 'appsemble://schema.json'),
-      this.logger,
+      this.traceLogger,
     );
     this.blockSchemaRequestHandler = new BlockSchemaRequestHandler(
       this.blockManifestCacher,
-      this.logger,
+      this.traceLogger,
     );
     this.schemaRequestWrapper = new SchemaRequestChainOfResponsibility(
       [staticSchemaRequestHandler, this.blockSchemaRequestHandler, this.schemaRequestWrapper],
-      this.logger,
+      this.traceLogger,
     );
     this.yamlSettings.schemaConfigurationSettings = createAppsembleSchemaConfig({
       referenceUri,
@@ -279,6 +285,7 @@ export class YAMLServerInit {
       this.yamlSettings,
       this.validationHandler,
       this.telemetry,
+      this.logger,
     );
     this.settingsHandler.registerHandlers();
     this.languageHandler = new LanguageHandlers(

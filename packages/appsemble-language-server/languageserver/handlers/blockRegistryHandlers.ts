@@ -48,7 +48,7 @@ export class BlockRegistryHandlers {
         allBlocks.set(`${block.type}@${block.version}`, block);
       }
     }
-    this.logger.info(
+    this.logger.log(
       `Updating block schemas for ${allBlocks.size} blocks: ${[...allBlocks.keys()].join(', ')}`,
     );
     const oneOf = [...allBlocks.values()].map((block) => ({
@@ -68,7 +68,7 @@ export class BlockRegistryHandlers {
       },
     }));
     if (deepEquals(oneOf, this.lastOneOf)) {
-      this.logger.info('Block schemas unchanged, not updating');
+      this.logger.log('Block schemas unchanged, not updating');
       return;
     }
     // eslint-disable-next-line unicorn/prefer-ternary
@@ -84,8 +84,8 @@ export class BlockRegistryHandlers {
     } catch (error: unknown) {
       this.logger.error(`Error updating blockSchemaRequestHandler: ${error}`);
     }
-    this.logger.info('Updated blockSchemaRequestHandler');
-    this.logger.info('Resetting schema: appsemble://availBlocksRef.json');
+    this.logger.log('Updated blockSchemaRequestHandler');
+    this.logger.log('Resetting schema: appsemble://availBlocksRef.json');
     this.languageService.resetSchema('appsemble://availBlocksRef.json');
   }
 }

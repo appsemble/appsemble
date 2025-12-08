@@ -15,8 +15,7 @@ export class BlockManifestCacher {
 
   constructor(apiBaseUrl: string, logger: Logger) {
     this.apiBaseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    this.logger = logger ?? (() => {});
+    this.logger = logger;
   }
 
   async getCachedBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
@@ -27,15 +26,15 @@ export class BlockManifestCacher {
           this.apiBaseUrl,
         ).href;
         if (this.blockMap.has(url)) {
-          this.logger.info(`Getting block from cache: ${url}`);
+          this.logger.log(`Getting block from cache: ${url}`);
           return this.blockMap.get(url);
         }
-        this.logger.info(`Fetching block URL: ${url}`);
+        this.logger.log(`Fetching block URL: ${url}`);
         const response = fetch(url)
           .then((resp) => (resp.ok ? resp.json() : null))
           .then((data) => {
-            this.logger.info(`Fetched block URL: ${url}`);
-            this.logger.info(data ? 'Block has data' : 'Block has no data');
+            this.logger.log(`Fetched block URL: ${url}`);
+            this.logger.log(data ? 'Block has data' : 'Block has no data');
             return data;
           });
         return this.blockMap.set(url, response).get(url);
@@ -50,7 +49,7 @@ export class BlockManifestCacher {
 
   set apiUrl(val: string) {
     this.apiBaseUrl = val;
-    this.logger.info(`Set the apiBase: ${this.apiBaseUrl}`);
+    this.logger.log(`Set the apiBase: ${this.apiBaseUrl}`);
   }
 
   get blocks(): typeof this.blockMap {

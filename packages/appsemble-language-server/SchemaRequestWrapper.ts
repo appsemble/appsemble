@@ -27,7 +27,7 @@ export class SchemaRequestChainOfResponsibility implements SchemaRequestWrapper 
   }
 
   async handle(uri: string): Promise<string> {
-    this.logger.info(`CoR Schema request for ${uri}`);
+    this.logger.log(`CoR Schema request for ${uri}`);
     for (const handler of this.handlers) {
       try {
         const result = await handler.handle(uri);

@@ -38,7 +38,7 @@ export class BlockSchemaRequestHandler implements SchemaRequestChainHandler {
   }
 
   handle(uri: string): Promise<string | null> {
-    this.logger.info(`Schema request for ${uri}`);
+    this.logger.log(`Schema request for ${uri}`);
 
     const blockParametersRegex = new RegExp(
       String.raw`^appsemble://blocks/(@|%40)${partialNormalized.source}/${partialNormalized.source}/(${partialSemver.source})/parameters\.json$`,
@@ -59,7 +59,7 @@ export class BlockSchemaRequestHandler implements SchemaRequestChainHandler {
       const [, at, org, type, version] = match;
       const organization = `${at === '%40' ? '@' : at}${org}`;
       const blockName = `${organization}/${type}`;
-      this.logger.info(`Block parameters schema request for ${blockName} version ${version}`);
+      this.logger.log(`Block parameters schema request for ${blockName} version ${version}`);
       return this.handleBlockParameters(blockName, version);
     }
     if (blockActionsRegex.test(uri)) {
@@ -67,7 +67,7 @@ export class BlockSchemaRequestHandler implements SchemaRequestChainHandler {
       const [, at, org, type, version] = match;
       const organization = `${at === '%40' ? '@' : at}${org}`;
       const blockName = `${organization}/${type}`;
-      this.logger.info(`Block actions schema request for ${blockName} version ${version}`);
+      this.logger.log(`Block actions schema request for ${blockName} version ${version}`);
       return this.handleBlockActions(blockName, version);
     }
     if (blockEventsRegex.test(uri)) {
@@ -75,17 +75,17 @@ export class BlockSchemaRequestHandler implements SchemaRequestChainHandler {
       const [, at, org, type, version] = match;
       const organization = `${at === '%40' ? '@' : at}${org}`;
       const blockName = `${organization}/${type}`;
-      this.logger.info(`Block events schema request for ${blockName} version ${version}`);
+      this.logger.log(`Block events schema request for ${blockName} version ${version}`);
       return this.handleBlockEvents(blockName, version);
     }
-    this.logger.info(`No block schema found for ${uri}`);
+    this.logger.log(`No block schema found for ${uri}`);
     return Promise.resolve(null);
   }
 
   private async handleBlockEvents(type: string, version: string): Promise<string | null> {
     const manifests = await this.blockManifestCacher.getCachedBlockVersions([{ type, version }]);
     if (manifests.length === 0) {
-      this.logger.info(`No manifest found for block ${type} version ${version}`);
+      this.logger.log(`No manifest found for block ${type} version ${version}`);
       return null;
     }
     const [manifest] = manifests;
@@ -131,7 +131,7 @@ export class BlockSchemaRequestHandler implements SchemaRequestChainHandler {
   private async handleBlockActions(type: string, version: string): Promise<string | null> {
     const manifests = await this.blockManifestCacher.getCachedBlockVersions([{ type, version }]);
     if (manifests.length === 0) {
-      this.logger.info(`No manifest found for block ${type} version ${version}`);
+      this.logger.log(`No manifest found for block ${type} version ${version}`);
       return null;
     }
     const [manifest] = manifests;
@@ -162,7 +162,7 @@ export class BlockSchemaRequestHandler implements SchemaRequestChainHandler {
   private async handleBlockParameters(type: string, version: string): Promise<string | null> {
     const manifests = await this.blockManifestCacher.getCachedBlockVersions([{ type, version }]);
     if (manifests.length === 0) {
-      this.logger.info(`No manifest found for block ${type} version ${version}`);
+      this.logger.log(`No manifest found for block ${type} version ${version}`);
       return null;
     }
     const [manifest] = manifests;

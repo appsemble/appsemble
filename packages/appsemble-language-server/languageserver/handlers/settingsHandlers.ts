@@ -24,6 +24,7 @@ import {
 } from 'yaml-language-server/lib/esm/languageservice/yamlLanguageService.js';
 
 import { type ValidationHandler } from './validationHandlers.js';
+import { type Logger } from '../../Logger.js';
 import { type Settings, type SettingsState } from '../../yamlSettings.js';
 
 export class SettingsHandler {
@@ -37,18 +38,22 @@ export class SettingsHandler {
 
   private telemetry: Telemetry;
 
+  private logger: Logger;
+
   constructor(
     connection: Connection,
     languageService: LanguageService,
     yamlSettings: SettingsState,
     validationHandler: ValidationHandler,
     telemetry: Telemetry,
+    logger: Logger,
   ) {
     this.connection = connection;
     this.languageService = languageService;
     this.yamlSettings = yamlSettings;
     this.validationHandler = validationHandler;
     this.telemetry = telemetry;
+    this.logger = logger;
   }
 
   async registerHandlers(): Promise<void> {
@@ -190,6 +195,7 @@ export class SettingsHandler {
 
     if (settings.appsemble.blockRegistryBaseUrl) {
       this.yamlSettings.blockRegistryBaseUrl = settings.appsemble.blockRegistryBaseUrl;
+      this.logger.log(`Changed block registry URL to ${this.yamlSettings.blockRegistryBaseUrl}`);
     }
 
     this.updateConfiguration();
