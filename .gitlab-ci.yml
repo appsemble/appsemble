@@ -33,7 +33,7 @@ workflow:
   interruptible: true
   services:
     - docker:dind@sha256:40916fb078cdd27640d069bba401324a15a06d3ecbd8895048122c8d321f43f8
-  image: docker@sha256:c9699f4fc7365e8daad3eb48ce3b62dc118b2a5267f7be7bcd3c4e4b2f1cfb4c
+  image: docker@sha256:40916fb078cdd27640d069bba401324a15a06d3ecbd8895048122c8d321f43f8
   dependencies: []
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
