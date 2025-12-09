@@ -2,7 +2,7 @@ import { IntlMessageFormat } from 'intl-messageformat';
 import { stringify } from 'yaml';
 
 import { type RemapperContext } from './remap.js';
-import { type AppMemberInfo, type Remappers } from './types/index.js';
+import { type AppMemberInfo, PredefinedAppRole, type Remappers } from './types/index.js';
 
 export interface RemapperExample {
   input: unknown;
@@ -53,6 +53,13 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     remapper: {},
     result: {},
     skip: true,
+  },
+  group: {
+    input: null,
+    remapper: {
+      group: 'name',
+    },
+    result: 'test-group',
   },
   type: {
     input: [1, 2, 3],
@@ -1021,6 +1028,11 @@ export function createExampleContext(
       },
       $seed: false,
       $ephemeral: false,
+    },
+    group: {
+      id: 0,
+      name: 'test-group',
+      role: PredefinedAppRole.Member,
     },
   };
 }

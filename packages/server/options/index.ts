@@ -15,6 +15,7 @@ export * from './getBlockAssetsPaths.js';
 export * from './getCsp.js';
 export * from './getCurrentAppMember.js';
 export * from './getCurrentAppMemberGroups.js';
+export * from './getCurrentAppMemberSelectedGroup.js';
 export * from './getDbUpdated.js';
 export * from './getHost.js';
 export * from './getTheme.js';

@@ -196,6 +196,7 @@ export function Page(): ReactNode {
         appMemberInfo: appMemberInfoRef.current,
         context,
         history,
+        group: appMemberSelectedGroup,
         root: input,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         locale: lang,
@@ -213,6 +214,7 @@ export function Page(): ReactNode {
       lang,
       pageDefinition?.name,
       prefix,
+      appMemberSelectedGroup,
     ],
   );
   const showDialog = useCallback((d: ShowDialogParams) => {

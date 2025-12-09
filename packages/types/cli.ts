@@ -166,6 +166,11 @@ export interface AppsembleContext {
   members?: boolean;
 
   /**
+   * Whether sending emails should be skipped for the group invites.
+   */
+  skipGroupInvites?: boolean;
+
+  /**
    * Whether to publish assets from the assets directory.
    *
    * If assets is specified, this will override --assets passed on the command line.

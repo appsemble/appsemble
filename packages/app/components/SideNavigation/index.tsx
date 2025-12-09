@@ -59,8 +59,9 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
       appMemberInfo,
       context: { name },
       locale: lang!,
+      group: appMemberSelectedGroup,
     }),
-    [getMessage, getVariable, lang, appMemberInfo],
+    [getMessage, getVariable, lang, appMemberInfo, appMemberSelectedGroup],
   );
 
   const generateNameAndNavName = useCallback(

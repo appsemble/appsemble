@@ -46,8 +46,9 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
         appMemberInfo,
         context: { name: page?.name },
         locale,
+        group: appMemberSelectedGroup,
       }) as RemapperContext,
-    [appMemberInfo, getMessage, getVariable, locale, page],
+    [appMemberInfo, appMemberSelectedGroup, getMessage, getVariable, locale, page],
   );
   const headerTagText = remap(
     definition.layout?.headerTag?.text ?? null,
