@@ -20,11 +20,19 @@ type CustomRemapperKeys =
   | 'array.range.1'
   | 'array.range.map'
   | 'array.range'
+  | 'date.endOf.quarter'
+  | 'date.endOf.week'
+  | 'date.endOf.weekSun'
+  | 'date.endOf.year'
+  | 'date.endOf'
+  | 'date.set'
+  | 'date.startOf.quarter'
+  | 'date.startOf.week'
+  | 'date.startOf.weekSun'
+  | 'date.startOf.year'
+  | 'date.startOf'
   | 'if.else'
   | 'if.then'
-  | 'date.startOfMonth'
-  | 'date.endOfMonth'
-  | 'date.set'
   | 'None';
 export type RemapperExampleKeys = CustomRemapperKeys | Exclude<keyof Remappers, 'app' | 'if'>;
 
@@ -481,16 +489,64 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     skip: true,
   },
 
-  'date.startOfMonth': {
+  'date.startOf': {
     input: '2025-11-21T12:00:00.000Z',
-    remapper: { 'date.startOfMonth': null },
+    remapper: { 'date.startOf': 'month' },
     result: '2025-11-01T00:00:00.000Z',
   },
 
-  'date.endOfMonth': {
+  'date.startOf.year': {
     input: '2025-11-21T12:00:00.000Z',
-    remapper: { 'date.endOfMonth': null },
+    remapper: { 'date.startOf': 'year' },
+    result: '2025-01-01T00:00:00.000Z',
+  },
+
+  'date.startOf.quarter': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.startOf': 'quarter' },
+    result: '2025-10-01T00:00:00.000Z',
+  },
+
+  'date.startOf.week': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.startOf': 'week' },
+    result: '2025-11-17T00:00:00.000Z',
+  },
+
+  'date.startOf.weekSun': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.startOf': 'weekSun' },
+    result: '2025-11-16T00:00:00.000Z',
+  },
+
+  'date.endOf': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.endOf': 'month' },
     result: '2025-11-30T23:59:59.999Z',
+  },
+
+  'date.endOf.year': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.endOf': 'year' },
+    result: '2025-12-31T23:59:59.999Z',
+  },
+
+  'date.endOf.quarter': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.endOf': 'quarter' },
+    result: '2025-12-31T23:59:59.999Z',
+  },
+
+  'date.endOf.week': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.endOf': 'week' },
+    result: '2025-11-23T23:59:59.999Z',
+  },
+
+  'date.endOf.weekSun': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.endOf': 'weekSun' },
+    result: '2025-11-22T23:59:59.999Z',
   },
 
   'date.set': {

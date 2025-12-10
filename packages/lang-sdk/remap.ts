@@ -2,11 +2,17 @@ import { filter, literalValues, param } from '@odata/parser';
 import {
   addMilliseconds,
   endOfMonth,
+  endOfQuarter,
+  endOfWeek,
+  endOfYear,
   format,
   parse,
   parseISO,
   set as setDate,
   startOfMonth,
+  startOfQuarter,
+  startOfWeek,
+  startOfYear,
 } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import equal from 'fast-deep-equal';
@@ -757,29 +763,67 @@ const mapperImplementations: MapperImplementations = {
     return args ? format(date, args) : date.toJSON();
   },
 
-  'date.startOfMonth'(args, input) {
+  'date.startOf'(unit, input) {
     const date =
       input instanceof Date
         ? input
         : typeof input === 'number'
           ? new Date(input)
           : parseISO(String(input));
-    // Convert to UTC-zoned date so startOfMonth operates in UTC
+    // Convert to UTC-zoned date so the operation works in UTC
     const zonedDate = utcToZonedTime(date, 'UTC');
-    const result = startOfMonth(zonedDate);
+    let result: Date;
+    switch (unit) {
+      case 'year':
+        result = startOfYear(zonedDate);
+        break;
+      case 'quarter':
+        result = startOfQuarter(zonedDate);
+        break;
+      case 'month':
+        result = startOfMonth(zonedDate);
+        break;
+      case 'week':
+        result = startOfWeek(zonedDate, { weekStartsOn: 1 });
+        break;
+      case 'weekSun':
+        result = startOfWeek(zonedDate, { weekStartsOn: 0 });
+        break;
+      default:
+        return input;
+    }
     return zonedTimeToUtc(result, 'UTC').toJSON();
   },
 
-  'date.endOfMonth'(args, input) {
+  'date.endOf'(unit, input) {
     const date =
       input instanceof Date
         ? input
         : typeof input === 'number'
           ? new Date(input)
           : parseISO(String(input));
-    // Convert to UTC-zoned date so endOfMonth operates in UTC
+    // Convert to UTC-zoned date so the operation works in UTC
     const zonedDate = utcToZonedTime(date, 'UTC');
-    const result = endOfMonth(zonedDate);
+    let result: Date;
+    switch (unit) {
+      case 'year':
+        result = endOfYear(zonedDate);
+        break;
+      case 'quarter':
+        result = endOfQuarter(zonedDate);
+        break;
+      case 'month':
+        result = endOfMonth(zonedDate);
+        break;
+      case 'week':
+        result = endOfWeek(zonedDate, { weekStartsOn: 1 });
+        break;
+      case 'weekSun':
+        result = endOfWeek(zonedDate, { weekStartsOn: 0 });
+        break;
+      default:
+        return input;
+    }
     return zonedTimeToUtc(result, 'UTC').toJSON();
   },
 
