@@ -842,7 +842,8 @@ const mapperImplementations: MapperImplementations = {
       setValues.year = remapped.year;
     }
     if (typeof remapped.month === 'number') {
-      setValues.month = remapped.month;
+      // Convert from 1-indexed (user-facing) to 0-indexed (date-fns)
+      setValues.month = remapped.month - 1;
     }
     if (typeof remapped.day === 'number') {
       setValues.date = remapped.day;

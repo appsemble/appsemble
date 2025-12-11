@@ -552,7 +552,7 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
   'date.set': {
     input: '2025-11-21T12:00:00.000Z',
     remapper: { 'date.set': { year: 2026, month: 1, day: 1 } },
-    result: '2026-02-01T12:00:00.000Z',
+    result: '2026-01-01T12:00:00.000Z',
   },
 
   equals: {

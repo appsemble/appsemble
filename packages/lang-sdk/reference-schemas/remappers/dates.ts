@@ -125,6 +125,8 @@ ${schemaExample('date.endOf')}
     type: 'object',
     description: `Sets parts of a date. Only the given parts are changed.
 
+Month is 1-indexed (1 = January, 12 = December).
+
 ${schemaExample('date.set')}`,
     properties: {
       year: {
