@@ -117,7 +117,7 @@ export function ImageComponent({
                 alt={alt}
                 className={`${styles.img} ${rounded && 'is-rounded'}`}
                 ref={imgRef as MutableRef<HTMLImageElement>}
-                src={isVisible ? src : undefined}
+                src={isVisible ? `${src}?width=${width}&height=${height}` : undefined}
               />
             </figure>
           </button>
