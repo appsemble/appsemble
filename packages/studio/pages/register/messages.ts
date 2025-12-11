@@ -2,7 +2,7 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   title: {
-    id: 'studio.qcsBrp',
+    id: 'studio.4WFkRW',
     defaultMessage: 'Register new account',
   },
   description: {

@@ -2,35 +2,35 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   themeColor: {
-    id: 'studio.yAtJ0m',
+    id: 'studio.DXD2M2',
     defaultMessage: 'Theme color',
   },
   splashColor: {
-    id: 'studio.2icOAh',
+    id: 'studio.OJdj1K',
     defaultMessage: 'Splash color',
   },
   primaryColor: {
-    id: 'studio.qzFcWI',
+    id: 'studio.HEwTnH',
     defaultMessage: 'Primary color',
   },
   linkColor: {
-    id: 'studio.zhvLV9',
+    id: 'studio.S+6M0e',
     defaultMessage: 'Link color',
   },
   successColor: {
-    id: 'studio.sJwguN',
+    id: 'studio.cqDud6',
     defaultMessage: 'Success color',
   },
   infoColor: {
-    id: 'studio.OWRK6s',
+    id: 'studio.dz9+Gr',
     defaultMessage: 'Info color',
   },
   warningColor: {
-    id: 'studio.UUoguq',
+    id: 'studio.ws5WlT',
     defaultMessage: 'Warning color',
   },
   dangerColor: {
-    id: 'studio.TGTcH5',
+    id: 'studio.WuC32e',
     defaultMessage: 'Danger color',
   },
   font: {
@@ -46,11 +46,11 @@ export const messages = defineMessages({
     defaultMessage: 'Source',
   },
   tileLayers: {
-    id: 'studio.e1Z7f/',
+    id: 'studio.MyaV3Q',
     defaultMessage: 'Tile layers',
   },
   defaultTheme: {
-    id: 'studio.owyfG1',
+    id: 'studio.qwMDBy',
     defaultMessage: 'Default theme',
   },
 });

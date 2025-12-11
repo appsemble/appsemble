@@ -147,7 +147,7 @@ export const messages = defineMessages({
     defaultMessage: 'Payment has failed, please try again.',
   },
   paymentSucceeded: {
-    id: 'studio.+enqwl',
+    id: 'studio.x5MHZT',
     defaultMessage:
       'Payment has been received and your subscription is active. Your invoice will be delivered via provided email.',
   },

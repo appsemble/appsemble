@@ -2,7 +2,7 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   title: {
-    id: 'studio.eQ8Hq+',
+    id: 'studio.QXAhtx',
     defaultMessage: 'Container logs',
   },
   titleLabel: {

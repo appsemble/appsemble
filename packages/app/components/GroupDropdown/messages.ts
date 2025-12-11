@@ -6,7 +6,7 @@ export const messages = defineMessages({
     defaultMessage: 'Group',
   },
   noGroup: {
-    id: 'app.KciU4I',
+    id: 'app.VxuIxU',
     defaultMessage: 'No group',
   },
 });

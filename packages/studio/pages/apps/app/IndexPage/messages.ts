@@ -6,7 +6,7 @@ export const messages = defineMessages({
     defaultMessage: 'Description',
   },
   view: {
-    id: 'studio.Kn7A8C',
+    id: 'studio.nevxi8',
     defaultMessage: 'View app',
   },
   readMore: {
@@ -22,7 +22,7 @@ export const messages = defineMessages({
     defaultMessage: 'demo',
   },
   shareApp: {
-    id: 'studio.mpNJuB',
+    id: 'studio.bIGB4X',
     defaultMessage: 'Share app',
   },
 });

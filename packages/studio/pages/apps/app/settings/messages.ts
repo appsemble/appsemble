@@ -135,7 +135,7 @@ export const messages = defineMessages({
     defaultMessage: 'This needs to be a valid Meta Pixel ID',
   },
   msClarityIDLabel: {
-    id: 'studio.ZUMv1d',
+    id: 'studio.+gcqF7',
     defaultMessage: 'MS Clarity project ID',
   },
   msClarityIDDescription: {
@@ -144,7 +144,7 @@ export const messages = defineMessages({
       'If this is specified, MS Clarity will be applied to your app. For more information, please refer to the <link>documentation</link>.',
   },
   msClarityError: {
-    id: 'studio.4e71es',
+    id: 'studio.YorHyj',
     defaultMessage: 'This needs to be a valid MS Clarity project ID',
   },
   saveChanges: {
@@ -255,7 +255,7 @@ export const messages = defineMessages({
       'The name displayed for emails sent for this app. The email address won’t change.',
   },
   displayAppMemberNameLabel: {
-    id: 'studio.xWGGQF',
+    id: 'studio.aVzfKh',
     defaultMessage: 'Display app member name',
   },
   displayAppMemberNameDescription: {
@@ -264,7 +264,7 @@ export const messages = defineMessages({
       "Whether to display the logged in app member's name in the title bar, if the name is not available email is displayed",
   },
   displayInstallationPromptLabel: {
-    id: 'studio.rQb2kK',
+    id: 'studio.PzoRtl',
     defaultMessage: 'Prompt app install',
   },
   displayInstallationPromptDescription: {
@@ -272,7 +272,7 @@ export const messages = defineMessages({
     defaultMessage: 'Whether to display installation prompts to the users of the app',
   },
   skipGroupInvitesLabel: {
-    id: 'studio.vIs3fn',
+    id: 'studio.pm8anK',
     defaultMessage: 'Skip group invites',
   },
   skipGroupInvitesDescription: {
@@ -280,7 +280,7 @@ export const messages = defineMessages({
     defaultMessage: 'Whether to skip sending group invite emails and add group members directly',
   },
   supportedLanguages: {
-    id: 'studio.KLr1Qo',
+    id: 'studio.Xu3qea',
     defaultMessage: 'Supported languages',
   },
   supportedLanguagesHelp: {

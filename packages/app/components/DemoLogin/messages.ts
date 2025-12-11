@@ -10,7 +10,7 @@ export const messages = defineMessages({
     defaultMessage: 'Login',
   },
   createAccount: {
-    id: 'app.5JcXdV',
+    id: 'app.huqKGl',
     defaultMessage: 'Create account',
   },
   loginFailed: {

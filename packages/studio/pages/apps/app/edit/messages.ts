@@ -31,7 +31,7 @@ export const messages = defineMessages({
     defaultMessage: 'Resource warning',
   },
   switchToGuiEditor: {
-    id: 'studio.zoSzG+',
+    id: 'studio.EXhZn5',
     defaultMessage: 'Switch to GUI editor',
   },
   enterFullscreen: {
@@ -47,7 +47,7 @@ export const messages = defineMessages({
     defaultMessage: 'Preview format:',
   },
   experimental: {
-    id: 'studio.R1RMax',
+    id: 'studio.E8xLz8',
     defaultMessage: '- experimental',
   },
   resourceWarning: {

@@ -70,7 +70,7 @@ export const messages = defineMessages({
     defaultMessage: 'An email address is required',
   },
   displayName: {
-    id: 'studio.pwlQEY',
+    id: 'studio.dOQCL8',
     defaultMessage: 'Display name',
   },
   displayNameHelp: {
@@ -78,7 +78,7 @@ export const messages = defineMessages({
     defaultMessage: 'This is the name that displays for other users.',
   },
   saveProfile: {
-    id: 'studio.Wd+wHl',
+    id: 'studio.ZBVds5',
     defaultMessage: 'Save profile',
   },
   submitSuccess: {
@@ -134,19 +134,19 @@ export const messages = defineMessages({
     defaultMessage: 'Password',
   },
   changePassword: {
-    id: 'studio.QiKKFz',
+    id: 'studio.L4nXIc',
     defaultMessage: 'Change password',
   },
   currentPasswordLabel: {
-    id: 'studio.GretYf',
+    id: 'studio.NIynnB',
     defaultMessage: 'Current password',
   },
   newPasswordLabel: {
-    id: 'studio.Ev6SEF',
+    id: 'studio.fTHhSB',
     defaultMessage: 'New password',
   },
   wrongPasswordError: {
-    id: 'studio.NFWglg',
+    id: 'studio.Wl5Ylc',
     defaultMessage: 'Current password is incorrect.',
   },
   changePasswordSuccess: {

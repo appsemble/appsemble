@@ -10,7 +10,7 @@ export const messages = defineMessages({
     defaultMessage: 'Profile',
   },
   displayName: {
-    id: 'app.pwlQEY',
+    id: 'app.dOQCL8',
     defaultMessage: 'Display name',
   },
   displayNameHelp: {
@@ -18,7 +18,7 @@ export const messages = defineMessages({
     defaultMessage: 'This is the name that displays for other users.',
   },
   saveProfile: {
-    id: 'app.Wd+wHl',
+    id: 'app.ZBVds5',
     defaultMessage: 'Save profile',
   },
   submitSuccess: {
@@ -46,7 +46,7 @@ export const messages = defineMessages({
     defaultMessage: 'Camera',
   },
   clickPicture: {
-    id: 'app.Z7RWBU',
+    id: 'app.+Ekyh5',
     defaultMessage: 'Click a picture',
   },
   clickDescription: {
@@ -63,7 +63,7 @@ export const messages = defineMessages({
     defaultMessage: 'Preferred language for this app',
   },
   phoneNumber: {
-    id: 'app.mXiD5u',
+    id: 'app.jdJhOL',
     defaultMessage: 'Phone number',
   },
   supported: {
@@ -71,23 +71,23 @@ export const messages = defineMessages({
     defaultMessage: 'Supported',
   },
   oldPassword: {
-    id: 'app.J+buBa',
+    id: 'app.SViZJR',
     defaultMessage: 'Old password',
   },
   newPassword: {
-    id: 'app.Ev6SEF',
+    id: 'app.fTHhSB',
     defaultMessage: 'New password',
   },
   changePassword: {
-    id: 'app.QiKKFz',
+    id: 'app.L4nXIc',
     defaultMessage: 'Change password',
   },
   updatedEmail: {
-    id: 'app.t+2d4F',
+    id: 'app.EkHtkg',
     defaultMessage: 'Updated email',
   },
   changeEmail: {
-    id: 'app.lo21n8',
+    id: 'app.EI6y9l',
     defaultMessage: 'Change email address',
   },
   password: {

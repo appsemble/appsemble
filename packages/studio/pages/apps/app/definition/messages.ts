@@ -10,7 +10,7 @@ export const messages = defineMessages({
     defaultMessage: 'The app definition for {appName}',
   },
   view: {
-    id: 'studio.Kn7A8C',
+    id: 'studio.nevxi8',
     defaultMessage: 'View app',
   },
   cloneText: {

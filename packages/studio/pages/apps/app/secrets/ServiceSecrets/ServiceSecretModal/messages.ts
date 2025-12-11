@@ -2,7 +2,7 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   modalTitle: {
-    id: 'studio.djM9ag',
+    id: 'studio.8ATZGO',
     defaultMessage: 'Service secret',
   },
   docs: {

@@ -6,7 +6,7 @@ export const messages = defineMessages({
     defaultMessage: 'Debug',
   },
   clean: {
-    id: 'app.HvTaVW',
+    id: 'app.Itf6+O',
     defaultMessage: 'Clean state',
   },
 });

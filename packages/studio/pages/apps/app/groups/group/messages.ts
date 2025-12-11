@@ -10,7 +10,7 @@ export const messages = defineMessages({
     defaultMessage: 'Edit group',
   },
   groupMembers: {
-    id: 'studio.TMfUIc',
+    id: 'studio.fT7nDJ',
     defaultMessage: 'Group members',
   },
   cancelLabel: {

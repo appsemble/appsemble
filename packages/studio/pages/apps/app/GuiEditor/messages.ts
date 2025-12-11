@@ -2,7 +2,7 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   title: {
-    id: 'studio.4OleBK',
+    id: 'studio.YXNo2C',
     defaultMessage: 'GUI editor',
   },
   generalTab: {
@@ -18,7 +18,7 @@ export const messages = defineMessages({
     defaultMessage: 'Pages',
   },
   switchToCodeEditor: {
-    id: 'studio.7Znis6',
+    id: 'studio.tUa1tv',
     defaultMessage: 'Switch to code editor',
   },
   themeTab: {
@@ -50,27 +50,27 @@ export const messages = defineMessages({
     defaultMessage: 'Redo last undo (ctrl+y)',
   },
   createSubPage: {
-    id: 'studio.nAh4nV',
+    id: 'studio.s1BfHQ',
     defaultMessage: 'Create sub-page',
   },
   createPage: {
-    id: 'studio.XGRBwY',
+    id: 'studio.BCT58h',
     defaultMessage: 'Create page',
   },
   savePage: {
-    id: 'studio.XdKIcE',
+    id: 'studio.m8Ge5s',
     defaultMessage: 'Save page',
   },
   deletePage: {
-    id: 'studio.IkH3lh',
+    id: 'studio.69th+V',
     defaultMessage: 'Delete page',
   },
   unsavedChanges: {
-    id: 'studio.AZ6j18',
+    id: 'studio.j7WSfa',
     defaultMessage: 'Unsaved changes',
   },
   pageName: {
-    id: 'studio.4IKGKj',
+    id: 'studio.AjBEeD',
     defaultMessage: 'Page name',
   },
   flowPageWarning: {
@@ -102,7 +102,7 @@ export const messages = defineMessages({
     defaultMessage: 'Unknown error',
   },
   reportBug: {
-    id: 'studio.d1OBbT',
+    id: 'studio.lEOKzN',
     defaultMessage: 'Report bug',
   },
   enterFullscreen: {

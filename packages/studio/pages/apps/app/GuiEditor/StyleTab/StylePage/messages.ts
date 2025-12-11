@@ -38,7 +38,7 @@ export const messages = defineMessages({
     defaultMessage: 'Radius',
   },
   cssPreview: {
-    id: 'studio.YS/siD',
+    id: 'studio.WhMd/+',
     defaultMessage: 'CSS preview',
   },
   margin: {

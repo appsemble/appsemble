@@ -10,7 +10,7 @@ export const messages = defineMessages({
     defaultMessage: 'The client id used to authenticate for the OAuth client credentials flow',
   },
   clientSecretLabel: {
-    id: 'studio.ASwJRg',
+    id: 'studio.B7p2EC',
     defaultMessage: 'Client secret',
   },
   clientSecretHelp: {

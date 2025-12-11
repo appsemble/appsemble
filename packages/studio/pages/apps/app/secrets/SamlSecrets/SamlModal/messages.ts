@@ -2,7 +2,7 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   modalTitle: {
-    id: 'studio.O+J2Zf',
+    id: 'studio.ULlRxz',
     defaultMessage: 'SAML secret',
   },
   iconLabel: {

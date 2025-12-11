@@ -2,7 +2,7 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   reseed: {
-    id: 'studio.9FMy4U',
+    id: 'studio.7YlBCy',
     defaultMessage: 'Reseed app',
   },
   check: {

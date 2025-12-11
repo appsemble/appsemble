@@ -10,7 +10,7 @@ export const messages = defineMessages({
     defaultMessage: 'Import',
   },
   importFile: {
-    id: 'studio.yL26VP',
+    id: 'studio.pr6SmF',
     defaultMessage: 'Import from file',
   },
   noFile: {

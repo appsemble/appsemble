@@ -26,7 +26,7 @@ export const messages = defineMessages({
     defaultMessage: 'Settings',
   },
   pfp: {
-    id: 'studio.IKMcY6',
+    id: 'studio.O9GTIc',
     defaultMessage: 'Profile picture',
   },
 });
