@@ -11,6 +11,6 @@ export async function fetchCustomAppDomains(): Promise<string[]> {
       },
     },
   });
-  const domains = Array.from(apps.map((app) => `${app.domain}:*`));
+  const domains = Array.from(apps.map((app) => app.domain!));
   return domains;
 }
