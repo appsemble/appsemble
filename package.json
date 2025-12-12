@@ -132,6 +132,7 @@
     "s3-secret-key": "password"
   },
   "dependencies": {
+    "gitleaks-secret-scanner": "^1.2.2",
     "i18n-iso-countries": "^7.14.0",
     "vite-tsconfig-paths": "^5.0.0"
   },
