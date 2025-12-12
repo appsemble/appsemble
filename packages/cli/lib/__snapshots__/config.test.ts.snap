@@ -2748,6 +2748,20 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         },
         "type": "object",
       },
+      "DateDecorationsAction": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "description": "Action to fetch decorations and disabled dates for the visible month. Called with { month: number, year: number }. Should return { decorations: { date: string, color?: string, label?: string }[], disabledDates: string[] }.",
+            "format": "action",
+            "type": "string",
+          },
+        },
+        "required": [
+          "action",
+        ],
+        "type": "object",
+      },
       "DateField": {
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
@@ -2778,6 +2792,25 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
           },
+          "decorations": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/DateDecorationsAction",
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "remap": {
+                    "format": "remapper",
+                  },
+                },
+                "required": [
+                  "remap",
+                ],
+                "type": "object",
+              },
+            ],
+          },
           "defaultValue": {
             "description": "The default value of the field.",
             "type": "string",
@@ -2786,6 +2819,13 @@ The date value can be accessed using the \`root\` remapper.",
             "default": false,
             "description": "Whether the field should always be be disabled.",
             "format": "remapper",
+          },
+          "disabledDates": {
+            "description": "Dates to disable in the picker (ISO date strings).",
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
           },
           "help": {
             "description": "A description for the text field. For adding more information about the field.",

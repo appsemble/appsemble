@@ -1,0 +1,61 @@
+/* stylelint-disable selector-max-attribute, color-format/format, color-hex-length */
+.dateDecorations .flatpickr-day {
+  position: relative;
+}
+
+/* TODO: pick some other colors, and/or add custom color capabilities */
+
+.dateDecorations [data-date-color='red'] {
+  --date-color: #ff0000;
+}
+
+.dateDecorations [data-date-color='green'] {
+  --date-color: #00ff00;
+}
+
+.dateDecorations [data-date-color='blue'] {
+  --date-color: #0000ff;
+}
+
+.dateDecorations [data-date-color='yellow'] {
+  --date-color: #ffff00;
+}
+
+.dateDecorations [data-date-color='purple'] {
+  --date-color: #800080;
+}
+
+.dateDecorations [data-date-color='orange'] {
+  --date-color: #ffa500;
+}
+
+/* Dot decoration - small circle below the date number */
+.dayDecoration[data-decoration-type='dot'] {
+  background: var(--date-color);
+  border-radius: 50%;
+  bottom: 3px;
+  height: 4px;
+  left: calc(50% - 2px);
+  position: absolute;
+  width: 4px;
+}
+
+/* Overlay decoration - semi-transparent background with inset border */
+.dayDecoration[data-decoration-type='overlay'] {
+  background-color: color-mix(in srgb, var(--date-color) 20%, transparent);
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 2px var(--date-color);
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Border decoration - thick outline around the cell */
+.dayDecoration[data-decoration-type='border'] {
+  border-radius: inherit;
+  inset: 0;
+  outline: 2px var(--date-border-style, solid) var(--date-color);
+  outline-offset: -2px;
+  pointer-events: none;
+  position: absolute;
+}
