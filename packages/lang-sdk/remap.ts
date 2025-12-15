@@ -770,29 +770,27 @@ const mapperImplementations: MapperImplementations = {
         : typeof input === 'number'
           ? new Date(input)
           : parseISO(String(input));
-    // Convert to UTC-zoned date so the operation works in UTC
-    const zonedDate = utcToZonedTime(date, 'UTC');
     let result: Date;
     switch (unit) {
       case 'year':
-        result = startOfYear(zonedDate);
+        result = startOfYear(date);
         break;
       case 'quarter':
-        result = startOfQuarter(zonedDate);
+        result = startOfQuarter(date);
         break;
       case 'month':
-        result = startOfMonth(zonedDate);
+        result = startOfMonth(date);
         break;
       case 'week':
-        result = startOfWeek(zonedDate, { weekStartsOn: 1 });
+        result = startOfWeek(date, { weekStartsOn: 1 });
         break;
       case 'weekSun':
-        result = startOfWeek(zonedDate, { weekStartsOn: 0 });
+        result = startOfWeek(date, { weekStartsOn: 0 });
         break;
       default:
         return input;
     }
-    return zonedTimeToUtc(result, 'UTC').toJSON();
+    return result.toJSON();
   },
 
   'date.endOf'(unit, input) {
@@ -802,29 +800,27 @@ const mapperImplementations: MapperImplementations = {
         : typeof input === 'number'
           ? new Date(input)
           : parseISO(String(input));
-    // Convert to UTC-zoned date so the operation works in UTC
-    const zonedDate = utcToZonedTime(date, 'UTC');
     let result: Date;
     switch (unit) {
       case 'year':
-        result = endOfYear(zonedDate);
+        result = endOfYear(date);
         break;
       case 'quarter':
-        result = endOfQuarter(zonedDate);
+        result = endOfQuarter(date);
         break;
       case 'month':
-        result = endOfMonth(zonedDate);
+        result = endOfMonth(date);
         break;
       case 'week':
-        result = endOfWeek(zonedDate, { weekStartsOn: 1 });
+        result = endOfWeek(date, { weekStartsOn: 1 });
         break;
       case 'weekSun':
-        result = endOfWeek(zonedDate, { weekStartsOn: 0 });
+        result = endOfWeek(date, { weekStartsOn: 0 });
         break;
       default:
         return input;
     }
-    return zonedTimeToUtc(result, 'UTC').toJSON();
+    return result.toJSON();
   },
 
   'date.set'(args, input, context) {
