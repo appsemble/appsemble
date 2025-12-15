@@ -218,7 +218,7 @@ export const string = 'with-icon';
       await authorizeCLI('apps:write', testApp);
       await expect(() =>
         traverseBlockThemes(resolveFixture('apps/test'), app.id, testApp.defaults.baseURL!, false),
-      ).rejects.toThrow('Request failed with status code 404');
+      ).rejects.toThrowError('Request failed with status code 404');
       const { AppBlockStyle } = await getAppDB(app.id);
       const style = await AppBlockStyle.findOne();
       expect(style).toBeNull();

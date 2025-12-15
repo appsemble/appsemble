@@ -11,6 +11,6 @@ describe('validateStyle', () => {
   });
 
   it('should throw a CssValidationError when validating incorrect CSS', () => {
-    expect(() => validateStyle("this isn't valid")).toThrow(StyleValidationError);
+    expect(() => validateStyle("this isn't valid")).toThrowError(StyleValidationError);
   });
 });

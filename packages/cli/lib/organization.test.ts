@@ -97,7 +97,7 @@ describe('organization', () => {
           countryCode: 'NL',
           invoiceReference: 'employee',
         }),
-      ).rejects.toThrow('Request failed with status code 409');
+      ).rejects.toThrowError('Request failed with status code 409');
       vi.useFakeTimers();
     });
   });
@@ -195,7 +195,7 @@ describe('organization', () => {
           countryCode: null,
           invoiceReference: null,
         }),
-      ).rejects.toThrow('Request failed with status code 404');
+      ).rejects.toThrowError('Request failed with status code 404');
     });
 
     it('should throw if the user is not authorized', async () => {
@@ -227,7 +227,7 @@ describe('organization', () => {
           countryCode: null,
           invoiceReference: null,
         }),
-      ).rejects.toThrow('Request failed with status code 401');
+      ).rejects.toThrowError('Request failed with status code 401');
     });
   });
 
@@ -335,7 +335,7 @@ describe('organization', () => {
           countryCode: null,
           invoiceReference: null,
         }),
-      ).rejects.toThrow('Request failed with status code 403');
+      ).rejects.toThrowError('Request failed with status code 403');
       expect(organization).toMatchObject({
         id: 'test',
         name: 'Test',

@@ -38,7 +38,7 @@ describe('AppMember', () => {
         role: 'Admin',
         phoneNumber: '+31 6 1234 567',
       }),
-    ).rejects.toThrow('Invalid Phone Number');
+    ).rejects.toThrowError('Invalid Phone Number');
   });
 
   it('should use NL as default country code', async () => {
