@@ -36,7 +36,7 @@ export const baseTest = mergeTests(
  *
  * Used for tests that require a logged in user
  */
-export const authenticatedTest = baseTest.extend<{}, { workerStorageState: string }>({
+export const authenticatedTest = baseTest.extend<object, { workerStorageState: string }>({
   // Use the same storage state for all tests in this worker.
   storageState: ({ workerStorageState }, use) => use(workerStorageState),
 

@@ -1,4 +1,0 @@
-extends:
-  - remcohaszing/web
-rules:
-  n/no-unpublished-import: off

@@ -35,11 +35,12 @@ interface SimpleFormContext {
   values: FormValues;
 }
 
-// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
 const Context = createContext<SimpleFormContext>(null);
 export const SimpleFormProvider = Context.Provider;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export function SimpleForm<T extends {}>({
   children,
   defaultValues,
@@ -62,7 +63,6 @@ export function SimpleForm<T extends {}>({
   }, [defaultValues]);
 
   const doSubmit = useCallback(async () => {
-    // eslint-disable-next-line unicorn/no-useless-undefined
     setSubmitError(undefined);
     setSubmitting(true);
     try {
@@ -73,7 +73,6 @@ export function SimpleForm<T extends {}>({
     } finally {
       setSubmitting(false);
     }
-    // eslint-disable-next-line unicorn/no-useless-undefined
     setSubmitError(undefined);
     if (resetOnSuccess) {
       reset();

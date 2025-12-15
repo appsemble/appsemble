@@ -156,7 +156,7 @@ describe('resource', () => {
         type: 'test',
         seed: false,
       }),
-    ).rejects.toThrow('Request failed with status code 404');
+    ).rejects.toThrowError('Request failed with status code 404');
   });
 
   describe('updateResource', () => {
@@ -309,7 +309,7 @@ describe('resource', () => {
           remote: testApp.defaults.baseURL!,
           path: resolveFixture('resources/test-update.json'),
         }),
-      ).rejects.toThrow('Request failed with status code 404');
+      ).rejects.toThrowError('Request failed with status code 404');
     });
 
     it('should not update if there are no IDs in resource file', async () => {

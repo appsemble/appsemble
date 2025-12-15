@@ -2,6 +2,7 @@ import { assertKoaCondition } from '@appsemble/node-utils';
 import { stripPem } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { toXml } from 'xast-util-to-xml';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { x as h } from 'xastscript';
 
 import { App, getAppDB } from '../../../../models/index.js';

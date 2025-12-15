@@ -23,7 +23,7 @@ interface CodeBlockProps {
   /**
    * The code to render.
    */
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-restricted-types
   readonly children: ReactElement<HighlightedCodeProps> | string;
 
   /**

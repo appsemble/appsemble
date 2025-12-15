@@ -16,12 +16,20 @@ function mapArrayToWordcloudObject(words: string[]): ListEntry[] {
 }
 
 interface WordcloudProps {
-  readonly shape: string;
+  readonly shape:
+    | 'cardioid'
+    | 'circle'
+    | 'diamond'
+    | 'pentagon'
+    | 'square'
+    | 'star'
+    | 'triangle-forward'
+    | 'triangle';
   readonly options: Options;
   readonly words: string[];
 }
 
-export function WordcloudLogic(props: WordcloudProps): VNode {
+export function WordcloudLogic({ shape = 'circle', options, words }: WordcloudProps): VNode {
   const canvasRef = useRef<HTMLCanvasElement>();
   const canvasWidth = Math.floor(window.innerWidth * 0.61);
   const canvasHeight = Math.floor(window.innerHeight * 0.82);
@@ -31,15 +39,16 @@ export function WordcloudLogic(props: WordcloudProps): VNode {
       return;
     }
 
-    const list = mapArrayToWordcloudObject(props.words);
+    const list = mapArrayToWordcloudObject(words);
 
     WordCloud(canvasRef.current, {
+      ...options,
       color: '#000000',
       rotateRatio: 0,
-      ...props.options,
       list,
+      shape,
     });
-  }, [props.options, props.words]);
+  }, [options, shape, words]);
 
   if (!WordCloud.isSupported) {
     return <FormattedMessage id="unsupported" />;

@@ -32,7 +32,7 @@ describe('dns', () => {
 
     it('should throw if the app domain strategy is unknown', async () => {
       setArgv({ appDomainStrategy: 'unknown' });
-      await expect(configureDNS()).rejects.toThrow("Unknown app domain strategy: 'unknown'");
+      await expect(configureDNS()).rejects.toThrowError("Unknown app domain strategy: 'unknown'");
     });
   });
 
@@ -51,7 +51,7 @@ describe('dns', () => {
 
     it('should throw if the app domain strategy is unknown', async () => {
       setArgv({ appDomainStrategy: 'unknown' });
-      await expect(cleanupDNS()).rejects.toThrow("Unknown app domain strategy: 'unknown'");
+      await expect(cleanupDNS()).rejects.toThrowError("Unknown app domain strategy: 'unknown'");
     });
   });
 
@@ -73,7 +73,7 @@ describe('dns', () => {
 
     it('should throw if the app domain strategy is unknown', async () => {
       setArgv({ appDomainStrategy: 'unknown' });
-      await expect(reconcileDNS()).rejects.toThrow("Unknown app domain strategy: 'unknown'");
+      await expect(reconcileDNS()).rejects.toThrowError("Unknown app domain strategy: 'unknown'");
     });
   });
 });

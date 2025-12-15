@@ -1313,7 +1313,6 @@ export type Values = Record<string, unknown>;
 export type FieldError = FieldError[] | FieldErrorMap | boolean | string;
 
 // Not using an interface causes an invalid circular reference.
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export interface FieldErrorMap {
   [key: string]: FieldError;
 }

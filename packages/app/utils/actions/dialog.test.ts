@@ -38,7 +38,7 @@ describe('dialog', () => {
       prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     options.close();
-    await expect(promise).rejects.toThrow(
+    await expect(promise).rejects.toThrowError(
       new ActionError({
         data: 'closed',
         cause: 'closed',
@@ -76,7 +76,7 @@ describe('dialog', () => {
       title: 'Hello dialog',
     });
     options.close();
-    await expect(promise).rejects.toThrow(
+    await expect(promise).rejects.toThrowError(
       new ActionError({
         data: '',
         cause: '',
@@ -142,7 +142,7 @@ describe('dialog', () => {
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     await options.actionCreators['dialog.error']?.(null)[0]({ value: 'fail' }, null);
-    await expect(promise).rejects.toThrow(
+    await expect(promise).rejects.toThrowError(
       new ActionError({
         data: '',
         cause: '',

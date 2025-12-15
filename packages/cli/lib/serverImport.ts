@@ -36,7 +36,7 @@ export async function serverImport<
     | 'synchronizeTrainings',
 >(...members: T[]): Promise<Record<T, any>> {
   try {
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore Because the the server isn’t built and published, an error is expected here at
     // build time, but while type checking.
     const mod = await import('@appsemble/server');

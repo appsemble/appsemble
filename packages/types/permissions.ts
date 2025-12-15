@@ -351,9 +351,7 @@ export enum OrganizationPermission {
   QueryOrganizationSubscriptions,
 }
 
-export const appOrganizationPermissionMapping: {
-  [key in AppPermission]: OrganizationPermission;
-} = {
+export const appOrganizationPermissionMapping: Record<AppPermission, OrganizationPermission> = {
   [AppPermission.CreateAppInvites]: OrganizationPermission.CreateAppInvites,
   [AppPermission.QueryAppMembers]: OrganizationPermission.QueryAppMembers,
   [AppPermission.DeleteAppMembers]: OrganizationPermission.DeleteAppMembers,

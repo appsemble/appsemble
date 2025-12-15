@@ -44,7 +44,7 @@ describe('requestUserPasswordReset', () => {
     expect(await compare('newPassword', user.password!)).toBe(true);
 
     // Sequelize throws errors when trying to load in null objects.
-    await expect(token.reload()).rejects.toThrow(
+    await expect(token.reload()).rejects.toThrowError(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
   });

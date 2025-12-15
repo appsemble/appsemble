@@ -220,7 +220,6 @@ export function Page(): ReactNode {
   const showDialog = useCallback((d: ShowDialogParams) => {
     setDialog(d);
     return () => {
-      // eslint-disable-next-line unicorn/no-useless-undefined
       setDialog(undefined);
     };
   }, []);

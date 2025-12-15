@@ -199,7 +199,7 @@ describe('deleteAppMember', () => {
     const response = await request.delete(`/api/apps/${app.id}/app-members/${appMember.id}`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
-    await expect(() => appMember.reload()).rejects.toThrow(
+    await expect(() => appMember.reload()).rejects.toThrowError(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
   });
@@ -326,13 +326,13 @@ describe('deleteAppMember', () => {
       status: 204,
       data: '',
     });
-    await expect(() => appMember.reload()).rejects.toThrow(
+    await expect(() => appMember.reload()).rejects.toThrowError(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
-    await expect(() => samlAuthorization.reload()).rejects.toThrow(
+    await expect(() => samlAuthorization.reload()).rejects.toThrowError(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
-    await expect(() => oauth2Authorization.reload()).rejects.toThrow(
+    await expect(() => oauth2Authorization.reload()).rejects.toThrowError(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
     await samlSecret.reload();

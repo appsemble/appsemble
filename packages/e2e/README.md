@@ -82,7 +82,7 @@ to have logged in and set the access token in the `request` fixture beforehand. 
 so:
 
 ```ts
-export const test = base.extend<{}>({
+export const test = base.extend<object>({
   async request({}, use) {
     const newRequest = await request.newContext({
       extraHTTPHeaders: {

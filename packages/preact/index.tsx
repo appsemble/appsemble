@@ -9,7 +9,7 @@ export interface BlockProps extends BootstrapParams {
   ready: () => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore 2345 argument of type is not assignable to parameter of type (strictNullChecks)
 export const Context = createContext<BlockProps>(null);
 
@@ -49,6 +49,7 @@ export function bootstrap(Component: ComponentType<BlockProps>): void {
  * @returns The wrapper component.
  * @deprecated Use `useBlock()` instead.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export function withBlock<P extends {}>(
   Component: ComponentType<Omit<BlockProps, keyof P> & P>,
 ): ComponentType<P> {

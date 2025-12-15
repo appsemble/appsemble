@@ -30,7 +30,7 @@ interface BlockListProps {
   readonly data?: any;
   readonly ee: EventEmitter;
   readonly extraCreators?: ActionCreators;
-  readonly flowActions?: {};
+  readonly flowActions?: object;
   readonly pageDefinition: PageDefinition;
   readonly prefix: string;
   readonly prefixIndex: string;

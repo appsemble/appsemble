@@ -1,0 +1,48 @@
+{
+  "name": "@appsemble/eslint-plugin",
+  "version": "0.36.0",
+  "private": true,
+  "description": "Custom eslint rules used internally at Appsemble.",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/eslint-plugin"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
+  },
+  "scripts": {
+    "prepack": "tsc --noEmit false",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@typescript-eslint/types": "^8.49.0",
+    "@typescript-eslint/utils": "^8.49.0"
+  },
+  "devDependencies": {
+    "@types/eslint": "^9.6.1"
+  },
+  "peerDependencies": {
+    "@typescript-eslint/parser": "^8.49.0",
+    "eslint": ">=9"
+  }
+}

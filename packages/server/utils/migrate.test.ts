@@ -31,10 +31,10 @@ describe('migrate', () => {
     await Meta.create({ version: '1.2.3' });
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
-    await expect(migrate(db, null, [])).rejects.toThrow(AppsembleError);
+    await expect(migrate(db, null, [])).rejects.toThrowError(AppsembleError);
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
-    await expect(migrate(db, null, [])).rejects.toThrow(
+    await expect(migrate(db, null, [])).rejects.toThrowError(
       `Multiple Meta entries found. The ${db.getDatabaseName()} database requires a manual fix.`,
     );
   });
@@ -213,8 +213,8 @@ describe('migrate', () => {
       };
 
       const db = getDB();
-      await expect(migrate(db, '0.24.13', [m02412, m02413])).rejects.toThrow('test');
-      await expect(getDB().query('SELECT * FROM "Test";')).rejects.toThrow(
+      await expect(migrate(db, '0.24.13', [m02412, m02413])).rejects.toThrowError('test');
+      await expect(getDB().query('SELECT * FROM "Test";')).rejects.toThrowError(
         'relation "Test" does not exist',
       );
 
@@ -236,7 +236,7 @@ describe('migrate', () => {
       const m02413 = { key: '0.24.13', up: vi.fn(), down: vi.fn() };
 
       const db = getDB();
-      await expect(migrate(db, '0.24.13', [m02412, m02413])).rejects.toThrow('test');
+      await expect(migrate(db, '0.24.13', [m02412, m02413])).rejects.toThrowError('test');
 
       expect(m02412.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
       expect(m02413.up).not.toHaveBeenCalled();
@@ -267,7 +267,7 @@ describe('migrate', () => {
       };
 
       const db = getDB();
-      await expect(migrate(db, '0.24.13', [m02412, m02413])).rejects.toThrow('test');
+      await expect(migrate(db, '0.24.13', [m02412, m02413])).rejects.toThrowError('test');
 
       expect(m02412.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
       expect(m02413.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
@@ -306,7 +306,7 @@ and include the stacktrace.`,
       };
 
       const db = getDB();
-      await expect(migrate(db, '0.24.12', [m02412, m02413])).rejects.toThrow('test');
+      await expect(migrate(db, '0.24.12', [m02412, m02413])).rejects.toThrowError('test');
 
       expect(m02412.up).not.toHaveBeenCalled();
       expect(m02413.up).not.toHaveBeenCalled();

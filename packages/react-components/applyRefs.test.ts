@@ -18,7 +18,7 @@ it('should apply object refs', () => {
 it('should ignore null refs', () => {
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
-  expect(() => applyRefs('current value', null)).not.toThrow();
+  expect(() => applyRefs('current value', null)).not.toThrowError();
 });
 
 it('should apply multiple refs', () => {

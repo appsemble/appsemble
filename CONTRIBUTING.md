@@ -515,9 +515,9 @@ tracks the migration version.
 
 4. Adding unique rules to columns in a table MUST be done using indexes, NOT constraints. Appsemble
    has a custom eslint rule defined in
-   [enforce-index-decorator.cjs](packages/eslint-plugin-appsemble/enforce-index-decorator.cjs) to
+   [enforce-index-decorator.cjs](packages/eslint-plugin/rules/enforce-index-decorator.ts) to
    remind you of the correct decorator to use in the models. See why this is done here
-   [appsemble-eslint-plugin](packages/appsemble-eslint-plugin/README.md). This also means you MUST
+   [eslint-plugin](packages/eslint-plugin/README.md). This also means you MUST
    never use `queryInterface.createConstraint` for unique columns, but instead use
    `queryInterface.createIndex`.
 

@@ -1,0 +1,41 @@
+import { defineConfig } from 'eslint/config';
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
+
+import globals from 'globals';
+
+import { getReactRules } from '../utils/getReactRules.js';
+import jsxRules from '../rules/jsx-a11y.js';
+
+export default defineConfig([
+  {
+    files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
+    plugins: {
+      react,
+      'react-hooks': reactHooks,
+      'jsx-a11y': jsxA11y,
+    },
+    settings: {
+      react: {
+        version: 'detect',
+        defaultVersion: '18',
+        pragma: 'React',
+      },
+    },
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+      globals: {
+        ...globals.browser,
+      },
+    },
+    rules: {
+      ...jsxRules,
+      ...getReactRules('react'),
+    },
+  },
+]);

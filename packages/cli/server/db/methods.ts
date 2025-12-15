@@ -24,9 +24,11 @@ export function setAppName(name: string): void {
   appName = name;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const comparators = ['gt', 'gte', 'lt', 'lte', 'eq', 'ne'] as const;
 type Comparator = (typeof comparators)[number];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const expressions = ['and', 'or'] as const;
 type Expression = (typeof expressions)[number];
 
