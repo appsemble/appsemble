@@ -21,11 +21,23 @@ export interface ResourceFixtures {
   ) => Promise<Resource>;
 
   /**
-   * Delete all resources from an app.
+   * Delete all seed resources from an app,
+   * To delete all the resources of a specific type,
+   * use `resourceType` optional argument.
    *
    * @param appId Id of the app to delete the resources of.
+   * @param resourceType Type of the resource to delete.
    */
-  deleteAllResources: (appId: number) => Promise<void>;
+  deleteAllResources: (appId: number, resourceType?: string) => Promise<void>;
+
+  /**
+   * Delete a resource from an app.
+   *
+   * @param appId Id of the app to delete the resource of.
+   * @param resourceType Type of the resource to delete.
+   * @param id Id of the resource to delete.
+   */
+  deleteResource: (appId: number, resourceType: string, id: number) => Promise<void>;
 }
 
 export const test = base.extend<ResourceFixtures>({
@@ -53,8 +65,26 @@ export const test = base.extend<ResourceFixtures>({
   },
 
   async deleteAllResources({ request }, use) {
-    await use(async (appId) => {
-      const response = await request.delete(`/api/apps/${appId}/resources`);
+    await use(async (appId, resourceType) => {
+      if (resourceType) {
+        const queryResponse = await request.get(`/api/apps/${appId}/resources/${resourceType}`, {
+          params: { $select: 'id' },
+        });
+        const resources = (await queryResponse.json()) as Resource[];
+        const response = await request.delete(`/api/apps/${appId}/resources/${resourceType}`, {
+          data: resources.map(({ id }) => id),
+        });
+        expect(response.status()).toBe(204);
+      } else {
+        const response = await request.delete(`/api/apps/${appId}/resources`);
+        expect(response.status()).toBe(204);
+      }
+    });
+  },
+
+  async deleteResource({ request }, use) {
+    await use(async (appId, resourceType, id) => {
+      const response = await request.delete(`/api/apps/${appId}/resources/${resourceType}/${id}`);
       expect(response.status()).toBe(204);
     });
   },
