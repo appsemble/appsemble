@@ -840,6 +840,7 @@ interface ActionEnumField extends AbstractEnumField {
    * This action will be fired to fetch dynamic enum options.
    *
    * The action should return an array of objects that contain the `label` and `value` property.
+   * Optionally, each object can include `disabled: true` to make that option unselectable.
    *
    * @format action
    */
@@ -861,6 +862,7 @@ interface EventEnumField extends AbstractEnumField {
    * Wait until an event has been fired containing the list of options.
    *
    * The event should return an array of objects that contain the `label` and `value` property.
+   * Optionally, each object can include `disabled: true` to make that option unselectable.
    *
    * @format event-listener
    */
