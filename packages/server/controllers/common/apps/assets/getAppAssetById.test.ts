@@ -82,7 +82,7 @@ describe('getAppAssetById', () => {
     });
   });
 
-  it('should be able to fetch an by name', async () => {
+  it('should be able to fetch an asset by name', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
       mime: 'application/octet-stream',
@@ -102,6 +102,86 @@ describe('getAppAssetById', () => {
         'cache-control': 'max-age=31536000,immutable',
       }),
     });
+  });
+
+  it('should return original image when larger size is specified.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/avif',
+    });
+    const image = await sharp({
+      create: {
+        width: 100,
+        height: 100,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .avif()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const response = await request.get(
+      `/api/apps/${app.id}/assets/${asset.id}?width=150&height=150`,
+      {
+        responseType: 'arraybuffer',
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+    });
+
+    const metadata = await sharp(response.data).metadata();
+
+    expect(metadata.width).toBe(100);
+    expect(metadata.height).toBe(100);
+  });
+
+  it('should return original image when specified size is too similar.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/avif',
+    });
+    const image = await sharp({
+      create: {
+        width: 300,
+        height: 300,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .avif()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const response = await request.get(
+      `/api/apps/${app.id}/assets/${asset.id}?width=150&height=150`,
+      {
+        responseType: 'arraybuffer',
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+    });
+
+    const metadata = await sharp(response.data).metadata();
+
+    expect(metadata.width).toBe(300);
+    expect(metadata.height).toBe(300);
   });
 
   it('should not resize the asset when its not an image, only return original.', async () => {

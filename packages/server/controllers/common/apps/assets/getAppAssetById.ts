@@ -79,27 +79,38 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     if (width && height && mime?.startsWith('image')) {
       const mid = sharp();
       stream.pipe(mid);
-      resizedImage = await mid
-        .resize({
-          width: Math.round(width) * 4,
-          kernel: sharp.kernel.lanczos3,
-        })
-        .gamma()
-        .toBuffer();
-      stream = await sharp(resizedImage)
-        .resize(Math.round(width), Math.round(height), {
-          kernel: sharp.kernel.lanczos3,
-          fit: 'cover',
-        })
-        .avif()
-        .toBuffer();
+      const metadata = await mid.metadata();
+      assertKoaCondition(
+        metadata.width != null && metadata.height != null,
+        ctx,
+        422,
+        'Invalid asset',
+      );
+      if (metadata.width > width * 4 && metadata.height > height * 4) {
+        resizedImage = await mid
+          .resize({
+            width: Math.round(width) * 4,
+            kernel: sharp.kernel.lanczos3,
+          })
+          .gamma()
+          .toBuffer();
+        stream = await sharp(resizedImage)
+          .resize(Math.round(width), Math.round(height), {
+            kernel: sharp.kernel.lanczos3,
+            fit: 'cover',
+          })
+          .avif()
+          .toBuffer();
 
-      const newAsset = await Asset.create({
-        name: `${assetId}${Math.round(width)}x${Math.round(height)}`,
-        mime: 'image/avif',
-      });
+        const newAsset = await Asset.create({
+          name: `${assetId}${Math.round(width)}x${Math.round(height)}`,
+          mime: 'image/avif',
+        });
 
-      await uploadS3File(`app-${appId}`, newAsset.id, resizedImage);
+        await uploadS3File(`app-${appId}`, newAsset.id, resizedImage);
+      } else {
+        stream = await mid.avif().toBuffer();
+      }
     }
   }
 
