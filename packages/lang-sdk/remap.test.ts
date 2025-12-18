@@ -1087,6 +1087,80 @@ describe('array.join', () => {
   });
 });
 
+describe('array.groupBy', () => {
+  runTests({
+    'should return empty array if input is not an array': {
+      input: { foo: 'bar' },
+      mappers: { 'array.groupBy': 'type' },
+      expected: [],
+    },
+    'should group objects by a common property': {
+      input: [
+        { name: 'Alice', dept: 'Engineering' },
+        { name: 'Bob', dept: 'Sales' },
+        { name: 'Charlie', dept: 'Engineering' },
+        { name: 'Diana', dept: 'Sales' },
+      ],
+      mappers: { 'array.groupBy': 'dept' },
+      expected: [
+        {
+          key: 'Engineering',
+          items: [
+            { name: 'Alice', dept: 'Engineering' },
+            { name: 'Charlie', dept: 'Engineering' },
+          ],
+        },
+        {
+          key: 'Sales',
+          items: [
+            { name: 'Bob', dept: 'Sales' },
+            { name: 'Diana', dept: 'Sales' },
+          ],
+        },
+      ],
+    },
+    'should handle items with undefined group key': {
+      input: [
+        { name: 'Alice', dept: 'Engineering' },
+        { name: 'Bob' },
+        { name: 'Charlie', dept: 'Engineering' },
+      ],
+      mappers: { 'array.groupBy': 'dept' },
+      expected: [
+        {
+          key: 'Engineering',
+          items: [
+            { name: 'Alice', dept: 'Engineering' },
+            { name: 'Charlie', dept: 'Engineering' },
+          ],
+        },
+        {
+          key: undefined,
+          items: [{ name: 'Bob' }],
+        },
+      ],
+    },
+    'should preserve order of first occurrence': {
+      input: [
+        { id: 1, type: 'B' },
+        { id: 2, type: 'A' },
+        { id: 3, type: 'B' },
+      ],
+      mappers: { 'array.groupBy': 'type' },
+      expected: [
+        {
+          key: 'B',
+          items: [
+            { id: 1, type: 'B' },
+            { id: 3, type: 'B' },
+          ],
+        },
+        { key: 'A', items: [{ id: 2, type: 'A' }] },
+      ],
+    },
+  });
+});
+
 describe('array.map', () => {
   runTests({
     'apply remappers to each array item': {

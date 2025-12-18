@@ -564,6 +564,23 @@ const mapperImplementations: MapperImplementations = {
     return input.join(separator ?? undefined);
   },
 
+  'array.groupBy'(propertyName, input) {
+    if (!Array.isArray(input)) {
+      return [];
+    }
+
+    const groups = new Map<unknown, unknown[]>();
+    for (const item of input) {
+      const key = item?.[propertyName];
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)!.push(item);
+    }
+
+    return [...groups.entries()].map(([key, items]) => ({ key, items }));
+  },
+
   'array.unique'(mapper, input, context) {
     if (!Array.isArray(input)) {
       return input;

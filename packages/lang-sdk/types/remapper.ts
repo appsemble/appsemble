@@ -549,6 +549,24 @@ export interface Remappers {
   'array.join': string | null;
 
   /**
+   * Groups an array of objects by a common property value.
+   *
+   * Returns an array of group objects, each containing a `key` (the grouped property value)
+   * and `items` (array of objects with that property value).
+   *
+   * If the input is not an array, returns an empty array.
+   *
+   * @example
+   * // Input: [{ name: "Alice", dept: "Eng" }, { name: "Bob", dept: "Sales" }, { name: "Charlie", dept: "Eng" }]
+   * { "array.groupBy": "dept" }
+   * // Result: [
+   * //   { key: "Eng", items: [{ name: "Alice", dept: "Eng" }, { name: "Charlie", dept: "Eng" }] },
+   * //   { key: "Sales", items: [{ name: "Bob", dept: "Sales" }] }
+   * // ]
+   */
+  'array.groupBy': string;
+
+  /**
    * This remapper return true if the provided string is a substring of the input string.
    *
    */

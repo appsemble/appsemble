@@ -251,6 +251,29 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: "id eq '5' or id eq '6' or id eq '7'",
   },
+  'array.groupBy': {
+    input: [
+      { name: 'Alice', department: 'Engineering' },
+      { name: 'Bob', department: 'Sales' },
+      { name: 'Charlie', department: 'Engineering' },
+    ],
+    remapper: {
+      'array.groupBy': 'department',
+    },
+    result: [
+      {
+        key: 'Engineering',
+        items: [
+          { name: 'Alice', department: 'Engineering' },
+          { name: 'Charlie', department: 'Engineering' },
+        ],
+      },
+      {
+        key: 'Sales',
+        items: [{ name: 'Bob', department: 'Sales' }],
+      },
+    ],
+  },
   'array.map': {
     input: [
       {

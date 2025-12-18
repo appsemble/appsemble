@@ -54,6 +54,21 @@ ${schemaExample('array.range.map', { input: 'pretty' })}
     ${schemaExample('array.join')}
 `,
   },
+  'array.groupBy': {
+    type: 'string',
+    description: `
+Groups an array of objects by a common property value.
+
+Returns an array of group objects, each containing a \`key\` (the grouped property value)
+and \`items\` (array of objects with that property value).
+
+If the input is not an array, returns an empty array.
+
+${schemaExample('array.groupBy')}
+
+The groups preserve the order of first occurrence of each key value.
+`,
+  },
   'array.unique': {
     $ref: '#/components/schemas/RemapperDefinition',
     description: `
