@@ -142,7 +142,7 @@ export function EnumInput({
       setLoading(false);
     };
 
-    if ('action' in field) {
+    if ('action' in field && !originalOptions.length) {
       actions[field.action]().then(handleOptions, handleError);
     }
 
@@ -157,7 +157,16 @@ export function EnumInput({
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
-  }, [actions, events, field, fieldsetEntryValues, formValues, remapperValues, utils]);
+  }, [
+    actions,
+    events,
+    field,
+    fieldsetEntryValues,
+    formValues,
+    originalOptions,
+    remapperValues,
+    utils,
+  ]);
 
   const filterChange = useCallback((e: ChangeEvent<HTMLInputElement>, input: string): void => {
     setInputValue(input);
