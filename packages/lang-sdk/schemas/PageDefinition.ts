@@ -22,5 +22,8 @@ the list.
     actions: {
       $ref: '#/components/schemas/PageActionsDefinition',
     },
+    layout: {
+      $ref: '#/components/schemas/PageLayoutDefinition',
+    },
   },
 });

@@ -5,6 +5,7 @@ import {
   type BlockDefinition,
   type PageDefinition,
   type Remapper,
+  type PageLayoutDefinition,
 } from '@appsemble/lang-sdk';
 import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
 import { type ProjectImplementations } from '@appsemble/types';
@@ -24,6 +25,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { Block } from '../Block/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
+import usePageGridCss from '../PageGridProvider/index.js';
 
 interface BlockListProps {
   readonly blocks: BlockDefinition[];
@@ -38,7 +40,14 @@ interface BlockListProps {
   readonly remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
   readonly showDialog: ShowDialogAction;
   readonly showShareDialog: ShowShareDialog;
+  readonly pageLayout?: PageLayoutDefinition;
 }
+
+const BREAKPOINTS = {
+  mobile: 0,
+  tablet: 640,
+  desktop: 1024,
+};
 
 export function BlockList({
   appStorage,
@@ -48,6 +57,7 @@ export function BlockList({
   extraCreators,
   flowActions,
   pageDefinition,
+  pageLayout,
   prefix,
   prefixIndex,
   remap,
@@ -203,6 +213,7 @@ export function BlockList({
     appMemberInfoRef,
     appMemberSelectedGroup,
   ]);
+  usePageGridCss({ pageLayout, BREAKPOINTS });
 
   if (!blockList.length) {
     if (!isLoggedIn) {
@@ -211,9 +222,8 @@ export function BlockList({
 
     return <Navigate to="/" />;
   }
-
   return (
-    <>
+    <div className="page-grid">
       {isLoading ? <Loader /> : null}
       {blockList.map(([block, index, visible]) =>
         visible ? (
@@ -239,6 +249,6 @@ export function BlockList({
           />
         ) : null,
       )}
-    </>
+    </div>
   );
 }

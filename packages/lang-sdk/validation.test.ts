@@ -9,6 +9,7 @@ import {
   type FlowPageDefinition,
   predefinedAppRoles,
   type Security,
+  type PageLayoutDefinition,
 } from './types/index.js';
 import { validateAppDefinition } from './validation.js';
 
@@ -3727,6 +3728,34 @@ describe('validateAppDefinition', () => {
         app,
         undefined,
         ['security', 'guest', 'inherits'],
+      ),
+    ]);
+  });
+
+  it('should throw if the page layout templates do not match with the number of columns', async () => {
+    const app = createTestApp();
+    const invalidPageLayoutDefinition = {
+      desktop: {
+        spacing: {
+          unit: '40px',
+          gap: 1 / 8,
+          padding: 1 / 4,
+        },
+        layout: {
+          columns: 8,
+          template: ['a a a a a a a a a a', 'b b b b b b b b', 'a a a a b b b b'],
+        },
+      },
+    } as PageLayoutDefinition;
+    Object.assign(app.pages[0], { layout: invalidPageLayoutDefinition });
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'template needs to be the same length as number of columns',
+        invalidPageLayoutDefinition.desktop.layout.template,
+        undefined,
+        ['pages', 0, 'desktop', 'layout', 'template'],
       ),
     ]);
   });

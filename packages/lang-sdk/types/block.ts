@@ -68,14 +68,14 @@ export interface BlockDefinition extends ControllerDefinition {
    * For floating blocks this property defines where the block should float.
    */
   position?:
-    | 'bottom left'
-    | 'bottom right'
-    | 'bottom'
-    | 'left'
-    | 'right'
-    | 'top left'
-    | 'top right'
-    | 'top';
+  | 'bottom left'
+  | 'bottom right'
+  | 'bottom'
+  | 'left'
+  | 'right'
+  | 'top left'
+  | 'top right'
+  | 'top';
 
   /**
    * Whether to render the block or not.
@@ -98,4 +98,9 @@ export interface BlockDefinition extends ControllerDefinition {
    * The exact meaning of the parameters depends on the project type.
    */
   parameters?: JsonObject;
+
+  /**
+   * Grid area defined in the page layout definition
+   */
+  gridArea?: string;
 }

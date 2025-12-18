@@ -29,6 +29,9 @@ import {
   type Remapper,
   type ResourceGetActionDefinition,
   type RoleDefinition,
+  type DeviceGridLayoutDefinition,
+  type PageLayoutDefinition,
+  type BasicPageDefinition,
 } from './types/index.js';
 
 type Report = (instance: unknown, message: string, path: (number | string)[]) => void;
@@ -363,6 +366,51 @@ function validateController(
             !has(controllerImplementations.events?.listen, key)
           ) {
             report(value, 'is an unknown event listener', [...path, 'events', 'listen', key]);
+          }
+        }
+      }
+    },
+  });
+}
+
+function validatePageLayoutDefinition(
+  layoutDefinition: PageLayoutDefinition | undefined,
+  report: Report,
+  path: Prefix,
+): void {
+  if (!layoutDefinition) {
+    return;
+  }
+  for (const [deviceName, deviceDefinition] of Object.entries(layoutDefinition) as [
+    string,
+    DeviceGridLayoutDefinition,
+  ][]) {
+    if (
+      deviceDefinition.layout.template.some(
+        (row) => row.split(' ').length !== deviceDefinition.layout.columns,
+      )
+    ) {
+      report(
+        deviceDefinition.layout.template,
+        'template needs to be the same length as number of columns',
+        [...path, deviceName, 'layout', 'template'],
+      );
+    }
+  }
+}
+
+function validateGridLayout(definition: AppDefinition, report: Report): void {
+  iterApp(definition, {
+    onPage(page, path) {
+      if (page.type === 'page' || page.type === undefined) {
+        const layoutDefinition = (page as BasicPageDefinition).layout;
+        validatePageLayoutDefinition(layoutDefinition, report, path);
+      } else {
+        if (page.type === 'tabs') {
+          if (page.tabs) {
+            page.tabs.map((tab) => validatePageLayoutDefinition(tab.layout, report, path));
+          } else {
+            validatePageLayoutDefinition(page.definition!.foreach.layout, report, path);
           }
         }
       }
@@ -1712,6 +1760,7 @@ export async function validateAppDefinition(
     validateActions(definition, report);
     validateEvents(definition, blockVersionMap, report);
     validateUniquePageNames(definition, report);
+    validateGridLayout(definition, report);
   } catch (error) {
     report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
   }
