@@ -37,8 +37,7 @@ export function getCsp({
       ];
 
   return {
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-    'report-uri': [reportUri],
+    'report-uri': [reportUri ?? false],
     'connect-src': [
       '*',
       'blob:',
@@ -61,9 +60,14 @@ export function getCsp({
       app.msClarityID ? 'https://clarity.ms' : false,
     ],
     'media-src': ['*', 'blob:', 'data:', host],
-    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+    'style-src': ["'self'", 'https://fonts.googleapis.com'],
     'font-src': ['*', 'data:'],
+    // Frames videos from vimeo and youtube in the `@appsemble/video` block, weseedo in
+    // `@eindhoven/weseedo` block.
     'frame-src': ["'self'", 'blob:', '*.vimeo.com', '*.youtube.com', '*.weseedo.nl', host],
     'object-src': ['*', 'data:', 'blob:', host],
+    // Framed in the appsemble studio for a preview, hence `host` in frame-ancestors
+    'frame-ancestors': [host, "'none'"],
+    'base-uri': ["'self'"],
   };
 }

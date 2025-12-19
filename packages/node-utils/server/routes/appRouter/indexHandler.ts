@@ -24,6 +24,12 @@ export function createIndexHandler({
   return async (ctx: Context) => {
     const { hostname, path } = ctx;
     const host = getHost({ context: ctx });
+    // Prevent mime-type sniffing,
+    // Visit https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Content-Type-Options to know more.
+    ctx.set('x-content-type-options', 'nosniff');
+    // Less strict due to the OAuth mechanism
+    // Visit https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy to know more.
+    ctx.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
     // Most of the fields here are used either directly or indirectly that's why no attributes query
     const app = await getApp({ context: ctx });
