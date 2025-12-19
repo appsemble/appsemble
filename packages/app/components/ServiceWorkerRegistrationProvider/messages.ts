@@ -2,8 +2,8 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   error: {
-    id: 'app.c7Slxf',
+    id: 'app.Z9tTQT',
     defaultMessage:
-      'You are using an in-app browser that doesn’t support all features such as notifications. For a better experience, open this page in a browser app.',
+      'You might be using an in-app browser that doesn’t support all features such as notifications. If not, please ignore this warning and close this pop-up. For a better experience, open this page in a browser app.',
   },
 });
