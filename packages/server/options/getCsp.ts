@@ -60,14 +60,15 @@ export function getCsp({
       app.msClarityID ? 'https://clarity.ms' : false,
     ],
     'media-src': ['*', 'blob:', 'data:', host],
-    'style-src': ["'self'", 'https://fonts.googleapis.com'],
+    // Unsafe-inline used in the restaurants app.
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     'font-src': ['*', 'data:'],
     // Frames videos from vimeo and youtube in the `@appsemble/video` block, weseedo in
     // `@eindhoven/weseedo` block.
     'frame-src': ["'self'", 'blob:', '*.vimeo.com', '*.youtube.com', '*.weseedo.nl', host],
     'object-src': ['*', 'data:', 'blob:', host],
     // Framed in the appsemble studio for a preview, hence `host` in frame-ancestors
-    'frame-ancestors': [host, "'none'"],
+    'frame-ancestors': [host],
     'base-uri': ["'self'"],
   };
 }

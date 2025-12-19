@@ -23,6 +23,7 @@ export function ImageComponent({ field }: { field: Image }): VNode | null {
       <button
         className={classNames(styles.button, styles.root)}
         onClick={modal.enable}
+        /* eslint-disable-next-line react/forbid-dom-props */
         style={{ backgroundImage: `url(${img})` }}
         type="button"
       >
