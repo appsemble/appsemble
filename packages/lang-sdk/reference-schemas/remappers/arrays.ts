@@ -69,6 +69,26 @@ ${schemaExample('array.groupBy')}
 The groups preserve the order of first occurrence of each key value.
 `,
   },
+  'array.toObject': {
+    type: 'object',
+    additionalProperties: false,
+    required: ['key', 'value'],
+    properties: {
+      key: { $ref: '#/components/schemas/RemapperDefinition' },
+      value: { $ref: '#/components/schemas/RemapperDefinition' },
+    },
+    description: `
+Converts an array of objects into a single object using specified key and value remappers.
+
+For each item in the array, the \`key\` remapper determines the property name and the \`value\`
+remapper determines the property value in the resulting object.
+
+If the input is not an array, returns an empty object.
+If multiple items produce the same key, later items overwrite earlier ones.
+
+${schemaExample('array.toObject')}
+`,
+  },
   'array.unique': {
     $ref: '#/components/schemas/RemapperDefinition',
     description: `

@@ -581,6 +581,33 @@ const mapperImplementations: MapperImplementations = {
     return [...groups.entries()].map(([key, items]) => ({ key, items }));
   },
 
+  'array.toObject'({ key: keyMapper, value: valueMapper }, input, context) {
+    if (!Array.isArray(input)) {
+      return {};
+    }
+
+    const result: Record<string, unknown> = {};
+    for (const [index, item] of input.entries()) {
+      const itemContext = {
+        ...context,
+        array: {
+          index,
+          length: input.length,
+          item,
+          prevItem: input[index - 1],
+          nextItem: input[index + 1],
+        },
+      };
+      const key = remap(keyMapper, item, itemContext);
+      const value = remap(valueMapper, item, itemContext);
+      if (key != null) {
+        result[String(key)] = value;
+      }
+    }
+
+    return result;
+  },
+
   'array.unique'(mapper, input, context) {
     if (!Array.isArray(input)) {
       return input;

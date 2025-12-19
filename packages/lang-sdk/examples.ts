@@ -274,6 +274,19 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
       },
     ],
   },
+  'array.toObject': {
+    input: [
+      { key: 'Engineering', items: ['Alice', 'Charlie'] },
+      { key: 'Sales', items: ['Bob'] },
+    ],
+    remapper: {
+      'array.toObject': { key: { prop: 'key' }, value: { prop: 'items' } },
+    },
+    result: {
+      Engineering: ['Alice', 'Charlie'],
+      Sales: ['Bob'],
+    },
+  },
   'array.map': {
     input: [
       {

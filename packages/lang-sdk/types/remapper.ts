@@ -567,6 +567,25 @@ export interface Remappers {
   'array.groupBy': string;
 
   /**
+   * Converts an array of objects into a single object using specified key and value remappers.
+   *
+   * For each item in the array, the `key` remapper determines the property name and the `value`
+   * remapper determines the property value in the resulting object.
+   *
+   * If the input is not an array, returns an empty object.
+   * If multiple items produce the same key, later items overwrite earlier ones.
+   *
+   * @example
+   * // Input: [{ key: "Eng", items: [...] }, { key: "Sales", items: [...] }]
+   * { "array.toObject": { key: { prop: "key" }, value: { prop: "items" } } }
+   * // Result: { "Eng": [...], "Sales": [...] }
+   */
+  'array.toObject': {
+    key: Remapper;
+    value: Remapper;
+  };
+
+  /**
    * This remapper return true if the provided string is a substring of the input string.
    *
    */
