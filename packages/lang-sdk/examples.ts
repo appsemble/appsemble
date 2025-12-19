@@ -619,6 +619,11 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     remapper: { gt: [{ prop: 'stock' }, 5] },
     result: true,
   },
+  gte: {
+    input: { stock: 5 },
+    remapper: { gte: [{ prop: 'stock' }, 5] },
+    result: true,
+  },
   history: {
     input: null,
     remapper: {},
@@ -684,6 +689,11 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
   lt: {
     input: { stock: 4 },
     remapper: { lt: [{ prop: 'stock' }, 5] },
+    result: true,
+  },
+  lte: {
+    input: { stock: 5 },
+    remapper: { lte: [{ prop: 'stock' }, 5] },
     result: true,
   },
   match: {

@@ -338,10 +338,20 @@ const mapperImplementations: MapperImplementations = {
     // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
     remap(left, input, context) > remap(right, input, context),
 
+  gte: ([left, right], input: any, context) =>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
+    remap(left, input, context) >= remap(right, input, context),
+
   lt: ([left, right], input: any, context) =>
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
     remap(left, input, context) < remap(right, input, context),
+
+  lte: ([left, right], input: any, context) =>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
+    remap(left, input, context) <= remap(right, input, context),
 
   ics(mappers, input, context) {
     let event;

@@ -267,9 +267,23 @@ export interface Remappers {
   /**
    * Compares the first computed remapper value with the second computed remapper value.
    *
+   * Returns `true` of the first entry is greater than or equal to the second entry.
+   */
+  gte: [Remapper, Remapper];
+
+  /**
+   * Compares the first computed remapper value with the second computed remapper value.
+   *
    * Returns `true` of the first entry is less than the second entry.
    */
   lt: [Remapper, Remapper];
+
+  /**
+   * Compares the first computed remapper value with the second computed remapper value.
+   *
+   * Returns `true` of the first entry is less than or equal to the second entry.
+   */
+  lte: [Remapper, Remapper];
 
   /**
    * Logs its input data (returns it) and its context.
