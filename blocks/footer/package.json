@@ -1,0 +1,27 @@
+{
+  "name": "@appsemble/footer",
+  "version": "0.36.0",
+  "private": true,
+  "description": "Render data as multiple cards.",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/footer"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "type": "module",
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@appsemble/sdk": "0.36.0",
+    "@appsemble/preact": "0.36.0",
+    "@appsemble/utils": "0.36.0",
+    "@appsemble/preact-components": "0.36.0",
+    "classnames": "^2.0.0",
+    "preact": "^10.0.0"
+  }
+}

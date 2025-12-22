@@ -2149,6 +2149,195 @@ This means this field will be displayed directly on the screen instead of in the
 }
 `;
 
+exports[`config > getProjectImplementations > official blocks > footer 1`] = `
+{
+  "actions": {
+    "$any": {
+      "description": "Custom action mapping.",
+    },
+  },
+  "events": undefined,
+  "messages": undefined,
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": {
+      "BulmaColor": {
+        "description": "A color known to Bulma.",
+        "enum": [
+          "danger",
+          "dark",
+          "info",
+          "link",
+          "primary",
+          "success",
+          "warning",
+          "white",
+        ],
+        "type": "string",
+      },
+      "FooterColumn": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/FooterColumnWithImage",
+          },
+          {
+            "$ref": "#/definitions/FooterColumnWithLinks",
+          },
+        ],
+      },
+      "FooterColumnWithImage": {
+        "additionalProperties": false,
+        "properties": {
+          "image": {
+            "$ref": "#/definitions/Image",
+            "description": "Image to render in the footer.",
+          },
+          "type": {
+            "const": "image",
+            "type": "string",
+          },
+        },
+        "required": [
+          "type",
+          "image",
+        ],
+        "type": "object",
+      },
+      "FooterColumnWithLinks": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/definitions/FooterItem",
+            },
+            "type": "array",
+          },
+          "title": {
+            "description": "Title of the column.",
+            "format": "remapper",
+          },
+          "titleLevel": {
+            "default": 4,
+            "description": "Level of the title text.",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+            ],
+            "type": "number",
+          },
+          "type": {
+            "const": "links",
+            "type": "string",
+          },
+        },
+        "required": [
+          "type",
+          "items",
+          "title",
+        ],
+        "type": "object",
+      },
+      "FooterItem": {
+        "additionalProperties": false,
+        "properties": {
+          "hide": {
+            "description": "Whether to hide the link.",
+            "format": "remapper",
+          },
+          "icon": {
+            "description": "Icon to be rendered next to the item.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "Label for the link item.",
+            "format": "remapper",
+          },
+          "onClick": {
+            "description": "Action to fire when user clicks on the link.",
+            "format": "action",
+            "type": "string",
+          },
+        },
+        "required": [
+          "label",
+        ],
+        "type": "object",
+      },
+      "Image": {
+        "additionalProperties": false,
+        "properties": {
+          "alt": {
+            "description": "The alt text of the image.",
+            "format": "remapper",
+          },
+          "file": {
+            "description": "Url or asset name of the image
+
+file can either be url or uploaded image",
+            "format": "remapper",
+          },
+          "hide": {
+            "description": "Whether to hide the image.",
+            "format": "remapper",
+          },
+        },
+        "required": [
+          "file",
+        ],
+        "type": "object",
+      },
+    },
+    "properties": {
+      "alignment": {
+        "default": "\`left\`",
+        "description": "Alignment of the columns.",
+        "enum": [
+          "center",
+          "left",
+          "right",
+        ],
+        "type": "string",
+      },
+      "backgroundColor": {
+        "$ref": "#/definitions/BulmaColor",
+        "default": "\`light\`",
+        "description": "Background color of the footer",
+      },
+      "columns": {
+        "items": {
+          "$ref": "#/definitions/FooterColumn",
+        },
+        "type": "array",
+      },
+      "copyright": {
+        "description": "Copyright text to be rendered at the bottom.",
+        "format": "remapper",
+      },
+      "linkColor": {
+        "$ref": "#/definitions/BulmaColor",
+        "default": "\`link\`",
+        "description": "Color of the links in footer",
+      },
+      "textColor": {
+        "$ref": "#/definitions/BulmaColor",
+        "default": "\`dark\`",
+        "description": "Color of the titles and copyright text.",
+      },
+    },
+    "required": [
+      "columns",
+    ],
+    "type": "object",
+  },
+}
+`;
+
 exports[`config > getProjectImplementations > official blocks > form 1`] = `
 {
   "actions": {

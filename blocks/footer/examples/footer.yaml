@@ -1,0 +1,22 @@
+parameters:
+  items:
+    - type: links
+      links:
+        - label: Link A
+        - label: Link B
+        - label: Link C
+        - label: Link D
+    - type: image
+      image:
+        file: attachment
+        alt: Attachment
+    - type: links
+      links:
+        - label: Link A
+        - label: Link B
+        - label: Link C
+        - label: Link D
+actions:
+  onClick:
+    type: link
+    to: { app: url }

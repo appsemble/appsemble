@@ -1,0 +1,25 @@
+.wrapper {
+  display: grid;
+  grid-gap: 0.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  grid-template-rows: auto;
+  margin: 0.25rem;
+}
+
+.tile {
+  align-items: center;
+  color: hsl(0deg 0% 100% / 85%);
+  cursor: pointer;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  min-height: 6rem;
+
+  &:hover {
+    color: hsl(0deg 0% 100% / 85%);
+  }
+}
+
+.icon {
+  font-size: calc(min(3em, 10vw));
+}
