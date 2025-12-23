@@ -28,6 +28,7 @@ RUN npm --workspace @appsemble/sdk run prepack
 RUN npm --workspace @appsemble/lang-sdk run prepack
 RUN npm --workspace @appsemble/utils run prepack
 RUN npm --workspace @appsemble/node-utils run prepack
+RUN npm --workspace @appsemble/eslint-plugin run prepack
 RUN npm --workspace @appsemble/server run prepack
 
 # Install production dependencies
@@ -39,6 +40,7 @@ COPY --from=build /app/packages/lang-sdk packages/lang-sdk
 COPY --from=build /app/packages/server packages/server
 COPY --from=build /app/packages/types packages/types
 COPY --from=build /app/packages/utils packages/utils
+COPY --from=build /app/packages/eslint-plugin packages/eslint-plugin
 COPY --from=build /app/package.json package.json
 COPY --from=build /app/package-lock.json package-lock.json
 COPY --from=build /app/trainings trainings
