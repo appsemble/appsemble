@@ -243,6 +243,44 @@ export function remap(
   return result;
 }
 
+// Comparison functions for array.sort
+const compareNumeric = (aVal: unknown, bVal: unknown): number => {
+  const aNum = Number(aVal);
+  const bNum = Number(bVal);
+  const aIsNaN = Number.isNaN(aNum);
+  const bIsNaN = Number.isNaN(bNum);
+  if (aIsNaN && bIsNaN) {
+    return 0;
+  }
+  if (aIsNaN) {
+    return 1;
+  }
+  if (bIsNaN) {
+    return -1;
+  }
+  return aNum - bNum;
+};
+
+const compareLexicographic = (aVal: unknown, bVal: unknown): number =>
+  String(aVal).localeCompare(String(bVal));
+
+const compareDate = (aVal: unknown, bVal: unknown): number => {
+  const aDate = aVal instanceof Date ? aVal : parseISO(String(aVal));
+  const bDate = bVal instanceof Date ? bVal : parseISO(String(bVal));
+  const aInvalid = Number.isNaN(aDate.getTime());
+  const bInvalid = Number.isNaN(bDate.getTime());
+  if (aInvalid && bInvalid) {
+    return 0;
+  }
+  if (aInvalid) {
+    return 1;
+  }
+  if (bInvalid) {
+    return -1;
+  }
+  return aDate.getTime() - bDate.getTime();
+};
+
 /**
  * Implementations of all remappers.
  *
@@ -616,6 +654,67 @@ const mapperImplementations: MapperImplementations = {
     }
 
     return result;
+  },
+
+  'array.sort'(mapper, input) {
+    if (!Array.isArray(input)) {
+      return input;
+    }
+
+    // Normalize mapper: string becomes { by: string }, null/undefined becomes {}
+    const {
+      by,
+      descending = false,
+      strategy = 'infer',
+    } = typeof mapper === 'string'
+      ? { by: mapper, descending: false, strategy: 'infer' as const }
+      : (mapper ?? {});
+
+    // Extract values for sorting
+    const getValue = (item: unknown): unknown =>
+      by ? (item as Record<string, unknown>)?.[by] : item;
+
+    // Determine effective strategy for 'infer' mode
+    let effectiveStrategy = strategy;
+    if (strategy === 'infer') {
+      // Find first non-null value to determine type
+      const firstValue = input.map(getValue).find((v) => v != null);
+      if (typeof firstValue === 'number') {
+        effectiveStrategy = 'numeric';
+      } else if (firstValue instanceof Date) {
+        effectiveStrategy = 'date';
+      } else {
+        effectiveStrategy = 'lexicographic';
+      }
+    }
+
+    const compare =
+      effectiveStrategy === 'numeric'
+        ? compareNumeric
+        : effectiveStrategy === 'date'
+          ? compareDate
+          : compareLexicographic;
+
+    const sorted = [...input].sort((a, b) => {
+      const aValue = getValue(a);
+      const bValue = getValue(b);
+
+      // Handle nullish values - push them to the end
+      if (aValue == null && bValue == null) {
+        return 0;
+      }
+      if (aValue == null) {
+        return 1;
+      }
+      if (bValue == null) {
+        return -1;
+      }
+
+      const comparison = compare(aValue, bValue);
+      return descending ? -comparison : comparison;
+    });
+
+    return sorted;
   },
 
   'array.unique'(mapper, input, context) {

@@ -356,4 +356,56 @@ Checks if the input array includes the provided item.
 ${schemaExample('array.contains')}
 `,
   },
+  'array.sort': {
+    oneOf: [
+      { type: 'string' },
+      {
+        type: 'object',
+        nullable: true,
+        additionalProperties: false,
+        properties: {
+          by: { type: 'string' },
+          descending: { type: 'boolean', default: false },
+          strategy: {
+            type: 'string',
+            enum: ['infer', 'numeric', 'lexicographic', 'date'],
+            default: 'infer',
+          },
+        },
+      },
+    ],
+    description: `
+Sorts an array of items.
+
+Can sort by a property (for arrays of objects) or by the items themselves (for primitive arrays).
+Supports ascending and descending order, and handles numbers, strings, and dates.
+
+When a string is provided, it's used as the property name to sort by (ascending).
+
+**Sorting strategy (\`strategy\` option):**
+
+- \`infer\` (default): Determines comparison type from the first non-null value.
+  Numbers use numeric comparison, Dates use timestamp comparison, everything else
+  uses lexicographic (string) comparison. Mixed types fall back to lexicographic.
+- \`numeric\`: Coerces values to numbers. Non-numeric values (NaN) are pushed to the end.
+- \`lexicographic\`: Converts values to strings and uses \`localeCompare()\`.
+- \`date\`: Parses values as ISO dates and compares timestamps. Invalid dates are pushed to the end.
+
+Nullish values (null/undefined) are always pushed to the end regardless of strategy.
+
+${schemaExample('array.sort')}
+
+For arrays of objects, you can simply use a string to sort by that property:
+
+${schemaExample('array.sort.by')}
+
+Use \`descending: true\` to sort in descending order:
+
+${schemaExample('array.sort.desc')}
+
+Use \`strategy: numeric\` to force numeric comparison (useful for string numbers):
+
+${schemaExample('array.sort.numeric')}
+`,
+  },
 };

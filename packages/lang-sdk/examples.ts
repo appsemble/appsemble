@@ -20,6 +20,9 @@ type CustomRemapperKeys =
   | 'array.range.1'
   | 'array.range.map'
   | 'array.range'
+  | 'array.sort.by'
+  | 'array.sort.desc'
+  | 'array.sort.numeric'
   | 'date.endOf.quarter'
   | 'date.endOf.week'
   | 'date.endOf.weekSun'
@@ -445,6 +448,42 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
         occupation: 'CEO',
       },
     ],
+  },
+  'array.sort': {
+    input: [3, 1, 4, 1, 5, 9, 2, 6],
+    remapper: {
+      'array.sort': null,
+    },
+    result: [1, 1, 2, 3, 4, 5, 6, 9],
+  },
+  'array.sort.by': {
+    input: [
+      { name: 'Charlie', age: 30 },
+      { name: 'Alice', age: 25 },
+      { name: 'Bob', age: 35 },
+    ],
+    remapper: {
+      'array.sort': 'name',
+    },
+    result: [
+      { name: 'Alice', age: 25 },
+      { name: 'Bob', age: 35 },
+      { name: 'Charlie', age: 30 },
+    ],
+  },
+  'array.sort.desc': {
+    input: [3, 1, 4, 1, 5, 9, 2, 6],
+    remapper: {
+      'array.sort': { descending: true },
+    },
+    result: [9, 6, 5, 4, 3, 2, 1, 1],
+  },
+  'array.sort.numeric': {
+    input: ['10', '2', '1', '20'],
+    remapper: {
+      'array.sort': { strategy: 'numeric' },
+    },
+    result: ['1', '2', '10', '20'],
   },
   'array.unique': {
     input: [1, 1, 2, 3],

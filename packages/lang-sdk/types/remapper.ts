@@ -600,6 +600,68 @@ export interface Remappers {
   };
 
   /**
+   * Sorts an array of items.
+   *
+   * Can sort by a property (for arrays of objects) or by the items themselves (for primitive arrays).
+   * Supports ascending and descending order, and handles numbers, strings, and dates.
+   *
+   * When a string is provided, it's used as the property name to sort by (ascending).
+   *
+   * **Sorting strategy (`strategy` option):**
+   *
+   * - `infer` (default): Determines comparison type from the first non-null value.
+   * Numbers use numeric comparison, Dates use timestamp comparison, everything else
+   * uses lexicographic (string) comparison. Mixed types fall back to lexicographic.
+   * - `numeric`: Coerces values to numbers. Non-numeric values (NaN) are pushed to the end.
+   * - `lexicographic`: Converts values to strings and uses `localeCompare()`.
+   * - `date`: Parses values as ISO dates and compares timestamps. Invalid dates are pushed to the end.
+   *
+   * Nullish values (null/undefined) are always pushed to the end regardless of strategy.
+   *
+   * @example
+   * // Input: [3, 1, 2]
+   * { "array.sort": null }
+   * // Result: [1, 2, 3]
+   * @example
+   * // Input: [{ name: "Charlie" }, { name: "Alice" }, { name: "Bob" }]
+   * { "array.sort": "name" }
+   * // Result: [{ name: "Alice" }, { name: "Bob" }, { name: "Charlie" }]
+   * @example
+   * // Input: [{ name: "Charlie" }, { name: "Alice" }, { name: "Bob" }]
+   * { "array.sort": { by: "name", descending: true } }
+   * // Result: [{ name: "Charlie" }, { name: "Bob" }, { name: "Alice" }]
+   * @example
+   * // Input: ["10", "2", "1"]
+   * { "array.sort": { strategy: "numeric" } }
+   * // Result: ["1", "2", "10"]
+   */
+  'array.sort':
+    | string
+    | {
+        /**
+         * The property name to sort by. If not provided, sorts by the items themselves.
+         */
+        by?: string;
+
+        /**
+         * Whether to sort in descending order. Defaults to false (ascending).
+         */
+        descending?: boolean;
+
+        /**
+         * The comparison strategy to use.
+         *
+         * - `infer` (default): Auto-detect from first non-null value. Numbers use numeric,
+         * Dates use date, others use lexicographic. Mixed types fall back to lexicographic.
+         * - `numeric`: Coerce to numbers. NaN values pushed to end.
+         * - `lexicographic`: Convert to strings, use localeCompare().
+         * - `date`: Parse as ISO dates, compare timestamps. Invalid dates pushed to end.
+         */
+        strategy?: 'date' | 'infer' | 'lexicographic' | 'numeric';
+      }
+    | null;
+
+  /**
    * This remapper return true if the provided string is a substring of the input string.
    *
    */
