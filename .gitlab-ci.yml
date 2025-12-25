@@ -65,6 +65,7 @@ workflow:
         npm run scripts -- release "$INCREMENT"
       fi
     - npm install
+    - npm --workspace @appsemble/eslint-plugin run prepack
     - VERSION="$(npm --silent run appsemble -- --version)"
     - |
       MESSAGE="$VERSION
