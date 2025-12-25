@@ -63,7 +63,16 @@ export function ResourceDetailsPage({ guiResourceId, guiResourceName }: Props): 
   useMeta(resourceId);
 
   const setResource = useCallback(
-    ({ $author, $clonable, $created, $editor, $updated, id: unused, ...rest }: Resource) => {
+    ({
+      $author,
+      $clonable,
+      $created,
+      $editor,
+      $updated,
+      id: unused,
+      Position,
+      ...rest
+    }: Resource) => {
       setEditingResource(rest);
       setEditingResourceJson(`${JSON.stringify(rest, null, 2)}\n`);
     },
