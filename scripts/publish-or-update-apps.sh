@@ -5,23 +5,23 @@ set -e
 # parse flags
 for arg in "$@"; do
   case "$arg" in
-    --push-to-main)
-      REMOTE_BRANCH=main
-      shift
-      ;;
-    --help)
-      echo "Usage: ${0##*/} [--push-to-main] [context]"
-      echo "  --push-to-main: push to main instead of set-<context>-app-ids"
-      echo "  context: the context to use, defaults to development"
-      exit
-      ;;
-    --*)
-      echo "Unknown flag $arg"
-      exit 1
-      ;;
-    *)
-      break # stop parsing flags after first positional
-      ;;
+  --push-to-main)
+    REMOTE_BRANCH=main
+    shift
+    ;;
+  --help)
+    echo "Usage: ${0##*/} [--push-to-main] [context]"
+    echo "  --push-to-main: push to main instead of set-<context>-app-ids"
+    echo "  context: the context to use, defaults to development"
+    exit
+    ;;
+  --*)
+    echo "Unknown flag $arg"
+    exit 1
+    ;;
+  *)
+    break # stop parsing flags after first positional
+    ;;
   esac
 done
 CONTEXT=${1:-development}
@@ -35,12 +35,12 @@ for app in $apps; do
   context_id=$(yq -e ".context.$CONTEXT.id" "$app/.appsemblerc.yaml" 2>/dev/null || true)
 
   if npm run appsemble -- -vv app update --force "$app"; then
-    echo "Successful update on app $app_name";
+    echo "Successful update on app $app_name"
   else
     if [ -n "$context_id" ] && [ "$context_id" != "null" ]; then
-      echo "App with $CONTEXT id $context_id does not exist, publishing instead of updating";
+      echo "App with $CONTEXT id $context_id does not exist, publishing instead of updating"
     else
-      echo "App $app_name has no $CONTEXT id, publishing instead of updating";
+      echo "App $app_name has no $CONTEXT id, publishing instead of updating"
     fi
 
     file_before="$(mktemp)"
@@ -56,6 +56,8 @@ for app in $apps; do
 done
 
 [ -z "$ANY_PUBLISHED" ] && echo "No apps were published or updated" && exit 0
+# prepack eslint config
+npm --workspace @appsemble/eslint-plugin run prepack
 # make an MR
 gpg --import "$GPG_PRIVATE_KEY"
 git config user.email bot@appsemble.com
