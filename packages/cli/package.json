@@ -69,8 +69,6 @@
     "koas-core": "^0.7.0",
     "koas-operations": "^0.7.0",
     "koas-status-code": "^0.7.0",
-    "language-tags": "^1.0.0",
-    "lodash-es": "^4.0.0",
     "mime-types": "^2.0.0",
     "node-json-db": "^2.0.0",
     "normalize-path": "^3.0.0",
@@ -97,13 +95,14 @@
     "@types/concat-stream": "2.0.3",
     "@types/inquirer": "9.0.7",
     "@types/koa__cors": "5.0.0",
+    "@types/koa-compress": "4.0.6",
+    "@types/koa-range": "0.3.5",
     "@types/normalize-path": "3.0.2",
     "@types/postcss-import": "14.0.3",
     "@types/postcss-url": "10.0.4",
     "concat-stream": "2.0.0",
     "vitest": "2.1.9",
-    "sequelize": "6.37.7",
-    "minio": "8.0.6"
+    "sequelize": "6.37.7"
   },
   "optionalDependencies": {
     "keytar": "^7.0.0"

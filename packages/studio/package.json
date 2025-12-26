@@ -58,7 +58,6 @@
     "fast-deep-equal": "^3.0.0",
     "i18n-iso-countries": "^7.14.0",
     "indent-string": "^5.0.0",
-    "intl-messageformat": "^10.0.0",
     "jsonschema": "~1.4.1",
     "jwt-decode": "^4.0.0",
     "monaco-editor": "^0.41.0",

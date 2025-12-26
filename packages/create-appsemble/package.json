@@ -40,10 +40,8 @@
   },
   "dependencies": {
     "@appsemble/node-utils": "0.36.0",
-    "@appsemble/types": "0.36.0",
     "inquirer": "^9.0.0",
-    "type-fest": "^4.0.0",
-    "yaml": "^2.0.0"
+    "type-fest": "^4.0.0"
   },
   "devDependencies": {
     "@types/inquirer": "9.0.7"

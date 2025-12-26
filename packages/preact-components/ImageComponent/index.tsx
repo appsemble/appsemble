@@ -1,4 +1,4 @@
-import { Modal, useToggle } from '@appsemble/preact-components';
+import { Modal, useToggle } from '../index.js';
 import { Fragment, type VNode } from 'preact';
 import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
