@@ -145,6 +145,8 @@ declare module 'koas-parameters' {
     $own: boolean;
     delimiter?: string;
     email: string;
+    width?: number;
+    height?: number;
   }
 }
 

@@ -4,6 +4,8 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [
     { $ref: '#/components/parameters/appId' },
     { $ref: '#/components/parameters/assetId' },
+    { $ref: '#/components/parameters/width' },
+    { $ref: '#/components/parameters/height' },
   ],
   get: {
     tags: ['common', 'app', 'asset'],
