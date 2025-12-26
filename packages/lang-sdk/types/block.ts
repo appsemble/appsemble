@@ -68,14 +68,14 @@ export interface BlockDefinition extends ControllerDefinition {
    * For floating blocks this property defines where the block should float.
    */
   position?:
-  | 'bottom left'
-  | 'bottom right'
-  | 'bottom'
-  | 'left'
-  | 'right'
-  | 'top left'
-  | 'top right'
-  | 'top';
+    | 'bottom left'
+    | 'bottom right'
+    | 'bottom'
+    | 'left'
+    | 'right'
+    | 'top left'
+    | 'top right'
+    | 'top';
 
   /**
    * Whether to render the block or not.

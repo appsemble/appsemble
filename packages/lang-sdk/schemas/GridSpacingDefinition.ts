@@ -7,15 +7,20 @@ export const GridSpacingDefinition: OpenAPIV3.NonArraySchemaObject = {
   properties: {
     unit: {
       type: 'string',
-      description: '',
+      description: 'CSS unit for spacing calculations (e.g., "1rem", "8px")',
+      default: '1rem',
     },
     gap: {
       type: 'number',
-      description: '',
+      description: 'Gap multiplier between grid items',
+      default: 1,
+      minimum: 0,
     },
     padding: {
       type: 'number',
-      description: '',
+      description: 'Padding multiplier around the grid',
+      default: 1,
+      minimum: 0,
     },
   },
 };

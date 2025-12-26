@@ -373,6 +373,25 @@ function validateController(
   });
 }
 
+function getTemplateAreas(layoutDefinition: PageLayoutDefinition | undefined): Set<string> {
+  const areas = new Set<string>();
+  if (!layoutDefinition) {
+    return areas;
+  }
+  for (const deviceDefinition of Object.values(layoutDefinition) as DeviceGridLayoutDefinition[]) {
+    if (deviceDefinition?.layout?.template) {
+      for (const row of deviceDefinition.layout.template) {
+        for (const area of row.split(' ')) {
+          if (area && area !== '.') {
+            areas.add(area);
+          }
+        }
+      }
+    }
+  }
+  return areas;
+}
+
 function validatePageLayoutDefinition(
   layoutDefinition: PageLayoutDefinition | undefined,
   report: Report,
@@ -385,6 +404,9 @@ function validatePageLayoutDefinition(
     string,
     DeviceGridLayoutDefinition,
   ][]) {
+    if (!deviceDefinition?.layout?.template || !deviceDefinition?.layout?.columns) {
+      continue;
+    }
     if (
       deviceDefinition.layout.template.some(
         (row) => row.split(' ').length !== deviceDefinition.layout.columns,
@@ -403,14 +425,47 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
   iterApp(definition, {
     onPage(page, path) {
       if (page.type === 'page' || page.type === undefined) {
-        const layoutDefinition = (page as BasicPageDefinition).layout;
+        const basicPage = page as BasicPageDefinition;
+        const layoutDefinition = basicPage.layout;
         validatePageLayoutDefinition(layoutDefinition, report, path);
+
+        if (layoutDefinition && basicPage.blocks) {
+          const templateAreas = getTemplateAreas(layoutDefinition);
+          for (const [idx, block] of basicPage.blocks.entries()) {
+            if (block.gridArea && !templateAreas.has(block.gridArea)) {
+              report(
+                block.gridArea,
+                `does not match any area defined in the page layout template. Available areas: ${[...templateAreas].join(', ') || 'none'}`,
+                [...path, 'blocks', idx, 'gridArea'],
+              );
+            }
+          }
+        }
       } else {
         if (page.type === 'tabs') {
           if (page.tabs) {
-            page.tabs.map((tab) => validatePageLayoutDefinition(tab.layout, report, path));
-          } else {
-            validatePageLayoutDefinition(page.definition!.foreach.layout, report, path);
+            for (const [tabIdx, tab] of page.tabs.entries()) {
+              validatePageLayoutDefinition(tab.layout, report, [...path, 'tabs', tabIdx]);
+
+              if (tab.layout && tab.blocks) {
+                const templateAreas = getTemplateAreas(tab.layout);
+                for (const [idx, block] of tab.blocks.entries()) {
+                  if (block.gridArea && !templateAreas.has(block.gridArea)) {
+                    report(
+                      block.gridArea,
+                      `does not match any area defined in the tab layout template. Available areas: ${[...templateAreas].join(', ') || 'none'}`,
+                      [...path, 'tabs', tabIdx, 'blocks', idx, 'gridArea'],
+                    );
+                  }
+                }
+              }
+            }
+          } else if (page.definition?.foreach) {
+            validatePageLayoutDefinition(page.definition.foreach.layout, report, [
+              ...path,
+              'definition',
+              'foreach',
+            ]);
           }
         }
       }
