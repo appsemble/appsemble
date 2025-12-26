@@ -35,6 +35,7 @@
     "@appsemble/preact": "0.36.0",
     "@appsemble/types": "0.36.0",
     "@appsemble/web-utils": "0.36.0",
+    "@appsemble/lang-sdk": "0.36.0",
     "@creativebulma/bulma-tagsinput": "^1.0.0",
     "@types/creativebulma__bulma-tagsinput": "^1.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
@@ -42,7 +43,6 @@
     "@types/leaflet": "^1.0.0",
     "classnames": "^2.0.0",
     "flatpickr": "^4.0.0",
-    "intl-messageformat": "^10.0.0",
     "leaflet": "~1.5.0",
     "nouislider": "^15.0.0",
     "preact": "^10.0.0"

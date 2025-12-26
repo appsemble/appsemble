@@ -33,8 +33,6 @@
   },
   "dependencies": {
     "@appsemble/node-utils": "0.36.0",
-    "@appsemble/utils": "0.36.0",
-    "@fortawesome/fontawesome-free": "^6.0.0",
     "@mdx-js/loader": "^3.0.0",
     "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",
     "@types/hast": "^3.0.0",
@@ -66,9 +64,11 @@
     "unified": "^11.0.0",
     "unist-util-visit": "^5.0.0",
     "unused-webpack-plugin": "^2.0.0",
-    "url": "^0.11.0",
     "webpack": "^5.0.0",
     "workbox-webpack-plugin": "^7.0.0"
+  },
+  "devDependencies": {
+    "url": "^0.11.0"
   },
   "engines": {
     "node": ">=20"

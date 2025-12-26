@@ -1,4 +1,4 @@
-import { Button } from '@appsemble/react-components';
+import { Button } from '../index.js';
 import { type ReactNode } from 'react';
 
 interface PaginationNumbersProps {

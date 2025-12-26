@@ -66,8 +66,7 @@
     "react-intl": "^6.0.0",
     "react-router-dom": "^6.0.0",
     "react-use-pwa-install": "^1.0.3",
-    "type-fest": "^4.0.0",
-    "xast-util-to-xml": "^4.0.0"
+    "type-fest": "^4.0.0"
   },
   "devDependencies": {
     "@types/jsdom": "21.1.7",

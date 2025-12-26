@@ -27,16 +27,13 @@
     "@appsemble/data-loader": "0.36.0",
     "@appsemble/list": "0.36.0",
     "@appsemble/preact": "0.36.0",
-    "@appsemble/preact-components": "0.36.0",
     "@appsemble/sdk": "0.36.0",
     "@appsemble/utils": "0.36.0",
     "@types/node": "22.15.21",
-    "classnames": "^2.0.0",
     "preact": "^10.0.0"
   },
   "devDependencies": {
     "@testing-library/preact": "3.2.4",
-    "@testing-library/user-event": "14.6.1",
     "vitest": "2.1.9"
   }
 }
