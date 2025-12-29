@@ -15,19 +15,19 @@ import {
 import { type AppMember, type AppModels, type Resource } from '../index.js';
 
 export class ResourceVersionGlobal extends Model {
-  id!: string;
+  declare id: string;
 
-  data?: any;
+  declare data?: any;
 
-  created!: Date;
+  declare created: Date;
 
-  ResourceId!: number;
+  declare ResourceId: number;
 
-  Resource?: Awaited<Resource>;
+  declare Resource?: Awaited<Resource>;
 
-  AppMemberId?: string;
+  declare AppMemberId?: string;
 
-  AppMember?: Awaited<AppMember>;
+  declare AppMember?: Awaited<AppMember>;
 
   toJSON(): ResourceVersionType {
     return {
@@ -45,20 +45,20 @@ export function createResourceVersionModel(sequelize: Sequelize): typeof Resourc
     @IsUUID(4)
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
-    id!: string;
+    declare id: string;
 
     @Column(DataType.JSON)
-    data?: any;
+    declare data?: any;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @AllowNull(false)
     @Column(DataType.INTEGER)
-    ResourceId!: number;
+    declare ResourceId: number;
 
     @Column(DataType.UUID)
-    AppMemberId?: string;
+    declare AppMemberId?: string;
 
     static associate(models: AppModels): void {
       ResourceVersion.belongsTo(models.Resource, {

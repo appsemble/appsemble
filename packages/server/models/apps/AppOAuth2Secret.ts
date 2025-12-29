@@ -17,31 +17,31 @@ import {
 import { type AppModels, type AppOAuth2Authorization } from '../index.js';
 
 export class AppOAuth2SecretGlobal extends Model {
-  id!: number;
+  declare id: number;
 
-  authorizationUrl!: string;
+  declare authorizationUrl: string;
 
-  tokenUrl!: string;
+  declare tokenUrl: string;
 
-  userInfoUrl?: string;
+  declare userInfoUrl?: string;
 
-  remapper?: Remapper;
+  declare remapper?: Remapper;
 
-  clientId!: string;
+  declare clientId: string;
 
-  clientSecret!: string;
+  declare clientSecret: string;
 
-  icon!: IconName;
+  declare icon: IconName;
 
-  name!: string;
+  declare name: string;
 
-  scope!: string;
+  declare scope: string;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  AppOAuth2Authorizations!: AppOAuth2Authorization[];
+  declare AppOAuth2Authorizations: AppOAuth2Authorization[];
 }
 
 export function createAppOAuth2SecretModel(sequelize: Sequelize): typeof AppOAuth2SecretGlobal {
@@ -66,47 +66,47 @@ export function createAppOAuth2SecretModel(sequelize: Sequelize): typeof AppOAut
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
-    id!: number;
+    declare id: number;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    authorizationUrl!: string;
+    declare authorizationUrl: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    tokenUrl!: string;
+    declare tokenUrl: string;
 
     @Column(DataType.STRING)
-    userInfoUrl?: string;
+    declare userInfoUrl?: string;
 
     @Column(DataType.JSON)
-    remapper?: Remapper;
+    declare remapper?: Remapper;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    clientId!: string;
+    declare clientId: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    clientSecret!: string;
+    declare clientSecret: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    icon!: IconName;
+    declare icon: IconName;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    name!: string;
+    declare name: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    scope!: string;
+    declare scope: string;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     static associate(models: AppModels): void {
       AppOAuth2Secret.hasMany(models.AppOAuth2Authorization, { onDelete: 'CASCADE' });

@@ -47,11 +47,11 @@ export class App extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 
   @AllowNull(false)
   @Column(DataType.JSON)
-  definition!: AppDefinition;
+  declare definition: AppDefinition;
 
   /**
    * The maximum length of a domain name is 255 bytes as per
@@ -60,232 +60,232 @@ export class App extends Model {
    */
   @Column({ type: DataType.STRING(253) })
   @Index({ name: 'appDomainComposite' })
-  domain?: string;
+  declare domain?: string;
 
   @Column({ type: DataType.TEXT })
-  sslCertificate?: string;
+  declare sslCertificate?: string;
 
   @Column({ type: DataType.TEXT })
-  sslKey?: string;
+  declare sslKey?: string;
 
   @Column(DataType.BLOB)
-  icon?: Buffer;
+  declare icon?: Buffer;
 
   @Column(DataType.BLOB)
-  maskableIcon?: Buffer;
+  declare maskableIcon?: Buffer;
 
   @Column(DataType.STRING)
-  iconBackground?: string;
+  declare iconBackground?: string;
 
   @Index({ name: 'App_path_OrganizationId_key', unique: true })
   @Column(DataType.STRING)
-  path!: string;
+  declare path: string;
 
   @AllowNull(false)
   @Default('unlisted')
   @Column(DataType.STRING)
-  visibility!: AppVisibility;
+  declare visibility: AppVisibility;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  showAppDefinition!: boolean;
+  declare showAppDefinition: boolean;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  template!: boolean;
+  declare template: boolean;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  demoMode!: boolean;
+  declare demoMode: boolean;
 
   @Column(DataType.TEXT)
-  coreStyle?: string;
+  declare coreStyle?: string;
 
   @Column(DataType.TEXT)
-  sharedStyle?: string;
+  declare sharedStyle?: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  vapidPublicKey!: string;
+  declare vapidPublicKey: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  vapidPrivateKey!: string;
+  declare vapidPrivateKey: string;
 
   @Default('unlocked')
   @Column(DataType.ENUM('fullLock', 'studioLock', 'unlocked'))
-  locked!: AppLock;
+  declare locked: AppLock;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  enableUnsecuredServiceSecrets!: boolean;
+  declare enableUnsecuredServiceSecrets: boolean;
 
   @Default(true)
   @Column(DataType.BOOLEAN)
-  showAppsembleOAuth2Login!: boolean;
+  declare showAppsembleOAuth2Login: boolean;
 
   @Default(false)
   @Column(DataType.BOOLEAN)
-  showAppsembleLogin!: boolean;
+  declare showAppsembleLogin: boolean;
 
   @Default(false)
   @Column(DataType.BOOLEAN)
-  displayAppMemberName!: boolean;
+  declare displayAppMemberName: boolean;
 
   @Default(false)
   @Column(DataType.BOOLEAN)
-  displayInstallationPrompt!: boolean;
+  declare displayInstallationPrompt: boolean;
 
   @Default(true)
   @Column(DataType.BOOLEAN)
-  enableSelfRegistration!: boolean;
+  declare enableSelfRegistration: boolean;
 
   @Column(DataType.STRING)
-  emailName?: string;
+  declare emailName?: string;
 
   @Column(DataType.STRING)
-  emailHost?: string;
+  declare emailHost?: string;
 
   @Column(DataType.STRING)
-  emailUser?: string;
+  declare emailUser?: string;
 
   @Column(DataType.BLOB)
-  emailPassword?: Buffer;
+  declare emailPassword?: Buffer;
 
   @Default(587)
   @Column(DataType.INTEGER)
-  emailPort!: number;
+  declare emailPort: number;
 
   @Default(true)
   @Column(DataType.BOOLEAN)
-  emailSecure!: boolean;
+  declare emailSecure: boolean;
 
   @Column(DataType.STRING)
-  googleAnalyticsID?: string;
+  declare googleAnalyticsID?: string;
 
   @Column(DataType.STRING)
-  metaPixelID?: string;
+  declare metaPixelID?: string;
 
   @Column(DataType.STRING)
-  msClarityID?: string;
+  declare msClarityID?: string;
 
   @Column(DataType.STRING)
-  sentryDsn?: string;
+  declare sentryDsn?: string;
 
   @Column(DataType.STRING)
-  sentryEnvironment?: string;
+  declare sentryEnvironment?: string;
 
   @Default(false)
   @AllowNull(false)
   @Column(DataType.BOOLEAN)
-  scimEnabled!: boolean;
+  declare scimEnabled: boolean;
 
   @Column(DataType.BLOB)
-  scimToken?: Buffer;
+  declare scimToken?: Buffer;
 
   @Column(DataType.TEXT)
-  controllerCode?: string;
+  declare controllerCode?: string;
 
   @Column(DataType.JSON)
-  controllerImplementations?: ProjectImplementations;
+  declare controllerImplementations?: ProjectImplementations;
 
   @AllowNull(true)
   @Column(DataType.JSON)
-  containers?: CompanionContainerDefinition[];
+  declare containers?: CompanionContainerDefinition[];
 
   @AllowNull(true)
   @Column(DataType.BLOB)
-  stripeApiSecretKey?: Buffer | null;
+  declare stripeApiSecretKey?: Buffer | null;
 
   @AllowNull(true)
   @Column(DataType.BLOB)
-  stripeWebhookSecret?: Buffer | null;
+  declare stripeWebhookSecret?: Buffer | null;
 
   @AllowNull(true)
   @Column(DataType.STRING)
-  successUrl?: string | null;
+  declare successUrl?: string | null;
 
   @AllowNull(true)
   @Column(DataType.ARRAY(DataType.STRING))
-  supportedLanguages?: string[];
+  declare supportedLanguages?: string[];
 
   @AllowNull(true)
   @Column(DataType.STRING)
-  cancelUrl?: string | null;
+  declare cancelUrl?: string | null;
 
   @AllowNull(true)
   @Column(DataType.STRING)
-  registry?: string;
+  declare registry?: string;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  skipGroupInvites!: boolean;
+  declare skipGroupInvites: boolean;
 
   @Column(DataType.STRING)
-  dbName!: string;
+  declare dbName: string;
 
   @Column(DataType.STRING)
-  dbHost!: string;
+  declare dbHost: string;
 
   @Min(1)
   @Max(65_535)
   @Column(DataType.INTEGER)
-  dbPort!: number;
+  declare dbPort: number;
 
   @Column(DataType.STRING)
-  dbUser!: string;
+  declare dbUser: string;
 
   @Column(DataType.BLOB)
-  dbPassword!: Buffer;
+  declare dbPassword: Buffer;
 
   @UpdatedAt
-  updated!: Date;
+  declare updated: Date;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @DeletedAt
   @Index({ name: 'appDomainComposite' })
-  deleted?: Date;
+  declare deleted?: Date;
 
   @AllowNull(false)
   @ForeignKey(() => Organization)
   @Index({ name: 'App_path_OrganizationId_key', unique: true })
   @Column(DataType.STRING)
-  OrganizationId!: string;
+  declare OrganizationId: string;
 
   @BelongsTo(() => Organization, { onDelete: 'CASCADE' })
-  Organization?: Awaited<Organization>;
+  declare Organization?: Awaited<Organization>;
 
   @HasMany(() => AppMessages)
-  AppMessages!: AppMessages[];
+  declare AppMessages: AppMessages[];
 
   @HasMany(() => AppRating)
-  AppRatings!: AppRating[];
+  declare AppRatings: AppRating[];
 
   @HasMany(() => AppScreenshot)
-  AppScreenshots!: AppScreenshot[];
+  declare AppScreenshots: AppScreenshot[];
 
   @HasMany(() => AppReadme)
-  AppReadmes!: AppReadme[];
+  declare AppReadmes: AppReadme[];
 
   @HasMany(() => AppSnapshot, { onDelete: 'CASCADE' })
-  AppSnapshots!: AppSnapshot[];
+  declare AppSnapshots: AppSnapshot[];
 
-  RatingAverage?: number;
+  declare RatingAverage?: number;
 
-  RatingCount?: number;
+  declare RatingCount?: number;
 
-  hasIcon?: boolean;
+  declare hasIcon?: boolean;
 
-  hasMaskableIcon?: boolean;
+  declare hasMaskableIcon?: boolean;
 
-  messages?: AppsembleMessages;
+  declare messages?: AppsembleMessages;
 
   @BeforeCreate
   static beforeCreateHook(instance: App): void {

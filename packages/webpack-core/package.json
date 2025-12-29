@@ -34,10 +34,6 @@
   "dependencies": {
     "@appsemble/node-utils": "0.36.0",
     "@mdx-js/loader": "^3.0.0",
-    "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",
-    "@types/hast": "^3.0.0",
-    "@types/mdast": "^4.0.0",
-    "@types/unused-webpack-plugin": "^2.0.0",
     "bulma": "=0.9.3",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
     "css-loader": "^6.0.0",
@@ -68,6 +64,10 @@
     "workbox-webpack-plugin": "^7.0.0"
   },
   "devDependencies": {
+    "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",
+    "@types/hast": "^3.0.0",
+    "@types/mdast": "^4.0.0",
+    "@types/unused-webpack-plugin": "^2.0.0",
     "url": "0.11.4"
   },
   "engines": {

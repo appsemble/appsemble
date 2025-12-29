@@ -32,81 +32,81 @@ import { OrganizationSubscription } from './OrganizationSubscription.js';
 export class Organization extends Model {
   @PrimaryKey
   @Column(DataType.STRING)
-  id!: string;
+  declare id: string;
 
   @Column(DataType.STRING)
-  name?: string;
+  declare name?: string;
 
   @Column(DataType.STRING)
-  description?: string;
+  declare description?: string;
 
   @Column(DataType.STRING)
-  website?: string;
+  declare website?: string;
 
   @Column(DataType.STRING)
-  email?: string;
+  declare email?: string;
 
   @Column(DataType.BLOB)
-  icon?: Buffer;
+  declare icon?: Buffer;
 
   @AllowNull(false)
   @Default('en')
   @Column(DataType.STRING)
-  locale?: string;
+  declare locale?: string;
 
   @Column(DataType.STRING)
-  stripeCustomerId?: string;
+  declare stripeCustomerId?: string;
 
   @AllowNull(true)
   @Column(DataType.STRING)
-  vatIdNumber?: string;
+  declare vatIdNumber?: string;
 
   @Column(DataType.STRING)
-  invoiceReference?: string;
+  declare invoiceReference?: string;
 
   @Column(DataType.STRING)
-  streetName?: string;
+  declare streetName?: string;
 
   @Column(DataType.STRING)
-  houseNumber?: string;
+  declare houseNumber?: string;
 
   @Column(DataType.STRING(85))
-  city?: string;
+  declare city?: string;
 
   @Column(DataType.STRING(15))
-  zipCode?: string;
+  declare zipCode?: string;
 
   @Column(DataType.STRING(2))
-  countryCode?: string;
+  declare countryCode?: string;
 
   @HasOne(() => OrganizationSubscription)
-  OrganizationSubscription?: OrganizationSubscription;
+  declare OrganizationSubscription?: OrganizationSubscription;
 
   @BelongsToMany(() => User, () => OrganizationMember)
-  Users!: User[];
+  declare Users: User[];
 
   @HasMany(() => OrganizationInvite)
-  OrganizationInvites!: OrganizationInvite[];
+  declare OrganizationInvites: OrganizationInvite[];
 
   @HasMany(() => App)
-  Apps!: App[];
+  declare Apps: App[];
 
   @HasMany(() => AppCollection)
-  AppCollections!: AppCollection[];
+  declare AppCollections: AppCollection[];
 
   @HasMany(() => BlockVersion)
-  BlockVersions!: BlockVersion[];
+  declare BlockVersions: BlockVersion[];
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @UpdatedAt
-  updated!: Date;
+  declare updated: Date;
 
   @DeletedAt
-  deleted?: Date;
+  declare deleted?: Date;
 
-  OrganizationMember?: Awaited<OrganizationMember>;
+  declare OrganizationMember?: Awaited<OrganizationMember>;
 
   @AfterCreate
   static async afterCreateHook(instance: Organization): Promise<void> {

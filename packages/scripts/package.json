@@ -37,12 +37,6 @@
     "@appsemble/utils": "0.36.0",
     "@appsemble/webpack-core": "0.36.0",
     "@formatjs/cli-lib": "^6.0.0",
-    "@types/fs-extra": "^11.0.0",
-    "@types/lodash-es": "^4.0.0",
-    "@types/mdast": "^4.0.0",
-    "@types/normalize-path": "^3.0.0",
-    "@types/semver": "^7.0.0",
-    "@types/tar": "^6.0.0",
     "axios": "^1.0.0",
     "date-fns": "^2.0.0",
     "fast-glob": "^3.0.0",
@@ -67,6 +61,15 @@
     "webpack": "^5.0.0",
     "yaml": "^2.0.0",
     "yargs": "^17.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.0",
+    "@types/lodash-es": "^4.0.0",
+    "@types/mdast": "^4.0.0",
+    "@types/normalize-path": "^3.0.0",
+    "@types/semver": "^7.0.0",
+    "@types/tar": "^6.0.0",
+    "@sindresorhus/merge-streams": "4.0.0"
   },
   "engines": {
     "node": ">=20"

@@ -14,23 +14,23 @@ import {
 import { type AppMember, type AppModels, type ResourceSubscription } from '../index.js';
 
 export class AppSubscriptionGlobal extends Model {
-  id!: number;
+  declare id: number;
 
-  endpoint!: string;
+  declare endpoint: string;
 
-  p256dh!: string;
+  declare p256dh: string;
 
-  auth!: string;
+  declare auth: string;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  AppMemberId?: string;
+  declare AppMemberId?: string;
 
-  AppMember?: Awaited<AppMember>;
+  declare AppMember?: Awaited<AppMember>;
 
-  ResourceSubscriptions!: ResourceSubscription[];
+  declare ResourceSubscriptions: ResourceSubscription[];
 }
 
 export function createAppSubscriptionModel(sequelize: Sequelize): typeof AppSubscriptionGlobal {
@@ -39,28 +39,28 @@ export function createAppSubscriptionModel(sequelize: Sequelize): typeof AppSubs
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
-    id!: number;
+    declare id: number;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    endpoint!: string;
+    declare endpoint: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    p256dh!: string;
+    declare p256dh: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    auth!: string;
+    declare auth: string;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     @Column(DataType.UUID)
-    AppMemberId?: string;
+    declare AppMemberId?: string;
 
     static associate(models: AppModels): void {
       AppSubscription.belongsTo(models.AppMember, {

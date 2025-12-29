@@ -58,6 +58,7 @@ const transformer: Transformer<Root> = (ast) => {
         body: [
           {
             type: 'ExportNamedDeclaration',
+            attributes: [],
             specifiers: [],
             declaration: {
               type: 'VariableDeclaration',

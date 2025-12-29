@@ -44,7 +44,7 @@
     "date-fns": "^2.0.0",
     "fast-deep-equal": "^3.0.0",
     "ics": "^3.0.0",
-    "intl-messageformat": "^10.0.0",
+    "intl-messageformat": "^11.0.0",
     "parse-duration": "^1.0.0",
     "fast-xml-parser": "^5.0.8",
     "vitest": "^2.0.0",

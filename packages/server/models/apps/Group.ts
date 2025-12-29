@@ -15,21 +15,21 @@ import {
 import { type AppModels, type GroupInvite, type GroupMember } from '../index.js';
 
 export class GroupGlobal extends Model {
-  id!: number;
+  declare id: number;
 
-  name!: string;
+  declare name: string;
 
-  annotations?: Record<string, string>;
+  declare annotations?: Record<string, string>;
 
-  demo!: boolean;
+  declare demo: boolean;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  Members!: GroupMember[];
+  declare Members: GroupMember[];
 
-  Invites!: GroupInvite[];
+  declare Invites: GroupInvite[];
 }
 
 export function createGroupModel(sequelize: Sequelize): typeof GroupGlobal {
@@ -38,25 +38,25 @@ export function createGroupModel(sequelize: Sequelize): typeof GroupGlobal {
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
-    id!: number;
+    declare id: number;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    name!: string;
+    declare name: string;
 
     @Column(DataType.JSON)
-    annotations?: Record<string, string>;
+    declare annotations?: Record<string, string>;
 
     @AllowNull(false)
     @Default(false)
     @Column(DataType.BOOLEAN)
-    demo!: boolean;
+    declare demo: boolean;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     static associate(models: AppModels): void {
       Group.hasMany(models.GroupMember, { as: 'Members' });

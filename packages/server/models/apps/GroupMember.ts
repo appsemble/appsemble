@@ -16,21 +16,21 @@ import {
 import { type AppMember, type AppModels, type Group } from '../index.js';
 
 export class GroupMemberGlobal extends Model {
-  id!: string;
+  declare id: string;
 
-  role!: AppRole;
+  declare role: AppRole;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  AppMemberId!: string;
+  declare AppMemberId: string;
 
-  GroupId!: number;
+  declare GroupId: number;
 
-  AppMember?: Awaited<AppMember>;
+  declare AppMember?: Awaited<AppMember>;
 
-  Group?: Awaited<Group>;
+  declare Group?: Awaited<Group>;
 }
 
 export function createGroupMemberModel(sequelize: Sequelize): typeof GroupMemberGlobal {
@@ -40,25 +40,25 @@ export function createGroupMemberModel(sequelize: Sequelize): typeof GroupMember
     @IsUUID(4)
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
-    id!: string;
+    declare id: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    role!: AppRole;
+    declare role: AppRole;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     @PrimaryKey
     @Column(DataType.UUID)
-    AppMemberId!: string;
+    declare AppMemberId: string;
 
     @PrimaryKey
     @Column(DataType.INTEGER)
-    GroupId!: number;
+    declare GroupId: number;
 
     static associate(models: AppModels): void {
       GroupMember.belongsTo(models.AppMember, {

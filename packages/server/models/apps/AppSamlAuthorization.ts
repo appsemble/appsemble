@@ -17,29 +17,29 @@ export class AppSamlAuthorizationGlobal extends Model {
   /**
    * The name id of the user on the identity provider.
    */
-  nameId!: string;
+  declare nameId: string;
 
   /**
    * The email used on the SAML provider.
    */
-  email!: string;
+  declare email: string;
 
   /**
    * Whether the linked email is verified on the SAML provider.
    */
-  emailVerified!: boolean;
+  declare emailVerified: boolean;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  AppSamlSecretId!: number;
+  declare AppSamlSecretId: number;
 
-  AppMemberId?: string;
+  declare AppMemberId?: string;
 
-  AppSamlSecret?: Awaited<AppSamlSecret>;
+  declare AppSamlSecret?: Awaited<AppSamlSecret>;
 
-  AppMember?: Awaited<AppMember>;
+  declare AppMember?: Awaited<AppMember>;
 }
 
 export function createAppSamlAuthorizationModel(
@@ -49,29 +49,29 @@ export function createAppSamlAuthorizationModel(
   class AppSamlAuthorization extends AppSamlAuthorizationGlobal {
     @PrimaryKey
     @Column(DataType.STRING)
-    nameId!: string;
+    declare nameId: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    email!: string;
+    declare email: string;
 
     @Default(false)
     @AllowNull(false)
     @Column(DataType.BOOLEAN)
-    emailVerified!: boolean;
+    declare emailVerified: boolean;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     @PrimaryKey
     @Column(DataType.INTEGER)
-    AppSamlSecretId!: number;
+    declare AppSamlSecretId: number;
 
     @Column(DataType.UUID)
-    AppMemberId?: string;
+    declare AppMemberId?: string;
 
     static associate(models: AppModels): void {
       AppSamlAuthorization.belongsTo(models.AppSamlSecret, {

@@ -1,4 +1,4 @@
-import { type DestroyOptions } from 'sequelize';
+import { type DestroyOptions, Op } from 'sequelize';
 import {
   AfterDestroy,
   AllowNull,
@@ -18,37 +18,37 @@ import {
 import { type AppMember, type AppModels, type Group, type Resource } from '../index.js';
 
 export class AssetGlobal extends Model {
-  id!: string;
+  declare id: string;
 
-  mime?: string;
+  declare mime?: string;
 
-  filename?: string;
+  declare filename?: string;
 
-  name?: string;
+  declare name?: string;
 
-  clonable!: boolean;
+  declare clonable: boolean;
 
-  seed!: boolean;
+  declare seed: boolean;
 
-  ephemeral!: boolean;
+  declare ephemeral: boolean;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  deleted?: Date;
+  declare deleted?: Date;
 
-  GroupId?: number;
+  declare GroupId?: number;
 
-  AppMemberId?: string;
+  declare AppMemberId?: string;
 
-  ResourceId?: number;
+  declare ResourceId?: number;
 
-  Group?: Awaited<Group>;
+  declare Group?: Awaited<Group>;
 
-  AppMember?: Awaited<AppMember>;
+  declare AppMember?: Awaited<AppMember>;
 
-  Resource?: Awaited<Resource>;
+  declare Resource?: Awaited<Resource>;
 }
 
 export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
@@ -57,19 +57,27 @@ export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.STRING)
-    id!: string;
+    declare id: string;
 
     @Column(DataType.STRING)
-    mime?: string;
+    declare mime?: string;
 
     @Column(DataType.STRING)
-    filename?: string;
+    declare filename?: string;
 
-    @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
-    @Index({ name: 'UniqueAssetWithGroupId', unique: true })
+    @Index({
+      name: 'UniqueAssetWithNullGroupId',
+      unique: true,
+      where: { GroupId: { [Op.is]: null }, deleted: { [Op.is]: null } },
+    })
+    @Index({
+      name: 'UniqueAssetWithGroupId',
+      unique: true,
+      where: { GroupId: { [Op.not]: null }, deleted: { [Op.is]: null } },
+    })
     @Index({ name: 'assetNameIndex' })
     @Column(DataType.STRING)
-    name?: string;
+    declare name?: string;
 
     /**
      * If true, the asset will be transferred when cloning an app
@@ -77,7 +85,7 @@ export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
     @AllowNull(false)
     @Default(false)
     @Column(DataType.BOOLEAN)
-    clonable!: boolean;
+    declare clonable: boolean;
 
     /**
      * If true, the asset will be used for creating ephemeral assets in demo apps
@@ -85,37 +93,49 @@ export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
     @AllowNull(false)
     @Default(false)
     @Column(DataType.BOOLEAN)
-    seed!: boolean;
+    declare seed: boolean;
 
     /**
      * If true, the asset is cleaned up regularly
      */
     @AllowNull(false)
     @Default(false)
-    @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
-    @Index({ name: 'UniqueAssetWithGroupId', unique: true })
+    @Index({
+      name: 'UniqueAssetWithNullGroupId',
+      unique: true,
+      where: { GroupId: { [Op.is]: null }, deleted: { [Op.is]: null } },
+    })
+    @Index({
+      name: 'UniqueAssetWithGroupId',
+      unique: true,
+      where: { GroupId: { [Op.not]: null }, deleted: { [Op.is]: null } },
+    })
     @Column(DataType.BOOLEAN)
-    ephemeral!: boolean;
+    declare ephemeral: boolean;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     @DeletedAt
-    deleted?: Date;
+    declare deleted?: Date;
 
     @AllowNull(true)
-    @Index({ name: 'UniqueAssetWithGroupId', unique: true })
+    @Index({
+      name: 'UniqueAssetWithGroupId',
+      unique: true,
+      where: { GroupId: { [Op.not]: null }, deleted: { [Op.is]: null } },
+    })
     @Column(DataType.INTEGER)
-    GroupId?: number;
+    declare GroupId?: number;
 
     @Column(DataType.UUID)
-    AppMemberId?: string;
+    declare AppMemberId?: string;
 
     @Column(DataType.INTEGER)
-    ResourceId?: number;
+    declare ResourceId?: number;
 
     static associate(models: AppModels): void {
       Asset.belongsTo(models.Group, {

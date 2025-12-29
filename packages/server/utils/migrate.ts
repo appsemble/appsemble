@@ -85,7 +85,7 @@ export async function migrate(
     return;
   }
   [meta] = metas;
-  if (semver.eq(to, meta.version)) {
+  if (semver.eq(to, meta.dataValues.version)) {
     logger.info(`Database ${dbName} is already on version ${to}. Nothing to migrate.`);
     return;
   }

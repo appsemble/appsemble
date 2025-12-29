@@ -593,7 +593,7 @@ describe('indexHandler', () => {
       Referrer-Policy: strict-origin-when-cross-origin
       X-Content-Type-Options: nosniff
 
-      Redirecting to <a href="http://host.example/organizations/org">http://host.example/organizations/org</a>.
+      Redirecting to http://host.example/organizations/org.
     `);
   });
 
@@ -618,7 +618,7 @@ describe('indexHandler', () => {
       Referrer-Policy: strict-origin-when-cross-origin
       X-Content-Type-Options: nosniff
 
-      Redirecting to <a href="http://custom.example/en?query=param">http://custom.example/en?query=param</a>.
+      Redirecting to http://custom.example/en?query=param.
     `);
   });
 
@@ -632,7 +632,7 @@ describe('indexHandler', () => {
       Referrer-Policy: strict-origin-when-cross-origin
       X-Content-Type-Options: nosniff
 
-      Redirecting to <a href="http://host.example/">http://host.example/</a>.
+      Redirecting to http://host.example/.
     `);
   });
 

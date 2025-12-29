@@ -17,16 +17,16 @@ export class AppEmailQuotaLog extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 
   // TODO: make this non-nullable
   @Column(DataType.INTEGER)
   @ForeignKey(() => App)
-  AppId?: number;
+  declare AppId?: number;
 
   @BelongsTo(() => App)
-  App?: Awaited<App>;
+  declare App?: Awaited<App>;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 }

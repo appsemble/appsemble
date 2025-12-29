@@ -18,38 +18,38 @@ import { App, User } from '../index.js';
 export class AppRating extends Model {
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  rating!: number;
+  declare rating: number;
 
   @Column(DataType.TEXT)
-  description?: string;
+  declare description?: string;
 
   @PrimaryKey
   @AllowNull(false)
   @Index({ name: 'UniqueRatingIndex', unique: true })
   @ForeignKey(() => App)
   @Column(DataType.INTEGER)
-  AppId!: number;
+  declare AppId: number;
 
   @BelongsTo(() => App)
-  App?: Awaited<App>;
+  declare App?: Awaited<App>;
 
   @PrimaryKey
   @AllowNull(false)
   @Index({ name: 'UniqueRatingIndex', unique: true })
   @ForeignKey(() => User)
   @Column(DataType.UUID)
-  UserId!: string;
+  declare UserId: string;
 
   @BelongsTo(() => User)
-  User?: Awaited<User>;
+  declare User?: Awaited<User>;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @UpdatedAt
-  updated!: Date;
+  declare updated: Date;
 
-  RatingAverage?: number;
+  declare RatingAverage?: number;
 
-  RatingCount?: number;
+  declare RatingCount?: number;
 }

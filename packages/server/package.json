@@ -64,7 +64,7 @@
     "extract-pg-schema": "^5.0.0",
     "form-data": "^4.0.4",
     "imapflow": "^1.0.0",
-    "intl-messageformat": "^10.0.0",
+    "intl-messageformat": "^11.0.0",
     "jest-axios-snapshot": "^1.0.0",
     "json-diff": "^1.0.0",
     "jsonschema": "~1.4.1",
@@ -135,10 +135,14 @@
     "@types/web-push": "3.6.4",
     "axios-mock-adapter": "1.22.0",
     "axios-test-instance": "7.0.0",
+    "cross-fetch": "4.1.0",
     "jest-image-snapshot": "6.4.0",
+    "jsvat": "2.5.4",
     "memfs": "4.17.0",
     "strip-indent": "4.0.0",
-    "vitest": "2.1.9"
+    "validate-vat": "0.9.0",
+    "vitest": "2.1.9",
+    "xpath": "0.0.34"
   },
   "peerDependencies": {
     "webpack": "^5"

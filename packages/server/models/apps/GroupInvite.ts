@@ -15,19 +15,19 @@ import {
 import { type AppModels, type Group } from '../index.js';
 
 export class GroupInviteGlobal extends Model {
-  email!: string;
+  declare email: string;
 
-  key!: string;
+  declare key: string;
 
-  role!: AppRole;
+  declare role: AppRole;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  GroupId!: number;
+  declare GroupId: number;
 
-  Group?: Awaited<Group>;
+  declare Group?: Awaited<Group>;
 
   toJSON(): { id: number; name: string } {
     // Here we assume you queried with `{ include: Group }`
@@ -46,27 +46,27 @@ export function createGroupInviteModel(sequelize: Sequelize): typeof GroupInvite
     @PrimaryKey
     @AllowNull(false)
     @Column(DataType.STRING)
-    email!: string;
+    declare email: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    key!: string;
+    declare key: string;
 
     @Default('Member')
     @AllowNull(false)
     @Column(DataType.STRING)
-    role!: AppRole;
+    declare role: AppRole;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     @PrimaryKey
     @AllowNull(false)
     @Column(DataType.INTEGER)
-    GroupId!: number;
+    declare GroupId: number;
 
     static associate(models: AppModels): void {
       GroupInvite.belongsTo(models.Group, {

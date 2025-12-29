@@ -25,38 +25,38 @@ export class AppCollection extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  name!: string;
+  declare name: string;
 
   @AllowNull(false)
   @Column(DataType.BLOB)
-  headerImage!: Buffer;
+  declare headerImage: Buffer;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  headerImageMimeType!: string;
+  declare headerImageMimeType: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  expertName!: string;
+  declare expertName: string;
 
   @Column(DataType.STRING(4000))
-  expertDescription?: string;
+  declare expertDescription?: string;
 
   @AllowNull(false)
   @Column(DataType.BLOB)
-  expertProfileImage!: Buffer;
+  declare expertProfileImage: Buffer;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  expertProfileImageMimeType!: string;
+  declare expertProfileImageMimeType: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  visibility!: AppCollectionVisibility;
+  declare visibility: AppCollectionVisibility;
 
   /**
    * The maximum length of a domain name is 255 bytes as per
@@ -65,25 +65,25 @@ export class AppCollection extends Model {
    */
   @Column({ type: DataType.STRING(253) })
   @Index({ name: 'appCollectionComposite' })
-  domain?: string;
+  declare domain?: string;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @UpdatedAt
   @Index({ name: 'appCollectionComposite', order: 'DESC' })
-  updated!: Date;
+  declare updated: Date;
 
   @HasMany(() => AppCollectionApp)
-  Apps!: AppCollectionApp[];
+  declare Apps: AppCollectionApp[];
 
   @ForeignKey(() => Organization)
   @AllowNull(false)
   @Column(DataType.STRING)
-  OrganizationId!: string;
+  declare OrganizationId: string;
 
   @BelongsTo(() => Organization, { onDelete: 'CASCADE' })
-  Organization?: Awaited<Organization>;
+  declare Organization?: Awaited<Organization>;
 
   toJSON(): AppCollectionType {
     return {
