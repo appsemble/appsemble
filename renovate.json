@@ -1,12 +1,14 @@
 {
-  "extends": ["config:best-practices", "schedule:nonOfficeHours"],
+  "extends": ["config:best-practices"],
+  "schedule": ["every weekday"],
   "prConcurrentLimit": 6,
   "rebaseWhen": "behind-base-branch",
   "minimumReleaseAge": "3 days",
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
+      "automerge": true,
+      "autoapprove": true
     }
   ]
 }
