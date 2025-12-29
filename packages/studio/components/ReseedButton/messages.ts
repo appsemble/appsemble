@@ -18,4 +18,8 @@ export const messages = defineMessages({
     id: 'studio.cDnAuK',
     defaultMessage: 'Reseed',
   },
+  invalidPermissions: {
+    id: 'studio.tSV5V2',
+    defaultMessage: 'You do not have permission to reseed this app.',
+  },
 });
