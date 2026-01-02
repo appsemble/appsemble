@@ -63,7 +63,7 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, definition);
   const displayAppName = (definition?.layout?.titleBarText || 'pageName') === 'appName';
 
-  return (
+  return definition.layout?.hideTitleBar ? null : (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
       <div className="is-flex is-justify-content-space-between is-flex-grow-1">
         {navigation === 'left-menu' &&

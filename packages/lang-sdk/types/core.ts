@@ -121,6 +121,11 @@ export interface AppDefinition {
      *
      */
     titleBarText?: 'appName' | 'pageName';
+
+    /**
+     * Whether to hide the title bar from all pages in the app.
+     */
+    hideTitleBar?: boolean;
   };
 
   /**
