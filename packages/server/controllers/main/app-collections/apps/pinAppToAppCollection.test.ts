@@ -35,7 +35,7 @@ describe('pinAppToAppCollection', () => {
     vi.setSystemTime(0);
     user = await createTestUser();
     organization = await Organization.create({
-      id: 'testorganization',
+      id: String(Math.floor(100_000 + Math.random() * 900_000)),
       name: 'Test Organization',
     });
     await OrganizationMember.create({
