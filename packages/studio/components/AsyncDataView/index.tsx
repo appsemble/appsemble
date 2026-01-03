@@ -70,7 +70,7 @@ export function AsyncDataView<T>({
     );
   }
 
-  if (Array.isArray(data) && !data.length) {
+  if (Array.isArray(data) && (!data.length || Object.keys(data[0]).length === 0)) {
     return emptyMessage;
   }
 

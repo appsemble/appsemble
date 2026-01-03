@@ -37,7 +37,7 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
     ],
   });
 
-  ctx.body = await Promise.all(
+  const appAccounts = await Promise.all(
     apps.map(async (app) => {
       applyAppMessages(app, language, baseLanguage);
 
@@ -67,7 +67,7 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
       });
 
       if (!appMember) {
-        return {};
+        return;
       }
 
       return {
@@ -77,4 +77,6 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
       };
     }),
   );
+
+  ctx.body = appAccounts.filter((appAccount) => appAccount !== undefined);
 }
