@@ -13,29 +13,31 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
     query: includeOptions,
   } = parseLanguage(ctx, ctx.query?.language ?? []);
 
-  const apps = await App.findAll({
-    attributes: {
-      include: [
-        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
-        [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
-      ],
-      exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
-    },
-    include: [
-      {
-        model: Organization,
-        attributes: {
-          include: [
-            'id',
-            'name',
-            'updated',
-            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
-          ],
-        },
+  const apps = (
+    await App.findAll({
+      attributes: {
+        include: [
+          [literal('"App".icon IS NOT NULL'), 'hasIcon'],
+          [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
+        ],
+        exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
       },
-      ...includeOptions,
-    ],
-  });
+      include: [
+        {
+          model: Organization,
+          attributes: {
+            include: [
+              'id',
+              'name',
+              'updated',
+              [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+            ],
+          },
+        },
+        ...includeOptions,
+      ],
+    })
+  ).filter((app) => app.definition.security);
 
   const appAccounts = await Promise.all(
     apps.map(async (app) => {
