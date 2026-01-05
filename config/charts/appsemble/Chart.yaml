@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.36.0
-appVersion: 0.36.0
+version: 0.36.1
+appVersion: 0.36.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,8 +31,22 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Block(footer): New block footer."
+    - kind: added
+      description: "Eslint-plugin: Added autofix that replaces @Unique or @Unique()
+        with @Index({ unique: true })."
+    - kind: added
+      description: "Eslint-plugin: Extended decorator rule to include Unique()."
+    - kind: changed
+      description: "Block(form): Specify in the display property of the NumberField
+        that you can choose between number and slider."
+    - kind: changed
+      description: "Studio: Hide the Reseed App button when logged out."
+    - kind: changed
+      description: "Studio: Show an 'insufficient permission' message if the user
+        tries to reseed an app without the right permissions."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

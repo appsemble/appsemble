@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.36.1](https://gitlab.com/appsemble/appsemble/-/releases/0.36.1)] - 2026-01-05
+
+### Added
+
+- Block(`footer`): New block `footer`.
+- Eslint-plugin: Added autofix that replaces `@Unique` or `@Unique()` with
+  `@Index({ unique: true })`.
+- Eslint-plugin: Extended decorator rule to include `Unique()`.
+
+### Changed
+
+- Block(`form`): Specify in the `display` property of the `NumberField` that you can choose between
+  `number` and `slider`.
+- Studio: Hide the `Reseed App` button when logged out.
+- Studio: Show an 'insufficient permission' message if the user tries to reseed an app without the
+  right permissions.
+
 ## \[[0.36.0](https://gitlab.com/appsemble/appsemble/-/releases/0.36.0)] - 2025-12-02
 
 ## \[[0.35.22](https://gitlab.com/appsemble/appsemble/-/releases/0.35.22)] - 2025-12-02
