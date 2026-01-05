@@ -16,19 +16,19 @@ import { type AppMember } from '../index.js';
 
 @Table({ tableName: 'AppMemberEmailAuthorization' })
 export class AppMemberEmailAuthorizationGlobal extends Model {
-  email!: string;
+  declare email: string;
 
-  verified!: boolean;
+  declare verified: boolean;
 
-  key?: string;
+  declare key?: string;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  AppMemberId!: string;
+  declare AppMemberId: string;
 
-  AppMember?: AppMember;
+  declare AppMember?: AppMember;
 }
 
 export function createAppMemberEmailAuthorizationModel(
@@ -38,26 +38,26 @@ export function createAppMemberEmailAuthorizationModel(
   class AppMemberEmailAuthorization extends AppMemberEmailAuthorizationGlobal {
     @AllowNull(false)
     @Column(DataType.STRING)
-    email!: string;
+    declare email: string;
 
     @Default(false)
     @AllowNull(false)
     @Column(DataType.BOOLEAN)
-    verified!: boolean;
+    declare verified: boolean;
 
     @Column(DataType.STRING)
-    key?: string;
+    declare key?: string;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     @AllowNull(false)
     @PrimaryKey
     @Column(DataType.UUID)
-    AppMemberId!: string;
+    declare AppMemberId: string;
 
     // Auto delete instances when an email is verified
     @AfterUpdate

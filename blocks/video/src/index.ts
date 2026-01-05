@@ -1,5 +1,5 @@
 import { bootstrap } from '@appsemble/sdk';
-import Vimeo, { type TimeEvent } from '@vimeo/player';
+import Vimeo, { type VimeoUrl, type VimeoEvent } from '@vimeo/player';
 
 import styles from './index.module.css';
 
@@ -48,7 +48,7 @@ bootstrap(
       finished = true;
       actions.onFinish(data, { videoId: currentUrl.match(/\d+/)?.[0], videoUrl: currentUrl });
     };
-    const onTimeUpdate = ({ duration, seconds }: TimeEvent): void => {
+    const onTimeUpdate = ({ duration, seconds }: VimeoEvent): void => {
       if (seconds > duration - 0.5) {
         onFinish();
       }
@@ -107,7 +107,7 @@ bootstrap(
           portrait: false,
           responsive: true,
           muted,
-          url: newURL,
+          url: newURL as VimeoUrl,
           title: false,
         });
 

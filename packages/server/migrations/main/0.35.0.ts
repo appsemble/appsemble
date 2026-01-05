@@ -755,13 +755,13 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   await queryInterface.addIndex('Asset', ['name', 'ephemeral', 'GroupId', 'AppId'], {
     name: 'UniqueAssetWithGroupId',
     unique: true,
-    where: { GroupId: { [Op.not]: null } },
+    where: { GroupId: { [Op.not]: null }, deleted: { [Op.is]: null } },
     transaction,
   });
   await queryInterface.addIndex('Asset', ['name', 'ephemeral', 'AppId'], {
     name: 'UniqueAssetWithNullGroupId',
     unique: true,
-    where: { GroupId: null },
+    where: { GroupId: null, deleted: { [Op.is]: null } },
     transaction,
   });
   await queryInterface.createTable(

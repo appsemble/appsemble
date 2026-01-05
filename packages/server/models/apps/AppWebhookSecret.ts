@@ -13,17 +13,17 @@ import {
 } from 'sequelize-typescript';
 
 export class AppWebhookSecretGlobal extends Model {
-  id!: string;
+  declare id: string;
 
-  name?: string;
+  declare name?: string;
 
-  webhookName!: string;
+  declare webhookName: string;
 
-  secret!: Buffer;
+  declare secret: Buffer;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 }
 
 export function createAppWebhookSecretModel(sequelize: Sequelize): typeof AppWebhookSecretGlobal {
@@ -33,24 +33,24 @@ export function createAppWebhookSecretModel(sequelize: Sequelize): typeof AppWeb
     @IsUUID(4)
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
-    id!: string;
+    declare id: string;
 
     @Column(DataType.STRING)
-    name?: string;
+    declare name?: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    webhookName!: string;
+    declare webhookName: string;
 
     @AllowNull(false)
     @Column(DataType.BLOB)
-    secret!: Buffer;
+    declare secret: Buffer;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
   }
 
   sequelize.addModels([AppWebhookSecret]);

@@ -20,62 +20,62 @@ export class OAuthAuthorization extends Model {
    */
   @PrimaryKey
   @Column(DataType.STRING)
-  sub!: string;
+  declare sub: string;
 
   /**
    * The authorization URL where the user needs to approve Appsemble to access their account.
    */
   @PrimaryKey
   @Column(DataType.STRING)
-  authorizationUrl!: string;
+  declare authorizationUrl: string;
 
   /**
    * The access token assigned to Appsemble linked to the subject.
    */
   @AllowNull(false)
   @Column(DataType.TEXT)
-  accessToken!: string;
+  declare accessToken: string;
 
   /**
    * The expiration date of the access token.
    */
   @Column(DataType.DATE)
-  expiresAt?: Date;
+  declare expiresAt?: Date;
 
   /**
    * The refresh token that may be used to refresh the access token.
    */
   @Column(DataType.TEXT)
-  refreshToken?: string;
+  declare refreshToken?: string;
 
   /**
-   * A short lived authorization code that’s used during the login process.
+   * A short lived authorization code that's used during the login process.
    */
   @Column(DataType.TEXT)
-  code?: string;
+  declare code?: string;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @UpdatedAt
-  updated!: Date;
+  declare updated: Date;
 
   /**
    * The id of the linked Appsemble user.
    */
   @ForeignKey(() => User)
   @Column(DataType.UUID)
-  UserId?: string;
+  declare UserId?: string;
 
   /**
    * The email used for the authorization
    */
   @Column(DataType.STRING)
-  email?: string;
+  declare email?: string;
 
   /**
    * The Appsemble user.
    */
   @BelongsTo(() => User, { onDelete: 'SET NULL' })
-  User?: Awaited<User>;
+  declare User?: Awaited<User>;
 }

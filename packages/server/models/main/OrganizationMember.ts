@@ -19,27 +19,27 @@ export class OrganizationMember extends Model {
   @AllowNull(false)
   @Default('Member')
   @Column(DataType.ENUM(...predefinedOrganizationRoles))
-  role!: PredefinedOrganizationRole;
+  declare role: PredefinedOrganizationRole;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @UpdatedAt
-  updated!: Date;
+  declare updated: Date;
 
   @AllowNull(false)
   @ForeignKey(() => Organization)
   @Column(DataType.STRING)
-  OrganizationId!: string;
+  declare OrganizationId: string;
 
   @AllowNull(false)
   @ForeignKey(() => User)
   @Column(DataType.UUID)
-  UserId!: string;
+  declare UserId: string;
 
   @BelongsTo(() => Organization)
-  Organization?: Awaited<Organization>;
+  declare Organization?: Awaited<Organization>;
 
   @BelongsTo(() => User)
-  User?: Awaited<User>;
+  declare User?: Awaited<User>;
 }

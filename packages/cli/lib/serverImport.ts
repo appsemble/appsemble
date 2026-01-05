@@ -1,6 +1,8 @@
 import { AppsembleError } from '@appsemble/node-utils';
 import { has } from '@appsemble/utils';
 
+import { fileURLToPath } from 'url';
+
 const PROMPT = process.platform === 'win32' ? '>' : '$';
 const COMMAND = /yarn/.test(process.env.npm_execpath ?? '')
   ? 'yarn add --dev --ignore-workspace-root-check'
@@ -49,7 +51,7 @@ export async function serverImport<
   } catch (error: unknown) {
     if (
       (error as any).code !== 'MODULE_NOT_FOUND' ||
-      (error as any).requireStack?.[0] !== __filename
+      (error as any).requireStack?.[0] !== fileURLToPath(import.meta.url)
     ) {
       throw error;
     }

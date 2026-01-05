@@ -17,13 +17,13 @@ export class AppBlockStyleGlobal extends Model {
    *
    * Format: @organizationName/blockName
    */
-  block!: string;
+  declare block: string;
 
-  style?: string;
+  declare style?: string;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 }
 
 export function createAppBlockStyleModel(sequelize: Sequelize): typeof AppBlockStyleGlobal {
@@ -32,16 +32,16 @@ export function createAppBlockStyleModel(sequelize: Sequelize): typeof AppBlockS
     @PrimaryKey
     @AllowNull(false)
     @Column(DataType.STRING)
-    block!: string;
+    declare block: string;
 
     @Column({ type: DataType.TEXT })
-    style?: string;
+    declare style?: string;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
   }
 
   sequelize.addModels([AppBlockStyle]);

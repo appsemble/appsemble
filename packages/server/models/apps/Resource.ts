@@ -43,56 +43,56 @@ interface ResourceToJsonOptions {
 }
 
 export class ResourceGlobal extends Model {
-  id!: number;
+  declare id: number;
 
-  type!: string;
+  declare type: string;
 
-  data!: any;
+  declare data: any;
 
   /**
    * If true, the resource will be transferred when cloning an app
    */
-  clonable!: boolean;
+  declare clonable: boolean;
 
   /**
    * If true, the resource will be used for creating ephemeral resources in demo apps
    */
 
-  seed!: boolean;
+  declare seed: boolean;
 
   /**
    * If true, the resource is cleaned up regularly
    */
 
-  ephemeral!: boolean;
+  declare ephemeral: boolean;
 
-  expires?: Date;
+  declare expires?: Date;
 
-  Position?: number;
+  declare Position?: number;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  deleted?: Date;
+  declare deleted?: Date;
 
-  GroupId?: number;
+  declare GroupId?: number;
 
-  AuthorId?: string;
+  declare AuthorId?: string;
 
-  EditorId?: string;
+  declare EditorId?: string;
 
-  Group?: Awaited<Group>;
+  declare Group?: Awaited<Group>;
 
-  Author?: Awaited<AppMember>;
+  declare Author?: Awaited<AppMember>;
 
-  Editor?: Awaited<AppMember>;
+  declare Editor?: Awaited<AppMember>;
 
-  Assets!: Asset[];
+  declare Assets: Asset[];
 
-  ResourceSubscriptions!: ResourceSubscription[];
+  declare ResourceSubscriptions: ResourceSubscription[];
 
-  ResourceVersions!: ResourceVersion[];
+  declare ResourceVersions: ResourceVersion[];
 
   /**
    * Represent a resource as JSON output
@@ -291,17 +291,17 @@ export function createResourceModel(sequelize: Sequelize): typeof ResourceGlobal
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
-    id!: number;
+    declare id: number;
 
     @AllowNull(false)
     @Index({ name: 'resourceTypeComposite' })
     @Column(DataType.STRING)
-    type!: string;
+    declare type: string;
 
     @AllowNull(false)
     @Column(DataType.JSONB)
     @Index({ name: 'resourceDataIndex' })
-    data!: any;
+    declare data: any;
 
     /**
      * If true, the resource will be transferred when cloning an app
@@ -309,7 +309,7 @@ export function createResourceModel(sequelize: Sequelize): typeof ResourceGlobal
     @AllowNull(false)
     @Default(false)
     @Column(DataType.BOOLEAN)
-    clonable!: boolean;
+    declare clonable: boolean;
 
     /**
      * If true, the resource will be used for creating ephemeral resources in demo apps
@@ -317,7 +317,7 @@ export function createResourceModel(sequelize: Sequelize): typeof ResourceGlobal
     @AllowNull(false)
     @Default(false)
     @Column(DataType.BOOLEAN)
-    seed!: boolean;
+    declare seed: boolean;
 
     /**
      * If true, the resource is cleaned up regularly
@@ -325,35 +325,35 @@ export function createResourceModel(sequelize: Sequelize): typeof ResourceGlobal
     @AllowNull(false)
     @Default(false)
     @Column(DataType.BOOLEAN)
-    ephemeral!: boolean;
+    declare ephemeral: boolean;
 
     @Column(DataType.DATE)
     @Index({ name: 'resourceTypeComposite' })
-    expires?: Date;
+    declare expires?: Date;
 
     @AllowNull(true)
     @Column(DataTypes.DECIMAL)
-    Position?: number;
+    declare Position?: number;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     @DeletedAt
-    deleted?: Date;
+    declare deleted?: Date;
 
     @Index({ name: 'resourceTypeComposite' })
     @AllowNull(true)
     @Column(DataType.INTEGER)
-    GroupId?: number;
+    declare GroupId?: number;
 
     @Column(DataType.UUID)
-    AuthorId?: string;
+    declare AuthorId?: string;
 
     @Column(DataType.UUID)
-    EditorId?: string;
+    declare EditorId?: string;
 
     static associate(models: AppModels): void {
       Resource.belongsTo(models.Group, {

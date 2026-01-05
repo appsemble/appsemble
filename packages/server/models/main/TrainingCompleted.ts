@@ -17,16 +17,16 @@ export class TrainingCompleted extends Model {
   @PrimaryKey
   @ForeignKey(() => Training)
   @Column(DataType.STRING)
-  TrainingId!: string;
+  declare TrainingId: string;
 
   @PrimaryKey
   @ForeignKey(() => User)
   @Column(DataType.UUID)
-  UserId!: string;
+  declare UserId: string;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @UpdatedAt
-  updated!: Date;
+  declare updated: Date;
 }

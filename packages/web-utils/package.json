@@ -34,7 +34,7 @@
   "dependencies": {
     "@appsemble/types": "0.36.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
-    "@sentry/browser": "^7.0.0",
+    "@sentry/browser": "^10.0.0",
     "@types/webpack-env": "^1.0.0",
     "axios": "^1.0.0"
   },

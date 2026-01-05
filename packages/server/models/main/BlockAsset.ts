@@ -26,29 +26,29 @@ export class BlockAsset extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 
   @AllowNull(false)
   @Column(DataType.BLOB)
-  content!: Buffer;
+  declare content: Buffer;
 
   @AllowNull(false)
   @Column(DataType.STRING)
   @Index({ name: 'blockAssetFilenameIndex' })
-  filename!: string;
+  declare filename: string;
 
   @Column(DataType.STRING)
-  mime?: string;
+  declare mime?: string;
 
   @Index('BlockAssetBlockVersionId')
   @ForeignKey(() => BlockVersion)
   @AllowNull(false)
   @Column(DataType.UUID)
-  BlockVersionId!: string;
+  declare BlockVersionId: string;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @BelongsTo(() => BlockVersion, { onDelete: 'CASCADE' })
-  BlockVersion?: Awaited<BlockVersion>;
+  declare BlockVersion?: Awaited<BlockVersion>;
 }

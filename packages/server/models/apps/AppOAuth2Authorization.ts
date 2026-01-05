@@ -17,44 +17,44 @@ export class AppOAuth2AuthorizationGlobal extends Model {
   /**
    * The subject id of the user on the remote authorization server.
    */
-  sub!: string;
+  declare sub: string;
 
   /**
    * The access token assigned to Appsemble linked to the subject.
    */
-  accessToken!: string;
+  declare accessToken: string;
 
   /**
    * The expiration date of the access token.
    */
-  expiresAt?: Date;
+  declare expiresAt?: Date;
 
   /**
    * The refresh token that may be used to refresh the access token.
    */
-  refreshToken?: string;
+  declare refreshToken?: string;
 
   /**
    * The email used on the OAuth2 provider.
    */
-  email!: string;
+  declare email: string;
 
   /**
    * Whether the linked email is verified on the OAuth2 provider.
    */
-  emailVerified!: boolean;
+  declare emailVerified: boolean;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  AppMemberId?: string;
+  declare AppMemberId?: string;
 
-  AppOAuth2SecretId!: number;
+  declare AppOAuth2SecretId: number;
 
-  AppMember!: Awaited<AppMember>;
+  declare AppMember: Awaited<AppMember>;
 
-  AppOAuth2Secret?: Awaited<AppOAuth2Secret>;
+  declare AppOAuth2Secret?: Awaited<AppOAuth2Secret>;
 }
 
 export function createAppOAuth2AuthorizationModel(
@@ -64,39 +64,39 @@ export function createAppOAuth2AuthorizationModel(
   class AppOAuth2Authorization extends AppOAuth2AuthorizationGlobal {
     @PrimaryKey
     @Column(DataType.STRING)
-    sub!: string;
+    declare sub: string;
 
     @AllowNull(false)
     @Column(DataType.TEXT)
-    accessToken!: string;
+    declare accessToken: string;
 
     @Column(DataType.DATE)
-    expiresAt?: Date;
+    declare expiresAt?: Date;
 
     @Column(DataType.TEXT)
-    refreshToken?: string;
+    declare refreshToken?: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    email!: string;
+    declare email: string;
 
     @Default(false)
     @AllowNull(false)
     @Column(DataType.BOOLEAN)
-    emailVerified!: boolean;
+    declare emailVerified: boolean;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     @Column(DataType.UUID)
-    AppMemberId?: string;
+    declare AppMemberId?: string;
 
     @PrimaryKey
     @Column(DataType.INTEGER)
-    AppOAuth2SecretId!: number;
+    declare AppOAuth2SecretId: number;
 
     static associate(models: AppModels): void {
       AppOAuth2Authorization.belongsTo(models.AppMember, {
