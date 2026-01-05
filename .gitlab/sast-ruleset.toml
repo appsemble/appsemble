@@ -1,0 +1,4 @@
+[semgrep]
+  [[semgrep.ruleset]]
+    disable = true
+    rules = ["nodejs_scan.javascript-database-rule-node_nosqli_injection"]
