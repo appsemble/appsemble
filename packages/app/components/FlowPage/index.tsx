@@ -366,6 +366,7 @@ export function FlowPage({
         flowActions={flowActions}
         key={currentStep}
         pageDefinition={pageDefinition}
+        pageLayout={steps[currentStep].layout}
         prefix={
           pageDefinition.type === 'loop'
             ? `${generateLoopPrefix(prefix)}.blocks`

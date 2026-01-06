@@ -3743,7 +3743,7 @@ describe('validateAppDefinition', () => {
         },
         layout: {
           columns: 8,
-          template: ['a a a a a a a a a a', 'b b b b b b b b', 'a a a a b b b b'],
+          template: ['. . . . . . . . . .', '. . . . . . . .', '. . . . . . . .'],
         },
       },
     } as PageLayoutDefinition;
@@ -3753,10 +3753,96 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError(
         'template needs to be the same length as number of columns',
-        invalidPageLayoutDefinition.desktop.layout.template,
+        invalidPageLayoutDefinition.desktop!.layout.template,
         undefined,
         ['pages', 0, 'desktop', 'layout', 'template'],
       ),
     ]);
+  });
+
+  describe('grid area rectangular validation', () => {
+    const createLayoutDefinition = (template: string[]): PageLayoutDefinition =>
+      ({
+        desktop: {
+          spacing: {
+            unit: '40px',
+            gap: 1 / 8,
+            padding: 1 / 4,
+          },
+          layout: {
+            columns: template[0]?.split(' ').length ?? 1,
+            template,
+          },
+        },
+      }) as PageLayoutDefinition;
+
+    describe('valid grid area patterns', () => {
+      it.each([
+        { name: 'single cell area', template: ['a'] },
+        { name: 'single row rectangle', template: ['a a a'] },
+        { name: 'single column rectangle', template: ['a', 'a', 'a'] },
+        { name: 'multi-cell rectangle (2x2)', template: ['a a', 'a a'] },
+        { name: 'multi-cell rectangle (3x2)', template: ['a a a', 'a a a'] },
+        {
+          name: 'multiple distinct rectangular areas',
+          template: ['a a b b', 'a a b b', 'c c c c'],
+        },
+        {
+          name: 'dot cells mixed with rectangular areas',
+          template: ['a a . .', 'a a . .', '. . b b'],
+        },
+        {
+          name: 'complex valid layout with dots',
+          template: ['header header header', '. content .', 'footer footer footer'],
+        },
+      ])('should accept $name', async ({ template }) => {
+        const app = createTestApp();
+        Object.assign(app.pages[0], { layout: createLayoutDefinition(template) });
+        const result = await validateAppDefinition(app, () => []);
+        const rectangularErrors = result.errors.filter((e) =>
+          e.message.includes('does not form a single contiguous rectangle'),
+        );
+        expect(rectangularErrors).toHaveLength(0);
+      });
+    });
+
+    describe('invalid grid area patterns', () => {
+      it.each([
+        { name: 'horizontally disjointed area', template: ['a b a'], invalidArea: 'a' },
+        { name: 'vertically disjointed area', template: ['a', 'b', 'a'], invalidArea: 'a' },
+        { name: 'L-shaped area', template: ['a a', 'b a'], invalidArea: 'a' },
+        { name: 'inverted L-shaped area', template: ['a b', 'a a'], invalidArea: 'a' },
+        { name: 'T-shaped area', template: ['a a a', '. a .'], invalidArea: 'a' },
+        { name: 'inverted T-shaped area', template: ['. a .', 'a a a'], invalidArea: 'a' },
+        { name: 'diagonal pattern', template: ['a b', 'b a'], invalidArea: 'a' },
+        { name: 'cross/plus shaped area', template: ['. a .', 'a a a', '. a .'], invalidArea: 'a' },
+        { name: 'scattered cells', template: ['a . a', '. a .', 'a . a'], invalidArea: 'a' },
+      ])('should reject $name', async ({ template, invalidArea }) => {
+        const app = createTestApp();
+        Object.assign(app.pages[0], { layout: createLayoutDefinition(template) });
+        const result = await validateAppDefinition(app, () => []);
+        expect(result.valid).toBe(false);
+        expect(result.errors).toContainEqual(
+          new ValidationError(
+            `grid area '${invalidArea}' does not form a single contiguous rectangle`,
+            template,
+            undefined,
+            ['pages', 0, 'desktop', 'layout', 'template'],
+          ),
+        );
+      });
+    });
+
+    it('should report multiple invalid areas separately', async () => {
+      const app = createTestApp();
+      const template = ['a b a', 'b a b'];
+      Object.assign(app.pages[0], { layout: createLayoutDefinition(template) });
+      const result = await validateAppDefinition(app, () => []);
+      expect(result.valid).toBe(false);
+      const rectangularErrors = result.errors.filter((e) =>
+        e.message.includes('does not form a single contiguous rectangle'),
+      );
+      expect(rectangularErrors).toHaveLength(2);
+    });
   });
 });

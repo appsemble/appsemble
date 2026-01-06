@@ -1,3 +1,5 @@
+import { type RequireAtLeastOne } from 'type-fest';
+
 export interface GridLayoutDefinition {
   columns: number;
   template: string[];
@@ -14,8 +16,8 @@ export interface DeviceGridLayoutDefinition {
   spacing: GridLayoutSpacingDefinition;
 }
 
-export interface PageLayoutDefinition {
-  mobile?: DeviceGridLayoutDefinition;
-  tablet?: DeviceGridLayoutDefinition;
+export type PageLayoutDefinition = RequireAtLeastOne<{
+  mobile: DeviceGridLayoutDefinition;
+  tablet: DeviceGridLayoutDefinition;
   desktop: DeviceGridLayoutDefinition;
-}
+}>;

@@ -20,18 +20,22 @@ import {
   type AppMemberCurrentPatchAction,
   type AppMemberPropertiesPatchAction,
   type AppMemberRegisterAction,
+  type BasicPageDefinition,
+  type BlockDefinition,
   type BlockManifest,
   type CustomAppPermission,
+  type DeviceGridLayoutDefinition,
+  type FlowPageDefinition,
+  type LoopPageDefinition,
   type PageDefinition,
+  type TabsPageDefinition,
+  type PageLayoutDefinition,
   PredefinedAppRole,
   predefinedAppRolePermissions,
   type ProjectImplementations,
   type Remapper,
   type ResourceGetActionDefinition,
   type RoleDefinition,
-  type DeviceGridLayoutDefinition,
-  type PageLayoutDefinition,
-  type BasicPageDefinition,
 } from './types/index.js';
 
 type Report = (instance: unknown, message: string, path: (number | string)[]) => void;
@@ -392,6 +396,71 @@ function getTemplateAreas(layoutDefinition: PageLayoutDefinition | undefined): S
   return areas;
 }
 
+function validateTemplateAreasAreRectangular(
+  template: string[],
+  report: Report,
+  path: Prefix,
+): void {
+  const grid = template.map((row) => row.split(' '));
+
+  function isAreaRectangular(areaName: string): boolean {
+    const cells: { row: number; col: number }[] = [];
+
+    for (const [row, rowCells] of grid.entries()) {
+      for (const [col, cell] of rowCells.entries()) {
+        if (cell === areaName) {
+          cells.push({ row, col });
+        }
+      }
+    }
+
+    if (cells.length === 0) {
+      return true;
+    }
+
+    let minRow = Infinity;
+    let maxRow = -Infinity;
+    let minCol = Infinity;
+    let maxCol = -Infinity;
+    for (const cell of cells) {
+      minRow = Math.min(minRow, cell.row);
+      maxRow = Math.max(maxRow, cell.row);
+      minCol = Math.min(minCol, cell.col);
+      maxCol = Math.max(maxCol, cell.col);
+    }
+
+    const expectedCount = (maxRow - minRow + 1) * (maxCol - minCol + 1);
+    if (cells.length !== expectedCount) {
+      return false;
+    }
+
+    for (let row = minRow; row <= maxRow; row += 1) {
+      for (let col = minCol; col <= maxCol; col += 1) {
+        if (grid[row][col] !== areaName) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  const areas = new Set<string>();
+  for (const row of grid) {
+    for (const cell of row) {
+      if (cell && cell !== '.') {
+        areas.add(cell);
+      }
+    }
+  }
+
+  for (const area of areas) {
+    if (!isAreaRectangular(area)) {
+      report(template, `grid area '${area}' does not form a single contiguous rectangle`, path);
+    }
+  }
+}
+
 function validatePageLayoutDefinition(
   layoutDefinition: PageLayoutDefinition | undefined,
   report: Report,
@@ -418,56 +487,90 @@ function validatePageLayoutDefinition(
         [...path, deviceName, 'layout', 'template'],
       );
     }
+
+    validateTemplateAreasAreRectangular(deviceDefinition.layout.template, report, [
+      ...path,
+      deviceName,
+      'layout',
+      'template',
+    ]);
+  }
+}
+
+function validateBlockGridAreas(
+  blocks: BlockDefinition[],
+  layoutDefinition: PageLayoutDefinition,
+  report: Report,
+  path: Prefix,
+): void {
+  const templateAreas = getTemplateAreas(layoutDefinition);
+  for (const [idx, block] of blocks.entries()) {
+    if (block.gridArea && !templateAreas.has(block.gridArea)) {
+      report(
+        block.gridArea,
+        `does not match any area defined in the layout template. Available areas: ${[...templateAreas].join(', ') || 'none'}`,
+        [...path, idx, 'gridArea'],
+      );
+    }
+  }
+}
+
+function validateSubPageLayout(
+  layout: PageLayoutDefinition | undefined,
+  blocks: BlockDefinition[],
+  report: Report,
+  path: Prefix,
+): void {
+  validatePageLayoutDefinition(layout, report, path);
+  if (layout && blocks) {
+    validateBlockGridAreas(blocks, layout, report, [...path, 'blocks']);
   }
 }
 
 function validateGridLayout(definition: AppDefinition, report: Report): void {
   iterApp(definition, {
     onPage(page, path) {
+      // Basic page
       if (page.type === 'page' || page.type === undefined) {
         const basicPage = page as BasicPageDefinition;
-        const layoutDefinition = basicPage.layout;
-        validatePageLayoutDefinition(layoutDefinition, report, path);
+        validateSubPageLayout(basicPage.layout, basicPage.blocks, report, path);
+        return;
+      }
 
-        if (layoutDefinition && basicPage.blocks) {
-          const templateAreas = getTemplateAreas(layoutDefinition);
-          for (const [idx, block] of basicPage.blocks.entries()) {
-            if (block.gridArea && !templateAreas.has(block.gridArea)) {
-              report(
-                block.gridArea,
-                `does not match any area defined in the page layout template. Available areas: ${[...templateAreas].join(', ') || 'none'}`,
-                [...path, 'blocks', idx, 'gridArea'],
-              );
-            }
+      // Tabs page
+      if (page.type === 'tabs') {
+        const tabsPage = page as TabsPageDefinition;
+        if (tabsPage.tabs) {
+          for (const [tabIdx, tab] of tabsPage.tabs.entries()) {
+            validateSubPageLayout(tab.layout, tab.blocks, report, [...path, 'tabs', tabIdx]);
           }
+        } else if (tabsPage.definition?.foreach) {
+          validateSubPageLayout(
+            tabsPage.definition.foreach.layout,
+            tabsPage.definition.foreach.blocks,
+            report,
+            [...path, 'definition', 'foreach'],
+          );
         }
-      } else {
-        if (page.type === 'tabs') {
-          if (page.tabs) {
-            for (const [tabIdx, tab] of page.tabs.entries()) {
-              validatePageLayoutDefinition(tab.layout, report, [...path, 'tabs', tabIdx]);
+        return;
+      }
 
-              if (tab.layout && tab.blocks) {
-                const templateAreas = getTemplateAreas(tab.layout);
-                for (const [idx, block] of tab.blocks.entries()) {
-                  if (block.gridArea && !templateAreas.has(block.gridArea)) {
-                    report(
-                      block.gridArea,
-                      `does not match any area defined in the tab layout template. Available areas: ${[...templateAreas].join(', ') || 'none'}`,
-                      [...path, 'tabs', tabIdx, 'blocks', idx, 'gridArea'],
-                    );
-                  }
-                }
-              }
-            }
-          } else if (page.definition?.foreach) {
-            validatePageLayoutDefinition(page.definition.foreach.layout, report, [
-              ...path,
-              'definition',
-              'foreach',
-            ]);
-          }
+      // Flow page
+      if (page.type === 'flow') {
+        const flowPage = page as FlowPageDefinition;
+        for (const [stepIdx, step] of flowPage.steps.entries()) {
+          validateSubPageLayout(step.layout, step.blocks, report, [...path, 'steps', stepIdx]);
         }
+        return;
+      }
+
+      // Loop page
+      if (page.type === 'loop') {
+        const loopPage = page as LoopPageDefinition;
+        validateSubPageLayout(loopPage.foreach.layout, loopPage.foreach.blocks, report, [
+          ...path,
+          'foreach',
+        ]);
       }
     },
   });

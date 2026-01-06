@@ -7,6 +7,7 @@ export const GridSpacingDefinition: OpenAPIV3.NonArraySchemaObject = {
   properties: {
     unit: {
       type: 'string',
+      pattern: /^\d*\.?\d+(px|rem|em|%|vh|vw)$/.source,
       description: 'CSS unit for spacing calculations (e.g., "1rem", "8px")',
       default: '1rem',
     },

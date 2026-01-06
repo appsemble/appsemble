@@ -1,5 +1,5 @@
 import { type PageLayoutDefinition } from '@appsemble/lang-sdk';
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 
 type DeviceName = 'desktop' | 'mobile' | 'tablet';
 
@@ -22,48 +22,47 @@ export default function usePageGridCss({
 }: {
   pageLayout?: PageLayoutDefinition;
   BREAKPOINTS?: Record<DeviceName, number>;
-}): void {
+}): string | undefined {
+  const id = useId();
+  const className = `page-grid${id.replaceAll(':', '-')}`;
   const styleRef = useRef<HTMLStyleElement | null>(null);
 
   useEffect(() => {
     if (!styleRef.current) {
       const s = document.createElement('style');
-      s.dataset.pageGridCss = 'true';
+      s.dataset.pageGridCss = className;
       document.head.append(s);
       styleRef.current = s;
     }
-    const styleEl = styleRef.current!;
-    if (!pageLayout) {
-      styleEl.textContent = '';
-      return;
-    }
+    const styleEl = styleRef.current;
 
-    let css = '';
-    let lastDefinedLayout = DEFAULT_LAYOUT;
-    let lastDefinedSpacing = DEFAULT_SPACING;
+    if (pageLayout) {
+      let css = '';
+      let lastDefinedLayout = DEFAULT_LAYOUT;
+      let lastDefinedSpacing = DEFAULT_SPACING;
 
-    for (const bpName of DEVICE_ORDER) {
-      const minWidth = BREAKPOINTS![bpName];
-      if (minWidth == null) {
-        continue;
-      }
+      for (const bpName of DEVICE_ORDER) {
+        const minWidth = BREAKPOINTS?.[bpName];
+        if (minWidth == null) {
+          continue;
+        }
 
-      const bpDef = pageLayout[bpName];
+        const bpDef = pageLayout[bpName];
 
-      if (bpDef?.layout) {
-        lastDefinedLayout = { ...lastDefinedLayout, ...bpDef.layout };
-      }
-      if (bpDef?.spacing) {
-        lastDefinedSpacing = { ...lastDefinedSpacing, ...bpDef.spacing };
-      }
+        if (bpDef?.layout) {
+          lastDefinedLayout = { ...lastDefinedLayout, ...bpDef.layout };
+        }
+        if (bpDef?.spacing) {
+          lastDefinedSpacing = { ...lastDefinedSpacing, ...bpDef.spacing };
+        }
 
-      const { gap, unit, padding } = lastDefinedSpacing;
-      const { columns, template } = lastDefinedLayout;
+        const { gap, unit, padding } = lastDefinedSpacing;
+        const { columns, template } = lastDefinedLayout;
 
-      const templateString = template.map((r) => `"${r}"`).join(' ');
-      css += `
+        const templateString = template.map((r) => `"${r}"`).join(' ');
+        css += `
 @media (min-width: ${minWidth}px) {
-  .page-grid {
+  .${className} {
     padding: calc(${padding} * ${unit});
     display: grid;
     grid-template-columns: repeat(${columns}, minmax(0, 1fr));
@@ -72,9 +71,12 @@ export default function usePageGridCss({
   }
 }
 `;
-    }
+      }
 
-    styleEl.textContent = css;
+      styleEl.textContent = css;
+    } else {
+      styleEl.textContent = '';
+    }
 
     return () => {
       if (styleRef.current) {
@@ -82,5 +84,7 @@ export default function usePageGridCss({
         styleRef.current = null;
       }
     };
-  }, [pageLayout, BREAKPOINTS]);
+  }, [pageLayout, BREAKPOINTS, className]);
+
+  return pageLayout ? className : undefined;
 }

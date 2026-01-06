@@ -213,7 +213,7 @@ export function BlockList({
     appMemberInfoRef,
     appMemberSelectedGroup,
   ]);
-  usePageGridCss({ pageLayout, BREAKPOINTS });
+  const gridClassName = usePageGridCss({ pageLayout, BREAKPOINTS });
 
   if (!blockList.length) {
     if (!isLoggedIn) {
@@ -223,7 +223,7 @@ export function BlockList({
     return <Navigate to="/" />;
   }
   return (
-    <div className="page-grid">
+    <div className={gridClassName}>
       {isLoading ? <Loader /> : null}
       {blockList.map(([block, index, visible]) =>
         visible ? (
