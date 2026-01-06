@@ -92,5 +92,10 @@ If this is omitted, a collapsable side navigation menu will be rendered on the l
       type: 'string',
       enum: ['appName', 'pageName'],
     },
+    hideTitleBar: {
+      description: 'Whether to hide the title bar',
+      type: 'boolean',
+      default: false,
+    },
   },
 };
