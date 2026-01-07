@@ -209,7 +209,7 @@ export function TabsPage({
           })}
         </Tabs>
         <MetaSwitch title={pageName}>
-          {pageTabs.map(({ blocks, name, roles }, index) => {
+          {pageTabs.map(({ blocks, layout, name, roles }, index) => {
             const defaultMessage =
               typeof name === 'string' ? name : String(remap(name, data, remapperContext));
             const translatedName = createdTabs.length
@@ -232,6 +232,7 @@ export function TabsPage({
                       ee={ee}
                       name={translatedName}
                       pageDefinition={pageDefinition}
+                      pageLayout={layout}
                       prefix={`${prefix}.tabs.${index}.blocks`}
                       prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
                       remap={remap}

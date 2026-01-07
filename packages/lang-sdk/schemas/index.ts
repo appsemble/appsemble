@@ -120,3 +120,7 @@ export * from './SecurityRoleDefinition.js';
 export * from './TabsPageDefinition.js';
 export * from './Theme.js';
 export * from './WebhookDefinition.js';
+export * from './DeviceGridLayoutDefinition.js';
+export * from './GridLayoutDefinition.js';
+export * from './GridSpacingDefinition.js';
+export * from './PageLayoutDefinition.js';

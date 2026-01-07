@@ -10,6 +10,7 @@ import { type ResourceDefinition } from './resource.js';
 import { type ViewRole } from './roles.js';
 import { type Security } from './security.js';
 import { type Theme } from './theme.js';
+import { type PageLayoutDefinition } from './gridLayout.js';
 
 export type SettingName = 'email' | 'languages' | 'name' | 'password' | 'phoneNumber' | 'picture';
 
@@ -266,11 +267,13 @@ export interface SubPageDefinition {
   name: Remapper;
   roles?: ViewRole[];
   blocks: BlockDefinition[];
+  layout?: PageLayoutDefinition;
 }
 
 export interface BasicPageDefinition extends BasePageDefinition {
   type?: 'page';
   blocks: BlockDefinition[];
+  layout?: PageLayoutDefinition;
 }
 
 export interface ContainerPageDefinition extends BasePageDefinition {

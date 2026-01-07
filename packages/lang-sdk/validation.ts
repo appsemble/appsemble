@@ -20,9 +20,16 @@ import {
   type AppMemberCurrentPatchAction,
   type AppMemberPropertiesPatchAction,
   type AppMemberRegisterAction,
+  type BasicPageDefinition,
+  type BlockDefinition,
   type BlockManifest,
   type CustomAppPermission,
+  type DeviceGridLayoutDefinition,
+  type FlowPageDefinition,
+  type LoopPageDefinition,
   type PageDefinition,
+  type TabsPageDefinition,
+  type PageLayoutDefinition,
   PredefinedAppRole,
   predefinedAppRolePermissions,
   type ProjectImplementations,
@@ -365,6 +372,205 @@ function validateController(
             report(value, 'is an unknown event listener', [...path, 'events', 'listen', key]);
           }
         }
+      }
+    },
+  });
+}
+
+function getTemplateAreas(layoutDefinition: PageLayoutDefinition | undefined): Set<string> {
+  const areas = new Set<string>();
+  if (!layoutDefinition) {
+    return areas;
+  }
+  for (const deviceDefinition of Object.values(layoutDefinition) as DeviceGridLayoutDefinition[]) {
+    if (deviceDefinition?.layout?.template) {
+      for (const row of deviceDefinition.layout.template) {
+        for (const area of row.split(' ')) {
+          if (area && area !== '.') {
+            areas.add(area);
+          }
+        }
+      }
+    }
+  }
+  return areas;
+}
+
+function validateTemplateAreasAreRectangular(
+  template: string[],
+  report: Report,
+  path: Prefix,
+): void {
+  const grid = template.map((row) => row.split(' '));
+
+  function isAreaRectangular(areaName: string): boolean {
+    const cells: { row: number; col: number }[] = [];
+
+    for (const [row, rowCells] of grid.entries()) {
+      for (const [col, cell] of rowCells.entries()) {
+        if (cell === areaName) {
+          cells.push({ row, col });
+        }
+      }
+    }
+
+    if (cells.length === 0) {
+      return true;
+    }
+
+    let minRow = Infinity;
+    let maxRow = -Infinity;
+    let minCol = Infinity;
+    let maxCol = -Infinity;
+    for (const cell of cells) {
+      minRow = Math.min(minRow, cell.row);
+      maxRow = Math.max(maxRow, cell.row);
+      minCol = Math.min(minCol, cell.col);
+      maxCol = Math.max(maxCol, cell.col);
+    }
+
+    const expectedCount = (maxRow - minRow + 1) * (maxCol - minCol + 1);
+    if (cells.length !== expectedCount) {
+      return false;
+    }
+
+    for (let row = minRow; row <= maxRow; row += 1) {
+      for (let col = minCol; col <= maxCol; col += 1) {
+        if (grid[row][col] !== areaName) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  const areas = new Set<string>();
+  for (const row of grid) {
+    for (const cell of row) {
+      if (cell && cell !== '.') {
+        areas.add(cell);
+      }
+    }
+  }
+
+  for (const area of areas) {
+    if (!isAreaRectangular(area)) {
+      report(template, `grid area '${area}' does not form a single contiguous rectangle`, path);
+    }
+  }
+}
+
+function validatePageLayoutDefinition(
+  layoutDefinition: PageLayoutDefinition | undefined,
+  report: Report,
+  path: Prefix,
+): void {
+  if (!layoutDefinition) {
+    return;
+  }
+  for (const [deviceName, deviceDefinition] of Object.entries(layoutDefinition) as [
+    string,
+    DeviceGridLayoutDefinition,
+  ][]) {
+    if (!deviceDefinition?.layout?.template || !deviceDefinition?.layout?.columns) {
+      continue;
+    }
+    if (
+      deviceDefinition.layout.template.some(
+        (row) => row.split(' ').length !== deviceDefinition.layout.columns,
+      )
+    ) {
+      report(
+        deviceDefinition.layout.template,
+        'template needs to be the same length as number of columns',
+        [...path, deviceName, 'layout', 'template'],
+      );
+    }
+
+    validateTemplateAreasAreRectangular(deviceDefinition.layout.template, report, [
+      ...path,
+      deviceName,
+      'layout',
+      'template',
+    ]);
+  }
+}
+
+function validateBlockGridAreas(
+  blocks: BlockDefinition[],
+  layoutDefinition: PageLayoutDefinition,
+  report: Report,
+  path: Prefix,
+): void {
+  const templateAreas = getTemplateAreas(layoutDefinition);
+  for (const [idx, block] of blocks.entries()) {
+    if (block.gridArea && !templateAreas.has(block.gridArea)) {
+      report(
+        block.gridArea,
+        `does not match any area defined in the layout template. Available areas: ${[...templateAreas].join(', ') || 'none'}`,
+        [...path, idx, 'gridArea'],
+      );
+    }
+  }
+}
+
+function validateSubPageLayout(
+  layout: PageLayoutDefinition | undefined,
+  blocks: BlockDefinition[],
+  report: Report,
+  path: Prefix,
+): void {
+  validatePageLayoutDefinition(layout, report, path);
+  if (layout && blocks) {
+    validateBlockGridAreas(blocks, layout, report, [...path, 'blocks']);
+  }
+}
+
+function validateGridLayout(definition: AppDefinition, report: Report): void {
+  iterApp(definition, {
+    onPage(page, path) {
+      // Basic page
+      if (page.type === 'page' || page.type === undefined) {
+        const basicPage = page as BasicPageDefinition;
+        validateSubPageLayout(basicPage.layout, basicPage.blocks, report, path);
+        return;
+      }
+
+      // Tabs page
+      if (page.type === 'tabs') {
+        const tabsPage = page as TabsPageDefinition;
+        if (tabsPage.tabs) {
+          for (const [tabIdx, tab] of tabsPage.tabs.entries()) {
+            validateSubPageLayout(tab.layout, tab.blocks, report, [...path, 'tabs', tabIdx]);
+          }
+        } else if (tabsPage.definition?.foreach) {
+          validateSubPageLayout(
+            tabsPage.definition.foreach.layout,
+            tabsPage.definition.foreach.blocks,
+            report,
+            [...path, 'definition', 'foreach'],
+          );
+        }
+        return;
+      }
+
+      // Flow page
+      if (page.type === 'flow') {
+        const flowPage = page as FlowPageDefinition;
+        for (const [stepIdx, step] of flowPage.steps.entries()) {
+          validateSubPageLayout(step.layout, step.blocks, report, [...path, 'steps', stepIdx]);
+        }
+        return;
+      }
+
+      // Loop page
+      if (page.type === 'loop') {
+        const loopPage = page as LoopPageDefinition;
+        validateSubPageLayout(loopPage.foreach.layout, loopPage.foreach.blocks, report, [
+          ...path,
+          'foreach',
+        ]);
       }
     },
   });
@@ -1712,6 +1918,7 @@ export async function validateAppDefinition(
     validateActions(definition, report);
     validateEvents(definition, blockVersionMap, report);
     validateUniquePageNames(definition, report);
+    validateGridLayout(definition, report);
   } catch (error) {
     report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
   }

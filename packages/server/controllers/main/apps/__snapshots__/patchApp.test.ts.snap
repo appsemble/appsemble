@@ -35,6 +35,10 @@ Content-Type: application/json; charset=utf-8
             "events": {
               "$ref": "#/components/schemas/EventsDefinition",
             },
+            "gridArea": {
+              "description": "Grid area defined in the page layout definition",
+              "type": "string",
+            },
             "header": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "An optional header to render above the block.",
@@ -2061,6 +2065,10 @@ Content-Type: application/json; charset=utf-8
             },
             "events": {
               "$ref": "#/components/schemas/EventsDefinition",
+            },
+            "gridArea": {
+              "description": "Grid area defined in the page layout definition",
+              "type": "string",
             },
             "header": {
               "$ref": "#/components/schemas/RemapperDefinition",

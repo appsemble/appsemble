@@ -441,6 +441,7 @@ export function Page(): ReactNode {
                     ee={ee.current}
                     key={prefix}
                     pageDefinition={pageDefinition}
+                    pageLayout={pageDefinition.layout}
                     prefix={`${prefix}.blocks`}
                     prefixIndex={`${prefixIndex}.blocks`}
                     remap={remapWithContext}

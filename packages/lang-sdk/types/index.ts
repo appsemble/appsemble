@@ -16,6 +16,7 @@ export * from './roles.js';
 export * from './security.js';
 export * from './theme.js';
 export * from './member.js';
+export * from './gridLayout.js';
 
 export interface ActionType {
   /**
