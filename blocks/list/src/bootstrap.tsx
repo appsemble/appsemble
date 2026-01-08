@@ -226,16 +226,6 @@ export function List({
               )}
             </li>
           ))}
-          {onDrop?.type === 'noop' ? null : (
-            // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-            <li
-              className={styles.invisible}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => handleDrop(itemList.length)}
-            >
-              <ListItem index={itemList.length} item={{ Position: null }} />
-            </li>
-          )}
         </ul>
       );
     },
