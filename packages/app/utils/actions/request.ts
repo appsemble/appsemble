@@ -61,6 +61,8 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         req.params = null;
       }
 
+      // Intended behavior
+      // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
       const response = await axios(req);
       let responseBody = response.data;
       // Check if it's safe to represent the response as a string (i.e. not a binary file)
