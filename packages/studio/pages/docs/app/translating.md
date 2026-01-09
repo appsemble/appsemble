@@ -53,7 +53,7 @@ Let’s look at a simple example of what this looks like in an app.
 ```yaml validate blocks-snippet
 blocks:
   - type: markdown
-    version: 0.36.2-test.1
+    version: 0.36.2-test.2
     parameters:
       content:
         translate: myMessage
@@ -70,7 +70,7 @@ Alternatively using `string.format`:
 ```yaml validate blocks-snippet
 blocks:
   - type: markdown
-    version: 0.36.2-test.1
+    version: 0.36.2-test.2
     parameters:
       content:
         string.format:
@@ -166,7 +166,7 @@ The format used for these translation files is similar to the format shown on th
   },
   "blocks": {
     "@appsemble/form": {
-      "0.36.2-test.1": {
+      "0.36.2-test.2": {
         "submit": "An example override of the submit message in the form block."
       }
     }
