@@ -630,6 +630,8 @@ gitlab release:
 
 publish docker:
   extends: .docker
+  tags:
+    - saas-linux-small-amd64
   stage: publish
   needs:
     - build docker image
@@ -682,6 +684,8 @@ publish helm:
 
 # Publish npm packages to npmjs.org.
 publish npm:
+  tags:
+    - saas-linux-small-amd64
   stage: publish
   needs:
     - job: pack
