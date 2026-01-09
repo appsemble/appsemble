@@ -5,7 +5,7 @@ data.
 
 ```yaml
 - type: data-loader
-  version: 0.36.2-test.2
+  version: 0.36.2-test.3
   actions:
     onLoad:
       type: resource.query
@@ -16,7 +16,7 @@ data.
     emit:
       data: news
 - type: timer
-  version: 0.36.2-test.2
+  version: 0.36.2-test.3
   parameters:
     interval: 60
   events:
