@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.36.2-test.0
-appVersion: 0.36.2-test.0
+version: 0.36.2-test.1
+appVersion: 0.36.2-test.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,7 +32,9 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: |
-    []
+    - kind: added
+      description: "Lang-sdk: Add grid layout support for pages with responsive
+        breakpoints and CSS grid template areas."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
