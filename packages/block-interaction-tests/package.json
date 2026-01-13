@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/block-interaction-tests",
-  "version": "0.36.2-test.3",
+  "version": "0.36.2-test.4",
   "private": true,
   "description": "Used to test interactions between different appsemble blocks.",
   "keywords": [
@@ -24,11 +24,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/data-loader": "0.36.2-test.3",
-    "@appsemble/list": "0.36.2-test.3",
-    "@appsemble/preact": "0.36.2-test.3",
-    "@appsemble/sdk": "0.36.2-test.3",
-    "@appsemble/utils": "0.36.2-test.3",
+    "@appsemble/data-loader": "0.36.2-test.4",
+    "@appsemble/list": "0.36.2-test.4",
+    "@appsemble/preact": "0.36.2-test.4",
+    "@appsemble/sdk": "0.36.2-test.4",
+    "@appsemble/utils": "0.36.2-test.4",
     "@types/node": "22.15.21",
     "preact": "^10.0.0"
   },

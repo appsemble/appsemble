@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/table",
-  "version": "0.36.2-test.3",
+  "version": "0.36.2-test.4",
   "private": true,
   "description": "A block that can be used to display larger sets of data.",
   "homepage": "https://appsemble.app",
@@ -17,15 +17,15 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.36.2-test.3",
-    "@appsemble/preact-components": "0.36.2-test.3",
-    "@appsemble/sdk": "0.36.2-test.3",
-    "@appsemble/utils": "0.36.2-test.3",
+    "@appsemble/preact": "0.36.2-test.4",
+    "@appsemble/preact-components": "0.36.2-test.4",
+    "@appsemble/sdk": "0.36.2-test.4",
+    "@appsemble/utils": "0.36.2-test.4",
     "classnames": "^2.0.0",
     "preact": "^10.0.0"
   },
   "devDependencies": {
-    "@appsemble/block-interaction-tests": "0.36.2-test.3",
+    "@appsemble/block-interaction-tests": "0.36.2-test.4",
     "@testing-library/preact": "3.2.4",
     "@testing-library/user-event": "14.6.1",
     "vitest": "2.1.9"
