@@ -31,6 +31,7 @@ miscellaneous supported actions.
 - [`share`](#share)
 - [`static`](#static)
 - [`throw`](#throw)
+- [`webhook`](#webhook)
 
 ## Actions
 
@@ -651,4 +652,38 @@ blocks:
         onError:
           type: throw
           remapBefore: { prop: code } # ERR_BAD_RESPONSE
+```
+
+### webhook<Side name="webhook" />
+
+<ActionRef action={referenceSchemas.miscellaneousActions['webhook']} />
+
+The `webhook` action invokes a webhook defined in the app. Webhooks execute server-side, making them
+ideal for secure operations like generating verification codes, sending emails, or modifying
+resources without exposing sensitive logic to the client.
+
+Users must have the `$webhook:<webhookName>:invoke` permission to call this action. The result of
+the webhook's action chain is returned to the client.
+
+```yaml
+blocks:
+  - type: form
+    version: 0.36.2-test.6
+    parameters:
+      fields:
+        - type: string
+          name: email
+          format: email
+          label: { translate: email }
+    actions:
+      onSubmit:
+        type: webhook
+        name: sendVerificationEmail
+        body:
+          object.from:
+            email:
+              prop: email
+        onSuccess:
+          type: message
+          body: Verification email sent!
 ```

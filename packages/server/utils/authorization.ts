@@ -24,6 +24,8 @@ import {
   OrganizationMember,
 } from '../models/index.js';
 
+// XXX: Too many functions checking too many things.
+
 interface CheckAppPermissionsParams {
   context: Context;
   appId: number;

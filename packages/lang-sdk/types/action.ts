@@ -108,6 +108,7 @@ export type Action =
   | BaseAction<'storage.update'>
   | BaseAction<'storage.write'>
   | BaseAction<'throw'>
+  | BaseAction<'webhook'>
   | LinkAction
   | LogAction
   | RequestAction

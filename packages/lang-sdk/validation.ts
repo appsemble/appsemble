@@ -35,6 +35,7 @@ import {
   type ProjectImplementations,
   type Remapper,
   type ResourceGetActionDefinition,
+  type WebhookActionDefinition,
   type RoleDefinition,
 } from './types/index.js';
 
@@ -53,6 +54,10 @@ const ownResourcePermissionPattern = /^\$resource:[^:]+:own:(get|query|delete|pa
 const allResourceViewPermissionPattern = /^\$resource:all:(get|query):[^:]+$/;
 
 const resourceViewPermissionPattern = /^\$resource:[^:]+:(get|query):[^:]+$/;
+
+const allWebhookPermissionPattern = /^\$webhook:all:invoke$/;
+
+const webhookPermissionPattern = /^\$webhook:[^:]+:invoke$/;
 
 /**
  * Check whether or not the given link represents a link related to the Appsemble core.
@@ -725,6 +730,19 @@ function validatePermissions(
             );
             return;
           }
+        }
+      }
+
+      if (webhookPermissionPattern.test(permission)) {
+        const [, webhookName] = permission.split(':');
+
+        if (webhookName !== 'all' && !appDefinition.webhooks?.[webhookName]) {
+          report(
+            appDefinition,
+            `webhook ${webhookName} does not exist in the app's webhooks definition`,
+            [...path, 'permissions', index],
+          );
+          return;
         }
       }
 
@@ -1478,7 +1496,8 @@ function validateActions(definition: AppDefinition, report: Report): void {
             return;
           }
 
-          const allPermissions = definition.security.guest?.permissions || [];
+          // IMPORTANT: Create a COPY of the permissions array to avoid mutating the definition
+          const allPermissions = [...(definition.security.guest?.permissions || [])];
 
           if (definition.security?.cron) {
             allPermissions.push(...(definition.security.cron.permissions ?? []));
@@ -1545,6 +1564,59 @@ function validateActions(definition: AppDefinition, report: Report): void {
               action.type,
               'there is no one in the app who has permissions to use this action',
               [...path, 'resource'],
+            );
+            return;
+          }
+        }
+      }
+
+      if (action.type === 'webhook') {
+        const { name: webhookName } = action as WebhookActionDefinition;
+
+        if (!definition.webhooks?.[webhookName]) {
+          report(
+            action.type,
+            `webhook '${webhookName}' does not exist in the app's webhooks definition`,
+            [...path, 'name'],
+          );
+          return;
+        }
+
+        // Check if anyone has permission to invoke this webhook
+        if (definition.security) {
+          // IMPORTANT: Create a COPY of the permissions array to avoid mutating the definition
+          const webhookAllPermissions: CustomAppPermission[] = [
+            ...(definition.security.guest?.permissions || []),
+          ];
+
+          if (definition.security?.cron) {
+            webhookAllPermissions.push(...(definition.security.cron.permissions ?? []));
+          }
+
+          if (definition.security.roles) {
+            const allRolePermissions = getAppRolePermissions(
+              definition.security,
+              Object.keys(definition.security.roles),
+            );
+            webhookAllPermissions.push(...allRolePermissions);
+          }
+
+          if (
+            !webhookAllPermissions.some((permission) => {
+              if (
+                webhookPermissionPattern.test(permission) ||
+                allWebhookPermissionPattern.test(permission)
+              ) {
+                const [, permissionWebhookName] = permission.split(':');
+                return permissionWebhookName === 'all' || permissionWebhookName === webhookName;
+              }
+              return false;
+            })
+          ) {
+            report(
+              action.type,
+              'there is no one in the app who has permissions to invoke this webhook',
+              [...path, 'name'],
             );
             return;
           }
@@ -1888,37 +1960,43 @@ export async function validateAppDefinition(
     return result;
   }
 
-  const blocks = getAppBlocks(definition);
-  const blockVersions = await getBlockVersions(blocks);
-
-  const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
-  for (const version of blockVersions) {
-    if (!blockVersionMap.has(version.name)) {
-      blockVersionMap.set(version.name, new Map());
-    }
-    blockVersionMap.get(version.name)!.set(version.version, version);
-  }
-
   const report: Report = (instance, message, path) => {
     result.errors.push(new ValidationError(message, instance, undefined, path));
   };
 
   try {
-    validateController(definition, controllerImplementations, report);
-    validateCronJobs(definition, report);
-    validateDefaultPage(definition, report);
-    validateHooks(definition, report);
-    validateLanguage(definition, report);
-    validateResourceReferences(definition, report);
-    validateMembersSchema(definition, report);
-    validatePhoneNumberDefinition(definition, report);
-    validateResourceSchemas(definition, report);
-    validateSecurity(definition, report);
-    validateBlocks(definition, blockVersionMap, report);
-    validateActions(definition, report);
-    validateEvents(definition, blockVersionMap, report);
-    validateUniquePageNames(definition, report);
-    validateGridLayout(definition, report);
+    // IMPORTANT: Create a deep copy to prevent validation logic from mutating the original definition.
+    // The imperative/procedural-style algorithms below (e.g., in validateActions) build up arrays
+    // using .push(), which can accidentally mutate the original definition if passed by reference.
+    // This clone acts as a safeguard against such side effects.
+    const clonedDefinition = structuredClone(definition);
+
+    const blocks = getAppBlocks(clonedDefinition);
+    const blockVersions = await getBlockVersions(blocks);
+
+    const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
+    for (const version of blockVersions) {
+      if (!blockVersionMap.has(version.name)) {
+        blockVersionMap.set(version.name, new Map());
+      }
+      blockVersionMap.get(version.name)!.set(version.version, version);
+    }
+
+    validateController(clonedDefinition, controllerImplementations, report);
+    validateCronJobs(clonedDefinition, report);
+    validateDefaultPage(clonedDefinition, report);
+    validateHooks(clonedDefinition, report);
+    validateLanguage(clonedDefinition, report);
+    validateResourceReferences(clonedDefinition, report);
+    validateMembersSchema(clonedDefinition, report);
+    validatePhoneNumberDefinition(clonedDefinition, report);
+    validateResourceSchemas(clonedDefinition, report);
+    validateSecurity(clonedDefinition, report);
+    validateBlocks(clonedDefinition, blockVersionMap, report);
+    validateActions(clonedDefinition, report);
+    validateEvents(clonedDefinition, blockVersionMap, report);
+    validateUniquePageNames(clonedDefinition, report);
+    validateGridLayout(clonedDefinition, report);
   } catch (error) {
     report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
   }

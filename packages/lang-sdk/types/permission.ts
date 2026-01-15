@@ -129,4 +129,9 @@ export enum AppPermission {
    * The permission to delete own app resources.
    */
   DeleteOwnResources = '$resource:all:own:delete',
+
+  /**
+   * The permission to invoke any app webhook.
+   */
+  InvokeWebhooks = '$webhook:all:invoke',
 }

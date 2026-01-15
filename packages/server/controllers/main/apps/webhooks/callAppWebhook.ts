@@ -1,22 +1,25 @@
-import { assertKoaCondition, handleValidatorResult } from '@appsemble/node-utils';
+import { assertKoaCondition, handleValidatorResult, logger } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { type OpenAPIV3 } from 'openapi-types';
 
 import { App } from '../../../../models/index.js';
+import { checkAppPermissions } from '../../../../options/checkAppPermissions.js';
 import { options } from '../../../../options/options.js';
 import { handleAction } from '../../../../utils/action.js';
 import { actions } from '../../../../utils/actions/index.js';
 
 export async function callAppWebhook(ctx: Context): Promise<void> {
   const {
+    client,
     mailer,
     openApi,
     pathParams: { appId, webhookName },
     request: { body },
+    user,
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'demoMode'],
+    attributes: ['id', 'definition', 'demoMode', 'domain', 'path', 'OrganizationId'],
   });
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
@@ -24,6 +27,22 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
   const webhookDefinition = app.definition.webhooks?.[webhookName];
 
   assertKoaCondition(webhookDefinition != null, ctx, 404, 'Webhook not found');
+
+  // Webhook secret auth: user is truthy (empty object) but no client.app
+  // App auth: user is truthy and client.app exists
+  // Guest: user is falsy
+  const clientApp = (client as { app?: unknown } | undefined)?.app;
+  const isWebhookSecretAuth = user && !clientApp;
+
+  // Check permissions for app auth and guest (not for webhook secret auth)
+  if (!isWebhookSecretAuth) {
+    logger.info(`Checking permissions for webhook '${webhookName}'`);
+    await checkAppPermissions({
+      context: ctx,
+      app: app.toJSON(),
+      permissions: [`$webhook:${webhookName}:invoke`],
+    });
+  }
 
   const parsedSchema = structuredClone(webhookDefinition.schema);
   parsedSchema.properties ??= {};
@@ -50,9 +69,11 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
     'Webhook body validation failed',
   );
 
+  logger.info(`Webhook '${webhookName}' received data:`, JSON.stringify(body, null, 2));
+
   const action = actions[webhookDefinition.action.type];
   // @ts-expect-error Messed up
-  await handleAction(action, {
+  const result = await handleAction(action, {
     app,
     action: webhookDefinition.action,
     mailer,
@@ -60,4 +81,8 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
     options,
     context: ctx,
   });
+
+  // Return the result to the client
+  ctx.status = 200;
+  ctx.body = result ?? null;
 }

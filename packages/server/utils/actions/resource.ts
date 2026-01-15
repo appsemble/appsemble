@@ -46,9 +46,14 @@ export async function get({
     string,
     unknown
   >;
-  if (!body?.id) {
+
+  // Support action.id remapper (like client-side) or fallback to body.id
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  const resourceId = action.id ? remap(action.id, data, internalContext) : body?.id;
+  if (!resourceId) {
     throw new Error('Missing id');
   }
+  body.id = resourceId;
 
   const { view } = action;
   const resourceDefinition = getResourceDefinition(app.definition, action.resource, context, view);
@@ -59,7 +64,7 @@ export async function get({
       { association: 'Editor', attributes: ['id', 'name'], required: false },
     ],
     where: {
-      id: body.id,
+      id: resourceId,
       type: action.resource,
       expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
     },
@@ -219,15 +224,19 @@ export async function update({
     unknown
   >;
 
-  if (!body?.id) {
+  // Support action.id remapper (like client-side) or fallback to body.id
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  const resourceId = action.id ? remap(action.id, actionData, internalContext) : body?.id;
+  if (!resourceId) {
     throw new Error('Missing id');
   }
+  body.id = resourceId;
 
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const resource = await Resource.findOne({
     where: {
-      id: body.id,
+      id: resourceId,
       type: action.resource,
     },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
@@ -324,14 +333,19 @@ export async function patch({
     unknown
   >;
 
-  if (!body?.id) {
+  // Support action.id remapper (like client-side) or fallback to body.id
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  const resourceId = action.id ? remap(action.id, actionData, internalContext) : body?.id;
+  if (!resourceId) {
     throw new Error('Missing id');
   }
+  // Ensure id is available in body for downstream processing
+  body.id = resourceId;
 
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const resource = await Resource.findOne({
-    where: { id: body.id, type: action.resource },
+    where: { id: resourceId, type: action.resource },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
   });
 
@@ -428,12 +442,16 @@ export async function remove({
 
   getResourceDefinition(app.definition, action.resource, context);
 
-  if (!body?.id) {
+  // Support action.id remapper (like client-side) or fallback to body.id
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  const resourceId = action.id ? remap(action.id, data, internalContext) : body?.id;
+  if (!resourceId) {
     throw new Error('Missing id');
   }
+  body.id = resourceId;
 
   const resource = await Resource.findOne({
-    where: { id: body.id, type: action.resource },
+    where: { id: resourceId, type: action.resource },
     include: [
       {
         model: Asset,

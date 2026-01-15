@@ -349,6 +349,11 @@ export enum OrganizationPermission {
    * The permission to query organization subscriptions.
    */
   QueryOrganizationSubscriptions,
+
+  /**
+   * The permission to invoke webhooks for an app.
+   */
+  InvokeAppWebhooks,
 }
 
 export const appOrganizationPermissionMapping: Record<AppPermission, OrganizationPermission> = {
@@ -378,4 +383,5 @@ export const appOrganizationPermissionMapping: Record<AppPermission, Organizatio
   [AppPermission.UpdateOwnResources]: OrganizationPermission.UpdateAppResources,
   [AppPermission.PatchOwnResources]: OrganizationPermission.PatchAppResources,
   [AppPermission.DeleteOwnResources]: OrganizationPermission.DeleteAppResources,
+  [AppPermission.InvokeWebhooks]: OrganizationPermission.InvokeAppWebhooks,
 };
