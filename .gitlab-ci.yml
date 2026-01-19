@@ -91,7 +91,7 @@ workflow:
 
 secret-scan-mr:
   stage: security
-  image: node:lts-trixie@sha256:306b92aa9c0e42270959980513a018470a9c0dcca611ea03d031b92da538964d
+  image: node:lts-trixie@sha256:bea2f8264c42f56e253295ebd89db8e7c4ff96a03339adeb4a7628bd548d9476
   variables:
     BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
     HEAD_SHA: ${CI_COMMIT_SHA}
