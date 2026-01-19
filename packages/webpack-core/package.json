@@ -64,10 +64,10 @@
     "workbox-webpack-plugin": "^7.0.0"
   },
   "devDependencies": {
-    "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",
-    "@types/hast": "^3.0.0",
-    "@types/mdast": "^4.0.0",
-    "@types/unused-webpack-plugin": "^2.0.0",
+    "@types/case-sensitive-paths-webpack-plugin": "2.1.9",
+    "@types/hast": "3.0.4",
+    "@types/mdast": "4.0.4",
+    "@types/unused-webpack-plugin": "2.4.5",
     "url": "0.11.4"
   },
   "engines": {
