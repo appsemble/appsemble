@@ -118,7 +118,7 @@
     "@types/bcrypt": "5.0.2",
     "@types/imapflow": "1.0.189",
     "@types/json-diff": "1.0.3",
-    "@types/jsonwebtoken": "9.0.9",
+    "@types/jsonwebtoken": "9.0.10",
     "@types/koa": "2.15.0",
     "@types/koa-compress": "4.0.6",
     "@types/koa-range": "0.3.5",
