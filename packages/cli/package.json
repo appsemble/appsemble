@@ -99,7 +99,7 @@
     "yoctocolors-cjs": "2.1.3",
     "@inquirer/figures": "2.0.2",
     "@types/concat-stream": "2.0.3",
-    "@types/inquirer": "9.0.7",
+    "@types/inquirer": "9.0.9",
     "@types/koa__cors": "5.0.0",
     "@types/koa-compress": "4.0.6",
     "@types/koa-range": "0.3.5",
