@@ -561,13 +561,62 @@ e2e SLA apps:
     matrix:
       - PROJECT:
           - 'appsemble/apps/sittard-geleen'
-          - 'appsemble/apps/restaurants'
           - 'appsemble/apps/minjus'
-          - 'appsemble/apps/sounding-bodies'
   trigger:
     project: $PROJECT
     strategy: depend
     branch: main
+
+e2e SLA apps(private):
+  stage: end 2 end
+  needs:
+    - build docker image
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_COMMIT_TAG
+  variables:
+    APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+  parallel:
+    matrix:
+      - PROJECT_NAME: RESTAURANTS
+        PROJECT_ID: '111'
+      - PROJECT_NAME: SOUNDING_BODIES
+        PROJECT_ID: '105'
+  script:
+    - apt-get update
+    - apt-get install --yes curl jq
+    # Trigger pipeline on remote GitLab and poll until completion
+    - |
+      case "$PROJECT_NAME" in
+        RESTAURANTS) TRIGGER_TOKEN="$DC_GITLAB_TRIGGER_RESTAURANTS" ;;
+        SOUNDING_BODIES) TRIGGER_TOKEN="$DC_GITLAB_TRIGGER_SOUNDING_BODIES" ;;
+        *) echo "Unknown project: $PROJECT_NAME"; exit 1 ;;
+      esac
+      RESPONSE=$(curl -s --request POST \
+        --form "token=$TRIGGER_TOKEN" \
+        --form "ref=main" \
+        --form "variables[APPSEMBLE_IMAGE]=$APPSEMBLE_IMAGE" \
+        "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/trigger/pipeline")
+      echo "Trigger response: $(echo "$RESPONSE" | jq '{id, status, web_url, message}')"
+      PIPELINE_ID=$(echo "$RESPONSE" | jq -r '.id')
+      if [ "$PIPELINE_ID" = "null" ] || [ -z "$PIPELINE_ID" ]; then
+        echo "Failed to trigger pipeline"
+        exit 1
+      fi
+      echo "Triggered pipeline $PIPELINE_ID"
+
+      while true; do
+        RESPONSE=$(curl -s --header "PRIVATE-TOKEN: $DC_GITLAB_TOKEN" \
+          "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/pipelines/$PIPELINE_ID")
+        STATUS=$(echo "$RESPONSE" | jq -r '.status')
+        echo "Pipeline $PIPELINE_ID status: $STATUS"
+        case "$STATUS" in
+          success) exit 0 ;;
+          failed|canceled) exit 1 ;;
+          null) echo "Failed to get pipeline status"; exit 1 ;;
+          *) sleep 10 ;;
+        esac
+      done
 
 # Allow failure as we don't support these anymore
 # e2e SLA apps deprecated:
