@@ -100,7 +100,7 @@
     "@inquirer/figures": "2.0.3",
     "@types/concat-stream": "2.0.3",
     "@types/inquirer": "9.0.9",
-    "@types/koa__cors": "5.0.0",
+    "@types/koa__cors": "5.0.1",
     "@types/koa-compress": "4.0.7",
     "@types/koa-range": "0.3.5",
     "@types/normalize-path": "3.0.2",
