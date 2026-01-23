@@ -342,6 +342,7 @@ parameters:
       'role',
       'properties',
       'phoneNumber',
+      'demo',
     ],
     description: `
 > **Note:** For this remapper to work, the app member that activated the remapper has to be logged in to
@@ -360,6 +361,7 @@ Provides some fields of app member information taken from the OpenID user info. 
 - \`role\`: The role of the app member in the app
 - \`properties\`: Custom properties defined on the app member
 - \`phoneNumber\`: Phone number of the app member if enabled in app definition.
+- \`demo\`: Whether the app member is used for demo purposes.
 
 Example:
 
