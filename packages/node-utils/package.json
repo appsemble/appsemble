@@ -108,7 +108,7 @@
     "@types/css-tree": "2.3.11",
     "@types/express-to-koa": "1.0.4",
     "@types/koa-mount": "4.0.5",
-    "@types/mustache": "4.2.5",
+    "@types/mustache": "4.2.6",
     "@types/type-is": "1.6.7",
     "@types/uuid": "10.0.0",
     "axios-mock-adapter": "1.22.0",
