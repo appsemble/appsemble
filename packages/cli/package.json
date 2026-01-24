@@ -102,7 +102,7 @@
     "@types/inquirer": "9.0.9",
     "@types/koa__cors": "5.0.1",
     "@types/koa-compress": "4.0.7",
-    "@types/koa-range": "0.3.5",
+    "@types/koa-range": "0.3.6",
     "@types/normalize-path": "3.0.2",
     "@types/postcss-import": "14.0.3",
     "@types/postcss-url": "10.0.4",
