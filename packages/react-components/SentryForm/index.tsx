@@ -13,6 +13,7 @@ import {
   SimpleSubmit,
   TextAreaField,
 } from '../index.js';
+import { emailPattern } from '@appsemble/utils';
 
 interface SentryFormProps {
   /**
@@ -115,8 +116,14 @@ export function SentryForm({
         icon="envelope"
         label={<FormattedMessage {...messages.emailLabel} />}
         name="email"
+        pattern={emailPattern}
         required
         type="email"
+        validityMessages={{
+          typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+          patternMismatch: <FormattedMessage {...messages.emailInvalid} />,
+          valueMissing: <FormattedMessage {...messages.emailRequired} />,
+        }}
       />
       <SimpleFormField
         component={TextAreaField}

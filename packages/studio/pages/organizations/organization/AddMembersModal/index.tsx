@@ -26,6 +26,7 @@ import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
+import { emailPattern } from '@appsemble/utils';
 
 interface AddMembersModalProps {
   /**
@@ -189,6 +190,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
               onBlur={onBlur}
               onChange={onChange}
               onPaste={onPaste}
+              pattern={emailPattern}
               required
               type="email"
               value={member.email}

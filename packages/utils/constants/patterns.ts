@@ -51,3 +51,8 @@ export const jwtPattern = /^[\w-]+(?:\.[\w-]+){2}$/;
  * A pattern which matches an ISO 8601 datetime string.
  */
 export const ISODateTimePattern = /\d{4}(.\d{2}){2}(\s|T)(\d{2}.){2}\d{2}/;
+
+/**
+ * A pattern which matches a standardized email format
+ */
+export const emailPattern = /^[^@]+@[^@]+\.[^@]+$/;

@@ -13,6 +13,7 @@ import {
   SimpleSubmit,
   useToggle,
 } from '../index.js';
+import { emailPattern } from '@appsemble/utils';
 
 export interface LoginFormValues {
   email: string;
@@ -64,10 +65,12 @@ export function Login({
         icon="envelope"
         label={<FormattedMessage {...messages.emailLabel} />}
         name="email"
+        pattern={emailPattern}
         required
         type="email"
         validityMessages={{
           typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+          patternMismatch: <FormattedMessage {...messages.emailInvalid} />,
           valueMissing: <FormattedMessage {...messages.emailRequired} />,
         }}
       />
