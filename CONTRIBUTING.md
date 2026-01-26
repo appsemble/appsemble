@@ -33,6 +33,12 @@ core blocks. These are the 3 classes of blocks:
 
 ### Core
 
+#### Confidential merge requests
+
+Create confidential merge requests for confidential issues like security related bugs. To create and
+merge a confidential merge request, follow
+[this guide](https://docs.gitlab.com/user/project/merge_requests/confidential/#create-a-confidential-merge-request).
+
 #### API
 
 Please follow the guidelines and best practices for naming API endpoints described
@@ -407,7 +413,7 @@ collected here that may help you build your end 2 end tests:
 We aim to follow these guidelines to ensure stability in the platform:
 
 - Aim to test blocks and their components at the lowest possible level first in the following order:
-> component tests -> block component tests -> block interaction tests -> e2e tests
+  > component tests -> block component tests -> block interaction tests -> e2e tests
 - When making changes to a block, make sure its component and interaction tests remain working
 - When making changes to a block, make sure to add tests to cover the changes
 - e2e tests should be reserved for app specific features
@@ -515,10 +521,10 @@ tracks the migration version.
 
 4. Adding unique rules to columns in a table MUST be done using indexes, NOT constraints. Appsemble
    has a custom eslint rule defined in
-   [enforce-index-decorator.cjs](packages/eslint-plugin/rules/enforce-index-decorator.ts) to
-   remind you of the correct decorator to use in the models. See why this is done here
-   [eslint-plugin](packages/eslint-plugin/README.md). This also means you MUST
-   never use `queryInterface.createConstraint` for unique columns, but instead use
+   [enforce-index-decorator.cjs](packages/eslint-plugin/rules/enforce-index-decorator.ts) to remind
+   you of the correct decorator to use in the models. See why this is done here
+   [eslint-plugin](packages/eslint-plugin/README.md). This also means you MUST never use
+   `queryInterface.createConstraint` for unique columns, but instead use
    `queryInterface.createIndex`.
 
 5. Adding unique indexes (or primary keys) should only be done on new tables.
