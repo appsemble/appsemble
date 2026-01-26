@@ -14,6 +14,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
+import { emailPattern } from '@appsemble/utils';
 
 interface BillingInformationBoxProps {
   /**
@@ -172,7 +173,12 @@ export function BillingInformationBox({
         help={<FormattedMessage {...messages.emailDescription} />}
         label={<FormattedMessage {...messages.email} />}
         name="email"
+        pattern={emailPattern}
         type="email"
+        validityMessages={{
+          typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+          patternMismatch: <FormattedMessage {...messages.emailInvalid} />,
+        }}
       />
       <SimpleFormField
         help={<FormattedMessage {...messages.descriptionStreetName} />}

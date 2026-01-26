@@ -24,6 +24,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
 import { useApp } from '../../../index.js';
+import { emailPattern } from '@appsemble/utils';
 
 interface AddMembersModalProps {
   /**
@@ -200,6 +201,7 @@ export function AddGroupMemberModal({
               onBlur={onBlur}
               onChange={onChange}
               onPaste={onPaste}
+              pattern={emailPattern}
               required
               type="email"
               value={member.email}

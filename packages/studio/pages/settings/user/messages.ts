@@ -61,6 +61,14 @@ export const messages = defineMessages({
     id: 'studio.KQyGdZ',
     defaultMessage: 'Are you sure you want to remove this email address?',
   },
+  emailInvalid: {
+    id: 'studio.jv0FOj',
+    defaultMessage: 'This must be a valid email address',
+  },
+  emailRequired: {
+    id: 'studio.KssJcX',
+    defaultMessage: 'An email address is required',
+  },
   displayName: {
     id: 'studio.pwlQEY',
     defaultMessage: 'Display Name',

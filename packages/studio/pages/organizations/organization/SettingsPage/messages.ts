@@ -45,6 +45,10 @@ export const messages = defineMessages({
     id: 'studio.UHheiE',
     defaultMessage: 'The email address users can use to contact this organization.',
   },
+  emailInvalid: {
+    id: 'studio.jv0FOj',
+    defaultMessage: 'This must be a valid email address',
+  },
   deleteSuccess: {
     id: 'studio.LNqVbp',
     defaultMessage: 'Successfully deleted organization.',

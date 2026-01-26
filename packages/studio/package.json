@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/studio",
-  "version": "0.36.2-test.0",
+  "version": "0.36.2-test.6",
   "private": true,
   "description": "The frontend for managing Appsemble apps and organizations",
   "keywords": [
@@ -31,11 +31,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.36.2-test.0",
-    "@appsemble/types": "0.36.2-test.0",
-    "@appsemble/utils": "0.36.2-test.0",
-    "@appsemble/web-utils": "0.36.2-test.0",
-    "@appsemble/lang-sdk": "0.36.2-test.0",
+    "@appsemble/react-components": "0.36.2-test.6",
+    "@appsemble/types": "0.36.2-test.6",
+    "@appsemble/utils": "0.36.2-test.6",
+    "@appsemble/web-utils": "0.36.2-test.6",
+    "@appsemble/lang-sdk": "0.36.2-test.6",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",
@@ -74,13 +74,13 @@
     "yaml": "^2.0.0"
   },
   "devDependencies": {
-    "@types/css-modules": "^1.0.0",
-    "@types/mdx": "^2.0.0",
-    "@types/react": "^18.0.0",
-    "@types/react-avatar-editor": "^13.0.0",
-    "@types/react-dom": "^18.0.0",
-    "@types/react-router-dom": "^5.0.0",
-    "@types/webpack-env": "^1.0.0",
+    "@types/css-modules": "1.0.5",
+    "@types/mdx": "2.0.13",
+    "@types/react": "18.3.27",
+    "@types/react-avatar-editor": "13.0.4",
+    "@types/react-dom": "18.3.7",
+    "@types/react-router-dom": "5.3.3",
+    "@types/webpack-env": "1.18.8",
     "jsonc-parser": "3.3.1",
     "vscode-languageserver-types": "3.17.5",
     "path-browserify": "1.0.1",

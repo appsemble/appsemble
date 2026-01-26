@@ -183,6 +183,8 @@ describe('verifyAppOAuth2SecretCode', () => {
         picture: 'https://example.com/user.jpg',
         sub: '42',
       },
+      // Test secret for mocking OAuth2 token
+      // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
       'random',
     );
     mock.onPost('https://example.com/oauth/token').reply(200, {
@@ -239,7 +241,11 @@ describe('verifyAppOAuth2SecretCode', () => {
       sub: '42',
       timezone: 'Europe/Amsterdam',
     };
+    // Test secret for mocking OAuth2 token
+    // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
     const accessToken = jwt.sign(oauth2User, 'random');
+    // Test secret for mocking OAuth2 token
+    // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
     const idToken = jwt.sign(oauth2User, 'random');
     mock.onPost('https://example.com/oauth/token').reply(200, {
       access_token: accessToken,
@@ -320,6 +326,8 @@ describe('verifyAppOAuth2SecretCode', () => {
         picture: 'https://example.com/user.jpg',
         sub: '42',
       },
+      // Test secret for mocking OAuth2 token
+      // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
       'random',
     );
     mock.onGet('https://example.com/oauth/userinfo').reply(() => [

@@ -194,6 +194,7 @@
     "Klokgebouw",
     "DATEONLY",
     "klarna",
-    "lanczos"
+    "lanczos",
+    "nosemgrep"
   ]
 }

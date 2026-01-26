@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.36.2-test.0",
+  "version": "0.36.2-test.6",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -31,11 +31,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.36.2-test.0",
-    "@appsemble/node-utils": "0.36.2-test.0",
-    "@appsemble/types": "0.36.2-test.0",
-    "@appsemble/utils": "0.36.2-test.0",
-    "@appsemble/webpack-core": "0.36.2-test.0",
+    "@appsemble/lang-sdk": "0.36.2-test.6",
+    "@appsemble/node-utils": "0.36.2-test.6",
+    "@appsemble/types": "0.36.2-test.6",
+    "@appsemble/utils": "0.36.2-test.6",
+    "@appsemble/webpack-core": "0.36.2-test.6",
     "@formatjs/cli-lib": "^6.0.0",
     "axios": "^1.0.0",
     "date-fns": "^2.0.0",
@@ -63,12 +63,12 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^11.0.0",
-    "@types/lodash-es": "^4.0.0",
-    "@types/mdast": "^4.0.0",
-    "@types/normalize-path": "^3.0.0",
-    "@types/semver": "^7.0.0",
-    "@types/tar": "^6.0.0",
+    "@types/fs-extra": "11.0.4",
+    "@types/lodash-es": "4.17.12",
+    "@types/mdast": "4.0.4",
+    "@types/normalize-path": "3.0.2",
+    "@types/semver": "7.7.1",
+    "@types/tar": "6.1.13",
     "@sindresorhus/merge-streams": "4.0.0"
   },
   "engines": {

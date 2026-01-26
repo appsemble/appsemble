@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.36.2-test.0",
+  "version": "0.36.2-test.6",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -40,10 +40,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.36.2-test.0",
-    "@appsemble/types": "0.36.2-test.0",
-    "@appsemble/utils": "0.36.2-test.0",
-    "@appsemble/lang-sdk": "0.36.2-test.0",
+    "@appsemble/node-utils": "0.36.2-test.6",
+    "@appsemble/types": "0.36.2-test.6",
+    "@appsemble/utils": "0.36.2-test.6",
+    "@appsemble/lang-sdk": "0.36.2-test.6",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@koa/cors": "^5.0.0",
     "@odata/parser": "^0.2.0",
@@ -119,11 +119,11 @@
     "@types/bcrypt": "5.0.2",
     "@types/imapflow": "1.0.189",
     "@types/json-diff": "1.0.3",
-    "@types/jsonwebtoken": "9.0.9",
+    "@types/jsonwebtoken": "9.0.10",
     "@types/koa": "2.15.0",
-    "@types/koa-compress": "4.0.6",
-    "@types/koa-range": "0.3.5",
-    "@types/koa__cors": "5.0.0",
+    "@types/koa-compress": "4.0.7",
+    "@types/koa-range": "0.3.6",
+    "@types/koa__cors": "5.0.1",
     "@types/koa-static": "4.0.4",
     "@types/language-tags": "1.0.4",
     "@types/lodash-es": "4.17.12",

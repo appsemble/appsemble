@@ -32,8 +32,8 @@ workflow:
 .docker:
   interruptible: true
   services:
-    - docker:dind@sha256:173f284a4299164772a90f52b373e73e087583c0963f1334c9995f190ef6f3f5
-  image: docker@sha256:173f284a4299164772a90f52b373e73e087583c0963f1334c9995f190ef6f3f5
+    - docker:dind@sha256:3a33fc81fa4d38360f490f5b900e9846f725db45bb1d9b1fe02d849bd42a5cf2
+  image: docker@sha256:3a33fc81fa4d38360f490f5b900e9846f725db45bb1d9b1fe02d849bd42a5cf2
   dependencies: []
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
@@ -91,7 +91,7 @@ workflow:
 
 secret-scan-mr:
   stage: security
-  image: node:lts-trixie@sha256:306b92aa9c0e42270959980513a018470a9c0dcca611ea03d031b92da538964d
+  image: node:lts-trixie@sha256:bea2f8264c42f56e253295ebd89db8e7c4ff96a03339adeb4a7628bd548d9476
   variables:
     BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
     HEAD_SHA: ${CI_COMMIT_SHA}
@@ -228,7 +228,7 @@ helm lint:
 
 # Lint shell scripts
 shellcheck:
-  image: koalaman/shellcheck-alpine@sha256:e15ed7626b80a51f3410b8a36f4686ba096524f4493bc9a2406b232477bcec14
+  image: koalaman/shellcheck-alpine@sha256:7078491222b5b102b14b20e379ebe82b95e9eb14088c85b40f455ead2c52fb03
   stage: test
   needs: []
   script:
@@ -267,7 +267,7 @@ stylelint:
 test node:
   extends: .npm
   services:
-    - name: postgres:15@sha256:a7711af921c380de0fda7c48a61fab5ac4def145fd9fc00ccea7355fd6270bb4
+    - name: postgres:15@sha256:5f07e69ced9ee30ec814cd12c555694276bb1d520e971205f39a833362748a3c
       alias: postgres
     - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
       alias: minio
@@ -319,7 +319,7 @@ check migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:15@sha256:a7711af921c380de0fda7c48a61fab5ac4def145fd9fc00ccea7355fd6270bb4
+    - name: postgres:15@sha256:5f07e69ced9ee30ec814cd12c555694276bb1d520e971205f39a833362748a3c
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -335,7 +335,7 @@ check down migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:15@sha256:a7711af921c380de0fda7c48a61fab5ac4def145fd9fc00ccea7355fd6270bb4
+    - name: postgres:15@sha256:5f07e69ced9ee30ec814cd12c555694276bb1d520e971205f39a833362748a3c
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -351,7 +351,7 @@ fuzz migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:15@sha256:a7711af921c380de0fda7c48a61fab5ac4def145fd9fc00ccea7355fd6270bb4
+    - name: postgres:15@sha256:5f07e69ced9ee30ec814cd12c555694276bb1d520e971205f39a833362748a3c
       alias: postgres
   variables:
     POSTGRES_DB: testAppsemble
@@ -393,7 +393,7 @@ validate-snippets:
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
   services:
-    - name: postgres:15@sha256:a7711af921c380de0fda7c48a61fab5ac4def145fd9fc00ccea7355fd6270bb4
+    - name: postgres:15@sha256:5f07e69ced9ee30ec814cd12c555694276bb1d520e971205f39a833362748a3c
       alias: database
       variables:
         POSTGRES_DB: appsemble
@@ -464,7 +464,7 @@ e2e node:
     DATABASE_PASSWORD: password
     E2E_HOST: 'http://appsemble:9999'
   services:
-    - name: postgres:15@sha256:a7711af921c380de0fda7c48a61fab5ac4def145fd9fc00ccea7355fd6270bb4
+    - name: postgres:15@sha256:5f07e69ced9ee30ec814cd12c555694276bb1d520e971205f39a833362748a3c
       alias: database
       variables:
         POSTGRES_DB: appsemble
@@ -630,6 +630,8 @@ gitlab release:
 
 publish docker:
   extends: .docker
+  tags:
+    - saas-linux-small-amd64
   stage: publish
   needs:
     - build docker image
@@ -682,6 +684,8 @@ publish helm:
 
 # Publish npm packages to npmjs.org.
 publish npm:
+  tags:
+    - saas-linux-small-amd64
   stage: publish
   needs:
     - job: pack
@@ -1137,7 +1141,7 @@ provision production:
     - production
     - npm_ci
   environment:
-    name: production-do
+    name: production
     action: prepare
   script:
     - npm run appsemble -- config set context production

@@ -29,6 +29,9 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     user: authSubject,
   } = ctx;
   const prompt = (status: SAMLStatus, query?: Record<string, string>): void =>
+    // Neither query is user input dependent nor the prompt function is called with the optional
+    // query param
+    // nosemgrep: nodejs_scan.javascript-redirect-rule-express_open_redirect
     ctx.redirect(`/saml/response/${status}${query ? `?${new URLSearchParams(query)}` : ''}`);
 
   if (RelayState !== argv.host) {

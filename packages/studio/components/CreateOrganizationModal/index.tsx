@@ -11,7 +11,7 @@ import {
   type Toggle,
 } from '@appsemble/react-components';
 import { type Organization, PredefinedOrganizationRole } from '@appsemble/types';
-import { normalize } from '@appsemble/utils';
+import { emailPattern, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import countries from 'i18n-iso-countries';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
@@ -245,7 +245,12 @@ export function CreateOrganizationModal({
         icon="envelope"
         label={<FormattedMessage {...messages.email} />}
         name="email"
+        pattern={emailPattern}
         type="email"
+        validityMessages={{
+          typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+          patternMismatch: <FormattedMessage {...messages.emailInvalid} />,
+        }}
       />
       <SimpleFormField
         disabled={disabled}

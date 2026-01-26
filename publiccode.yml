@@ -1,8 +1,8 @@
 publiccodeYmlVersion: '0.2'
 name: Appsemble
 url: https://gitlab.com/appsemble/appsemble
-softwareVersion: 0.36.2-test.0
-releaseDate: 2026-01-06
+softwareVersion: 0.36.2-test.6
+releaseDate: 2026-01-16
 logo: config/assets/logo.svg
 monochromeLogo: config/assets/logo-monochrome.svg
 platforms:
