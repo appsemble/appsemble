@@ -218,6 +218,10 @@ export const messages = defineMessages({
     defaultMessage: 'Email that the invoice and relevant payment updates will be sent to.',
     id: 'studio.Elelf8',
   },
+  emailInvalid: {
+    id: 'studio.jv0FOj',
+    defaultMessage: 'This must be a valid email address',
+  },
   vatAmount: {
     defaultMessage: 'VAT',
     id: 'studio.KxG+iy',

@@ -14,7 +14,7 @@ import {
   useMessages,
   WebcamImageUpload,
 } from '@appsemble/react-components';
-import { getLanguageDisplayName } from '@appsemble/utils';
+import { emailPattern, getLanguageDisplayName } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -248,7 +248,12 @@ export function ProfileSettings(): ReactNode {
                       <SimpleFormField
                         label={<FormattedMessage {...messages.email} />}
                         name="email"
+                        pattern={emailPattern}
                         type="email"
+                        validityMessages={{
+                          typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+                          patternMismatch: <FormattedMessage {...messages.emailInvalid} />,
+                        }}
                       />
                       <SimpleSubmit>
                         <FormattedMessage {...messages.changeEmail} />

@@ -115,4 +115,8 @@ export const messages = defineMessages({
     id: 'app.o5vQ3R',
     defaultMessage: 'Something went wrong trying to register this email',
   },
+  emailInvalid: {
+    id: 'app.jv0FOj',
+    defaultMessage: 'This must be a valid email address',
+  },
 });

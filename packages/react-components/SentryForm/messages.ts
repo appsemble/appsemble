@@ -41,4 +41,12 @@ export const messages = defineMessages({
     id: 'react-components.lXIQ7a',
     defaultMessage: 'Submit error report',
   },
+  emailInvalid: {
+    id: 'react-components.jv0FOj',
+    defaultMessage: 'This must be a valid email address',
+  },
+  emailRequired: {
+    id: 'react-components.KssJcX',
+    defaultMessage: 'An email address is required',
+  },
 });

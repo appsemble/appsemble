@@ -37,6 +37,7 @@ import { IconPreview } from '../../../../components/IconPreview/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 import { type Block, type Organization } from '../../../../types.js';
 import { supportedOrganizationLanguages } from '../../../../utils/constants.js';
+import { emailPattern } from '@appsemble/utils';
 
 interface SettingsPageProps {
   /**
@@ -274,7 +275,12 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
           help={<FormattedMessage {...messages.emailDescription} />}
           label={<FormattedMessage {...messages.email} />}
           name="email"
+          pattern={emailPattern}
           type="email"
+          validityMessages={{
+            typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+            patternMismatch: <FormattedMessage {...messages.emailInvalid} />,
+          }}
         />
         <SimpleFormField
           help={<FormattedMessage {...messages.descriptionDescription} />}

@@ -10,6 +10,7 @@ import {
   SimpleFormField,
   SimpleSubmit,
 } from '../index.js';
+import { emailPattern } from '@appsemble/utils';
 
 export interface ResetPasswordValues {
   email: string;
@@ -42,11 +43,13 @@ export function ResetPassword({ onSubmit }: ResetPasswordProps): ReactNode {
         icon="envelope"
         label={<FormattedMessage {...messages.emailLabel} />}
         name="email"
+        pattern={emailPattern}
         required
         type="email"
         validityMessages={{
           valueMissing: <FormattedMessage {...messages.emailRequired} />,
           typeMismatch: <FormattedMessage {...messages.emailMissing} />,
+          patternMismatch: <FormattedMessage {...messages.emailMissing} />,
         }}
       />
       <FormButtons>

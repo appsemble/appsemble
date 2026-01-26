@@ -22,7 +22,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type EmailAuthorization } from '@appsemble/types';
-import { defaultLocale, has } from '@appsemble/utils';
+import { defaultLocale, emailPattern, has } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -231,9 +231,15 @@ export function UserPage(): ReactNode {
             icon="envelope"
             label={<FormattedMessage {...messages.addEmail} />}
             name="email"
+            pattern={emailPattern}
             placeholder={formatMessage(messages.email)}
             required
             type="email"
+            validityMessages={{
+              typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+              patternMismatch: <FormattedMessage {...messages.emailInvalid} />,
+              valueMissing: <FormattedMessage {...messages.emailRequired} />,
+            }}
           />
           <FormButtons>
             <SimpleSubmit>
