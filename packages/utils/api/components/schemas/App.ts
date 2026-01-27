@@ -68,6 +68,16 @@ This doesn’t affect whether or not the app can be accessed on its own domain.
       and to make any changes from the studio, this should be set to \`unlocked\`.
 `,
     },
+    totp: {
+      enum: ['disabled', 'enabled', 'required'],
+      default: 'disabled',
+      description: `The TOTP (two-factor authentication) setting for the app.
+
+- **disabled**: TOTP is not available for app members.
+- **enabled**: TOTP is available but optional for app members.
+- **required**: TOTP is required for all app members. **WARNING**: Setting this will lock out existing users who have not yet enabled 2FA on their accounts.
+`,
+    },
     displayAppMemberName: {
       type: 'boolean',
       description: 'Whether to display app member name in the title bar.',

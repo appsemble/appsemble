@@ -62,6 +62,7 @@ export async function createApp(ctx: Context): Promise<void> {
         showAppDefinition = true,
         supportedLanguages,
         template = false,
+        totp,
         visibility,
         yaml,
       },
@@ -103,6 +104,14 @@ export async function createApp(ctx: Context): Promise<void> {
       'App validation failed',
     );
 
+    // TOTP cannot be enabled in demo mode apps
+    assertKoaCondition(
+      !demoMode || !totp || totp === 'disabled',
+      ctx,
+      400,
+      'TOTP cannot be enabled for demo mode apps',
+    );
+
     const path = normalize(definition.name);
     const keys = webpush.generateVAPIDKeys();
 
@@ -127,6 +136,7 @@ export async function createApp(ctx: Context): Promise<void> {
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
       demoMode: Boolean(demoMode),
+      totp: totp || 'disabled',
       controllerCode,
       controllerImplementations,
       displayAppMemberName: false,

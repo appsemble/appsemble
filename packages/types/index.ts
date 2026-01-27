@@ -213,6 +213,15 @@ export enum SubscriptionRenewalPeriod {
  */
 export type AppLock = 'fullLock' | 'studioLock' | 'unlocked';
 
+/**
+ * A type to represent the app TOTP requirement setting.
+ *
+ * - `disabled`: TOTP is not available for app members.
+ * - `enabled`: TOTP is available but optional for app members.
+ * - `required`: TOTP is required for all app members.
+ */
+export type AppTotp = 'disabled' | 'enabled' | 'required';
+
 export interface SubscriptionResponseResource {
   create: boolean;
   update: boolean;
@@ -295,6 +304,11 @@ export interface App {
    * Whether the app is currently locked.
    */
   locked: AppLock;
+
+  /**
+   * The TOTP (two-factor authentication) setting for the app.
+   */
+  totp: AppTotp;
 
   /**
    * Whether the app is a template.

@@ -347,6 +347,7 @@ describe('importApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -475,6 +476,7 @@ describe('importApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "name: Test App

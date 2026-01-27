@@ -38,6 +38,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
               demoMode: {
                 $ref: '#/components/schemas/App/properties/demoMode',
               },
+              totp: {
+                $ref: '#/components/schemas/App/properties/totp',
+              },
               yaml: {
                 type: 'string',
                 description: 'The original YAML definition used to define the app.',

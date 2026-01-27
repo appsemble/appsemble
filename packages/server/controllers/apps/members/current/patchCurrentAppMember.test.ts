@@ -81,6 +81,7 @@ describe('patchCurrentAppMember', () => {
         },
         "role": "Member",
         "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
     `,
@@ -141,6 +142,7 @@ describe('patchCurrentAppMember', () => {
         "properties": {},
         "role": "Member",
         "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
     `,
@@ -179,6 +181,7 @@ describe('patchCurrentAppMember', () => {
         "properties": {},
         "role": "Member",
         "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
     `,

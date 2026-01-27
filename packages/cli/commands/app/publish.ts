@@ -1,7 +1,7 @@
 import { type ReadStream } from 'node:fs';
 
 import { logger } from '@appsemble/node-utils';
-import { type AppVisibility } from '@appsemble/types';
+import { type AppTotp, type AppVisibility } from '@appsemble/types';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { type Argv } from 'yargs';
@@ -26,6 +26,7 @@ interface PublishAppArguments extends BaseArguments {
   assetsClonable: boolean;
   modifyContext: boolean;
   visibility: AppVisibility;
+  totp: AppTotp;
   sentryDsn: string;
   sentryEnvironment: string;
   googleAnalyticsId: string;
@@ -81,6 +82,11 @@ export function builder(yargs: Argv): Argv<any> {
     .option('demo-mode', {
       describe: 'Whether the app should be used in demo mode.',
       type: 'boolean',
+    })
+    .option('totp', {
+      describe:
+        'The TOTP (two-factor authentication) setting for the app. Use "disabled" to turn off, "enabled" to make it optional, or "required" to enforce for all app members. WARNING: Setting "required" will lock out existing users who have not yet enabled 2FA.',
+      choices: ['disabled', 'enabled', 'required'],
     })
     .option('dry-run', {
       describe: 'Whether the API should be called to run without actually creating the app.',

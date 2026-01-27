@@ -26,6 +26,7 @@ import { apiUrl, appId, demoMode, languages, supportedLanguages } from '../../ut
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { ResendVerificationButton } from '../ResendVerificationButton/index.js';
+import { TotpSettings } from '../TotpSettings/index.js';
 
 const DEFAULT_IMAGE_PREFIX = 'https://www.gravatar.com/avatar/';
 
@@ -236,6 +237,7 @@ export function ProfileSettings(): ReactNode {
               </SimpleForm>
             </section>
           ) : null}
+          <TotpSettings />
           <section>
             {enabledSettings.includes('email') ? (
               <section>

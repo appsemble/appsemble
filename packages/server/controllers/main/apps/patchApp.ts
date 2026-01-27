@@ -83,6 +83,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         skipGroupInvites,
         supportedLanguages,
         template,
+        totp,
         visibility,
         yaml,
       },
@@ -127,6 +128,16 @@ export async function patchApp(ctx: Context): Promise<void> {
   let appDB = oldAppDB;
 
   await checkAppLimit(ctx, dbApp, visibility);
+
+  // TOTP cannot be enabled in demo mode apps
+  const effectiveDemoMode = demoMode === undefined ? dbApp.demoMode : demoMode;
+  const effectiveTotp = totp === undefined ? dbApp.totp : totp;
+  assertKoaCondition(
+    !effectiveDemoMode || !effectiveTotp || effectiveTotp === 'disabled',
+    ctx,
+    400,
+    'TOTP cannot be enabled for demo mode apps',
+  );
 
   try {
     const permissionsToCheck: OrganizationPermission[] = [];
@@ -266,6 +277,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (enableUnsecuredServiceSecrets !== undefined) {
       result.enableUnsecuredServiceSecrets = enableUnsecuredServiceSecrets;
+    }
+
+    if (totp !== undefined) {
+      result.totp = totp;
     }
 
     if (coreStyle !== undefined) {

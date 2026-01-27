@@ -77,6 +77,10 @@ export class AppMemberGlobal extends Model {
 
   declare seed: boolean;
 
+  declare totpSecret?: Buffer | null;
+
+  declare totpEnabled: boolean;
+
   declare userId?: string;
 
   declare created: Date;
@@ -353,6 +357,15 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
     @Column(DataType.UUID)
     @Index({ name: 'UniqueAppMemberUserIndex', unique: true })
     declare userId?: string;
+
+    @AllowNull(true)
+    @Column(DataType.BLOB)
+    declare totpSecret?: Buffer | null;
+
+    @AllowNull(false)
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    declare totpEnabled: boolean;
 
     @CreatedAt
     declare created: Date;

@@ -222,6 +222,10 @@
             "items": {
               "type": "string"
             }
+          },
+          "totp": {
+            "enum": ["disabled", "enabled", "required"],
+            "description": "The TOTP (two-factor authentication) setting for the app.\n\n- disabled: TOTP is not available for app members.\n- enabled: TOTP is available but optional for app members.\n- required: TOTP is required for all app members. WARNING: Setting this will lock out existing users who have not yet enabled 2FA on their accounts.\n\nIf totp is specified, this will override --totp passed on the command line."
           }
         }
       }

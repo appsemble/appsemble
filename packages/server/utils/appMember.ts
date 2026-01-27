@@ -37,6 +37,7 @@ export function getAppMemberInfo(appId: number, appMember: AppMember): AppMember
     $seed: appMember.seed,
     $ephemeral: appMember.ephemeral,
     unverifiedEmail: appMember.AppMemberEmailAuthorizations?.[0]?.email,
+    totpEnabled: appMember.totpEnabled ?? false,
   } as AppMemberInfo;
 }
 

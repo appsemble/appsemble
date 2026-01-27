@@ -88,6 +88,7 @@
     "node-forge": "^1.0.0",
     "nodemailer": "^6.0.0",
     "openapi-types": "^12.0.0",
+    "otplib": "^12.0.0",
     "pdf-lib": "^1.17.1",
     "raw-body": "^2.0.0",
     "reflect-metadata": "^0.1.0",

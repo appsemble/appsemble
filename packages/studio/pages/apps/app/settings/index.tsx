@@ -97,6 +97,7 @@ export function SettingsPage(): ReactNode {
       path: app.path,
       visibility: app.visibility,
       locked: app.locked,
+      totp: app.totp || 'disabled',
       showAppDefinition: app.showAppDefinition,
       displayAppMemberName: app.displayAppMemberName || false,
       displayInstallationPrompt: app.displayInstallationPrompt || false,
@@ -122,6 +123,7 @@ export function SettingsPage(): ReactNode {
     form.set('displayAppMemberName', String(values.displayAppMemberName));
     form.set('displayInstallationPrompt', String(values.displayInstallationPrompt));
     form.set('skipGroupInvites', String(values.skipGroupInvites));
+    form.set('totp', values.totp);
     form.set('supportedLanguages', JSON.stringify(values.supportedLanguages));
     if (values.icon !== app.iconUrl) {
       form.set('icon', values.icon);
@@ -246,6 +248,21 @@ export function SettingsPage(): ReactNode {
             label={<FormattedMessage {...messages.skipGroupInvitesLabel} />}
             name="skipGroupInvites"
           />
+          <SimpleFormField
+            component={SelectField}
+            disabled={app.locked !== 'unlocked' || app.demoMode}
+            help={
+              <FormattedMessage
+                {...(app.demoMode ? messages.totpDisabledDemoMode : messages.totpDescription)}
+              />
+            }
+            label={<FormattedMessage {...messages.totpLabel} />}
+            name="totp"
+          >
+            <option value="disabled">{formatMessage(messages.totpDisabled)}</option>
+            <option value="enabled">{formatMessage(messages.totpEnabled)}</option>
+            <option value="required">{formatMessage(messages.totpRequired)}</option>
+          </SimpleFormField>
           <SimpleFormField
             addonLeft={
               <Button

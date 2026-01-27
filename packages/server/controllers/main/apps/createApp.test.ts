@@ -151,6 +151,7 @@ describe('createApp', () => {
           "en",
         ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -352,6 +353,7 @@ describe('createApp', () => {
           "en",
         ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -563,6 +565,7 @@ describe('createApp', () => {
           "en",
         ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -636,6 +639,7 @@ describe('createApp', () => {
           "en",
         ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -709,6 +713,7 @@ describe('createApp', () => {
           "en",
         ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -782,6 +787,7 @@ describe('createApp', () => {
           "en",
         ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -861,6 +867,7 @@ describe('createApp', () => {
           "en",
         ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -954,6 +961,7 @@ describe('createApp', () => {
           "en",
         ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -1058,6 +1066,9 @@ describe('createApp', () => {
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
                 },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
+                },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
                 },
@@ -1149,6 +1160,9 @@ describe('createApp', () => {
                 },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
+                },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
                 },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
@@ -1276,6 +1290,9 @@ describe('createApp', () => {
                 },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
+                },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
                 },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
@@ -1561,6 +1578,7 @@ describe('createApp', () => {
           "en",
         ],
         "template": false,
+        "totp": "disabled",
         "version": 2,
         "visibility": "unlisted",
         "yaml": "
@@ -1659,6 +1677,7 @@ describe('createApp', () => {
           "en",
         ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -1752,6 +1771,7 @@ describe('createApp', () => {
           "en",
         ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -1881,6 +1901,9 @@ describe('createApp', () => {
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
                 },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
+                },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
                 },
@@ -2005,6 +2028,9 @@ describe('createApp', () => {
                 },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
+                },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
                 },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
@@ -2308,6 +2334,7 @@ describe('createApp', () => {
             "en",
           ],
           "template": false,
+          "totp": "disabled",
           "version": 1,
           "visibility": "unlisted",
           "yaml": "

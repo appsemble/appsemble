@@ -10,4 +10,8 @@ export const messages = defineMessages({
     id: 'app.Gw440T',
     defaultMessage: 'Return to login page',
   },
+  totpError: {
+    id: 'app.QGJFJi',
+    defaultMessage: 'Invalid verification code. Please try again.',
+  },
 });

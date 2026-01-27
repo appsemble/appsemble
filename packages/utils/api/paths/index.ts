@@ -18,6 +18,10 @@ import { pathItems as appsAppIdAuthEmailResendVerification } from './apps/appId/
 import { pathItems as appsAppIdAuthEmailResetPassword } from './apps/appId/auth/email/resetPassword.js';
 import { pathItems as appsAppIdAuthEmailUnverified } from './apps/appId/auth/email/unverified.js';
 import { pathItems as appsAppIdAuthEmailVerify } from './apps/appId/auth/email/verify.js';
+import { pathItems as appsAppIdAuthTotpDisable } from './apps/appId/auth/totp/disable.js';
+import { pathItems as appsAppIdAuthTotpSetup } from './apps/appId/auth/totp/setup.js';
+import { pathItems as appsAppIdAuthTotpVerify } from './apps/appId/auth/totp/verify.js';
+import { pathItems as appsAppIdAuthTotpVerifySetup } from './apps/appId/auth/totp/verifySetup.js';
 import { pathItems as appsAppIdBroadcast } from './apps/appId/broadcast.js';
 import { pathItems as appsAppIdClonableAssets } from './apps/appId/clonable-assets.js';
 import { pathItems as appsAppIdClonableResources } from './apps/appId/clonable-resources.js';
@@ -270,6 +274,10 @@ export const paths = {
   '/api/apps/{appId}/auth/email/reset-password': appsAppIdAuthEmailResetPassword,
   '/api/apps/{appId}/auth/email/verify': appsAppIdAuthEmailVerify,
   '/api/apps/{appId}/auth/email/unverified': appsAppIdAuthEmailUnverified,
+  '/api/apps/{appId}/auth/totp/setup': appsAppIdAuthTotpSetup,
+  '/api/apps/{appId}/auth/totp/verify-setup': appsAppIdAuthTotpVerifySetup,
+  '/api/apps/{appId}/auth/totp/verify': appsAppIdAuthTotpVerify,
+  '/api/apps/{appId}/auth/totp/disable': appsAppIdAuthTotpDisable,
   '/api/apps': apps,
   '/api/app-templates': appTemplates,
   '/api/auth/email/login': authEmailLogin,

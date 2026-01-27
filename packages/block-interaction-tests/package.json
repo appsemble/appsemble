@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@appsemble/data-loader": "0.36.3-test.6",
+    "@appsemble/lang-sdk": "0.36.3-test.6",
     "@appsemble/list": "0.36.3-test.6",
     "@appsemble/preact": "0.36.3-test.6",
     "@appsemble/sdk": "0.36.3-test.6",
