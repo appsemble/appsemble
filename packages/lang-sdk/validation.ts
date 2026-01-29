@@ -1534,21 +1534,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
                 );
               }
 
-              return false;
-            })
-          ) {
-            report(
-              action.type,
-              'there is no one in the app who has permissions to use this action',
-              [...path, 'resource'],
-            );
-            return;
-          }
-
-          if (
-            view &&
-            !allPermissions.some((permission) => {
-              if (resourceViewPermissionPattern.test(permission)) {
+              if (view && resourceViewPermissionPattern.test(permission)) {
                 const [, permissionResourceName, permissionResourceAction, permissionResourceView] =
                   permission.split(':');
                 return (
@@ -1557,6 +1543,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
                   (!permissionResourceView || permissionResourceView === view)
                 );
               }
+
               return false;
             })
           ) {
