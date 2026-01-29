@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.36.3-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.0)] - 2026-01-29
+
+### Changed
+
+- Server: Don't return empty objects when failing to fetch user app accounts.
+
 ## \[[0.36.2](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2)] - 2026-01-29
 
 ### Added
