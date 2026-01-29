@@ -1,6 +1,6 @@
 import { expect, authenticatedTest as test } from '../../../index.js';
 
-test.describe('Connected apps', () => {
+test.describe.skip('Connected apps', () => {
   test('should navigate to connected apps from settings', async ({ page }) => {
     await page.goto('/settings/user');
     await page.getByRole('link', { name: 'Connected apps' }).click();

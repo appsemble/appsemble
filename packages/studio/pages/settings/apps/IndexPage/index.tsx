@@ -1,15 +1,15 @@
-import { Title, useData } from '@appsemble/react-components';
-import { type AppAccount } from '@appsemble/types';
+import { Message, Title } from '@appsemble/react-components';
+// Import { type AppAccount } from '@appsemble/types';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './index.module.css';
+// Import styles from './index.module.css';
 import { messages } from './messages.js';
-import { AppCard } from '../../../../components/AppCard/index.js';
-import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+// Import { AppCard } from '../../../../components/AppCard/index.js';
+// import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 
 export function IndexPage(): ReactNode {
-  const result = useData<AppAccount[]>('/api/users/current/apps/accounts');
+  // Const result = useData<AppAccount[]>('/api/users/current/apps/accounts');
 
   return (
     <main>
@@ -19,7 +19,21 @@ export function IndexPage(): ReactNode {
       <p className="content">
         <FormattedMessage {...messages.help} />
       </p>
-      <AsyncDataView
+      <Message color="warning">
+        <div className="is-flex is-justify-content-space-between is-align-items-center">
+          <p>
+            This page is temporarily disabled due to a security issue, and we are working hard to
+            fix it
+            <br />
+            <br />
+            Please refer to the following{' '}
+            <a href="https://gitlab.com/appsemble/appsemble/-/issues/2050">issue</a> for more
+            information
+          </p>
+        </div>
+      </Message>
+
+      {/* <AsyncDataView
         emptyMessage={<FormattedMessage {...messages.empty} />}
         errorMessage={<FormattedMessage {...messages.error} />}
         loadingMessage={<FormattedMessage {...messages.loading} />}
@@ -32,7 +46,7 @@ export function IndexPage(): ReactNode {
             ))}
           </div>
         )}
-      </AsyncDataView>
+      </AsyncDataView> */}
     </main>
   );
 }

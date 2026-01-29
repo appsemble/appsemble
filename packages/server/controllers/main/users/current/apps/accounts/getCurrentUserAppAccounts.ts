@@ -13,6 +13,11 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
     query: includeOptions,
   } = parseLanguage(ctx, ctx.query?.language ?? []);
 
+  // Disable endpoint for now as it overloads the server causing a temporary outage
+  ctx.body = [];
+  return;
+
+  // eslint-disable-next-line no-unreachable
   const apps = (
     await App.findAll({
       attributes: {
@@ -80,5 +85,6 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
     }),
   );
 
+  // eslint-disable-next-line no-unreachable
   ctx.body = appAccounts.filter((appAccount) => appAccount !== undefined);
 }
