@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.36.2-test.6
-appVersion: 0.36.2-test.6
+version: 0.36.2
+appVersion: 0.36.2
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,8 +31,16 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Utils: Added new regex constant emailPattern."
+    - kind: changed
+      description: "React-components: Enforce a stricter email pattern with email inputs."
+    - kind: changed
+      description: "Studio: Enforce a stricter email pattern with email inputs."
+    - kind: security
+      description: "Node-utils: Add SSRF protection to proxy handler to block requests
+        to private IPs and internal services."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

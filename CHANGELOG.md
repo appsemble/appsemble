@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.36.2](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2)] - 2026-01-29
+
+### Added
+
+- Utils: Added new regex constant `emailPattern`.
+
+### Changed
+
+- React-components: Enforce a stricter email pattern with email inputs.
+- Studio: Enforce a stricter email pattern with email inputs.
+
+### Security
+
+- Node-utils: Add SSRF protection to proxy handler to block requests to private IPs and internal
+  services.
+
 ## \[[0.36.2-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2-test.6)] - 2026-01-16
 
 ## \[[0.36.2-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2-test.5)] - 2026-01-14
