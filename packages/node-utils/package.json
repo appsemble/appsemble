@@ -90,6 +90,7 @@
     "parse-duration": "^1.0.0",
     "parse-json": "^8.0.0",
     "pg": "^8.16.3",
+    "request-filtering-agent": "^3.2.0",
     "sass": "^1.0.0",
     "sharp": "^0.32.0",
     "sort-keys": "^5.0.0",

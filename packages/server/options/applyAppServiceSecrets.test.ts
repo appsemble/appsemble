@@ -164,7 +164,10 @@ describe('applyAppServiceSecrets', () => {
     axios.interceptors.request.eject(interceptor);
 
     expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -213,7 +216,10 @@ describe('applyAppServiceSecrets', () => {
     axios.interceptors.request.eject(interceptor);
 
     expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -290,7 +296,10 @@ describe('applyAppServiceSecrets', () => {
     axios.interceptors.request.eject(interceptor);
 
     expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -370,7 +379,10 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -421,7 +433,10 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -467,7 +482,10 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -526,7 +544,10 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -727,7 +748,10 @@ describe('applyAppServiceSecrets', () => {
     axios.interceptors.request.eject(responseInterceptor);
 
     expect(outgoingRequestConfig?.headers.Authorization).toBe('Bearer abcd');
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -789,7 +813,10 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -838,7 +865,10 @@ describe('applyAppServiceSecrets', () => {
     axios.interceptors.request.eject(interceptor);
 
     expect(outgoingRequestConfig?.headers['Set-Cookie']).toBe('cookie=secret;');
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -896,7 +926,10 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.headers['Set-Cookie']).toBe(
       'cookie=secret; another-cookie=another-secret;',
     );
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -945,7 +978,10 @@ describe('applyAppServiceSecrets', () => {
     axios.interceptors.request.eject(interceptor);
 
     expect(outgoingRequestConfig?.headers['custom-header']).toBe('secret');
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -1003,7 +1039,10 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
@@ -1052,7 +1091,10 @@ describe('applyAppServiceSecrets', () => {
     axios.interceptors.request.eject(interceptor);
 
     expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toStrictEqual({
       authKey: 'key',
     });
@@ -1110,7 +1152,10 @@ describe('applyAppServiceSecrets', () => {
     axios.interceptors.request.eject(interceptor);
 
     expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    // HttpsAgent exists (SSRF protection) but should have no secret options
+    expect(outgoingRequestConfig?.httpsAgent?.options?.cert).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.key).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent?.options?.ca).toBeUndefined();
     expect(outgoingRequestConfig?.params).toStrictEqual({
       authKey: 'key',
       anotherOne: 'w',

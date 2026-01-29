@@ -18,6 +18,11 @@ import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from 'vitest';
 import { dropAndCloseAllAppDBs } from './models/index.js';
 import { getRootDB, setupTestDatabase } from './utils/test/testSchema.js';
 
+// Allow private IP addresses in proxy tests (e.g., localhost test servers).
+// This env var is checked by the SSRF protection in @appsemble/node-utils.
+// SSRF tests explicitly unset this to verify protection works.
+process.env.VITEST_CONF_ALLOW_PRIVATE_IP_PROXY = '1';
+
 interface CustomMatchers<R = unknown> {
   toMatchImageSnapshot: () => R;
 }
