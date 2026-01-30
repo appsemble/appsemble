@@ -448,8 +448,9 @@ export class Mailer {
     to,
   }: SendMailOptions): Promise<void> {
     let { transport } = this;
-    if (app?.emailHost && app?.emailUser && app?.emailPassword) {
-      const smtpPass = decrypt(app.emailPassword, argv.aesSecret);
+    const hasOwnEmail = app?.emailHost && app?.emailUser && app?.emailPassword;
+    if (hasOwnEmail) {
+      const smtpPass = decrypt(app.emailPassword!, argv.aesSecret);
       const mailer = new Mailer({
         smtpFrom: from,
         smtpHost: app.emailHost,
@@ -468,7 +469,9 @@ export class Mailer {
 
     await this.tryRateLimiting({ app });
 
-    const parsed = addrs.parseOneAddress(argv.smtpFrom) as ParsedMailbox;
+    const parsed = addrs.parseOneAddress(
+      hasOwnEmail ? app.emailUser! : argv.smtpFrom,
+    ) as ParsedMailbox;
     const fromHeader = from ? `${from} <${parsed?.address}>` : argv.smtpFrom;
 
     const loggingMessage = ['Sending email:', `To: ${to}`];
