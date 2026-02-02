@@ -195,6 +195,7 @@
     "DATEONLY",
     "klarna",
     "lanczos",
-    "nosemgrep"
+    "nosemgrep",
+    "tolerations"
   ]
 }

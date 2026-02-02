@@ -252,6 +252,12 @@
       "description": "A remote Appsemble server to connect to in order to synchronize blocks.",
       "format": "uri"
     },
+    "securityEmail": {
+      "type": "string",
+      "description": "The default security contact email for reporting security vulnerabilities.",
+      "format": "email",
+      "default": "security@appsemble.com"
+    },
     "provision": {
       "type": "object",
       "description": "Provision the database with a preconfigured account and client credentials. This is for development purposes only.",

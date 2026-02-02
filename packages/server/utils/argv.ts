@@ -487,6 +487,13 @@ export interface Argv {
    * @default undefined
    */
   restoreBackupFilename: string;
+
+  /**
+   * The default security contact email for reporting security vulnerabilities.
+   *
+   * @default 'security@appsemble.com'
+   */
+  securityEmail: string;
 }
 
 const defaults: Argv = {
@@ -606,6 +613,7 @@ const defaults: Argv = {
   backupsSecretKey: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   restoreBackupFilename: undefined,
+  securityEmail: 'security@appsemble.com',
 };
 
 export const argv = { ...defaults };

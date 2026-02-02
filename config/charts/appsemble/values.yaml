@@ -107,6 +107,8 @@ postgresSSL: false
 
 remote: null
 
+securityEmail: security@appsemble.com
+
 quotas:
   appEmail:
     enabled: false

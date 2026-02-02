@@ -461,6 +461,7 @@ export interface ParsedQuery {
 export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
 export interface Options {
+  getSecurityEmail: () => string;
   getCurrentAppMember: (params: GetCurrentAppMemberParams) => Promise<AppMemberInfo | null>;
   getCurrentAppMemberSelectedGroup: (
     params: GetCurrentAppMemberSelectedGroupParams,
