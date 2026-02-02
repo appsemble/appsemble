@@ -39,3 +39,4 @@ export * from './checkAppMemberAppPermissions.js';
 export * from './checkUserOrganizationPermissions.js';
 export * from './checkAuthSubjectAppPermissions.js';
 export * from './checkAppPermissions.js';
+export * from './getSecurityEmail.js';

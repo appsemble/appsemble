@@ -208,6 +208,10 @@ spec:
             - name: REMOTE
               value: {{ . | quote }}
             {{- end }}
+            {{- with .Values.securityEmail }}
+            - name: SECURITY_EMAIL
+              value: {{ . | quote }}
+            {{- end }}
             {{- if .Values.proxy }}
             - name: PROXY
               value: 'true'
