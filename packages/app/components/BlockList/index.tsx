@@ -9,7 +9,7 @@ import {
 } from '@appsemble/lang-sdk';
 import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
 import { type ProjectImplementations } from '@appsemble/types';
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState, Fragment } from 'react';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
@@ -222,8 +222,11 @@ export function BlockList({
 
     return <Navigate to="/" />;
   }
+  const Wrapper = gridClassName ? 'div' : Fragment;
+  const wrapperProps = gridClassName ? { className: gridClassName } : {};
+
   return (
-    <div className={gridClassName}>
+    <Wrapper {...wrapperProps}>
       {isLoading ? <Loader /> : null}
       {blockList.map(([block, index, visible]) =>
         visible ? (
@@ -249,6 +252,6 @@ export function BlockList({
           />
         ) : null,
       )}
-    </div>
+    </Wrapper>
   );
 }
