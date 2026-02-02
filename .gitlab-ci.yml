@@ -682,7 +682,8 @@ publish helm:
         helm repo update > /dev/null
       done
 
-# Publish npm packages to npmjs.org.
+# Publish npm packages to npmjs.org using trusted publishing (OIDC).
+# See: https://docs.npmjs.com/generating-provenance-statements#publishing-packages-with-provenance-via-gitlab-cicd
 publish npm:
   tags:
     - saas-linux-small-amd64
@@ -697,15 +698,18 @@ publish npm:
   id_tokens:
     SIGSTORE_ID_TOKEN:
       aud: sigstore
+    NPM_ID_TOKEN:
+      aud: https://registry.npmjs.org
   script:
-    - npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
     - |
-      if echo "$CI_RUNNED_TAGS" | grep -q "self-hosted"; then
+      if echo "$CI_RUNNER_TAGS" | grep -q "self-hosted"; then
+        echo "Detected self-hosted runner, using NPM_TOKEN for authentication"
+        npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
         PROVENANCE_FLAG=""
-        echo "Detected self-hosted tag, skipping provenance"
       else
+        echo "Using npm trusted publishing (OIDC)"
+        npm config set //registry.npmjs.org/:_authToken "${NPM_ID_TOKEN}"
         PROVENANCE_FLAG="--provenance"
-        echo "No self-hosted tag detected, enabling provenance"
       fi
       echo "Using provenance flag: '$PROVENANCE_FLAG'"
       find ./build -name "*.tgz" -print0 | xargs -0 -I{} sh -c 'npm publish "{}" --access public '"$PROVENANCE_FLAG"''
