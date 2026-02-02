@@ -86,6 +86,24 @@ workflow:
       fi
 
 ###################################################################################################
+#  Auto-approve Renovate MRs                                                                      #
+###################################################################################################
+
+# Automatically approve merge requests from Renovate bot after build succeeds
+auto-approve-renovate:
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\//
+  needs:
+    - npm_ci
+    - build docker image
+  script:
+    - |
+      curl --fail --request POST \
+        --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/approve"
+
+###################################################################################################
 #  Security Stage                                                                                 #
 ###################################################################################################
 
