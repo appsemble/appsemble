@@ -46,7 +46,9 @@ describe('securityHandler', () => {
       headers: {
         'content-type': 'text/plain; charset=utf-8',
       },
-      data: expect.stringMatching(/^Contact: mailto:security@appsemble\.com\nExpires: .+/),
+      data: expect.stringMatching(
+        /^Contact: mailto:security@appsemble\.com\nExpires: \d{4}-\d{2}-\d{2}T.+\nCanonical: http:\/\/app\.org\.localhost\/\.well-known\/security\.txt\nPolicy: https:\/\/gitlab\.com\/appsemble\/appsemble\/-\/blob\/main\/SECURITY\.md\nPreferred-Languages: en, nl$/,
+      ),
     });
   });
 
