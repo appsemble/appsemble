@@ -766,7 +766,7 @@ publish npm:
     SIGSTORE_ID_TOKEN:
       aud: sigstore
     NPM_ID_TOKEN:
-      aud: https://registry.npmjs.org
+      aud: 'npm:registry.npmjs.org'
   script:
     - |
       if echo "$CI_RUNNER_TAGS" | grep -q "self-hosted"; then
