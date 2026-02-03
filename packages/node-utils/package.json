@@ -43,7 +43,6 @@
     "@appsemble/lang-sdk": "0.36.3-test.0",
     "@appsemble/types": "0.36.3-test.0",
     "@appsemble/utils": "0.36.3-test.0",
-    "@appsemble/webpack-core": "0.36.3-test.0",
     "@formatjs/fast-memoize": "^2.0.0",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@kubernetes/client-node": "^0.22.2",
