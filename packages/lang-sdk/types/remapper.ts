@@ -200,7 +200,7 @@ export interface Remappers {
    * - `year`: Last moment of the year
    * - `quarter`: Last moment of the quarter
    * - `month`: Last moment of the month
-   * - `week`: Last moment of the week (ends Saturday if week starts Monday)
+   * - `week`: Last moment of the week (ends Sunday if week starts Monday)
    * - `weekSun`: Last moment of the week (ends Saturday if week starts Sunday)
    */
   'date.endOf': 'month' | 'quarter' | 'week' | 'weekSun' | 'year';
