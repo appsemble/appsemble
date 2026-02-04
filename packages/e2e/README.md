@@ -1,8 +1,8 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.36.3-test.1/config/assets/logo.svg) Appsemble End 2 End Tests
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.36.3-test.2/config/assets/logo.svg) Appsemble End 2 End Tests
 
 > Run end 2 end tests on an Appsemble environment and provide Appsemble fixtures
 
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.36.3-test.1/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.1)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.36.3-test.2/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.2)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -102,5 +102,5 @@ When writing end-to-end tests, have a look at the
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.36.3-test.1/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.36.3-test.2/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

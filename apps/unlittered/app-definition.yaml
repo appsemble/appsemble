@@ -76,7 +76,7 @@ pages:
   - name: Report litter
     blocks:
       - type: form
-        version: 0.36.3-test.1
+        version: 0.36.3-test.2
         parameters:
           fields:
             - name: location
@@ -113,7 +113,7 @@ pages:
   - name: Litter Overview
     blocks:
       - type: data-loader
-        version: 0.36.3-test.1
+        version: 0.36.3-test.2
         actions:
           onLoad:
             type: resource.query
@@ -126,7 +126,7 @@ pages:
           emit:
             data: data
       - type: map
-        version: 0.36.3-test.1
+        version: 0.36.3-test.2
         parameters:
           latitude:
             - prop: location
@@ -142,7 +142,7 @@ pages:
           listen:
             data: data
       - type: action-button
-        version: 0.36.3-test.1
+        version: 0.36.3-test.2
         parameters:
           icon: plus
         actions:
@@ -155,7 +155,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.36.3-test.1
+        version: 0.36.3-test.2
         actions:
           onLoad:
             type: resource.get
@@ -164,7 +164,7 @@ pages:
           emit:
             data: data
       - type: detail-viewer
-        version: 0.36.3-test.1
+        version: 0.36.3-test.2
         parameters:
           fields:
             - value: { prop: location }
@@ -187,14 +187,14 @@ pages:
   - name: Litter list
     blocks:
       - type: timer
-        version: 0.36.3-test.1
+        version: 0.36.3-test.2
         parameters:
           interval: 5
         events:
           emit:
             interval: refresh
       - type: filter
-        version: 0.36.3-test.1
+        version: 0.36.3-test.2
         events:
           emit:
             filtered: filterResults
@@ -225,7 +225,7 @@ pages:
                 $orderby: '$created desc'
                 $top: 50
       - type: data-notifier
-        version: 0.36.3-test.1
+        version: 0.36.3-test.2
         events:
           listen:
             data: refreshedResults
@@ -233,7 +233,7 @@ pages:
           emit:
             data: updateLitter
       - type: feed
-        version: 0.36.3-test.1
+        version: 0.36.3-test.2
         events:
           listen:
             data: updateLitter
@@ -269,7 +269,7 @@ pages:
             type: resource.create
             resource: litterReply
       - type: action-button
-        version: 0.36.3-test.1
+        version: 0.36.3-test.2
         parameters:
           icon: plus
         actions:
