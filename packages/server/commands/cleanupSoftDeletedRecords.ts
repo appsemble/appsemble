@@ -7,7 +7,7 @@ import { App, getAppDB, initDB, Organization, transactional, User } from '../mod
 import { argv } from '../utils/argv.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
-export const command = 'cleanup-soft-deleted';
+export const command = 'cleanup-soft-deleted-records';
 export const description =
   'Permanently deleted soft deleted records that are older than three months';
 
