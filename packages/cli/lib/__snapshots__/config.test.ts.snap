@@ -2456,7 +2456,7 @@ Include an array of fields in \`fields\` to replace the current list of fields i
           "action": {
             "description": "This action will be fired to fetch dynamic enum options.
 
-The action should return an array of objects that contain the \`label\` and \`value\` property.",
+The action should return an array of objects that contain the \`label\` and \`value\` property. Optionally, each object can include \`disabled: true\` to make that option unselectable.",
             "format": "action",
             "type": "string",
           },
@@ -2748,6 +2748,20 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         },
         "type": "object",
       },
+      "DateDecorationsAction": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "description": "Action to fetch decorations and disabled dates for the visible month. Called with { month: number, year: number }. Should return { decorations: { date: string, color?: string, label?: string }[], disabledDates: string[] }.",
+            "format": "action",
+            "type": "string",
+          },
+        },
+        "required": [
+          "action",
+        ],
+        "type": "object",
+      },
       "DateField": {
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
@@ -2778,6 +2792,25 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
           },
+          "decorations": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/DateDecorationsAction",
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "remap": {
+                    "format": "remapper",
+                  },
+                },
+                "required": [
+                  "remap",
+                ],
+                "type": "object",
+              },
+            ],
+          },
           "defaultValue": {
             "description": "The default value of the field.",
             "type": "string",
@@ -2786,6 +2819,13 @@ The date value can be accessed using the \`root\` remapper.",
             "default": false,
             "description": "Whether the field should always be be disabled.",
             "format": "remapper",
+          },
+          "disabledDates": {
+            "description": "Dates to disable in the picker (ISO date strings).",
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
           },
           "help": {
             "description": "A description for the text field. For adding more information about the field.",
@@ -3094,7 +3134,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "event": {
             "description": "Wait until an event has been fired containing the list of options.
 
-The event should return an array of objects that contain the \`label\` and \`value\` property.",
+The event should return an array of objects that contain the \`label\` and \`value\` property. Optionally, each object can include \`disabled: true\` to make that option unselectable.",
             "format": "event-listener",
             "type": "string",
           },
