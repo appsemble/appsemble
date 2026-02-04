@@ -20,6 +20,7 @@ export { handler as scaleContainers } from './commands/scaleContainers.js';
 export { handler as fuzzMigrations } from './commands/fuzzMigrations.js';
 export { handler as synchronizeTrainings } from './commands/synchronizeTrainings.js';
 export { handler as chargeOrganizationSubscriptions } from './commands/chargeOrganizationSubscriptions.js';
+export { handler as reencryptSecrets } from './commands/reencryptSecrets.js';
 
 /**
  * These are exported, so @appsemble/cli can use them for integration testing.

@@ -30,6 +30,7 @@ export async function serverImport<
     | 'fuzzMigrations'
     | 'migrate'
     | 'migrateAppDefinitions'
+    | 'reencryptSecrets'
     | 'restoreDataFromBackup'
     | 'runCronJobs'
     | 'scaleContainers'
