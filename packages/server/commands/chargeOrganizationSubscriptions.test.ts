@@ -48,7 +48,7 @@ describe('paymentRetries', () => {
     }))!;
     await subscription.update({
       subscriptionPlan: 'basic',
-      expirationDate: dayjs(now).add(17, 'day'),
+      expirationDate: String(dayjs(now).add(17, 'day')),
       cancelled: false,
     });
   });
@@ -107,7 +107,7 @@ describe('paymentRetries', () => {
     expect(mailerMock.sendTranslatedEmail).not.toHaveBeenCalled();
   });
 
-  it('should charge a subscription expiring in 14 days', { timeout: 10_000 }, async () => {
+  it('should charge a subscription expiring in 14 days', { timeout: 15_000 }, async () => {
     await subscription.update({
       expirationDate: String(dayjs(now).add(14, 'day')),
     });

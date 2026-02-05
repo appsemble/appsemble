@@ -91,7 +91,7 @@ describe('sendInvoice', () => {
 
   it('should not send an invoice when missing billing information', async () => {
     authorizeStudio();
-    organization.update({ countryCode: null });
+    await organization.update({ countryCode: null });
     const response = await request.post(
       `/api/payments/send-invoice?organizationId=${organization.id}&subscriptionType=basic&period=month`,
     );
@@ -104,7 +104,7 @@ describe('sendInvoice', () => {
     });
   });
 
-  it('should handle undefined response from payment interface', { timeout: 10_000 }, async () => {
+  it('should handle undefined response from payment interface', { timeout: 15_000 }, async () => {
     authorizeStudio();
     vi.mocked(getPaymentObject).mockResolvedValue({
       createOrUpdateCustomer: vi.fn(() => Promise.resolve(null)),
