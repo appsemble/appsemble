@@ -148,7 +148,7 @@ Configure the environment variables for Appsemble to enable backups.
 - name: BACKUPS_PORT
   value: {{ .Values.backups.port | quote }}
 - name: BACKUPS_SECURE
-  value: {{ .Values.backups.secure | quote }}
+  value: {{ .Values.backups.secure }}
 {{- with .Values.backups.existingSecret }}
 - name: BACKUPS_ACCESS_KEY
   valueFrom:
