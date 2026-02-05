@@ -13,9 +13,10 @@ export function createSecurityHandler({ getApp, getSecurityEmail }: Options): Mi
     ctx.body = [
       `Contact: mailto:${securityEmail}`,
       `Expires: ${expires.toISOString().replace(/\.\d{3}Z$/, 'Z')}`,
-      `Canonical: ${ctx.origin}/.well-known/security.txt`,
+      `Canonical: ${ctx.URL.origin}/.well-known/security.txt`,
       'Policy: https://gitlab.com/appsemble/appsemble/-/blob/main/SECURITY.md',
       'Preferred-Languages: en, nl',
+      '',
     ].join('\n');
   };
 }

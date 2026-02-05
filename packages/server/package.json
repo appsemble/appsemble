@@ -70,7 +70,7 @@
     "jsonschema": "~1.4.1",
     "jsonwebtoken": "^9.0.0",
     "jszip": "^3.0.0",
-    "koa": "^2.0.0",
+    "koa": "^3.0.0",
     "koa-compose": "^4.0.0",
     "koa-compress": "^5.0.0",
     "koa-range": "^0.3.0",
@@ -137,6 +137,7 @@
     "axios-mock-adapter": "1.22.0",
     "axios-test-instance": "7.0.0",
     "cross-fetch": "4.1.0",
+    "ein-validator": "^1.0.0",
     "jest-image-snapshot": "6.4.0",
     "jsvat": "2.5.4",
     "memfs": "4.17.0",
@@ -149,6 +150,6 @@
     "webpack": "^5"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }

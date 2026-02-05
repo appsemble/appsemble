@@ -53,9 +53,9 @@ const localHostnames = new Set(['127.0.0.1', 'localhost']);
  * @returns The app matching the url.
  */
 export async function getApp(
-  { origin }: Pick<Context, 'origin'>,
+  ctx: Pick<Context, 'URL'>,
   queryOptions: FindOptions,
-  url = origin,
+  url = ctx.URL.origin,
 ): Promise<GetAppValue> {
   const platformHost = new URL(argv.host).hostname;
   const { hostname } = new URL(url);

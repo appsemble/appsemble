@@ -56,7 +56,7 @@ export function createIndexHandler({
 
     if (appUrl.hostname !== hostname) {
       appUrl.pathname = path;
-      appUrl.search = ctx.querystring;
+      appUrl.search = ctx.URL.search;
       ctx.redirect(String(appUrl));
       return;
     }
