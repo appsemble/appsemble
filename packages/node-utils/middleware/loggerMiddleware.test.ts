@@ -20,8 +20,8 @@ beforeEach(async () => {
   app = new Koa();
 
   app.use(async (ctx, next) => {
-    Object.defineProperty(ctx.request, 'origin', {
-      value: 'https://example.com:1337',
+    Object.defineProperty(ctx, 'href', {
+      get: () => `https://example.com:1337${ctx.path}`,
     });
     try {
       await next();

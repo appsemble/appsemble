@@ -171,7 +171,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -223,7 +223,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -303,7 +303,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -386,7 +386,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -440,7 +440,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -489,7 +489,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -551,7 +551,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -615,7 +615,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -684,7 +684,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -755,7 +755,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -820,7 +820,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -872,7 +872,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -933,7 +933,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -985,7 +985,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -1046,7 +1046,7 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -1100,7 +1100,7 @@ describe('applyAppServiceSecrets', () => {
     });
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -1162,7 +1162,7 @@ describe('applyAppServiceSecrets', () => {
     });
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {
@@ -1239,7 +1239,7 @@ describe('applyAppServiceSecrets', () => {
     });
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {

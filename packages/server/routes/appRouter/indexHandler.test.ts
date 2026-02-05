@@ -134,7 +134,7 @@ describe('indexHandler', () => {
     setArgv({ host: 'http://host.example', secret: 'test' });
     const server = await createServer({
       middleware(ctx, next) {
-        Object.defineProperty(ctx, 'origin', { get: () => requestURL.origin });
+        Object.defineProperty(ctx, 'URL', { get: () => requestURL });
         Object.defineProperty(ctx, 'hostname', { get: () => requestURL.hostname });
         return next();
       },

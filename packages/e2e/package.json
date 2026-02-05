@@ -45,7 +45,7 @@
     "strip-indent": "^4.0.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "devDependencies": {
     "eslint-plugin-playwright": "2.2.2"

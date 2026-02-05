@@ -74,6 +74,7 @@
     "yaml": "^2.0.0"
   },
   "devDependencies": {
+    "@sentry-internal/browser-utils": "^10.0.0",
     "@types/css-modules": "1.0.5",
     "@types/mdx": "2.0.13",
     "@types/react": "18.3.27",

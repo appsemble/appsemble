@@ -260,7 +260,7 @@
     },
     "provision": {
       "type": "object",
-      "description": "Provision the database with a preconfigured account and client credentials. This is for development purposes only.",
+      "description": "Provision the database with a pre-configured account and client credentials. This is for development purposes only.",
       "additionalProperties": false,
       "required": ["user"],
       "properties": {

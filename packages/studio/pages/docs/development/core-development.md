@@ -18,7 +18,7 @@ websites of these tools.
 - [Git](https://git-scm.com/)
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
-- [NodeJS 20.18](https://nodejs.org/docs/latest-v20.x/api/index.html)
+- [NodeJS 24](https://nodejs.org/docs/latest-v24.x/api/index.html)
 
 You can start local development by cloning the git repository and installing the dependencies. Run
 the following commands to get started.
@@ -30,7 +30,7 @@ npm ci
 ```
 
 The project requires a PostgreSQL database. To make the development process easy,
-`docker-compose.yml` contains the configuration to spin up a preconfigured database with ease.
+`docker-compose.yml` contains the configuration to spin up a pre-configured database with ease.
 
 ```sh copy
 docker compose up -d

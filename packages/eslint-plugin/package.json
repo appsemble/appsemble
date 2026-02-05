@@ -22,7 +22,7 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "exports": {
     ".": {

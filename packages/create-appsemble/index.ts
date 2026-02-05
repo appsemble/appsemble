@@ -3,38 +3,29 @@ import { cp, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { logger, readData, writeData } from '@appsemble/node-utils';
-import inquirer from 'inquirer';
+import { input } from '@inquirer/prompts';
 import { type PackageJson } from 'type-fest';
 
 const templatesDir = new URL('templates/', import.meta.url);
 
-function validateProjectName(input: string): boolean {
-  if (input.length > 30 || input.length === 0) {
-    logger.error(
-      'Please input a valid project name. Name must be between 1 and 30 characters long.',
-    );
-    return false;
+function validateProjectName(value: string): boolean | string {
+  if (value.length > 30 || value.length === 0) {
+    return 'Please input a valid project name. Name must be between 1 and 30 characters long.';
   }
   return true;
 }
 
 export async function handler(): Promise<void> {
-  const answers = await inquirer.prompt(
-    [
-      {
-        name: 'name',
-        message: 'Please enter the name of your project.',
-        validate: validateProjectName,
-      },
-      {
-        name: 'path',
-        message: 'Please enter the path for where you want the project folder to go (default ".").',
-      },
-    ].filter(Boolean),
-  );
+  const name = await input({
+    message: 'Please enter the name of your project.',
+    validate: validateProjectName,
+  });
 
-  const { name } = answers;
-  const path = answers.path || process.cwd();
+  const pathAnswer = await input({
+    message: 'Please enter the path for where you want the project folder to go (default ".").',
+  });
+
+  const path = pathAnswer || process.cwd();
 
   const outputDirectory = join(path, name);
   const inputDirectory = new URL('gitlab/', templatesDir);
@@ -68,4 +59,7 @@ export async function handler(): Promise<void> {
   logger.info(`Successfully created ${name} at ${outputDirectory}`);
 }
 
-await handler();
+// Only run interactively if stdin is a TTY (not during validation/CI)
+if (process.stdin.isTTY) {
+  await handler();
+}

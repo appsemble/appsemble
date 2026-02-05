@@ -44,7 +44,7 @@ export async function sendInvoice(ctx: Context): Promise<void> {
       subscription!.renewalPeriod = SubscriptionRenewalPeriod.Month;
       break;
   }
-  subscription!.save();
+  await subscription!.save();
 
   const wantedPlan = getSubscriptionPlanByName(subscriptionType);
   const pricingInformation = await calculateSubscriptionPrice(
@@ -98,7 +98,7 @@ export async function sendInvoice(ctx: Context): Promise<void> {
   const stripeCustomerId = await payments.createOrUpdateCustomer(organization!);
   assertKoaError(!stripeCustomerId, ctx, 500, 'Problem creating customer.');
   organization!.stripeCustomerId = stripeCustomerId;
-  organization!.save();
+  await organization!.save();
 
   const invoiceInformation = await payments.createInvoice(
     invoice,
@@ -108,7 +108,7 @@ export async function sendInvoice(ctx: Context): Promise<void> {
   );
   assertKoaError(!invoiceInformation, ctx, 500, 'Problem creating invoice.');
   invoice.stripeInvoiceId = invoiceInformation.id;
-  invoice.save();
+  await invoice.save();
 
   ctx.body = {
     url: invoiceInformation.paymentUrl,

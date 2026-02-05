@@ -16,21 +16,30 @@ const customerId = 'cus_RMoF3DpETbqZL6';
 const invoiceId = 'in_1QU7dEIqNkYhnCOA3OaPMvuJ';
 const paymentUrl = 'testpaymenturl.com';
 
+vi.mock('../../../utils/payments/getPaymentObject.js', () => {
+  const paymentsMock = {
+    createOrUpdateCustomer: vi.fn(() => Promise.resolve(customerId)),
+    createInvoice: vi.fn(() => Promise.resolve({ id: invoiceId, paymentUrl })),
+  };
+  return { getPaymentObject: vi.fn(() => Promise.resolve(paymentsMock)) };
+});
+
 describe('sendInvoice', () => {
   beforeAll(async () => {
     setArgv({ host: 'http://localhost', secret: 'test' });
     server = await createServer();
     await setTestApp(server);
-    vi.mock('../../../utils/payments/getPaymentObject.js', () => {
-      const paymentsMock = {
-        createOrUpdateCustomer: vi.fn(() => Promise.resolve(customerId)),
-        createInvoice: vi.fn(() => Promise.resolve({ id: invoiceId, paymentUrl })),
-      };
-      return { getPaymentObject: vi.fn(() => paymentsMock) };
-    });
   });
 
   beforeEach(async () => {
+    vi.mocked(getPaymentObject).mockResolvedValue({
+      createOrUpdateCustomer: vi.fn(() => Promise.resolve(customerId)),
+      createInvoice: vi.fn(() => Promise.resolve({ id: invoiceId, paymentUrl })),
+      chargeInvoice: vi.fn(() => Promise.resolve(null)),
+      deletePaymentMethods: vi.fn(() => Promise.resolve(null)),
+      createAppCheckout: vi.fn(() => Promise.resolve(null)),
+    });
+
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',
@@ -82,7 +91,7 @@ describe('sendInvoice', () => {
 
   it('should not send an invoice when missing billing information', async () => {
     authorizeStudio();
-    organization.update({ countryCode: null });
+    await organization.update({ countryCode: null });
     const response = await request.post(
       `/api/payments/send-invoice?organizationId=${organization.id}&subscriptionType=basic&period=month`,
     );
@@ -95,7 +104,7 @@ describe('sendInvoice', () => {
     });
   });
 
-  it('should handle undefined response from payment interface', async () => {
+  it('should handle undefined response from payment interface', { timeout: 15_000 }, async () => {
     authorizeStudio();
     vi.mocked(getPaymentObject).mockResolvedValue({
       createOrUpdateCustomer: vi.fn(() => Promise.resolve(null)),

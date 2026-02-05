@@ -14,7 +14,7 @@ describe('robotsHandler', () => {
     await setTestApp(
       new Koa()
         .use((ctx, next) => {
-          Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
+          Object.defineProperty(ctx, 'URL', { value: new URL('http://app.org.localhost') });
           return next();
         })
         .use(errorMiddleware())

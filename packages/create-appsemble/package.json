@@ -40,13 +40,10 @@
   },
   "dependencies": {
     "@appsemble/node-utils": "0.36.3-test.3",
-    "inquirer": "^9.0.0",
+    "@inquirer/prompts": "^8.0.0",
     "type-fest": "^4.0.0"
   },
-  "devDependencies": {
-    "@types/inquirer": "9.0.9"
-  },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }

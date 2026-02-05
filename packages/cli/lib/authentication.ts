@@ -9,7 +9,7 @@ import {
   logger,
   throwKoaError,
 } from '@appsemble/node-utils';
-import inquirer from 'inquirer';
+import { checkbox } from '@inquirer/prompts';
 import Koa, { type Context } from 'koa';
 import open from 'open';
 import raw from 'raw-body';
@@ -90,14 +90,10 @@ export async function remove({ remote }: BaseArguments): Promise<void> {
     logger.warn('No client credentials are currently in use.');
     return;
   }
-  const { clientIds } = await inquirer.prompt<{ clientIds: string[] }>([
-    {
-      name: 'clientIds',
-      message: 'Select client ids to delete',
-      choices: choices.map(({ account }) => account),
-      type: 'checkbox',
-    },
-  ]);
+  const clientIds = await checkbox({
+    message: 'Select client ids to delete',
+    choices: choices.map(({ account }) => ({ name: account, value: account })),
+  });
   await Promise.all(
     clientIds.map(async (clientId) => {
       await deletePassword(getService(remote), clientId);
