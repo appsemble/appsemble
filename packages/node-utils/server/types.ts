@@ -147,6 +147,7 @@ declare module 'koas-parameters' {
     email: string;
     width?: number;
     height?: number;
+    secret: string;
   }
 }
 

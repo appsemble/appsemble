@@ -28,6 +28,9 @@ export class EmailAuthorization extends Model {
   @Column(DataType.STRING)
   declare key?: string;
 
+  @Column(DataType.DATE)
+  declare disabled?: Date;
+
   @CreatedAt
   declare created: Date;
 

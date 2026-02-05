@@ -27,6 +27,7 @@ import {
   App,
   AppEmailQuotaLog,
   AppMessages,
+  EmailAuthorization,
   Organization,
   OrganizationMember,
   transactional,
@@ -102,6 +103,11 @@ export interface SendMailOptions {
    * The HTML content of the email.
    */
   html: string;
+
+  /**
+   * Email address for the recipient to reply to.
+   */
+  replyTo?: string;
 
   /**
    * The plain-text content of the email.
@@ -443,6 +449,7 @@ export class Mailer {
     cc,
     from,
     html,
+    replyTo,
     subject,
     text,
     to,
@@ -466,13 +473,23 @@ export class Mailer {
     if (!transport) {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
+    const emailAuthorization = await EmailAuthorization.findOne({where: { email: to }});
+    if (emailAuthorization?.disabled) {
+        throw new EmailError('Email disabled due to repeated failed deliveries.');
+    }
 
     await this.tryRateLimiting({ app });
 
     const parsed = addrs.parseOneAddress(
       hasOwnEmail ? app.emailUser! : argv.smtpFrom,
     ) as ParsedMailbox;
-    const fromHeader = from ? `${from} <${parsed?.address}>` : argv.smtpFrom;
+    const headers: Record<string, string> = {};
+    headers.from = from ? `${from} <${parsed?.address}>` : argv.smtpFrom;
+    if(replyTo){
+      headers.replyTo = replyTo;
+    } else {
+      headers.replyTo = headers.from;
+    }
 
     const loggingMessage = ['Sending email:', `To: ${to}`];
     if (cc) {
@@ -481,8 +498,8 @@ export class Mailer {
     if (bcc) {
       loggingMessage.push(`BCC: ${bcc}`);
     }
-    if (fromHeader) {
-      loggingMessage.push(`From: ${fromHeader}`);
+    if (headers) {
+      loggingMessage.push(`Headers: ${headers}`);
     }
     loggingMessage.push(`Subject: ${subject}`, '', text);
     logger.info(loggingMessage.join('\n'));
@@ -501,7 +518,7 @@ export class Mailer {
           ...(cc ? { cc } : {}),
           ...(bcc ? { bcc } : {}),
           html,
-          from: fromHeader,
+          headers,
           subject,
           text,
           to,
@@ -523,7 +540,7 @@ export class Mailer {
         ...(cc ? { cc } : {}),
         ...(bcc ? { bcc } : {}),
         html,
-        from: fromHeader,
+        headers,
         subject,
         text,
         to,

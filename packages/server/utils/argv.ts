@@ -223,6 +223,13 @@ export interface Argv {
    */
   smtpSecure: boolean;
 
+  /**
+   * Secret used to authorize incoming postal webhooks.
+   *
+   * @default false
+   */
+  postalSecret: string;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // IMAP
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -500,7 +507,7 @@ const defaults: Argv = {
   quiet: 0,
   verbose: 0,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
-  host: undefined,
+  host: 'host.docker.internal',
   forceProtocolHttps: false,
   port: 9999,
   proxy: false,
@@ -545,8 +552,7 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   stripeWebhookSecret: undefined,
   updateStripeResponses: false,
-  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
-  smtpFrom: undefined,
+  smtpFrom: 'support@appsemble.com',
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpHost: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
@@ -556,6 +562,7 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpPass: undefined,
   smtpSecure: false,
+  postalSecret: 'test',
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   imapHost: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
