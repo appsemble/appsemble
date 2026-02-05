@@ -121,7 +121,7 @@ export function useBreadcrumbs(): Breadcrumb[] {
  *
  * @param title The page title to use. This will be used for both a breadcrumb and as part of the
  *   page title.
- * @param description The page description to use. This is used for SEO purposes only. Therefor
+ * @param description The page description to use. This is used for SEO purposes only. Therefore
  *   it’s only needed for public pages.
  */
 export function useMeta(title: Text, description?: Text): void {

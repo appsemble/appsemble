@@ -55,9 +55,9 @@ export function createIndexHandler({
     const appUrl = await getAppUrl({ app, context: ctx });
 
     if (appUrl.hostname !== hostname) {
-      appUrl.pathname = path;
-      appUrl.search = ctx.URL.search;
-      ctx.redirect(String(appUrl));
+      const redirectUrl = new URL(path, appUrl);
+      redirectUrl.search = ctx.search;
+      ctx.redirect(String(redirectUrl));
       return;
     }
 

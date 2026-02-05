@@ -1,7 +1,7 @@
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Invoice, Organization, OrganizationMember, type User } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -16,21 +16,24 @@ const customerId = 'cus_RMoF3DpETbqZL6';
 const invoiceId = 'in_1QU7dEIqNkYhnCOA3OaPMvuJ';
 const paymentUrl = 'testpaymenturl.com';
 
+vi.mock('../../../utils/payments/getPaymentObject.js', () => {
+  const paymentsMock = {
+    createOrUpdateCustomer: vi.fn(() => Promise.resolve(customerId)),
+    createInvoice: vi.fn(() => Promise.resolve({ id: invoiceId, paymentUrl })),
+  };
+  return { getPaymentObject: vi.fn(() => Promise.resolve(paymentsMock)) };
+});
+
 describe('sendInvoice', () => {
   beforeAll(async () => {
     setArgv({ host: 'http://localhost', secret: 'test' });
     server = await createServer();
     await setTestApp(server);
-    vi.mock('../../../utils/payments/getPaymentObject.js', () => {
-      const paymentsMock = {
-        createOrUpdateCustomer: vi.fn(() => Promise.resolve(customerId)),
-        createInvoice: vi.fn(() => Promise.resolve({ id: invoiceId, paymentUrl })),
-      };
-      return { getPaymentObject: vi.fn(() => paymentsMock) };
-    });
   });
 
   beforeEach(async () => {
+    vi.restoreAllMocks();
+
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',
@@ -48,6 +51,16 @@ describe('sendInvoice', () => {
       OrganizationId: organization.id,
       UserId: user.id,
       role: PredefinedOrganizationRole.Owner,
+    });
+  });
+
+  afterEach(() => {
+    vi.mocked(getPaymentObject).mockResolvedValue({
+      createOrUpdateCustomer: vi.fn(() => Promise.resolve(customerId)),
+      createInvoice: vi.fn(() => Promise.resolve({ id: invoiceId, paymentUrl })),
+      chargeInvoice: vi.fn(() => Promise.resolve(null)),
+      deletePaymentMethods: vi.fn(() => Promise.resolve(null)),
+      createAppCheckout: vi.fn(() => Promise.resolve(null)),
     });
   });
 

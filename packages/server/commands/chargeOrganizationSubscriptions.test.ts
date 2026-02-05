@@ -1,6 +1,6 @@
 import { InvoiceStatus, SubscriptionPlanType } from '@appsemble/types';
 import dayjs from 'dayjs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { chargeOrganizationSubscriptions } from './chargeOrganizationSubscriptions.js';
 import { Invoice, Organization, OrganizationSubscription } from '../models/index.js';
@@ -8,7 +8,7 @@ import { type Mailer } from '../utils/email/Mailer.js';
 import { type Payments } from '../utils/payments/payments.js';
 
 describe('paymentRetries', () => {
-  const date = dayjs().add(17, 'day');
+  const now = new Date('2025-06-15T12:00:00.000Z');
   const mailerMock = {
     sendTranslatedEmail: vi.fn(() => Promise.resolve(null)),
   };
@@ -25,6 +25,9 @@ describe('paymentRetries', () => {
   };
 
   beforeEach(async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(now);
+
     organization = await Organization.create({
       id: 'testorganization',
       name: 'Test Organization',
@@ -44,14 +47,18 @@ describe('paymentRetries', () => {
     }))!;
     await subscription.update({
       subscriptionPlan: 'basic',
-      expirationDate: date,
+      expirationDate: dayjs(now).add(17, 'day'),
       cancelled: false,
     });
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('should notify about subscription expiry', async () => {
     await subscription.update({
-      expirationDate: String(dayjs().add(16, 'day')),
+      expirationDate: String(dayjs(now).add(16, 'day')),
     });
 
     await chargeOrganizationSubscriptions(
@@ -77,7 +84,7 @@ describe('paymentRetries', () => {
       where: { OrganizationId: 'testorganization' },
     }))!;
     await subscription.update({
-      expirationDate: String(dayjs().add(15, 'day')),
+      expirationDate: String(dayjs(now).add(15, 'day')),
     });
 
     await chargeOrganizationSubscriptions(
@@ -88,7 +95,7 @@ describe('paymentRetries', () => {
     expect(mailerMock.sendTranslatedEmail).not.toHaveBeenCalled();
 
     await subscription.update({
-      expirationDate: String(dayjs().add(17, 'day')),
+      expirationDate: String(dayjs(now).add(17, 'day')),
     });
 
     await chargeOrganizationSubscriptions(
@@ -101,7 +108,7 @@ describe('paymentRetries', () => {
 
   it('should charge a subscription expiring in 14 days', async () => {
     await subscription.update({
-      expirationDate: String(dayjs().add(14, 'day')),
+      expirationDate: String(dayjs(now).add(14, 'day')),
     });
 
     await chargeOrganizationSubscriptions(null, paymentsMock as unknown as Payments);
@@ -113,7 +120,7 @@ describe('paymentRetries', () => {
 
   it('should not charge a subscription expiring in 15 days', async () => {
     await subscription.update({
-      expirationDate: String(dayjs().add(15, 'day')),
+      expirationDate: String(dayjs(now).add(15, 'day')),
     });
 
     await chargeOrganizationSubscriptions(null, paymentsMock as unknown as Payments);
