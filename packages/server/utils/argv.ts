@@ -507,7 +507,7 @@ const defaults: Argv = {
   quiet: 0,
   verbose: 0,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
-  host: 'host.docker.internal',
+  host: undefined,
   forceProtocolHttps: false,
   port: 9999,
   proxy: false,
