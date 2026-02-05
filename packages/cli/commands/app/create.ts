@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { logger, readData, writeData } from '@appsemble/node-utils';
 import { type AppsembleRC } from '@appsemble/types';
-import inquirer from 'inquirer';
+import { checkbox, confirm, input, select } from '@inquirer/prompts';
 import { format } from 'prettier';
 import { parse, parseDocument, stringify } from 'yaml';
 import { type Argv } from 'yargs';
@@ -62,10 +62,9 @@ export async function builder(yargs: Argv): Promise<Argv<any>> {
     });
 }
 
-function validateAppName(input: string): boolean {
-  if (input.length > 30 || input.length === 0) {
-    logger.error('Please input a valid app name. Name must be between 1 and 30 characters long.');
-    return false;
+function validateAppName(value: string): boolean | string {
+  if (value.length > 30 || value.length === 0) {
+    return 'Please input a valid app name. Name must be between 1 and 30 characters long.';
   }
   return true;
 }
@@ -73,79 +72,79 @@ function validateAppName(input: string): boolean {
 export async function handler(args: AppArgs): Promise<void> {
   const templateChoices = await readdir(templatesDir);
   const languageChoices = ['en', 'nl', 'ru', 'fr', 'de', 'da', 'id', 'hr'];
-  const answers = await inquirer.prompt(
-    [
-      !args.organization && {
-        name: 'organization',
-        message: 'For which organisation is this app? (default "appsemble")',
-      },
-      !args.name && {
-        name: 'name',
-        message: 'What will be the name of the app.',
-        validate: validateAppName,
-      },
-      !args.description && {
-        name: 'description',
-        message: 'Please describe your app.',
-      },
-      !args.template && {
-        name: 'template',
-        type: 'list',
-        choices: templateChoices,
-        message: 'Please choose a template to continue.',
-      },
-      !args.languages && {
-        name: 'languages',
-        type: 'checkbox',
-        choices: languageChoices,
-        message: 'Please select the languages for your app.',
-      },
-      !args.resource && {
-        name: 'resource',
-        message:
-          'Please enter the name of sample resource to be added to the app definition.(leave empty for none)',
-      },
-      !args.security && {
-        name: 'security',
-        message: 'Would you like to add a security definition to the app.',
-        type: 'confirm',
-        default: false,
-      },
-      {
-        name: 'groups',
-        message: 'Will you be using groups in your app.',
-        type: 'confirm',
-        default: false,
-        when: (appOptions: AppArgs) => appOptions.security,
-      },
-      !args.cronJobs && {
-        name: 'cronJobs',
-        message: 'Would you like to add a cron-job to the definition of the app.',
-        type: 'confirm',
-        default: false,
-      },
-      !args.path && {
-        name: 'path',
-        message: 'Please enter the path for where you want the app folder to go (default "apps").',
-      },
-    ].filter(Boolean),
-  );
-  const path = args.path || answers.path || join(process.cwd(), 'apps');
-  const organization = answers.organization || args.organization || 'appsemble';
-  const name = answers.name || args.name;
-  const appDescription = answers.description || args.description || '';
-  const template = answers.template || args.template;
-  const languages = answers.languages || args.languages;
-  const resource = answers.resource || args.resource;
-  const security = answers.security || args.security;
-  const cronJobs = answers.cronJobs || args.cronJobs;
-  const { groups } = answers;
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
+  const organization =
+    args.organization ||
+    (await input({
+      message: 'For which organisation is this app? (default "appsemble")',
+    })) ||
+    'appsemble';
+
+  const name =
+    args.name ||
+    (await input({
+      message: 'What will be the name of the app.',
+      validate: validateAppName,
+    }));
+
+  const appDescription =
+    args.description ||
+    (await input({
+      message: 'Please describe your app.',
+    })) ||
+    '';
+
+  const template =
+    args.template ||
+    (await select({
+      message: 'Please choose a template to continue.',
+      choices: templateChoices.map((t) => ({ name: t, value: t })),
+    }));
+
+  const languages =
+    args.languages ||
+    (await checkbox({
+      message: 'Please select the languages for your app.',
+      choices: languageChoices.map((language) => ({ name: language, value: language })),
+    }));
+
+  const resource =
+    args.resource ||
+    (await input({
+      message:
+        'Please enter the name of sample resource to be added to the app definition.(leave empty for none)',
+    }));
+
+  const security =
+    args.security ??
+    (await confirm({
+      message: 'Would you like to add a security definition to the app.',
+      default: false,
+    }));
+
+  let groups = false;
+  if (security) {
+    groups = await confirm({
+      message: 'Will you be using groups in your app.',
+      default: false,
+    });
+  }
+
+  const cronJobs =
+    args.cronJobs ??
+    (await confirm({
+      message: 'Would you like to add a cron-job to the definition of the app.',
+      default: false,
+    }));
+
+  const path =
+    args.path ||
+    (await input({
+      message: 'Please enter the path for where you want the app folder to go (default "apps").',
+    })) ||
+    join(process.cwd(), 'apps');
+
   const outputDirectory = join(path, name);
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
   const inputDirectory = join(`${templatesDir}/`, template);
   const appsembleRcPath = join(inputDirectory, '.appsemblerc.yaml');
   const [appsembleRc] = await readData<AppsembleRC>(appsembleRcPath);
