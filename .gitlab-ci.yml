@@ -1,5 +1,5 @@
 default:
-  image: node:24-bookworm-slim@sha256:46feb5752989c05b8606e6323fbbc3db667d14ade1c24f5d0d44d9ca9909d607
+  image: node:24-bookworm-slim
 
 stages:
   - security
@@ -111,7 +111,7 @@ auto-approve-renovate:
 
 secret-scan-mr:
   stage: security
-  image: node:lts-trixie@sha256:bea2f8264c42f56e253295ebd89db8e7c4ff96a03339adeb4a7628bd548d9476
+  image: node:lts-bookworm-slim
   variables:
     BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
     HEAD_SHA: ${CI_COMMIT_SHA}
