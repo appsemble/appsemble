@@ -102,7 +102,7 @@ auto-approve-renovate:
     - apk add --no-cache curl
     - |
       curl --fail --request POST \
-        --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+        --header "PRIVATE-TOKEN: $GITLAB_APPROVAL_TOKEN" \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/approve"
 
 ###################################################################################################
