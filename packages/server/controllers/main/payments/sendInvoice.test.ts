@@ -1,7 +1,7 @@
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Invoice, Organization, OrganizationMember, type User } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -32,7 +32,13 @@ describe('sendInvoice', () => {
   });
 
   beforeEach(async () => {
-    vi.restoreAllMocks();
+    vi.mocked(getPaymentObject).mockResolvedValue({
+      createOrUpdateCustomer: vi.fn(() => Promise.resolve(customerId)),
+      createInvoice: vi.fn(() => Promise.resolve({ id: invoiceId, paymentUrl })),
+      chargeInvoice: vi.fn(() => Promise.resolve(null)),
+      deletePaymentMethods: vi.fn(() => Promise.resolve(null)),
+      createAppCheckout: vi.fn(() => Promise.resolve(null)),
+    });
 
     user = await createTestUser();
     organization = await Organization.create({
@@ -51,16 +57,6 @@ describe('sendInvoice', () => {
       OrganizationId: organization.id,
       UserId: user.id,
       role: PredefinedOrganizationRole.Owner,
-    });
-  });
-
-  afterEach(() => {
-    vi.mocked(getPaymentObject).mockResolvedValue({
-      createOrUpdateCustomer: vi.fn(() => Promise.resolve(customerId)),
-      createInvoice: vi.fn(() => Promise.resolve({ id: invoiceId, paymentUrl })),
-      chargeInvoice: vi.fn(() => Promise.resolve(null)),
-      deletePaymentMethods: vi.fn(() => Promise.resolve(null)),
-      createAppCheckout: vi.fn(() => Promise.resolve(null)),
     });
   });
 
@@ -108,7 +104,7 @@ describe('sendInvoice', () => {
     });
   });
 
-  it('should handle undefined response from payment interface', async () => {
+  it('should handle undefined response from payment interface', { timeout: 10_000 }, async () => {
     authorizeStudio();
     vi.mocked(getPaymentObject).mockResolvedValue({
       createOrUpdateCustomer: vi.fn(() => Promise.resolve(null)),

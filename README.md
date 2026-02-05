@@ -34,11 +34,10 @@ be found in [here](packages/studio/pages/docs/deployment/helm.md).
 
 Our production environment is available on [appsemble.app](https://appsemble.app).
 
-Our staging environment is available on
-[staging.appsemble.eu](https://staging.appsemble.eu). This environment hosts the latest
-changes in the `staging` branch. This environment is reset every night at 04:00 AM UTC. The point of
-this environment is to mimic production as closely as possible. It is the last stage where changes
-are added to before they reach production.
+Our staging environment is available on [staging.appsemble.eu](https://staging.appsemble.eu). This
+environment hosts the latest changes in the `staging` branch. This environment is reset every night
+at 04:00 AM UTC. The point of this environment is to mimic production as closely as possible. It is
+the last stage where changes are added to before they reach production.
 
 For each of our internal merge requests a review environment is started at
 `${CI_MERGE_REQUEST_IID}.appsemble.review`.
@@ -61,7 +60,7 @@ must be installed.
 
 - [Docker][]
 - [Docker Compose][]
-- [NodeJS 20.18][nodejs]
+- [NodeJS 24][nodejs]
 
 ### Getting started
 
@@ -82,7 +81,7 @@ npx playwright install
 ```
 
 The project requires a PostgreSQL database. This project contains a Docker Compose configuration to
-spin up a preconfigured database with ease.
+spin up a pre-configured database with ease.
 
 ```sh
 docker compose up -d
@@ -227,4 +226,4 @@ Please read our [security policy](./SECURITY.md).
 [docker]: https://docker.com
 [docker compose]: https://docs.docker.com/compose
 [vitest cli options]: https://vitest.dev/guide/cli.html#options
-[nodejs]: https://nodejs.org/docs/latest-v20.x/api/index.html
+[nodejs]: https://nodejs.org/docs/latest-v24.x/api/index.html

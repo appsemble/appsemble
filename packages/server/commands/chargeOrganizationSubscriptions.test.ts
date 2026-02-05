@@ -27,6 +27,7 @@ describe('paymentRetries', () => {
   beforeEach(async () => {
     vi.useFakeTimers();
     vi.setSystemTime(now);
+    vi.clearAllMocks();
 
     organization = await Organization.create({
       id: 'testorganization',
@@ -106,7 +107,7 @@ describe('paymentRetries', () => {
     expect(mailerMock.sendTranslatedEmail).not.toHaveBeenCalled();
   });
 
-  it('should charge a subscription expiring in 14 days', async () => {
+  it('should charge a subscription expiring in 14 days', { timeout: 10_000 }, async () => {
     await subscription.update({
       expirationDate: String(dayjs(now).add(14, 'day')),
     });

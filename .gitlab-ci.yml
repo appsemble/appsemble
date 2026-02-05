@@ -38,7 +38,7 @@ workflow:
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
 
-# A preconfigured environment for using npm.
+# A pre-configured environment for using npm.
 .npm:
   interruptible: true
   dependencies: [npm_ci]
@@ -111,7 +111,7 @@ auto-approve-renovate:
 
 secret-scan-mr:
   stage: security
-  image: node:lts-bookworm-slim
+  image: node:24-bookworm
   variables:
     BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
     HEAD_SHA: ${CI_COMMIT_SHA}
