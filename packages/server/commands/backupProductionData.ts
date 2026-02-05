@@ -70,7 +70,9 @@ export async function handler(): Promise<void> {
     initS3Client({
       endPoint: argv.backupsHost,
       port: argv.backupsPort,
-      useSSL: argv.backupsSecure,
+      // Parsed value from the kubernetes env is a string
+      useSSL:
+        typeof argv.backupsSecure === 'string' ? argv.backupsSecure === 'true' : argv.backupsSecure,
       accessKey: argv.backupsAccessKey,
       secretKey: argv.backupsSecretKey,
     });
