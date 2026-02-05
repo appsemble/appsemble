@@ -1,0 +1,15 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Local development secrets in package.json"
+paths = ["package.json"]
+regexTarget = "line"
+regexes = [
+  '''github-client-secret''',
+  '''gitlab-client-secret''',
+  '''"secret"''',
+  '''"aes-secret"''',
+  '''s3-access-key''',
+  '''s3-secret-key''',
+]
