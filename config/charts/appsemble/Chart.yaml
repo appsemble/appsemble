@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.36.3-test.3
-appVersion: 0.36.3-test.3
+version: 0.36.3-test.4
+appVersion: 0.36.3-test.4
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
