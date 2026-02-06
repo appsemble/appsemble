@@ -32,7 +32,6 @@ export async function handler(): Promise<void> {
     handleDBError(error as Error);
   }
 
-  logger.info('Cleaning up all demo users');
   // Delete records that have been deleted at least 90 days ago.
   const deletedAt = Date.now() - 90 * 24 * 60 * 60 * 1000;
   await transactional(async (transaction) => {

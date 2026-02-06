@@ -58,6 +58,8 @@ COPY --from=prod /app /app
 COPY --from=build /app/dist /app/dist
 COPY i18n /app/i18n
 RUN ln -s /app/packages/server/bin.js /usr/bin/appsemble-server
+# Install postgresql-client for pg_dump (used by backup-production-data command)
+RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 # By default colors aren’t detected within a Docker container. Let’s assume at least simple colors
 # are supported by those who inspect the logs.

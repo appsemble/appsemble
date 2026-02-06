@@ -781,7 +781,13 @@ publish npm:
         PROVENANCE_FLAG="--provenance"
       fi
       echo "Using provenance flag: '$PROVENANCE_FLAG'"
-      find ./build -name "*.tgz" -print0 | xargs -0 -I{} sh -c 'npm publish "{}" --access public '"$PROVENANCE_FLAG"''
+      # Use 'next' tag for prerelease versions to avoid publishing to 'latest'
+      TAG_FLAG=""
+      if echo "$CI_COMMIT_TAG" | grep -q '-'; then
+        TAG_FLAG="--tag next"
+        echo "Detected prerelease version, publishing with tag: next"
+      fi
+      find ./build -name "*.tgz" -print0 | xargs -0 -I{} sh -c 'npm publish "{}" --access public '"$PROVENANCE_FLAG"' '"$TAG_FLAG"''
 
 # Perform various post release actions.
 sentry release:
