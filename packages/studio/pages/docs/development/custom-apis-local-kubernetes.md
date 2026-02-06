@@ -238,7 +238,7 @@ As an example, we can use this simple API that returns a JSON response:
 
 ```sh
 docker build -t localhost:32000/my-custom-api:0.0.1 - << EOF
-FROM node:24-bookworm-slim
+FROM node:24-trixie-slim
 
 WORKDIR /app
 RUN npm install express

@@ -1,5 +1,5 @@
 default:
-  image: node:24-bookworm-slim@sha256:4660b1ca8b28d6d1906fd644abe34b2ed81d15434d26d845ef0aced307cf4b6f
+  image: node:24-trixie-slim
 
 stages:
   - security
@@ -111,7 +111,7 @@ auto-approve-renovate:
 
 secret-scan-mr:
   stage: security
-  image: node:24-bookworm@sha256:1de022d8459f896fff2e7b865823699dc7a8d5567507e8b87b14a7442e07f206
+  image: node:24-trixie
   variables:
     BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
     HEAD_SHA: ${CI_COMMIT_SHA}
@@ -467,7 +467,7 @@ validate-snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.51.1-jammy@sha256:79da45705a7c3f147c435ac6d0beeddf2e132f53263cb27bed90beafbb2e552b
+  image: mcr.microsoft.com/playwright:v1.58.1-noble
   interruptible: true
   needs:
     - build docker image
