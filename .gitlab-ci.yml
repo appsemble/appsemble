@@ -1,5 +1,5 @@
 default:
-  image: node:24-bookworm-slim
+  image: node:24-bookworm-slim@sha256:4660b1ca8b28d6d1906fd644abe34b2ed81d15434d26d845ef0aced307cf4b6f
 
 stages:
   - security
@@ -92,9 +92,9 @@ workflow:
 # Automatically approve merge requests from Renovate bot after build succeeds
 auto-approve-renovate:
   stage: test
-  image: alpine:latest
+  image: alpine:latest@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\//
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\// && $CI_MERGE_REQUEST_APPROVED != "true"
   needs:
     - npm_ci
     - build docker image
@@ -111,7 +111,7 @@ auto-approve-renovate:
 
 secret-scan-mr:
   stage: security
-  image: node:24-bookworm
+  image: node:24-bookworm@sha256:1de022d8459f896fff2e7b865823699dc7a8d5567507e8b87b14a7442e07f206
   variables:
     BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
     HEAD_SHA: ${CI_COMMIT_SHA}
