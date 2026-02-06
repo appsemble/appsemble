@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/openai",
-  "version": "0.36.3-test.4",
+  "version": "0.36.3-test.5",
   "private": true,
   "description": "A block for interacting with OpenAI",
   "homepage": "https://appsemble.app",
@@ -16,8 +16,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.36.3-test.4",
-    "@appsemble/sdk": "0.36.3-test.4",
+    "@appsemble/preact": "0.36.3-test.5",
+    "@appsemble/sdk": "0.36.3-test.5",
     "preact": "^10.0.0",
     "preact-markdown": "^2.1.0"
   },

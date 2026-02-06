@@ -78,7 +78,7 @@ pages:
   - name: Person List
     blocks:
       - type: data-loader
-        version: 0.36.3-test.4
+        version: 0.36.3-test.5
         actions:
           onLoad:
             type: resource.query
@@ -88,7 +88,7 @@ pages:
             data: data
 
       - type: table
-        version: 0.36.3-test.4
+        version: 0.36.3-test.5
         parameters:
           fields:
             - value: { prop: firstName }
@@ -137,7 +137,7 @@ pages:
   - name: Person List
     blocks:
       - type: data-loader
-        version: 0.36.3-test.4
+        version: 0.36.3-test.5
         actions:
           onLoad:
             type: resource.query
@@ -147,7 +147,7 @@ pages:
             data: data
 
       - type: table
-        version: 0.36.3-test.4
+        version: 0.36.3-test.5
         parameters:
           fields:
             - value: { prop: firstName }

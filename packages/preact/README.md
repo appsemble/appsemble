@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.36.3-test.4/config/assets/logo.svg) Appsemble Preact SDK
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.36.3-test.5/config/assets/logo.svg) Appsemble Preact SDK
 
 > Build your own blocks using Preact
 
 [![npm](https://img.shields.io/npm/v/@appsemble/preact)](https://www.npmjs.com/package/@appsemble/preact)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.36.3-test.4/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.4)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.36.3-test.5/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.5)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -97,5 +97,5 @@ export function MyButton({ name }: MyButtonProps): VNode {
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.36.3-test.4/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.36.3-test.5/LICENSE.md) ©
 [Appsemble](https://appsemble.com)
