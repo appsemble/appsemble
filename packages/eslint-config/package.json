@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/eslint-config",
-  "version": "0.36.3-test.5",
+  "version": "0.36.3-test.6",
   "private": true,
   "description": "Eslint configuration used internally at Appsemble.",
   "keywords": [
@@ -29,7 +29,7 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@appsemble/eslint-plugin": "0.36.3-test.5",
+    "@appsemble/eslint-plugin": "0.36.3-test.6",
     "@eslint/js": "9.39.2",
     "@eslint/markdown": "7.5.1",
     "@remcohaszing/eslint": "12.0.1",

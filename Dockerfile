@@ -51,7 +51,7 @@ RUN rm -r package-lock.json
 
 # Setup the production docker image.
 FROM node:24-trixie-slim
-ARG version=0.36.3-test.5
+ARG version=0.36.3-test.6
 ARG date
 
 COPY --from=prod /app /app

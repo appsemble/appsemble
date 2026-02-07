@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-core",
-  "version": "0.36.3-test.5",
+  "version": "0.36.3-test.6",
   "private": true,
   "description": "The Webpack configuration for the Appsemble core",
   "keywords": [
@@ -32,7 +32,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.36.3-test.5",
+    "@appsemble/node-utils": "0.36.3-test.6",
     "@mdx-js/loader": "^3.0.0",
     "bulma": "=0.9.3",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
