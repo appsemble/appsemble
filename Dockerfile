@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:1.7-labs@sha256:b99fecfe00268a8b556fad7d9c37ee25d716ae08a5d7320e6d51c4dd83246894
 # Build production files
-FROM node:24-bookworm-slim@sha256:4660b1ca8b28d6d1906fd644abe34b2ed81d15434d26d845ef0aced307cf4b6f AS build
+FROM node:24-trixie-slim AS build
 WORKDIR /app
 
 # Get the system dependencies installed regardless of any package.json or lockfile changes
 # (those dependencies should be versioned by the container's distro repos anyways, debian updates
 # packages roughly once every two months, and if playwright needs new packages we run that command
 # below again anyways)
-RUN --mount=type=bind,rw,target=/root/.npm npx playwright@1.51.1 install-deps
+RUN --mount=type=bind,rw,target=/root/.npm npx playwright@1.58.1 install-deps
 
 COPY package-lock.json package-lock.json
 COPY package.json package.json
@@ -32,7 +32,7 @@ RUN npm --workspace @appsemble/eslint-plugin run prepack
 RUN npm --workspace @appsemble/server run prepack
 
 # Install production dependencies
-FROM node:24-bookworm-slim@sha256:4660b1ca8b28d6d1906fd644abe34b2ed81d15434d26d845ef0aced307cf4b6f AS prod
+FROM node:24-trixie-slim AS prod
 WORKDIR /app
 COPY --from=build /app/packages/node-utils packages/node-utils
 COPY --from=build /app/packages/sdk packages/sdk
@@ -50,7 +50,7 @@ RUN find . -name '*.ts' -delete
 RUN rm -r package-lock.json
 
 # Setup the production docker image.
-FROM node:24-bookworm-slim@sha256:4660b1ca8b28d6d1906fd644abe34b2ed81d15434d26d845ef0aced307cf4b6f
+FROM node:24-trixie-slim
 ARG version=0.36.3-test.5
 ARG date
 
