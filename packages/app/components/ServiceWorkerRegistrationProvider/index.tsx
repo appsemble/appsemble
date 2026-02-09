@@ -233,7 +233,11 @@ export function ServiceWorkerRegistrationProvider({
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     <Context.Provider value={value}>
       {serviceWorkerError && !e2e ? (
-        <ModalCard isActive={Boolean(serviceWorkerError)} onClose={clearServiceWorkerError}>
+        <ModalCard
+          isActive={Boolean(serviceWorkerError)}
+          onClose={clearServiceWorkerError}
+          title={<FormattedMessage {...messages.serviceWorkerError} />}
+        >
           <FormattedMessage {...messages.error} />
         </ModalCard>
       ) : null}

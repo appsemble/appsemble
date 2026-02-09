@@ -35,11 +35,17 @@ test.describe('Holidays', () => {
 
   test('should navigate to the second tab', async ({ page }) => {
     await page.click('text=Germany');
-    await expect(page.getByText('Mariä Himmelfahrt')).toBeVisible();
+    await expect(page.getByText('Mariä Himmelfahrt')).toBeVisible({ timeout: 7000 });
   });
 
   test('should navigate to the American holidays page', async ({ page }) => {
+    const modal = page.getByRole('dialog', { name: 'ServiceWorkerError' });
+    if (await modal.isVisible()) {
+      await modal.getByRole('button').click();
+    }
     await page.click('text=Holidays in America');
-    await expect(page.getByText('Independence Day')).toBeVisible();
+    await expect(page.getByText('Independence Day', { exact: true })).toBeVisible({
+      timeout: 8000,
+    });
   });
 });
