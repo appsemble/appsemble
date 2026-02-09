@@ -7,7 +7,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     parameters: [
       {
         name: 'secret',
-        schema: {type: 'string'},
+        schema: { type: 'string' },
         description: 'Secret used to authenticate incoming Postal webhooks.',
         in: 'query',
       },

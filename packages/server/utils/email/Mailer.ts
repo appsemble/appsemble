@@ -473,9 +473,11 @@ export class Mailer {
     if (!transport) {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
-    const emailAuthorization = await EmailAuthorization.findOne({where: { email: to }});
-    if (emailAuthorization?.disabled) {
+    if (to) {
+      const emailAuthorization = await EmailAuthorization.findOne({ where: { email: to } });
+      if (emailAuthorization?.disabled) {
         throw new EmailError('Email disabled due to repeated failed deliveries.');
+      }
     }
 
     await this.tryRateLimiting({ app });
@@ -485,11 +487,7 @@ export class Mailer {
     ) as ParsedMailbox;
     const headers: Record<string, string> = {};
     headers.from = from ? `${from} <${parsed?.address}>` : argv.smtpFrom;
-    if(replyTo){
-      headers.replyTo = replyTo;
-    } else {
-      headers.replyTo = headers.from;
-    }
+    headers.replyTo = replyTo ?? headers.from;
 
     const loggingMessage = ['Sending email:', `To: ${to}`];
     if (cc) {
