@@ -1,5 +1,5 @@
 default:
-  image: node:24-trixie-slim
+  image: node:24-trixie-slim@sha256:036dfa7e82a1e867b09248440a2b6635b3f8de557f69e60bac923a10c6e696a8
 
 stages:
   - security
@@ -111,7 +111,7 @@ auto-approve-renovate:
 
 secret-scan-mr:
   stage: security
-  image: node:24-trixie
+  image: node:24-trixie@sha256:c5d7e2590675fc31c7d6709e052030f9be090bc8ddcded1b559c503c54cf5c2b
   variables:
     BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
     HEAD_SHA: ${CI_COMMIT_SHA}
@@ -467,7 +467,7 @@ validate-snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.58.1-noble
+  image: mcr.microsoft.com/playwright:v1.58.1-noble@sha256:feae0b1581609d3dc2ba22567b4703dd6a3e7a219984bb86a19ed35007148a91
   interruptible: true
   needs:
     - build docker image

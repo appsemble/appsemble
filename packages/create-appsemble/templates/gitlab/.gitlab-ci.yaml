@@ -11,7 +11,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
 
 .npm:
-  image: node:24-trixie-slim
+  image: node:24-trixie-slim@sha256:036dfa7e82a1e867b09248440a2b6635b3f8de557f69e60bac923a10c6e696a8
   before_script:
     - npm ci
 
