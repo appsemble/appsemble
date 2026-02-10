@@ -62,6 +62,7 @@ export async function createSettings({
       'displayAppMemberName',
       'displayInstallationPrompt',
       'supportedLanguages',
+      'totp',
     ],
     where: { id: app.id },
     include: [
@@ -124,6 +125,7 @@ export async function createSettings({
       showAppsembleOAuth2Login: persistedApp.showAppsembleOAuth2Login ?? true,
       enableSelfRegistration: persistedApp.enableSelfRegistration ?? true,
       showDemoLogin: persistedApp.demoMode ?? false,
+      totp: persistedApp.totp ?? 'disabled',
       sentryDsn,
       sentryEnvironment,
       appUpdated: persistedApp.updated.toISOString(),

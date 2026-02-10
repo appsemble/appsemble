@@ -22,6 +22,7 @@ import {
   type AppsembleMessages,
   type AppsembleRC,
   type AppServiceSecretDefinition,
+  type AppTotp,
   type AppVisibility,
   type Messages,
   type ProjectBuildConfig,
@@ -1180,6 +1181,11 @@ interface PublishAppParams {
    * The password of the external app database.
    */
   dbPassword?: string;
+
+  /**
+   * The TOTP (two-factor authentication) setting for the app.
+   */
+  totp?: AppTotp;
 }
 
 /**
@@ -1262,6 +1268,7 @@ export async function publishApp({
   const dbPort = appsembleContext.dbPort ?? options.dbPort;
   const dbUser = appsembleContext.dbUser ?? options.dbUser;
   const skipGroupInvites = appsembleContext.skipGroupInvites ?? options.skipGroupInvites ?? false;
+  const totp = appsembleContext.totp ?? options.totp;
   const { dbPassword } = options;
 
   logger.verbose(`App remote: ${remote}`);
@@ -1345,6 +1352,11 @@ export async function publishApp({
   if (msClarityId) {
     logger.info('Using MS Clarity');
     formData.append('msClarityID', msClarityId);
+  }
+
+  if (totp) {
+    logger.info(`Setting TOTP to ${totp}`);
+    formData.append('totp', totp);
   }
 
   let authScope = 'apps:write';
@@ -1597,6 +1609,11 @@ interface UpdateAppParams {
    * The password of the external app database.
    */
   dbPassword?: string;
+
+  /**
+   * The TOTP (two-factor authentication) setting for the app.
+   */
+  totp?: AppTotp;
 }
 
 /**
@@ -1677,6 +1694,7 @@ export async function updateApp({
   const dbHost = appsembleContext.dbHost ?? options.dbHost;
   const dbPort = appsembleContext.dbPort ?? options.dbPort;
   const dbUser = appsembleContext.dbUser ?? options.dbUser;
+  const totp = appsembleContext.totp ?? options.totp;
   const { dbPassword } = options;
 
   logger.info(`App id: ${id}`);
@@ -1761,6 +1779,11 @@ export async function updateApp({
   if (msClarityId) {
     logger.info('Using MS Clarity');
     formData.append('msClarityID', msClarityId);
+  }
+
+  if (totp) {
+    logger.info(`Setting TOTP to ${totp}`);
+    formData.append('totp', totp);
   }
 
   let authScope = 'apps:write';
@@ -1922,6 +1945,11 @@ interface PatchAppParams {
    * Whether the app is currently locked.
    */
   locked?: AppLock;
+
+  /**
+   * The TOTP (two-factor authentication) setting for the app.
+   */
+  totp?: AppTotp;
 }
 
 export async function patchApp({ id, remote, ...options }: PatchAppParams): Promise<void> {
@@ -1979,6 +2007,10 @@ export async function patchApp({ id, remote, ...options }: PatchAppParams): Prom
   if (options.enableSelfRegistration !== undefined) {
     logger.info(`Setting enableSelfRegistration to ${options.enableSelfRegistration}`);
     formData.append('enableSelfRegistration', String(options.enableSelfRegistration));
+  }
+  if (options.totp !== undefined) {
+    logger.info(`Setting totp to ${options.totp}`);
+    formData.append('totp', options.totp);
   }
   try {
     if (!formData.getLengthSync() && options.locked === undefined) {

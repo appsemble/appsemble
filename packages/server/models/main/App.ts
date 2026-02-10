@@ -4,6 +4,7 @@ import {
   type AppLock,
   type AppsembleMessages,
   type App as AppType,
+  type AppTotp,
   type AppVisibility,
   type ProjectImplementations,
 } from '@appsemble/types';
@@ -118,6 +119,11 @@ export class App extends Model {
   @Default('unlocked')
   @Column(DataType.ENUM('fullLock', 'studioLock', 'unlocked'))
   declare locked: AppLock;
+
+  @Default('disabled')
+  @AllowNull(false)
+  @Column(DataType.ENUM('disabled', 'enabled', 'required'))
+  declare totp: AppTotp;
 
   @AllowNull(false)
   @Default(false)
@@ -392,6 +398,7 @@ export class App extends Model {
       visibility: this.visibility,
       template: this.template,
       locked: this.locked || 'unlocked',
+      totp: this.totp || 'disabled',
       hasIcon: this.get('hasIcon') ?? Boolean(this.icon),
       hasMaskableIcon: this.get('hasMaskableIcon') ?? Boolean(this.maskableIcon),
       iconBackground: this.iconBackground || '#ffffff',

@@ -1,4 +1,4 @@
-import { type AppLock, type AppVisibility } from '@appsemble/types';
+import { type AppLock, type AppTotp, type AppVisibility } from '@appsemble/types';
 
 export interface FormValues {
   emailName: string;
@@ -14,6 +14,7 @@ export interface FormValues {
   visibility: AppVisibility;
   domain: string;
   locked: AppLock;
+  totp: AppTotp;
   showAppDefinition: boolean;
   displayAppMemberName: boolean;
   displayInstallationPrompt: boolean;

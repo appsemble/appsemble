@@ -116,6 +116,7 @@ describe('getAppById', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
       }
     `);
@@ -206,6 +207,7 @@ describe('getAppById', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": 2,
         "visibility": "unlisted",
       }
@@ -266,6 +268,7 @@ describe('getAppById', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
       }
     `);
@@ -328,6 +331,7 @@ describe('getAppById', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
       }
     `);
@@ -386,6 +390,7 @@ describe('getAppById', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
       }
     `);
@@ -444,6 +449,7 @@ describe('getAppById', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -505,6 +511,7 @@ describe('getAppById', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page

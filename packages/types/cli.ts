@@ -1,5 +1,5 @@
 import { type AppVisibility } from './app.js';
-import { type AppLock } from './index.js';
+import { type AppLock, type AppTotp } from './index.js';
 
 /**
  * A `context` which can be specified using the `--context` command line argument.
@@ -209,6 +209,18 @@ export interface AppsembleContext {
    * Languages officially supported by the app
    */
   supportedLanguages?: string[];
+
+  /**
+   * The TOTP (two-factor authentication) setting for the app.
+   *
+   * - `disabled`: TOTP is not available for app members.
+   * - `enabled`: TOTP is available but optional for app members.
+   * - `required`: TOTP is required for all app members. WARNING: Setting this will lock out
+   * existing users who have not yet enabled 2FA on their accounts.
+   *
+   * If `totp` is specified, this will override `--totp` passed on the command line.
+   */
+  totp?: AppTotp;
 }
 
 export interface AppsembleRC {

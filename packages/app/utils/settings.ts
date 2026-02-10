@@ -22,6 +22,7 @@ export const {
   showDemoLogin,
   snapshotId,
   supportedLanguages,
+  totp,
   vapidPublicKey,
 } = window.settings;
 // @ts-expect-error This is intentional

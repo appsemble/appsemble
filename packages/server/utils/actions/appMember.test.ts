@@ -114,6 +114,7 @@ describe('appMemberQuery', () => {
         $seed: false,
         $ephemeral: false,
         unverifiedEmail: undefined,
+        totpEnabled: false,
       },
       {
         sub: expect.any(String),
@@ -130,6 +131,7 @@ describe('appMemberQuery', () => {
         $seed: false,
         $ephemeral: false,
         unverifiedEmail: undefined,
+        totpEnabled: false,
       },
     ]);
   });
@@ -220,6 +222,7 @@ describe('appMemberQuery', () => {
           properties: { foo: 'Bar 2' },
           role: 'Staff',
           demo: false,
+          totpEnabled: false,
           $seed: false,
           $ephemeral: false,
         },
@@ -235,6 +238,7 @@ describe('appMemberQuery', () => {
           properties: { foo: 'Bar 2' },
           role: 'Manager',
           demo: false,
+          totpEnabled: false,
           $seed: false,
           $ephemeral: false,
         },

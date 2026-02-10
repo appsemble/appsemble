@@ -157,6 +157,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "private",
         "yaml": "
@@ -486,6 +487,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -643,6 +645,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -708,6 +711,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -773,6 +777,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -843,6 +848,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -977,6 +983,9 @@ describe('patchApp', () => {
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
                 },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
+                },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
                 },
@@ -1068,6 +1077,9 @@ describe('patchApp', () => {
                 },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
+                },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
                 },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
@@ -1516,6 +1528,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1794,6 +1807,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1848,6 +1862,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1912,6 +1927,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1965,6 +1981,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -2016,6 +2033,7 @@ describe('patchApp', () => {
         "skipGroupInvites": false,
         "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App

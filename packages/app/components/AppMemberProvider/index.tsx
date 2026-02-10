@@ -36,6 +36,7 @@ const initialState: LoginState = {
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   appMemberRole: null,
   appMemberGroups: [],
+  totpPending: null,
 };
 
 interface PasswordLoginParams {
@@ -54,16 +55,25 @@ interface DemoLoginParams {
   appRole?: string;
 }
 
+interface TotpPendingState {
+  memberId: string;
+  redirect?: string;
+  totpEnabled: boolean;
+}
+
 interface LoginState {
   isLoggedIn: boolean;
   appMemberRole: AppRole;
   appMemberGroups: AppMemberGroup[];
+  totpPending: TotpPendingState | null;
 }
 
 interface AppMemberContext extends LoginState {
   passwordLogin: (params: PasswordLoginParams) => Promise<void>;
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   demoLogin: (props: DemoLoginParams) => Promise<void>;
+  totpLogin: (token: string) => Promise<void>;
+  cancelTotpLogin: () => void;
   logout: () => any;
   appMemberInfo: AppMemberInfo;
   appMemberInfoRef: MutableRefObject<AppMemberInfo>;
@@ -90,6 +100,15 @@ interface TokenResponse {
    * The refresh token.
    */
   refresh_token: string;
+}
+
+/**
+ * A response indicating TOTP verification is required.
+ */
+interface TotpRequiredResponse {
+  totpRequired: true;
+  totpEnabled: boolean;
+  memberId: string;
 }
 
 const REFRESH_TOKEN = 'refresh_token';
@@ -146,15 +165,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
    *
    * @param grantType The grant type to authenticate with
    * @param params Additional parameters, which depend on the grant type.
+   * @returns A tuple of [authorization header, jwt payload] or null if TOTP is required
    */
   const fetchToken = useCallback(async (grantType: string, params: Record<string, string>) => {
     if (development) {
       return ['', { sub: '1' }] as const;
     }
 
-    const {
-      data: { access_token: accessToken, refresh_token: rt },
-    } = await axios.post<TokenResponse>(
+    const { data } = await axios.post<TokenResponse | TotpRequiredResponse>(
       `${apiUrl}/apps/${appId}/auth/oauth2/token`,
       new URLSearchParams({
         client_id: `app:${appId}`,
@@ -163,6 +181,21 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         ...params,
       }),
     );
+
+    // Check if TOTP verification is required
+    if ('totpRequired' in data && data.totpRequired) {
+      setState((prev) => ({
+        ...prev,
+        totpPending: {
+          memberId: data.memberId,
+          redirect: params.redirect,
+          totpEnabled: data.totpEnabled ?? false,
+        },
+      }));
+      return null;
+    }
+
+    const { access_token: accessToken, refresh_token: rt } = data as TokenResponse;
     const payload = jwtDecode<JwtPayload>(accessToken);
     localStorage.setItem(REFRESH_TOKEN, rt);
     const auth = `Bearer ${accessToken}`;
@@ -183,7 +216,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     async <P extends {}>(grantType: string, params: P) => {
       try {
-        const [auth] = await fetchToken(grantType, params);
+        const result = await fetchToken(grantType, params as Record<string, string>);
+
+        // If result is null, TOTP verification is required - don't proceed with login
+        if (result == null) {
+          return;
+        }
+
+        const [auth] = result;
         const config = { headers: { authorization: auth } };
         const linking = loadAccountLinkingState();
         if (linking) {
@@ -220,6 +260,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
           isLoggedIn: true,
           appMemberRole: appMember.role,
           appMemberGroups,
+          totpPending: null,
         });
         clearAccountLinkingState();
 
@@ -279,6 +320,94 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     },
     [login, logout],
   );
+
+  /**
+   * Complete login with TOTP verification.
+   *
+   * @param token The TOTP token from the authenticator app.
+   */
+  const totpLogin = useCallback(
+    async (token: string) => {
+      if (!state.totpPending) {
+        throw new Error('No TOTP verification pending');
+      }
+
+      const { data } = await axios.post<TokenResponse>(
+        `${apiUrl}/api/apps/${appId}/auth/totp/verify`,
+        {
+          memberId: state.totpPending.memberId,
+          token,
+          scope: oauth2Scope,
+        },
+      );
+
+      const { access_token: accessToken, refresh_token: rt } = data;
+      const payload = jwtDecode<JwtPayload>(accessToken);
+      localStorage.setItem(REFRESH_TOKEN, rt);
+      const auth = `Bearer ${accessToken}`;
+      setAuthorization(auth);
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
+      setExp(payload.exp);
+
+      const config = { headers: { authorization: auth } };
+      const linking = loadAccountLinkingState();
+      if (linking) {
+        await axios.post(
+          `${apiUrl}/api/apps/${appId}/members/current/link`,
+          {
+            externalId: linking.externalId,
+            secret: linking.secret,
+            email: linking.email,
+          },
+          config,
+        );
+      }
+
+      const { data: appMember } = await axios.get<AppMemberInfo>(
+        `${apiUrl}/api/apps/${appId}/members/current`,
+        config,
+      );
+
+      let appMemberGroups: AppMemberGroup[] = [];
+      try {
+        const { data: groups } = await axios.get<AppMemberGroup[]>(
+          `${apiUrl}/api/apps/${appId}/members/current/groups`,
+          config,
+        );
+        appMemberGroups = groups;
+      } catch {
+        // Do nothing
+      }
+
+      const { redirect } = state.totpPending;
+
+      setSentryUser({ id: appMember.sub });
+      setAppMemberInfo(appMember);
+      setState({
+        isLoggedIn: true,
+        appMemberRole: appMember.role,
+        appMemberGroups,
+        totpPending: null,
+      });
+      clearAccountLinkingState();
+
+      if (redirect) {
+        navigate(redirect);
+      }
+    },
+    [state.totpPending, navigate],
+  );
+
+  /**
+   * Cancel pending TOTP verification.
+   */
+  const cancelTotpLogin = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      totpPending: null,
+    }));
+  }, []);
 
   const addAppMemberGroup: (group: AppMemberGroup) => void = useCallback((group) => {
     setState(({ appMemberGroups, ...oldState }) => {
@@ -376,6 +505,8 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       passwordLogin,
       developmentLogin,
       demoLogin,
+      totpLogin,
+      cancelTotpLogin,
       logout,
       addAppMemberGroup,
       setAppMemberInfo,
@@ -390,6 +521,8 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       passwordLogin,
       developmentLogin,
       demoLogin,
+      totpLogin,
+      cancelTotpLogin,
       logout,
       addAppMemberGroup,
       appMemberInfo,

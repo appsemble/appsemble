@@ -159,14 +159,34 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           username,
         } = checkTokenRequestParameters(query, ['client_id', 'username', 'password', 'scope']);
         const appId = Number(clientId.replace('app:', ''));
+        const app = await App.findByPk(appId, { attributes: ['totp'] });
         const { AppMember } = await getAppDB(appId);
         const appMember = await AppMember.findOne({
           where: { email: username.toLowerCase() },
-          attributes: ['id', 'password'],
+          attributes: ['id', 'password', 'totpEnabled'],
         });
 
         if (!appMember?.password || !(await compare(password, appMember.password))) {
           throw new GrantError('invalid_client');
+        }
+
+        // Check if TOTP verification is required
+        const totpSetting = app?.totp ?? 'disabled';
+        const memberHasTotpEnabled = appMember.totpEnabled ?? false;
+
+        // TOTP is required if:
+        // 1. App setting is 'required' (everyone must use TOTP), OR
+        // 2. App setting is 'enabled' and the member has TOTP enabled
+        if (totpSetting === 'required' || (totpSetting === 'enabled' && memberHasTotpEnabled)) {
+          // Return a response indicating TOTP verification is needed
+          // Include totpEnabled so client knows whether to show verification or setup
+          ctx.status = 200;
+          ctx.body = {
+            totpRequired: true,
+            totpEnabled: memberHasTotpEnabled,
+            memberId: appMember.id,
+          };
+          return;
         }
 
         aud = clientId;

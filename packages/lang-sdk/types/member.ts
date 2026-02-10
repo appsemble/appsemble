@@ -87,4 +87,9 @@ export interface AppMemberInfo {
    * Unverified email of the user, this will replace the current email when verified.
    */
   unverifiedEmail?: string;
+
+  /**
+   * Whether TOTP (two-factor authentication) is enabled for this app member.
+   */
+  totpEnabled?: boolean;
 }

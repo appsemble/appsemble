@@ -278,6 +278,7 @@ describe('app', () => {
             "en",
           ],
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -485,6 +486,7 @@ describe('app', () => {
             "en",
           ],
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -668,6 +670,7 @@ describe('app', () => {
             "en",
           ],
           "template": true,
+          "totp": "disabled",
           "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
@@ -846,6 +849,7 @@ describe('app', () => {
             "en",
           ],
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -1196,6 +1200,7 @@ describe('app', () => {
           "skipGroupInvites": false,
           "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -1393,6 +1398,7 @@ describe('app', () => {
           "skipGroupInvites": false,
           "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -1567,6 +1573,7 @@ describe('app', () => {
           "skipGroupInvites": false,
           "supportedLanguages": null,
           "template": true,
+          "totp": "disabled",
           "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
@@ -1743,6 +1750,7 @@ describe('app', () => {
           "skipGroupInvites": false,
           "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -2043,6 +2051,7 @@ describe('app', () => {
           "skipGroupInvites": false,
           "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
@@ -2124,6 +2133,7 @@ describe('app', () => {
           "skipGroupInvites": false,
           "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
@@ -2200,6 +2210,7 @@ describe('app', () => {
           "skipGroupInvites": false,
           "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
@@ -2288,6 +2299,7 @@ describe('app', () => {
           "skipGroupInvites": false,
           "supportedLanguages": null,
           "template": true,
+          "totp": "disabled",
           "version": -1,
           "visibility": "private",
           "yaml": "name: Test App

@@ -114,6 +114,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 type: 'boolean',
                 description: 'Whether the Appsemble OAuth2 login method should be shown.',
               },
+              totp: {
+                $ref: '#/components/schemas/App/properties/totp',
+              },
               enableSelfRegistration: {
                 type: 'boolean',
                 description: 'Whether new users should be able to register themselves.',
