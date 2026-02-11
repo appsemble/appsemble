@@ -3,9 +3,9 @@ import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { EmailAuthorization } from '../../../models/index.js';
-import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
+import { setArgv, updateArgv } from '../../../utils/argv.js';
 
 let server: Koa;
 
@@ -13,6 +13,8 @@ describe('undeliveredEmails', () => {
   beforeAll(async () => {
     setArgv({ host: 'http://localhost', secret: 'test' });
     server = await createServer();
+    const argv = { postalSecret: 'test' };
+    updateArgv(argv);
     await setTestApp(server);
   });
 
