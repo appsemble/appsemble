@@ -9,6 +9,9 @@ export const description =
 
 export function builder(yargs: Argv): Argv<any> {
   return yargs
+    .option('aesSecret', {
+      desc: 'Aes Secret used for encrypting DB password in the backup DB',
+    })
     .option('database-host', {
       desc: 'The host of the database to connect to. This defaults to the connected database container.',
     })
@@ -37,7 +40,7 @@ export function builder(yargs: Argv): Argv<any> {
       desc: 'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: ['database-host', 'database-name', 'database-user', 'database-password'],
     })
-    .option('appsembleBackupFile', {
+    .option('restoreBackupFilename', {
       type: 'string',
       describe:
         'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz',

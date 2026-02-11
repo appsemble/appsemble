@@ -108,33 +108,53 @@ export async function handler({
         }> = {};
 
         if (app.dbPassword) {
-          logger.info(`Updating app ${app.id} dbPassword`);
-          const decrypted = decrypt(app.dbPassword, oldAesSecret);
-          appUpdates.dbPassword = encrypt(decrypted, newAesSecret);
+          try {
+            logger.info(`Updating app ${app.id} dbPassword`);
+            const decrypted = decrypt(app.dbPassword, oldAesSecret);
+            appUpdates.dbPassword = encrypt(decrypted, newAesSecret);
+          } catch {
+            logger.warn(`Failed to decrypt app ${app.id} dbPassword, skipping`);
+          }
         }
 
         if (app.emailPassword) {
-          logger.info(`Updating app ${app.id} emailPassword`);
-          const decrypted = decrypt(app.emailPassword, oldAesSecret);
-          appUpdates.emailPassword = encrypt(decrypted, newAesSecret);
+          try {
+            logger.info(`Updating app ${app.id} emailPassword`);
+            const decrypted = decrypt(app.emailPassword, oldAesSecret);
+            appUpdates.emailPassword = encrypt(decrypted, newAesSecret);
+          } catch {
+            logger.warn(`Failed to decrypt app ${app.id} emailPassword, skipping`);
+          }
         }
 
         if (app.scimToken) {
-          logger.info(`Updating app ${app.id} scimToken`);
-          const decrypted = decrypt(app.scimToken, oldAesSecret);
-          appUpdates.scimToken = encrypt(decrypted, newAesSecret);
+          try {
+            logger.info(`Updating app ${app.id} scimToken`);
+            const decrypted = decrypt(app.scimToken, oldAesSecret);
+            appUpdates.scimToken = encrypt(decrypted, newAesSecret);
+          } catch {
+            logger.warn(`Failed to decrypt app ${app.id} scimToken, skipping`);
+          }
         }
 
         if (app.stripeApiSecretKey) {
-          logger.info(`Updating app ${app.id} stripeApiSecretKey`);
-          const decrypted = decrypt(app.stripeApiSecretKey, oldAesSecret);
-          appUpdates.stripeApiSecretKey = encrypt(decrypted, newAesSecret);
+          try {
+            logger.info(`Updating app ${app.id} stripeApiSecretKey`);
+            const decrypted = decrypt(app.stripeApiSecretKey, oldAesSecret);
+            appUpdates.stripeApiSecretKey = encrypt(decrypted, newAesSecret);
+          } catch {
+            logger.warn(`Failed to decrypt app ${app.id} stripeApiSecretKey, skipping`);
+          }
         }
 
         if (app.stripeWebhookSecret) {
-          logger.info(`Updating app ${app.id} stripeWebhookSecret`);
-          const decrypted = decrypt(app.stripeWebhookSecret, oldAesSecret);
-          appUpdates.stripeWebhookSecret = encrypt(decrypted, newAesSecret);
+          try {
+            logger.info(`Updating app ${app.id} stripeWebhookSecret`);
+            const decrypted = decrypt(app.stripeWebhookSecret, oldAesSecret);
+            appUpdates.stripeWebhookSecret = encrypt(decrypted, newAesSecret);
+          } catch {
+            logger.warn(`Failed to decrypt app ${app.id} stripeWebhookSecret, skipping`);
+          }
         }
 
         if (Object.keys(appUpdates).length > 0) {
@@ -160,15 +180,27 @@ export async function handler({
             const secretUpdates: Partial<{ secret: Buffer; accessToken: Buffer }> = {};
 
             if (secret.secret) {
-              logger.info(`Updating app ${app.id} AppServiceSecret ${secret.id} secret`);
-              const decrypted = decrypt(secret.secret, oldAesSecret);
-              secretUpdates.secret = encrypt(decrypted, newAesSecret);
+              try {
+                logger.info(`Updating app ${app.id} AppServiceSecret ${secret.id} secret`);
+                const decrypted = decrypt(secret.secret, oldAesSecret);
+                secretUpdates.secret = encrypt(decrypted, newAesSecret);
+              } catch {
+                logger.warn(
+                  `Failed to decrypt app ${app.id} AppServiceSecret ${secret.id} secret, skipping`,
+                );
+              }
             }
 
             if (secret.accessToken) {
-              logger.info(`Updating app ${app.id} AppServiceSecret ${secret.id} accessToken`);
-              const decrypted = decrypt(secret.accessToken, oldAesSecret);
-              secretUpdates.accessToken = encrypt(decrypted, newAesSecret);
+              try {
+                logger.info(`Updating app ${app.id} AppServiceSecret ${secret.id} accessToken`);
+                const decrypted = decrypt(secret.accessToken, oldAesSecret);
+                secretUpdates.accessToken = encrypt(decrypted, newAesSecret);
+              } catch {
+                logger.warn(
+                  `Failed to decrypt app ${app.id} AppServiceSecret ${secret.id} accessToken, skipping`,
+                );
+              }
             }
 
             if (Object.keys(secretUpdates).length > 0) {
@@ -184,10 +216,16 @@ export async function handler({
 
           for (const secret of webhookSecrets) {
             if (secret.secret) {
-              logger.info(`Updating app ${app.id} AppWebhookSecret ${secret.id} secret`);
-              const decrypted = decrypt(secret.secret, oldAesSecret);
-              const encrypted = encrypt(decrypted, newAesSecret);
-              await secret.update({ secret: encrypted }, { transaction: appTransaction });
+              try {
+                logger.info(`Updating app ${app.id} AppWebhookSecret ${secret.id} secret`);
+                const decrypted = decrypt(secret.secret, oldAesSecret);
+                const encrypted = encrypt(decrypted, newAesSecret);
+                await secret.update({ secret: encrypted }, { transaction: appTransaction });
+              } catch {
+                logger.warn(
+                  `Failed to decrypt app ${app.id} AppWebhookSecret ${secret.id} secret, skipping`,
+                );
+              }
             }
           }
         });
