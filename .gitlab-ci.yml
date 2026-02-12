@@ -111,7 +111,7 @@ auto-approve-renovate:
 
 secret-scan-mr:
   stage: security
-  image: node:24-trixie@sha256:c5d7e2590675fc31c7d6709e052030f9be090bc8ddcded1b559c503c54cf5c2b
+  image: node:24-trixie@sha256:0c36fcf0bfd7d2c60bb4615dbac143bf9d8309c9bfb13c158095602b396a0f3a
   variables:
     BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
     HEAD_SHA: ${CI_COMMIT_SHA}
