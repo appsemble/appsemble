@@ -29,22 +29,32 @@ registerMarkerDataProvider(monaco, 'yaml', {
   },
 });
 
-monaco.editor.onDidCreateModel((model) => {
-  const modelMap = new WeakMap<monaco.editor.ITextModel, string[]>();
+const decorationIds = new WeakMap<monaco.editor.ITextModel, string[]>();
+const pendingVersion = new WeakMap<monaco.editor.ITextModel, number>();
 
+monaco.editor.onDidCreateModel((model) => {
   const disposable = model.onDidChangeContent(async () => {
     if (String(model.uri) !== 'file:///app.yaml' || model.getLanguageId() !== 'yaml') {
       return;
     }
 
+    const versionAtRequest = model.getVersionId();
+    pendingVersion.set(model, versionAtRequest);
+
     const client = await workerManager.getWorker(model.uri);
-    const markers = await client.getDecorations(String(model.uri));
-    modelMap.set(model, model.deltaDecorations(modelMap.get(model) ?? [], markers));
+    const decorations = await client.getDecorations(String(model.uri));
+
+    // Only apply decorations if this is still the latest request
+    if (pendingVersion.get(model) === versionAtRequest) {
+      const oldIds = decorationIds.get(model) ?? [];
+      decorationIds.set(model, model.deltaDecorations(oldIds, decorations ?? []));
+    }
   });
 
   model.onWillDispose(() => {
     disposable.dispose();
-    modelMap.delete(model);
+    decorationIds.delete(model);
+    pendingVersion.delete(model);
   });
 });
 
