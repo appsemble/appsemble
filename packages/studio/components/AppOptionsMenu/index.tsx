@@ -135,7 +135,7 @@ export function AppOptionsMenu({
             ) : null}
           </div>
           <div className="dropdown-item px-0">
-            <AddToCollectionButton app={app} className="is-fullwidth" />
+            <AddToCollectionButton app={app} className="is-fullwidth" shouldFetch={isActive} />
           </div>
         </div>
       </div>
