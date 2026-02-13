@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/form",
-  "version": "0.36.3-test.6",
+  "version": "0.36.3",
   "sideEffects": [
     "*.css"
   ],
@@ -20,12 +20,12 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.36.3-test.6",
-    "@appsemble/preact-components": "0.36.3-test.6",
-    "@appsemble/sdk": "0.36.3-test.6",
-    "@appsemble/utils": "0.36.3-test.6",
-    "@appsemble/types": "0.36.3-test.6",
-    "@appsemble/lang-sdk": "0.36.3-test.6",
+    "@appsemble/preact": "0.36.3",
+    "@appsemble/preact-components": "0.36.3",
+    "@appsemble/sdk": "0.36.3",
+    "@appsemble/utils": "0.36.3",
+    "@appsemble/types": "0.36.3",
+    "@appsemble/lang-sdk": "0.36.3",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@milkdown/crepe": "^7.5.7",

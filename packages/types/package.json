@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/types",
-  "version": "0.36.3-test.6",
+  "version": "0.36.3",
   "description": "TypeScript definitions reused within Appsemble internally",
   "keywords": [
     "app",
@@ -40,7 +40,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.36.3-test.6",
+    "@appsemble/lang-sdk": "0.36.3",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "react": "^18.0.0"
   }

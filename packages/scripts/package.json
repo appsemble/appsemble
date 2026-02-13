@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.36.3-test.6",
+  "version": "0.36.3",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -31,11 +31,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.36.3-test.6",
-    "@appsemble/node-utils": "0.36.3-test.6",
-    "@appsemble/types": "0.36.3-test.6",
-    "@appsemble/utils": "0.36.3-test.6",
-    "@appsemble/webpack-core": "0.36.3-test.6",
+    "@appsemble/lang-sdk": "0.36.3",
+    "@appsemble/node-utils": "0.36.3",
+    "@appsemble/types": "0.36.3",
+    "@appsemble/utils": "0.36.3",
+    "@appsemble/webpack-core": "0.36.3",
     "@formatjs/cli-lib": "^6.0.0",
     "axios": "^1.0.0",
     "date-fns": "^2.0.0",
