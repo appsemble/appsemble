@@ -287,7 +287,7 @@ stylelint:
 test node:
   extends: .npm
   services:
-    - name: postgres:15@sha256:98fe06b500b5eb29e45bf8c073eb0ca399790ce17b1d586448edc4203627d342
+    - name: postgres:15@sha256:c6eff6624b52dc1743ad29c0703246e6cba161ed152b567ef4d433883e3c4c2d
       alias: postgres
     - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
       alias: minio
@@ -339,7 +339,7 @@ check migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:15@sha256:98fe06b500b5eb29e45bf8c073eb0ca399790ce17b1d586448edc4203627d342
+    - name: postgres:15@sha256:c6eff6624b52dc1743ad29c0703246e6cba161ed152b567ef4d433883e3c4c2d
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -355,7 +355,7 @@ check down migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:15@sha256:98fe06b500b5eb29e45bf8c073eb0ca399790ce17b1d586448edc4203627d342
+    - name: postgres:15@sha256:c6eff6624b52dc1743ad29c0703246e6cba161ed152b567ef4d433883e3c4c2d
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -371,7 +371,7 @@ fuzz migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:15@sha256:98fe06b500b5eb29e45bf8c073eb0ca399790ce17b1d586448edc4203627d342
+    - name: postgres:15@sha256:c6eff6624b52dc1743ad29c0703246e6cba161ed152b567ef4d433883e3c4c2d
       alias: postgres
   variables:
     POSTGRES_DB: testAppsemble
@@ -413,7 +413,7 @@ validate-snippets:
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
   services:
-    - name: postgres:15@sha256:98fe06b500b5eb29e45bf8c073eb0ca399790ce17b1d586448edc4203627d342
+    - name: postgres:15@sha256:c6eff6624b52dc1743ad29c0703246e6cba161ed152b567ef4d433883e3c4c2d
       alias: database
       variables:
         POSTGRES_DB: appsemble
@@ -484,7 +484,7 @@ e2e node:
     DATABASE_PASSWORD: password
     E2E_HOST: 'http://appsemble:9999'
   services:
-    - name: postgres:15@sha256:98fe06b500b5eb29e45bf8c073eb0ca399790ce17b1d586448edc4203627d342
+    - name: postgres:15@sha256:c6eff6624b52dc1743ad29c0703246e6cba161ed152b567ef4d433883e3c4c2d
       alias: database
       variables:
         POSTGRES_DB: appsemble

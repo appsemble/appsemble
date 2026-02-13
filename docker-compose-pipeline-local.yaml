@@ -6,7 +6,7 @@ networks:
 services:
   postgres:
     container_name: postgres
-    image: postgres:15@sha256:98fe06b500b5eb29e45bf8c073eb0ca399790ce17b1d586448edc4203627d342
+    image: postgres:15@sha256:c6eff6624b52dc1743ad29c0703246e6cba161ed152b567ef4d433883e3c4c2d
     networks: [pipeline]
     environment:
       POSTGRES_DB: appsemble
