@@ -151,6 +151,7 @@ import { pathItems as timezones } from './timezones.js';
 import { pathItems as completedTrainings } from './trainings/completedTrainings.js';
 import { pathItems as completeTraining } from './trainings/completeTraining.js';
 import { pathItems as trainingIds } from './trainings/trainingIds.js';
+import { pathItems as undeliveredEmails } from './undeliveredEmails.js';
 import { pathItems as usersCurrentAppsAccounts } from './users/current/apps/accounts.js';
 import { pathItems as usersCurrentAppsAppIdAccount } from './users/current/apps/appId/account.js';
 import { pathItems as usersCurrentApps } from './users/current/apps.js';
@@ -194,6 +195,7 @@ export const paths = {
   '/api/apps/{appId}/demo-groups': appsAppIdDemoGroups,
   '/api/apps/{appId}/demo-members': appsAppIdDemoMembers,
   '/api/apps/{appId}/email': appsAppIdEmail,
+  '/api/undelivered-emails': undeliveredEmails,
   '/api/apps/{appId}/payment': appsAppIdPayments,
   '/api/apps/{appId}/accept-payment': acceptAppPayment,
   '/api/apps/{appId}/export': appsAppIdExport,

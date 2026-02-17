@@ -9,6 +9,7 @@ export * from './trainings/index.js';
 export * from './users/index.js';
 export * from './organization-subscriptions/index.js';
 export * from './payments/index.js';
+export * from './emails/index.js';
 
 export { checkHealth } from './checkHealth.js';
 export { getSslStatus } from './getSslStatus.js';

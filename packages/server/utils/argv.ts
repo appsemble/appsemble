@@ -223,6 +223,13 @@ export interface Argv {
    */
   smtpSecure: boolean;
 
+  /**
+   * Secret used to authorize incoming postal webhooks.
+   *
+   * @default false
+   */
+  postalSecret: string;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // IMAP
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -556,6 +563,8 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpPass: undefined,
   smtpSecure: false,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  postalSecret: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   imapHost: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
