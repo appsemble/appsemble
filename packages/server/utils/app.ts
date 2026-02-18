@@ -278,8 +278,6 @@ export async function createAppScreenshots(
           const img = sharp(contents);
 
           const { format, height, width } = await img.metadata();
-          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-          // (strictNullChecks)
           const mime = lookup(format);
 
           assertKoaCondition(mime !== false, ctx, 404, `Unknown screenshot mime type: ${mime}`);

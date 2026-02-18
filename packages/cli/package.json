@@ -49,6 +49,7 @@
     "@appsemble/lang-sdk": "0.36.3",
     "@appsemble/utils": "0.36.3",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
+    "@inquirer/prompts": "^8.0.0",
     "@koa/cors": "^5.0.0",
     "@odata/parser": "^0.2.0",
     "axios": "^1.0.0",
@@ -60,7 +61,6 @@
     "fast-glob": "^3.0.0",
     "form-data": "^4.0.4",
     "global-cache-dir": "^6.0.0",
-    "@inquirer/prompts": "^8.0.0",
     "jsonschema": "~1.4.1",
     "koa": "^3.0.0",
     "koa-compose": "^4.0.0",
@@ -80,7 +80,7 @@
     "prettier": "^3.0.0",
     "raw-body": "^2.0.0",
     "read-package-up": "^11.0.0",
-    "sharp": "^0.32.0",
+    "sharp": "0.34.5",
     "ts-json-schema-generator": "^1.0.0",
     "type-fest": "^4.0.0",
     "url": "0.11.4",
@@ -106,9 +106,17 @@
     "@types/normalize-path": "3.0.2",
     "@types/postcss-import": "14.0.3",
     "@types/postcss-url": "10.0.4",
+    "axios-test-instance": "7.0.0",
+    "bcrypt": "5.1.1",
+    "big-integer": "1.6.52",
     "concat-stream": "2.0.0",
+    "default-browser": "5.4.0",
+    "is-inside-container": "1.0.0",
+    "sequelize": "6.37.7",
+    "titleize": "4.0.0",
+    "untildify": "6.0.0",
     "vitest": "2.1.9",
-    "sequelize": "6.37.7"
+    "yoctocolors-cjs": "2.1.3"
   },
   "optionalDependencies": {
     "keytar": "^7.0.0"
