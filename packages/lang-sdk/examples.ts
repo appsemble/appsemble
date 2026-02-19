@@ -8,6 +8,7 @@ export interface RemapperExample {
   input: unknown;
   remapper: unknown;
   result: unknown;
+  history?: unknown[];
   skip?: boolean;
 }
 
@@ -16,6 +17,23 @@ type CustomRemapperKeys =
   | 'app.locale'
   | 'app.url'
   | 'array.map.1'
+  | 'array.range.1'
+  | 'array.range.map'
+  | 'array.range'
+  | 'array.sort.by'
+  | 'array.sort.desc'
+  | 'array.sort.numeric'
+  | 'date.endOf.quarter'
+  | 'date.endOf.week'
+  | 'date.endOf.weekSun'
+  | 'date.endOf.year'
+  | 'date.endOf'
+  | 'date.set'
+  | 'date.startOf.quarter'
+  | 'date.startOf.week'
+  | 'date.startOf.weekSun'
+  | 'date.startOf.year'
+  | 'date.startOf'
   | 'if.else'
   | 'if.then'
   | 'None';
@@ -236,6 +254,42 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: "id eq '5' or id eq '6' or id eq '7'",
   },
+  'array.groupBy': {
+    input: [
+      { name: 'Alice', department: 'Engineering' },
+      { name: 'Bob', department: 'Sales' },
+      { name: 'Charlie', department: 'Engineering' },
+    ],
+    remapper: {
+      'array.groupBy': 'department',
+    },
+    result: [
+      {
+        key: 'Engineering',
+        items: [
+          { name: 'Alice', department: 'Engineering' },
+          { name: 'Charlie', department: 'Engineering' },
+        ],
+      },
+      {
+        key: 'Sales',
+        items: [{ name: 'Bob', department: 'Sales' }],
+      },
+    ],
+  },
+  'array.toObject': {
+    input: [
+      { key: 'Engineering', items: ['Alice', 'Charlie'] },
+      { key: 'Sales', items: ['Bob'] },
+    ],
+    remapper: {
+      'array.toObject': { key: { prop: 'key' }, value: { prop: 'items' } },
+    },
+    result: {
+      Engineering: ['Alice', 'Charlie'],
+      Sales: ['Bob'],
+    },
+  },
   'array.map': {
     input: [
       {
@@ -320,6 +374,44 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
       },
     ],
   },
+  'array.range': {
+    input: null,
+    remapper: {
+      'array.range': 4,
+    },
+    result: [0, 1, 2, 3],
+  },
+  'array.range.1': {
+    input: 5,
+    remapper: {
+      'array.range': { root: null },
+    },
+    result: [0, 1, 2, 3, 4],
+  },
+  'array.range.map': {
+    input: 3,
+    remapper: [
+      { 'array.range': { root: null } },
+      {
+        'array.map': {
+          'object.from': {
+            index: { array: 'item' },
+            message: {
+              'string.format': {
+                template: 'Item {i}',
+                values: { i: { array: 'item' } },
+              },
+            },
+          },
+        },
+      },
+    ],
+    result: [
+      { index: 0, message: 'Item 0' },
+      { index: 1, message: 'Item 1' },
+      { index: 2, message: 'Item 2' },
+    ],
+  },
   'array.omit': {
     input: [
       {
@@ -356,6 +448,42 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
         occupation: 'CEO',
       },
     ],
+  },
+  'array.sort': {
+    input: [3, 1, 4, 1, 5, 9, 2, 6],
+    remapper: {
+      'array.sort': null,
+    },
+    result: [1, 1, 2, 3, 4, 5, 6, 9],
+  },
+  'array.sort.by': {
+    input: [
+      { name: 'Charlie', age: 30 },
+      { name: 'Alice', age: 25 },
+      { name: 'Bob', age: 35 },
+    ],
+    remapper: {
+      'array.sort': 'name',
+    },
+    result: [
+      { name: 'Alice', age: 25 },
+      { name: 'Bob', age: 35 },
+      { name: 'Charlie', age: 30 },
+    ],
+  },
+  'array.sort.desc': {
+    input: [3, 1, 4, 1, 5, 9, 2, 6],
+    remapper: {
+      'array.sort': { descending: true },
+    },
+    result: [9, 6, 5, 4, 3, 2, 1, 1],
+  },
+  'array.sort.numeric': {
+    input: ['10', '2', '1', '20'],
+    remapper: {
+      'array.sort': { strategy: 'numeric' },
+    },
+    result: ['1', '2', '10', '20'],
   },
   'array.unique': {
     input: [1, 1, 2, 3],
@@ -436,6 +564,82 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     skip: true,
   },
 
+  'date.startOf': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.startOf': 'month' },
+    result: '2025-11-01T00:00:00.000Z',
+    skip: true,
+  },
+
+  'date.startOf.year': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.startOf': 'year' },
+    result: '2025-01-01T00:00:00.000Z',
+    skip: true,
+  },
+
+  'date.startOf.quarter': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.startOf': 'quarter' },
+    result: '2025-10-01T00:00:00.000Z',
+    skip: true,
+  },
+
+  'date.startOf.week': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.startOf': 'week' },
+    result: '2025-11-17T00:00:00.000Z',
+    skip: true,
+  },
+
+  'date.startOf.weekSun': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.startOf': 'weekSun' },
+    result: '2025-11-16T00:00:00.000Z',
+    skip: true,
+  },
+
+  'date.endOf': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.endOf': 'month' },
+    result: '2025-11-30T23:59:59.999Z',
+    skip: true,
+  },
+
+  'date.endOf.year': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.endOf': 'year' },
+    result: '2025-12-31T23:59:59.999Z',
+    skip: true,
+  },
+
+  'date.endOf.quarter': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.endOf': 'quarter' },
+    result: '2025-12-31T23:59:59.999Z',
+    skip: true,
+  },
+
+  'date.endOf.week': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.endOf': 'week' },
+    result: '2025-11-23T23:59:59.999Z',
+    skip: true,
+  },
+
+  'date.endOf.weekSun': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.endOf': 'weekSun' },
+    result: '2025-11-22T23:59:59.999Z',
+    skip: true,
+  },
+
+  'date.set': {
+    input: '2025-11-21T12:00:00.000Z',
+    remapper: { 'date.set': { year: 2026, month: 1, day: 1 } },
+    result: '2026-01-01T12:00:00.000Z',
+  },
+
   equals: {
     input: { inputValue: 'example', expectedValue: 'example' },
     remapper: {
@@ -452,6 +656,11 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
   gt: {
     input: { stock: 100 },
     remapper: { gt: [{ prop: 'stock' }, 5] },
+    result: true,
+  },
+  gte: {
+    input: { stock: 5 },
+    remapper: { gte: [{ prop: 'stock' }, 5] },
     result: true,
   },
   history: {
@@ -519,6 +728,11 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
   lt: {
     input: { stock: 4 },
     remapper: { lt: [{ prop: 'stock' }, 5] },
+    result: true,
+  },
+  lte: {
+    input: { stock: 5 },
+    remapper: { lte: [{ prop: 'stock' }, 5] },
     result: true,
   },
   match: {
@@ -952,6 +1166,83 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: [true, true, true, false, false],
   },
+  focus: {
+    input: null,
+    history: [
+      [
+        { id: 'customer1', name: 'Customer 1' },
+        { id: 'customer2', name: 'Customer 2' },
+        { id: 'customer3', name: 'Customer 3' },
+      ],
+      [
+        { id: 'orderA', customerId: 'customer1', value: 'Order A for Customer 1' },
+        { id: 'orderB', customerId: 'customer2', value: 'Order B for Customer 2' },
+        { id: 'orderC', customerId: 'customer1', value: 'Order C for Customer 1' },
+        { id: 'orderD', customerId: 'customer3', value: 'Order D for Customer 3' },
+        { id: 'orderE', customerId: 'customer1', value: 'Order E for Customer 1' },
+        { id: 'orderF', customerId: 'customer2', value: 'Order F for Customer 2' },
+      ],
+    ],
+    remapper: [
+      { history: 0 },
+      {
+        'array.map': {
+          focus: {
+            on: {
+              'object.from': {
+                currentCustomer: { array: 'item' },
+                allOrders: { history: 1 },
+              },
+            },
+            do: {
+              'object.from': {
+                id: { prop: 'id' },
+                name: { prop: 'name' },
+                associatedOrders: [
+                  { root: null },
+                  { prop: 'allOrders' },
+                  {
+                    'array.filter': {
+                      equals: [
+                        { prop: 'customerId' },
+                        [{ root: null }, { prop: 'currentCustomer' }, { prop: 'id' }],
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    ],
+    result: [
+      {
+        id: 'customer1',
+        name: 'Customer 1',
+        associatedOrders: [
+          { id: 'orderA', customerId: 'customer1', value: 'Order A for Customer 1' },
+          { id: 'orderC', customerId: 'customer1', value: 'Order C for Customer 1' },
+          { id: 'orderE', customerId: 'customer1', value: 'Order E for Customer 1' },
+        ],
+      },
+      {
+        id: 'customer2',
+        name: 'Customer 2',
+        associatedOrders: [
+          { id: 'orderB', customerId: 'customer2', value: 'Order B for Customer 2' },
+          { id: 'orderF', customerId: 'customer2', value: 'Order F for Customer 2' },
+        ],
+      },
+      {
+        id: 'customer3',
+        name: 'Customer 3',
+        associatedOrders: [
+          { id: 'orderD', customerId: 'customer3', value: 'Order D for Customer 3' },
+        ],
+      },
+    ],
+  },
   maths: {
     input: { version: 0 },
     remapper: {
@@ -1002,7 +1293,7 @@ export function createExampleContext(
   url: URL,
   lang: string,
   userInfo?: AppMemberInfo,
-  history?: [],
+  history?: unknown[],
 ): RemapperContext {
   return {
     getMessage: ({ defaultMessage }) =>

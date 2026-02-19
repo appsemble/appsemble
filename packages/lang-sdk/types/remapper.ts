@@ -182,6 +182,43 @@ export interface Remappers {
   'date.format'?: string;
 
   /**
+   * Takes a date and returns the start of the specified unit.
+   *
+   * Supported units:
+   * - `year`: First day of the year
+   * - `quarter`: First day of the quarter
+   * - `month`: First day of the month
+   * - `week`: First day of the week (Monday)
+   * - `weekSun`: First day of the week (Sunday)
+   */
+  'date.startOf': 'month' | 'quarter' | 'week' | 'weekSun' | 'year';
+
+  /**
+   * Takes a date and returns the end of the specified unit.
+   *
+   * Supported units:
+   * - `year`: Last moment of the year
+   * - `quarter`: Last moment of the quarter
+   * - `month`: Last moment of the month
+   * - `week`: Last moment of the week (ends Sunday if week starts Monday)
+   * - `weekSun`: Last moment of the week (ends Saturday if week starts Sunday)
+   */
+  'date.endOf': 'month' | 'quarter' | 'week' | 'weekSun' | 'year';
+
+  /**
+   * Sets parts of a date.
+   *
+   * Only the given parts are changed.
+   *
+   * Month is 1-indexed (1 = January, 12 = December).
+   */
+  'date.set': {
+    year?: Remapper;
+    month?: Remapper;
+    day?: Remapper;
+  };
+
+  /**
    * Compare all computed remapper values against each other.
    *
    * Returns `true` if all entries are equal, otherwise `false`.
@@ -230,9 +267,23 @@ export interface Remappers {
   /**
    * Compares the first computed remapper value with the second computed remapper value.
    *
+   * Returns `true` of the first entry is greater than or equal to the second entry.
+   */
+  gte: [Remapper, Remapper];
+
+  /**
+   * Compares the first computed remapper value with the second computed remapper value.
+   *
    * Returns `true` of the first entry is less than the second entry.
    */
   lt: [Remapper, Remapper];
+
+  /**
+   * Compares the first computed remapper value with the second computed remapper value.
+   *
+   * Returns `true` of the first entry is less than or equal to the second entry.
+   */
+  lte: [Remapper, Remapper];
 
   /**
    * Logs its input data (returns it) and its context.
@@ -254,6 +305,14 @@ export interface Remappers {
    * Always returns an array, can be empty if supplied data isn’t an array.
    */
   'array.map': Remapper;
+
+  /**
+   * Creates an array of numbers from 0 to N-1.
+   *
+   * @example
+   * { "array.range": 5 } // returns [0, 1, 2, 3, 4]
+   */
+  'array.range': Remapper;
 
   /**
    * Filters out unique entries from an array.
@@ -504,6 +563,105 @@ export interface Remappers {
   'array.join': string | null;
 
   /**
+   * Groups an array of objects by a common property value.
+   *
+   * Returns an array of group objects, each containing a `key` (the grouped property value)
+   * and `items` (array of objects with that property value).
+   *
+   * If the input is not an array, returns an empty array.
+   *
+   * @example
+   * // Input: [{ name: "Alice", dept: "Eng" }, { name: "Bob", dept: "Sales" }, { name: "Charlie", dept: "Eng" }]
+   * { "array.groupBy": "dept" }
+   * // Result: [
+   * //   { key: "Eng", items: [{ name: "Alice", dept: "Eng" }, { name: "Charlie", dept: "Eng" }] },
+   * //   { key: "Sales", items: [{ name: "Bob", dept: "Sales" }] }
+   * // ]
+   */
+  'array.groupBy': string;
+
+  /**
+   * Converts an array of objects into a single object using specified key and value remappers.
+   *
+   * For each item in the array, the `key` remapper determines the property name and the `value`
+   * remapper determines the property value in the resulting object.
+   *
+   * If the input is not an array, returns an empty object.
+   * If multiple items produce the same key, later items overwrite earlier ones.
+   *
+   * @example
+   * // Input: [{ key: "Eng", items: [...] }, { key: "Sales", items: [...] }]
+   * { "array.toObject": { key: { prop: "key" }, value: { prop: "items" } } }
+   * // Result: { "Eng": [...], "Sales": [...] }
+   */
+  'array.toObject': {
+    key: Remapper;
+    value: Remapper;
+  };
+
+  /**
+   * Sorts an array of items.
+   *
+   * Can sort by a property (for arrays of objects) or by the items themselves (for primitive arrays).
+   * Supports ascending and descending order, and handles numbers, strings, and dates.
+   *
+   * When a string is provided, it's used as the property name to sort by (ascending).
+   *
+   * **Sorting strategy (`strategy` option):**
+   *
+   * - `infer` (default): Determines comparison type from the first non-null value.
+   * Numbers use numeric comparison, Dates use timestamp comparison, everything else
+   * uses lexicographic (string) comparison. Mixed types fall back to lexicographic.
+   * - `numeric`: Coerces values to numbers. Non-numeric values (NaN) are pushed to the end.
+   * - `lexicographic`: Converts values to strings and uses `localeCompare()`.
+   * - `date`: Parses values as ISO dates and compares timestamps. Invalid dates are pushed to the end.
+   *
+   * Nullish values (null/undefined) are always pushed to the end regardless of strategy.
+   *
+   * @example
+   * // Input: [3, 1, 2]
+   * { "array.sort": null }
+   * // Result: [1, 2, 3]
+   * @example
+   * // Input: [{ name: "Charlie" }, { name: "Alice" }, { name: "Bob" }]
+   * { "array.sort": "name" }
+   * // Result: [{ name: "Alice" }, { name: "Bob" }, { name: "Charlie" }]
+   * @example
+   * // Input: [{ name: "Charlie" }, { name: "Alice" }, { name: "Bob" }]
+   * { "array.sort": { by: "name", descending: true } }
+   * // Result: [{ name: "Charlie" }, { name: "Bob" }, { name: "Alice" }]
+   * @example
+   * // Input: ["10", "2", "1"]
+   * { "array.sort": { strategy: "numeric" } }
+   * // Result: ["1", "2", "10"]
+   */
+  'array.sort':
+    | string
+    | {
+        /**
+         * The property name to sort by. If not provided, sorts by the items themselves.
+         */
+        by?: string;
+
+        /**
+         * Whether to sort in descending order. Defaults to false (ascending).
+         */
+        descending?: boolean;
+
+        /**
+         * The comparison strategy to use.
+         *
+         * - `infer` (default): Auto-detect from first non-null value. Numbers use numeric,
+         * Dates use date, others use lexicographic. Mixed types fall back to lexicographic.
+         * - `numeric`: Coerce to numbers. NaN values pushed to end.
+         * - `lexicographic`: Convert to strings, use localeCompare().
+         * - `date`: Parse as ISO dates, compare timestamps. Invalid dates pushed to end.
+         */
+        strategy?: 'date' | 'infer' | 'lexicographic' | 'numeric';
+      }
+    | null;
+
+  /**
    * This remapper return true if the provided string is a substring of the input string.
    *
    */
@@ -681,6 +839,61 @@ export interface Remappers {
     a: Remapper;
     b: Remapper;
     operation: 'add' | 'divide' | 'mod' | 'multiply' | 'subtract';
+  };
+
+  /**
+   * Executes a remapper chain with a temporary root context.
+   *
+   * This is useful for solving nested context problems, like performing a
+   * filter on one list that depends on a value from an outer loop.
+   *
+   * @example
+   *
+   * // Get all customers, and for each customer, find the orders belonging to that customer.
+   * // Assumes that `history: 1` is an array of all customers,
+   * // and `history: 2` is an array of all orders.
+   * {
+   *   'array.map': {
+   *     focus: {
+   *       on: {
+   *         'object.from': {
+   *           currentCustomer: { array: 'item' },
+   *           allOrders: { history: 1 },
+   *         },
+   *       },
+   *       do: {
+   *         'object.from': {
+   *           id: { prop: 'id' },
+   *           name: { prop: 'name' },
+   *           associatedOrders: [
+   *             { root: null },
+   *             { prop: 'allOrders' },
+   *             {
+   *               'array.filter': {
+   *                 equals: [
+   *                   { prop: 'customerId' },
+   *                   [{ root: null }, { prop: 'currentCustomer' }, { prop: 'id' }],
+   *                 ],
+   *               },
+   *             },
+   *           ],
+   *         },
+   *       },
+   *     },
+   *   },
+   * },
+   */
+  focus: {
+    /**
+     * A remapper that resolves to the object that will become the new `root`
+     * for the `do` remapper chain.
+     */
+    on: Remapper;
+
+    /**
+     * The remapper or chain of remappers to execute with the new focused `root`.
+     */
+    do: Remapper;
   };
 }
 

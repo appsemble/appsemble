@@ -93,4 +93,51 @@ date.parse:
 \`\`\`
 `,
   },
+  'date.startOf': {
+    enum: ['year', 'quarter', 'month', 'week', 'weekSun'],
+    description: `Takes a date and returns the start of the specified unit.
+
+Supported units:
+- \`year\`: First day of the year
+- \`quarter\`: First day of the quarter
+- \`month\`: First day of the month
+- \`week\`: First day of the week (Monday)
+- \`weekSun\`: First day of the week (Sunday)
+
+${schemaExample('date.startOf')}
+`,
+  },
+  'date.endOf': {
+    enum: ['year', 'quarter', 'month', 'week', 'weekSun'],
+    description: `Takes a date and returns the end of the specified unit.
+
+Supported units:
+- \`year\`: Last moment of the year
+- \`quarter\`: Last moment of the quarter
+- \`month\`: Last moment of the month
+- \`week\`: Last moment of the week (ends Sunday if week starts Monday)
+- \`weekSun\`: Last moment of the week (ends Saturday if week starts Sunday)
+
+${schemaExample('date.endOf')}
+`,
+  },
+  'date.set': {
+    type: 'object',
+    description: `Sets parts of a date. Only the given parts are changed.
+
+Month is 1-indexed (1 = January, 12 = December).
+
+${schemaExample('date.set')}`,
+    properties: {
+      year: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      month: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      day: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+    },
+  },
 };

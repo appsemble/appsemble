@@ -68,17 +68,53 @@ ${schemaExample('gt')}
       $ref: '#/components/schemas/RemapperDefinition',
     },
   },
-  lt: {
+  gte: {
     type: 'array',
-    description: `**(lt = Lesser than)
+    description: `**(gte = Greater than or equal)**
 
 Compare the first computed remapper value with the second computed remapper value.
 
-Returns \`true\` if the first entry is lesser than the second entry.
+Returns \`true\` if the first entry is greater than or equal to the second entry.
+
+For example, if \`stock\` is 5 or more here, it returns \`true\`.
+
+${schemaExample('gte')}
+`,
+    minItems: 2,
+    maxItems: 2,
+    items: {
+      $ref: '#/components/schemas/RemapperDefinition',
+    },
+  },
+  lt: {
+    type: 'array',
+    description: `**(lt = Less than)**
+
+Compare the first computed remapper value with the second computed remapper value.
+
+Returns \`true\` if the first entry is less than the second entry.
 
 For example, if \`stock\` is less than 5 here, it returns \`true\`.
 
-${schemaExample('gt')}
+${schemaExample('lt')}
+`,
+    minItems: 2,
+    maxItems: 2,
+    items: {
+      $ref: '#/components/schemas/RemapperDefinition',
+    },
+  },
+  lte: {
+    type: 'array',
+    description: `**(lte = Less than or equal)**
+
+Compare the first computed remapper value with the second computed remapper value.
+
+Returns \`true\` if the first entry is less than or equal to the second entry.
+
+For example, if \`stock\` is 5 or less here, it returns \`true\`.
+
+${schemaExample('lte')}
 `,
     minItems: 2,
     maxItems: 2,

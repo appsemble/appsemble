@@ -413,4 +413,28 @@ ${schemaExample('slice')}`,
       { type: 'number' },
     ],
   },
+  focus: {
+    type: 'object',
+    description: `
+Executes a remapper chain with a temporary root context.
+
+This is useful for solving nested context problems, like performing a
+filter on one list that depends on a value from an outer loop.
+
+${schemaExample('focus', { input: 'pretty', result: 'pretty', exclude: [] })}
+`,
+    required: ['on', 'do'],
+    properties: {
+      on: {
+        description:
+          'The data to focus on. The input data will be remapped with this remapper, and the result will be passed as root context to `do`.',
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      do: {
+        description:
+          'The remapper to execute with the focused data as root. The original input will be provided as input, and the result of `on` will be the root context.',
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+    },
+  },
 };

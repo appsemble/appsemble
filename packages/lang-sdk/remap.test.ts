@@ -1087,6 +1087,129 @@ describe('array.join', () => {
   });
 });
 
+describe('array.groupBy', () => {
+  runTests({
+    'should return empty array if input is not an array': {
+      input: { foo: 'bar' },
+      mappers: { 'array.groupBy': 'type' },
+      expected: [],
+    },
+    'should group objects by a common property': {
+      input: [
+        { name: 'Alice', dept: 'Engineering' },
+        { name: 'Bob', dept: 'Sales' },
+        { name: 'Charlie', dept: 'Engineering' },
+        { name: 'Diana', dept: 'Sales' },
+      ],
+      mappers: { 'array.groupBy': 'dept' },
+      expected: [
+        {
+          key: 'Engineering',
+          items: [
+            { name: 'Alice', dept: 'Engineering' },
+            { name: 'Charlie', dept: 'Engineering' },
+          ],
+        },
+        {
+          key: 'Sales',
+          items: [
+            { name: 'Bob', dept: 'Sales' },
+            { name: 'Diana', dept: 'Sales' },
+          ],
+        },
+      ],
+    },
+    'should handle items with undefined group key': {
+      input: [
+        { name: 'Alice', dept: 'Engineering' },
+        { name: 'Bob' },
+        { name: 'Charlie', dept: 'Engineering' },
+      ],
+      mappers: { 'array.groupBy': 'dept' },
+      expected: [
+        {
+          key: 'Engineering',
+          items: [
+            { name: 'Alice', dept: 'Engineering' },
+            { name: 'Charlie', dept: 'Engineering' },
+          ],
+        },
+        {
+          key: undefined,
+          items: [{ name: 'Bob' }],
+        },
+      ],
+    },
+    'should preserve order of first occurrence': {
+      input: [
+        { id: 1, type: 'B' },
+        { id: 2, type: 'A' },
+        { id: 3, type: 'B' },
+      ],
+      mappers: { 'array.groupBy': 'type' },
+      expected: [
+        {
+          key: 'B',
+          items: [
+            { id: 1, type: 'B' },
+            { id: 3, type: 'B' },
+          ],
+        },
+        { key: 'A', items: [{ id: 2, type: 'A' }] },
+      ],
+    },
+  });
+});
+
+describe('array.toObject', () => {
+  runTests({
+    'should return empty object if input is not an array': {
+      input: { foo: 'bar' },
+      mappers: { 'array.toObject': { key: { prop: 'k' }, value: { prop: 'v' } } },
+      expected: {},
+    },
+    'should convert array to object using key and value remappers': {
+      input: [
+        { key: 'Eng', items: ['Alice', 'Charlie'] },
+        { key: 'Sales', items: ['Bob'] },
+      ],
+      mappers: { 'array.toObject': { key: { prop: 'key' }, value: { prop: 'items' } } },
+      expected: {
+        Eng: ['Alice', 'Charlie'],
+        Sales: ['Bob'],
+      },
+    },
+    'should overwrite duplicate keys with later values': {
+      input: [
+        { id: 'a', val: 1 },
+        { id: 'b', val: 2 },
+        { id: 'a', val: 3 },
+      ],
+      mappers: { 'array.toObject': { key: { prop: 'id' }, value: { prop: 'val' } } },
+      expected: {
+        a: 3,
+        b: 2,
+      },
+    },
+    'should skip items with null or undefined keys': {
+      input: [{ id: 'a', val: 1 }, { id: null, val: 2 }, { val: 3 }],
+      mappers: { 'array.toObject': { key: { prop: 'id' }, value: { prop: 'val' } } },
+      expected: {
+        a: 1,
+      },
+    },
+    'should support array context in remappers': {
+      input: ['a', 'b', 'c'],
+      mappers: { 'array.toObject': { key: { array: 'item' }, value: { array: 'index' } } },
+      expected: {
+        a: 0,
+        b: 1,
+        c: 2,
+      },
+    },
+  });
+});
+
 describe('array.map', () => {
   runTests({
     'apply remappers to each array item': {
@@ -1201,6 +1324,41 @@ describe('array.flatten', () => {
       input: 'Oops',
       mappers: [{ 'array.flatten': null }],
       expected: 'Oops',
+    },
+  });
+});
+
+describe('array.range', () => {
+  runTests({
+    'should create an array of numbers from 0 to N-1': {
+      input: null,
+      mappers: { 'array.range': 5 },
+      expected: [0, 1, 2, 3, 4],
+    },
+    'should work with a dynamic count from input': {
+      input: 3,
+      mappers: { 'array.range': { root: null } },
+      expected: [0, 1, 2],
+    },
+    'should return an empty array for count 0': {
+      input: null,
+      mappers: { 'array.range': 0 },
+      expected: [],
+    },
+    'should return an empty array for negative count': {
+      input: null,
+      mappers: { 'array.range': -5 },
+      expected: [],
+    },
+    'should return an empty array for non-integer count': {
+      input: null,
+      mappers: { 'array.range': 3.14 },
+      expected: [],
+    },
+    'should return an empty array for non-numeric count': {
+      input: null,
+      mappers: { 'array.range': 'foo' },
+      expected: [],
     },
   });
 });
@@ -1992,9 +2150,14 @@ describe('maths', () => {
 
 describe.each(Object.entries(examples))(
   'should test remapper example: %s',
-  (name, { input, remapper, result: expected, skip }) => {
+  (name, { history, input, remapper, result: expected, skip }) => {
     it.skipIf(skip)('to be valid.', () => {
-      const context = createExampleContext(new URL('https://example.com'), 'en');
+      const context = createExampleContext(
+        new URL('https://example.com'),
+        'en',
+        undefined,
+        history,
+      );
       const result = remap(remapper as Remapper, input, context);
       expect(result).toStrictEqual(expected);
     });

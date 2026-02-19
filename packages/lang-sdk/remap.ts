@@ -1,5 +1,20 @@
 import { filter, literalValues, param } from '@odata/parser';
-import { addMilliseconds, format, parse, parseISO } from 'date-fns';
+import {
+  addMilliseconds,
+  endOfMonth,
+  endOfQuarter,
+  endOfWeek,
+  endOfYear,
+  format,
+  parse,
+  parseISO,
+  set as setDate,
+  startOfMonth,
+  startOfQuarter,
+  startOfWeek,
+  startOfYear,
+} from 'date-fns';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import equal from 'fast-deep-equal';
 import { XMLParser } from 'fast-xml-parser';
 import { createEvent, type EventAttributes } from 'ics';
@@ -228,6 +243,44 @@ export function remap(
   return result;
 }
 
+// Comparison functions for array.sort
+const compareNumeric = (aVal: unknown, bVal: unknown): number => {
+  const aNum = Number(aVal);
+  const bNum = Number(bVal);
+  const aIsNaN = Number.isNaN(aNum);
+  const bIsNaN = Number.isNaN(bNum);
+  if (aIsNaN && bIsNaN) {
+    return 0;
+  }
+  if (aIsNaN) {
+    return 1;
+  }
+  if (bIsNaN) {
+    return -1;
+  }
+  return aNum - bNum;
+};
+
+const compareLexicographic = (aVal: unknown, bVal: unknown): number =>
+  String(aVal).localeCompare(String(bVal));
+
+const compareDate = (aVal: unknown, bVal: unknown): number => {
+  const aDate = aVal instanceof Date ? aVal : parseISO(String(aVal));
+  const bDate = bVal instanceof Date ? bVal : parseISO(String(bVal));
+  const aInvalid = Number.isNaN(aDate.getTime());
+  const bInvalid = Number.isNaN(bDate.getTime());
+  if (aInvalid && bInvalid) {
+    return 0;
+  }
+  if (aInvalid) {
+    return 1;
+  }
+  if (bInvalid) {
+    return -1;
+  }
+  return aDate.getTime() - bDate.getTime();
+};
+
 /**
  * Implementations of all remappers.
  *
@@ -323,10 +376,20 @@ const mapperImplementations: MapperImplementations = {
     // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
     remap(left, input, context) > remap(right, input, context),
 
+  gte: ([left, right], input: any, context) =>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
+    remap(left, input, context) >= remap(right, input, context),
+
   lt: ([left, right], input: any, context) =>
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
     remap(left, input, context) < remap(right, input, context),
+
+  lte: ([left, right], input: any, context) =>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
+    remap(left, input, context) <= remap(right, input, context),
 
   ics(mappers, input, context) {
     let event;
@@ -382,6 +445,11 @@ const mapperImplementations: MapperImplementations = {
   if(mappers, input, context) {
     const condition = remap(mappers.condition, input, context);
     return remap(condition ? mappers.then : mappers.else, input, context);
+  },
+
+  focus({ do: doRemapper, on }, input, context) {
+    const newRoot = remap(on, input, context);
+    return remap(doRemapper, input, { ...context, root: newRoot });
   },
 
   match(mappers, input, context) {
@@ -515,6 +583,14 @@ const mapperImplementations: MapperImplementations = {
       }),
     ) ?? [],
 
+  'array.range'(countRemapper, input, context) {
+    const count = remap(countRemapper, input, context);
+    if (typeof count !== 'number' || !Number.isInteger(count) || count < 0) {
+      return [];
+    }
+    return Array.from({ length: count }, (item, idx) => idx);
+  },
+
   'array.contains'(mapper, input, context) {
     if (!Array.isArray(input)) {
       return false;
@@ -534,6 +610,111 @@ const mapperImplementations: MapperImplementations = {
       return input;
     }
     return input.join(separator ?? undefined);
+  },
+
+  'array.groupBy'(propertyName, input) {
+    if (!Array.isArray(input)) {
+      return [];
+    }
+
+    const groups = new Map<unknown, unknown[]>();
+    for (const item of input) {
+      const key = item?.[propertyName];
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)!.push(item);
+    }
+
+    return [...groups.entries()].map(([key, items]) => ({ key, items }));
+  },
+
+  'array.toObject'({ key: keyMapper, value: valueMapper }, input, context) {
+    if (!Array.isArray(input)) {
+      return {};
+    }
+
+    const result: Record<string, unknown> = {};
+    for (const [index, item] of input.entries()) {
+      const itemContext = {
+        ...context,
+        array: {
+          index,
+          length: input.length,
+          item,
+          prevItem: input[index - 1],
+          nextItem: input[index + 1],
+        },
+      };
+      const key = remap(keyMapper, item, itemContext);
+      const value = remap(valueMapper, item, itemContext);
+      if (key != null) {
+        result[String(key)] = value;
+      }
+    }
+
+    return result;
+  },
+
+  'array.sort'(mapper, input) {
+    if (!Array.isArray(input)) {
+      return input;
+    }
+
+    // Normalize mapper: string becomes { by: string }, null/undefined becomes {}
+    const {
+      by,
+      descending = false,
+      strategy = 'infer',
+    } = typeof mapper === 'string'
+      ? { by: mapper, descending: false, strategy: 'infer' as const }
+      : (mapper ?? {});
+
+    // Extract values for sorting
+    const getValue = (item: unknown): unknown =>
+      by ? (item as Record<string, unknown>)?.[by] : item;
+
+    // Determine effective strategy for 'infer' mode
+    let effectiveStrategy = strategy;
+    if (strategy === 'infer') {
+      // Find first non-null value to determine type
+      const firstValue = input.map(getValue).find((v) => v != null);
+      if (typeof firstValue === 'number') {
+        effectiveStrategy = 'numeric';
+      } else if (firstValue instanceof Date) {
+        effectiveStrategy = 'date';
+      } else {
+        effectiveStrategy = 'lexicographic';
+      }
+    }
+
+    const compare =
+      effectiveStrategy === 'numeric'
+        ? compareNumeric
+        : effectiveStrategy === 'date'
+          ? compareDate
+          : compareLexicographic;
+
+    const sorted = [...input].sort((a, b) => {
+      const aValue = getValue(a);
+      const bValue = getValue(b);
+
+      // Handle nullish values - push them to the end
+      if (aValue == null && bValue == null) {
+        return 0;
+      }
+      if (aValue == null) {
+        return 1;
+      }
+      if (bValue == null) {
+        return -1;
+      }
+
+      const comparison = compare(aValue, bValue);
+      return descending ? -comparison : comparison;
+    });
+
+    return sorted;
   },
 
   'array.unique'(mapper, input, context) {
@@ -733,6 +914,94 @@ const mapperImplementations: MapperImplementations = {
           : parseISO(String(input));
 
     return args ? format(date, args) : date.toJSON();
+  },
+
+  'date.startOf'(unit, input) {
+    const date =
+      input instanceof Date
+        ? input
+        : typeof input === 'number'
+          ? new Date(input)
+          : parseISO(String(input));
+    let result: Date;
+    switch (unit) {
+      case 'year':
+        result = startOfYear(date);
+        break;
+      case 'quarter':
+        result = startOfQuarter(date);
+        break;
+      case 'month':
+        result = startOfMonth(date);
+        break;
+      case 'week':
+        result = startOfWeek(date, { weekStartsOn: 1 });
+        break;
+      case 'weekSun':
+        result = startOfWeek(date, { weekStartsOn: 0 });
+        break;
+      default:
+        return input;
+    }
+    return result.toJSON();
+  },
+
+  'date.endOf'(unit, input) {
+    const date =
+      input instanceof Date
+        ? input
+        : typeof input === 'number'
+          ? new Date(input)
+          : parseISO(String(input));
+    let result: Date;
+    switch (unit) {
+      case 'year':
+        result = endOfYear(date);
+        break;
+      case 'quarter':
+        result = endOfQuarter(date);
+        break;
+      case 'month':
+        result = endOfMonth(date);
+        break;
+      case 'week':
+        result = endOfWeek(date, { weekStartsOn: 1 });
+        break;
+      case 'weekSun':
+        result = endOfWeek(date, { weekStartsOn: 0 });
+        break;
+      default:
+        return input;
+    }
+    return result.toJSON();
+  },
+
+  'date.set'(args, input, context) {
+    const date =
+      input instanceof Date
+        ? input
+        : typeof input === 'number'
+          ? new Date(input)
+          : parseISO(String(input));
+
+    const remapped = mapValues(args, (mapper) => remap(mapper, input, context));
+
+    const setValues: { year?: number; month?: number; date?: number } = {};
+    if (typeof remapped.year === 'number') {
+      setValues.year = remapped.year;
+    }
+    if (typeof remapped.month === 'number') {
+      // Convert from 1-indexed (user-facing) to 0-indexed (date-fns)
+      setValues.month = remapped.month - 1;
+    }
+    if (typeof remapped.day === 'number') {
+      setValues.date = remapped.day;
+    }
+
+    // Convert to UTC-zoned date so set operates in UTC
+    const zonedDate = utcToZonedTime(date, 'UTC');
+    const result = setDate(zonedDate, setValues);
+    return zonedTimeToUtc(result, 'UTC').toJSON();
   },
 
   'null.strip': (args, input) => stripNullValues(input, args || {}),
