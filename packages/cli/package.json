@@ -102,7 +102,7 @@
     "bcrypt": "5.1.1",
     "big-integer": "1.6.52",
     "concat-stream": "2.0.0",
-    "default-browser": "5.4.0",
+    "default-browser": "5.5.0",
     "is-inside-container": "1.0.0",
     "sequelize": "6.37.7",
     "titleize": "4.0.0",
