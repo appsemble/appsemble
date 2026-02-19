@@ -9,6 +9,7 @@ import { Mailer } from './Mailer.js';
 import { App, AppMessages, Organization, OrganizationMember, User } from '../../models/index.js';
 import { type Argv, argv, setArgv } from '../argv.js';
 import { createServer } from '../createServer.js';
+import { encrypt } from '../crypto.js';
 import { createTestUser } from '../test/authorization.js';
 
 let mailer: Mailer;
@@ -16,6 +17,7 @@ let mailer: Mailer;
 const baseArgv: Partial<Argv> = {
   host: '',
   smtpFrom: 'test@example.com',
+  aesSecret: 'testSecret',
 };
 
 describe('Mailer', () => {
@@ -489,6 +491,65 @@ _Test App_
         text: 'How do you do, John Doe?\n',
         to: 'John Doe <test@example.com>',
       });
+    });
+
+    it('should pass app email settings to sendEmail', async () => {
+      const appWithEmailSettings = await App.create({
+        definition: {
+          name: 'Test App With Email',
+          defaultPage: 'Test Page',
+          security: {
+            default: {
+              role: 'Reader',
+              policy: 'everyone',
+            },
+            roles: {
+              Reader: {},
+            },
+          },
+        },
+        path: 'test-app-email-settings',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: 'testorganization',
+        emailName: 'Custom Sender',
+        emailHost: 'smtp.example.com',
+        emailUser: 'user@example.com',
+        emailPassword: encrypt('secret', baseArgv.aesSecret!),
+        emailPort: 587,
+        emailSecure: true,
+      });
+
+      const sendEmailSpy = vi.spyOn(mailer, 'sendEmail').mockResolvedValue();
+
+      await mailer.sendTranslatedEmail({
+        appId: appWithEmailSettings.id,
+        app: appWithEmailSettings,
+        emailName: 'welcome',
+        from: 'Custom Sender',
+        to: { email: 'newuser@example.com', name: 'New User' },
+        locale: 'en',
+        values: {
+          name: 'New User',
+          appName: 'Test App With Email',
+          link: (text) => `[${text}](http://example.com/token=abcdefg)`,
+        },
+      });
+
+      expect(sendEmailSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          app: expect.objectContaining({
+            emailHost: 'smtp.example.com',
+            emailUser: 'user@example.com',
+            emailPassword: expect.anything(),
+            emailPort: 587,
+            emailSecure: true,
+            emailName: 'Custom Sender',
+          }),
+        }),
+      );
+
+      sendEmailSpy.mockRestore();
     });
 
     describe.each(supportedLocales)('%s', (locale) => {

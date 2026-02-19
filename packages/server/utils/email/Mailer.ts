@@ -357,7 +357,18 @@ export class Mailer {
       subject,
       html,
       text,
-      app: app ? { ...app, id: app.id ?? appId } : undefined,
+      app: app
+        ? {
+            id: app.id ?? appId,
+            demoMode: app.demoMode,
+            emailHost: app.emailHost,
+            emailName: app.emailName,
+            emailPassword: app.emailPassword,
+            emailPort: app.emailPort,
+            emailSecure: app.emailSecure,
+            emailUser: app.emailUser,
+          }
+        : undefined,
       attachments,
     };
 
