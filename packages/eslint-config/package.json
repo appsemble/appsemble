@@ -40,7 +40,7 @@
     "eslint-plugin-formatjs": "5.4.2",
     "eslint-plugin-jsdoc": "61.5.0",
     "eslint-plugin-jsx-a11y": "6.10.2",
-    "eslint-plugin-n": "17.23.2",
+    "eslint-plugin-n": "17.24.0",
     "eslint-plugin-playwright": "2.4.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",
