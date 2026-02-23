@@ -134,7 +134,95 @@
       }
     },
     "resources": {
-      "type": "object"
+      "type": "object",
+      "description": "Resource limits and requests for containers.",
+      "additionalProperties": false,
+      "properties": {
+        "deployment": {
+          "type": "object",
+          "description": "Resource limits and requests for the main deployment.",
+          "additionalProperties": false,
+          "properties": {
+            "limits": {
+              "type": "object",
+              "properties": {
+                "memory": { "type": "string" },
+                "cpu": { "type": "string" }
+              }
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "memory": { "type": "string" },
+                "cpu": { "type": "string" }
+              }
+            }
+          }
+        },
+        "jobs": {
+          "type": "object",
+          "description": "Resource limits and requests for Job containers (migrate, provision, etc.).",
+          "additionalProperties": false,
+          "properties": {
+            "limits": {
+              "type": "object",
+              "properties": {
+                "memory": { "type": "string" },
+                "cpu": { "type": "string" }
+              }
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "memory": { "type": "string" },
+                "cpu": { "type": "string" }
+              }
+            }
+          }
+        },
+        "cronjobs": {
+          "type": "object",
+          "description": "Resource limits and requests for CronJob containers.",
+          "additionalProperties": false,
+          "properties": {
+            "limits": {
+              "type": "object",
+              "properties": {
+                "memory": { "type": "string" },
+                "cpu": { "type": "string" }
+              }
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "memory": { "type": "string" },
+                "cpu": { "type": "string" }
+              }
+            }
+          }
+        },
+        "backupCronjob": {
+          "type": "object",
+          "description": "Resource limits and requests for the backup CronJob container (requires more memory than standard cronjobs).",
+          "additionalProperties": false,
+          "properties": {
+            "limits": {
+              "type": "object",
+              "properties": {
+                "memory": { "type": "string" },
+                "cpu": { "type": "string" }
+              }
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "memory": { "type": "string" },
+                "cpu": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
     },
     "nodeSelector": {
       "type": "object"

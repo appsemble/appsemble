@@ -18,6 +18,8 @@ spec:
         - name: {{ include "appsemble.fullname" . }}-reconcile-dns
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources.jobs | nindent 12 }}
           args:
             - reconcile-dns
             - --no-dry-run

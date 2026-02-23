@@ -41,13 +41,34 @@ route:
     insecureEdgeTerminationPolicy: Redirect
 
 resources:
-  {}
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-#  memory: 128Mi
+  deployment:
+    limits:
+      memory: 4Gi
+      cpu: '1'
+    requests:
+      memory: 2Gi
+      cpu: 100m
+  jobs:
+    limits:
+      memory: 1Gi
+      cpu: '1'
+    requests:
+      memory: 256Mi
+      cpu: 100m
+  cronjobs:
+    limits:
+      memory: 256Mi
+      cpu: 500m
+    requests:
+      memory: 64Mi
+      cpu: 50m
+  backupCronjob:
+    limits:
+      memory: 3Gi
+      cpu: '1'
+    requests:
+      memory: 1Gi
+      cpu: 100m
 
 nodeSelector: {}
 
