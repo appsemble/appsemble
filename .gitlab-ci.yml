@@ -2,9 +2,16 @@ default:
   image: node:24-trixie-slim@sha256:1c78323e27e7aff8ac92377845119cd52ac3d3b22e197b3b14e8eb64af387f8c
 
 stages:
+  - security
+  - cleanup
   - build
   - test
   - end 2 end
+  - publish
+  - deploy
+  - provision
+  - performance
+  - backup
 
 workflow:
   rules:
@@ -30,6 +37,93 @@ workflow:
   dependencies: []
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+
+# A pre-configured environment for using npm.
+.npm:
+  interruptible: true
+  dependencies: [npm_ci]
+  needs:
+    - job: npm_ci
+      artifacts: true
+
+# A template for creating a minor or patch release
+.release:
+  extends: .npm
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      when: manual
+  allow_failure: true
+  script:
+    - apt-get update
+    - apt-get install --yes git gnupg
+    - gpg --import "$GPG_PRIVATE_KEY"
+    - |
+      if [ -n "$IDENTIFIER" ]; then
+        npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
+      else
+        npm run scripts -- release "$INCREMENT"
+      fi
+    - npm install
+    - npm --workspace @appsemble/eslint-plugin run prepack
+    - VERSION="$(npm --silent run appsemble -- --version)"
+    - |
+      MESSAGE="$VERSION
+
+      $(npm --silent run scripts get-release-notes)"
+    - git config user.email bot@appsemble.com
+    - git config user.name Appsemble
+    - git add .
+    - git commit --message "$MESSAGE" --cleanup whitespace --gpg-sign
+    - git tag "$VERSION" --message "$MESSAGE" --cleanup whitespace --sign
+    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:main
+    - |
+      if [ $? -eq 0 ]; then
+        echo "Code push successful. Pushing tags..."
+        git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" --tags
+      else
+        echo "Push to main branch failed. Tags will not be pushed."
+      fi
+
+###################################################################################################
+#  Auto-approve Renovate MRs                                                                      #
+###################################################################################################
+
+# Automatically approve merge requests from Renovate bot after build succeeds
+auto-approve-renovate:
+  stage: test
+  image: alpine:latest@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\// && $CI_MERGE_REQUEST_APPROVED != "true"
+  needs:
+    - npm_ci
+    - build docker image
+  script:
+    - apk add --no-cache curl
+    - |
+      curl --fail --request POST \
+        --header "PRIVATE-TOKEN: $GITLAB_APPROVAL_TOKEN" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/approve"
+
+###################################################################################################
+#  Security Stage                                                                                 #
+###################################################################################################
+
+secret-scan-mr:
+  stage: security
+  image: node:24-trixie@sha256:0c36fcf0bfd7d2c60bb4615dbac143bf9d8309c9bfb13c158095602b396a0f3a
+  variables:
+    BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
+    HEAD_SHA: ${CI_COMMIT_SHA}
+  script:
+    - npm install -g gitleaks-secret-scanner
+    - gitleaks-secret-scanner --diff-mode ci --html-report scan-report-mr.html
+  artifacts:
+    when: always
+    paths: [scan-report-mr.html]
+    expire_in: 1 week
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
 ###################################################################################################
 #  Build Stage                                                                                    #
@@ -180,6 +274,226 @@ build seeded db image:
       -f db-image/Dockerfile
     - docker push "$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG"
 
+# Build the npm packages that should be published.
+pack:
+  extends: .npm
+  stage: build
+  script:
+    - mkdir build/
+    - npm --pack-destination build --workspace @appsemble/types pack
+    - npm --pack-destination build --workspace @appsemble/sdk pack
+    - npm --pack-destination build --workspace @appsemble/lang-sdk pack
+    - npm --pack-destination build --workspace @appsemble/preact pack
+    - npm --pack-destination build --workspace @appsemble/utils pack
+    - npm --pack-destination build --workspace @appsemble/node-utils pack
+    - npm --pack-destination build --workspace @appsemble/webpack-config pack
+    - npm --pack-destination build --workspace @appsemble/cli pack
+    - npm --pack-destination build --workspace @appsemble/tsconfig pack
+    - npm --pack-destination build --workspace @appsemble/e2e pack
+    - npm --pack-destination build --workspace appsemble pack
+    - npm --pack-destination build --workspace create-appsemble pack
+    - npm run scripts -- validate-packaged-exports build/*
+    - find build -mindepth 1 -maxdepth 1 -type d -exec rm -r {} +
+  artifacts:
+    name: npm packages
+    expose_as: packages
+    paths:
+      - build/
+
+# Package the Helm chart
+helm package:
+  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  stage: build
+  needs: []
+  script:
+    - cp LICENSE.md config/charts/appsemble/
+    - config/bin/helm-package.sh --dependency-update --destination public config/charts/appsemble/
+  artifacts:
+    name: Helm chart
+    expose_as: Helm chart
+    paths:
+      - public/
+
+###################################################################################################
+#  Test Stage                                                                                     #
+###################################################################################################
+
+# Spell check using cspell
+cspell:
+  extends: .npm
+  stage: test
+  script:
+    - npx -- cspell
+
+# Lint JavaScript code using ESLint.
+eslint:
+  extends: .npm
+  stage: test
+  script:
+    - npm --workspace @appsemble/eslint-plugin run prepack
+    - npx -- eslint --format gitlab .
+  artifacts:
+    reports:
+      codequality: gl-codequality.json
+
+# Lint Helm charts.
+helm lint:
+  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  stage: test
+  needs: []
+  script:
+    - helm lint config/charts/*
+
+# Lint shell scripts
+shellcheck:
+  image: koalaman/shellcheck-alpine@sha256:920e1ce5b6839f906344c37b0cc34d207347d23db3858b647369bebe973fc653
+  stage: test
+  needs: []
+  script:
+    - printf "Evaluating:\n$(find . -name '*.sh')"
+    - find . -name '*.sh' | xargs shellcheck
+
+# Verify app messages are in sync with the app definition.
+i18n:
+  extends: .npm
+  stage: test
+  script:
+    - npm run appsemble -- app extract-messages --verify nl apps/*
+
+# Check formatting using prettier.
+prettier:
+  extends: .npm
+  stage: test
+  script:
+    - npx -- prettier .
+
+# Lint Markdown using remark.
+remark lint:
+  extends: .npm
+  stage: test
+  script:
+    - npx -- remark --frail --no-stdout .
+
+# Lint CSS using stylelint.
+stylelint:
+  extends: .npm
+  stage: test
+  script:
+    - npx -- stylelint .
+
+# Run unittests using NodeJS.
+test node:
+  extends: .npm
+  services:
+    - name: postgres:17
+      alias: postgres
+    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+      alias: minio
+      command: ['server', '/data']
+      variables:
+        MINIO_ROOT_USER: admin
+        MINIO_ROOT_PASSWORD: password
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_NAME: testAppsemble
+    DATABASE_HOST: postgres
+    DATABASE_PORT: 5432
+    DATABASE_USER: admin
+    DATABASE_PASSWORD: password
+    S3_HOST: 'minio'
+    S3_PORT: 9000
+  stage: test
+  script:
+    - npm test -- --no-file-parallelism --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+  parallel: 9
+  artifacts:
+    paths:
+      - coverage
+    reports:
+      junit: junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+
+# Check type validity for our TypeScript files.
+tsc:
+  extends: .npm
+  stage: test
+  script:
+    - npx --workspaces tsc
+
+# Check type validity for our TypeScript files.
+validate:
+  extends: .npm
+  stage: test
+  script:
+    - npm run scripts -- validate
+
+# Check migrations are in sync with Sequelize models
+check migrations:
+  extends: .npm
+  stage: test
+  interruptible: true
+  services:
+    - name: postgres:17
+      alias: postgres
+  variables:
+    FORCE_COLOR: '1' # Required for Chalk.js
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+  script:
+    - npm run appsemble -- check-migrations --database-name testAppsemble --database-host postgres --database-port 5432 --database-user admin --database-password password
+
+# Check down migrations
+check down migrations:
+  extends: .npm
+  stage: test
+  interruptible: true
+  services:
+    - name: postgres:17
+      alias: postgres
+  variables:
+    FORCE_COLOR: '1' # Required for Chalk.js
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+  script:
+    - npm run appsemble -- check-down-migrations --database-name testAppsemble --database-host postgres --database-port 5432 --database-user admin --database-password password
+
+# Fuzz test migrations for anomalous up and down migration failures
+fuzz migrations:
+  extends: .npm
+  stage: test
+  interruptible: true
+  services:
+    - name: postgres:17
+      alias: postgres
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+  script:
+    - npm run appsemble -- fuzz-migrations --database-name testAppsemble --database-host postgres --database-port 5432 --database-user admin --database-password password
+
+include:
+  # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Container-Scanning.gitlab-ci.yml
+  # https://docs.gitlab.com/ee/user/application_security/container_scanning
+  # Uses https://github.com/aquasecurity/trivy
+  # The 'latest' template is used to enable merge-request scanning
+  # The generated report is used for https://gitlab.com/appsemble/security-policy-management/-/blob/main/.gitlab/security-policies/policy.yml
+  - template: Jobs/Container-Scanning.latest.gitlab-ci.yml
+
+container_scanning:
+  needs:
+    - build docker image
+  variables:
+    GIT_STRATEGY: fetch
+    CS_DISABLE_LANGUAGE_VULNERABILITY_SCAN: false
+    CS_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+
 validate snippets:
   stage: test
   interruptible: true
@@ -230,6 +544,10 @@ validate snippets:
   script:
     - npm run appsemble -- config set remote 'http://appsemble:9999'
     - npm run scripts -- validate-docs --organization appsemble --remote 'http://appsemble:9999' --clientCredentials $APPSEMBLE_CLIENT_CREDENTIALS -vv
+
+###################################################################################################
+#  End 2 End Stage                                                                               #
+###################################################################################################
 
 e2e node:
   stage: end 2 end
@@ -297,3 +615,771 @@ e2e node:
       - packages/e2e/test-results/
     reports:
       junit: packages/e2e/results.xml
+
+# Apps under SLA are supported through Appsemble core changes
+e2e SLA apps:
+  allow_failure: false
+  stage: end 2 end
+  needs:
+    - build docker image
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_COMMIT_TAG
+  inherit:
+    variables: false
+  variables:
+    APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+  parallel:
+    matrix:
+      - PROJECT:
+          - 'appsemble/apps/sittard-geleen'
+          - 'appsemble/apps/minjus'
+  trigger:
+    project: $PROJECT
+    strategy: depend
+    branch: main
+
+e2e SLA apps(private):
+  stage: end 2 end
+  needs:
+    - build docker image
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_COMMIT_TAG
+  variables:
+    APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+  parallel:
+    matrix:
+      - PROJECT_NAME: RESTAURANTS
+        PROJECT_ID: '111'
+      - PROJECT_NAME: SOUNDING_BODIES
+        PROJECT_ID: '105'
+  script:
+    - apt-get update
+    - apt-get install --yes curl jq
+    # Trigger pipeline on remote GitLab and poll until completion
+    - |
+      case "$PROJECT_NAME" in
+        RESTAURANTS) TRIGGER_TOKEN="$DC_GITLAB_TRIGGER_RESTAURANTS" ;;
+        SOUNDING_BODIES) TRIGGER_TOKEN="$DC_GITLAB_TRIGGER_SOUNDING_BODIES" ;;
+        *) echo "Unknown project: $PROJECT_NAME"; exit 1 ;;
+      esac
+      RESPONSE=$(curl -s --request POST \
+        --form "token=$TRIGGER_TOKEN" \
+        --form "ref=main" \
+        --form "variables[APPSEMBLE_IMAGE]=$APPSEMBLE_IMAGE" \
+        "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/trigger/pipeline")
+      echo "Trigger response: $(echo "$RESPONSE" | jq '{id, status, web_url, message}')"
+      PIPELINE_ID=$(echo "$RESPONSE" | jq -r '.id')
+      if [ "$PIPELINE_ID" = "null" ] || [ -z "$PIPELINE_ID" ]; then
+        echo "Failed to trigger pipeline"
+        exit 1
+      fi
+      echo "Triggered pipeline $PIPELINE_ID"
+
+      while true; do
+        RESPONSE=$(curl -s --header "PRIVATE-TOKEN: $DC_GITLAB_TOKEN" \
+          "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/pipelines/$PIPELINE_ID")
+        STATUS=$(echo "$RESPONSE" | jq -r '.status')
+        echo "Pipeline $PIPELINE_ID status: $STATUS"
+        case "$STATUS" in
+          success) exit 0 ;;
+          failed|canceled) exit 1 ;;
+          null) echo "Failed to get pipeline status"; exit 1 ;;
+          *) sleep 10 ;;
+        esac
+      done
+
+# Allow failure as we don't support these anymore
+# e2e SLA apps deprecated:
+#   when: manual
+#   allow_failure: true
+#   stage: end 2 end
+#   needs:
+#     - build docker image
+#   rules:
+#     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+#     - if: $CI_COMMIT_TAG
+#   inherit:
+#     variables: false
+#   variables:
+#     APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+#   parallel:
+#     matrix:
+#       - PROJECT:
+#           - 'appsemble/apps/template'
+#           - 'appsemble/apps/eindhoven'
+#           - 'appsemble/apps/amersfoort'
+#           - 'appsemble/apps/tbvwonen'
+#   trigger:
+#     project: $PROJECT
+#     strategy: depend
+#     branch: main
+
+###################################################################################################
+#  Publish Stage                                                                                  #
+###################################################################################################
+
+twitter:
+  extends: .npm
+  stage: publish
+  # This is new and mainly used to update nice-to-have metadata.
+  # Allow failure to prevent blocking of important jobs.
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - npm run scripts -- twitter
+
+# Update metadata on Docker Hub
+docker metadata:
+  extends: .npm
+  stage: publish
+  # This is new and mainly used to update nice-to-have metadata.
+  # Allow failure to prevent blocking of important jobs.
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - npm run scripts -- docker-metadata
+
+# Create a GitHub release
+github release:
+  extends: .npm
+  stage: publish
+  # This is new and mainly used to update nice-to-have metadata.
+  # Allow failure to prevent blocking of important jobs.
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - npm run scripts -- github-release
+
+# Create a GitLab release
+gitlab release:
+  extends: .npm
+  stage: publish
+  # This is new and mainly used to update nice-to-have metadata.
+  # Allow failure to prevent blocking of important jobs.
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - npm run scripts -- gitlab-release
+
+publish docker:
+  extends: .docker
+  tags:
+    - saas-linux-small-amd64
+  stage: publish
+  needs:
+    - build docker image
+  variables:
+    GIT_STRATEGY: none
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE:latest"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "appsemble/appsemble:latest"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "appsemble/appsemble:$CI_COMMIT_TAG"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+    - docker push "appsemble/appsemble:latest"
+    - docker push "appsemble/appsemble:$CI_COMMIT_TAG"
+
+# Publish the Helm chart to https://charts.appsemble.com
+publish helm:
+  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  needs:
+    - helm package
+  stage: publish
+  variables:
+    GIT_STRATEGY: none
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - apk add git gnupg
+    - gpg --import "$GPG_PRIVATE_KEY"
+    - git init
+    - git remote add origin "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/charts.git"
+    - git fetch --depth 1
+    - git checkout --track origin/main
+    - git config commit.gpgSign true
+    - git config user.email bot@appsemble.com
+    - git config user.name Appsemble
+    - git add public
+    - git commit --message "Add Appsemble Helm chart $CI_COMMIT_TAG"
+    - git push origin main
+    - helm repo add appsemble https://charts.appsemble.com
+    - | # Wait until the chart has been published downstream
+      while ! helm show all 'appsemble/appsemble' --version "$CI_COMMIT_TAG" 2> /dev/null; do
+        sleep 3
+        echo retrying in 3 seconds…
+        helm repo update > /dev/null
+      done
+
+# Publish npm packages to npmjs.org using trusted publishing (OIDC).
+# See: https://docs.npmjs.com/generating-provenance-statements#publishing-packages-with-provenance-via-gitlab-cicd
+publish npm:
+  tags:
+    - saas-linux-small-amd64
+  stage: publish
+  needs:
+    - job: pack
+      artifacts: true
+  variables:
+    GIT_STRATEGY: none
+  rules:
+    - if: $CI_COMMIT_TAG
+  id_tokens:
+    SIGSTORE_ID_TOKEN:
+      aud: sigstore
+    NPM_ID_TOKEN:
+      aud: 'npm:registry.npmjs.org'
+  script:
+    - |
+      if echo "$CI_RUNNER_TAGS" | grep -q "self-hosted"; then
+        echo "Detected self-hosted runner, using NPM_TOKEN for authentication"
+        npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+        PROVENANCE_FLAG=""
+      else
+        echo "Using npm trusted publishing (OIDC)"
+        npm config set //registry.npmjs.org/:_authToken "${NPM_ID_TOKEN}"
+        PROVENANCE_FLAG="--provenance"
+      fi
+      echo "Using provenance flag: '$PROVENANCE_FLAG'"
+      # Use 'next' tag for prerelease versions to avoid publishing to 'latest'
+      TAG_FLAG=""
+      if echo "$CI_COMMIT_TAG" | grep -q '-'; then
+        TAG_FLAG="--tag next"
+        echo "Detected prerelease version, publishing with tag: next"
+      fi
+      find ./build -name "*.tgz" -print0 | xargs -0 -I{} sh -c 'npm publish "{}" --access public '"$PROVENANCE_FLAG"' '"$TAG_FLAG"''
+
+# Perform various post release actions.
+sentry release:
+  needs:
+    - job: build docker image
+      artifacts: true
+  image:
+    name: getsentry/sentry-cli:2@sha256:2a60d341709d8ae040b842556c66f98443cc6d59101cab751f9811f3a1df9362
+    entrypoint: [/bin/sh, -c]
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - sentry-cli releases new --finalize "$CI_COMMIT_TAG"
+    - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
+    - sentry-cli releases files upload-sourcemaps dist/
+
+# Create a test pre-release
+release test:
+  extends: .release
+  variables:
+    INCREMENT: prerelease
+    IDENTIFIER: test
+
+# Create a patch release
+release patch:
+  extends: .release
+  variables:
+    INCREMENT: patch
+
+# Create a minor release
+release minor:
+  extends: .release
+  variables:
+    INCREMENT: minor
+
+###################################################################################################
+#  Deploy Stage                                                                                   #
+###################################################################################################
+
+# Update lockfile and fix formatting where possible
+update dependencies:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule' && $UPDATE_PROJECT_DEPS == 'true'
+  cache:
+    policy: push
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules
+      - '**/node_modules'
+  script:
+    - apt update
+    - apt install --yes git gnupg
+    - gpg --import "$GPG_PRIVATE_KEY"
+    - git init
+    - git remote add origin "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble.git"
+    - git fetch --depth 1
+    - git checkout -B update-lockfile origin/main
+    - git config commit.gpgSign true
+    - git config user.email bot@appsemble.com
+    - git config user.name Appsemble
+    - rm package-lock.json
+    - npm install --ignore-scripts
+    - npx -- eslint --fix . || true
+    - npx -- remark . -o || true
+    - npx -- stylelint --fix . || true
+    - npx -- prettier --write . || true
+    - git commit --all --message 'Update package-lock.json'
+    - git push --force origin update-lockfile
+      -o merge_request.create
+      -o merge_request.label=Chore
+      -o merge_request.merge_when_pipeline_succeeds
+      -o merge_request.remove_source_branch
+
+# Deploy the Docker image for a branch to a review environment.
+review:
+  image: dtzar/helm-kubectl:3.16.0@sha256:3d0876a8a4159fddfb381fcccf23c774bcfcd4b4ffdbb80c1a5c10c1eb23de54
+  stage: deploy
+  needs:
+    - build docker image
+    - job: helm package
+      artifacts: true
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+  environment:
+    name: review/$CI_MERGE_REQUEST_IID
+    url: https://$CI_MERGE_REQUEST_IID.appsemble.review
+    on_stop: stop review
+    auto_stop_in: 1 day
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - kubectl config use-context "$CI_PROJECT_PATH:review"
+    # This is the only way to make sure the review environment can be overwritten
+    - helm delete "review-$CI_MERGE_REQUEST_IID" || true
+    - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" || true
+    - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
+    - kubectl delete secret review-$CI_MERGE_REQUEST_IID-mailpit-tls || true
+    - apk add --no-cache openssl
+    - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
+    - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
+    - rm mailpit.key mailpit.crt
+    # Stripe webhook setup
+    - apk add --no-cache curl jq tar
+    - LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
+    - URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
+    - curl -L -o stripe.tar.gz "$URL"
+    - tar -xvf stripe.tar.gz
+    - mv stripe /usr/local/bin/
+    - stripe -v
+    - |
+      WEBHOOK_URL="https://$CI_MERGE_REQUEST_IID.appsemble.review/api/payments/accept-payment"
+
+      WEBHOOK_ID=$(stripe webhook_endpoints list --limit 20 --api-key "$STRIPE_API_SECRET_KEY" | \
+        jq -r --arg url "$WEBHOOK_URL" '.data[] | select(.url==$url) | .id')
+      if [ -n "$WEBHOOK_ID" ]; then
+        stripe webhook_endpoints delete "$WEBHOOK_ID" --api-key "$STRIPE_API_SECRET_KEY" --confirm
+      fi
+    - kubectl delete secret stripe-webhook-secret-$CI_MERGE_REQUEST_IID || true
+    - |
+      export STRIPE_WEBHOOK_SECRET=$(stripe webhook_endpoints create \
+        --url https://$CI_MERGE_REQUEST_IID.appsemble.review/api/payments/accept-payment \
+        --enabled-events checkout.session.async_payment_failed \
+        --enabled-events checkout.session.async_payment_succeeded \
+        --enabled-events checkout.session.completed \
+        --enabled-events invoice.paid \
+        --enabled-events invoice.payment_failed \
+        --enabled-events invoice.payment_succeeded \
+        --api-key "$STRIPE_API_SECRET_KEY" | jq -r '.secret')
+    - kubectl create secret generic stripe-webhook-secret-$CI_MERGE_REQUEST_IID --from-literal=stripe-webhook-secret="$STRIPE_WEBHOOK_SECRET"
+    # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
+    - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
+      --debug
+      --atomic
+      --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
+      --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
+      --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
+      --set "image.pullPolicy=Always"
+      --set "image.repository=$CI_REGISTRY_IMAGE"
+      --set "image.tag=$CI_COMMIT_REF_SLUG"
+      --set "ingress.clusterIssuer=acme-issuer-dev"
+      --set "ingress.enabled=true"
+      --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
+      --set "ingress.tls.secretName=review-$CI_MERGE_REQUEST_IID-tls"
+      --set "ingress.tls.wildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
+      --set "migrateTo=next"
+      --set "global.postgresql.auth.existingSecret=postgresql-secret"
+      --set "postgresql.primary.persistence.size=1Gi"
+      --set "provision.organization.id=appsemble"
+      --set "provision.organization.subscription=enterprise"
+      --set "provision.user.organizationRole=Maintainer"
+      --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
+      --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
+      --set "provision.user.name=$BOT_ACCOUNT_NAME"
+      --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
+      --set "provision.user.timezone=Europe/Amsterdam"
+      --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
+      --set "proxy=true"
+      --set "remote=https://appsemble.app"
+      --set "sentry.allowedDomains={*.appsemble.review}"
+      --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
+      --set "sentry.secret=sentry"
+      --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
+      --set "minio.persistence.size=1Gi"
+      --set "minio.fullnameOverride=review-$CI_MERGE_REQUEST_IID-minio"
+      --set "minio.ingress.hostname=console.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.apiIngress.hostname=api.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
+      --set "backups.enabled=false"
+
+# Stop a review environment.
+stop review:
+  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  dependencies: []
+  stage: deploy
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+      when: manual
+  allow_failure: true
+  environment:
+    name: review/$CI_MERGE_REQUEST_IID
+    action: stop
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - kubectl config use-context "$CI_PROJECT_PATH:review"
+    - helm delete "review-$CI_MERGE_REQUEST_IID"
+    - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID"
+    - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
+    - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep "^review-$CI_MERGE_REQUEST_IID" | xargs -I{} kubectl delete secret {} || true
+
+# Deploy the Docker image for main to the staging environment.
+staging:
+  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  stage: deploy
+  needs:
+    - build docker image
+    - job: helm package
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'staging'
+  environment:
+    name: staging
+    url: https://appsemble.eu
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - kubectl config use-context "$CI_PROJECT_PATH:staging"
+    # This is the only way to make sure staging can be overwritten
+    - helm delete staging || true
+    - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
+    - kubectl delete namespace "companion-containers-staging" || true
+    - kubectl delete secret staging-mailpit-tls || true
+    - apk add --no-cache openssl
+    - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=staging-appsemble-mailpit-smtp" -addext "subjectAltName=DNS:staging-appsemble-mailpit-smtp"
+    - kubectl create secret tls staging-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
+    - rm mailpit.key mailpit.crt
+    - helm install staging ./public/appsemble-*.tgz
+      --atomic
+      --timeout 30m0s
+      --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
+      --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
+      --set "global.postgresql.auth.existingSecret=postgresql-secret"
+      --set "image.pullPolicy=Always"
+      --set "image.repository=$CI_REGISTRY_IMAGE"
+      --set "image.tag=staging"
+      --set "ingress.clusterIssuer=acme-issuer-dev"
+      --set "ingress.enabled=true"
+      --set "ingress.host=appsemble.eu"
+      --set "ingress.tls.secretName=staging-tls"
+      --set "ingress.tls.wildcardSecretName=staging-tls-wildcard"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=1G"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/force-ssl-redirect=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/ssl-redirect=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts-include-subdomains=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts-max-age=\"31536000\""
+      --set "migrateTo=next"
+      --set "oauthSecret=oauth2"
+      --set "skipCustomDomains=true"
+      --set "postgresql.fullnameOverride=staging-postgresql"
+      --set 'minio.persistence.size=20Gi'
+      --set "postgresql.primary.resources.requests.cpu=250m"
+      --set "postgresql.primary.resources.requests.memory=1Gi"
+      --set "postgresql.primary.resources.limits.cpu=1"
+      --set "postgresql.primary.resources.limits.memory=2Gi"
+      --set "provision.organization.id=appsemble"
+      --set "provision.organization.subscription=enterprise"
+      --set "provision.user.organizationRole=Maintainer"
+      --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
+      --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
+      --set "provision.user.name=$BOT_ACCOUNT_NAME"
+      --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
+      --set "provision.user.timezone=Europe/Amsterdam"
+      --set "migrateDefinitions.save=true"
+      --set "proxy=true"
+      --set "remote=https://appsemble.app"
+      --set "sentry.allowedDomains={*.appsemble.en}"
+      --set "sentry.environment=staging"
+      --set "sentry.secret=sentry"
+      --set "quotas.appEmail.enabled=true"
+      --set "quotas.appEmail.dailyLimit=10"
+      --set "quotas.appEmail.alertOrganizationOwner=true"
+      --set "mailpit.mailpit.smtp.tls.secretName=staging-mailpit-tls"
+      --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
+      --set "minio.fullnameOverride=staging-minio"
+      --set "minio.ingress.hostname=console.minio.appsemble.eu"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.apiIngress.hostname=api.minio.appsemble.eu"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "backups.enabled=false"
+
+production:
+  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  stage: deploy
+  needs:
+    - publish docker
+    - publish helm
+  rules:
+    - if: $CI_COMMIT_TAG
+  environment:
+    name: production
+    url: https://appsemble.app
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - kubectl config use-context "$CI_PROJECT_PATH:production"
+    - kubectl config set-context --current --namespace default
+    - helm repo add appsemble https://charts.appsemble.com
+    # Prevent a finished job without chart actually serving.
+    - |
+      retries=0
+      found=0
+      while [ $retries -lt 100 ] && [ $found -ne 1 ]; do
+        helm repo update
+        if helm search repo appsemble/appsemble --version "$CI_COMMIT_TAG" --fail-on-no-result; then
+          echo "Chart found!"
+          found=1
+        else
+          echo "Chart version $CI_COMMIT_TAG not found, retrying in 5 seconds..."
+          sleep 5
+          retries=$((retries + 1))
+        fi
+      done
+      if [ $found -ne 1 ]; then
+        echo "Maximum number of attempts reached. Chart not found."
+        exit 1
+      fi
+    - kubectl delete secret appsemble-mailpit-tls || true
+    - apk add --no-cache openssl
+    - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=appsemble-mailpit-smtp" -addext "subjectAltName=DNS:appsemble-mailpit-smtp"
+    - kubectl create secret tls appsemble-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
+    - rm mailpit.key mailpit.crt
+    - kubectl rollout restart deployment appsemble-mailpit || true
+    - helm upgrade appsemble appsemble/appsemble
+      --debug
+      --timeout 30m
+      --version "$CI_COMMIT_TAG"
+      --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
+      --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
+      --set "global.postgresql.auth.existingSecret=$POSTGRESQL_SECRET"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=1G"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/force-ssl-redirect=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/ssl-redirect=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts-include-subdomains=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts-max-age=\"31536000\""
+      --set "ingress.clusterIssuer=acme-issuer-prod"
+      --set "ingress.enabled=true"
+      --set "ingress.host=appsemble.app"
+      --set "ingress.tls.secretName=appsemble-tls"
+      --set "ingress.tls.wildcardSecretName=appsemble-tls-wildcard"
+      --set "oauthSecret=oauth2"
+      --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
+      --set "postgresql.enabled=true"
+      --set 'postgresSSL=false'
+      --set 'minio.persistence.size=20Gi'
+      --set "postgresql.primary.resources.requests.cpu=250m"
+      --set "postgresql.primary.resources.requests.memory=1Gi"
+      --set "postgresql.primary.resources.limits.cpu=1"
+      --set "postgresql.primary.resources.limits.memory=2Gi"
+      --set "migrateDefinitions.save=true"
+      --set "proxy=true"
+      --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
+      --set "sentry.environment=production"
+      --set "sentry.secret=sentry"
+      --set "quotas.appEmail.enabled=true"
+      --set "quotas.appEmail.dailyLimit=10"
+      --set "quotas.appEmail.alertOrganizationOwner=true"
+      --set "mailpit.mailpit.smtp.tls.secretName=appsemble-mailpit-tls"
+      --set "minio.ingress.hostname=console.minio.appsemble.app"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
+      --set "minio.apiIngress.hostname=api.minio.appsemble.app"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
+      --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "backups.host=$BACKUPS_HOST"
+      --set "backups.filename=appsemble_prod_backup"
+      --wait
+
+###################################################################################################
+#  Provision Stage                                                                                #
+###################################################################################################
+
+# Provision the review environment with the blocks that were built in the build stage.
+provision review:
+  extends: .npm
+  stage: provision
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+      when: manual
+      allow_failure: true
+  variables:
+    INCREMENT: patch
+    IDENTIFIER: ''
+    APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
+    APPSEMBLE_STAGING_DOMAIN: 'appsemble.eu'
+  needs:
+    - review
+    - npm_ci
+  script:
+    - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
+    - npm run appsemble -- config set context review
+    - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
+    - npm run scripts -- wait-for-api
+    - npm run appsemble -- block create --organization appsemble --template vanilla --name template-vanilla --path blocks
+    - npm run appsemble -- block create --organization appsemble --template preact --name template-preact --path blocks
+    - npm run appsemble -- block create --organization appsemble --template mini-jsx --name template-mini-jsx --path blocks
+    - npm run appsemble -- block publish 'blocks/*'
+    - npm run appsemble -- app publish 'apps/*' --resources --assets --assets-clonable --modify-context
+
+# Provision the staging environment with the blocks that were built in the build stage.
+provision staging:
+  extends: .npm
+  stage: provision
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'staging'
+      when: manual
+      allow_failure: true
+  variables:
+    INCREMENT: patch
+    IDENTIFIER: ''
+  needs:
+    - staging
+    - npm_ci
+  script:
+    - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
+    - npm run appsemble -- config set context staging
+    - npm run appsemble -- config set remote https://appsemble.eu
+    - npm run appsemble -- -vv block publish blocks/*
+    - apt-get update
+    - apt-get install --yes git gnupg yq
+    - ./scripts/publish-or-update-apps.sh staging
+
+# Provision the production environment with the blocks that were built in the build stage.
+provision production:
+  extends: .npm
+  stage: provision
+  rules:
+    - if: $CI_COMMIT_TAG
+  needs:
+    - production
+    - npm_ci
+  environment:
+    name: production
+    action: prepare
+  script:
+    - npm run appsemble -- config set context production
+    - npm run appsemble -- config set remote https://appsemble.app
+    - npm run appsemble -- config set ignore-conflict true
+    - npm run appsemble -- -vv block publish blocks/*
+    - apt-get update
+    - apt-get install --yes git gnupg yq
+    - ./scripts/publish-or-update-apps.sh --push-to-main production
+
+###################################################################################################
+#  Performance Stage                                                                               #
+###################################################################################################
+
+#
+# --- Disabled for now ---
+#
+# lighthouse:
+#   interruptible: true
+#   stage: performance
+#   extends: .npm
+#   image: $CI_REGISTRY/appsemble/docker-node-chrome
+#   needs:
+#     - npm_ci
+#     - job: provision review
+#       optional: true
+#     - job: provision staging
+#       optional: true
+#     - job: provision production
+#       optional: true
+#   rules:
+#     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+#     - if: $CI_COMMIT_TAG
+#   variables:
+#     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
+#     APPSEMBLE_STAGING_DOMAIN: 'appsemble.eu'
+#   script:
+#     - npm run scripts -- wait-for-ssl
+#     - npx -- lhci collect
+#     - npx -- lhci assert
+#   artifacts:
+#     expose_as: Lighthouse reports
+#     when: always
+#     paths:
+#       - .lighthouseci
+
+###################################################################################################
+#  Cleanup Stage                                                                                  #
+###################################################################################################
+
+# Stop and cleanup all review environments.
+cleanup review environments:
+  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  dependencies: []
+  stage: cleanup
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule' && $CLEANUP_REVIEW_ENVIRONMENTS == 'true'
+    - if: $CI_COMMIT_BRANCH == 'main'
+      when: manual
+  allow_failure: true
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - kubectl config use-context "$CI_PROJECT_PATH:review"
+    # Delete all review managed ingresses instead of relying on the pre-delete hooks
+    - kubectl get ingress --selector app.kubernetes.io/managed-by -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete ingress " $1}' | bash || true
+    # Delete all review managed secrets instead of relying on the pre-delete hooks
+    - kubectl get secret --selector app.kubernetes.io/managed-by -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete secret " $1}' | bash || true
+    # Delete all helm review releases without hooks
+    - helm list --short | grep '^review-' | xargs -I {} helm delete {} --no-hooks || true
+    # Delete all remaining review kubernetes resources with instance selector
+    - kubectl get all --selector app.kubernetes.io/instance -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/instance}{" "}{.kind}{"\n"}{end}' | grep '^.* review-' | awk '{kind=tolower($3); print "kubectl delete " kind " " $1;}' | bash || true
+    # Delete all persistent volume claims from review environments
+    - kubectl get pvc --selector app.kubernetes.io/instance -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/instance}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete pvc " $1}' | bash || true
+    # Delete all companion container namespaces for review environments
+    - kubectl get namespaces --no-headers -o custom-columns=:metadata.name | grep '^companion-containers-review-' | xargs -I{} kubectl delete namespace {} || true
+    # Delete all ingresses for review environments
+    - kubectl get ingress --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete ingress {} || true
+    # Delete all secrets for review environments
+    - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete secret {} || true
+    # Delete all Stripe webhooks for review environments
+    - apk add --no-cache curl jq tar
+    - LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
+    - URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
+    - curl -L -o stripe.tar.gz "$URL"
+    - tar -xvf stripe.tar.gz
+    - mv stripe /usr/local/bin/
+    - stripe -v
+    - |
+      stripe webhook_endpoints list --limit 20 --api-key "$STRIPE_API_SECRET_KEY" \
+      | jq -r '.data[].id' \
+      | xargs -I{} stripe webhook_endpoints delete {} --api-key "$STRIPE_API_SECRET_KEY" --confirm
