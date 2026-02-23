@@ -95,6 +95,44 @@
         }
       }
     },
+    "route": {
+      "type": "object",
+      "description": "OpenShift Route configuration. Use this instead of ingress on OpenShift clusters.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether or not the service should be exposed through an OpenShift Route."
+        },
+        "host": {
+          "type": "string",
+          "description": "The host name on which the route will expose the service."
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Annotations for the OpenShift Route.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tls": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "termination": {
+              "type": "string",
+              "description": "TLS termination type: edge, passthrough, or reencrypt.",
+              "enum": ["edge", "passthrough", "reencrypt"]
+            },
+            "insecureEdgeTerminationPolicy": {
+              "type": "string",
+              "description": "Policy for handling insecure traffic: Allow, Redirect, or None.",
+              "enum": ["Allow", "Redirect", "None"]
+            }
+          }
+        }
+      }
+    },
     "resources": {
       "type": "object"
     },

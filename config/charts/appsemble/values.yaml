@@ -31,6 +31,15 @@ ingress:
     # secretName: chart-example-tls
   # wildcardSecretName: chart-example-tls-wildcard
 
+# OpenShift Route configuration (alternative to Ingress)
+route:
+  enabled: false
+  host: ''
+  annotations: {}
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+
 resources:
   {}
   # limits:
