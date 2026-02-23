@@ -232,6 +232,43 @@ export const update: ActionCreator<'resource.update'> = (args) => {
   });
 };
 
+export const updateGroup: ActionCreator<'resource.update.group'> = (args) => {
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const { query: actionQuery, resource: resourceType } = definition;
+  const queryRemapper = ([] as any[]).concat(actionQuery).filter(Boolean);
+  const selectedGroup = getAppMemberSelectedGroup?.();
+  if (selectedGroup) {
+    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  }
+  const resource = appDefinition.resources?.[resourceType];
+  const method = 'PUT';
+  const url = `${apiUrl}/api/apps/${appId}/resources/${resourceType}`;
+  // @ts-expect-error Messed up
+  const { id = 'id' } = resource;
+  return request({
+    ...args,
+    definition: {
+      ...definition,
+      body: {
+        'object.from': {
+          groupId: definition.groupId ?? { prop: 'groupId' },
+        },
+      },
+      method,
+      query: queryRemapper,
+      proxy: false,
+      type: 'request',
+      url: {
+        'string.format': {
+          template: `${url}${url.endsWith('/') ? '' : '/'}{id}/group`,
+          values: { id: definition.id ?? { prop: id as string } },
+        },
+      },
+      schema: resource?.schema,
+    },
+  });
+};
+
 export const updatePositions: ActionCreator<'resource.update.positions'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
   const { query: actionQuery, resource: resourceType } = definition;

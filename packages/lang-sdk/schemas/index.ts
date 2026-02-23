@@ -54,6 +54,7 @@ export * from './actions/GroupQueryActionDefinition.js';
 export * from './actions/LinkActionDefinition.js';
 export * from './actions/ResourceSubscriptionUnsubscribeActionDefinition.js';
 export * from './actions/ResourceUpdateActionDefinition.js';
+export * from './actions/ResourceUpdateGroupActionDefinition.js';
 export * from './actions/ResourceUpdatePositionsActionDefinition.js';
 export * from './actions/ShareActionDefinition.js';
 export * from './actions/StaticActionDefinition.js';

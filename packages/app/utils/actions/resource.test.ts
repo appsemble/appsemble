@@ -84,6 +84,70 @@ describe('resource.get', () => {
   });
 });
 
+describe('resource.update.group', () => {
+  it('should make a PUT request to the right URL', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, 5, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.update.group', resource: 'pet' },
+    });
+    const result = await action({
+      id: 84,
+      type: 'fish',
+      groupId: 5,
+    });
+    expect(request.method).toBe('put');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84/group`);
+    expect(request.data).toBe('{"groupId":5}');
+    expect(result).toBe(5);
+  });
+
+  it('should support explicit groupId param', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, 10, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: {
+        type: 'resource.update.group',
+        resource: 'pet',
+        groupId: { prop: 'targetGroup' },
+      },
+    });
+    const result = await action({
+      id: 84,
+      targetGroup: 10,
+    });
+    expect(request.method).toBe('put');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84/group`);
+    expect(request.data).toBe('{"groupId":10}');
+    expect(result).toBe(10);
+  });
+
+  it('should support explicit id param', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, 7, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.update.group', resource: 'pet', id: { prop: 'resourceId' } },
+    });
+    const result = await action({
+      resourceId: 99,
+      groupId: 7,
+    });
+    expect(request.method).toBe('put');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/99/group`);
+    expect(request.data).toBe('{"groupId":7}');
+    expect(result).toBe(7);
+  });
+});
+
 describe('resource.update.positions', () => {
   it('should make a PUT request to the right URL', async () => {
     mock.onAny(/.*/).reply((req) => {

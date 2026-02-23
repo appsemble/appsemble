@@ -61,6 +61,7 @@ export type ActionDefinition =
   | ResourceSubscriptionToggleActionDefinition
   | ResourceSubscriptionUnsubscribeActionDefinition
   | ResourceUpdateActionDefinition
+  | ResourceUpdateGroupActionDefinition
   | ResourceUpdatePositionsActionDefinition
   | ShareActionDefinition
   | StaticActionDefinition
@@ -125,6 +126,7 @@ export type ActionName =
   | 'resource.subscription.subscribe'
   | 'resource.subscription.toggle'
   | 'resource.subscription.unsubscribe'
+  | 'resource.update.group'
   | 'resource.update.positions'
   | 'resource.update'
   | 'share'
@@ -802,6 +804,11 @@ export type ResourceQueryActionDefinition = OwnResourceDefinition &
 export type ResourceCountActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
+export type ResourceUpdateGroupActionDefinition =
+  ResourceActionDefinition<'resource.update.group'> &
+    ResourceActionWithIdDefinition & {
+      groupId?: Remapper;
+    };
 export type ResourceUpdatePositionsActionDefinition =
   ResourceActionDefinition<'resource.update.positions'> & ResourceActionWithIdDefinition;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'> &
