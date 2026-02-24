@@ -1,4 +1,4 @@
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { AppsembleError, getRequestId, logger } from '@appsemble/node-utils';
 import { highlight } from 'cli-highlight';
 import {
   AccessDeniedError,
@@ -20,13 +20,15 @@ import { argv } from './argv.js';
  */
 export function logSQL(statement: string, timing?: number): void {
   const highlighted = highlight(statement, { language: 'sql', ignoreIllegals: true });
+  const requestId = getRequestId();
+  const prefix = requestId ? `[${requestId.slice(0, 8)}] ` : '';
 
   if (timing === undefined) {
-    logger.silly(highlighted);
+    logger.silly(`${prefix}${highlighted}`);
   } else if (timing > argv.slowQueryThreshold) {
-    logger.warn(`Slow query (${timing}ms): ${highlighted}`);
+    logger.warn(`${prefix}Slow query (${timing}ms): ${highlighted}`);
   } else {
-    logger.silly(`(${timing}ms) ${highlighted}`);
+    logger.silly(`${prefix}(${timing}ms) ${highlighted}`);
   }
 }
 

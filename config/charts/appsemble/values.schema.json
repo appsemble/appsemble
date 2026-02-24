@@ -223,6 +223,16 @@
       "type": "boolean",
       "description": "If `true`, connect establish the PostgreSQL connection over SSL."
     },
+    "databaseBenchmark": {
+      "type": "boolean",
+      "description": "If `true`, enable query timing. Logs execution time for each SQL query and warns for slow queries.",
+      "default": true
+    },
+    "slowQueryThreshold": {
+      "type": "integer",
+      "description": "Threshold in milliseconds. Queries slower than this are logged as warnings when benchmark mode is enabled.",
+      "default": 100
+    },
     "quotas": {
       "type": "object",
       "additionalProperties": false,

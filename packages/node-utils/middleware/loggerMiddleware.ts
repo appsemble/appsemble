@@ -3,6 +3,7 @@ import { type ParameterizedContext } from 'koa';
 import type * as compose from 'koa-compose';
 
 import { logger } from '../logger.js';
+import { createRequestContext, requestStore } from '../requestContext.js';
 
 interface RangeMap<T> {
   [key: number]: T;
@@ -24,7 +25,9 @@ export function loggerMiddleware(): compose.Middleware<ParameterizedContext> {
     const { href, res } = ctx;
     const start = Date.now();
     const method = chalk.bold(ctx.method);
-    logger.info(`${method} ${href} — ${chalk.white(ctx.ip)}`);
+    const context = createRequestContext(ctx.method, ctx.path);
+    const reqIdPrefix = `[${context.requestId.slice(0, 8)}] `;
+    logger.info(`${reqIdPrefix}${method} ${href} — ${chalk.white(ctx.ip)}`);
 
     function logResponse(): void {
       res.removeListener('finish', logResponse);
@@ -64,7 +67,7 @@ export function loggerMiddleware(): compose.Middleware<ParameterizedContext> {
 
       logger.log(
         level,
-        `${method} ${href} ${formatStatus(location ? `${s} → ${location}` : s)} ${formatDuration(
+        `${reqIdPrefix}${method} ${href} ${formatStatus(location ? `${s} → ${location}` : s)} ${formatDuration(
           `${duration}ms`,
         )}`,
       );
@@ -82,13 +85,13 @@ export function loggerMiddleware(): compose.Middleware<ParameterizedContext> {
       });
 
       logger.warn(
-        `${method} ${href} ${chalk.grey('Cancelled')} ${formatDuration(`${duration}ms`)}`,
+        `${reqIdPrefix}${method} ${href} ${chalk.grey('Cancelled')} ${formatDuration(`${duration}ms`)}`,
       );
     }
 
     res.once('finish', logResponse);
     res.once('close', logCancel);
 
-    return next();
+    return requestStore.run(context, next);
   };
 }
