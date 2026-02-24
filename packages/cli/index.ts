@@ -13,6 +13,7 @@ import * as chargeOrganizationSubscriptions from './commands/chargeOrganizationS
 import * as checkDownMigrations from './commands/checkDownMigrations.js';
 import * as checkAppMigrations from './commands/checkMigrations.js';
 import * as cleanupDemoAppMembers from './commands/cleanupDemoAppMembers.js';
+import * as cleanupExpiredDomains from './commands/cleanupExpiredDomains.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
 import * as cleanupSoftDeletedRecords from './commands/cleanupSoftDeletedRecords.js';
 import * as config from './commands/config/index.js';
@@ -68,6 +69,7 @@ let parser = yargs(process.argv.slice(2))
   .command(backupProductionData as unknown as CommandModule)
   .command(restoreDataFromBackup as unknown as CommandModule)
   .command(cleanupDemoAppMembers as unknown as CommandModule)
+  .command(cleanupExpiredDomains as unknown as CommandModule)
   .command(cleanupSoftDeletedRecords as unknown as CommandModule)
   .command(checkAppMigrations as unknown as CommandModule)
   .command(checkDownMigrations as unknown as CommandModule)
