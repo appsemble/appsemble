@@ -2,7 +2,7 @@
 export default {
   '*.css': ['stylelint --report-needless-disables'],
   '*.md': ['remark --frail --no-stdout'],
-  '*.{html,json,md,mdx,scss,yaml,yml}': ['prettier --check'],
+  '*.{html,json,md,mdx,scss,yaml,yml}': ['prettier --write'],
   '*.{js,md,ts,tsx}': ['eslint', 'npx -- cspell'],
   '**/*.ts?(x)': [() => 'npx --workspaces tsc --incremental --noEmit'],
   '**/{messages.ts,package.json,tsconfig.json,vitest.config.js,LICENSE.md,packages/{cli/assets/appsemblerc.schema.json,types/cli.ts}}':
