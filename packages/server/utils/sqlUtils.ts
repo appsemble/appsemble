@@ -7,13 +7,27 @@ import {
   HostNotFoundError,
 } from 'sequelize';
 
+import { argv } from './argv.js';
+
 /**
  * Log an SQL statement using syntax highlighting.
  *
+ * When benchmark mode is enabled and timing is provided, queries exceeding the slow query threshold
+ * are logged at warn level.
+ *
  * @param statement The SQL statement to log.
+ * @param timing The query execution time in milliseconds (only provided when benchmark is enabled).
  */
-export function logSQL(statement: string): void {
-  logger.silly(highlight(statement, { language: 'sql', ignoreIllegals: true }));
+export function logSQL(statement: string, timing?: number): void {
+  const highlighted = highlight(statement, { language: 'sql', ignoreIllegals: true });
+
+  if (timing === undefined) {
+    logger.silly(highlighted);
+  } else if (timing > argv.slowQueryThreshold) {
+    logger.warn(`Slow query (${timing}ms): ${highlighted}`);
+  } else {
+    logger.silly(`(${timing}ms) ${highlighted}`);
+  }
 }
 
 export function handleDBError(error: Error): never {
