@@ -176,6 +176,104 @@ build docker image:
     paths:
       - dist/
 
+# Populate a postgres database with the 'default' values we need for the platform to function
+seed database:
+  stage: build
+  interruptible: true
+  needs:
+    - build docker image
+    - npm_ci
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_COMMIT_TAG
+  variables:
+    FF_NETWORK_PER_BUILD: 'true'
+    DATABASE_HOST: database
+    DATABASE_PORT: 5432
+    DATABASE_NAME: appsemble
+    DATABASE_USER: admin
+    DATABASE_PASSWORD: password
+  services:
+    - name: postgres:17
+      alias: database
+      variables:
+        POSTGRES_DB: appsemble
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: password
+    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+      alias: minio
+      entrypoint: ['sh', '-c', 'minio server /data']
+      variables:
+        MINIO_ROOT_USER: admin
+        MINIO_ROOT_PASSWORD: password
+    - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+      alias: appsemble
+      variables:
+        SECRET: secret
+        AES_SECRET: secret
+        HOST: 'http://appsemble:9999'
+        REMOTE: 'https://appsemble.app'
+        DATABASE_HOST: database
+        DATABASE_PORT: 5432
+        DATABASE_NAME: appsemble
+        DATABASE_USER: admin
+        DATABASE_PASSWORD: password
+        S3_HOST: minio
+        S3_SECURE: false
+        S3_ACCESS_KEY: admin
+        S3_SECRET_KEY: password
+        migrateTo: next
+  script:
+    - npm run scripts create-user --
+      --name $BOT_ACCOUNT_NAME
+      --email $BOT_ACCOUNT_EMAIL
+      --password $BOT_ACCOUNT_PASSWORD
+      --timezone Europe/Amsterdam
+      --clientCredentials $APPSEMBLE_CLIENT_CREDENTIALS
+    - npm run appsemble -- config set remote 'http://appsemble:9999'
+    - npm run appsemble -- organization create appsemble
+      --description "The open source low-code app building platform"
+      --email support@appsemble.com
+      --icon packages/server/assets/appsemble.png
+      --name Appsemble
+      --website https://appsemble.com
+    - npm run appsemble -- block publish 'blocks/*'
+  after_script:
+    - apt-get update && apt-get install -y postgresql-client
+    - PGPASSWORD="password" pg_dump -h database -U admin --no-owner --no-acl appsemble > seededDb.sql
+  artifacts:
+    name: Default database dump
+    expose_as: Default database dump
+    paths:
+      - seededDb.sql
+    expire_in: 2 hours
+
+build seeded db image:
+  extends: .docker
+  stage: build
+  needs:
+    - 'seed database'
+  dependencies:
+    - 'seed database'
+  script:
+    - mkdir db-image
+    - cp seededDb.sql db-image/
+    - |
+      cat > db-image/Dockerfile <<'EOF'
+      FROM postgres:17
+
+      COPY seededDb.sql /docker-entrypoint-initdb.d/seededDb.sql
+
+      EOF
+
+    - docker build .
+      -t "$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG"
+      --build-arg "BUILDKIT_INLINE_CACHE=$USE_CACHE"
+      --build-arg "version=$CI_COMMIT_REF_NAME"
+      --build-arg "date=$CI_JOB_STARTED_AT"
+      -f db-image/Dockerfile
+    - docker push "$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG"
+
 # Build the npm packages that should be published.
 pack:
   extends: .npm
@@ -287,7 +385,7 @@ stylelint:
 test node:
   extends: .npm
   services:
-    - name: postgres:15@sha256:dafc4d8e8369da730a5ee9a320a0f0b3c6aa516f41244689c4493a27dc84472d
+    - name: postgres:17
       alias: postgres
     - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
       alias: minio
@@ -339,7 +437,7 @@ check migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:15@sha256:dafc4d8e8369da730a5ee9a320a0f0b3c6aa516f41244689c4493a27dc84472d
+    - name: postgres:17
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -355,7 +453,7 @@ check down migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:15@sha256:dafc4d8e8369da730a5ee9a320a0f0b3c6aa516f41244689c4493a27dc84472d
+    - name: postgres:17
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -371,7 +469,7 @@ fuzz migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:15@sha256:dafc4d8e8369da730a5ee9a320a0f0b3c6aa516f41244689c4493a27dc84472d
+    - name: postgres:17
       alias: postgres
   variables:
     POSTGRES_DB: testAppsemble
@@ -396,12 +494,13 @@ container_scanning:
     CS_DISABLE_LANGUAGE_VULNERABILITY_SCAN: false
     CS_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
 
-validate-snippets:
+validate snippets:
   stage: test
   interruptible: true
   needs:
     - build docker image
     - npm_ci
+    - build seeded db image
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_COMMIT_TAG
@@ -413,20 +512,18 @@ validate-snippets:
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
   services:
-    - name: postgres:15@sha256:dafc4d8e8369da730a5ee9a320a0f0b3c6aa516f41244689c4493a27dc84472d
+    - name: '$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG'
       alias: database
       variables:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-
     - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
         MINIO_ROOT_USER: admin
         MINIO_ROOT_PASSWORD: password
-
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
       variables:
@@ -445,21 +542,8 @@ validate-snippets:
         S3_SECRET_KEY: password
         migrateTo: next
   script:
-    - npm run scripts create-user --
-      --name $BOT_ACCOUNT_NAME
-      --email $BOT_ACCOUNT_EMAIL
-      --password $BOT_ACCOUNT_PASSWORD
-      --timezone Europe/Amsterdam
-      --clientCredentials $APPSEMBLE_CLIENT_CREDENTIALS
     - npm run appsemble -- config set remote 'http://appsemble:9999'
-    - npm run appsemble -- organization create appsemble
-      --description "The open source low-code app building platform"
-      --email support@appsemble.com
-      --icon packages/server/assets/appsemble.png
-      --name Appsemble
-      --website https://appsemble.com
-    - npm run appsemble -- block publish 'blocks/*'
-    - npm run scripts -- validate-docs --organization appsemble --remote 'http://appsemble:9999' -vv
+    - npm run scripts -- validate-docs --organization appsemble --remote 'http://appsemble:9999' --clientCredentials $APPSEMBLE_CLIENT_CREDENTIALS -vv
 
 ###################################################################################################
 #  End 2 End Stage                                                                               #
@@ -467,11 +551,12 @@ validate-snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.58.1-noble@sha256:feae0b1581609d3dc2ba22567b4703dd6a3e7a219984bb86a19ed35007148a91
+  image: mcr.microsoft.com/playwright:v1.58.1-noble
   interruptible: true
   needs:
     - build docker image
     - npm_ci
+    - build seeded db image
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_COMMIT_TAG
@@ -484,20 +569,18 @@ e2e node:
     DATABASE_PASSWORD: password
     E2E_HOST: 'http://appsemble:9999'
   services:
-    - name: postgres:15@sha256:dafc4d8e8369da730a5ee9a320a0f0b3c6aa516f41244689c4493a27dc84472d
+    - name: '$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG'
       alias: database
       variables:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-
     - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
         MINIO_ROOT_USER: admin
         MINIO_ROOT_PASSWORD: password
-
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
       variables:
@@ -517,21 +600,8 @@ e2e node:
         migrateTo: next
         E2E: true
   script:
-    - npm run scripts create-user --
-      --name $BOT_ACCOUNT_NAME
-      --email $BOT_ACCOUNT_EMAIL
-      --password $BOT_ACCOUNT_PASSWORD
-      --timezone Europe/Amsterdam
-      --clientCredentials $APPSEMBLE_CLIENT_CREDENTIALS
     - npm run appsemble -- config set context e2e
     - npm run appsemble -- config set remote 'http://appsemble:9999'
-    - npm run appsemble -- organization create appsemble
-      --description "The open source low-code app building platform"
-      --email support@appsemble.com
-      --icon packages/server/assets/appsemble.png
-      --name Appsemble
-      --website https://appsemble.com
-    - npm run appsemble -- block publish 'blocks/*'
     - npm --workspace @appsemble/types run prepack
     - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/utils run prepack
