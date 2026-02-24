@@ -23,7 +23,20 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
     request: { body },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'path', 'OrganizationId', 'domain', 'skipGroupInvites'],
+    attributes: [
+      'id',
+      'definition',
+      'path',
+      'OrganizationId',
+      'domain',
+      'skipGroupInvites',
+      'emailName',
+      'emailPort',
+      'emailUser',
+      'emailHost',
+      'emailPassword',
+      'emailSecure',
+    ],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
@@ -172,6 +185,7 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
           groupName: group.name,
           appName: app.definition.name,
         },
+        app,
       });
     }),
   );

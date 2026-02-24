@@ -15,7 +15,19 @@ export async function requestAppMemberEmailUpdate(ctx: Context): Promise<void> {
     user: authInfo,
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'emailName', 'domain', 'path', 'OrganizationId'],
+    attributes: [
+      'id',
+      'definition',
+      'emailName',
+      'emailPort',
+      'emailUser',
+      'emailHost',
+      'emailPassword',
+      'emailSecure',
+      'domain',
+      'path',
+      'OrganizationId',
+    ],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
   const { AppMember, AppMemberEmailAuthorization } = await getAppDB(appId);

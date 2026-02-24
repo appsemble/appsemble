@@ -13,7 +13,18 @@ export async function resendAppInvite(ctx: Context): Promise<void> {
     request,
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'definition', 'domain', 'path'],
+    attributes: [
+      'OrganizationId',
+      'definition',
+      'domain',
+      'path',
+      'emailName',
+      'emailPort',
+      'emailUser',
+      'emailHost',
+      'emailPassword',
+      'emailSecure',
+    ],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found.');
 
@@ -54,6 +65,7 @@ export async function resendAppInvite(ctx: Context): Promise<void> {
         name: user?.name || 'null',
         appName: app.definition.name,
       },
+      app,
     });
   } catch (error: any) {
     throwKoaError(ctx, 400, error.message || 'Something went wrong when sending the invite.');
