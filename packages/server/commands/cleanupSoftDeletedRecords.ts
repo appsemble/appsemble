@@ -49,7 +49,15 @@ export async function handler(): Promise<void> {
     const apps = await App.findAll({ attributes: ['id'] });
     await Promise.all(
       apps.map(async (app) => {
-        const { Asset, Resource, sequelize } = await getAppDB(app.id);
+        let appDB;
+        try {
+          appDB = await getAppDB(app.id);
+        } catch {
+          logger.warn(`Failed to connect to database for app ${app.id}, skipping cleanup.`);
+          return;
+        }
+
+        const { Asset, Resource, sequelize } = appDB;
         try {
           await sequelize.transaction(async (appTransaction) => {
             logger.info(`Deleting resources soft deleted before ${deletedAtParsed}`);
