@@ -20,6 +20,8 @@ export default defineConfig({
   reporter: [['junit', { outputFile: 'results.xml' }]],
   // Prevent the pipeline from timing out
   maxFailures: 6,
+  // Overall test timeout - increased for CI stability with cold server starts
+  timeout: 60_000,
   // Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions.
   use: {
     // Base URL to use in actions like `await page.goto('/')`.
@@ -34,6 +36,8 @@ export default defineConfig({
     // Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer
     trace: 'on-first-retry',
     video: 'on',
+    // Navigation timeout for page.goto() - increased for CI stability
+    navigationTimeout: 60_000,
   },
 
   // Configure projects for major browsers
