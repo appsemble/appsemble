@@ -10,9 +10,9 @@ import { BlockVersion } from '../models/main/BlockVersion.js';
 import { Organization } from '../models/main/Organization.js';
 import { OrganizationMember } from '../models/main/OrganizationMember.js';
 import { type User } from '../models/main/User.js';
-import { setArgv } from '../utils/argv.js';
-import { createServer } from '../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { setArgv } from './argv.js';
+import { createServer } from './createServer.js';
+import { authorizeStudio, createTestUser } from './test/authorization.js';
 
 let user: User;
 let organization: Organization;
@@ -161,7 +161,7 @@ describe('Create block version response', () => {
       wildcardActions: false,
       visibility: 'public',
     });
-    member.destroy();
+    await member.destroy();
     const response = await createBlockVersionResponse(
       { user } as any,
       [blockVersionUnlisted, blockVersionPublic],
