@@ -23,6 +23,8 @@ spec:
             - psql
           securityContext:
             readOnlyRootFilesystem: true
+          resources:
+            {{- toYaml .Values.resources.jobs | nindent 12 }}
           args:
             - "--command"
             - |
