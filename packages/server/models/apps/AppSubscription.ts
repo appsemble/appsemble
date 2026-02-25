@@ -42,7 +42,7 @@ export function createAppSubscriptionModel(sequelize: Sequelize): typeof AppSubs
     declare id: number;
 
     @AllowNull(false)
-    @Column(DataType.STRING)
+    @Column(DataType.TEXT)
     declare endpoint: string;
 
     @AllowNull(false)
