@@ -26,6 +26,7 @@ export function createVitestConfig({ url }) {
       clearMocks: true,
       restoreMocks: true,
       mockReset: true,
+      hookTimeout: 30_000,
       environment: lib.includes('dom') || lib.includes('webworker') ? 'jsdom' : 'node',
       setupFiles: setupFilesAfterEnv,
       environmentOptions: {

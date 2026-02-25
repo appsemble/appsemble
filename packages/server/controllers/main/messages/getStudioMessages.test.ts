@@ -10,7 +10,7 @@ describe('getStudioMessages', () => {
     setArgv({ host: 'http://localhost', secret: 'test' });
     const server = await createServer();
     await setTestApp(server);
-  }, 30_000);
+  });
 
   it('should return all translations for a language', async () => {
     const result = await request.get<AppMessages>('/api/messages/nl');
