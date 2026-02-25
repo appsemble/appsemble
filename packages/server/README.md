@@ -47,6 +47,8 @@ passed as a command line parameter instead, if desired.
 | `DATABASE_USER`                 |              | The user to use to login to the database.                                                                              |
 | `DATABASE_PASSWORD`             |              | The password to use to login to the database.                                                                          |
 | `DATABASE_URL`                  |              | A connection string for the database to connect to. This is an alternative to the separate database related variables. |
+| `DATABASE_BENCHMARK`            | `false`      | Enable query timing. Logs execution time for each SQL query and warns for slow queries.                                |
+| `SLOW_QUERY_THRESHOLD`          | `100`        | Threshold in milliseconds. Queries slower than this are logged as warnings when benchmark mode is enabled.             |
 | `SENTRY_DSN`                    |              | The Sentry DSN to use for error reporting. See [Sentry](https://sentry.io) for details.                                |
 | `GITHUB_CLIENT_ID`              |              | The OAuth2 client ID used for logging in with GitHub in Appsemble Studio.                                              |
 | `GITHUB_CLIENT_SECRET`          |              | The OAuth2 client secret used for logging in with GitHub in Appsemble Studio.                                          |

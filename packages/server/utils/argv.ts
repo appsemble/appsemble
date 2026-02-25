@@ -150,6 +150,20 @@ export interface Argv {
    */
   migrateTo: string;
 
+  /**
+   * Whether to enable Sequelize benchmark mode to log query execution times.
+   *
+   * @default false
+   */
+  databaseBenchmark: boolean;
+
+  /**
+   * Threshold in milliseconds above which queries are logged as warnings.
+   *
+   * @default 100
+   */
+  slowQueryThreshold: number;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // SSL                                                                                          //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -542,6 +556,8 @@ const defaults: Argv = {
   interval: 5,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   migrateTo: undefined,
+  databaseBenchmark: false,
+  slowQueryThreshold: 100,
   ssl: false,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sslKey: undefined,

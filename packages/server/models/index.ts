@@ -192,6 +192,7 @@ export function initDB({
 
   const options = {
     logging: logSQL,
+    benchmark: argv.databaseBenchmark,
     retry: { max: 3 },
     models: [
       App,
@@ -361,6 +362,7 @@ export async function initAppDB(
       password: decrypt(app.dbPassword, argv.aesSecret || 'Local Appsemble development AES secret'),
       username: app.dbUser,
       logging: logSQL,
+      benchmark: argv.databaseBenchmark,
       dialect: 'postgres',
       dialectOptions: {
         ssl: argv.databaseSsl && { rejectUnauthorized: false },

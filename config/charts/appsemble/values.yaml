@@ -114,6 +114,9 @@ postgresql:
 
 postgresSSL: false
 
+databaseBenchmark: true
+slowQueryThreshold: 100
+
 remote: null
 
 securityEmail: security@appsemble.com

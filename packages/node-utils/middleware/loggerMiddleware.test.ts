@@ -4,6 +4,14 @@ import chalk from 'chalk';
 import Koa from 'koa';
 import { beforeEach, expect, it, vi } from 'vitest';
 
+vi.mock('node:crypto', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:crypto')>();
+  return {
+    ...actual,
+    randomUUID: vi.fn(() => 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'),
+  };
+});
+
 class TestError extends Error {
   constructor(message?: string) {
     super(message);
@@ -41,7 +49,7 @@ beforeEach(async () => {
 it('should log requests', async () => {
   await request.get('/pizza');
   expect(logger.info).toHaveBeenCalledWith(
-    `${chalk.bold('GET')} https://example.com:1337/pizza — ${chalk.white('127.0.0.1')}`,
+    `[aaaaaaaa] ${chalk.bold('GET')} https://example.com:1337/pizza — ${chalk.white('127.0.0.1')}`,
   );
 });
 
@@ -53,7 +61,7 @@ it('should log success responses as info', async () => {
   await request.get('/fries');
   expect(logger.log).toHaveBeenCalledWith(
     'info',
-    `${chalk.bold('GET')} https://example.com:1337/fries ${chalk.green('200 OK')} ${chalk.green(
+    `[aaaaaaaa] ${chalk.bold('GET')} https://example.com:1337/fries ${chalk.green('200 OK')} ${chalk.green(
       '1ms',
     )}`,
   );
@@ -67,7 +75,7 @@ it('should log redirect responses as info', async () => {
   await request.get('/fries');
   expect(logger.log).toHaveBeenCalledWith(
     'info',
-    `${chalk.bold('GET')} https://example.com:1337/fries ${chalk.cyan(
+    `[aaaaaaaa] ${chalk.bold('GET')} https://example.com:1337/fries ${chalk.cyan(
       '302 Found → /',
     )} ${chalk.green('33ms')}`,
   );
@@ -81,7 +89,7 @@ it('should log bad responses as warn', async () => {
   await request.get('/burrito');
   expect(logger.log).toHaveBeenCalledWith(
     'warn',
-    `${chalk.bold('GET')} https://example.com:1337/burrito ${chalk.yellow(
+    `[aaaaaaaa] ${chalk.bold('GET')} https://example.com:1337/burrito ${chalk.yellow(
       '400 Bad Request',
     )} ${chalk.green('3ms')}`,
   );
@@ -95,7 +103,7 @@ it('should log error responses as error', async () => {
   await request.get('/wrap');
   expect(logger.log).toHaveBeenCalledWith(
     'error',
-    `${chalk.bold('GET')} https://example.com:1337/wrap ${chalk.red(
+    `[aaaaaaaa] ${chalk.bold('GET')} https://example.com:1337/wrap ${chalk.red(
       '503 Service Unavailable',
     )} ${chalk.green('53ms')}`,
   );
@@ -109,7 +117,7 @@ it('should log long request lengths yellow', async () => {
   await request.get('/banana');
   expect(logger.log).toHaveBeenCalledWith(
     'info',
-    `${chalk.bold('GET')} https://example.com:1337/banana ${chalk.green('200 OK')} ${chalk.yellow(
+    `[aaaaaaaa] ${chalk.bold('GET')} https://example.com:1337/banana ${chalk.green('200 OK')} ${chalk.yellow(
       '400ms',
     )}`,
   );
@@ -123,7 +131,7 @@ it('should log extremely long request lengths red', async () => {
   await request.get('/pepperoni');
   expect(logger.log).toHaveBeenCalledWith(
     'info',
-    `${chalk.bold('GET')} https://example.com:1337/pepperoni ${chalk.green('200 OK')} ${chalk.red(
+    `[aaaaaaaa] ${chalk.bold('GET')} https://example.com:1337/pepperoni ${chalk.green('200 OK')} ${chalk.red(
       '1337ms',
     )}`,
   );
@@ -143,7 +151,7 @@ it('should log errors as internal server errors and rethrow', async () => {
   expect(spy).toHaveBeenCalledWith(error, context);
   expect(logger.log).toHaveBeenCalledWith(
     'error',
-    `${chalk.bold('GET')} https://example.com:1337/taco ${chalk.red(
+    `[aaaaaaaa] ${chalk.bold('GET')} https://example.com:1337/taco ${chalk.red(
       '500 Internal Server Error',
     )} ${chalk.green('86ms')}`,
   );
@@ -158,7 +166,7 @@ it('should append the response length if it is defined', async () => {
   await request.get('/fries');
   expect(logger.log).toHaveBeenCalledWith(
     'info',
-    `${chalk.bold('GET')} https://example.com:1337/fries ${chalk.green('200 OK')} ${chalk.green(
+    `[aaaaaaaa] ${chalk.bold('GET')} https://example.com:1337/fries ${chalk.green('200 OK')} ${chalk.green(
       '1ms',
     )}`,
   );
@@ -172,7 +180,7 @@ it('should log handled errors correctly', async () => {
   await request.get('potatoes');
   expect(logger.log).toHaveBeenCalledWith(
     'warn',
-    `${chalk.bold('GET')} https://example.com:1337/potatoes ${chalk.yellow(
+    `[aaaaaaaa] ${chalk.bold('GET')} https://example.com:1337/potatoes ${chalk.yellow(
       '400 Bad Request',
     )} ${chalk.green('15ms')}`,
   );
