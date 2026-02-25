@@ -141,6 +141,7 @@ postgresql:
       scripts:
         00_init_pg_stat_statements.sql: |
           CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+          GRANT pg_read_all_stats TO appsemble;
 
 postgresSSL: false
 
