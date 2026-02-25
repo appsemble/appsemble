@@ -21,6 +21,6 @@ export async function deleteCurrentAppMemberUnverifiedEmail(ctx: Context): Promi
 
   assertKoaCondition(emailAuth != null, ctx, 404, 'Email not registered');
 
-  emailAuth.destroy();
+  await emailAuth.destroy();
   ctx.status = 204;
 }
