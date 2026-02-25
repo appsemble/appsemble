@@ -216,7 +216,7 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
 
   async doValidation(uri) {
     const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
-    if (!doc) {
+    if (!doc || !definition) {
       return [];
     }
     const validatorResult = appValidator.validateApp(definition);
@@ -245,7 +245,7 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
 
   async getDecorations(uri) {
     const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
-    if (!doc) {
+    if (!doc || !definition) {
       return [];
     }
     const decorationsPromises: Promise<editor.IModelDeltaDecoration[]>[] = [];
