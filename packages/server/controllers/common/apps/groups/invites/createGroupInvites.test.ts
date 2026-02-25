@@ -205,6 +205,14 @@ describe('createGroupInvites', () => {
         name: 'null',
         groupName: 'A',
       },
+      app: expect.objectContaining({
+        OrganizationId: app.OrganizationId,
+        emailName: app.emailName,
+        emailPort: app.emailPort,
+        emailHost: app.emailHost,
+        emailPassword: app.emailPassword,
+        emailUser: app.emailUser,
+      }),
     });
   });
 
@@ -269,6 +277,14 @@ describe('createGroupInvites', () => {
         name: 'null',
         groupName: 'A',
       },
+      app: expect.objectContaining({
+        OrganizationId: app.OrganizationId,
+        emailName: app.emailName,
+        emailPort: app.emailPort,
+        emailHost: app.emailHost,
+        emailPassword: app.emailPassword,
+        emailUser: app.emailUser,
+      }),
     });
   });
 
@@ -340,6 +356,14 @@ describe('createGroupInvites', () => {
         name: 'John Doe',
         groupName: 'A',
       },
+      app: expect.objectContaining({
+        OrganizationId: app.OrganizationId,
+        emailName: app.emailName,
+        emailPort: app.emailPort,
+        emailHost: app.emailHost,
+        emailPassword: app.emailPassword,
+        emailUser: app.emailUser,
+      }),
     });
   });
 
@@ -412,6 +436,14 @@ describe('createGroupInvites', () => {
         name: 'John Doe',
         groupName: 'A',
       },
+      app: expect.objectContaining({
+        OrganizationId: app.OrganizationId,
+        emailName: app.emailName,
+        emailPort: app.emailPort,
+        emailHost: app.emailHost,
+        emailPassword: app.emailPassword,
+        emailUser: app.emailUser,
+      }),
     });
   });
 
