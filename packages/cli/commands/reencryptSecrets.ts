@@ -3,14 +3,16 @@ import { type Argv } from 'yargs';
 import { serverImport } from '../lib/serverImport.js';
 import { type BaseArguments } from '../types.js';
 
-export const command = 'restore-data-from-backup';
+export const command = 'reencrypt-secrets';
 export const description =
-  'Restore appsemble data from a specified backup for the main database and app databases';
+  'Re-encrypts all secrets in the database using the current AES secret. Use this when rotating from an old AES secret to a new one.';
 
 export function builder(yargs: Argv): Argv<any> {
   return yargs
-    .option('aesSecret', {
-      desc: 'Aes Secret used for encrypting DB password in the backup DB',
+    .option('old-aes-secret', {
+      desc: 'The old AES secret that was used to encrypt the secrets',
+      type: 'string',
+      demandOption: true,
     })
     .option('database-host', {
       desc: 'The host of the database to connect to. This defaults to the connected database container.',
@@ -39,17 +41,11 @@ export function builder(yargs: Argv): Argv<any> {
     .option('database-url', {
       desc: 'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: ['database-host', 'database-name', 'database-user', 'database-password'],
-    })
-    .option('restoreBackupFilename', {
-      type: 'string',
-      describe:
-        'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz',
-      demandOption: true,
     });
 }
 
 export async function handler(argv: BaseArguments): Promise<void> {
-  const { restoreDataFromBackup, setArgv } = await serverImport('setArgv', 'restoreDataFromBackup');
+  const { reencryptSecrets, setArgv } = await serverImport('setArgv', 'reencryptSecrets');
   setArgv(argv);
-  return restoreDataFromBackup();
+  return reencryptSecrets(argv);
 }

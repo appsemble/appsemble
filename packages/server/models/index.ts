@@ -313,6 +313,7 @@ export async function initAppDB(
   rootDB?: RootSequelize,
   transaction?: Transaction,
   replace?: boolean,
+  aesSecret?: string,
 ): Promise<void> {
   const mainDB = rootDB ?? getDB();
 
@@ -359,7 +360,10 @@ export async function initAppDB(
       database: appDBName,
       host: app.dbHost,
       port: app.dbPort,
-      password: decrypt(app.dbPassword, argv.aesSecret || 'Local Appsemble development AES secret'),
+      password: decrypt(
+        app.dbPassword,
+        aesSecret || argv.aesSecret || 'Local Appsemble development AES secret',
+      ),
       username: app.dbUser,
       logging: logSQL,
       benchmark: argv.databaseBenchmark,
@@ -419,9 +423,10 @@ export async function getAppDB(
   rootDB?: RootSequelize,
   transaction?: Transaction,
   replace?: boolean,
+  aesSecret?: string,
 ): Promise<AppDB> {
   if (appDBs[appId] == null || replace === true) {
-    await initAppDB(appId, rootDB, transaction, replace);
+    await initAppDB(appId, rootDB, transaction, replace, aesSecret);
   }
 
   return appDBs[appId]!;

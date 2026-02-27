@@ -22,6 +22,7 @@ import * as login from './commands/login.js';
 import * as logout from './commands/logout.js';
 import * as migrate from './commands/migrate.js';
 import * as migrateAppDefinitions from './commands/migrateAppDefinitions.js';
+import * as reencryptSecrets from './commands/reencryptSecrets.js';
 import * as organization from './commands/organization/index.js';
 import * as resource from './commands/resource/index.js';
 import * as restoreDataFromBackup from './commands/restoreDataFromBackup.js';
@@ -76,6 +77,7 @@ let parser = yargs(process.argv.slice(2))
   .command(logout as unknown as CommandModule)
   .command(migrate as unknown as CommandModule)
   .command(migrateAppDefinitions as unknown as CommandModule)
+  .command(reencryptSecrets as unknown as CommandModule)
   .command(organization)
   .command(resource)
   .command(runCronJobs as unknown as CommandModule)

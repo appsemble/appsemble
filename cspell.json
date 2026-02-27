@@ -1,13 +1,5 @@
 {
-  "dictionaries": [
-    "custom-words",
-    "typescript",
-    "node",
-    "css",
-    "html",
-    "fonts",
-    "companies"
-  ],
+  "dictionaries": ["custom-words", "typescript", "node", "css", "html", "fonts", "companies"],
   "dictionaryDefinitions": [
     {
       "name": "custom-words",
@@ -20,14 +12,8 @@
       "addWords": true
     }
   ],
-  "files": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "ignorePaths": [
-    "node_modules",
-    "packages/server/utils/email/Mailer.test.ts"
-  ],
+  "files": ["**/*.ts", "**/*.tsx"],
+  "ignorePaths": ["node_modules", "packages/server/utils/email/Mailer.test.ts"],
   "ignoreRegExpList": [
     "import[^\\;]*",
     "const[^\\;]*",
@@ -213,6 +199,7 @@
     "tolerations",
     "totp",
     "Totp",
-    "otpauth"
+    "otpauth",
+    "reencrypted"
   ]
 }

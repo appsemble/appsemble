@@ -160,21 +160,25 @@ export async function handler(): Promise<void> {
 
   for (const app of apps) {
     try {
+      const dbName = app.dbName ?? `app-${app.id}`;
+      const dbPassword = decrypt(app.dbPassword, argv.aesSecret);
+
       const appDbUrl = buildPostgresUri({
         dbHost: app.dbHost,
-        dbName: app.dbName ?? `app-${app.id}`,
-        dbPassword: decrypt(app.dbPassword, argv.aesSecret),
+        dbName,
+        dbPassword,
         dbPort: app.dbPort,
         dbUser: app.dbUser,
         ssl: argv.databaseSsl,
       });
 
       const key = `apps/${app.id}/${argv.restoreBackupFilename}`;
-      await recreateDatabase(app.dbName ?? `app-${app.id}`, adminUri);
+      await recreateDatabase(dbName, adminUri);
       await restoreDatabaseFromS3(appDbUrl, argv.backupsBucket, key);
     } catch (err) {
       failed = true;
-      logger.error(`Failed to restore app ${app.id} database:`, err);
+      logger.error(`Failed to restore app ${app.id} database:`);
+      logger.error(err);
     }
   }
 
