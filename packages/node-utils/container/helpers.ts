@@ -5,9 +5,9 @@ import {
 } from '@appsemble/lang-sdk';
 import { logger } from '@appsemble/node-utils';
 import {
+  ApiException,
   AppsV1Api,
   CoreV1Api,
-  HttpError,
   KubeConfig,
   type V1EnvVar,
 } from '@kubernetes/client-node';
@@ -49,10 +49,9 @@ export function formatSecretName(appName: string, appId: string): string {
 }
 
 export function handleKubernetesError(error: unknown): void {
-  if (error instanceof HttpError) {
-    const { statusCode } = error as HttpError;
-    if (statusCode) {
-      logger.warn(`Kubernetes error with status code ${statusCode}:`);
+  if (error instanceof ApiException) {
+    if (error.code) {
+      logger.warn(`Kubernetes error with status code ${error.code}:`);
     }
     logger.warn(error.body);
     return;
@@ -74,21 +73,17 @@ export async function deleteResource(
     logger.silly(`Deleting ${type} '${name}' from namespace ${namespace} ... `);
     switch (type) {
       case 'deployment':
-        await appsApi.deleteNamespacedDeployment(
+        await appsApi.deleteNamespacedDeployment({
           name,
           namespace,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          'Background',
-        );
+          propagationPolicy: 'Background',
+        });
         break;
       case 'service':
-        await coreApi.deleteNamespacedService(name, namespace);
+        await coreApi.deleteNamespacedService({ name, namespace });
         break;
       default:
-        await coreApi.deleteNamespacedSecret(name, namespace);
+        await coreApi.deleteNamespacedSecret({ name, namespace });
     }
     logger.verbose(`Deleted ${type} '${name}' from namespace ${namespace}`);
   } catch (error: unknown) {
