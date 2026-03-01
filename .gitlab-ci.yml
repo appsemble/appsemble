@@ -193,7 +193,7 @@ seed database:
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
   services:
-    - name: postgres:17
+    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
       alias: database
       variables:
         POSTGRES_DB: appsemble
@@ -385,7 +385,7 @@ stylelint:
 test node:
   extends: .npm
   services:
-    - name: postgres:17
+    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
       alias: postgres
     - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
       alias: minio
@@ -437,7 +437,7 @@ check migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17
+    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -453,7 +453,7 @@ check down migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17
+    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -469,7 +469,7 @@ fuzz migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17
+    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
       alias: postgres
   variables:
     POSTGRES_DB: testAppsemble
@@ -551,7 +551,7 @@ validate snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.58.1-noble
+  image: mcr.microsoft.com/playwright:v1.58.1-noble@sha256:feae0b1581609d3dc2ba22567b4703dd6a3e7a219984bb86a19ed35007148a91
   interruptible: true
   needs:
     - build docker image
