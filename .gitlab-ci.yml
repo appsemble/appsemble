@@ -1231,6 +1231,12 @@ production:
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "backups.host=$BACKUPS_HOST"
       --set "backups.filename=appsemble_prod_backup"
+      --set "assetsBackups.enabled=true"
+      --set "assetsBackups.prefix=appsemble-assets-prod"
+      --set "assetsBackups.archiveRetentionDays=90"
+      --set "assetsBackups.enableMonthlyFullSnapshot=true"
+      --set "assetsBackups.fullSnapshotDay=1"
+      --set "assetsBackups.fullSnapshotRetentionMonths=12"
       --wait
 
 ###################################################################################################

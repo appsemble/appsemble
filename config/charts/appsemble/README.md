@@ -186,8 +186,9 @@ For production environments with significant asset storage in MinIO:
 - set the MinIO PVC annotation `helm.sh/resource-policy: keep`.
 - set `postgresql.primary.persistence.storageClass` to the same retained class.
 - set the PostgreSQL PVC annotation `helm.sh/resource-policy: keep`.
-- keep `backup-production-data` enabled for database backups and add an additional MinIO object
-  backup job in infrastructure/ops.
+- keep `backup-production-data` enabled for database backups.
+- enable `assetsBackups.enabled=true` for MinIO app-asset backups (incremental daily + monthly full
+  snapshots).
 
 Example:
 
@@ -204,6 +205,13 @@ postgresql:
       storageClass: hetzner-volumes-retain
       annotations:
         helm.sh/resource-policy: keep
+assetsBackups:
+  enabled: true
+  prefix: appsemble-assets-prod
+  archiveRetentionDays: 90
+  enableMonthlyFullSnapshot: true
+  fullSnapshotDay: 1
+  fullSnapshotRetentionMonths: 12
 ```
 
 > Note: `helm.sh/resource-policy=keep` reduces Helm-driven deletion risk but does not replace
