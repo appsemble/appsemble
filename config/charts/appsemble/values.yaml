@@ -199,3 +199,19 @@ backups:
   port: 443
   secure: true
   existingSecret: backups-secret
+
+assetsBackups:
+  enabled: false
+  schedule: '20 2 * * *'
+  sourceEndpoint: null
+  sourceRegion: us-east-1
+  destinationRegion: eu-central-1
+  prefix: appsemble-assets
+  verifyAfterSync: true
+  maxDelete: 2000
+  checkers: 16
+  transfers: 8
+  archiveRetentionDays: 90
+  enableMonthlyFullSnapshot: true
+  fullSnapshotDay: 1
+  fullSnapshotRetentionMonths: 12

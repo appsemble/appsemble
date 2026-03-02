@@ -493,6 +493,67 @@
           "description": "The name of the existing kubernetes secret to get the access key and secret key from. Must contain access-key and secret-key"
         }
       }
+    },
+    "assetsBackups": {
+      "type": "object",
+      "description": "Configuration for MinIO app-asset object backups.",
+      "additionalProperties": false,
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable CronJob-based backup of app-* asset buckets."
+        },
+        "schedule": {
+          "type": "string",
+          "description": "Cron schedule for the asset backup job."
+        },
+        "sourceEndpoint": {
+          "type": ["string", "null"],
+          "description": "Optional explicit source S3 endpoint; if omitted, it is derived from MinIO settings."
+        },
+        "sourceRegion": {
+          "type": "string"
+        },
+        "destinationRegion": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string",
+          "description": "Destination path prefix under the backup bucket."
+        },
+        "verifyAfterSync": {
+          "type": "boolean"
+        },
+        "maxDelete": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checkers": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "transfers": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "archiveRetentionDays": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "enableMonthlyFullSnapshot": {
+          "type": "boolean"
+        },
+        "fullSnapshotDay": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 31
+        },
+        "fullSnapshotRetentionMonths": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
     }
   }
 }
