@@ -175,3 +175,36 @@ new. New pods will be created one at a time, to avoid downtime.
 | `quotas.appEmail.alertOrganizationOwner`  | `false`                       | If `true`, send an email to the organization owner when the daily limit is reached.                                                       |
 
 [sentry]: https://sentry.io
+
+## Production durability recommendations
+
+For production environments with significant asset storage in MinIO:
+
+- set `minio.persistence.size` to at least `50Gi`.
+- set `minio.persistence.storageClass` to a retained storage class (for Hetzner:
+  `hetzner-volumes-retain`).
+- set the MinIO PVC annotation `helm.sh/resource-policy: keep`.
+- set `postgresql.primary.persistence.storageClass` to the same retained class.
+- set the PostgreSQL PVC annotation `helm.sh/resource-policy: keep`.
+- keep `backup-production-data` enabled for database backups and add an additional MinIO object
+  backup job in infrastructure/ops.
+
+Example:
+
+```yaml
+minio:
+  persistence:
+    size: 50Gi
+    storageClass: hetzner-volumes-retain
+    annotations:
+      helm.sh/resource-policy: keep
+postgresql:
+  primary:
+    persistence:
+      storageClass: hetzner-volumes-retain
+      annotations:
+        helm.sh/resource-policy: keep
+```
+
+> Note: `helm.sh/resource-policy=keep` reduces Helm-driven deletion risk but does not replace
+> backups.
