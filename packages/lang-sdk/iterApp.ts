@@ -126,6 +126,10 @@ export function iterBlockList(
   callbacks: IterCallbacks,
   prefix: Prefix = [],
 ): boolean {
+  if (!blockList) {
+    return false;
+  }
+
   if (callbacks.onBlockList?.(blockList, prefix)) {
     return true;
   }

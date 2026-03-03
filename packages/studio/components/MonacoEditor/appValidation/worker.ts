@@ -216,8 +216,8 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
 
   async doValidation(uri) {
     const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
-    if (!doc) {
-      return;
+    if (!doc || !definition) {
+      return [];
     }
     const validatorResult = appValidator.validateApp(definition);
     const { errors } = await validateAppDefinition(
@@ -245,8 +245,8 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
 
   async getDecorations(uri) {
     const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
-    if (!doc) {
-      return;
+    if (!doc || !definition) {
+      return [];
     }
     const decorationsPromises: Promise<editor.IModelDeltaDecoration[]>[] = [];
     iterApp(definition, {
@@ -312,6 +312,7 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
       },
     });
     const decorations = await Promise.all(decorationsPromises);
-    return Promise.all(decorations.flat());
+    // Filter out undefined values from blocks that don't have a valid manifest
+    return decorations.flat().filter(Boolean);
   },
 }));
