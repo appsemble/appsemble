@@ -2,20 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.36.5-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5-test.0)] - 2026-03-03
+
+### Added
+
+- Server: Add new command `re-encrypt-secrets` to decrypt and re-encrypt secrets using AES.
+
+### Fixed
+
+- Server: Fix emails being sent from the appsemble SMTP for the apps with custom email settings.
+- Server: Fix notifications not working in microsoft edge.
+
 ## \[[0.36.4](https://gitlab.com/appsemble/appsemble/-/releases/0.36.4)] - 2026-02-19
 
 ### Added
 
 - Lang-sdk: Add `array.groupBy` remapper for grouping arrays of objects by a common property.
+
 - Lang-sdk: Add `array.range` remapper.
+
 - Lang-sdk: Add `array.toObject` remapper for converting arrays to objects using key/value
   remappers.
+
 - Lang-sdk: Add `date.startOf`, `date.endOf`, and `date.set` remappers.
 
   `date.startOf` and `date.endOf` support the following units: `year`, `quarter`, `month`, `week`
   (Monday start), and `weekSun` (Sunday start).
 
 - Lang-sdk: Add `focus` remapper to execute a remapper chain with a temporary root context.
+
 - Lang-sdk: Add `gte` and `lte` remappers for greater-than-or-equal and less-than-or-equal
   comparisons.
 

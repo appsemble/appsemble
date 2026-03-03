@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.36.4
-appVersion: 0.36.4
+version: 0.36.5-test.0
+appVersion: 0.36.5-test.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,26 +33,13 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Lang-sdk: Add array.groupBy remapper for grouping arrays of
-        objects by a common property."
-    - kind: added
-      description: "Lang-sdk: Add array.range remapper."
-    - kind: added
-      description: "Lang-sdk: Add array.toObject remapper for converting arrays to
-        objects using key/value remappers."
-    - kind: added
-      description: "Lang-sdk: Add date.startOf, date.endOf, and date.set
-        remappers.date.startOf and date.endOf support the following units: year,
-        quarter, month, week (Monday start), and weekSun (Sunday start)."
-    - kind: added
-      description: "Lang-sdk: Add focus remapper to execute a remapper chain with a
-        temporary root context."
-    - kind: added
-      description: "Lang-sdk: Add gte and lte remappers for greater-than-or-equal and
-        less-than-or-equal comparisons."
+      description: "Server: Add new command re-encrypt-secrets to decrypt and
+        re-encrypt secrets using AES."
     - kind: fixed
-      description: "Server: Fix sending register and invite app emails from custom
-        email servers."
+      description: "Server: Fix emails being sent from the appsemble SMTP for the apps
+        with custom email settings."
+    - kind: fixed
+      description: "Server: Fix notifications not working in microsoft edge."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
