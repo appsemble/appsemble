@@ -1,0 +1,117 @@
+{{- if and .Values.ingress.enabled .Values.assetsBackups.enabled -}}
+{{- $sourceEndpoint := .Values.assetsBackups.sourceEndpoint -}}
+{{- if not $sourceEndpoint -}}
+{{- if .Values.minio.apiIngress.enabled -}}
+{{- $sourceEndpoint = printf "https://%s" .Values.minio.apiIngress.hostname -}}
+{{- else -}}
+{{- $sourceEndpoint = printf "http://%s:9000" .Values.minio.fullnameOverride -}}
+{{- end -}}
+{{- end -}}
+{{- $destinationScheme := ternary "https" "http" .Values.backups.secure -}}
+{{- $destinationPort := int .Values.backups.port -}}
+{{- $defaultPort := ternary 443 80 .Values.backups.secure -}}
+{{- $destinationEndpoint := "" -}}
+{{- if eq $destinationPort $defaultPort -}}
+{{- $destinationEndpoint = printf "%s://%s" $destinationScheme .Values.backups.host -}}
+{{- else -}}
+{{- $destinationEndpoint = printf "%s://%s:%v" $destinationScheme .Values.backups.host $destinationPort -}}
+{{- end -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "appsemble.fullname" . }}-s3-assets-backup-script
+  labels:
+    {{ include "appsemble.labels" . }}
+data:
+  s3-assets-backup-incremental.sh: |
+{{ .Files.Get "scripts/s3-assets-backup-incremental.sh" | indent 4 }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "appsemble.fullname" . }}-s3-assets-backup
+  labels:
+    {{ include "appsemble.labels" . }}
+spec:
+  schedule: {{ .Values.assetsBackups.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            {{ include "appsemble.gitlab" . | indent 12 }}
+        spec:
+          restartPolicy: Never
+          volumes:
+            - name: backup-script
+              configMap:
+                name: {{ include "appsemble.fullname" . }}-s3-assets-backup-script
+                defaultMode: 0555
+          containers:
+            - name: {{ include "appsemble.fullname" . }}-cronjob-s3-assets-backup
+              image: rclone/rclone:1.71.2
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -ec
+              args:
+                - /opt/backup/s3-assets-backup-incremental.sh
+              resources:
+                {{- toYaml .Values.resources.backupCronjob | nindent 16 }}
+              volumeMounts:
+                - name: backup-script
+                  mountPath: /opt/backup
+                  readOnly: true
+              env:
+                - name: SRC_S3_ENDPOINT
+                  value: {{ $sourceEndpoint | quote }}
+                - name: SRC_S3_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.minio.auth.existingSecret | quote }}
+                      key: {{ .Values.minio.auth.rootUserSecretKey | quote }}
+                - name: SRC_S3_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.minio.auth.existingSecret | quote }}
+                      key: {{ .Values.minio.auth.rootPasswordSecretKey | quote }}
+                - name: SRC_S3_REGION
+                  value: {{ .Values.assetsBackups.sourceRegion | quote }}
+                - name: DST_S3_ENDPOINT
+                  value: {{ $destinationEndpoint | quote }}
+                - name: DST_S3_BUCKET
+                  value: {{ .Values.backups.bucket | quote }}
+                - name: DST_S3_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.backups.existingSecret | quote }}
+                      key: access-key
+                - name: DST_S3_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.backups.existingSecret | quote }}
+                      key: secret-key
+                - name: DST_S3_REGION
+                  value: {{ .Values.assetsBackups.destinationRegion | quote }}
+                - name: BACKUP_PREFIX
+                  value: {{ .Values.assetsBackups.prefix | quote }}
+                - name: VERIFY_AFTER_SYNC
+                  value: {{ .Values.assetsBackups.verifyAfterSync | quote }}
+                - name: MAX_DELETE
+                  value: {{ .Values.assetsBackups.maxDelete | quote }}
+                - name: CHECKERS
+                  value: {{ .Values.assetsBackups.checkers | quote }}
+                - name: TRANSFERS
+                  value: {{ .Values.assetsBackups.transfers | quote }}
+                - name: ARCHIVE_RETENTION_DAYS
+                  value: {{ .Values.assetsBackups.archiveRetentionDays | quote }}
+                - name: ENABLE_MONTHLY_FULL_SNAPSHOT
+                  value: {{ .Values.assetsBackups.enableMonthlyFullSnapshot | quote }}
+                - name: FULL_SNAPSHOT_DAY
+                  value: {{ .Values.assetsBackups.fullSnapshotDay | quote }}
+                - name: FULL_SNAPSHOT_RETENTION_MONTHS
+                  value: {{ .Values.assetsBackups.fullSnapshotRetentionMonths | quote }}
+{{ end }}
