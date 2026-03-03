@@ -19,17 +19,11 @@ export async function scaleDeployment(
 
   try {
     logger.verbose(`Scaling deployment ${deploymentName} to ${replicas} replicas ... `);
-    await appsApi.patchNamespacedDeployment(
-      deploymentName,
+    await appsApi.patchNamespacedDeployment({
+      name: deploymentName,
       namespace,
-      patch,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      { headers: { 'Content-Type': 'application/json-patch+json' } },
-    );
+      body: patch,
+    });
 
     logger.verbose(`Deployment ${deploymentName} scaled to ${replicas} replicas successfully `);
   } catch (error: unknown) {
@@ -45,7 +39,7 @@ export async function stopIdleContainers(interval = 10): Promise<void> {
   logger.verbose('Scaling containers');
 
   try {
-    deployments = (await appsApi.listDeploymentForAllNamespaces()).body;
+    deployments = await appsApi.listDeploymentForAllNamespaces();
   } catch (error: unknown) {
     handleKubernetesError(error);
     return;
@@ -80,17 +74,7 @@ export async function stopIdleContainers(interval = 10): Promise<void> {
       ];
       try {
         logger.silly(`Updating metadata of deployment ${name}`);
-        await appsApi.patchNamespacedDeployment(
-          name,
-          namespace,
-          patch,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          { headers: { 'Content-Type': 'application/json-patch+json' } },
-        );
+        await appsApi.patchNamespacedDeployment({ name, namespace, body: patch });
         logger.verbose(`Updated metadata of deployment ${name} successfully `);
       } catch (error: unknown) {
         handleKubernetesError(error);
@@ -118,17 +102,13 @@ export async function waitForPodReadiness(
   const { coreApi } = getKubeConfig();
 
   while (!isReady) {
-    const pods = await coreApi.listNamespacedPod(
+    const pods = await coreApi.listNamespacedPod({
       namespace,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      `app=${appSelector}`,
-    );
+      labelSelector: `app=${appSelector}`,
+    });
 
-    if (pods.body.items.length > 0) {
-      isReady = pods.body?.items.every((pod) =>
+    if (pods.items.length > 0) {
+      isReady = pods.items.every((pod) =>
         pod.status?.conditions?.some(
           (condition) => condition.type === 'Ready' && condition.status === 'True',
         ),
@@ -169,17 +149,11 @@ export async function setLastRequestAnnotation(
     logger.silly(
       `Setting 'lastRequestTimestamp' annotation of '${deploymentName}' to ${now.toISOString()}`,
     );
-    await appsApi.patchNamespacedDeployment(
-      deploymentName,
+    await appsApi.patchNamespacedDeployment({
+      name: deploymentName,
       namespace,
-      patch,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      { headers: { 'Content-Type': 'application/json-patch+json' } },
-    );
+      body: patch,
+    });
     logger.silly(`'LastRequestTimestamp' annotation of '${deploymentName}' updated successfully`);
   } catch (error: unknown) {
     logger.warn('Could not set last request annotation:');

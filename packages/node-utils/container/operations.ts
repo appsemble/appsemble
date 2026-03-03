@@ -52,7 +52,7 @@ export async function updateNamespacedSecret(
 
   let existing: V1Secret | undefined;
   try {
-    existing = (await coreApi.readNamespacedSecret(formattedName, namespace)).body;
+    existing = await coreApi.readNamespacedSecret({ name: formattedName, namespace });
   } catch (error: unknown) {
     handleKubernetesError(error);
   }
@@ -66,11 +66,11 @@ export async function updateNamespacedSecret(
     existing.data[secretName] = Buffer.from(value).toString('base64');
 
     try {
-      const { body: updatedSecret } = await coreApi.replaceNamespacedSecret(
-        formattedName,
+      const updatedSecret = await coreApi.replaceNamespacedSecret({
+        name: formattedName,
         namespace,
-        existing,
-      );
+        body: existing,
+      });
       logger.info(`Secret ${updatedSecret.metadata?.name} updated successfully`);
     } catch (error: unknown) {
       handleKubernetesError(error);
@@ -80,7 +80,7 @@ export async function updateNamespacedSecret(
 
   try {
     logger.verbose(`Creating secret ${secretSpec.metadata?.name} ...`);
-    const { body: secret } = await coreApi.createNamespacedSecret(namespace, secretSpec);
+    const secret = await coreApi.createNamespacedSecret({ namespace, body: secretSpec });
 
     logger.info(`Secret ${secret.metadata?.name} created successfully`);
   } catch (error: unknown) {
@@ -98,7 +98,7 @@ export async function deleteSecret(appName: string, appId: string, key?: string)
 
   if (key) {
     try {
-      const { body: secret } = await coreApi.readNamespacedSecret(secretName, namespace);
+      const secret = await coreApi.readNamespacedSecret({ name: secretName, namespace });
 
       logger.verbose(
         `Deleteing key ${key} of secret ${secretName} from namespace ${namespace} ...`,
@@ -110,7 +110,7 @@ export async function deleteSecret(appName: string, appId: string, key?: string)
       }
       delete secret.data[key];
 
-      await coreApi.replaceNamespacedSecret(secretName, namespace, secret);
+      await coreApi.replaceNamespacedSecret({ name: secretName, namespace, body: secret });
       logger.verbose(`Deleted key ${key} of secret ${secretName} from namespace ${namespace}.`);
     } catch (error: unknown) {
       logger.error(`Error deleting ${key ? `key ${key} from` : ''} secret ${secretName}`);
@@ -151,7 +151,7 @@ export async function updateCompanionContainers(
   logger.silly(`Listing services in namespace ${namespace} ...`);
 
   try {
-    services = (await coreApi.listNamespacedService(namespace)).body;
+    services = await coreApi.listNamespacedService({ namespace });
   } catch (error: unknown) {
     logger.error(`Error listing services in namespace ${namespace}`);
     handleKubernetesError(error);
@@ -168,51 +168,40 @@ export async function updateCompanionContainers(
     if (existing) {
       logger.verbose(`Updating resources for ${existing.metadata?.name} in namespace ${namespace}`);
 
-      const patchOptions: [
-        string,
-        string,
-        object,
-        string?,
-        string?,
-        string?,
-        string?,
-        boolean?,
-        { headers: Record<string, string> }?,
-      ] = [
-        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-        existing.metadata.name,
-        namespace,
-        [
-          {
-            op: 'replace',
-            path: '/metadata',
-            // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-            value: { ...def.metadata, name: existing.metadata.name },
-          },
-          {
-            op: 'replace',
-            path: '/spec/ports/0/targetPort',
-            value: def.port ?? 8080,
-          },
-          {
-            op: 'add',
-            path: '/metadata/labels',
-            value: { appId },
-          },
-        ],
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        { headers: { 'Content-Type': 'application/json-patch+json' } },
+      const existingServiceName = existing.metadata?.name;
+
+      if (!existingServiceName) {
+        logger.warn(`Service without metadata.name found in namespace ${namespace}, skipping ...`);
+        continue;
+      }
+
+      const servicePatch = [
+        {
+          op: 'replace',
+          path: '/metadata',
+          value: { ...def.metadata, name: existingServiceName },
+        },
+        {
+          op: 'replace',
+          path: '/spec/ports/0/targetPort',
+          value: def.port ?? 8080,
+        },
+        {
+          op: 'add',
+          path: '/metadata/labels',
+          value: { appId },
+        },
       ];
 
       // Update service
       try {
-        const updatedService = await coreApi.patchNamespacedService(...patchOptions);
+        const updatedService = await coreApi.patchNamespacedService({
+          name: existingServiceName,
+          namespace,
+          body: servicePatch,
+        });
 
-        logger.info(`Service ${updatedService?.body?.metadata?.name} updated`);
+        logger.info(`Service ${updatedService?.metadata?.name} updated`);
       } catch (error: unknown) {
         logger.error('Error updating service:');
         handleKubernetesError(error);
@@ -222,12 +211,11 @@ export async function updateCompanionContainers(
 
       const resources = validateContainerResources(def.resources);
 
-      patchOptions[2] = [
+      const deploymentPatch = [
         {
           op: 'replace',
           path: '/metadata',
-          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-          value: { ...def.metadata, name: existing.metadata.name },
+          value: { ...def.metadata, name: existingServiceName },
         },
         {
           op: 'replace',
@@ -251,9 +239,13 @@ export async function updateCompanionContainers(
         },
       ];
       try {
-        const updatedDeployment = await appsApi.patchNamespacedDeployment(...patchOptions);
+        const updatedDeployment = await appsApi.patchNamespacedDeployment({
+          name: existingServiceName,
+          namespace,
+          body: deploymentPatch,
+        });
 
-        logger.info(`Deployment ${updatedDeployment?.body?.metadata?.name} updated`);
+        logger.info(`Deployment ${updatedDeployment?.metadata?.name} updated`);
       } catch (error: unknown) {
         logger.error('Error updating deployment:');
         handleKubernetesError(error);
@@ -261,19 +253,24 @@ export async function updateCompanionContainers(
 
       // Update pod
       try {
-        const { body } = await coreApi.listNamespacedPod(
+        const podList = await coreApi.listNamespacedPod({
           namespace,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          `appId=${appId}`,
-        );
-        if (body?.items?.length === 0) {
+          labelSelector: `appId=${appId}`,
+        });
+        if (podList.items.length === 0) {
           logger.silly(`Deployment ${serviceName} has 0 pods, skipping ...`);
           continue;
         }
-        const pod = body?.items?.find((i) => i.metadata?.labels?.app === existing.metadata?.name);
+        const pod = podList.items.find(
+          (item) => item.metadata?.labels?.app === existingServiceName,
+        );
+
+        if (!pod?.metadata?.name) {
+          logger.silly(
+            `Deployment ${serviceName} has no matching pod with metadata.name, skipping`,
+          );
+          continue;
+        }
 
         // Set base labels, such as selector, pod name, pod hash
         const props = {
@@ -284,19 +281,21 @@ export async function updateCompanionContainers(
             'pod-template-hash': pod?.metadata?.labels?.['pod-template-hash'],
             appId,
           },
-          name: pod?.metadata?.name,
+          name: pod.metadata.name,
         };
-        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-        patchOptions[0] = pod?.metadata?.name;
-        patchOptions[2] = [
+        const podPatch = [
           {
             op: 'replace',
             path: '/metadata',
             value: props,
           },
         ];
-        const updatedPod = await coreApi.patchNamespacedPod(...patchOptions);
-        logger.verbose(`Pod updated: ${updatedPod?.body?.metadata?.name}`);
+        const updatedPod = await coreApi.patchNamespacedPod({
+          name: pod.metadata.name,
+          namespace,
+          body: podPatch,
+        });
+        logger.verbose(`Pod updated: ${updatedPod?.metadata?.name}`);
       } catch (error: unknown) {
         handleKubernetesError(error);
       }
@@ -317,15 +316,18 @@ export async function updateCompanionContainers(
         logger.verbose(`Creating resources in namespace ${namespace} ...`);
 
         try {
-          const deploymentObj = await appsApi.createNamespacedDeployment(namespace, deployment);
-          logger.info(`Deployment created: ${deploymentObj.body?.metadata?.name}`);
+          const deploymentObj = await appsApi.createNamespacedDeployment({
+            namespace,
+            body: deployment,
+          });
+          logger.info(`Deployment created: ${deploymentObj.metadata?.name}`);
         } catch (error: unknown) {
           handleKubernetesError(error);
           return;
         }
         try {
-          const serviceObj = await coreApi.createNamespacedService(namespace, service);
-          logger.info(`Service created: ${serviceObj.body.metadata?.name}`);
+          const serviceObj = await coreApi.createNamespacedService({ namespace, body: service });
+          logger.info(`Service created: ${serviceObj.metadata?.name}`);
         } catch (error: unknown) {
           handleKubernetesError(error);
         }
@@ -353,9 +355,11 @@ export async function updateCompanionContainers(
       );
 
       if (!existing) {
-        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-        // (strictNullChecks)
-        await deleteCompanionContainers(service.metadata?.name);
+        if (!service.metadata?.name) {
+          continue;
+        }
+
+        await deleteCompanionContainers(service.metadata.name);
       }
     }
   }
