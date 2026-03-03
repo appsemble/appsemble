@@ -34,6 +34,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -74,6 +75,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -114,6 +116,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -154,6 +157,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -194,6 +198,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -237,6 +242,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -280,6 +286,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -323,6 +330,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -366,6 +374,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -415,6 +424,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -464,6 +474,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -513,6 +524,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -562,6 +574,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -611,6 +624,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -660,6 +674,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -709,6 +724,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -758,6 +774,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -801,6 +818,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -844,6 +862,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -887,6 +906,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -930,6 +950,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -976,6 +997,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1022,6 +1044,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1068,6 +1091,7 @@ exports[
 ] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1111,6 +1135,7 @@ exports[`Mailer > sendTranslatedEmail > resend > en > should render resend 0 for
 exports[`Mailer > sendTranslatedEmail > resend > en > should render resend 0 for locale en 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1157,6 +1182,7 @@ exports[`Mailer > sendTranslatedEmail > resend > en > should render resend 1 for
 exports[`Mailer > sendTranslatedEmail > resend > en > should render resend 1 for locale en 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1203,6 +1229,7 @@ exports[`Mailer > sendTranslatedEmail > resend > nl > should render resend 0 for
 exports[`Mailer > sendTranslatedEmail > resend > nl > should render resend 0 for locale nl 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1249,6 +1276,7 @@ exports[`Mailer > sendTranslatedEmail > resend > nl > should render resend 1 for
 exports[`Mailer > sendTranslatedEmail > resend > nl > should render resend 1 for locale nl 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1295,6 +1323,7 @@ exports[`Mailer > sendTranslatedEmail > reset > en > should render reset 0 for l
 exports[`Mailer > sendTranslatedEmail > reset > en > should render reset 0 for locale en 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1338,6 +1367,7 @@ exports[`Mailer > sendTranslatedEmail > reset > en > should render reset 1 for l
 exports[`Mailer > sendTranslatedEmail > reset > en > should render reset 1 for locale en 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1381,6 +1411,7 @@ exports[`Mailer > sendTranslatedEmail > reset > nl > should render reset 0 for l
 exports[`Mailer > sendTranslatedEmail > reset > nl > should render reset 0 for locale nl 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1424,6 +1455,7 @@ exports[`Mailer > sendTranslatedEmail > reset > nl > should render reset 1 for l
 exports[`Mailer > sendTranslatedEmail > reset > nl > should render reset 1 for locale nl 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1467,6 +1499,7 @@ exports[`Mailer > sendTranslatedEmail > welcome > en > should render welcome 0 f
 exports[`Mailer > sendTranslatedEmail > welcome > en > should render welcome 0 for locale en 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1507,6 +1540,7 @@ exports[`Mailer > sendTranslatedEmail > welcome > en > should render welcome 1 f
 exports[`Mailer > sendTranslatedEmail > welcome > en > should render welcome 1 for locale en 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1547,6 +1581,7 @@ exports[`Mailer > sendTranslatedEmail > welcome > nl > should render welcome 0 f
 exports[`Mailer > sendTranslatedEmail > welcome > nl > should render welcome 0 for locale nl 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
@@ -1587,6 +1622,7 @@ exports[`Mailer > sendTranslatedEmail > welcome > nl > should render welcome 1 f
 exports[`Mailer > sendTranslatedEmail > welcome > nl > should render welcome 1 for locale nl 2`] = `
 {
   "attachments": [],
+  "from": "Appsemble <test@example.com>",
   "headers": {
     "from": "Appsemble <test@example.com>",
     "replyTo": "Appsemble <test@example.com>",
