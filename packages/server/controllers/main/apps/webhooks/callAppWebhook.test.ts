@@ -510,7 +510,11 @@ describe('callAppWebhook permissions', () => {
           default: { role: 'User' },
           roles: {
             User: {
-              permissions: ['$webhook:createRecord:invoke'],
+              permissions: [
+                '$webhook:createRecord:invoke',
+                '$webhook:patchFirstRecord:invoke',
+                '$webhook:createThenPatchRecord:invoke',
+              ],
             },
           },
           // Guest has NO webhook permissions
@@ -522,6 +526,8 @@ describe('callAppWebhook permissions', () => {
               additionalProperties: false,
               properties: {
                 foo: { type: 'string' },
+                pdf: { type: 'string', format: 'binary' },
+                xml: { type: 'string', format: 'binary' },
               },
             },
           },
@@ -539,6 +545,66 @@ describe('callAppWebhook permissions', () => {
             action: {
               type: 'resource.create',
               resource: 'record',
+            },
+          },
+          patchFirstRecord: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['foo'],
+              properties: {
+                foo: { type: 'string' },
+                pdf: { type: 'string', format: 'binary' },
+                xml: { type: 'string', format: 'binary' },
+              },
+            },
+            action: {
+              type: 'resource.query',
+              resource: 'record',
+              onSuccess: {
+                remapBefore: [
+                  {
+                    'object.from': {
+                      id: [{ prop: 0 }, { prop: 'id' }],
+                      foo: [{ history: 0 }, { prop: 'foo' }],
+                      pdf: [{ history: 0 }, { prop: 'pdf' }],
+                      xml: [{ history: 0 }, { prop: 'xml' }],
+                    },
+                  },
+                ],
+                type: 'resource.patch',
+                resource: 'record',
+              },
+            },
+          },
+          createThenPatchRecord: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['foo', 'fooPatched'],
+              properties: {
+                foo: { type: 'string' },
+                fooPatched: { type: 'string' },
+              },
+            },
+            action: {
+              type: 'resource.create',
+              resource: 'record',
+              body: {
+                'object.from': {
+                  foo: { prop: 'foo' },
+                },
+              },
+              onSuccess: {
+                remapBefore: {
+                  'object.from': {
+                    id: { prop: 'id' },
+                    foo: [{ history: 0 }, { prop: 'fooPatched' }],
+                  },
+                },
+                type: 'resource.patch',
+                resource: 'record',
+              },
             },
           },
         },
@@ -698,6 +764,108 @@ describe('callAppWebhook permissions', () => {
       expect.objectContaining({
         id: 1,
         foo: 'bar',
+      }),
+    );
+  });
+
+  it('should allow app member requests to run resource.create webhook actions with multipart bodies', async () => {
+    const appMember = await createTestAppMember(
+      appWithSecurity.id,
+      'member@example.com',
+      'User' as PredefinedAppRole,
+    );
+    authorizeAppMember(appWithSecurity, appMember);
+
+    const res = await request.post(
+      `/api/apps/${appWithSecurity.id}/webhooks/createRecord`,
+      createFormData({
+        foo: 'multipart-create',
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.data).toStrictEqual(
+      expect.objectContaining({
+        foo: 'multipart-create',
+        id: 1,
+      }),
+    );
+  });
+
+  it('should allow app member requests to run resource.patch webhook actions with multipart bodies', async () => {
+    const appMember = await createTestAppMember(
+      appWithSecurity.id,
+      'member@example.com',
+      'User' as PredefinedAppRole,
+    );
+    authorizeAppMember(appWithSecurity, appMember);
+
+    const createResponse = await request.post(
+      `/api/apps/${appWithSecurity.id}/webhooks/createRecord`,
+      {
+        foo: 'before-patch',
+      },
+    );
+    expect(createResponse.status).toBe(200);
+
+    const patchResponse = await request.post(
+      `/api/apps/${appWithSecurity.id}/webhooks/patchFirstRecord`,
+      createFormData({
+        foo: 'after-patch',
+        pdf: createFixtureStream('note.xml'),
+      }),
+    );
+
+    expect(patchResponse.status).toBe(200);
+    expect(patchResponse.data).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'after-patch',
+        pdf: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    );
+
+    const { Resource } = await getAppDB(appWithSecurity.id);
+    const resource = (await Resource.findOne())!;
+    expect(resource.toJSON()).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'after-patch',
+        pdf: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    );
+  });
+
+  it('should allow chaining resource.create and resource.patch in one webhook invocation', async () => {
+    const appMember = await createTestAppMember(
+      appWithSecurity.id,
+      'member@example.com',
+      'User' as PredefinedAppRole,
+    );
+    authorizeAppMember(appWithSecurity, appMember);
+
+    const response = await request.post(
+      `/api/apps/${appWithSecurity.id}/webhooks/createThenPatchRecord`,
+      {
+        foo: 'before-chain-patch',
+        fooPatched: 'after-chain-patch',
+      },
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'after-chain-patch',
+      }),
+    );
+
+    const { Resource } = await getAppDB(appWithSecurity.id);
+    const resource = (await Resource.findOne())!;
+    expect(resource.toJSON()).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'after-chain-patch',
       }),
     );
   });
