@@ -1685,6 +1685,38 @@ describe('patchApp', () => {
     `);
   });
 
+  it('should not allow malformed sentry DSNs when updating an app', async () => {
+    const app = await App.create(
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        sentryDsn: 'https://0123456789abcdef@sentry.io/%',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Invalid Sentry DSN",
+        "statusCode": 400,
+      }
+    `);
+  });
+
   it('should not allow invalid shared stylesheets when updating an app', async () => {
     const app = await App.create({
       path: 'bar',

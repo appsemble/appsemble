@@ -1,4 +1,5 @@
 import { version } from '@appsemble/node-utils';
+import { makeDsn } from '@sentry/core';
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { matcher } from 'matcher';
@@ -28,6 +29,16 @@ interface SentrySettings {
 }
 
 /**
+ * Verify whether a Sentry DSN is a valid URL.
+ *
+ * @param dsn The Sentry DSN to verify.
+ * @returns Whether the DSN can be parsed as an HTTP(S) URL.
+ */
+export function isValidSentryDsn(dsn: string): boolean {
+  return Boolean(makeDsn(dsn));
+}
+
+/**
  * Get client side Sentry settings to inject into the context for the given domain.
  *
  * @param domain The domain name to check.
@@ -48,16 +59,27 @@ export function getSentryClientSettings(
   ) {
     return {};
   }
+
   const dsn = sentryDsn || argv.sentryDsn;
-  const { origin, pathname, username } = new URL(dsn);
-  return {
-    sentryDsn: dsn,
-    sentryEnvironment: sentryDsn
-      ? sentryEnvironment || undefined
-      : argv.sentryEnvironment || undefined,
-    sentryOrigin: origin,
-    reportUri: `${origin}/api${pathname}/security/?sentry_key=${username}`,
-  };
+
+  try {
+    const { origin, pathname, username } = new URL(dsn);
+
+    return {
+      sentryDsn: dsn,
+      sentryEnvironment: sentryDsn
+        ? sentryEnvironment || undefined
+        : argv.sentryEnvironment || undefined,
+      sentryOrigin: origin,
+      reportUri: `${origin}/api${pathname}/security/?sentry_key=${username}`,
+    };
+  } catch (error) {
+    if (!sentryDsn) {
+      throw error;
+    }
+
+    return {};
+  }
 }
 
 /**

@@ -1926,6 +1926,37 @@ describe('createApp', () => {
     `);
   });
 
+  it('should not allow malformed sentry DSNs when creating an app', async () => {
+    authorizeStudio();
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        sentryDsn: 'https://0123456789abcdef@sentry.io/%',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Invalid Sentry DSN",
+        "statusCode": 400,
+      }
+    `);
+  });
+
   it('should not allow invalid shared stylesheets when creating an app', async () => {
     const form = createFormData({
       OrganizationId: organization.id,

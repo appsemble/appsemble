@@ -43,7 +43,7 @@ export function getCsp({
       'blob:',
       'data:',
       sentryOrigin ?? false,
-      sentryDsn ? new URL(decodeURI(sentryDsn)).host : false,
+      sentryDsn ? new URL(sentryDsn).host : false,
       app.metaPixelID ? 'https://graph.facebook.com' : false,
       app.msClarityID ? 'https://www.clarity.ms' : false,
       app.msClarityID ? 'https://clarity.ms' : false,

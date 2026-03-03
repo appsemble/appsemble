@@ -1,3 +1,4 @@
+import { emailPattern } from '@appsemble/utils';
 import { captureMessage } from '@sentry/browser';
 import axios from 'axios';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
@@ -13,7 +14,6 @@ import {
   SimpleSubmit,
   TextAreaField,
 } from '../index.js';
-import { emailPattern } from '@appsemble/utils';
 
 interface SentryFormProps {
   /**
@@ -69,12 +69,13 @@ export function SentryForm({
 
   const submit = useCallback(
     async (values: typeof defaultValues) => {
+      const { host } = new URL(dsn);
+
       const formData = new FormData();
       formData.set('comments', values.comments);
       formData.set('email', values.email);
       formData.set('name', values.name);
-      const { host } = new URL(decodeURI(dsn));
-      await axios.post(`https://${dsn ? host : 'sentry.io'}/api/embed/error-page/`, formData, {
+      await axios.post(`https://${host}/api/embed/error-page/`, formData, {
         params: { eventId: eventId || captureMessage('Feedback', 'info'), dsn },
       });
       setSubmitted(true);

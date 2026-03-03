@@ -120,4 +120,31 @@ describe('getSentryClientSettings', () => {
       sentryOrigin: 'https://sentry.io',
     });
   });
+
+  it('should throw if the configured sentry DSN is malformed', () => {
+    setArgv({
+      sentryAllowedDomains: '*',
+      sentryDsn: 'https://0123456789abcdef@sentry.io/%',
+    });
+
+    expect(() => {
+      getSentryClientSettings('example.com');
+    }).toThrow();
+  });
+
+  it('should return an empty object if a custom sentry DSN is malformed', () => {
+    setArgv({
+      sentryAllowedDomains: '*.foo.example',
+      sentryDsn: 'https://0123456789abcdef@sentry.io/42',
+      sentryEnvironment: 'test',
+    });
+
+    const result = getSentryClientSettings(
+      'foo.bar.example',
+      'https://0123456789abcdef@sentry.io/%',
+      'test-2',
+    );
+
+    expect(result).toStrictEqual({});
+  });
 });

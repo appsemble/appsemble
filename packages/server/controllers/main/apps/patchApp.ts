@@ -39,6 +39,7 @@ import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
+import { isValidSentryDsn } from '../../../utils/sentry.js';
 
 export async function patchApp(ctx: Context): Promise<void> {
   const {
@@ -244,6 +245,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     }
 
     if (sentryDsn !== undefined) {
+      assertKoaCondition(!sentryDsn || isValidSentryDsn(sentryDsn), ctx, 400, 'Invalid Sentry DSN');
       result.sentryDsn = sentryDsn;
     }
 
