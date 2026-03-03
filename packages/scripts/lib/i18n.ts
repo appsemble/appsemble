@@ -47,6 +47,10 @@ const serverMessageKeys = [
   'server.invoice.invoiceTotal',
   'server.invoice.invoiceDue',
   'server.invoice.reference',
+  'server.emails.appCollectionDomainExpired.body',
+  'server.emails.appCollectionDomainExpired.subject',
+  'server.emails.domainExpired.body',
+  'server.emails.domainExpired.subject',
 ];
 
 export async function extractMessages(): Promise<Translations> {
