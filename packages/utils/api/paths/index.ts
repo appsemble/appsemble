@@ -66,6 +66,7 @@ import { pathItems as appsAppIdResourcesResourceType$Count } from './apps/appId/
 import { pathItems as appsAppIdResourcesResourceTypeResourceIdPositioning } from './apps/appId/resources/resourceType/resourceId/positions.js';
 import { pathItems as appsAppIdResourcesResourceTypeResourceIdSubscriptions } from './apps/appId/resources/resourceType/resourceId/subscriptions.js';
 import { pathItems as appsAppIdResourcesResourceTypeResourceId } from './apps/appId/resources/resourceType/resourceId.js';
+import { pathItems as appsAppIdResourcesResourceTypeResourceIdGroup } from './apps/appId/resources/resourceType/resourceId/groups.js';
 import { pathItems as appsAppIdResourcesResourceTypeSubscriptions } from './apps/appId/resources/resourceType/subscriptions.js';
 import { pathItems as appsAppIdResourcesResourceType } from './apps/appId/resources/resourceType.js';
 import { pathItems as appsAppIdResourcesResourceTypeResourceIdVersions } from './apps/appId/resources/versions.js';
@@ -223,6 +224,8 @@ export const paths = {
     appsAppIdResourcesResourceTypeResourceIdSubscriptions,
   '/api/apps/{appId}/resources/{resourceType}/{resourceId}':
     appsAppIdResourcesResourceTypeResourceId,
+  '/api/apps/{appId}/resources/{resourceType}/{resourceId}/group':
+    appsAppIdResourcesResourceTypeResourceIdGroup,
   '/api/apps/{appId}/resources/{resourceType}/subscriptions':
     appsAppIdResourcesResourceTypeSubscriptions,
   '/api/apps/{appId}/resources/{resourceType}': appsAppIdResourcesResourceType,

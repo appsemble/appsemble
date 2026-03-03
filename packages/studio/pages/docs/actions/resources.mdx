@@ -42,6 +42,7 @@ Supported resource actions are as below:
 - [`resource.get`](#resourceget)
 - [`resource.history.get`](#resourcehistoryget)
 - [`resource.update.positions`](#resourceupdatepositions)
+- [`resource.update.group`](#resourceupdategroup)
 - [`resource.query`](#resourcequery)
 - [`resource.count`](#resourcecount)
 - [`resource.create`](#resourcecreate)
@@ -135,6 +136,45 @@ blocks:
       fields:
         - value: { prop: value }
         - foo: { prop: foo }
+```
+
+### resource.update.group<Side name="resource.update.group" />
+
+<ActionRef action={referenceSchemas.resourceActions['resource.update.group']} />
+
+This action is used to move a resource from one group to another. This is useful when you need to
+reassign resources between groups within your app.
+
+**Requirements**:
+
+This action requires the following permissions:
+
+- `$resource:<resource-name>:delete` or `$resource:<resource-name>:own:delete` permission in the
+  source group (the group the resource is being moved from)
+- `$resource:<resource-name>:create` permission in the target group (the group the resource is being
+  moved to)
+
+For more information check out [security](../app/security.md#permissions).
+
+Here is an example of how you can use this action to move a resource to a different group:
+
+```yaml validate blocks-snippet
+blocks:
+  - type: action-button
+    version: 0.36.4
+    parameters:
+      icon: arrows-alt
+    actions:
+      onClick:
+        remapBefore:
+          object.from:
+            id: { prop: id }
+            groupId: 2
+        type: resource.update.group
+        resource: person
+        onSuccess:
+          type: message
+          body: Resource moved to new group
 ```
 
 ### resource.query<Side name="resource.query" />
