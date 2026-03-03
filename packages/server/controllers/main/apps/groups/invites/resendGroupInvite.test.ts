@@ -100,6 +100,14 @@ describe('resendGroupInvite', () => {
         groupName: 'Test Group',
         name: 'Test User',
       },
+      app: expect.objectContaining({
+        OrganizationId: app.OrganizationId,
+        emailName: app.emailName,
+        emailPort: app.emailPort,
+        emailHost: app.emailHost,
+        emailPassword: app.emailPassword,
+        emailUser: app.emailUser,
+      }),
     });
   });
 

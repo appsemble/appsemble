@@ -18,7 +18,18 @@ export async function resendGroupInvite(ctx: Context): Promise<void> {
   assertKoaCondition(group != null, ctx, 404, 'Group not found.');
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'definition', 'domain', 'path'],
+    attributes: [
+      'OrganizationId',
+      'definition',
+      'domain',
+      'path',
+      'emailName',
+      'emailPort',
+      'emailUser',
+      'emailHost',
+      'emailPassword',
+      'emailSecure',
+    ],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
@@ -66,6 +77,7 @@ export async function resendGroupInvite(ctx: Context): Promise<void> {
         groupName: group.name,
         appName: app.definition.name,
       },
+      app,
     });
   } catch (error: any) {
     throwKoaError(ctx, 400, error.message || 'Something went wrong when sending the invite.');
