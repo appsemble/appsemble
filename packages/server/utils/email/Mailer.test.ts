@@ -223,6 +223,7 @@ describe('Mailer', () => {
 
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
+        from: 'Appsemble <test@example.com>',
         headers: {
           from: 'Appsemble <test@example.com>',
           replyTo: 'Appsemble <test@example.com>',
@@ -272,6 +273,7 @@ _Test App_
 
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
+        from: 'Appsemble <test@example.com>',
         headers: {
           from: 'Appsemble <test@example.com>',
           replyTo: 'Appsemble <test@example.com>',
@@ -321,6 +323,7 @@ _Test App_
 
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
+        from: 'Appsemble <test@example.com>',
         headers: {
           from: 'Appsemble <test@example.com>',
           replyTo: 'Appsemble <test@example.com>',
@@ -380,6 +383,7 @@ _Test App_
 
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
+        from: 'Appsemble <test@example.com>',
         headers: {
           from: 'Appsemble <test@example.com>',
           replyTo: 'Appsemble <test@example.com>',
@@ -426,6 +430,7 @@ _Test App_
 
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
+        from: 'Appsemble <test@example.com>',
         headers: {
           from: 'Appsemble <test@example.com>',
           replyTo: 'Appsemble <test@example.com>',
@@ -472,6 +477,7 @@ _Test App_
 
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
+        from: 'Appsemble <test@example.com>',
         headers: {
           from: 'Appsemble <test@example.com>',
           replyTo: 'Appsemble <test@example.com>',
@@ -629,6 +635,7 @@ _Test App_
       });
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         to: 'Me <test@example.com>',
+        from: 'test@example.com <test@example.com>',
         headers: {
           from: 'test@example.com <test@example.com>',
           replyTo: 'test@example.com <test@example.com>',
@@ -673,6 +680,7 @@ _Test App_
       });
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         to: 'Me <test@example.com>',
+        from: 'test@example.com <test@example.com>',
         headers: {
           from: 'test@example.com <test@example.com>',
           replyTo: 'test@example.com <test@example.com>',

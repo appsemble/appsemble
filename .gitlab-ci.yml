@@ -1206,9 +1206,6 @@ production:
       --set 'minio.persistence.size=50Gi'
       --set "minio.persistence.storageClass=hetzner-volumes-retain"
       --set "minio.persistence.annotations.helm\\.sh/resource-policy=keep"
-      --set "postgresql.primary.persistence.size=20Gi"
-      --set "postgresql.primary.persistence.storageClass=hetzner-volumes-retain"
-      --set "postgresql.primary.persistence.annotations.helm\\.sh/resource-policy=keep"
       --set "postgresql.primary.resources.requests.cpu=250m"
       --set "postgresql.primary.resources.requests.memory=1Gi"
       --set "postgresql.primary.resources.limits.cpu=1"

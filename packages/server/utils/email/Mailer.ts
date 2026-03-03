@@ -508,7 +508,7 @@ export class Mailer {
       loggingMessage.push(`BCC: ${bcc}`);
     }
     if (headers) {
-      loggingMessage.push(`Headers: ${headers}`);
+      loggingMessage.push(`Headers: ${JSON.stringify(headers)}`);
     }
     loggingMessage.push(`Subject: ${subject}`, '', text);
     logger.info(loggingMessage.join('\n'));
@@ -532,6 +532,7 @@ export class Mailer {
           text,
           to,
           attachments,
+          from: from ? `${from} <${parsed?.address}>` : argv.smtpFrom,
         });
       } catch (error: any) {
         throw new EmailError(
