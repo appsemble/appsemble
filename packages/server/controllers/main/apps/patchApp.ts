@@ -123,11 +123,6 @@ export async function patchApp(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, dbApp);
 
-  const { AppMember, Resource: OldResource, sequelize: oldAppDB } = await getAppDB(appId);
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  let Resource = OldResource;
-  let appDB = oldAppDB;
-
   await checkAppLimit(ctx, dbApp, visibility);
 
   // TOTP cannot be enabled in demo mode apps
@@ -141,6 +136,15 @@ export async function patchApp(ctx: Context): Promise<void> {
   );
 
   try {
+    if (sentryDsn !== undefined) {
+      assertKoaCondition(!sentryDsn || isValidSentryDsn(sentryDsn), ctx, 400, 'Invalid Sentry DSN');
+    }
+
+    const { AppMember, Resource: OldResource, sequelize: oldAppDB } = await getAppDB(appId);
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    let Resource = OldResource;
+    let appDB = oldAppDB;
+
     const permissionsToCheck: OrganizationPermission[] = [];
     if (yaml) {
       permissionsToCheck.push(OrganizationPermission.UpdateApps);
@@ -245,7 +249,6 @@ export async function patchApp(ctx: Context): Promise<void> {
     }
 
     if (sentryDsn !== undefined) {
-      assertKoaCondition(!sentryDsn || isValidSentryDsn(sentryDsn), ctx, 400, 'Invalid Sentry DSN');
       result.sentryDsn = sentryDsn;
     }
 
