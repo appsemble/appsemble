@@ -1,7 +1,7 @@
 import { ModalCard } from '@appsemble/react-components';
 import { type ResourceSubscribableAction } from '@appsemble/types';
 import { urlB64ToUint8Array } from '@appsemble/web-utils';
-import { captureException, captureMessage } from '@sentry/browser';
+import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
 import axios from 'axios';
 import {
   createContext,
@@ -79,7 +79,16 @@ export function ServiceWorkerRegistrationProvider({
   useEffect(() => {
     axios
       .get(apiVersionUrl)
-      .then((res) => localStorage.setItem('appsembleVersion', res.headers['x-appsemble-version']));
+      .then((res) => localStorage.setItem('appsembleVersion', res.headers['x-appsemble-version']))
+      .catch((error: unknown) => {
+        addBreadcrumb({
+          category: 'appsemble.version-check',
+          data: {
+            error: error instanceof Error ? error.message : String(error),
+          },
+          level: 'warning',
+        });
+      });
   }, []);
 
   useEffect(() => {
