@@ -47,13 +47,13 @@ it('should pass login options from argv to the studio', async () => {
     host: 'http://localhost:9999',
     gitlabClientId: 'GitLab secret',
     googleClientId: 'Google secret',
-    sentryDsn: 'https://secret@sentry.io/path',
+    sentryDsn: 'https://secret@sentry.io/42',
     sentryAllowedDomains: '*',
   });
   const response = await request.get('/');
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
-    Content-Security-Policy: base-uri 'self'; connect-src *; default-src 'self' https://sentry.io; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none' http://localhost:9999; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; object-src 'none'; report-uri https://sentry.io/api/path/security/?sentry_key=secret; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-8dYPnDBNRNIK86KD2V/qlP5xY9Uqz+Lnu/FeKaG8ZTk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+    Content-Security-Policy: base-uri 'self'; connect-src *; default-src 'self' https://sentry.io; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none' http://localhost:9999; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; object-src 'none'; report-uri https://sentry.io/api/42/security/?sentry_key=secret; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-1E+lVmeNS5pzqW7qxTAE6Sdz08NvhyQtMwDbbGJTro0=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
     Referrer-Policy: strict-origin-when-cross-origin
     X-Content-Type-Options: nosniff
@@ -61,7 +61,7 @@ it('should pass login options from argv to the studio', async () => {
     {
       "data": {
         "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-        "settings": "<script>window.settings={"enableRegistration":false,"logins":[{"authorizationUrl":"https://gitlab.com/oauth/authorize","clientId":"GitLab secret","icon":"gitlab","name":"GitLab","scope":"email openid profile"},{"authorizationUrl":"https://accounts.google.com/o/oauth2/auth","clientId":"Google secret","icon":"google","name":"Google","scope":"email openid profile"}],"sentryDsn":"https://secret@sentry.io/path","customDomainAppCollection":null}</script>",
+        "settings": "<script>window.settings={"enableRegistration":false,"logins":[{"authorizationUrl":"https://gitlab.com/oauth/authorize","clientId":"GitLab secret","icon":"gitlab","name":"GitLab","scope":"email openid profile"},{"authorizationUrl":"https://accounts.google.com/o/oauth2/auth","clientId":"Google secret","icon":"google","name":"Google","scope":"email openid profile"}],"sentryDsn":"https://secret@sentry.io/42","customDomainAppCollection":null}</script>",
       },
       "filename": "studio/index.html",
     }

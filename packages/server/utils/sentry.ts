@@ -28,6 +28,29 @@ interface SentrySettings {
 }
 
 /**
+ * Verify whether a Sentry DSN is a valid URL.
+ *
+ * @param dsn The Sentry DSN to verify.
+ * @returns Whether the DSN can be parsed and contains a valid project identifier.
+ */
+export function isValidSentryDsn(dsn: string): boolean {
+  try {
+    const { pathname, protocol, username } = new URL(dsn);
+
+    if (!username || (protocol !== 'http:' && protocol !== 'https:')) {
+      return false;
+    }
+
+    const pathSegments = pathname.split('/').filter(Boolean);
+    const projectId = pathSegments.at(-1);
+
+    return Boolean(projectId && /^\d+$/.test(projectId));
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Get client side Sentry settings to inject into the context for the given domain.
  *
  * @param domain The domain name to check.
@@ -48,8 +71,18 @@ export function getSentryClientSettings(
   ) {
     return {};
   }
+
   const dsn = sentryDsn || argv.sentryDsn;
+  if (!isValidSentryDsn(dsn)) {
+    if (sentryDsn) {
+      return {};
+    }
+
+    throw new Error('Invalid Sentry DSN');
+  }
+
   const { origin, pathname, username } = new URL(dsn);
+
   return {
     sentryDsn: dsn,
     sentryEnvironment: sentryDsn

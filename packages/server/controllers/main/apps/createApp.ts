@@ -32,6 +32,7 @@ import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
+import { isValidSentryDsn } from '../../../utils/sentry.js';
 
 export async function createApp(ctx: Context): Promise<void> {
   const {
@@ -111,6 +112,10 @@ export async function createApp(ctx: Context): Promise<void> {
       400,
       'TOTP cannot be enabled for demo mode apps',
     );
+
+    if (sentryDsn) {
+      assertKoaCondition(isValidSentryDsn(sentryDsn), ctx, 400, 'Invalid Sentry DSN');
+    }
 
     const path = normalize(definition.name);
     const keys = webpush.generateVAPIDKeys();
