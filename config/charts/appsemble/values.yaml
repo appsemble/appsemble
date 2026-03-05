@@ -44,31 +44,31 @@ resources:
   deployment:
     limits:
       memory: 4Gi
-      cpu: '1'
+      cpu: '2'
     requests:
       memory: 2Gi
-      cpu: 100m
+      cpu: 500m
   jobs:
     limits:
-      memory: 1Gi
+      memory: 2Gi
       cpu: '1'
     requests:
-      memory: 256Mi
-      cpu: 100m
+      memory: 512Mi
+      cpu: 250m
   cronjobs:
     limits:
-      memory: 256Mi
-      cpu: 500m
+      memory: 2Gi
+      cpu: '2'
     requests:
-      memory: 64Mi
-      cpu: 50m
+      memory: 512Mi
+      cpu: 250m
   backupCronjob:
     limits:
-      memory: 3Gi
-      cpu: '1'
+      memory: 4Gi
+      cpu: '2'
     requests:
       memory: 1Gi
-      cpu: 100m
+      cpu: 500m
 
 nodeSelector: {}
 
