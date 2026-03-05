@@ -48,6 +48,14 @@ log() {
   printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"
 }
 
+is_before() {
+  left="$1"
+  right="$2"
+
+  [ "$left" != "$right" ] &&
+    [ "$(printf '%s\n%s\n' "$left" "$right" | LC_ALL=C sort | head -n1)" = "$left" ]
+}
+
 configure_remote() {
   name="$1"
   endpoint="$2"
@@ -145,7 +153,7 @@ if [ "$DRY_RUN" != "true" ] && printf '%s' "$ARCHIVE_RETENTION_DAYS" | grep -Eq 
     sed 's:/$::' |
     while IFS= read -r run_dir; do
       [ -n "$run_dir" ] || continue
-      if printf '%s' "$run_dir" | grep -Eq '^[0-9]{8}T[0-9]{6}Z$' && [ "$run_dir" \< "$cutoff_archive" ]; then
+      if printf '%s' "$run_dir" | grep -Eq '^[0-9]{8}T[0-9]{6}Z$' && is_before "$run_dir" "$cutoff_archive"; then
         log "Pruning archive run ${run_dir}"
         rclone purge "${archive_root}/${run_dir}" \
           --log-file "$LOG_FILE" \
@@ -167,7 +175,7 @@ if [ "$DRY_RUN" != "true" ] && printf '%s' "$FULL_SNAPSHOT_RETENTION_MONTHS" | g
     sed 's:/$::' |
     while IFS= read -r snapshot_dir; do
       [ -n "$snapshot_dir" ] || continue
-      if printf '%s' "$snapshot_dir" | grep -Eq '^[0-9]{4}-[0-9]{2}-01$' && [ "$snapshot_dir" \< "$cutoff_snapshot" ]; then
+      if printf '%s' "$snapshot_dir" | grep -Eq '^[0-9]{4}-[0-9]{2}-01$' && is_before "$snapshot_dir" "$cutoff_snapshot"; then
         log "Pruning monthly snapshot ${snapshot_dir}"
         rclone purge "${snapshot_root}/${snapshot_dir}" \
           --log-file "$LOG_FILE" \
