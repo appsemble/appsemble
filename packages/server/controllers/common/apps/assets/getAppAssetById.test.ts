@@ -250,6 +250,64 @@ describe('getAppAssetById', () => {
     expect(metadata.height).toBe(10);
   });
 
+  it('should regenerate resized assets when cached image is missing from s3', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/avif',
+    });
+    const staleResizedAsset = await Asset.create({
+      name: `${asset.id}10x10`,
+      mime: 'image/avif',
+    });
+    const image = await sharp({
+      create: {
+        width: 100,
+        height: 100,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .avif()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const response = await request.get(
+      `/api/apps/${app.id}/assets/${asset.id}?width=10&height=10`,
+      {
+        responseType: 'arraybuffer',
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+    });
+
+    const metadata = await sharp(response.data).metadata();
+
+    expect(metadata.width).toBe(10);
+    expect(metadata.height).toBe(10);
+
+    const deletedCachedAsset = await Asset.findByPk(staleResizedAsset.id, {
+      paranoid: false,
+      attributes: ['deleted'],
+    });
+    expect(deletedCachedAsset?.deleted).toBeTruthy();
+
+    const regeneratedCachedAsset = await Asset.findOne({
+      where: { name: `${asset.id}10x10` },
+      attributes: ['id', 'deleted'],
+    });
+    expect(regeneratedCachedAsset).toBeTruthy();
+    expect(regeneratedCachedAsset?.id).not.toBe(staleResizedAsset.id);
+    expect(regeneratedCachedAsset?.deleted).toBeFalsy();
+  });
+
   it('should fallback to the asset id as the filename', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create();
