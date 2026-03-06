@@ -138,7 +138,7 @@ export async function handler(): Promise<void> {
   // Backup main database
   try {
     logger.info('Restoring main database...');
-    const key = `main/${argv.restoreBackupFilename}`;
+    const key = `sql/main/${argv.restoreBackupFilename}`;
     const mainDbUrl = buildPostgresUri({
       dbUser: argv.databaseUser,
       dbPassword: argv.databasePassword,
@@ -172,7 +172,7 @@ export async function handler(): Promise<void> {
         ssl: argv.databaseSsl,
       });
 
-      const key = `apps/${app.id}/${argv.restoreBackupFilename}`;
+      const key = `sql/apps/${app.id}/${argv.restoreBackupFilename}`;
       await recreateDatabase(dbName, adminUri);
       await restoreDatabaseFromS3(appDbUrl, argv.backupsBucket, key);
     } catch (err) {

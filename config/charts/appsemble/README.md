@@ -207,12 +207,22 @@ postgresql:
         helm.sh/resource-policy: keep
 assetsBackups:
   enabled: true
-  prefix: appsemble-assets-prod
+  prefix: assets/app-buckets
   archiveRetentionDays: 90
   enableMonthlyFullSnapshot: true
   fullSnapshotDay: 1
   fullSnapshotRetentionMonths: 12
 ```
+
+Recommended backup object layout within each environment backup bucket:
+
+- SQL backups:
+  - `sql/main/<filename>_<timestamp>.sql.gz`
+  - `sql/apps/<app-id>/<filename>_<timestamp>.sql.gz`
+- MinIO app asset backups:
+  - `assets/app-buckets/current/app-<id>/...`
+  - `assets/app-buckets/archive/<run-id>/app-<id>/...`
+  - `assets/app-buckets/snapshots/<yyyy-mm-01>/app-<id>/...`
 
 > Note: `helm.sh/resource-policy=keep` reduces Helm-driven deletion risk but does not replace
 > backups.
