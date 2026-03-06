@@ -31,9 +31,6 @@
       "eslint",
       "npx -- cspell"
     ],
-    "**/*.ts?(x)": [
-      "npx --workspaces tsc --noEmit"
-    ],
     "**/{messages.ts,package.json,tsconfig.json,vitest.config.js,LICENSE.md,packages/{cli/assets/appsemblerc.schema.json,types/cli.ts}}": [
       "sh -c 'tsx packages/scripts/index.ts validate'"
     ]

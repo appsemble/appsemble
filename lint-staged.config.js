@@ -4,7 +4,7 @@ export default {
   '*.md': ['remark --frail --no-stdout'],
   '*.{html,json,md,mdx,scss,yaml,yml}': ['prettier --write'],
   '*.{js,md,ts,tsx}': ['eslint', 'npx -- cspell'],
-  '**/*.ts?(x)': [() => 'npx --workspaces tsc --incremental --noEmit'],
+  '{apps,blocks,packages}/**/*.ts?(x)': [() => 'npx --workspaces tsc --incremental --noEmit'],
   '**/{messages.ts,package.json,tsconfig.json,vitest.config.js,LICENSE.md,packages/{cli/assets/appsemblerc.schema.json,types/cli.ts}}':
     ["sh -c 'tsx packages/scripts/index.ts validate'"],
 };
