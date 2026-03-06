@@ -501,7 +501,7 @@ export default function EditPage(): ReactNode {
   );
 
   const updateAppPreview = useCallback(async () => {
-    const definition = saveStack[index].toJS({ maxAliasCount: -1 }) as AppDefinition;
+    const definition = saveStack[index].toJS() as AppDefinition;
     const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
     delete definition.anchors;
     frame.current?.contentWindow.postMessage(
