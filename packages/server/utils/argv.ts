@@ -456,7 +456,7 @@ export interface Argv {
   /**
    * The name of the bucket to store backups in
    *
-   * @default appsemble-backups
+   * @default appsemble-backups-exampleenv
    */
   backupsBucket: string;
 
@@ -626,7 +626,7 @@ const defaults: Argv = {
   s3SecretKey: undefined,
   dryRun: true,
   skipCustomDomains: false,
-  backupsBucket: 'appsemble-backups',
+  backupsBucket: 'appsemble-backups-exampleenv',
   backupsFilename: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   backupsHost: undefined,

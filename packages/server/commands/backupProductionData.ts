@@ -88,7 +88,7 @@ export async function handler(): Promise<void> {
   // Backup main database
   try {
     logger.info('Backing up main database...');
-    const key = `main/${argv.backupsFilename}_${timestamp}.sql.gz`;
+    const key = `sql/main/${argv.backupsFilename}_${timestamp}.sql.gz`;
     const mainDbUrl = buildPostgresUri({
       dbUser: argv.databaseUser,
       dbPassword: argv.databasePassword,
@@ -121,7 +121,7 @@ export async function handler(): Promise<void> {
         ssl: argv.databaseSsl,
       });
 
-      const key = `apps/${app.id}/${argv.backupsFilename}_${timestamp}.sql.gz`;
+      const key = `sql/apps/${app.id}/${argv.backupsFilename}_${timestamp}.sql.gz`;
       await backupDatabaseToS3(appDbUrl, argv.backupsBucket, key);
     } catch (err) {
       failed = true;

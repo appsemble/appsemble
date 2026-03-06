@@ -194,7 +194,7 @@ minio:
 
 backups:
   enabled: true
-  bucket: appsemble-backups
+  bucket: appsemble-backups-exampleenv
   filename: appsemble_backup
   port: 443
   secure: true
@@ -206,7 +206,7 @@ assetsBackups:
   sourceEndpoint: null
   sourceRegion: us-east-1
   destinationRegion: eu-central-1
-  prefix: appsemble-assets
+  prefix: assets/app-buckets
   verifyAfterSync: true
   maxDelete: 2000
   checkers: 16

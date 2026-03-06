@@ -1083,6 +1083,8 @@ staging:
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=staging-appsemble-mailpit-smtp" -addext "subjectAltName=DNS:staging-appsemble-mailpit-smtp"
     - kubectl create secret tls staging-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
+    - '[ -n "$STAGING_BACKUPS_HOST" ] || { echo "Please set STAGING_BACKUPS_HOST for staging backup destination" >&2; exit 1; }'
+    - kubectl get secret backups-secret >/dev/null
     - helm install staging ./public/appsemble-*.tgz
       --atomic
       --timeout 30m0s
@@ -1137,7 +1139,16 @@ staging:
       --set "minio.apiIngress.hostname=api.minio.appsemble.eu"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "backups.host=$STAGING_BACKUPS_HOST"
+      --set "backups.bucket=appsemble-backups-staging"
+      --set "backups.filename=appsemble_staging_backup"
       --set "backups.enabled=false"
+      --set "assetsBackups.enabled=true"
+      --set "assetsBackups.prefix=assets/app-buckets"
+      --set "assetsBackups.archiveRetentionDays=2"
+      --set "assetsBackups.enableMonthlyFullSnapshot=false"
+    - kubectl -n default get cronjob staging-s3-assets-backup
+    - kubectl -n default get cronjob staging-s3-assets-backup -o jsonpath='{.spec.schedule}{"\n"}'
 
 production:
   image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
@@ -1180,6 +1191,8 @@ production:
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=appsemble-mailpit-smtp" -addext "subjectAltName=DNS:appsemble-mailpit-smtp"
     - kubectl create secret tls appsemble-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
+    - '[ -n "$BACKUPS_HOST" ] || { echo "Please set BACKUPS_HOST for production backup destination" >&2; exit 1; }'
+    - kubectl get secret backups-secret >/dev/null
     - kubectl rollout restart deployment appsemble-mailpit || true
     - helm upgrade appsemble appsemble/appsemble
       --debug
@@ -1225,9 +1238,10 @@ production:
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "backups.host=$BACKUPS_HOST"
+      --set "backups.bucket=appsemble-backups-production"
       --set "backups.filename=appsemble_prod_backup"
       --set "assetsBackups.enabled=true"
-      --set "assetsBackups.prefix=appsemble-assets-prod"
+      --set "assetsBackups.prefix=assets/app-buckets"
       --set "assetsBackups.archiveRetentionDays=90"
       --set "assetsBackups.enableMonthlyFullSnapshot=true"
       --set "assetsBackups.fullSnapshotDay=1"
