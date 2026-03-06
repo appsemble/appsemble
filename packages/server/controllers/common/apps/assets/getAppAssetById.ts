@@ -38,17 +38,25 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       attributes: ['id', 'mime', 'filename', 'name'],
     });
     if (asset) {
-      stats = await getS3FileStats(`app-${appId}`, asset.id);
-      stream = await getS3File(`app-${appId}`, asset.id);
-      ({ filename, mime } = asset);
-      if (!filename) {
-        filename = asset.id;
-        if (mime) {
-          const ext = extension(mime);
-          if (ext) {
-            filename += `.${ext}`;
+      try {
+        stats = await getS3FileStats(`app-${appId}`, asset.id);
+        stream = await getS3File(`app-${appId}`, asset.id);
+        ({ filename, mime } = asset);
+        if (!filename) {
+          filename = asset.id;
+          if (mime) {
+            const ext = extension(mime);
+            if (ext) {
+              filename += `.${ext}`;
+            }
           }
         }
+      } catch (error) {
+        if (!['NotFound', 'NoSuchKey'].includes((error as { code?: string })?.code ?? '')) {
+          throw error;
+        }
+        await asset.destroy();
+        asset = null;
       }
     }
   }
@@ -107,7 +115,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
           mime: 'image/avif',
         });
 
-        await uploadS3File(`app-${appId}`, newAsset.id, resizedImage);
+        await uploadS3File(`app-${appId}`, newAsset.id, stream);
       } else {
         stream = await mid.avif().toBuffer();
       }
