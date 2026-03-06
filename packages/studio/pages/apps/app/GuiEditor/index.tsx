@@ -501,7 +501,7 @@ export default function EditPage(): ReactNode {
   );
 
   const updateAppPreview = useCallback(async () => {
-    const definition = saveStack[index].toJS() as AppDefinition;
+    const definition = saveStack[index].toJS({ maxAliasCount: -1 }) as AppDefinition;
     const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
     delete definition.anchors;
     frame.current?.contentWindow.postMessage(
@@ -560,7 +560,7 @@ export default function EditPage(): ReactNode {
   useBeforeUnload(unsavedChanges);
 
   useEffect(() => {
-    updateAppPreview();
+    updateAppPreview().catch(noop);
   }, [setIndex, updateAppPreview]);
 
   if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {
