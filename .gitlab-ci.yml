@@ -954,19 +954,25 @@ review:
     auto_stop_in: 1 day
   variables:
     GIT_STRATEGY: none
+  retry:
+    max: 1
+    when:
+      - script_failure
+      - runner_system_failure
+      - api_failure
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:review"
+    - apk add --no-cache curl jq tar openssl
+    - ./scripts/cleanup-review-resources.sh
     # This is the only way to make sure the review environment can be overwritten
     - helm delete "review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete secret review-$CI_MERGE_REQUEST_IID-mailpit-tls || true
-    - apk add --no-cache openssl
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     # Stripe webhook setup
-    - apk add --no-cache curl jq tar
     - LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
     - URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
     - curl -L -o stripe.tar.gz "$URL"
@@ -997,6 +1003,7 @@ review:
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --debug
       --atomic
+      --timeout 10m0s
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
@@ -1056,6 +1063,7 @@ stop review:
     - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID"
     - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
     - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep "^review-$CI_MERGE_REQUEST_IID" | xargs -I{} kubectl delete secret {} || true
+    - kubectl delete secret "stripe-webhook-secret-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
 
 # Deploy the Docker image for main to the staging environment.
 staging:
@@ -1377,36 +1385,11 @@ cleanup review environments:
     GIT_STRATEGY: none
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:review"
-    # Delete all review managed ingresses instead of relying on the pre-delete hooks
-    - kubectl get ingress --selector app.kubernetes.io/managed-by -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete ingress " $1}' | bash || true
-    # Delete all review managed secrets instead of relying on the pre-delete hooks
-    - kubectl get secret --selector app.kubernetes.io/managed-by -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete secret " $1}' | bash || true
-    # Delete all helm review releases without hooks
-    - helm list --short | grep '^review-' | xargs -I {} helm delete {} --no-hooks || true
-    # Delete all remaining review kubernetes resources with instance selector
-    - kubectl get all --selector app.kubernetes.io/instance -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/instance}{" "}{.kind}{"\n"}{end}' | grep '^.* review-' | awk '{kind=tolower($3); print "kubectl delete " kind " " $1;}' | bash || true
-    # Delete all persistent volume claims from review environments
-    - kubectl get pvc --selector app.kubernetes.io/instance -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/instance}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete pvc " $1}' | bash || true
-    # Delete all companion container namespaces for review environments
-    - kubectl get namespaces --no-headers -o custom-columns=:metadata.name | grep '^companion-containers-review-' | xargs -I{} kubectl delete namespace {} || true
-    # Delete all ingresses for review environments
-    - kubectl get ingress --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete ingress {} || true
-    # Delete all secrets for review environments
-    - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete secret {} || true
-    # Delete all Stripe webhooks for review environments
-    - |
-      if [ -z "$STRIPE_API_SECRET_KEY" ]; then
-        echo "Skipping Stripe webhook cleanup because STRIPE_API_SECRET_KEY is not set."
-      else
-        apk add --no-cache curl jq tar
-        LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
-        URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
-        curl -L -o stripe.tar.gz "$URL"
-        tar -xvf stripe.tar.gz
-        mv stripe /usr/local/bin/
-        stripe -v
-
-        stripe webhook_endpoints list --limit 20 --api-key "$STRIPE_API_SECRET_KEY" \
-        | jq -r '.data[].id' \
-        | xargs -r -I{} stripe webhook_endpoints delete {} --api-key "$STRIPE_API_SECRET_KEY" --confirm
-      fi
+    - apk add --no-cache curl jq tar
+    - LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
+    - URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
+    - curl -L -o stripe.tar.gz "$URL"
+    - tar -xvf stripe.tar.gz
+    - mv stripe /usr/local/bin/
+    - stripe -v
+    - ./scripts/cleanup-review-resources.sh
