@@ -240,6 +240,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
     refetchDemoAppMembers: null,
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     getAppMemberSelectedGroup: null,
+    setAppMemberSelectedGroup: () => null,
     ...params,
   });
 }

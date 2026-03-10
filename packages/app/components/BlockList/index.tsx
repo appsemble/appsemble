@@ -10,7 +10,7 @@ import {
 import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
 import { type ProjectImplementations } from '@appsemble/types';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState, Fragment } from 'react';
-import { Navigate, useLocation, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { type ActionCreators } from '../../utils/actions/index.js';
@@ -18,7 +18,7 @@ import { checkBlockPermissions } from '../../utils/authorization.js';
 import { callController } from '../../utils/bootstrapper.js';
 import { createEvents } from '../../utils/events.js';
 import { makeActions } from '../../utils/makeActions.js';
-import { appControllerCode, appControllerImplementations } from '../../utils/settings.js';
+import { appControllerCode, appControllerImplementations, appId } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -66,6 +66,7 @@ export function BlockList({
 }: BlockListProps): ReactNode {
   const params = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const push = useMessages();
   const { definition: appDefinition, revision } = useAppDefinition();
   const {
@@ -77,6 +78,7 @@ export function BlockList({
     isLoggedIn,
     logout,
     passwordLogin,
+    setAppMemberSelectedGroup,
     setAppMemberInfo,
   } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
@@ -169,6 +171,20 @@ export function BlockList({
           passwordLogout: logout,
           setAppMemberInfo,
           refetchDemoAppMembers,
+          setAppMemberSelectedGroup(groupId) {
+            const selectedGroup =
+              groupId == null
+                ? null
+                : (appMemberGroups.find((group) => group.id === groupId) ?? null);
+            // @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks)
+            setAppMemberSelectedGroup(selectedGroup);
+            sessionStorage.setItem(
+              `appsemble-group-${appId}-appMemberSelectedGroup`,
+              JSON.stringify(selectedGroup),
+            );
+            navigate(0);
+            return selectedGroup;
+          },
           getAppMemberSelectedGroup: () => appMemberSelectedGroup,
         }),
         events: createEvents(
@@ -202,6 +218,7 @@ export function BlockList({
     pageReady,
     params,
     passwordLogin,
+    navigate,
     prefix,
     push,
     pushNotifications,
@@ -209,6 +226,7 @@ export function BlockList({
     remap,
     appMemberGroups,
     addAppMemberGroup,
+    setAppMemberSelectedGroup,
     setAppMemberInfo,
     appMemberInfoRef,
     appMemberSelectedGroup,

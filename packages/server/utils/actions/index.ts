@@ -86,6 +86,7 @@ export const actions = {
   'group.member.role.update': noop,
   'group.member.query': noop,
   'group.query': noop,
+  'group.selected.update': noop,
   throw: throwAction,
   'app.member.register': noop,
   'app.member.invite': noop,
