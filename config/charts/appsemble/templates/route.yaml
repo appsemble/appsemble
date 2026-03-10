@@ -20,7 +20,7 @@ spec:
   tls:
     termination: {{ .Values.route.tls.termination }}
     insecureEdgeTerminationPolicy: {{ .Values.route.tls.insecureEdgeTerminationPolicy }}
-  wildcardPolicy: None
+  wildcardPolicy: Subdomain
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
