@@ -151,6 +151,8 @@ npm_ci:
 
 # Build the Docker image.
 build docker image:
+  tags:
+    - saas-linux-small-amd64
   extends: .docker
   stage: build
   cache:
@@ -180,6 +182,8 @@ build docker image:
 
 # Populate a postgres database with the 'default' data it needs to function
 seed database:
+  tags:
+    - saas-linux-small-amd64
   stage: build
   interruptible: true
   needs:
@@ -249,6 +253,8 @@ seed database:
 
 # Build the database into a docker image for use in other jobs
 build seeded db image:
+  tags:
+    - saas-linux-small-amd64
   extends: .docker
   stage: build
   needs:
