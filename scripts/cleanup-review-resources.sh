@@ -12,7 +12,7 @@ if [ -n "${CI_API_V4_URL:-}" ] && [ -n "${CI_PROJECT_ID:-}" ]; then
   fi
 fi
 
-ACTIVE=$(printf '%s\n' $ACTIVE 2>/dev/null | awk '/^[0-9]+$/' | sort -u | tr '\n' ' ')
+ACTIVE=$(printf '%s\n' "$ACTIVE" 2>/dev/null | tr -s '[:space:]' '\n' | awk '/^[0-9]+$/' | sort -u | tr '\n' ' ')
 [ -z "$ACTIVE" ] && echo '[review-cleanup] No active IIDs; skipping.' && exit 0
 keep() { echo " $ACTIVE " | grep -q " $1 "; }
 
@@ -34,8 +34,9 @@ for s in $(kubectl get secrets --no-headers -o custom-columns=:metadata.name | g
 done
 
 if [ -n "${STRIPE_API_SECRET_KEY:-}" ] && command -v stripe >/dev/null 2>&1; then
+  TAB=$(printf '\t')
   stripe webhook_endpoints list --limit 100 --api-key "$STRIPE_API_SECRET_KEY" | jq -r '.data[] | [.id, .url] | @tsv' |
-    while IFS='\t' read -r id url; do
+    while IFS="$TAB" read -r id url; do
       iid=$(printf '%s\n' "$url" | sed -n 's#^https://\([0-9][0-9]*\)\.appsemble\.review/.*#\1#p')
       [ -z "$iid" ] && continue
       keep "$iid" || stripe webhook_endpoints delete "$id" --api-key "$STRIPE_API_SECRET_KEY" --confirm || true

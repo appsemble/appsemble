@@ -31,8 +31,13 @@ if [ -n "$pressure" ] || [ "$free" -lt "$MIN_FREE_MI" ]; then
   (helm list -a --short | grep '^review-[0-9][0-9]*$' | sed 's/^/  - /') || echo '  - none'
   echo '[review-capacity] Open MRs to consider closing/stopping:'
   if [ -n "${CI_API_V4_URL:-}" ] && [ -n "${CI_PROJECT_ID:-}" ] && [ -n "${CI_JOB_TOKEN:-}${GITLAB_ACCESS_TOKEN:-}" ]; then
-    hdr=''; tok=''
-    [ -n "${CI_JOB_TOKEN:-}" ] && { hdr='JOB-TOKEN'; tok="$CI_JOB_TOKEN"; } || { hdr='PRIVATE-TOKEN'; tok="$GITLAB_ACCESS_TOKEN"; }
+    if [ -n "${CI_JOB_TOKEN:-}" ]; then
+      hdr='JOB-TOKEN'
+      tok="$CI_JOB_TOKEN"
+    else
+      hdr='PRIVATE-TOKEN'
+      tok="$GITLAB_ACCESS_TOKEN"
+    fi
     curl -sS --header "$hdr: $tok" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests?state=opened&per_page=100" | jq -r '.[] | "  - !\(.iid): \(.title) -> \(.web_url)"' || true
   else
     echo '  - unable to query MR list'
