@@ -33,7 +33,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  host: {{ printf "*.%s" .Values.route.host | quote }}
+  host: {{ printf "wildcard.%s" .Values.route.host | quote }}
   to:
     kind: Service
     name: {{ include "appsemble.fullname" . }}
