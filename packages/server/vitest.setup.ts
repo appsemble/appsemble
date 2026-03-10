@@ -41,8 +41,10 @@ setLogLevel(0);
 expect.extend({ toMatchImageSnapshot });
 
 let testDB: Sequelize;
+let rootDB: Sequelize;
 
 beforeAll(async () => {
+  rootDB = getRootDB();
   [testDB] = await setupTestDatabase(randomUUID());
   await testDB.sync();
   initS3Client({
@@ -77,7 +79,8 @@ afterAll(async () => {
   await testDB.close();
   // We need to drop the test database from the root database
   // testDB.drop() doesn't actually delete the database
-  await getRootDB().query(`DROP DATABASE ${testDB.getDatabaseName()}`);
+  await rootDB.query(`DROP DATABASE ${testDB.getDatabaseName()}`);
+  await rootDB.close();
 });
 
 setResponseTransformer(
