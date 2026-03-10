@@ -6,16 +6,13 @@
 - [Helm](https://helm.sh)
 - (Optional) [Cert-manager](https://cert-manager.io) for automatic TLS certificate management
 
-Appsemble can be installed using Helm by running the following commands.
+For installation, upgrades, values, and chart-specific caveats, use the
+[Appsemble chart README](https://gitlab.com/appsemble/appsemble/-/tree/main/config/charts/appsemble).
 
-```sh copy
-helm repo add appsemble https://charts.appsemble.com
-helm repo update
-helm install --name my-appsemble appsemble/appsemble
-```
-
-For more detailed instructions, see Appsemble on
+The published chart is also available on
 [Artifact Hub](https://artifacthub.io/packages/helm/appsemble/appsemble).
+
+This page focuses on TLS setup patterns for Helm deployments.
 
 ## Cert-manager
 
