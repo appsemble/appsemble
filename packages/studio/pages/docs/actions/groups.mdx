@@ -11,6 +11,7 @@ group members. To know more about the groups visit [this page](../app/groups.md)
 actions are as follow.
 
 - [`group.query`](#groupquery)
+- [`group.selected.update`](#groupselectedupdate)
 - [`group.member.invite`](#groupmemberinvite)
 - [`group.member.query`](#groupmemberquery)
 - [`group.member.delete`](#groupmemberdelete)
@@ -36,6 +37,29 @@ blocks:
     actions:
       onClick:
         type: group.query
+        onSuccess:
+          type: log
+```
+
+### group.selected.update<Side name="group.selected.update" />
+
+<ActionRef action={referenceSchemas.groupActions['group.selected.update']} />
+
+This action changes the currently selected group for the logged in app member. The `groupId` must be
+either `null` (to clear the selected group) or the id of a group from the current `group.query`
+result. If an invalid value is provided, the action throws an error. Here is an example of how you
+can use this action.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: action-button
+    version: 0.36.5-test.2
+    parameters:
+      icon: 'users'
+    actions:
+      onClick:
+        type: group.selected.update
+        groupId: 1
         onSuccess:
           type: log
 ```

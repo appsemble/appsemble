@@ -51,6 +51,7 @@ export * from './actions/GroupMemberInviteActionDefinition.js';
 export * from './actions/GroupMemberQueryActionDefinition.js';
 export * from './actions/GroupMemberRoleUpdateActionDefinition.js';
 export * from './actions/GroupQueryActionDefinition.js';
+export * from './actions/GroupSelectedUpdateActionDefinition.js';
 export * from './actions/LinkActionDefinition.js';
 export * from './actions/ResourceSubscriptionUnsubscribeActionDefinition.js';
 export * from './actions/ResourceUpdateActionDefinition.js';

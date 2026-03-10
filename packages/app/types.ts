@@ -158,6 +158,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   appMemberGroups: AppMemberGroup[];
   addAppMemberGroup: (group: Group) => void;
   getAppMemberSelectedGroup: () => AppMemberGroup;
+  setAppMemberSelectedGroup: (groupId: null | number) => AppMemberGroup | null;
   refetchDemoAppMembers: () => Promise<void>;
 }
 

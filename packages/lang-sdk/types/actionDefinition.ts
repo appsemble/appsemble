@@ -41,6 +41,7 @@ export type ActionDefinition =
   | GroupMemberInviteActionDefinition
   | GroupMemberQueryActionDefinition
   | GroupMemberRoleUpdateActionDefinition
+  | GroupSelectedUpdateActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
   | MatchActionDefinition
@@ -104,6 +105,7 @@ export type ActionName =
   | 'group.member.query'
   | 'group.member.role.update'
   | 'group.query'
+  | 'group.selected.update'
   | 'link.back'
   | 'link.next'
   | 'link'
@@ -562,6 +564,14 @@ export interface GroupMemberRoleUpdateActionDefinition
    * The role to invite the app member with.
    */
   role: Remapper;
+}
+
+export interface GroupSelectedUpdateActionDefinition
+  extends BaseActionDefinition<'group.selected.update'> {
+  /**
+   * The ID of the group to select.
+   */
+  groupId: Remapper;
 }
 
 export interface AppMemberLoginAction extends BaseActionDefinition<'app.member.login'> {

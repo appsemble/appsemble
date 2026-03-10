@@ -49,6 +49,7 @@ export function Page(): ReactNode {
     isLoggedIn,
     logout,
     passwordLogin,
+    setAppMemberSelectedGroup,
     setAppMemberInfo,
   } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
@@ -255,6 +256,20 @@ export function Page(): ReactNode {
         remap,
         params,
         showMessage,
+        setAppMemberSelectedGroup(groupId) {
+          const selectedGroup =
+            groupId == null
+              ? null
+              : (appMemberGroups.find((group) => group.id === groupId) ?? null);
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks)
+          setAppMemberSelectedGroup(selectedGroup);
+          sessionStorage.setItem(
+            `appsemble-group-${appId}-appMemberSelectedGroup`,
+            JSON.stringify(selectedGroup),
+          );
+          navigate(0);
+          return selectedGroup;
+        },
         getAppMemberSelectedGroup: () => appMemberSelectedGroup,
         getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,
@@ -285,6 +300,7 @@ export function Page(): ReactNode {
       appMemberSelectedGroup,
       appMemberGroups,
       addAppMemberGroup,
+      setAppMemberSelectedGroup,
     ],
   );
 

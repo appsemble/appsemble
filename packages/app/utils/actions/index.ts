@@ -21,7 +21,7 @@ import { each } from './each.js';
 import { email } from './email.js';
 import { event } from './event.js';
 import * as flow from './flow.js';
-import { groupQuery } from './group.js';
+import { groupQuery, groupSelectedUpdate } from './group.js';
 import {
   groupMemberCreate,
   groupMemberDelete,
@@ -121,6 +121,7 @@ export const actionCreators: ActionCreators = {
   'group.member.query': groupMemberQuery,
   'group.member.delete': groupMemberDelete,
   'group.member.role.update': groupMemberRoleUpdate,
+  'group.selected.update': groupSelectedUpdate,
   throw: throwAction,
   'app.member.login': appMemberLogin,
   'app.member.register': appMemberRegister,

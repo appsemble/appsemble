@@ -86,6 +86,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/GroupMemberDeleteActionDefinition' },
         { $ref: '#/components/schemas/GroupMemberRoleUpdateActionDefinition' },
         { $ref: '#/components/schemas/GroupQueryActionDefinition' },
+        { $ref: '#/components/schemas/GroupSelectedUpdateActionDefinition' },
         { $ref: '#/components/schemas/ThrowActionDefinition' },
         { $ref: '#/components/schemas/AppMemberLoginActionDefinition' },
         { $ref: '#/components/schemas/AppMemberLogoutActionDefinition' },
