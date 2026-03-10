@@ -98,6 +98,8 @@ declare global {
       displayAppMemberName?: boolean;
       displayInstallationPrompt?: boolean;
       e2e?: boolean;
+      supportedLanguages: string[];
+      totp: 'disabled' | 'enabled' | 'required';
     };
   }
 }

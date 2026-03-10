@@ -16,61 +16,61 @@ export class SamlLoginRequestGlobal extends Model {
   /**
    * The SAML login ID that is sent to the SAML server.
    */
-  id!: string;
+  declare id: string;
 
   /**
    * The OAuth2 scope the app requested in the login request.
    */
-  scope!: string;
+  declare scope: string;
 
   /**
    * The OAuth2 state the app specified in the login request.
    */
-  state!: string;
+  declare state: string;
 
   /**
    * The email address the user is linking.
    */
-  email?: string;
+  declare email?: string;
 
   /**
-   * The nameId that’s stored if the authorization is being linked to the user.
+   * The nameId that's stored if the authorization is being linked to the user.
    */
-  nameId?: string;
+  declare nameId?: string;
 
   /**
    * The OAuth2 redirect URI the app specified in the login request.
    */
-  redirectUri!: string;
+  declare redirectUri: string;
 
   /**
    * The timezone of the browser used during the login flow.
    */
-  timezone!: string;
+  declare timezone: string;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
-
-  /**
-   * The ID of the app’s SAML secret.
-   */
-  AppSamlSecretId!: number;
+  declare updated: Date;
 
   /**
-   * An optional ID of the user who’s logged in to Appsemble Studio at the time of the request.
+   * The ID of the app's SAML secret.
    */
-  AppMemberId?: string;
+  declare AppSamlSecretId: number;
 
   /**
-   * The app’s SAML secret.
+   * An optional ID of the user who's logged in to Appsemble Studio at the time of the request.
    */
-  AppSamlSecret?: Awaited<AppSamlSecret>;
+  declare AppMemberId?: string;
 
   /**
-   * An optional user who’s logged in to Appsemble Studio at the time of the request.
+   * The app's SAML secret.
    */
-  AppMember?: Awaited<AppMember>;
+  declare AppSamlSecret?: Awaited<AppSamlSecret>;
+
+  /**
+   * An optional user who's logged in to Appsemble Studio at the time of the request.
+   */
+  declare AppMember?: Awaited<AppMember>;
 }
 
 export function createSamlLoginRequestModel(sequelize: Sequelize): typeof SamlLoginRequestGlobal {
@@ -78,42 +78,42 @@ export function createSamlLoginRequestModel(sequelize: Sequelize): typeof SamlLo
   class SamlLoginRequest extends SamlLoginRequestGlobal {
     @PrimaryKey
     @Column(DataType.STRING)
-    id!: string;
+    declare id: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    scope!: string;
+    declare scope: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    state!: string;
+    declare state: string;
 
     @Column(DataType.STRING)
-    email?: string;
+    declare email?: string;
 
     @Column(DataType.STRING)
-    nameId?: string;
-
-    @AllowNull(false)
-    @Column(DataType.STRING)
-    redirectUri!: string;
+    declare nameId?: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    timezone!: string;
+    declare redirectUri: string;
+
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    declare timezone: string;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     @AllowNull(false)
     @Column(DataType.INTEGER)
-    AppSamlSecretId!: number;
+    declare AppSamlSecretId: number;
 
     @Column(DataType.UUID)
-    AppMemberId?: string;
+    declare AppMemberId?: string;
 
     static associate(models: AppModels): void {
       SamlLoginRequest.belongsTo(models.AppSamlSecret, {

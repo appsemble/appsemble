@@ -17,6 +17,7 @@ export function List({
   utils,
 }: BlockProps & { readonly dataTestId?: string }): VNode | null {
   const [data, setData] = useState<Item[]>([]);
+  const [groups, setGroups] = useState<string[]>([]);
   const [groupedData, setGroupedData] = useState<Record<string, Item[]>>({});
   const [leftoverData, setLeftoverData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,6 +30,58 @@ export function List({
     utils: { isMobile },
   } = useBlock();
 
+  useEffect(() => {
+    const container: Document | HTMLElement = document;
+    let rafId: number | null = null;
+
+    function startScrollUp(): void {
+      if (rafId != null) {
+        return;
+      }
+      const step = (): void => {
+        window.scrollBy({ top: -8, left: 0, behavior: 'auto' });
+        rafId = requestAnimationFrame(step);
+      };
+      rafId = requestAnimationFrame(step);
+    }
+
+    function stopScrollUp(): void {
+      if (rafId != null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    }
+
+    function onDragEnter(e: DragEvent): void {
+      const target = e.target as Element | null;
+      if (target?.classList?.contains('navbar-brand')) {
+        startScrollUp();
+      }
+    }
+
+    function onDragLeave(e: DragEvent): void {
+      const target = e.target as Element | null;
+      if (target?.classList?.contains('navbar-brand')) {
+        stopScrollUp();
+      }
+    }
+
+    function onDragEnd(): void {
+      stopScrollUp();
+    }
+
+    container.addEventListener('dragenter', onDragEnter as EventListener);
+    container.addEventListener('dragleave', onDragLeave as EventListener);
+    container.addEventListener('dragend', onDragEnd as EventListener);
+
+    return () => {
+      stopScrollUp();
+      container.removeEventListener('dragenter', onDragEnter as EventListener);
+      container.removeEventListener('dragleave', onDragLeave as EventListener);
+      container.removeEventListener('dragend', onDragEnd as EventListener);
+    };
+  }, []);
+
   const renderItems = useCallback(
     (items: Item[], spaced?: boolean): VNode => {
       const itemList: Item[] = items;
@@ -38,9 +91,9 @@ export function List({
         setDraggedItemIndex(index);
       };
 
-      const handleDrop = async (index: number): Promise<void> => {
+      const handleDrop = async (index: number | null): Promise<void> => {
         setIsDragging(false);
-        if (draggedItemIndex == null || draggedItemIndex === index) {
+        if (draggedItemIndex == null || index == null || draggedItemIndex === index) {
           return;
         }
 
@@ -136,7 +189,6 @@ export function List({
               draggable={isDragging && onDrop ? onDrop.type !== 'noop' : undefined}
               key={item.id ?? index}
               onDragEnd={() => {
-                // @ts-expect-error strictNullCheck
                 handleDrop(currentLine);
                 setCurrentLine(null);
               }}
@@ -174,16 +226,6 @@ export function List({
               )}
             </li>
           ))}
-          {onDrop?.type === 'noop' ? null : (
-            // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-            <li
-              className={styles.invisible}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => handleDrop(itemList.length)}
-            >
-              <ListItem index={itemList.length} item={{ Position: null }} />
-            </li>
-          )}
         </ul>
       );
     },
@@ -212,7 +254,9 @@ export function List({
 
   useEffect(() => {
     if (data != null && groupBy) {
-      const newGroupedData: Record<string, Item[]> = {};
+      const newGroupedData: Record<string, Item[]> = groups.length
+        ? Object.fromEntries(groups.map((name) => [name, []]))
+        : {};
       const newLeftoverData: Item[] = [];
       for (const entry of data) {
         const groupName = entry[groupBy];
@@ -225,7 +269,7 @@ export function List({
       setGroupedData(newGroupedData);
       setLeftoverData(newLeftoverData);
     }
-  }, [data, groupBy]);
+  }, [data, groupBy, groups]);
 
   const loadData = useCallback(
     (d: any, err: string): void => {
@@ -253,6 +297,12 @@ export function List({
     const callback = (): void => setData([]);
     events.on.reset?.(callback);
     return () => events.off.data(callback);
+  }, [events]);
+
+  useEffect(() => {
+    const callback = (newGroups: any): void => setGroups(newGroups);
+    events.on.groups?.(callback);
+    return () => events.off.groups?.(callback);
   }, [events]);
 
   if (loading) {

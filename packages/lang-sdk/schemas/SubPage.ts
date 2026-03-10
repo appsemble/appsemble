@@ -10,6 +10,9 @@ export const SubPage: OpenAPIV3.NonArraySchemaObject = {
       $ref: '#/components/schemas/RemapperDefinition',
       description: 'The name of the sub page.',
     },
+    layout: {
+      $ref: '#/components/schemas/PageLayoutDefinition',
+    },
     roles: {
       type: 'array',
       description: `The list of roles that are allowed to view this page.

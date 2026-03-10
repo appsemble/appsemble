@@ -104,6 +104,8 @@ describe('getAppById', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -112,7 +114,9 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
       }
     `);
@@ -191,6 +195,8 @@ describe('getAppById', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -199,7 +205,9 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": 2,
         "visibility": "unlisted",
       }
@@ -248,6 +256,8 @@ describe('getAppById', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -256,7 +266,9 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
       }
     `);
@@ -307,6 +319,8 @@ describe('getAppById', () => {
         "iconUrl": "/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -315,7 +329,9 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
       }
     `);
@@ -362,6 +378,8 @@ describe('getAppById', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -370,7 +388,9 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
       }
     `);
@@ -417,6 +437,8 @@ describe('getAppById', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -425,7 +447,9 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -475,6 +499,8 @@ describe('getAppById', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -483,7 +509,9 @@ describe('getAppById', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page

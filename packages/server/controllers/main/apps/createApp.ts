@@ -1,6 +1,7 @@
 import {
   type AppDefinition,
   AppValidator,
+  defaultLocale,
   normalize,
   validateAppDefinition,
 } from '@appsemble/lang-sdk';
@@ -31,6 +32,7 @@ import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
+import { isValidSentryDsn } from '../../../utils/sentry.js';
 
 export async function createApp(ctx: Context): Promise<void> {
   const {
@@ -51,19 +53,25 @@ export async function createApp(ctx: Context): Promise<void> {
         icon,
         iconBackground,
         maskableIcon,
+        metaPixelID,
+        msClarityID,
         readmes,
         screenshots,
         sentryDsn,
         sentryEnvironment,
         sharedStyle,
         showAppDefinition = true,
+        supportedLanguages,
         template = false,
+        totp,
         visibility,
         yaml,
       },
       query: { dryRun },
     },
   } = ctx;
+
+  const supportedLanguagesArray = JSON.parse(supportedLanguages ?? '[]');
 
   const organization = await Organization.findByPk(OrganizationId, {
     attributes: {
@@ -97,6 +105,18 @@ export async function createApp(ctx: Context): Promise<void> {
       'App validation failed',
     );
 
+    // TOTP cannot be enabled in demo mode apps
+    assertKoaCondition(
+      !demoMode || !totp || totp === 'disabled',
+      ctx,
+      400,
+      'TOTP cannot be enabled for demo mode apps',
+    );
+
+    if (sentryDsn) {
+      assertKoaCondition(isValidSentryDsn(sentryDsn), ctx, 400, 'Invalid Sentry DSN');
+    }
+
     const path = normalize(definition.name);
     const keys = webpush.generateVAPIDKeys();
 
@@ -105,6 +125,8 @@ export async function createApp(ctx: Context): Promise<void> {
       OrganizationId,
       coreStyle: validateStyle(coreStyle),
       googleAnalyticsID,
+      metaPixelID,
+      msClarityID,
       iconBackground: iconBackground || '#ffffff',
       sharedStyle: validateStyle(sharedStyle),
       domain: domain || null,
@@ -119,6 +141,7 @@ export async function createApp(ctx: Context): Promise<void> {
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
       demoMode: Boolean(demoMode),
+      totp: totp || 'disabled',
       controllerCode,
       controllerImplementations,
       displayAppMemberName: false,
@@ -127,6 +150,9 @@ export async function createApp(ctx: Context): Promise<void> {
       dbHost,
       dbPort,
       dbUser,
+      supportedLanguages: supportedLanguagesArray.length
+        ? supportedLanguagesArray
+        : [definition.defaultLanguage ?? defaultLocale],
     };
 
     if (dbPassword) {

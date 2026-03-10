@@ -5,52 +5,52 @@ import { AllowNull, Column, CreatedAt, DataType, Model, Table } from 'sequelize-
 export class Theme extends Model implements Omit<ThemeType, 'font' | 'tileLayer'> {
   @AllowNull(false)
   @Column(DataType.STRING)
-  bulmaVersion!: string;
+  declare bulmaVersion: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  primaryColor!: string;
+  declare primaryColor: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  linkColor!: string;
+  declare linkColor: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  successColor!: string;
+  declare successColor: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  infoColor!: string;
+  declare infoColor: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  warningColor!: string;
+  declare warningColor: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  dangerColor!: string;
+  declare dangerColor: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  themeColor!: string;
+  declare themeColor: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  splashColor!: string;
+  declare splashColor: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  fontFamily!: string;
+  declare fontFamily: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  fontSource!: string;
+  declare fontSource: string;
 
   @AllowNull(false)
   @Column(DataType.TEXT)
-  css!: string;
+  declare css: string;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 }

@@ -1,5 +1,5 @@
 import { type AppVisibility } from './app.js';
-import { type AppLock } from './index.js';
+import { type AppLock, type AppTotp } from './index.js';
 
 /**
  * A `context` which can be specified using the `--context` command line argument.
@@ -62,6 +62,22 @@ export interface AppsembleContext {
    * command line.
    */
   googleAnalyticsId?: string;
+
+  /**
+   * The Meta Pixel ID that should be used for the app.
+   *
+   * If `metaPixelId` is specified, this will override `--meta-pixel-id` passed on the
+   * command line.
+   */
+  metaPixelId?: string;
+
+  /**
+   * The MS Clarity ID that should be used for the app.
+   *
+   * If `msClarityId` is specified, this will override `--ms-clarity-id` passed on the
+   * command line.
+   */
+  msClarityId?: string;
 
   /**
    * The custom Sentry DSN for the app.
@@ -150,6 +166,11 @@ export interface AppsembleContext {
   members?: boolean;
 
   /**
+   * Whether sending emails should be skipped for the group invites.
+   */
+  skipGroupInvites?: boolean;
+
+  /**
    * Whether to publish assets from the assets directory.
    *
    * If assets is specified, this will override --assets passed on the command line.
@@ -183,6 +204,23 @@ export interface AppsembleContext {
    * The user of the external app database.
    */
   dbUser?: string;
+
+  /**
+   * Languages officially supported by the app
+   */
+  supportedLanguages?: string[];
+
+  /**
+   * The TOTP (two-factor authentication) setting for the app.
+   *
+   * - `disabled`: TOTP is not available for app members.
+   * - `enabled`: TOTP is available but optional for app members.
+   * - `required`: TOTP is required for all app members. WARNING: Setting this will lock out
+   * existing users who have not yet enabled 2FA on their accounts.
+   *
+   * If `totp` is specified, this will override `--totp` passed on the command line.
+   */
+  totp?: AppTotp;
 }
 
 export interface AppsembleRC {

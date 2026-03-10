@@ -7,33 +7,73 @@ import { argv } from './argv.js';
 
 interface SentrySettings {
   /**
-   * The CORS `report-uri` to use.
+   * The CORS `report-uri` to use for CSP violation reports.
    */
   reportUri?: string;
 
   /**
-   * The Sentry origin to allow making requests to.
+   * The Sentry origin that must be allowed in CSP directives.
    */
   sentryOrigin?: string;
 
   /**
-   * The configured Sentry DSN.
+   * The configured Sentry DSN that should be exposed to the client.
    */
   sentryDsn?: string;
 
   /**
-   * The Sentry environment to use.
+   * The Sentry environment name to attach to events.
    */
   sentryEnvironment?: string;
 }
 
 /**
- * Get client side Sentry settings to inject into the context for the given domain.
+ * Parse a sample rate and fall back to a safe default when invalid.
+ *
+ * @param input The configured sample rate.
+ * @param fallback The default sample rate used on invalid input.
+ * @returns A number between 0 and 1.
+ */
+function parseSampleRate(input: string | number | undefined, fallback: number): number {
+  const parsed = typeof input === 'number' ? input : Number.parseFloat(input ?? '');
+
+  if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1) {
+    return fallback;
+  }
+
+  return parsed;
+}
+
+/**
+ * Verify whether a Sentry DSN is a valid URL.
+ *
+ * @param dsn The Sentry DSN to verify.
+ * @returns Whether the DSN can be parsed and contains a valid project identifier.
+ */
+export function isValidSentryDsn(dsn: string): boolean {
+  try {
+    const { pathname, protocol, username } = new URL(dsn);
+
+    if (!username || (protocol !== 'http:' && protocol !== 'https:')) {
+      return false;
+    }
+
+    const pathSegments = pathname.split('/').filter(Boolean);
+    const projectId = pathSegments.at(-1);
+
+    return Boolean(projectId && /^\d+$/.test(projectId));
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Get client-side Sentry settings for the given domain.
  *
  * @param domain The domain name to check.
- * @param sentryDsn The custom Sentry DSN to use.
- * @param sentryEnvironment The custom Sentry environment to use.
- * @returns Sentry DSN and environment if it matches the `--sentry-allowed-domains` option.
+ * @param sentryDsn An optional app-specific Sentry DSN override.
+ * @param sentryEnvironment An optional app-specific Sentry environment override.
+ * @returns Sentry DSN/origin/report URI when Sentry should be enabled for this domain.
  */
 export function getSentryClientSettings(
   domain: string,
@@ -48,8 +88,18 @@ export function getSentryClientSettings(
   ) {
     return {};
   }
+
   const dsn = sentryDsn || argv.sentryDsn;
+  if (!isValidSentryDsn(dsn)) {
+    if (sentryDsn) {
+      return {};
+    }
+
+    throw new Error('Invalid Sentry DSN');
+  }
+
   const { origin, pathname, username } = new URL(dsn);
+
   return {
     sentryDsn: dsn,
     sentryEnvironment: sentryDsn
@@ -61,26 +111,30 @@ export function getSentryClientSettings(
 }
 
 /**
- * Setup Sentry server side.
+ * Configure server-side Sentry instrumentation.
  *
- * @param sentryDsn The Sentry DSN
+ * @param settings Server-side Sentry settings including `sentryDsn`, `sentryEnvironment`, `tracesSampleRate`, and `profileSampleRate`.
  */
-export function configureSentry({
-  sentryDsn,
-  sentryEnvironment,
-}: {
+export function configureSentry(settings: {
   sentryDsn: string;
-  sentryEnvironment: string;
+  sentryEnvironment?: string;
+  tracesSampleRate?: string | number;
+  profileSampleRate?: string | number;
 }): void {
+  const { sentryDsn, sentryEnvironment, tracesSampleRate, profileSampleRate } = settings;
+
   if (sentryDsn) {
+    const effectiveTracesSampleRate = parseSampleRate(tracesSampleRate, 0.2);
+    const effectiveProfileSampleRate = parseSampleRate(profileSampleRate, 0.25);
+
     Sentry.init({
       dsn: sentryDsn,
       environment: sentryEnvironment,
       release: version,
       integrations: [nodeProfilingIntegration(), Sentry.postgresIntegration()],
-      tracesSampleRate: 1,
-      profilesSampleRate: 1,
-      profileSessionSampleRate: 1,
+      tracesSampleRate: effectiveTracesSampleRate,
+      profilesSampleRate: effectiveProfileSampleRate,
+      profileSessionSampleRate: effectiveProfileSampleRate,
       profileLifecycle: 'trace',
     });
   }

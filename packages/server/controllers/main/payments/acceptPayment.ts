@@ -9,6 +9,7 @@ import {
   InvoiceTransaction,
   Organization,
   OrganizationSubscription,
+  User,
 } from '../../../models/index.js';
 import { Invoice } from '../../../models/main/Invoice.js';
 import { argv } from '../../../utils/argv.js';
@@ -44,7 +45,14 @@ export async function acceptPayment(ctx: Context): Promise<void> {
       status: event.type,
     });
     transaction.save();
-    const organization = await Organization.findByPk(invoice!.organizationId);
+    const organization = await Organization.findByPk(invoice!.organizationId, {
+      include: [
+        {
+          model: User,
+          required: false,
+        },
+      ],
+    });
     assertKoaError(!(organization && organization?.email), ctx, 404, 'Organization not found.');
     const attachments: SendMailOptions['attachments'] = [];
     attachments.push({
@@ -59,7 +67,7 @@ export async function acceptPayment(ctx: Context): Promise<void> {
       },
       emailName: 'subscriptionConfirmation',
       attachments,
-      locale: 'EN',
+      locale: organization?.locale,
       values: {
         name: organization!.name,
       },

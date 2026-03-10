@@ -469,6 +469,11 @@ declare module '@appsemble/sdk' {
     data: never;
 
     /**
+     * The event that emits the names of the groups to add grouped elements to in sorted order.
+     */
+    groups: never;
+
+    /**
      * The event that resets the list.
      *
      * Commonly used with a filter.

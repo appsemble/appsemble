@@ -51,7 +51,7 @@ const Context = createContext<(...args: any[]) => Promise<any>>(() => Promise.re
  * A provider for the {@link useConfirmation} hook.
  */
 export function Confirmation({ children }: ConfirmationProps): ReactNode {
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const [options, setOptions] = useState<DeferredConfirmationOptions>(null);

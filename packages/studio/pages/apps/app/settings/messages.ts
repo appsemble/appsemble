@@ -121,6 +121,32 @@ export const messages = defineMessages({
     id: 'studio.slZvEA',
     defaultMessage: 'This needs to be a valid Google Analytics ID',
   },
+  metaPixelIDLabel: {
+    id: 'studio.y7GjxX',
+    defaultMessage: 'Meta Pixel ID',
+  },
+  metaPixelIDDescription: {
+    id: 'studio.//39+D',
+    defaultMessage:
+      'If this is specified, Meta Pixel will be applied to your app. For more information, please refer to the <link>documentation</link>.',
+  },
+  metaPixelError: {
+    id: 'studio.TGLI74',
+    defaultMessage: 'This needs to be a valid Meta Pixel ID',
+  },
+  msClarityIDLabel: {
+    id: 'studio.ZUMv1d',
+    defaultMessage: 'MS Clarity Project ID',
+  },
+  msClarityIDDescription: {
+    id: 'studio.u4ctdO',
+    defaultMessage:
+      'If this is specified, MS Clarity will be applied to your app. For more information, please refer to the <link>documentation</link>.',
+  },
+  msClarityError: {
+    id: 'studio.4e71es',
+    defaultMessage: 'This needs to be a valid MS Clarity Project ID',
+  },
   saveChanges: {
     id: 'studio.X0ha1a',
     defaultMessage: 'Save changes',
@@ -252,5 +278,38 @@ export const messages = defineMessages({
   skipGroupInvitesDescription: {
     id: 'studio.UGq/Er',
     defaultMessage: 'Whether to skip sending group invite emails and add group members directly',
+  },
+  supportedLanguages: {
+    id: 'studio.KLr1Qo',
+    defaultMessage: 'Supported Languages',
+  },
+  supportedLanguagesHelp: {
+    id: 'studio.q+JBOt',
+    defaultMessage: 'Languages officially supported by the app',
+  },
+  totpLabel: {
+    id: 'studio.j+ZWYD',
+    defaultMessage: 'Two-Factor Authentication (TOTP)',
+  },
+  totpDescription: {
+    id: 'studio.il4rxp',
+    defaultMessage:
+      'Configure whether two-factor authentication (TOTP) is available for app members. When set to "Required", all app members must set up TOTP to use the app. WARNING: Setting "Required" will lock out existing users who have not yet enabled 2FA.',
+  },
+  totpDisabled: {
+    id: 'studio.tthToS',
+    defaultMessage: 'Disabled',
+  },
+  totpEnabled: {
+    id: 'studio.79VsNo',
+    defaultMessage: 'Enabled (optional)',
+  },
+  totpRequired: {
+    id: 'studio.Seanpx',
+    defaultMessage: 'Required',
+  },
+  totpDisabledDemoMode: {
+    id: 'studio.mQhIG5',
+    defaultMessage: 'Two-factor authentication cannot be enabled for demo mode apps.',
   },
 });

@@ -126,7 +126,7 @@ export function ResourceRow({
 
   const openEditModal = useCallback(() => {
     modal.enable();
-    const { $author, $clonable, $created, $updated, id, ...rest } = resource;
+    const { $author, $clonable, $created, $updated, Position, id, ...rest } = resource;
     setEditingResource(rest);
   }, [modal, resource]);
 

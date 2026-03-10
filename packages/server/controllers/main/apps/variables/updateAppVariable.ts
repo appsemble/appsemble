@@ -1,6 +1,7 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
+import { Op } from 'sequelize';
 
 import { App, getAppDB } from '../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
@@ -25,7 +26,9 @@ export async function updateAppVariable(ctx: Context): Promise<void> {
   const { AppVariable } = await getAppDB(appId);
   if (body.name) {
     const { name } = body;
-    const existing = await AppVariable.findOne({ where: { name } });
+    const existing = await AppVariable.findOne({
+      where: { [Op.and]: { name, [Op.not]: { id: appVariableId } } },
+    });
 
     assertKoaCondition(existing == null, ctx, 400, `App variable with name ${name} already exists`);
   }

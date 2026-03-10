@@ -120,6 +120,8 @@ describe('connectOAuth2Authorization', () => {
         profile: 'https://example.com/me',
         sub: '42',
       },
+      // Test secret for mocking OAuth2 token
+      // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
       'secret',
     );
     mock.onPost('https://gitlab.com/oauth/authorize').reply(200, {
@@ -175,6 +177,8 @@ describe('connectOAuth2Authorization', () => {
         profile: 'https://example.com/me',
         sub: '42',
       },
+      // Test secret for mocking OAuth2 token
+      // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
       'secret',
     );
     mock.onPost('https://gitlab.com/oauth/authorize').reply(200, {
@@ -232,6 +236,8 @@ describe('connectOAuth2Authorization', () => {
         profile: 'https://example.com/me',
         sub: '42',
       },
+      // Test secret for mocking OAuth2 token
+      // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
       'secret',
     );
     mock.onPost('https://gitlab.com/oauth/authorize').reply(200, {

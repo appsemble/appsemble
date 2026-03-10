@@ -9,7 +9,7 @@ export class AppMetaGlobal extends Model {
    *
    * This field _**must**_ stay consistent across versions!
    */
-  version!: string;
+  declare version: string;
 }
 
 export function createAppMetaModel(sequelize: Sequelize): typeof AppMetaGlobal {
@@ -17,7 +17,7 @@ export function createAppMetaModel(sequelize: Sequelize): typeof AppMetaGlobal {
   class AppMeta extends AppMetaGlobal {
     @PrimaryKey
     @Column(DataType.STRING)
-    version!: string;
+    declare version: string;
   }
 
   sequelize.addModels([AppMeta]);

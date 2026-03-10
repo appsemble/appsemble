@@ -2,6 +2,7 @@ import { readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { toXml } from 'xast-util-to-xml';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { x as h } from 'xastscript';
 
 import { App, type AppSamlSecret, getAppDB, Organization } from '../../../../models/index.js';
@@ -260,7 +261,7 @@ describe('assertAppSamlConsumerService', () => {
 
     expect(response).toMatchObject({
       status: 302,
-      data: 'Redirecting to <a href="/saml/response/invalidrelaystate">/saml/response/invalidrelaystate</a>.',
+      data: 'Redirecting to /saml/response/invalidrelaystate.',
     });
   });
 
@@ -275,7 +276,7 @@ describe('assertAppSamlConsumerService', () => {
 
     expect(response).toMatchObject({
       status: 302,
-      data: 'Redirecting to <a href="/saml/response/invalidsecret">/saml/response/invalidsecret</a>.',
+      data: 'Redirecting to /saml/response/invalidsecret.',
     });
   });
 
@@ -291,7 +292,7 @@ describe('assertAppSamlConsumerService', () => {
 
     expect(response).toMatchObject({
       status: 302,
-      data: 'Redirecting to <a href="/saml/response/invalidstatuscode">/saml/response/invalidstatuscode</a>.',
+      data: 'Redirecting to /saml/response/invalidstatuscode.',
     });
   });
 });

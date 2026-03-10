@@ -1,9 +1,36 @@
-import { addBreadcrumb, captureMessage, init } from '@sentry/browser';
+import {
+  addBreadcrumb,
+  browserProfilingIntegration,
+  browserTracingIntegration,
+  captureMessage,
+  init,
+  replayIntegration,
+} from '@sentry/browser';
 
 import pkg from './package.json' with { type: 'json' };
 
-export function setupSentry(dsn: string, environment: string): void {
-  init({ dsn, environment, release: pkg.version });
+const tracesSampleRate = 0.2;
+const profileSampleRate = 0.25;
+const replaysSessionSampleRate = 0.02;
+const replaysOnErrorSampleRate = 1;
+
+export function setupSentry(dsn?: string, environment?: string): void {
+  if (!dsn) {
+    return;
+  }
+
+  init({
+    dsn,
+    environment,
+    release: pkg.version,
+    integrations: [browserTracingIntegration(), browserProfilingIntegration(), replayIntegration()],
+    tracesSampleRate,
+    profilesSampleRate: profileSampleRate,
+    profileSessionSampleRate: profileSampleRate,
+    profileLifecycle: 'trace',
+    replaysSessionSampleRate,
+    replaysOnErrorSampleRate,
+  });
 
   window.addEventListener('online', () => {
     addBreadcrumb({ category: 'network', message: 'online' });

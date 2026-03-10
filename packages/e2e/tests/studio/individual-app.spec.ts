@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 import { type App } from '@appsemble/types';
 
-import { expect, test } from '../../index.js';
+import { expect, authenticatedTest as test } from '../../index.js';
 
 let appId: number;
 
@@ -60,7 +60,12 @@ test.describe('Individual app', () => {
     await codeEditor.getByText('name: test app').press('Backspace');
     await codeEditor.getByText('name: test ap').press('p');
 
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/api/apps/') && response.request().method() === 'PATCH',
+    );
     await page.getByRole('button', { name: 'Publish' }).click();
+    await responsePromise;
 
     await expect(page.getByText('Successfully updated app definition')).toBeVisible();
 

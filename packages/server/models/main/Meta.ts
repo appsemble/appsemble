@@ -12,5 +12,5 @@ export class Meta extends Model {
    */
   @PrimaryKey
   @Column(DataType.STRING)
-  version!: string;
+  declare version: string;
 }

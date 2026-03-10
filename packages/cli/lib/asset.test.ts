@@ -102,7 +102,7 @@ describe('asset', () => {
           remote: testApp.defaults.baseURL!,
           seed: false,
         }),
-      ).rejects.toThrow('Request failed with status code 404');
+      ).rejects.toThrowError('Request failed with status code 404');
     });
   });
 });

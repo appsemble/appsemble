@@ -1,4 +1,4 @@
-import { Modal, useToggle } from '@appsemble/preact-components';
+import { Modal, useToggle } from '../index.js';
 import { Fragment, type VNode } from 'preact';
 import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
@@ -22,6 +22,7 @@ interface ImageComponentProps {
   /**
    * Is the image rounded.
    *
+   * @default false
    */
   readonly rounded?: boolean;
 
@@ -116,7 +117,13 @@ export function ImageComponent({
                 alt={alt}
                 className={`${styles.img} ${rounded && 'is-rounded'}`}
                 ref={imgRef as MutableRef<HTMLImageElement>}
-                src={isVisible ? src : undefined}
+                src={
+                  isVisible
+                    ? /\/api\/apps\/\d+\/assets\//.test(src)
+                      ? `${src}?width=${width}&height=${height}`
+                      : src
+                    : undefined
+                }
               />
             </figure>
           </button>

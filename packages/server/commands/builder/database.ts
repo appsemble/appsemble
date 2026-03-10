@@ -36,6 +36,16 @@ export function databaseBuilder(yargs: Argv): Argv {
         production && 'database-password',
       ].filter((x) => x !== false),
     })
+    .option('database-benchmark', {
+      desc: 'Enable Sequelize benchmark mode to log query execution times.',
+      type: 'boolean',
+      default: false,
+    })
+    .option('slow-query-threshold', {
+      desc: 'Threshold in milliseconds above which queries are logged as warnings.',
+      type: 'number',
+      default: 100,
+    })
     .option('s3-host', {
       desc: 'The host of the Amazon S3 compatible object storage server',
     })

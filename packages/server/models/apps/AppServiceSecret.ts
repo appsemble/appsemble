@@ -13,13 +13,13 @@ import {
 } from 'sequelize-typescript';
 
 export class AppServiceSecretGlobal extends Model {
-  id!: number;
+  declare id: number;
 
-  name?: string;
+  declare name?: string;
 
-  urlPatterns!: string;
+  declare urlPatterns: string;
 
-  authenticationMethod!:
+  declare authenticationMethod:
     | 'client-certificate'
     | 'client-credentials'
     | 'cookie'
@@ -27,48 +27,48 @@ export class AppServiceSecretGlobal extends Model {
     | 'http-basic'
     | 'query-parameter';
 
-  public!: boolean;
+  declare public: boolean;
 
   /**
    * Identifies the secret.
    *
    * Can be a certificate, cookie-, or client ID, username, or parameter/header name.
    */
-  identifier?: string;
+  declare identifier?: string;
 
   /**
    * Can be a parameter-, header-, cookie, client secret, password, or private key.
    */
-  secret?: Buffer;
+  declare secret?: Buffer;
 
   /**
    * Used for the client-credentials flow.
    */
-  tokenUrl?: string;
+  declare tokenUrl?: string;
 
   /**
    * Used for the client-credentials flow.
    */
-  scope?: string;
+  declare scope?: string;
 
   /**
    * Used for the client-certificate flow.
    */
-  ca?: string;
+  declare ca?: string;
 
   /**
    * The client-credentials access token used to authenticate outgoing requests.
    */
-  accessToken?: Buffer;
+  declare accessToken?: Buffer;
 
   /**
    * When the client-credentials `accessToken` expires.
    */
-  expiresAt?: Date;
+  declare expiresAt?: Date;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 }
 
 export function createAppServiceSecretModel(sequelize: Sequelize): typeof AppServiceSecretGlobal {
@@ -77,18 +77,18 @@ export function createAppServiceSecretModel(sequelize: Sequelize): typeof AppSer
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
-    id!: number;
+    declare id: number;
 
     @Column(DataType.STRING)
-    name?: string;
+    declare name?: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    urlPatterns!: string;
+    declare urlPatterns: string;
 
     @AllowNull(false)
     @Column({ type: DataType.STRING })
-    authenticationMethod!:
+    declare authenticationMethod:
       | 'client-certificate'
       | 'client-credentials'
       | 'cookie'
@@ -99,34 +99,34 @@ export function createAppServiceSecretModel(sequelize: Sequelize): typeof AppSer
     @AllowNull(false)
     @Default(false)
     @Column({ type: DataType.BOOLEAN })
-    public!: boolean;
+    declare public: boolean;
 
     @Column({ type: DataType.TEXT })
-    identifier?: string;
+    declare identifier?: string;
 
     @Column(DataType.BLOB)
-    secret?: Buffer;
+    declare secret?: Buffer;
 
     @Column(DataType.STRING)
-    tokenUrl?: string;
+    declare tokenUrl?: string;
 
     @Column(DataType.STRING)
-    scope?: string;
+    declare scope?: string;
 
     @Column(DataType.TEXT)
-    ca?: string;
+    declare ca?: string;
 
     @Column(DataType.BLOB)
-    accessToken?: Buffer;
+    declare accessToken?: Buffer;
 
     @Column(DataType.DATE)
-    expiresAt?: Date;
+    declare expiresAt?: Date;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
   }
 
   sequelize.addModels([AppServiceSecret]);

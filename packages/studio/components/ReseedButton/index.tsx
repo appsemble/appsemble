@@ -52,30 +52,40 @@ export function ReseedButton({ app }: ReseedButtonProps): ReactNode {
     return;
   }
 
-  return (
-    <>
-      <Button className="mb-3 ml-4" onClick={openReseedDialog}>
-        <FormattedMessage {...messages.reseed} />
-      </Button>
-      <ModalCard
-        footer={
-          userInfo && mayReseedApp ? (
-            <>
-              <CardFooterButton onClick={closeReseedDialog}>
-                <FormattedMessage {...messages.cancel} />
-              </CardFooterButton>
-              <CardFooterButton color="primary" onClick={reseedApp}>
-                <FormattedMessage {...messages.submit} />
-              </CardFooterButton>
-            </>
-          ) : null
-        }
-        isActive={hash === '#reseed'}
-        onClose={closeReseedDialog}
-        title={<FormattedMessage {...messages.reseed} />}
-      >
-        <FormattedMessage {...messages.check} />
-      </ModalCard>
-    </>
-  );
+  if (userInfo) {
+    return (
+      <>
+        <Button className="mb-3 ml-4" onClick={openReseedDialog}>
+          <FormattedMessage {...messages.reseed} />
+        </Button>
+        {mayReseedApp ? (
+          <ModalCard
+            footer={
+              <>
+                <CardFooterButton onClick={closeReseedDialog}>
+                  <FormattedMessage {...messages.cancel} />
+                </CardFooterButton>
+                <CardFooterButton color="primary" onClick={reseedApp}>
+                  <FormattedMessage {...messages.submit} />
+                </CardFooterButton>
+              </>
+            }
+            isActive={hash === '#reseed'}
+            onClose={closeReseedDialog}
+            title={<FormattedMessage {...messages.reseed} />}
+          >
+            <FormattedMessage {...messages.check} />
+          </ModalCard>
+        ) : (
+          <ModalCard
+            isActive={hash === '#reseed'}
+            onClose={closeReseedDialog}
+            title={<FormattedMessage {...messages.reseed} />}
+          >
+            <FormattedMessage {...messages.invalidPermissions} />
+          </ModalCard>
+        )}
+      </>
+    );
+  }
 }

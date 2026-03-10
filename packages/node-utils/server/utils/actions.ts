@@ -25,6 +25,7 @@ import { type App } from '@appsemble/types';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { type Context, type Middleware } from 'koa';
 import { get, mapValues, pick } from 'lodash-es';
+import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-filtering-agent';
 import { type JsonObject, type JsonValue } from 'type-fest';
 
 /**
@@ -207,6 +208,19 @@ async function handleRequestProxy(
 
   let response;
   const containerUrlPattern = /^http:\/\/(([\da-z-]+).){2}svc.cluster.local/;
+  let isValidCompanionContainer = false;
+
+  // Block known Kubernetes internal hostnames that don't match the container pattern
+  const kubernetesInternalHostnames = [
+    'kubernetes',
+    'kubernetes.default',
+    'kubernetes.default.svc',
+    'kubernetes.default.svc.cluster.local',
+  ];
+  if (kubernetesInternalHostnames.includes(proxyUrl.hostname.toLowerCase())) {
+    logger.warn(`SSRF blocked: Kubernetes internal hostname ${proxyUrl.hostname}`);
+    throwKoaError(ctx, 403, 'Access to Kubernetes internal services is not allowed');
+  }
 
   // Restricting access to only the containers defined by the app
   if (containerUrlPattern.test(String(proxyUrl))) {
@@ -219,6 +233,30 @@ async function handleRequestProxy(
     if (appId !== String(app.id)) {
       throwKoaError(ctx, 403, 'Forbidden');
     }
+    isValidCompanionContainer = true;
+  } else {
+    // Apply SSRF protection for non-companion-container URLs
+    // This blocks requests to private IPs, localhost, link-local addresses,
+    // and hostnames that resolve to private IPs (prevents DNS rebinding attacks)
+    //
+    // VITEST_CONF_ALLOW_PRIVATE_IP_PROXY: Test-only env var set in vitest.setup.ts
+    // to allow proxy tests to use localhost servers. SSRF tests explicitly unset this.
+    // This env var should NEVER be set in production.
+    const allowPrivateIPAddress = process.env.VITEST_CONF_ALLOW_PRIVATE_IP_PROXY === '1';
+
+    // Preserve any existing agent options (e.g., client certs from applyAppServiceSecrets)
+    // while still applying SSRF protection
+    const existingHttpsOptions = axiosConfig.httpsAgent?.options ?? {};
+    const existingHttpOptions = axiosConfig.httpAgent?.options ?? {};
+
+    axiosConfig.httpAgent = new RequestFilteringHttpAgent({
+      ...existingHttpOptions,
+      allowPrivateIPAddress,
+    });
+    axiosConfig.httpsAgent = new RequestFilteringHttpsAgent({
+      ...existingHttpsOptions,
+      allowPrivateIPAddress,
+    });
   }
 
   logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
@@ -228,9 +266,16 @@ async function handleRequestProxy(
     response = await axios(axiosConfig);
     logger.verbose(response);
   } catch (err: unknown) {
+    // Check if this is an SSRF block from request-filtering-agent
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    if (errorMessage.includes('is not allowed') || errorMessage.includes('private')) {
+      logger.warn(`SSRF blocked: ${errorMessage}`);
+      throwKoaError(ctx, 403, 'Access to private network addresses is not allowed');
+    }
+
     // If request is sent to a companion container and fails
     // Try to start it anew and retry the request
-    if (containerUrlPattern.test(String(proxyUrl))) {
+    if (isValidCompanionContainer) {
       const { deploymentName, namespace } = parseServiceUrl(String(proxyUrl));
       try {
         await scaleDeployment(namespace, deploymentName, 1);

@@ -10,13 +10,18 @@ export async function verifyAppMemberEmail(ctx: Context): Promise<void> {
       body: { token },
     },
   } = ctx;
-  const { AppMember } = await getAppDB(appId);
   const app = await App.findByPk(appId, { attributes: ['definition'] });
 
   assertKoaCondition(app != null, ctx, 404, 'App could not be found.');
-
+  const { AppMember, AppMemberEmailAuthorization } = await getAppDB(appId);
+  const emailAuth = await AppMemberEmailAuthorization.findOne({
+    where: { key: token },
+  });
   const appMember = await AppMember.findOne({
-    where: { emailKey: token },
+    // Legacy keys are supported via emailKey field of the app member.
+    where: {
+      ...(emailAuth ? { id: emailAuth.AppMemberId } : { emailKey: token }),
+    },
     attributes: ['id', 'emailVerified', 'emailKey', 'properties'],
   });
 
@@ -25,7 +30,8 @@ export async function verifyAppMemberEmail(ctx: Context): Promise<void> {
   await appMember.update({
     emailVerified: true,
     emailKey: null,
+    ...(emailAuth ? { email: emailAuth.email } : {}),
   });
-
+  await emailAuth?.destroy();
   ctx.status = 200;
 }

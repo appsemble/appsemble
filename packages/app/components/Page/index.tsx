@@ -189,9 +189,14 @@ export function Page(): ReactNode {
         getMessage,
         getVariable,
         pageData: data,
+        pageName: getAppMessage({
+          id: prefix ?? undefined,
+          defaultMessage: pageDefinition?.name,
+        }).format() as string,
         appMemberInfo: appMemberInfoRef.current,
         context,
         history,
+        group: appMemberSelectedGroup,
         root: input,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         locale: lang,
@@ -200,12 +205,21 @@ export function Page(): ReactNode {
         // @ts-expect-error 2322 unknown is not assignable to type (strictNullChecks)
         tabRef,
       }),
-    [getMessage, getVariable, data, appMemberInfoRef, lang],
+    [
+      getAppMessage,
+      getMessage,
+      getVariable,
+      data,
+      appMemberInfoRef,
+      lang,
+      pageDefinition?.name,
+      prefix,
+      appMemberSelectedGroup,
+    ],
   );
   const showDialog = useCallback((d: ShowDialogParams) => {
     setDialog(d);
     return () => {
-      // eslint-disable-next-line unicorn/no-useless-undefined
       setDialog(undefined);
     };
   }, []);
@@ -427,6 +441,7 @@ export function Page(): ReactNode {
                     ee={ee.current}
                     key={prefix}
                     pageDefinition={pageDefinition}
+                    pageLayout={pageDefinition.layout}
                     prefix={`${prefix}.blocks`}
                     prefixIndex={`${prefixIndex}.blocks`}
                     remap={remapWithContext}

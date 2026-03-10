@@ -8,14 +8,17 @@ context:
     organization: appsemble
     remote: https://appsemble.app
     visibility: public
+    supportedLanguages: ['en', 'nl']
   review:
     organization: appsemble
     visibility: public
+    supportedLanguages: ['en', 'nl']
   staging:
     id: 1030
     organization: appsemble
     remote: https://appsemble.eu
     visibility: public
+    supportedLanguages: ['en', 'nl']
   e2e:
     organization: appsemble
     visibility: public

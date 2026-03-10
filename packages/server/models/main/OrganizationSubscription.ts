@@ -22,45 +22,45 @@ export class OrganizationSubscription extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id?: number;
+  declare id?: number;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  cancelled?: Boolean;
+  declare cancelled?: Boolean;
 
   @Column(DataType.TEXT)
-  cancellationReason?: string;
+  declare cancellationReason?: string;
 
   @Column(DataType.DATE)
-  cancelledAt?: Date;
+  declare cancelledAt?: Date;
 
   @Column(DataType.DATEONLY)
-  expirationDate?: Date;
+  declare expirationDate?: Date;
 
   @AllowNull(false)
   @Default(SubscriptionPlanType.Free)
   @Column(DataType.ENUM(...Object.values(SubscriptionPlanType)))
-  subscriptionPlan?: SubscriptionPlanType;
+  declare subscriptionPlan?: SubscriptionPlanType;
 
   @Column(DataType.ENUM(...Object.values(SubscriptionRenewalPeriod)))
-  renewalPeriod?: SubscriptionRenewalPeriod;
+  declare renewalPeriod?: SubscriptionRenewalPeriod;
 
   @AllowNull(false)
   @ForeignKey(() => Organization)
   @Index({ name: 'OrganizationSubscription_path_OrganizationId_key', unique: true })
   @Column(DataType.STRING)
-  OrganizationId?: string;
+  declare OrganizationId?: string;
 
   @BelongsTo(() => Organization, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  Organization?: Awaited<Organization>;
+  declare Organization?: Awaited<Organization>;
 
   @CreatedAt
-  created?: Date;
+  declare created?: Date;
 
   @UpdatedAt
-  updated?: Date;
+  declare updated?: Date;
 }

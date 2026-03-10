@@ -226,3 +226,5 @@ IBAN
 KNAB
 RABO
 sepa
+externalname
+exampleenv

@@ -122,7 +122,7 @@ describe('getAppMessages', () => {
     });
   });
 
-  it('should omit messages for pages that do not exist anymore', async () => {
+  it('should omit messages for pages that do not exist', async () => {
     await AppMessages.create({
       language: 'en',
       messages: {
@@ -153,6 +153,53 @@ describe('getAppMessages', () => {
         },
       },
     });
+  });
+
+  it('should omit messages for pages that have been removed', async () => {
+    await app.update({
+      definition: {
+        name: 'Test App',
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [],
+          },
+        ],
+      },
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'en',
+      messages: {
+        app: {
+          name: 'App name',
+          'pages.test-page': 'Page name',
+        },
+        messageIds: {
+          test: 'Test message',
+        },
+      },
+    });
+    const { data, status } = await request.get(`/api/apps/${app.id}/messages/en`);
+    expect(status).toBe(200);
+    expect(data.messages).toMatchObject({
+      app: {
+        name: 'App name',
+        'pages.test-page': 'Page name',
+      },
+      messageIds: {
+        test: 'Test message',
+      },
+    });
+
+    await app.update({
+      definition: {
+        name: 'Test App',
+        pages: [],
+      },
+    });
+    const { data: updatedMessages } = await request.get(`/api/apps/${app.id}/messages/en`);
+    expect(updatedMessages.messages.app['pages.test-page']).toBeUndefined();
   });
 
   it('should return a 404 if a language is not supported', async () => {

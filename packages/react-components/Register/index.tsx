@@ -13,6 +13,7 @@ import {
   SimpleSubmit,
 } from '../index.js';
 import { PasswordStrengthIndicator } from '../PasswordStrengthIndicator/index.js';
+import { emailPattern } from '@appsemble/utils';
 
 export interface RegistrationFormValues {
   email: string;
@@ -57,10 +58,12 @@ export function Register({ onRegister, phoneNumberDefinition }: RegisterProps): 
         icon="envelope"
         label={<FormattedMessage {...messages.emailLabel} />}
         name="email"
+        pattern={emailPattern}
         required
         type="email"
         validityMessages={{
           typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+          patternMismatch: <FormattedMessage {...messages.emailInvalid} />,
           valueMissing: <FormattedMessage {...messages.emailRequired} />,
         }}
       />
@@ -84,7 +87,7 @@ export function Register({ onRegister, phoneNumberDefinition }: RegisterProps): 
         />
       ) : null}
       <SimpleFormField
-        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore Messed up
         component={CheckboxField}
         name="subscribed"

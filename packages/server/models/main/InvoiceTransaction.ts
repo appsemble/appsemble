@@ -20,28 +20,28 @@ export class InvoiceTransaction extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 
   @AllowNull(false)
   @ForeignKey(() => Invoice)
   @Index({ name: 'InvoiceTransaction_path_InvoiceId_key', unique: false })
   @Column(DataType.INTEGER)
-  InvoiceId!: number;
+  declare InvoiceId: number;
 
   @BelongsTo(() => Invoice)
-  invoice!: Invoice;
+  declare invoice: Invoice;
 
   @AllowNull(false)
   @Column(DataType.DATE)
-  timestamp!: Date;
+  declare timestamp: Date;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  status!: string;
+  declare status: string;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @UpdatedAt
-  updated?: Date;
+  declare updated?: Date;
 }

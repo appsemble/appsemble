@@ -401,6 +401,7 @@ export interface Image {
   /**
    * Is image rounded.
    *
+   * @default false
    */
   rounded?: boolean;
 
@@ -627,6 +628,88 @@ export interface DateTimeField extends AbstractField {
 }
 
 /**
+ * Base properties shared by all decoration types.
+ */
+interface BaseDateDecoration {
+  /**
+   * The date to decorate, as an ISO date string.
+   */
+  date: string;
+
+  /**
+   * The type of decoration to display.
+   *
+   * - `dot`: A small dot indicator below the date number
+   * - `overlay`: A semi-transparent background overlay
+   * - `border`: A border around the date cell
+   *
+   * @default 'dot'
+   */
+  type?: 'border' | 'dot' | 'overlay';
+
+  /**
+   * The color of the decoration.
+   *
+   * Can be a Bulma color name (primary, success, danger, warning, info, link, dark, white)
+   * or any valid CSS color value.
+   */
+  color?: string;
+
+  /**
+   * Accessibility label for the decoration (used for tooltips and screen readers).
+   */
+  label?: string;
+}
+
+/**
+ * A small dot indicator below the date number.
+ *
+ * Multiple dots on the same day will be displayed side by side.
+ */
+export type DotDecoration = BaseDateDecoration & {
+  type?: 'dot';
+};
+
+/**
+ * A semi-transparent background overlay on the date cell.
+ *
+ * Uses an inset box-shadow for a thick inner border to distinguish from flatpickr's selected state.
+ */
+export type OverlayDecoration = BaseDateDecoration & {
+  type: 'overlay';
+};
+
+/**
+ * A border around the date cell.
+ *
+ * Uses a thicker border than flatpickr's "today" indicator to distinguish.
+ */
+export type BorderDecoration = BaseDateDecoration & {
+  type: 'border';
+
+  /**
+   * The style of the border.
+   *
+   * @default 'solid'
+   */
+  borderStyle?: 'dashed' | 'dotted' | 'double' | 'solid';
+};
+
+export type DateDecoration = BorderDecoration | DotDecoration | OverlayDecoration;
+
+export interface DateDecorationsAction {
+  /**
+   * Action to fetch decorations and disabled dates for the visible month.
+   * Called with { month: number, year: number }.
+   * Should return
+   * { decorations: { date: string, color?: string, label?: string }[], disabledDates: string[] }.
+   *
+   * @format action
+   */
+  action: string;
+}
+
+/**
  * A date/time picker that results in an exact date and time.
  */
 export interface DateField extends AbstractField, InlineField {
@@ -689,6 +772,13 @@ export interface DateField extends AbstractField, InlineField {
    * @default false
    */
   altInput?: boolean;
+
+  decorations?: DateDecorationsAction | { remap: Remapper };
+
+  /**
+   * Dates to disable in the picker (ISO date strings).
+   */
+  disabledDates?: string[];
 }
 
 /**
@@ -839,6 +929,7 @@ interface ActionEnumField extends AbstractEnumField {
    * This action will be fired to fetch dynamic enum options.
    *
    * The action should return an array of objects that contain the `label` and `value` property.
+   * Optionally, each object can include `disabled: true` to make that option unselectable.
    *
    * @format action
    */
@@ -860,6 +951,7 @@ interface EventEnumField extends AbstractEnumField {
    * Wait until an event has been fired containing the list of options.
    *
    * The event should return an array of objects that contain the `label` and `value` property.
+   * Optionally, each object can include `disabled: true` to make that option unselectable.
    *
    * @format event-listener
    */
@@ -1109,9 +1201,9 @@ export interface NumberField extends AbstractField, InlineField {
   /**
    * How to display the numeric field.
    *
-   * By default a `number` input field is displayed.
+   * @default number
    */
-  display?: 'slider';
+  display?: 'number' | 'slider';
 
   /**
    * If `display` is set to `slider`, these labels are displayed evenly spaced below the slider.
@@ -1312,7 +1404,6 @@ export type Values = Record<string, unknown>;
 export type FieldError = FieldError[] | FieldErrorMap | boolean | string;
 
 // Not using an interface causes an invalid circular reference.
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export interface FieldErrorMap {
   [key: string]: FieldError;
 }
@@ -1530,6 +1621,8 @@ declare module '@appsemble/sdk' {
 
     /**
      * Whether the previous button should be shown.
+     *
+     * @default false
      */
     previous?: boolean;
 
@@ -1537,6 +1630,7 @@ declare module '@appsemble/sdk' {
      * Whether the submit button should not be visible, useful when the only field is an enum and
      * **onSelect** is defined
      *
+     * @default false
      */
     hideSubmitButton?: Remapper;
 
@@ -1583,6 +1677,8 @@ declare module '@appsemble/sdk' {
      * By default the form block will wait until event data is received.
      *
      * By setting this to `true`, this won’t happen.
+     *
+     * @default false
      */
     skipInitialLoad?: boolean;
 

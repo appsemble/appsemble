@@ -212,7 +212,7 @@ export const appMemberRoleUpdate: ActionCreator<'app.member.role.update'> = ({
 
     const sub = remap(definition.sub, data);
     const role = remap(definition.role, data);
-    const selectedGroupId = getAppMemberSelectedGroup?.();
+    const selectedGroupId = getAppMemberSelectedGroup?.()?.id;
 
     const { data: response } = await axios.put<AppMemberInfo>(
       `${apiUrl}/api/apps/${appId}/app-members/${sub}/role${selectedGroupId ? `?selectedGroupId=${selectedGroupId}` : ''}`,

@@ -61,14 +61,6 @@ export const messages = defineMessages({
     id: 'studio.BJ2TKX',
     defaultMessage: 'Checkout',
   },
-  descriptionPreferredPaymentProvider: {
-    defaultMessage: 'The payment provider you want to use.',
-    id: 'studio.vGE/z+',
-  },
-  preferredPaymentProvider: {
-    defaultMessage: 'Preferred payment provider',
-    id: 'studio.Fj9LvW',
-  },
   descriptionVatIdNumber: {
     defaultMessage: 'Your VAT id number.',
     id: 'studio.+NUiCV',
@@ -225,6 +217,10 @@ export const messages = defineMessages({
   emailDescription: {
     defaultMessage: 'Email that the invoice and relevant payment updates will be sent to.',
     id: 'studio.Elelf8',
+  },
+  emailInvalid: {
+    id: 'studio.jv0FOj',
+    defaultMessage: 'This must be a valid email address',
   },
   vatAmount: {
     defaultMessage: 'VAT',

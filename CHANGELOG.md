@@ -2,6 +2,246 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.36.5-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5-test.2)] - 2026-03-05
+
+## \[[0.36.5-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5-test.1)] - 2026-03-03
+
+## \[[0.36.5-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5-test.0)] - 2026-03-03
+
+### Added
+
+- Server: Add new command `re-encrypt-secrets` to decrypt and re-encrypt secrets using AES.
+
+### Fixed
+
+- Server: Fix emails being sent from the appsemble SMTP for the apps with custom email settings.
+- Server: Fix notifications not working in microsoft edge.
+
+## \[[0.36.4](https://gitlab.com/appsemble/appsemble/-/releases/0.36.4)] - 2026-02-19
+
+### Added
+
+- Lang-sdk: Add `array.groupBy` remapper for grouping arrays of objects by a common property.
+
+- Lang-sdk: Add `array.range` remapper.
+
+- Lang-sdk: Add `array.toObject` remapper for converting arrays to objects using key/value
+  remappers.
+
+- Lang-sdk: Add `date.startOf`, `date.endOf`, and `date.set` remappers.
+
+  `date.startOf` and `date.endOf` support the following units: `year`, `quarter`, `month`, `week`
+  (Monday start), and `weekSun` (Sunday start).
+
+- Lang-sdk: Add `focus` remapper to execute a remapper chain with a temporary root context.
+
+- Lang-sdk: Add `gte` and `lte` remappers for greater-than-or-equal and less-than-or-equal
+  comparisons.
+
+### Fixed
+
+- Server: Fix sending register and invite app emails from custom email servers.
+
+## \[[0.36.3](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3)] - 2026-02-13
+
+## \[[0.36.3-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.6)] - 2026-02-07
+
+## \[[0.36.3-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.5)] - 2026-02-06
+
+## \[[0.36.3-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.4)] - 2026-02-05
+
+## \[[0.36.3-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.3)] - 2026-02-05
+
+## \[[0.36.3-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.2)] - 2026-02-04
+
+## \[[0.36.3-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.1)] - 2026-02-03
+
+## \[[0.36.3-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.36.3-test.0)] - 2026-01-29
+
+### Changed
+
+- Server: Don't return empty objects when failing to fetch user app accounts.
+
+## \[[0.36.2](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2)] - 2026-01-29
+
+### Added
+
+- Utils: Added new regex constant `emailPattern`.
+
+### Changed
+
+- React-components: Enforce a stricter email pattern with email inputs.
+- Studio: Enforce a stricter email pattern with email inputs.
+
+### Security
+
+- Node-utils: Add SSRF protection to proxy handler to block requests to private IPs and internal
+  services.
+
+## \[[0.36.2-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2-test.6)] - 2026-01-16
+
+## \[[0.36.2-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2-test.5)] - 2026-01-14
+
+## \[[0.36.2-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2-test.4)] - 2026-01-13
+
+## \[[0.36.2-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2-test.3)] - 2026-01-09
+
+## \[[0.36.2-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2-test.2)] - 2026-01-09
+
+## \[[0.36.2-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2-test.1)] - 2026-01-09
+
+### Added
+
+- Lang-sdk: Add grid layout support for pages with responsive breakpoints and CSS grid template
+  areas.
+
+## \[[0.36.2-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.36.2-test.0)] - 2026-01-06
+
+## \[[0.36.1](https://gitlab.com/appsemble/appsemble/-/releases/0.36.1)] - 2026-01-05
+
+### Added
+
+- Block(`footer`): New block `footer`.
+- Eslint-plugin: Added autofix that replaces `@Unique` or `@Unique()` with
+  `@Index({ unique: true })`.
+- Eslint-plugin: Extended decorator rule to include `Unique()`.
+
+### Changed
+
+- Block(`form`): Specify in the `display` property of the `NumberField` that you can choose between
+  `number` and `slider`.
+- Studio: Hide the `Reseed App` button when logged out.
+- Studio: Show an 'insufficient permission' message if the user tries to reseed an app without the
+  right permissions.
+
+## \[[0.36.0](https://gitlab.com/appsemble/appsemble/-/releases/0.36.0)] - 2025-12-02
+
+## \[[0.35.22](https://gitlab.com/appsemble/appsemble/-/releases/0.35.22)] - 2025-12-02
+
+### Added
+
+- Block(`list`): Support listening for ordered groups.
+- App: Add new setting to change passwords.
+- App: Add new setting to update email of an app member.
+- App: Add resend verification email banner.
+- Server: Add `/.well-known/security.txt` for apps.
+
+### Fixed
+
+- Block(`form`): Temporary fix for form file entries.
+- Block(`list`): Style list block dropdown button.
+
+## \[[0.35.21](https://gitlab.com/appsemble/appsemble/-/releases/0.35.21)] - 2025-11-24
+
+### Added
+
+- Block(`form`): Visibility toggle in password fields.
+- Preact-components: New component `Icon Button`.
+
+### Fixed
+
+- Lang-sdk: Validate `Register` and `Reset-Password` pages as app links.
+
+## \[[0.35.20](https://gitlab.com/appsemble/appsemble/-/releases/0.35.20)] - 2025-11-14
+
+## \[[0.35.19](https://gitlab.com/appsemble/appsemble/-/releases/0.35.19)] - 2025-11-13
+
+## \[[0.35.18](https://gitlab.com/appsemble/appsemble/-/releases/0.35.18)] - 2025-11-13
+
+### Fixed
+
+- Block(`list`): Scrolling upwards when dragging an item.
+- Cli: `app extract-messages` command deletes emails messages.
+
+## \[[0.35.17](https://gitlab.com/appsemble/appsemble/-/releases/0.35.17)] - 2025-11-10
+
+## \[[0.35.16](https://gitlab.com/appsemble/appsemble/-/releases/0.35.16)] - 2025-11-04
+
+### Fixed
+
+- Server: Check app demo mode in server action webhook calls.
+
+## \[[0.35.16-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.35.16-test.0)] - 2025-11-04
+
+## \[[0.35.15](https://gitlab.com/appsemble/appsemble/-/releases/0.35.15)] - 2025-11-04
+
+## \[[0.35.14](https://gitlab.com/appsemble/appsemble/-/releases/0.35.14)] - 2025-10-30
+
+## \[[0.35.13](https://gitlab.com/appsemble/appsemble/-/releases/0.35.13)] - 2025-10-29
+
+## \[[0.35.12](https://gitlab.com/appsemble/appsemble/-/releases/0.35.12)] - 2025-10-27
+
+### Added
+
+- App: Allow remapping to an app predefined page in the link action.
+
+## \[[0.35.11](https://gitlab.com/appsemble/appsemble/-/releases/0.35.11)] - 2025-10-23
+
+### Added
+
+- Scripts: Add `delete-user` command.
+
+### Changed
+
+- Scripts: Make the `timezone` and `clientCredentials` parameters in the `create-user` command
+  optional.
+- Scripts: Rename `seed-account` to `create-user`.
+- Scripts: Rename `seed-subscription` to `update-subscription`.
+
+## \[[0.35.11-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.35.11-test.4)] - 2025-10-16
+
+## \[[0.35.11-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.35.11-test.3)] - 2025-10-14
+
+## \[[0.35.11-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.35.11-test.2)] - 2025-10-14
+
+## \[[0.35.11-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.35.11-test.1)] - 2025-10-14
+
+## \[[0.35.11-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.35.11-test.0)] - 2025-10-14
+
+## \[[0.35.10](https://gitlab.com/appsemble/appsemble/-/releases/0.35.10)] - 2025-10-14
+
+## \[[0.35.10-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.35.10-test.0)] - 2025-10-13
+
+## \[[0.35.9](https://gitlab.com/appsemble/appsemble/-/releases/0.35.9)] - 2025-10-10
+
+## \[[0.35.8](https://gitlab.com/appsemble/appsemble/-/releases/0.35.8)] - 2025-10-10
+
+### Fixed
+
+- Server: Updating messages from the studio.
+
+## \[[0.35.7](https://gitlab.com/appsemble/appsemble/-/releases/0.35.7)] - 2025-10-08
+
+### Added
+
+- Cli: Add support for Meta Pixel.
+- Server: Add support for Meta Pixel.
+- Studio: Add support for Meta Pixel.
+
+## \[[0.35.6](https://gitlab.com/appsemble/appsemble/-/releases/0.35.6)] - 2025-10-06
+
+## \[[0.35.5](https://gitlab.com/appsemble/appsemble/-/releases/0.35.5)] - 2025-10-06
+
+## \[[0.35.4](https://gitlab.com/appsemble/appsemble/-/releases/0.35.4)] - 2025-10-02
+
+## \[[0.35.3](https://gitlab.com/appsemble/appsemble/-/releases/0.35.3)] - 2025-10-02
+
+## \[[0.35.3-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.35.3-test.0)] - 2025-10-02
+
+## \[[0.35.2](https://gitlab.com/appsemble/appsemble/-/releases/0.35.2)] - 2025-10-01
+
+## \[[0.35.1](https://gitlab.com/appsemble/appsemble/-/releases/0.35.1)] - 2025-09-30
+
+## \[[0.35.0](https://gitlab.com/appsemble/appsemble/-/releases/0.35.0)] - 2025-09-30
+
+## \[[0.34.22-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.6)] - 2025-09-30
+
+### Changed
+
+- Utils: **Breaking** All app groups related endpoints are now prefixed by `/apps/<app-id>`.
+- Utils: **Breaking** All app invite related endpoints are now prefixed by `/apps/<app-id>`.
+- Utils: **Breaking** All app member related endpoints are now prefixed by `/apps/<app-id>`.
+
 ## \[[0.34.22-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.5)] - 2025-09-26
 
 ## \[[0.34.22-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.4)] - 2025-09-26

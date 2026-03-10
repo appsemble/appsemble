@@ -2,7 +2,7 @@ import { cp, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { logger, readData, version, writeData } from '@appsemble/node-utils';
-import inquirer from 'inquirer';
+import { input, select } from '@inquirer/prompts';
 import { type PackageJson } from 'type-fest';
 import { type Argv } from 'yargs';
 
@@ -38,32 +38,35 @@ export async function builder(yargs: Argv): Promise<Argv<any>> {
 }
 
 export async function handler(args: BlockArgs): Promise<void> {
-  const choices = await readdir(templateDir);
-  const answers = await inquirer.prompt(
-    [
-      !args.organization && {
-        name: 'organization',
-        message: 'For which organization is the block? (default "appsemble")',
-      },
-      !args.name && { name: 'name', message: 'What should be the name of the block?' },
-      !args.path && {
-        name: 'path',
-        message:
-          'Please enter the path for where you want the block folder to go (default "blocks").',
-      },
-      !args.template && {
-        name: 'template',
-        type: 'list',
-        choices,
-        message: 'What kind of block project should be bootstrapped?',
-      },
-    ].filter(Boolean),
-  );
+  const templateChoices = await readdir(templateDir);
 
-  const organization = answers.organization || args.organization || 'appsemble';
-  const name = answers.name || args.name;
-  const template = answers.template || args.template;
-  const path = answers.path || args.path || join(process.cwd(), 'blocks');
+  const organization =
+    args.organization ||
+    (await input({
+      message: 'For which organization is the block? (default "appsemble")',
+    })) ||
+    'appsemble';
+
+  const name =
+    args.name ||
+    (await input({
+      message: 'What should be the name of the block?',
+    }));
+
+  const path =
+    args.path ||
+    (await input({
+      message:
+        'Please enter the path for where you want the block folder to go (default "blocks").',
+    })) ||
+    join(process.cwd(), 'blocks');
+
+  const template =
+    args.template ||
+    (await select({
+      message: 'What kind of block project should be bootstrapped?',
+      choices: templateChoices.map((t) => ({ name: t, value: t })),
+    }));
 
   const outputPath = join(path, name);
   const inputPath = new URL(`${template}/`, templateDir);

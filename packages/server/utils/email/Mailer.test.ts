@@ -9,6 +9,7 @@ import { Mailer } from './Mailer.js';
 import { App, AppMessages, Organization, OrganizationMember, User } from '../../models/index.js';
 import { type Argv, argv, setArgv } from '../argv.js';
 import { createServer } from '../createServer.js';
+import { encrypt } from '../crypto.js';
 import { createTestUser } from '../test/authorization.js';
 
 let mailer: Mailer;
@@ -16,6 +17,7 @@ let mailer: Mailer;
 const baseArgv: Partial<Argv> = {
   host: '',
   smtpFrom: 'test@example.com',
+  aesSecret: 'testSecret',
 };
 
 describe('Mailer', () => {
@@ -40,7 +42,7 @@ describe('Mailer', () => {
       mailer.transport = {
         verify: () => Promise.reject(new Error('fail')),
       } as Partial<Transporter> as Transporter;
-      await expect(mailer.verify()).rejects.toThrow(new Error('fail'));
+      await expect(mailer.verify()).rejects.toThrowError(new Error('fail'));
     });
   });
 
@@ -222,6 +224,10 @@ describe('Mailer', () => {
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
         from: 'Appsemble <test@example.com>',
+        headers: {
+          from: 'Appsemble <test@example.com>',
+          replyTo: 'Appsemble <test@example.com>',
+        },
         html: `<!doctype html>
 <html lang="en">
 <head>
@@ -268,6 +274,10 @@ _Test App_
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
         from: 'Appsemble <test@example.com>',
+        headers: {
+          from: 'Appsemble <test@example.com>',
+          replyTo: 'Appsemble <test@example.com>',
+        },
         html: `<!doctype html>
 <html lang="en">
 <head>
@@ -314,6 +324,10 @@ _Test App_
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
         from: 'Appsemble <test@example.com>',
+        headers: {
+          from: 'Appsemble <test@example.com>',
+          replyTo: 'Appsemble <test@example.com>',
+        },
         html: `<!doctype html>
 <html lang="en">
 <head>
@@ -370,6 +384,10 @@ _Test App_
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
         from: 'Appsemble <test@example.com>',
+        headers: {
+          from: 'Appsemble <test@example.com>',
+          replyTo: 'Appsemble <test@example.com>',
+        },
         html: `<!doctype html>
 <html lang="en">
 <head>
@@ -413,6 +431,10 @@ _Test App_
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
         from: 'Appsemble <test@example.com>',
+        headers: {
+          from: 'Appsemble <test@example.com>',
+          replyTo: 'Appsemble <test@example.com>',
+        },
         html: `<!doctype html>
 <html lang="en">
 <head>
@@ -456,6 +478,10 @@ _Test App_
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         attachments: [],
         from: 'Appsemble <test@example.com>',
+        headers: {
+          from: 'Appsemble <test@example.com>',
+          replyTo: 'Appsemble <test@example.com>',
+        },
         html: `<!doctype html>
 <html lang="en">
 <head>
@@ -471,6 +497,65 @@ _Test App_
         text: 'How do you do, John Doe?\n',
         to: 'John Doe <test@example.com>',
       });
+    });
+
+    it('should pass app email settings to sendEmail', async () => {
+      const appWithEmailSettings = await App.create({
+        definition: {
+          name: 'Test App With Email',
+          defaultPage: 'Test Page',
+          security: {
+            default: {
+              role: 'Reader',
+              policy: 'everyone',
+            },
+            roles: {
+              Reader: {},
+            },
+          },
+        },
+        path: 'test-app-email-settings',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: 'testorganization',
+        emailName: 'Custom Sender',
+        emailHost: 'smtp.example.com',
+        emailUser: 'user@example.com',
+        emailPassword: encrypt('secret', baseArgv.aesSecret!),
+        emailPort: 587,
+        emailSecure: true,
+      });
+
+      const sendEmailSpy = vi.spyOn(mailer, 'sendEmail').mockResolvedValue();
+
+      await mailer.sendTranslatedEmail({
+        appId: appWithEmailSettings.id,
+        app: appWithEmailSettings,
+        emailName: 'welcome',
+        from: 'Custom Sender',
+        to: { email: 'newuser@example.com', name: 'New User' },
+        locale: 'en',
+        values: {
+          name: 'New User',
+          appName: 'Test App With Email',
+          link: (text) => `[${text}](http://example.com/token=abcdefg)`,
+        },
+      });
+
+      expect(sendEmailSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          app: expect.objectContaining({
+            emailHost: 'smtp.example.com',
+            emailUser: 'user@example.com',
+            emailPassword: expect.anything(),
+            emailPort: 587,
+            emailSecure: true,
+            emailName: 'Custom Sender',
+          }),
+        }),
+      );
+
+      sendEmailSpy.mockRestore();
     });
 
     describe.each(supportedLocales)('%s', (locale) => {
@@ -551,6 +636,10 @@ _Test App_
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         to: 'Me <test@example.com>',
         from: 'test@example.com <test@example.com>',
+        headers: {
+          from: 'test@example.com <test@example.com>',
+          replyTo: 'test@example.com <test@example.com>',
+        },
         cc: 'test+cc@example.com',
         bcc: 'test+bcc@example.com',
         subject: 'Test',
@@ -592,6 +681,10 @@ _Test App_
       expect(mailer.transport.sendMail).toHaveBeenCalledWith({
         to: 'Me <test@example.com>',
         from: 'test@example.com <test@example.com>',
+        headers: {
+          from: 'test@example.com <test@example.com>',
+          replyTo: 'test@example.com <test@example.com>',
+        },
         subject: 'Test',
         text: 'Test',
         html: '<p>Test</p>',
@@ -687,7 +780,9 @@ _Test App_
       vi.advanceTimersByTime(60 * 1000);
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
 
-      await expect(mailer.sendTranslatedEmail(email)).rejects.toThrow('Too many emails sent today');
+      await expect(mailer.sendTranslatedEmail(email)).rejects.toThrowError(
+        'Too many emails sent today',
+      );
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
     });
 
@@ -714,7 +809,7 @@ _Test App_
       vi.advanceTimersByTime(60 * 1000);
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
 
-      await expect(mailer.sendEmail(email)).rejects.toThrow('Too many emails sent today');
+      await expect(mailer.sendEmail(email)).rejects.toThrowError('Too many emails sent today');
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
     });
 
@@ -745,7 +840,9 @@ _Test App_
 
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
 
-      await expect(mailer.sendTranslatedEmail(email)).rejects.toThrow('Too many emails sent today');
+      await expect(mailer.sendTranslatedEmail(email)).rejects.toThrowError(
+        'Too many emails sent today',
+      );
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
 
       // After this, the time should be 1970-01-02T00:00:03.000Z
@@ -895,7 +992,7 @@ _Test App_
         sendMail: vi.fn().mockRejectedValue({}),
       } as Partial<Transporter> as Transporter;
 
-      await expect(() => mailer.sendEmail(email)).rejects.toThrow(
+      await expect(() => mailer.sendEmail(email)).rejects.toThrowError(
         'Something went wrong when sending the email.',
       );
     });
@@ -907,7 +1004,7 @@ _Test App_
         }),
       } as Partial<Transporter> as Transporter;
 
-      await expect(() => mailer.sendEmail(email)).rejects.toThrow(
+      await expect(() => mailer.sendEmail(email)).rejects.toThrowError(
         'Unable to determine the sender or recipient of the message.',
       );
     });

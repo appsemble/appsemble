@@ -53,9 +53,9 @@ const localHostnames = new Set(['127.0.0.1', 'localhost']);
  * @returns The app matching the url.
  */
 export async function getApp(
-  { origin }: Pick<Context, 'origin'>,
+  ctx: Pick<Context, 'URL'>,
   queryOptions: FindOptions,
-  url = origin,
+  url = ctx.URL.origin,
 ): Promise<GetAppValue> {
   const platformHost = new URL(argv.host).hostname;
   const { hostname } = new URL(url);
@@ -278,8 +278,6 @@ export async function createAppScreenshots(
           const img = sharp(contents);
 
           const { format, height, width } = await img.metadata();
-          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-          // (strictNullChecks)
           const mime = lookup(format);
 
           assertKoaCondition(mime !== false, ctx, 404, `Unknown screenshot mime type: ${mime}`);

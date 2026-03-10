@@ -50,7 +50,7 @@ describe('event', () => {
     // Wait 1 tick before emitting.
     await Promise.resolve();
     ee.emit('bar', { test: 'data' }, 'Boo!');
-    await expect(result).rejects.toThrow(
+    await expect(result).rejects.toThrowError(
       new ActionError({
         cause: 'Boo!',
         data: null,

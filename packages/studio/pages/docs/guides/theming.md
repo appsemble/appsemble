@@ -63,10 +63,10 @@ These variables are only used in specific blocks.
 
 These themes are only seen on mobile versions of the app.
 
-| Variable      | Purpose                                                                                                                        |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `splashColor` | The background color of the splash screen                                                                                      |
-| `themeColor`  | The backround color of the notification window at the top of the screen, and the splash screen if `splashColor` is not defined |
+| Variable      | Purpose                                                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `splashColor` | The background color of the splash screen                                                                                       |
+| `themeColor`  | The background color of the notification window at the top of the screen, and the splash screen if `splashColor` is not defined |
 
 ## Example
 
@@ -85,7 +85,7 @@ pages:
       primaryColor: '#FF0000' # Red
     blocks:
       - type: action-button
-        version: 0.34.22-test.5
+        version: 0.36.5-test.2
         parameters:
           icon: plus
         theme:

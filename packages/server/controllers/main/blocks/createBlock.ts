@@ -99,6 +99,7 @@ export async function createBlock(ctx: Context): Promise<void> {
 
   // If there is a previous version and it has a higher semver, throw an error.
   if (blockVersion && semver.gte(blockVersion.version, version)) {
+    logger.silly(`DB version ${blockVersion.version}, Request body version ${version}`);
     throwKoaError(
       ctx,
       409,
@@ -159,6 +160,7 @@ export async function createBlock(ctx: Context): Promise<void> {
     });
   } catch (err: unknown) {
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
+      logger.silly(err);
       throwKoaError(ctx, 409, `Block “${name}@${data.version}” already exists`);
     }
     throw err;

@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.34.22-test.5/config/assets/logo.svg) Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.36.5-test.2/config/assets/logo.svg) Appsemble Server
 
 > The official Appsemble Docker image
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.34.22-test.5/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.5)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.36.5-test.2/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5-test.2)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -47,7 +47,12 @@ passed as a command line parameter instead, if desired.
 | `DATABASE_USER`                 |              | The user to use to login to the database.                                                                              |
 | `DATABASE_PASSWORD`             |              | The password to use to login to the database.                                                                          |
 | `DATABASE_URL`                  |              | A connection string for the database to connect to. This is an alternative to the separate database related variables. |
+| `DATABASE_BENCHMARK`            | `false`      | Enable query timing. Logs execution time for each SQL query and warns for slow queries.                                |
+| `SLOW_QUERY_THRESHOLD`          | `100`        | Threshold in milliseconds. Queries slower than this are logged as warnings when benchmark mode is enabled.             |
 | `SENTRY_DSN`                    |              | The Sentry DSN to use for error reporting. See [Sentry](https://sentry.io) for details.                                |
+| `SENTRY_ENVIRONMENT`            |              | The Sentry environment to send with captured events.                                                                   |
+| `SENTRY_TRACES_SAMPLE_RATE`     | `0.2`        | The Sentry trace sampling rate between 0 and 1.                                                                        |
+| `SENTRY_PROFILE_SAMPLE_RATE`    | `0.25`       | The Sentry profile sampling rate between 0 and 1.                                                                      |
 | `GITHUB_CLIENT_ID`              |              | The OAuth2 client ID used for logging in with GitHub in Appsemble Studio.                                              |
 | `GITHUB_CLIENT_SECRET`          |              | The OAuth2 client secret used for logging in with GitHub in Appsemble Studio.                                          |
 | `GITLAB_CLIENT_ID`              |              | The OAuth2 client ID used for logging in with GitLab in Appsemble Studio.                                              |
@@ -166,7 +171,7 @@ These can also be used as CLI parameters.
 Stripe is used as a payment provider and there are some things that need to be configured in order
 to test it locally, but also so it can run in production. If you want to use Stripe in test mode,
 all you need to do is replace the `Webhook secret` and `Private key` with the test versions (test
-private key starts wtih `sk_test`).
+private key starts with `sk_test`).
 
 ### Live environment set-up
 
@@ -191,5 +196,5 @@ With the Stripe CLI you can expose an endpoint on your machine that will receive
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.34.22-test.5/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.36.5-test.2/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

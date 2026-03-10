@@ -258,6 +258,8 @@ describe('app', () => {
           "id": 1,
           "locked": "unlocked",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -272,7 +274,11 @@ describe('app', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": [
+            "en",
+          ],
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -356,7 +362,7 @@ describe('app', () => {
           visibility: 'unlisted',
           iconBackground: '#ffffff',
         }),
-      ).rejects.toThrow('Request failed with status code 401');
+      ).rejects.toThrowError('Request failed with status code 401');
       vi.useFakeTimers();
       const app = await App.findOne();
       expect(app).toBeNull();
@@ -460,6 +466,8 @@ describe('app', () => {
           "id": 1,
           "locked": "unlocked",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -474,7 +482,11 @@ describe('app', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": [
+            "en",
+          ],
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -638,6 +650,8 @@ describe('app', () => {
           "id": 1,
           "locked": "unlocked",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -652,7 +666,11 @@ describe('app', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": [
+            "en",
+          ],
           "template": true,
+          "totp": "disabled",
           "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
@@ -814,6 +832,8 @@ describe('app', () => {
           "id": 1,
           "locked": "unlocked",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -825,7 +845,11 @@ describe('app', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": [
+            "en",
+          ],
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -1061,7 +1085,7 @@ describe('app', () => {
           visibility: 'unlisted',
           iconBackground: '#ffffff',
         }),
-      ).rejects.toThrow('is not a known block type');
+      ).rejects.toThrowError('is not a known block type');
       const app = await App.findOne();
       expect(app).toBeNull();
     });
@@ -1158,6 +1182,8 @@ describe('app', () => {
           "id": 1,
           "locked": "unlocked",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -1172,7 +1198,9 @@ describe('app', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -1256,7 +1284,7 @@ describe('app', () => {
           visibility: 'unlisted',
           iconBackground: '#ffffff',
         }),
-      ).rejects.toThrow('Request failed with status code 401');
+      ).rejects.toThrowError('Request failed with status code 401');
       vi.useFakeTimers();
       await app.reload();
       expect(app).toMatchObject({
@@ -1352,6 +1380,8 @@ describe('app', () => {
           "id": 1,
           "locked": "unlocked",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -1366,7 +1396,9 @@ describe('app', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -1523,6 +1555,8 @@ describe('app', () => {
           "id": 1,
           "locked": "studioLock",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -1537,7 +1571,9 @@ describe('app', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": null,
           "template": true,
+          "totp": "disabled",
           "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
@@ -1699,6 +1735,8 @@ describe('app', () => {
           "id": 1,
           "locked": "unlocked",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -1710,7 +1748,9 @@ describe('app', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "unlisted",
           "yaml": "name: Test App
@@ -1993,6 +2033,8 @@ describe('app', () => {
           "id": 1,
           "locked": "fullLock",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -2007,7 +2049,9 @@ describe('app', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
@@ -2044,7 +2088,7 @@ describe('app', () => {
           visibility: 'public',
           iconBackground: '#fff999',
         }),
-      ).rejects.toThrow('Request failed with status code 403');
+      ).rejects.toThrowError('Request failed with status code 403');
       await app.reload();
       expect(app).toMatchInlineSnapshot(`
         {
@@ -2074,6 +2118,8 @@ describe('app', () => {
           "id": 1,
           "locked": "fullLock",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -2085,7 +2131,9 @@ describe('app', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
@@ -2116,7 +2164,7 @@ describe('app', () => {
           visibility: 'unlisted',
           iconBackground: '#ffffff',
         }),
-      ).rejects.toThrow('is not a known block type');
+      ).rejects.toThrowError('is not a known block type');
       vi.useFakeTimers();
       await app.reload();
       expect(app).toMatchInlineSnapshot(`
@@ -2147,6 +2195,8 @@ describe('app', () => {
           "id": 1,
           "locked": "unlocked",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -2158,7 +2208,9 @@ describe('app', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": null,
           "template": false,
+          "totp": "disabled",
           "version": -1,
           "visibility": "public",
           "yaml": "name: Test App
@@ -2232,6 +2284,8 @@ describe('app', () => {
           "id": 1,
           "locked": "fullLock",
           "messages": undefined,
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "updated-path",
           "rating": undefined,
           "readmeUrl": undefined,
@@ -2243,7 +2297,9 @@ describe('app', () => {
           "showAppsembleLogin": true,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": null,
           "template": true,
+          "totp": "disabled",
           "version": -1,
           "visibility": "private",
           "yaml": "name: Test App
@@ -2512,7 +2568,7 @@ describe('app', () => {
         // @ts-expect-error 2345 argument of type is not assignable to parameter of type
         // (strictNullChecks)
         traverseAppDirectory(resolveFixture('apps/empty'), null, formData),
-      ).rejects.toThrow('No app definition found');
+      ).rejects.toThrowError('No app definition found');
     });
   });
 
@@ -2548,7 +2604,7 @@ describe('app', () => {
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           null,
         ),
-      ).rejects.toThrow('App ID was not found');
+      ).rejects.toThrowError('App ID was not found');
     });
 
     it('should throw if the remote is not found in context and defaultAppRemote is not specified', async () => {
@@ -2563,7 +2619,7 @@ describe('app', () => {
       await expect(() =>
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         resolveAppIdAndRemote(resolveFixture('apps/test'), 'notFound', null, app.id),
-      ).rejects.toThrow('App remote was not found');
+      ).rejects.toThrowError('App remote was not found');
     });
   });
 
@@ -2572,7 +2628,7 @@ describe('app', () => {
       const clientCredentials = await authorizeCLI('apps:delete', testApp);
       await expect(() =>
         deleteApp({ id: 1, remote: testApp.defaults.baseURL!, clientCredentials }),
-      ).rejects.toThrow('Request failed with status code 404');
+      ).rejects.toThrowError('Request failed with status code 404');
     });
 
     it('should delete an app', async () => {
@@ -2614,10 +2670,38 @@ describe('app', () => {
       );
     });
 
+    it('should not delete the email messages', async () => {
+      const initialMessages = JSON.parse(
+        String(await readFixture('apps/test-messages/i18n/en.json')),
+      );
+      expect(initialMessages).toMatchObject({
+        app: {
+          'emails.appInvite.body': 'test invite body',
+          description: '',
+          name: 'Test App',
+          'pages.test-page': 'Test Page',
+        },
+      });
+      await writeAppMessages(resolveFixture('apps/test-messages'), ['en'], [], 'json');
+      const messages = JSON.parse(String(await readFixture('apps/test-messages/i18n/en.json')));
+      expect(messages).toMatchObject({
+        app: {
+          'emails.appInvite.body': 'test invite body',
+          description: '',
+          name: 'Test App',
+          'pages.test-page': 'Test Page',
+        },
+      });
+      await writeFile(
+        resolveFixture('apps/test-messages/i18n/en.json'),
+        JSON.stringify(initialMessages, null, '\t'),
+      );
+    });
+
     it('should throw if the language file does not exist', async () => {
       await expect(() =>
         writeAppMessages(resolveFixture('apps/test-messages'), ['hr'], [], 'json'),
-      ).rejects.toThrow('Missing translations file');
+      ).rejects.toThrowError('Missing translations file');
     });
 
     it('should throw if there are empty messages in a verified file', async () => {
@@ -2629,13 +2713,13 @@ describe('app', () => {
       });
       await expect(() =>
         writeAppMessages(resolveFixture('apps/test-messages'), ['nl'], ['nl'], 'json'),
-      ).rejects.toThrow('Missing translation');
+      ).rejects.toThrowError('Missing translation');
     });
 
     it('should throw if app definition does not exist in the app folder', async () => {
       await expect(() =>
         writeAppMessages(resolveFixture('apps/empty'), ['nl'], [], 'json'),
-      ).rejects.toThrow('Couldn’t find app definition');
+      ).rejects.toThrowError('Couldn’t find app definition');
     });
   });
 });

@@ -10,11 +10,18 @@ import { pathItems as appsAppIdAssetsAssetId } from './apps/appId/assets/assetId
 import { pathItems as appsAppIdAssets$Count } from './apps/appId/assets/count.js';
 import { pathItems as appsAppIdAssets } from './apps/appId/assets.js';
 import { pathItems as appsAppIdAuthEmailLogin } from './apps/appId/auth/email/login.js';
+import { pathItems as appsAppIdAuthEmailNewEmail } from './apps/appId/auth/email/newEmail.js';
+import { pathItems as appsAppIdAuthEmailPassword } from './apps/appId/auth/email/password.js';
 import { pathItems as appsAppIdAuthEmailRegister } from './apps/appId/auth/email/register.js';
 import { pathItems as appsAppIdAuthEmailRequestPasswordReset } from './apps/appId/auth/email/requestResetPassword.js';
 import { pathItems as appsAppIdAuthEmailResendVerification } from './apps/appId/auth/email/resendVerification.js';
 import { pathItems as appsAppIdAuthEmailResetPassword } from './apps/appId/auth/email/resetPassword.js';
+import { pathItems as appsAppIdAuthEmailUnverified } from './apps/appId/auth/email/unverified.js';
 import { pathItems as appsAppIdAuthEmailVerify } from './apps/appId/auth/email/verify.js';
+import { pathItems as appsAppIdAuthTotpDisable } from './apps/appId/auth/totp/disable.js';
+import { pathItems as appsAppIdAuthTotpSetup } from './apps/appId/auth/totp/setup.js';
+import { pathItems as appsAppIdAuthTotpVerify } from './apps/appId/auth/totp/verify.js';
+import { pathItems as appsAppIdAuthTotpVerifySetup } from './apps/appId/auth/totp/verifySetup.js';
 import { pathItems as appsAppIdBroadcast } from './apps/appId/broadcast.js';
 import { pathItems as appsAppIdClonableAssets } from './apps/appId/clonable-assets.js';
 import { pathItems as appsAppIdClonableResources } from './apps/appId/clonable-resources.js';
@@ -59,6 +66,7 @@ import { pathItems as appsAppIdResourcesResourceType$Count } from './apps/appId/
 import { pathItems as appsAppIdResourcesResourceTypeResourceIdPositioning } from './apps/appId/resources/resourceType/resourceId/positions.js';
 import { pathItems as appsAppIdResourcesResourceTypeResourceIdSubscriptions } from './apps/appId/resources/resourceType/resourceId/subscriptions.js';
 import { pathItems as appsAppIdResourcesResourceTypeResourceId } from './apps/appId/resources/resourceType/resourceId.js';
+import { pathItems as appsAppIdResourcesResourceTypeResourceIdGroup } from './apps/appId/resources/resourceType/resourceId/groups.js';
 import { pathItems as appsAppIdResourcesResourceTypeSubscriptions } from './apps/appId/resources/resourceType/subscriptions.js';
 import { pathItems as appsAppIdResourcesResourceType } from './apps/appId/resources/resourceType.js';
 import { pathItems as appsAppIdResourcesResourceTypeResourceIdVersions } from './apps/appId/resources/versions.js';
@@ -144,6 +152,7 @@ import { pathItems as timezones } from './timezones.js';
 import { pathItems as completedTrainings } from './trainings/completedTrainings.js';
 import { pathItems as completeTraining } from './trainings/completeTraining.js';
 import { pathItems as trainingIds } from './trainings/trainingIds.js';
+import { pathItems as undeliveredEmails } from './undeliveredEmails.js';
 import { pathItems as usersCurrentAppsAccounts } from './users/current/apps/accounts.js';
 import { pathItems as usersCurrentAppsAppIdAccount } from './users/current/apps/appId/account.js';
 import { pathItems as usersCurrentApps } from './users/current/apps.js';
@@ -187,6 +196,7 @@ export const paths = {
   '/api/apps/{appId}/demo-groups': appsAppIdDemoGroups,
   '/api/apps/{appId}/demo-members': appsAppIdDemoMembers,
   '/api/apps/{appId}/email': appsAppIdEmail,
+  '/api/undelivered-emails': undeliveredEmails,
   '/api/apps/{appId}/payment': appsAppIdPayments,
   '/api/apps/{appId}/accept-payment': acceptAppPayment,
   '/api/apps/{appId}/export': appsAppIdExport,
@@ -214,6 +224,8 @@ export const paths = {
     appsAppIdResourcesResourceTypeResourceIdSubscriptions,
   '/api/apps/{appId}/resources/{resourceType}/{resourceId}':
     appsAppIdResourcesResourceTypeResourceId,
+  '/api/apps/{appId}/resources/{resourceType}/{resourceId}/group':
+    appsAppIdResourcesResourceTypeResourceIdGroup,
   '/api/apps/{appId}/resources/{resourceType}/subscriptions':
     appsAppIdResourcesResourceTypeSubscriptions,
   '/api/apps/{appId}/resources/{resourceType}': appsAppIdResourcesResourceType,
@@ -260,10 +272,17 @@ export const paths = {
   '/api/apps/{appId}': appsAppId,
   '/api/apps/{appId}/auth/email/login': appsAppIdAuthEmailLogin,
   '/api/apps/{appId}/auth/email/register': appsAppIdAuthEmailRegister,
+  '/api/apps/{appId}/auth/email/password': appsAppIdAuthEmailPassword,
   '/api/apps/{appId}/auth/email/resend-verification': appsAppIdAuthEmailResendVerification,
   '/api/apps/{appId}/auth/email/request-password-reset': appsAppIdAuthEmailRequestPasswordReset,
+  '/api/apps/{appId}/auth/email/new-email': appsAppIdAuthEmailNewEmail,
   '/api/apps/{appId}/auth/email/reset-password': appsAppIdAuthEmailResetPassword,
   '/api/apps/{appId}/auth/email/verify': appsAppIdAuthEmailVerify,
+  '/api/apps/{appId}/auth/email/unverified': appsAppIdAuthEmailUnverified,
+  '/api/apps/{appId}/auth/totp/setup': appsAppIdAuthTotpSetup,
+  '/api/apps/{appId}/auth/totp/verify-setup': appsAppIdAuthTotpVerifySetup,
+  '/api/apps/{appId}/auth/totp/verify': appsAppIdAuthTotpVerify,
+  '/api/apps/{appId}/auth/totp/disable': appsAppIdAuthTotpDisable,
   '/api/apps': apps,
   '/api/app-templates': appTemplates,
   '/api/auth/email/login': authEmailLogin,

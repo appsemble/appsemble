@@ -150,6 +150,20 @@ export interface Argv {
    */
   migrateTo: string;
 
+  /**
+   * Whether to enable Sequelize benchmark mode to log query execution times.
+   *
+   * @default false
+   */
+  databaseBenchmark: boolean;
+
+  /**
+   * Threshold in milliseconds above which queries are logged as warnings.
+   *
+   * @default 100
+   */
+  slowQueryThreshold: number;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // SSL                                                                                          //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -222,6 +236,13 @@ export interface Argv {
    * @default false
    */
   smtpSecure: boolean;
+
+  /**
+   * Secret used to authorize incoming postal webhooks.
+   *
+   * @default false
+   */
+  postalSecret: string;
 
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // IMAP
@@ -431,6 +452,69 @@ export interface Argv {
    * @default false
    */
   skipCustomDomains: boolean;
+
+  /**
+   * The name of the bucket to store backups in
+   *
+   * @default appsemble-backups-exampleenv
+   */
+  backupsBucket: string;
+
+  /**
+   * The prefix for the backup files before their timestamp
+   *
+   * @default appsemble_backup
+   */
+  backupsFilename?: string;
+
+  /**
+   * The host of the Amazon S3 compatible object storage server for the backups
+   *
+   * default undefined
+   */
+  backupsHost: string;
+
+  /**
+   * The port of the Amazon S3 compatible object storage server for the backups
+   *
+   * default 443
+   */
+  backupsPort?: number;
+
+  /**
+   * Whether ssl should be used for the Amazon S3 compatible object storage server for the backups
+   *
+   * default true
+   */
+  backupsSecure?: boolean;
+
+  /**
+   * The access key of the Amazon S3 compatible object storage server for the backups
+   *
+   * default undefined
+   */
+  backupsAccessKey: string;
+
+  /**
+   * The secret key of the Amazon S3 compatible object storage server for the backups
+   *
+   * default undefined
+   */
+  backupsSecretKey: string;
+
+  /**
+   * The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz
+   *
+   * @default undefined
+   */
+  restoreBackupFilename: string;
+
+  /**
+   * The default security contact email for reporting security vulnerabilities.
+   *
+   * @default 'security@appsemble.com'
+   */
+  securityEmail: string;
 }
 
 const defaults: Argv = {
@@ -472,6 +556,8 @@ const defaults: Argv = {
   interval: 5,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   migrateTo: undefined,
+  databaseBenchmark: false,
+  slowQueryThreshold: 100,
   ssl: false,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sslKey: undefined,
@@ -493,6 +579,8 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpPass: undefined,
   smtpSecure: false,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  postalSecret: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   imapHost: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
@@ -538,6 +626,19 @@ const defaults: Argv = {
   s3SecretKey: undefined,
   dryRun: true,
   skipCustomDomains: false,
+  backupsBucket: 'appsemble-backups-exampleenv',
+  backupsFilename: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  backupsHost: undefined,
+  backupsPort: 443,
+  backupsSecure: true,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  backupsAccessKey: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  backupsSecretKey: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  restoreBackupFilename: undefined,
+  securityEmail: 'security@appsemble.com',
 };
 
 export const argv = { ...defaults };

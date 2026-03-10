@@ -1,6 +1,5 @@
 import {
   type OAuth2Provider,
-  type PaymentProvider,
   type PredefinedOrganizationRole,
   type UserInfo,
 } from '@appsemble/types';
@@ -20,8 +19,8 @@ export interface Organization {
   description: string;
   website: string;
   email: string;
+  locale: string;
   iconUrl: string;
-  preferredPaymentProvider: PaymentProvider;
   vatIdNumber: string;
   streetName: string;
   houseNumber: string;

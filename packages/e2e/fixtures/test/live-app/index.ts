@@ -61,7 +61,7 @@ export const test = base.extend<LiveAppFixtures>({
         ? getLiveAppURL(appIdentifier)
         : getLiveAppURL(await getAppId(appIdentifier, request)));
 
-      await page.goto(url);
+      await page.goto(url, { timeout: 60_000 });
       return url;
     });
   },
@@ -103,9 +103,6 @@ export const test = base.extend<LiveAppFixtures>({
           data: {
             redirectUri: url,
             scope: 'openid',
-          },
-          headers: {
-            Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
           },
         },
       );

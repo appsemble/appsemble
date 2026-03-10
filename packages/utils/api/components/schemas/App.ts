@@ -68,6 +68,16 @@ This doesn’t affect whether or not the app can be accessed on its own domain.
       and to make any changes from the studio, this should be set to \`unlocked\`.
 `,
     },
+    totp: {
+      enum: ['disabled', 'enabled', 'required'],
+      default: 'disabled',
+      description: `The TOTP (two-factor authentication) setting for the app.
+
+- **disabled**: TOTP is not available for app members.
+- **enabled**: TOTP is available but optional for app members.
+- **required**: TOTP is required for all app members. **WARNING**: Setting this will lock out existing users who have not yet enabled 2FA on their accounts.
+`,
+    },
     displayAppMemberName: {
       type: 'boolean',
       description: 'Whether to display app member name in the title bar.',
@@ -129,6 +139,14 @@ domain fall back to use the Appsemble server Sentry DSN.
     controllerImplementations: {
       type: 'string',
       description: 'Appsemble SDK interfaces implementations',
+    },
+    supportedLanguages: {
+      type: 'array',
+      description: 'Supported languages for an app',
+      items: {
+        type: 'string',
+        minLength: 2,
+      },
     },
   },
 };

@@ -15,7 +15,7 @@ export async function getBlockAsset({
 }: GetBlockAssetParams): Promise<ProjectAsset> {
   const { blockConfigs } = context;
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2488 [...] | undefined must have a '[Symbol.iterator]()'
   const [organisation, blockName] = parseBlockName(name);
 

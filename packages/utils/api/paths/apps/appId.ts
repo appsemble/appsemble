@@ -79,6 +79,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 type: 'string',
                 description: 'The custom style to apply to all parts of app.',
               },
+              supportedLanguages: {
+                $ref: '#/components/schemas/App/properties/supportedLanguages',
+              },
               screenshots: {
                 type: 'array',
                 description: 'Screenshots to showcase in the store',
@@ -110,6 +113,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
               showAppsembleOAuth2Login: {
                 type: 'boolean',
                 description: 'Whether the Appsemble OAuth2 login method should be shown.',
+              },
+              totp: {
+                $ref: '#/components/schemas/App/properties/totp',
               },
               enableSelfRegistration: {
                 type: 'boolean',

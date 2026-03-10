@@ -23,6 +23,8 @@ spec:
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               securityContext:
                 readOnlyRootFilesystem: true
+              resources:
+                {{- toYaml .Values.resources.cronjobs | nindent 16 }}
               args:
                 - cleanup-demo-app-members
                 - -vv

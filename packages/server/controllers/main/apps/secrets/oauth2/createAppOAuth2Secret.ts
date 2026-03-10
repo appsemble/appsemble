@@ -25,6 +25,6 @@ export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
   });
 
   const { AppOAuth2Secret } = await getAppDB(appId);
-  const { id } = await AppOAuth2Secret.create({ ...body, AppId: appId });
+  const { id } = await AppOAuth2Secret.create({ ...body });
   ctx.body = { ...body, id };
 }

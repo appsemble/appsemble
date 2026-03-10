@@ -1,4 +1,4 @@
-import { expect, test } from '../../index.js';
+import { expect, baseTest as test } from '../../index.js';
 
 test.describe('Organizations', () => {
   test.beforeEach(async ({ page }) => {

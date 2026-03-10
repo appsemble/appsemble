@@ -1,5 +1,6 @@
 import {
   type AppDefinition,
+  type AppMemberGroup,
   remap,
   type ResourceDefinition,
   type ResourceView,
@@ -33,6 +34,7 @@ import {
   type GetAppResourcesParams,
   type GetAppSubEntityParams,
   type GetCurrentAppMemberParams,
+  type GetCurrentAppMemberSelectedGroupParams,
   type Options,
   type ParsedQuery,
   type ParseQueryParams,
@@ -51,6 +53,9 @@ let mockCreateAppResourcesWithAssets: Mock<
 let mockGetAppAssets: Mock<(params: GetAppSubEntityParams) => Promise<Asset[]>>;
 let mockCheckAppPermissions: Mock<(params: CheckAppPermissionsParams) => Promise<void>>;
 let mockGetCurrentAppMember: Mock<(params: GetCurrentAppMemberParams) => Promise<AppMemberInfo>>;
+let mockGetCurrentAppMemberSelectedGroup: Mock<
+  (params: GetCurrentAppMemberSelectedGroupParams) => Promise<AppMemberGroup>
+>;
 
 let mockCtx: ParameterizedContext<DefaultState, DefaultContext>;
 let mockCtxIs: Mock<() => string>;
@@ -65,6 +70,7 @@ describe('createQueryResources', () => {
     mockGetAppVariables = vi.fn();
     mockCheckAppPermissions = vi.fn();
     mockGetCurrentAppMember = vi.fn();
+    mockGetCurrentAppMemberSelectedGroup = vi.fn();
 
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
@@ -249,6 +255,9 @@ describe('createQueryResources', () => {
         params: GetAppSubEntityParams,
       ) => Promise<AppConfigEntry[]>,
       getCurrentAppMember: mockGetCurrentAppMember as (params: GetCurrentAppMemberParams) => void,
+      getCurrentAppMemberSelectedGroup: mockGetCurrentAppMemberSelectedGroup as (
+        params: GetCurrentAppMemberSelectedGroupParams,
+      ) => void,
       checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
     } as Options;
 
@@ -557,6 +566,9 @@ describe('createGetResourceById', () => {
       ) => Promise<AppConfigEntry[]>,
       checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
       getCurrentAppMember: mockGetCurrentAppMember as (params: GetCurrentAppMemberParams) => void,
+      getCurrentAppMemberSelectedGroup: mockGetCurrentAppMemberSelectedGroup as (
+        params: GetCurrentAppMemberSelectedGroupParams,
+      ) => void,
     } as Options;
 
     const resourceDefinition = getResourceDefinition(

@@ -8,14 +8,11 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { appId } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
-import { useAppMessages } from '../AppMessagesProvider/index.js';
 
 export function GroupDropdown(): ReactNode {
   const { formatMessage } = useIntl();
-  const { getAppMessage } = useAppMessages();
   const navigate = useNavigate();
-  const { appMemberGroups, appMemberInfo, appMemberSelectedGroup, setAppMemberSelectedGroup } =
-    useAppMember();
+  const { appMemberGroups, appMemberSelectedGroup, setAppMemberSelectedGroup } = useAppMember();
 
   const handleGroupChange = (group: AppMemberGroup): void => {
     setAppMemberSelectedGroup(group);
@@ -34,37 +31,17 @@ export function GroupDropdown(): ReactNode {
           {appMemberSelectedGroup?.name
             ? `${formatMessage(messages.group)} ${appMemberSelectedGroup?.name}`
             : formatMessage(messages.noGroup)}
-          {' - '}
-          {appMemberSelectedGroup?.role
-            ? getAppMessage({
-                id: `app.roles.${appMemberSelectedGroup?.role}`,
-                defaultMessage: appMemberSelectedGroup?.role,
-              }).format()
-            : getAppMessage({
-                id: `app.roles.${appMemberInfo.role}`,
-                defaultMessage: appMemberInfo.role,
-              }).format()}
         </div>
       }
     >
       {appMemberGroups.map((group) => (
         <NavbarItem key={group.id} onClick={() => handleGroupChange(group)}>
           {formatMessage(messages.group)} {group.name}
-          {' - '}
-          {getAppMessage({
-            id: `app.roles.${group.role}`,
-            defaultMessage: group.role,
-          }).format()}
         </NavbarItem>
       ))}
       {/* @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks) */}
       <NavbarItem key="no-group" onClick={() => handleGroupChange(null)}>
         {formatMessage(messages.noGroup)}
-        {' - '}
-        {getAppMessage({
-          id: `app.roles.${appMemberInfo.role}`,
-          defaultMessage: appMemberInfo.role,
-        }).format()}
       </NavbarItem>
     </NavbarDropdown>
   );

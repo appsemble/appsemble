@@ -31,54 +31,54 @@ export class User extends Model {
   @IsUUID(4)
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
-  id!: string;
+  declare id: string;
 
   @Column(DataType.STRING)
-  name?: string;
+  declare name?: string;
 
   @ForeignKey(() => EmailAuthorization)
   @Index({ name: 'UniqueUserEmail', unique: true })
   @Column(DataType.STRING)
-  primaryEmail?: string;
+  declare primaryEmail?: string;
 
   @Column(DataType.STRING)
-  password?: string;
+  declare password?: string;
 
   @Column(DataType.STRING)
-  locale?: string;
+  declare locale?: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  timezone!: string;
+  declare timezone: string;
 
   @AllowNull(false)
   @Default(true)
   @Column(DataType.BOOLEAN)
-  subscribed!: boolean;
+  declare subscribed: boolean;
 
   @BelongsToMany(() => Organization, () => OrganizationMember)
-  Organizations!: Organization[];
+  declare Organizations: Organization[];
 
   @HasMany(() => EmailAuthorization)
-  EmailAuthorizations!: EmailAuthorization[];
+  declare EmailAuthorizations: EmailAuthorization[];
 
   @HasMany(() => OAuthAuthorization)
-  OAuthAuthorizations!: OAuthAuthorization[];
+  declare OAuthAuthorizations: OAuthAuthorization[];
 
   @HasMany(() => ResetPasswordToken, { onDelete: 'CASCADE' })
-  ResetPasswordTokens!: ResetPasswordToken[];
+  declare ResetPasswordTokens: ResetPasswordToken[];
 
   @HasMany(() => TrainingCompleted)
-  CompletedTrainings!: TrainingCompleted[];
+  declare CompletedTrainings: TrainingCompleted[];
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @UpdatedAt
-  updated!: Date;
+  declare updated: Date;
 
   @DeletedAt
-  deleted?: Date;
+  declare deleted?: Date;
 
-  OrganizationMember?: OrganizationMember;
+  declare OrganizationMember?: OrganizationMember;
 }

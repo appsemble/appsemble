@@ -15,12 +15,14 @@ import {
   ResourceSubscriptionToggleActionDefinition,
   ResourceSubscriptionUnsubscribeActionDefinition,
   ResourceUpdateActionDefinition,
+  ResourceUpdateGroupActionDefinition,
   ResourceUpdatePositionsActionDefinition,
 } from '../../schemas/index.js';
 
 export const resourceActions: Record<string, OpenAPIV3.SchemaObject> = {
   'resource.get': ResourceGetActionDefinition,
   'resource.history.get': ResourceHistoryGetActionDefinition,
+  'resource.update.group': ResourceUpdateGroupActionDefinition,
   'resource.update.positions': ResourceUpdatePositionsActionDefinition,
   'resource.query': ResourceQueryActionDefinition,
   'resource.count': ResourceCountActionDefinition,

@@ -82,7 +82,7 @@ describe('getAppMemberPicture', () => {
     expect(response.data).toStrictEqual(await readFixture('tux.png'));
   });
 
-  it('should return 404 if the user has not uploaded a picture', async () => {
+  it('should return a placeholder if the user has not uploaded a picture', async () => {
     const app = await createDefaultAppWithSecurity(organization);
     await request.post(
       `/api/apps/${app.id}/auth/email/register`,
@@ -97,15 +97,7 @@ describe('getAppMemberPicture', () => {
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
     const response = await request.get(`/api/apps/${app.id}/app-members/${m.id}/picture`);
 
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 404 Not Found
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "error": "Not Found",
-        "message": "This member has no profile picture set.",
-        "statusCode": 404,
-      }
-    `);
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toBe('image/png');
   });
 });

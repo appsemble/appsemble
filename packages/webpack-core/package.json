@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-core",
-  "version": "0.34.22-test.5",
+  "version": "0.36.5-test.2",
   "private": true,
   "description": "The Webpack configuration for the Appsemble core",
   "keywords": [
@@ -32,14 +32,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.34.22-test.5",
-    "@appsemble/utils": "0.34.22-test.5",
-    "@fortawesome/fontawesome-free": "^6.0.0",
+    "@appsemble/node-utils": "0.36.5-test.2",
     "@mdx-js/loader": "^3.0.0",
-    "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",
-    "@types/hast": "^3.0.0",
-    "@types/mdast": "^4.0.0",
-    "@types/unused-webpack-plugin": "^2.0.0",
     "bulma": "=0.9.3",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
     "css-loader": "^6.0.0",
@@ -66,11 +60,17 @@
     "unified": "^11.0.0",
     "unist-util-visit": "^5.0.0",
     "unused-webpack-plugin": "^2.0.0",
-    "url": "^0.11.0",
     "webpack": "^5.0.0",
     "workbox-webpack-plugin": "^7.0.0"
   },
+  "devDependencies": {
+    "@types/case-sensitive-paths-webpack-plugin": "2.1.9",
+    "@types/hast": "3.0.4",
+    "@types/mdast": "4.0.4",
+    "@types/unused-webpack-plugin": "2.4.5",
+    "url": "0.11.4"
+  },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }

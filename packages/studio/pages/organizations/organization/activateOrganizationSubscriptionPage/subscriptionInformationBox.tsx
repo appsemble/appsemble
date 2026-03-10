@@ -150,12 +150,16 @@ export function SubscriptionInformationBox({
               <div className="pr-5">
                 <FormattedMessage {...messages.subscriptionPrice} />
               </div>
-              <div className="pr-5">
-                <FormattedMessage {...messages.activeSubscriptionDiscount} />
-              </div>
-              <div className="pr-5">
-                <FormattedMessage {...messages.couponDiscount} />
-              </div>
+              {subscriptionPrice.activeSubscriptionDiscount === '0.00' ? null : (
+                <div className="pr-5">
+                  <FormattedMessage {...messages.activeSubscriptionDiscount} />
+                </div>
+              )}
+              {subscriptionPrice.couponDiscount === '0.00' ? null : (
+                <div className="pr-5">
+                  <FormattedMessage {...messages.couponDiscount} />
+                </div>
+              )}
               <div className="pr-5">
                 <FormattedMessage {...messages.vatAmount} />{' '}
                 {Number.parseFloat(subscriptionPrice.vatPercentage) * 100}%
@@ -166,19 +170,27 @@ export function SubscriptionInformationBox({
             </div>
             <div className="is-flex is-flex-direction-column is-align-items-flex-start">
               <span className="is-flex is-align-items-flex-end">€</span>
-              <span className="is-flex is-align-items-flex-end">€</span>
-              <span className="is-flex is-align-items-flex-end">€</span>
+              {subscriptionPrice.activeSubscriptionDiscount === '0.00' ? null : (
+                <span className="is-flex is-align-items-flex-end">€</span>
+              )}
+              {subscriptionPrice.couponDiscount === '0.00' ? null : (
+                <span className="is-flex is-align-items-flex-end">€</span>
+              )}
               <span className="is-flex is-.couponDiscountalign-items-flex-end">€</span>
               <span className="is-flex is-align-items-flex-end has-text-weight-bold mt-2">€</span>
             </div>
             <div className="is-flex is-flex-direction-column is-align-items-flex-end">
               <span className="is-flex is-align-items-flex-end">{subscriptionPrice.basePrice}</span>
-              <span className="is-flex is-align-items-flex-end">
-                {subscriptionPrice?.activeSubscriptionDiscount}
-              </span>
-              <span className="is-flex is-align-items-flex-end">
-                {subscriptionPrice?.couponDiscount}
-              </span>
+              {subscriptionPrice.activeSubscriptionDiscount === '0.00' ? null : (
+                <span className="is-flex is-align-items-flex-end">
+                  {subscriptionPrice?.activeSubscriptionDiscount}
+                </span>
+              )}
+              {subscriptionPrice.couponDiscount === '0.00' ? null : (
+                <span className="is-flex is-align-items-flex-end">
+                  {subscriptionPrice?.couponDiscount}
+                </span>
+              )}
               <span className="is-flex is-.couponDiscountalign-items-flex-end">
                 {subscriptionPrice?.vatAmount}
               </span>
@@ -232,20 +244,28 @@ export function SubscriptionInformationBox({
                   <div className="pr-5">
                     <FormattedMessage {...messages.subscriptionPrice} />
                   </div>
-                  <div className="pr-5">
-                    <FormattedMessage {...messages.activeSubscriptionDiscount} />
-                  </div>
-                  <div className="pr-5">
-                    <FormattedMessage {...messages.couponDiscount} />
-                  </div>
+                  {subscriptionPrice.activeSubscriptionDiscount === '0.00' ? null : (
+                    <div className="pr-5">
+                      <FormattedMessage {...messages.activeSubscriptionDiscount} />
+                    </div>
+                  )}
+                  {subscriptionPrice.couponDiscount === '0.00' ? null : (
+                    <div className="pr-5">
+                      <FormattedMessage {...messages.couponDiscount} />
+                    </div>
+                  )}
                   <div className="pr-5 has-text-weight-bold mt-2">
                     <FormattedMessage {...messages.totalPrice} />
                   </div>
                 </div>
                 <div className="is-flex is-flex-direction-column is-align-items-flex-start">
+                  {subscriptionPrice.activeSubscriptionDiscount === '0.00' ? null : (
+                    <span className="is-flex is-align-items-flex-end">€</span>
+                  )}
                   <span className="is-flex is-align-items-flex-end">€</span>
-                  <span className="is-flex is-align-items-flex-end">€</span>
-                  <span className="is-flex is-align-items-flex-end">€</span>
+                  {subscriptionPrice.couponDiscount === '0.00' ? null : (
+                    <span className="is-flex is-align-items-flex-end">€</span>
+                  )}
                   <span className="is-flex is-align-items-flex-end has-text-weight-bold mt-2">
                     €
                   </span>
@@ -254,12 +274,16 @@ export function SubscriptionInformationBox({
                   <span className="is-flex is-align-items-flex-end">
                     {subscriptionPrice.basePrice}
                   </span>
-                  <span className="is-flex is-align-items-flex-end">
-                    {subscriptionPrice.activeSubscriptionDiscount}
-                  </span>{' '}
-                  <span className="is-flex is-align-items-flex-end">
-                    {subscriptionPrice.couponDiscount}
-                  </span>
+                  {subscriptionPrice.activeSubscriptionDiscount === '0.00' ? null : (
+                    <span className="is-flex is-align-items-flex-end">
+                      {subscriptionPrice.activeSubscriptionDiscount}
+                    </span>
+                  )}
+                  {subscriptionPrice.couponDiscount === '0.00' ? null : (
+                    <span className="is-flex is-align-items-flex-end">
+                      {subscriptionPrice.couponDiscount}
+                    </span>
+                  )}
                   <span className="is-flex is-align-items-flex-end has-text-weight-bold mt-2">
                     {subscriptionPrice?.priceWithCoupon}
                   </span>

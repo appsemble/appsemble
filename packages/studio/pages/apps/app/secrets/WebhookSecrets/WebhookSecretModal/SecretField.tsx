@@ -19,6 +19,8 @@ export const SecretField = forwardRef<HTMLInputElement, SecretFieldProps>((props
 
   useEffect(() => {
     (async () => {
+      // Not SSRF: client-side relative URL to same-origin API, parameters are from application state
+      // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
       const { data } = await axios.get(`/api/apps/${appId}/secrets/webhook/${secretId}`);
       setValue(data.secret);
     })();

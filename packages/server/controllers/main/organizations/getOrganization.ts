@@ -23,11 +23,11 @@ export async function getOrganization(ctx: Context): Promise<void> {
     name: organization.name,
     description: organization.description,
     website: organization.website,
+    locale: organization.locale,
     email: organization.email,
     iconUrl: organization.get('hasIcon')
       ? `/api/organizations/${organization.id}/icon?updated=${organization.updated.toISOString()}`
       : null,
-    preferredPaymentProvider: organization.preferredPaymentProvider,
     vatIdNumber: organization.vatIdNumber,
     streetName: organization.streetName,
     houseNumber: organization.houseNumber,

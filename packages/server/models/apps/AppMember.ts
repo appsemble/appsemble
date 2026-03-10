@@ -30,6 +30,7 @@ import {
 
 import { type ResourceGlobal } from './Resource.js';
 import {
+  type AppMemberEmailAuthorization,
   type AppModels,
   type AppOAuth2Authorization,
   type AppSamlAuthorization,
@@ -38,57 +39,63 @@ import {
 } from '../index.js';
 
 export class AppMemberGlobal extends Model {
-  id!: string;
+  declare id: string;
 
-  role!: string;
+  declare role: string;
 
-  email!: string;
+  declare email: string;
 
-  emailVerified?: boolean;
+  declare emailVerified?: boolean;
 
-  name?: string;
+  declare name?: string;
 
-  password?: string;
+  declare password?: string;
 
-  emailKey?: string;
+  declare emailKey?: string;
 
-  resetKey?: string;
+  declare resetKey?: string;
 
-  consent?: Date;
+  declare consent?: Date;
 
-  picture?: Buffer | null;
+  declare picture?: Buffer | null;
 
-  properties?: Record<string, any>;
+  declare properties?: Record<string, any>;
 
-  scimExternalId?: string;
+  declare scimExternalId?: string;
 
-  scimActive!: boolean;
+  declare scimActive: boolean;
 
-  locale?: string;
+  declare locale?: string;
 
-  timezone?: string;
+  declare timezone?: string;
 
-  phoneNumber?: string;
+  declare phoneNumber?: string;
 
-  demo!: boolean;
+  declare demo: boolean;
 
-  ephemeral!: boolean;
+  declare ephemeral: boolean;
 
-  seed!: boolean;
+  declare seed: boolean;
 
-  userId?: string;
+  declare totpSecret?: Buffer | null;
 
-  created!: Date;
+  declare totpEnabled: boolean;
 
-  updated!: Date;
+  declare userId?: string;
 
-  GroupMembers!: GroupMember[];
+  declare created: Date;
 
-  AppOAuth2Authorizations!: AppOAuth2Authorization[];
+  declare updated: Date;
 
-  OAuth2AuthorizationCodes!: OAuth2AuthorizationCode[];
+  declare GroupMembers: GroupMember[];
 
-  AppSamlAuthorizations!: AppSamlAuthorization[];
+  declare AppOAuth2Authorizations: AppOAuth2Authorization[];
+
+  declare OAuth2AuthorizationCodes: OAuth2AuthorizationCode[];
+
+  declare AppSamlAuthorizations: AppSamlAuthorization[];
+
+  declare AppMemberEmailAuthorizations: AppMemberEmailAuthorization[];
 
   get hasPicture(): boolean {
     return this.get('hasPicture');
@@ -276,90 +283,100 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
     @IsUUID(4)
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
-    id!: string;
+    declare id: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    role!: string;
+    declare role: string;
 
     @AllowNull(false)
     @Index({ name: 'UniqueAppMemberEmailIndex', unique: true })
     @Column(DataType.STRING)
-    email!: string;
+    declare email: string;
 
     @Default(false)
     @Column(DataType.BOOLEAN)
-    emailVerified?: boolean;
+    declare emailVerified?: boolean;
 
     @Column(DataType.STRING)
-    name?: string;
+    declare name?: string;
 
     @Column(DataType.STRING)
-    password?: string;
+    declare password?: string;
 
     @Column(DataType.STRING)
-    emailKey?: string;
+    declare emailKey?: string;
 
     @Column(DataType.STRING)
-    resetKey?: string;
+    declare resetKey?: string;
 
     @Column(DataType.DATE)
-    consent?: Date;
+    declare consent?: Date;
 
     @Column(DataType.BLOB)
-    picture?: Buffer | null;
+    declare picture?: Buffer | null;
 
     @Column(DataType.JSON)
-    properties?: Record<string, any>;
+    declare properties?: Record<string, any>;
 
     @Column(DataType.STRING)
-    scimExternalId?: string;
+    declare scimExternalId?: string;
 
     @Default(false)
     @AllowNull(false)
     @Column(DataType.BOOLEAN)
-    scimActive!: boolean;
+    declare scimActive: boolean;
 
     @Column(DataType.STRING)
-    locale?: string;
+    declare locale?: string;
 
     @Column(DataType.STRING)
-    timezone?: string;
+    declare timezone?: string;
 
     @AllowNull(true)
     @Column(DataType.STRING)
     @Index({ name: 'UniqueAppMemberPhoneNumberIndex', unique: true })
-    phoneNumber?: string;
+    declare phoneNumber?: string;
 
     @AllowNull(false)
     @Default(false)
     @Column(DataType.BOOLEAN)
-    demo!: boolean;
+    declare demo: boolean;
 
     @AllowNull(false)
     @Default(false)
     @Column(DataType.BOOLEAN)
-    seed!: boolean;
+    declare seed: boolean;
 
     @AllowNull(false)
     @Default(false)
     @Index({ name: 'UniqueAppMemberEmailIndex', unique: true })
     @Column(DataType.BOOLEAN)
-    ephemeral!: boolean;
+    declare ephemeral: boolean;
 
     @Column(DataType.UUID)
     @Index({ name: 'UniqueAppMemberUserIndex', unique: true })
-    userId?: string;
+    declare userId?: string;
+
+    @AllowNull(true)
+    @Column(DataType.BLOB)
+    declare totpSecret?: Buffer | null;
+
+    @AllowNull(false)
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    declare totpEnabled: boolean;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     static associate(models: AppModels): void {
       AppMember.hasMany(models.GroupMember);
       AppMember.hasMany(models.AppOAuth2Authorization);
+      AppMember.hasMany(models.AppMemberEmailAuthorization);
       AppMember.hasMany(models.OAuth2AuthorizationCode, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',

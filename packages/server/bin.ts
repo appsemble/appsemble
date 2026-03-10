@@ -2,6 +2,7 @@
 import { configureAxios, configureLogger, handleError, version } from '@appsemble/node-utils';
 import yargs, { type CommandModule } from 'yargs';
 
+import * as backupProductionData from './commands/backupProductionData.js';
 import * as chargeOrganizationSubscriptions from './commands/chargeOrganizationSubscriptions.js';
 import * as checkDownMigrations from './commands/checkDownMigrations.js';
 import * as checkMigrations from './commands/checkMigrations.js';
@@ -14,6 +15,7 @@ import * as health from './commands/health.js';
 import * as migrate from './commands/migrate.js';
 import * as migrateAppDefinitions from './commands/migrateAppDefinitions.js';
 import * as reconcile from './commands/reconcileDNS.js';
+import * as reencryptSecrets from './commands/reencryptSecrets.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
 import * as start from './commands/start.js';
@@ -62,8 +64,10 @@ const parser = yargs()
   .command(synchronizeTrainings as CommandModule)
   .command(migrate as CommandModule)
   .command(migrateAppDefinitions as CommandModule)
-  .command(cleanupSoftDeletedRecords)
+  .command(reencryptSecrets as CommandModule)
+  .command(cleanupSoftDeletedRecords as CommandModule)
   .command(chargeOrganizationSubscriptions as CommandModule)
+  .command(backupProductionData as CommandModule)
   .fail(handleError)
   .help('help', 'Show this help message.')
   .alias('h', 'help')

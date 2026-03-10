@@ -17,7 +17,7 @@ export const TagsField = forwardRef<HTMLInputElement, TagsFieldProps>(
     const innerRef = useRef<HTMLInputElement>();
     const bulmaInputRef = useRef<BulmaTagsInput>();
 
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     const mergedRef = useCombinedRefs(innerRef, ref);

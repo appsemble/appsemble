@@ -1,5 +1,6 @@
 import {
   Button,
+  Loader,
   ModalCard,
   SelectField,
   SimpleForm,
@@ -13,6 +14,7 @@ import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useUser } from '../UserProvider/index.js';
@@ -27,6 +29,11 @@ interface AppToCollectionButtonProps {
    * Classname to be applied for the component
    */
   readonly className?: string;
+
+  /**
+   * Whether to trigger fetching collections.
+   */
+  readonly shouldFetch?: boolean;
 }
 
 const defaultValues = {
@@ -36,29 +43,44 @@ const defaultValues = {
 /**
  * Render a button that can be used to add an app to a collection.
  */
-export function AddToCollectionButton({ app, className }: AppToCollectionButtonProps): ReactNode {
+export function AddToCollectionButton({
+  app,
+  className,
+  shouldFetch = false,
+}: AppToCollectionButtonProps): ReactNode {
   const { organizations, userInfo } = useUser();
 
-  const [availableCollections, setAvailableCollections] = useState<AppCollection[]>([]);
+  const [availableCollections, setAvailableCollections] = useState<AppCollection[] | null>(null);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
+    if (!shouldFetch || availableCollections != null) {
+      return;
+    }
+
     const fetchCollections = async (): Promise<void> => {
-      const collections = (
-        await Promise.all(
-          organizations
-            ?.filter((org) =>
-              checkOrganizationRoleOrganizationPermissions(org.role, [
-                OrganizationPermission.UpdateAppCollections,
-              ]),
-            )
-            .map((org) =>
-              axios.get<AppCollection[]>(`/api/organizations/${org.id}/app-collections`),
-            ),
-        )
-      ).flatMap((response) => response.data);
-      setAvailableCollections(collections);
+      setLoading(true);
+      try {
+        const collections = (
+          await Promise.all(
+            organizations
+              ?.filter((org) =>
+                checkOrganizationRoleOrganizationPermissions(org.role, [
+                  OrganizationPermission.UpdateAppCollections,
+                ]),
+              )
+              .map((org) =>
+                axios.get<AppCollection[]>(`/api/organizations/${org.id}/app-collections`),
+              ),
+          )
+        ).flatMap((response) => response.data);
+        setAvailableCollections(collections);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchCollections();
-  }, [organizations]);
+  }, [shouldFetch, availableCollections, organizations]);
 
   const modalToggle = useToggle();
 
@@ -72,9 +94,13 @@ export function AddToCollectionButton({ app, className }: AppToCollectionButtonP
     [app, modalToggle],
   );
 
-  if (availableCollections.length === 0) {
-    return null;
-  }
+  const hasCollections = availableCollections && availableCollections.length > 0;
+
+  const organizationForCreate = organizations?.find((org) =>
+    checkOrganizationRoleOrganizationPermissions(org.role, [
+      OrganizationPermission.CreateAppCollections,
+    ]),
+  );
 
   return (
     <>
@@ -86,34 +112,57 @@ export function AddToCollectionButton({ app, className }: AppToCollectionButtonP
           component={SimpleForm as typeof SimpleForm<typeof defaultValues>}
           defaultValues={defaultValues}
           footer={
-            <SimpleModalFooter
-              cancelLabel={<FormattedMessage {...messages.cancel} />}
-              onClose={modalToggle.disable}
-              submitLabel={<FormattedMessage {...messages.addToCollection} />}
-            />
+            hasCollections ? (
+              <SimpleModalFooter
+                cancelLabel={<FormattedMessage {...messages.cancel} />}
+                onClose={modalToggle.disable}
+                submitLabel={<FormattedMessage {...messages.addToCollection} />}
+              />
+            ) : null
           }
           isActive={modalToggle.enabled}
           onClose={modalToggle.disable}
           onSubmit={onSubmit}
           title={<FormattedMessage {...messages.addToCollection} />}
         >
-          <SimpleFormError>
-            {({ error }) =>
-              axios.isAxiosError(error) && error.response?.status === 409 ? (
-                <FormattedMessage {...messages.alreadyInCollection} />
-              ) : (
-                <FormattedMessage {...messages.error} />
-              )
-            }
-          </SimpleFormError>
-          <SimpleFormField component={SelectField} name="collectionId" required>
-            <option className="is-hidden" disabled value="" />
-            {availableCollections.map((collection) => (
-              <option key={collection.id} value={collection.id}>
-                {collection.name}
-              </option>
-            ))}
-          </SimpleFormField>
+          {loading ? (
+            <Loader />
+          ) : hasCollections ? (
+            <>
+              <SimpleFormError>
+                {({ error }) =>
+                  axios.isAxiosError(error) && error.response?.status === 409 ? (
+                    <FormattedMessage {...messages.alreadyInCollection} />
+                  ) : (
+                    <FormattedMessage {...messages.error} />
+                  )
+                }
+              </SimpleFormError>
+              <SimpleFormField component={SelectField} name="collectionId" required>
+                <option className="is-hidden" disabled value="" />
+                {availableCollections.map((collection) => (
+                  <option key={collection.id} value={collection.id}>
+                    {collection.name}
+                  </option>
+                ))}
+              </SimpleFormField>
+            </>
+          ) : (
+            <p>
+              <FormattedMessage {...messages.noCollections} />
+              {organizationForCreate ? (
+                <>
+                  {' '}
+                  <Link
+                    onClick={modalToggle.disable}
+                    to={`/organizations/${organizationForCreate.id}/collections`}
+                  >
+                    <FormattedMessage {...messages.createCollection} />
+                  </Link>
+                </>
+              ) : null}
+            </p>
+          )}
         </ModalCard>
       ) : null}
     </>

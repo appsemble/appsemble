@@ -34,7 +34,7 @@ export const FormOutput = forwardRef<HTMLInputElement, FormOutputProps>(
     const ref = useRef<HTMLInputElement | HTMLTextAreaElement>();
     const push = useMessages();
 
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     const combinedRef = useCombinedRefs(ref, forwardedRef);

@@ -3,10 +3,11 @@ import {
   type CreateSettingsParams,
   createSettings as createUtilsSettings,
 } from '@appsemble/node-utils';
+import { defaultLocale } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { App, AppSnapshot, BlockAsset, BlockVersion, getAppDB } from '../models/index.js';
-import { createGtagCode } from '../utils/render.js';
+import { createGtagCode, createMetaPixelCode, createMSClarityCode } from '../utils/render.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
 export async function createSettings({
@@ -15,6 +16,7 @@ export async function createSettings({
   hostname,
   identifiableBlocks,
   languages,
+  nonce,
 }: CreateSettingsParams): Promise<[digest: string, script: string]> {
   const { AppOAuth2Secret, AppSamlSecret } = await getAppDB(app.id!);
   const blockManifests = await BlockVersion.findAll({
@@ -30,7 +32,7 @@ export async function createSettings({
     ],
     where: {
       [Op.or]: identifiableBlocks.map(({ type, version }) => {
-        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore Messed up
         const [OrganizationId, name] = parseBlockName(type);
         return { name, OrganizationId, version };
@@ -53,10 +55,14 @@ export async function createSettings({
       'enableSelfRegistration',
       'demoMode',
       'googleAnalyticsID',
+      'metaPixelID',
+      'msClarityID',
       'controllerCode',
       'controllerImplementations',
       'displayAppMemberName',
       'displayInstallationPrompt',
+      'supportedLanguages',
+      'totp',
     ],
     where: { id: app.id },
     include: [
@@ -119,11 +125,20 @@ export async function createSettings({
       showAppsembleOAuth2Login: persistedApp.showAppsembleOAuth2Login ?? true,
       enableSelfRegistration: persistedApp.enableSelfRegistration ?? true,
       showDemoLogin: persistedApp.demoMode ?? false,
+      totp: persistedApp.totp ?? 'disabled',
       sentryDsn,
       sentryEnvironment,
       appUpdated: persistedApp.updated.toISOString(),
       e2e: process.env.E2E,
+      supportedLanguages: persistedApp.supportedLanguages ?? [
+        persistedApp.definition.defaultLanguage ?? defaultLocale,
+      ],
     },
-    app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : undefined,
+    Boolean(app.metaPixelID) || Boolean(app.msClarityID) ? nonce : undefined,
+    [
+      ...(app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : []),
+      ...(app.metaPixelID ? createMetaPixelCode(app.metaPixelID) : []),
+      ...(app.msClarityID ? createMSClarityCode(app.msClarityID) : []),
+    ],
   );
 }

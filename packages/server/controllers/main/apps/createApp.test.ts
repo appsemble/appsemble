@@ -137,6 +137,8 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -145,7 +147,11 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -161,6 +167,29 @@ describe('createApp', () => {
     `);
     const { data: retrieved } = await request.get(`/api/apps/${createdResponse.data.id}`);
     expect(retrieved).toStrictEqual(createdResponse.data);
+  });
+
+  it('should create an app with supportedLanguages', async () => {
+    authorizeStudio();
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        supportedLanguages: JSON.stringify(['en', 'nl']),
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    expect(response.status).toBe(201);
+    expect(response.data.supportedLanguages).toStrictEqual(['en', 'nl']);
   });
 
   it('should create an app member with role `cron` if the security definition has cron defined', async () => {
@@ -308,6 +337,8 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/1",
@@ -318,7 +349,11 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -513,6 +548,8 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/1",
@@ -524,7 +561,11 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -581,6 +622,8 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/1",
@@ -592,7 +635,11 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -649,6 +696,8 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/3",
@@ -660,7 +709,11 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -717,6 +770,8 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/5",
@@ -728,7 +783,11 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -791,6 +850,8 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/3",
@@ -802,7 +863,11 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -882,6 +947,8 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -890,7 +957,11 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -989,8 +1060,14 @@ describe('createApp', () => {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
                 },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
+                },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
+                },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
                 },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
@@ -1078,8 +1155,14 @@ describe('createApp', () => {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
                 },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
+                },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
+                },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
                 },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
@@ -1202,8 +1285,14 @@ describe('createApp', () => {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
                 },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
+                },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
+                },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
                 },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
@@ -1475,6 +1564,8 @@ describe('createApp', () => {
         "iconUrl": null,
         "id": 2,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app-2",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -1483,7 +1574,11 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
+        "totp": "disabled",
         "version": 2,
         "visibility": "unlisted",
         "yaml": "
@@ -1568,6 +1663,8 @@ describe('createApp', () => {
         "iconUrl": null,
         "id": 12,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": StringMatching /test-app-\\(\\\\w\\)\\{10\\}/,
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -1576,7 +1673,11 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -1655,6 +1756,8 @@ describe('createApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "foobar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -1664,7 +1767,11 @@ describe('createApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": [
+          "en",
+        ],
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "unlisted",
         "yaml": "
@@ -1788,8 +1895,14 @@ describe('createApp', () => {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
                 },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
+                },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
+                },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
                 },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
@@ -1809,6 +1922,37 @@ describe('createApp', () => {
           },
         ],
         "message": "Invalid content types found",
+      }
+    `);
+  });
+
+  it('should not allow malformed sentry DSNs when creating an app', async () => {
+    authorizeStudio();
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        sentryDsn: 'https://0123456789abcdef@sentry.io/%',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Invalid Sentry DSN",
+        "statusCode": 400,
       }
     `);
   });
@@ -1910,8 +2054,14 @@ describe('createApp', () => {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
                 },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
+                },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
+                },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
                 },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
@@ -2201,6 +2351,8 @@ describe('createApp', () => {
           "iconUrl": null,
           "id": 1,
           "locked": "unlocked",
+          "metaPixelID": null,
+          "msClarityID": null,
           "path": "test-app",
           "screenshotUrls": [],
           "sentryDsn": null,
@@ -2209,7 +2361,11 @@ describe('createApp', () => {
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "skipGroupInvites": false,
+          "supportedLanguages": [
+            "en",
+          ],
           "template": false,
+          "totp": "disabled",
           "version": 1,
           "visibility": "unlisted",
           "yaml": "

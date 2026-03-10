@@ -43,6 +43,7 @@ export async function handleAction(
         return null;
       },
       appMemberInfo: undefined,
+      group: null,
       locale,
     } as RemapperContext);
   let data =

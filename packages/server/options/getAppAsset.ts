@@ -16,14 +16,12 @@ export async function getAppAsset({
   const asset =
     (await Asset.findOne({
       where: {
-        AppId: app.id,
         id: assetId,
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
     })) ??
     (await Asset.findOne({
       where: {
-        AppId: app.id,
         name: assetId,
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },

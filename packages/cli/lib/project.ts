@@ -27,6 +27,9 @@ export async function buildProject(config: ProjectBuildConfig): Promise<BuildRes
     loader: {
       '.png': 'dataurl',
       '.svg': 'dataurl',
+      '.ttf': 'file',
+      '.woff': 'file',
+      '.woff2': 'file',
     },
     logLevel: 'info',
     minify: true,

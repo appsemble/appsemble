@@ -23,7 +23,7 @@ describe('identity', () => {
  */
 describe('rethrow', () => {
   it('should throw the input data', () => {
-    expect(() => rethrow('Test')).toThrow('Test');
+    expect(() => rethrow('Test')).toThrowError('Test');
   });
 });
 

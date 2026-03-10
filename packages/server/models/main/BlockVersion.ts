@@ -22,44 +22,44 @@ export class BlockVersion extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
-  id!: string;
+  declare id: string;
 
   @Index({ name: 'blockVersionComposite', unique: true })
   @ForeignKey(() => Organization)
   @AllowNull(false)
   @Column(DataType.STRING)
-  OrganizationId!: string;
+  declare OrganizationId: string;
 
   @AllowNull(false)
   @Index({ name: 'blockVersionComposite', unique: true })
   @Column(DataType.STRING)
-  name!: string;
+  declare name: string;
 
   @AllowNull(false)
   @Index({ name: 'blockVersionComposite', unique: true })
   @Column(DataType.STRING)
-  version!: string;
+  declare version: string;
 
   @Column(DataType.STRING)
-  layout?: 'float' | 'grow' | 'hidden' | 'static' | null;
+  declare layout?: 'float' | 'grow' | 'hidden' | 'static' | null;
 
   @Column(DataType.BLOB)
-  icon?: Buffer;
+  declare icon?: Buffer;
 
   @Column(DataType.TEXT)
-  description?: string;
+  declare description?: string;
 
   @Column(DataType.TEXT)
-  longDescription?: string;
+  declare longDescription?: string;
 
   @Column(DataType.JSON)
-  parameters?: Schema;
+  declare parameters?: Schema;
 
   @Column(DataType.JSON)
-  actions?: Record<string, ActionType>;
+  declare actions?: Record<string, ActionType>;
 
   @Column(DataType.JSON)
-  events?: {
+  declare events?: {
     listen?: Record<string, EventType>;
     emit?: Record<string, EventType>;
   };
@@ -67,27 +67,27 @@ export class BlockVersion extends Model {
   @Default(false)
   @AllowNull(false)
   @Column(DataType.BOOLEAN)
-  wildcardActions!: boolean;
+  declare wildcardActions: boolean;
 
   @Default('public')
   @AllowNull(false)
   @Column(DataType.STRING)
-  visibility!: 'public' | 'unlisted';
+  declare visibility: 'public' | 'unlisted';
 
   @AllowNull(false)
   @Default([])
   @Column(DataType.JSONB)
-  examples!: string[];
+  declare examples: string[];
 
   @BelongsTo(() => Organization)
-  Organization?: Awaited<Organization>;
+  declare Organization?: Awaited<Organization>;
 
   @HasMany(() => BlockAsset)
-  BlockAssets!: BlockAsset[];
+  declare BlockAssets: BlockAsset[];
 
   @HasMany(() => BlockMessages)
-  BlockMessages!: BlockMessages[];
+  declare BlockMessages: BlockMessages[];
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 }

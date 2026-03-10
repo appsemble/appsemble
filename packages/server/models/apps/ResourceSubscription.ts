@@ -13,21 +13,21 @@ import { type AppModels, type AppSubscription, type Resource } from '../index.js
 
 @Table({ tableName: 'ResourceSubscription' })
 export class ResourceSubscriptionGlobal extends Model {
-  action?: 'create' | 'delete' | 'update';
+  declare action?: 'create' | 'delete' | 'update';
 
-  type?: string;
+  declare type?: string;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  AppSubscriptionId!: number;
+  declare AppSubscriptionId: number;
 
-  ResourceId?: number;
+  declare ResourceId?: number;
 
-  AppSubscription?: Awaited<AppSubscription>;
+  declare AppSubscription?: Awaited<AppSubscription>;
 
-  Resource?: Awaited<Resource>;
+  declare Resource?: Awaited<Resource>;
 }
 
 export function createResourceSubscriptionModel(
@@ -36,23 +36,23 @@ export function createResourceSubscriptionModel(
   @Table({ tableName: 'ResourceSubscription' })
   class ResourceSubscription extends ResourceSubscriptionGlobal {
     @Column(DataType.STRING)
-    action?: 'create' | 'delete' | 'update';
+    declare action?: 'create' | 'delete' | 'update';
 
     @Column(DataType.STRING)
-    type?: string;
+    declare type?: string;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     @AllowNull(false)
     @Column(DataType.INTEGER)
-    AppSubscriptionId!: number;
+    declare AppSubscriptionId: number;
 
     @Column(DataType.INTEGER)
-    ResourceId?: number;
+    declare ResourceId?: number;
 
     static associate(models: AppModels): void {
       ResourceSubscription.belongsTo(models.AppSubscription, {

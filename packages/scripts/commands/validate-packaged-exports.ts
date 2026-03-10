@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
-import tar from 'tar';
+import { x as tarExtract } from 'tar';
 import { type Argv } from 'yargs';
 
 export const command = 'validate-packaged-exports <paths...>';
@@ -27,7 +27,7 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
 
     const outDir = file.replace('.tgz', '');
     await mkdir(outDir);
-    await tar.x({
+    await tarExtract({
       file,
       C: outDir,
       strip: 1,

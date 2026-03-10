@@ -28,6 +28,20 @@ Example:
 ${schemaExample('app.url', { result: 'pretty', exclude: ['input'] })}
 `,
   },
+  group: {
+    enum: ['id', 'name', 'role'],
+    description: `Gives information about the currently selected group. Using this remapper you can
+get access to the following information:
+
+- \`id\`: ID of the group.
+- \`name\`: Name of the group.
+- \`role\`: Role of the current app member in the group.
+
+Example:
+
+${schemaExample('group', { result: 'pretty', exclude: ['input'] })}
+`,
+  },
   context: {
     type: 'string',
     description: `Gets a property from custom context passed by blocks. This property is specific to each block. To
@@ -150,12 +164,13 @@ The result of this is a flow page where each page shows the question’s title.
 `,
   },
   page: {
-    enum: ['data', 'url'],
+    enum: ['data', 'name', 'url'],
     description: `Gives actual information about the current page. This remapper gives access to the following
 information:
 
 - \`data\`: Current page data (FlowPage)
 - \`url\`: Full URL of the current page
+- \`name\`: Translated name of the current page.
 
 Example:
 
@@ -327,6 +342,7 @@ parameters:
       'role',
       'properties',
       'phoneNumber',
+      'demo',
     ],
     description: `
 > **Note:** For this remapper to work, the app member that activated the remapper has to be logged in to
@@ -345,6 +361,7 @@ Provides some fields of app member information taken from the OpenID user info. 
 - \`role\`: The role of the app member in the app
 - \`properties\`: Custom properties defined on the app member
 - \`phoneNumber\`: Phone number of the app member if enabled in app definition.
+- \`demo\`: Whether the app member is used for demo purposes.
 
 Example:
 
@@ -395,5 +412,29 @@ ${schemaExample('slice')}`,
       },
       { type: 'number' },
     ],
+  },
+  focus: {
+    type: 'object',
+    description: `
+Executes a remapper chain with a temporary root context.
+
+This is useful for solving nested context problems, like performing a
+filter on one list that depends on a value from an outer loop.
+
+${schemaExample('focus', { input: 'pretty', result: 'pretty', exclude: [] })}
+`,
+    required: ['on', 'do'],
+    properties: {
+      on: {
+        description:
+          'The data to focus on. The input data will be remapped with this remapper, and the result will be passed as root context to `do`.',
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      do: {
+        description:
+          'The remapper to execute with the focused data as root. The original input will be provided as input, and the result of `on` will be the root context.',
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+    },
   },
 };

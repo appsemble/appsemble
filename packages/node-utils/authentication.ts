@@ -1,7 +1,7 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { type TokenResponse } from '@appsemble/types';
+import { select } from '@inquirer/prompts';
 import axios, { type AxiosHeaders } from 'axios';
-import inquirer from 'inquirer';
 
 export const CREDENTIALS_ENV_VAR = 'APPSEMBLE_CLIENT_CREDENTIALS';
 
@@ -44,14 +44,10 @@ async function getClientCredentials(remote: string, inputCredentials?: string): 
   if (choices.length === 1) {
     [choice] = choices;
   } else {
-    ({ choice } = await inquirer.prompt([
-      {
-        name: 'choice',
-        message: 'Select client id to use',
-        choices: choices.map((value) => ({ name: value.account, value })),
-        type: 'list',
-      },
-    ]));
+    choice = await select({
+      message: 'Select client id to use',
+      choices: choices.map((value) => ({ name: value.account, value })),
+    });
   }
   return `${choice.account}:${choice.password}`;
 }

@@ -145,6 +145,8 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -153,7 +155,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": 1,
         "visibility": "private",
         "yaml": "
@@ -167,6 +171,29 @@ describe('patchApp', () => {
               ",
       }
     `);
+  });
+
+  it('should update the supportedLanguages of an app', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+      },
+      path: 'test-app',
+      supportedLanguages: ['en'],
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+    const { data, status } = await request.patch<AppType>(
+      `/api/apps/${app.id}`,
+      createFormData({
+        supportedLanguages: JSON.stringify(['en', 'nl']),
+      }),
+    );
+    expect(status).toBe(200);
+    expect(data.supportedLanguages).toStrictEqual(['en', 'nl']);
   });
 
   it('should assign the positions to resources if enabled in the app definition', async () => {
@@ -448,6 +475,8 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -456,7 +485,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -602,6 +633,8 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "fullLock",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -610,7 +643,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -664,6 +699,8 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "foo",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -672,7 +709,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -726,6 +765,8 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "foo",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -734,7 +775,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -793,6 +836,8 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "foo",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -801,7 +846,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -930,8 +977,14 @@ describe('patchApp', () => {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
                 },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
+                },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
+                },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
                 },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
@@ -1019,8 +1072,14 @@ describe('patchApp', () => {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
                 },
+                "supportedLanguages": {
+                  "$ref": "#/components/schemas/App/properties/supportedLanguages",
+                },
                 "template": {
                   "$ref": "#/components/schemas/App/properties/template",
+                },
+                "totp": {
+                  "$ref": "#/components/schemas/App/properties/totp",
                 },
                 "visibility": {
                   "$ref": "#/components/schemas/App/properties/visibility",
@@ -1456,6 +1515,8 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -1465,7 +1526,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1622,6 +1685,38 @@ describe('patchApp', () => {
     `);
   });
 
+  it('should not allow malformed sentry DSNs when updating an app', async () => {
+    const app = await App.create(
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        sentryDsn: 'https://0123456789abcdef@sentry.io/%',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Invalid Sentry DSN",
+        "statusCode": 400,
+      }
+    `);
+  });
+
   it('should not allow invalid shared stylesheets when updating an app', async () => {
     const app = await App.create({
       path: 'bar',
@@ -1732,6 +1827,8 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -1740,7 +1837,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1783,6 +1882,8 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -1791,7 +1892,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1841,6 +1944,8 @@ describe('patchApp', () => {
         "id": 1,
         "locked": "unlocked",
         "messages": undefined,
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "bar",
         "rating": undefined,
         "readmeUrl": undefined,
@@ -1852,7 +1957,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1894,6 +2001,8 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -1902,7 +2011,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App
@@ -1942,6 +2053,8 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
+        "metaPixelID": null,
+        "msClarityID": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -1950,7 +2063,9 @@ describe('patchApp', () => {
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "skipGroupInvites": false,
+        "supportedLanguages": null,
         "template": false,
+        "totp": "disabled",
         "version": -1,
         "visibility": "unlisted",
         "yaml": "name: Test App

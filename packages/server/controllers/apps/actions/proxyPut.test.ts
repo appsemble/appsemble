@@ -133,7 +133,7 @@ describe('proxyPut', () => {
   it('should proxy simple PUT request actions', async () => {
     const response = await request.put('/api/apps/1/actions/pages.0.blocks.0.actions.put', {});
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
+      HTTP/1.1 418 I'm a Teapot
       Content-Type: application/json; charset=utf-8
 
       {

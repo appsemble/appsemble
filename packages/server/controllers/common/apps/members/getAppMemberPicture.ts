@@ -14,15 +14,8 @@ export async function getAppMemberPicture(ctx: Context): Promise<void> {
   const appMember = await AppMember.findByPk(appMemberId, { attributes: ['picture'] });
   assertKoaCondition(appMember != null, ctx, 404, 'App member not found.');
 
-  assertKoaCondition(
-    appMember.picture != null,
-    ctx,
-    404,
-    'This member has no profile picture set.',
-  );
-
   await serveIcon(ctx, {
-    icon: appMember.picture,
+    icon: appMember.picture || undefined,
     fallback: 'user-solid.png',
     raw: true,
   });

@@ -24,7 +24,7 @@ export interface SharedFormComponentProps {
   /**
    * An additional control node to render right of the form field.
    */
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-restricted-types
   readonly control?: ReactElement;
 
   /**

@@ -16,7 +16,7 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition'],
+    attributes: ['id', 'definition', 'demoMode'],
   });
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');

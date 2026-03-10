@@ -38,20 +38,20 @@ describe('readData', () => {
 
   it('should throw an Appsemble error if file extension is unknown', async () => {
     const path = resolveFixture('hello.txt');
-    await expect(readData(path)).rejects.toThrow(
+    await expect(readData(path)).rejects.toThrowError(
       new AppsembleError(`Unknown file extension: ${path}`),
     );
   });
 
   it('should throw an Appsemble error if the file can’t be read', async () => {
-    await expect(readData('non-existent.yaml')).rejects.toThrow(
+    await expect(readData('non-existent.yaml')).rejects.toThrowError(
       new AppsembleError('Error reading file non-existent.yaml'),
     );
   });
 
   it('should throw an Appsemble error if the file can’t be parsed', async () => {
     const path = resolveFixture('invalid-json.json');
-    await expect(readData(path)).rejects.toThrow(AppsembleError);
+    await expect(readData(path)).rejects.toThrowError(AppsembleError);
   });
 });
 
@@ -102,14 +102,14 @@ describe('opendirSafe', () => {
 
   it('should throw if the path is not a directory', async () => {
     const path = resolveFixture('hello.txt');
-    await expect(opendirSafe(path, vi.fn())).rejects.toThrow(
+    await expect(opendirSafe(path, vi.fn())).rejects.toThrowError(
       new AppsembleError(`Expected ${path} to be a directory`),
     );
   });
 
   it('should throw if the path doesn’t exist', async () => {
     const path = resolveFixture('non-existent');
-    await expect(opendirSafe(path, vi.fn())).rejects.toThrow(
+    await expect(opendirSafe(path, vi.fn())).rejects.toThrowError(
       new AppsembleError(`Expected ${path} to be a directory`),
     );
   });

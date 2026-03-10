@@ -8,6 +8,10 @@ import {
 } from './apps/AppBlockStyle.js';
 import { type AppInviteGlobal as AppInvite, createAppInviteModel } from './apps/AppInvite.js';
 import { type AppMemberGlobal as AppMember, createAppMemberModel } from './apps/AppMember.js';
+import {
+  type AppMemberEmailAuthorizationGlobal as AppMemberEmailAuthorization,
+  createAppMemberEmailAuthorizationModel,
+} from './apps/AppMemberEmailAuthorization.js';
 import { type AppMetaGlobal as AppMeta, createAppMetaModel } from './apps/AppMeta.js';
 import {
   type AppOAuth2AuthorizationGlobal as AppOAuth2Authorization,
@@ -127,6 +131,7 @@ export {
   type AppInvite,
   type AppOAuth2Authorization,
   type AppOAuth2Secret,
+  type AppMemberEmailAuthorization,
   AppRating,
   AppReadme,
   type AppSamlAuthorization,
@@ -187,6 +192,7 @@ export function initDB({
 
   const options = {
     logging: logSQL,
+    benchmark: argv.databaseBenchmark,
     retry: { max: 3 },
     models: [
       App,
@@ -275,6 +281,7 @@ export interface AppModels {
   AppBlockStyle: Repository<AppBlockStyle>;
   AppInvite: Repository<AppInvite>;
   AppMember: Repository<AppMember>;
+  AppMemberEmailAuthorization: Repository<AppMemberEmailAuthorization>;
   AppOAuth2Authorization: Repository<AppOAuth2Authorization>;
   AppOAuth2Secret: Repository<AppOAuth2Secret>;
   AppSamlAuthorization: Repository<AppSamlAuthorization>;
@@ -306,6 +313,7 @@ export async function initAppDB(
   rootDB?: RootSequelize,
   transaction?: Transaction,
   replace?: boolean,
+  aesSecret?: string,
 ): Promise<void> {
   const mainDB = rootDB ?? getDB();
 
@@ -326,12 +334,20 @@ export async function initAppDB(
   const appDBName = app.dbName || `app-${app.id}`;
 
   if (app.dbHost === (argv.databaseHost || process.env.DATABASE_HOST || 'localhost')) {
+    // The database should be dynamically created and managed by appsemble
     try {
       const [[{ exists }]] = (await mainDB.query(
         `SELECT EXISTS (SELECT FROM pg_database WHERE datname = '${appDBName}');`,
       )) as { exists: boolean }[][];
+
       if (!exists) {
-        await mainDB.query(`CREATE DATABASE "${appDBName}"`);
+        const [[{ exists: templateExists }]] = (await mainDB.query(
+          "SELECT EXISTS (SELECT FROM pg_database WHERE datname = 'app_template');",
+        )) as { exists: boolean }[][];
+
+        await mainDB.query(
+          `CREATE DATABASE "${appDBName}" ${templateExists ? 'WITH TEMPLATE app_template' : ''}`,
+        );
       }
     } catch (err) {
       logger.error(err);
@@ -344,17 +360,24 @@ export async function initAppDB(
       database: appDBName,
       host: app.dbHost,
       port: app.dbPort,
-      password: decrypt(app.dbPassword, argv.aesSecret || 'Local Appsemble development AES secret'),
+      password: decrypt(
+        app.dbPassword,
+        aesSecret || argv.aesSecret || 'Local Appsemble development AES secret',
+      ),
       username: app.dbUser,
-      ssl: false,
       logging: logSQL,
+      benchmark: argv.databaseBenchmark,
       dialect: 'postgres',
+      dialectOptions: {
+        ssl: argv.databaseSsl && { rejectUnauthorized: false },
+      },
     });
 
     const models: AppModels = {
       AppBlockStyle: createAppBlockStyleModel(appDB),
       AppInvite: createAppInviteModel(appDB),
       AppMember: createAppMemberModel(appDB),
+      AppMemberEmailAuthorization: createAppMemberEmailAuthorizationModel(appDB),
       Meta: createAppMetaModel(appDB),
       AppOAuth2Authorization: createAppOAuth2AuthorizationModel(appDB),
       AppOAuth2Secret: createAppOAuth2SecretModel(appDB),
@@ -400,9 +423,10 @@ export async function getAppDB(
   rootDB?: RootSequelize,
   transaction?: Transaction,
   replace?: boolean,
+  aesSecret?: string,
 ): Promise<AppDB> {
   if (appDBs[appId] == null || replace === true) {
-    await initAppDB(appId, rootDB, transaction, replace);
+    await initAppDB(appId, rootDB, transaction, replace, aesSecret);
   }
 
   return appDBs[appId]!;

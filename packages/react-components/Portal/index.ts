@@ -1,16 +1,16 @@
-import { Children, type ReactChild, type ReactNode, useEffect } from 'react';
+import { Children, type ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 interface PortalProps {
   /**
    * The child node to mount. This may only result in a single top level HTML node.
    */
-  children: ReactChild;
+  readonly children: ReactNode;
 
   /**
    * The HTML element to render the children into.
    */
-  element: Element;
+  readonly element: Element;
 }
 
 /**
@@ -22,7 +22,7 @@ interface PortalProps {
  */
 export function Portal({ children, element }: PortalProps): ReactNode {
   useEffect(() => {
-    const copy = [...element.children].slice(0, element.children.length - 1);
+    const copy = element ? [...element.children].slice(0, element.children.length - 1) : [];
     for (const child of copy) {
       child.classList.add('is-hidden');
     }
@@ -34,5 +34,5 @@ export function Portal({ children, element }: PortalProps): ReactNode {
     };
   }, [element]);
 
-  return createPortal(Children.only(children), element);
+  return element ? createPortal(Children.only(children), element) : null;
 }

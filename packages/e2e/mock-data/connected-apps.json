@@ -1,0 +1,32 @@
+[
+  {
+    "app": {
+      "id": 0,
+      "path": "test-app",
+      "iconBackground": "#ffffff",
+      "iconUrl": null,
+      "definition": {
+        "name": "Test app",
+        "description": "Test app description"
+      },
+      "showAppDefinition": false,
+      "OrganizationId": "test-org",
+      "OrganizationName": "Test org",
+      "screenshotUrls": [
+        null
+      ]
+    },
+    "appMemberInfo": {
+      "sub": "0",
+      "name": "Test account",
+      "email": "test@test.com",
+      "email_verified": true,
+      "picture": "https://www.gravatar.com/avatar/f46b82357ce29bcd1099915946cda468?s=128&d=mp",
+      "locale": null,
+      "zoneinfo": "Europe/Amsterdam",
+      "subscribed": true,
+      "hasPassword": true
+    },
+    "sso": []
+  }
+]

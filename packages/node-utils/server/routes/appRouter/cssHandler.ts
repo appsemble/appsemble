@@ -10,7 +10,7 @@ export function createCssHandler(
 
     assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-    ctx.body = app[type];
+    ctx.body = app[type] ?? '';
     ctx.type = 'css';
   };
 }

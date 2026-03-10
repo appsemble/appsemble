@@ -1,6 +1,8 @@
 import {
   domainPattern,
   googleAnalyticsIDPattern,
+  metaPixelIDPattern,
+  msClarityIDPattern,
   normalize,
   toUpperCase,
 } from '@appsemble/lang-sdk';
@@ -16,10 +18,12 @@ import {
   SimpleFormField,
   SimpleSubmit,
   useConfirmation,
+  useData,
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
 import { type App, type SSLStatus } from '@appsemble/types';
+import { getLanguageDisplayName } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
@@ -75,6 +79,7 @@ export function SettingsPage(): ReactNode {
   }
 
   const sslStatus = useSSLStatus(...domains);
+  const languageIds = useData<string[]>(`/api/apps/${app.id}/messages`);
 
   // This is needed, because the app domain may be null.
   const defaultValues = useMemo<FormValues>(
@@ -83,6 +88,8 @@ export function SettingsPage(): ReactNode {
       maskableIcon: null,
       domain: app.domain || '',
       googleAnalyticsID: app.googleAnalyticsID || '',
+      metaPixelID: app.metaPixelID || '',
+      msClarityID: app.msClarityID || '',
       sentryDsn: app.sentryDsn || '',
       sentryEnvironment: app.sentryEnvironment || '',
       icon: null,
@@ -90,10 +97,12 @@ export function SettingsPage(): ReactNode {
       path: app.path,
       visibility: app.visibility,
       locked: app.locked,
+      totp: app.totp || 'disabled',
       showAppDefinition: app.showAppDefinition,
       displayAppMemberName: app.displayAppMemberName || false,
       displayInstallationPrompt: app.displayInstallationPrompt || false,
       skipGroupInvites: app.skipGroupInvites || false,
+      supportedLanguages: app.supportedLanguages,
     }),
     [app],
   );
@@ -103,6 +112,8 @@ export function SettingsPage(): ReactNode {
     form.set('emailName', values.emailName);
     form.set('domain', values.domain);
     form.set('googleAnalyticsID', values.googleAnalyticsID);
+    form.set('metaPixelID', values.metaPixelID);
+    form.set('msClarityID', values.msClarityID);
     form.set('sentryDsn', values.sentryDsn);
     form.set('sentryEnvironment', values.sentryEnvironment);
     form.set('path', values.path);
@@ -112,6 +123,8 @@ export function SettingsPage(): ReactNode {
     form.set('displayAppMemberName', String(values.displayAppMemberName));
     form.set('displayInstallationPrompt', String(values.displayInstallationPrompt));
     form.set('skipGroupInvites', String(values.skipGroupInvites));
+    form.set('totp', values.totp);
+    form.set('supportedLanguages', JSON.stringify(values.supportedLanguages));
     if (values.icon !== app.iconUrl) {
       form.set('icon', values.icon);
     }
@@ -236,6 +249,21 @@ export function SettingsPage(): ReactNode {
             name="skipGroupInvites"
           />
           <SimpleFormField
+            component={SelectField}
+            disabled={app.locked !== 'unlocked' || app.demoMode}
+            help={
+              <FormattedMessage
+                {...(app.demoMode ? messages.totpDisabledDemoMode : messages.totpDescription)}
+              />
+            }
+            label={<FormattedMessage {...messages.totpLabel} />}
+            name="totp"
+          >
+            <option value="disabled">{formatMessage(messages.totpDisabled)}</option>
+            <option value="enabled">{formatMessage(messages.totpEnabled)}</option>
+            <option value="required">{formatMessage(messages.totpRequired)}</option>
+          </SimpleFormField>
+          <SimpleFormField
             addonLeft={
               <Button
                 className={`is-light ${
@@ -342,6 +370,59 @@ export function SettingsPage(): ReactNode {
           />
           <SimpleFormField
             disabled={app.locked !== 'unlocked'}
+            help={
+              <FormattedMessage
+                {...messages.metaPixelIDDescription}
+                values={{
+                  link: (link) => (
+                    <Link
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      to="../../../docs/guides/analytics"
+                    >
+                      {link}
+                    </Link>
+                  ),
+                }}
+              />
+            }
+            label={<FormattedMessage {...messages.metaPixelIDLabel} />}
+            maxLength={15}
+            name="metaPixelID"
+            pattern={metaPixelIDPattern}
+            preprocess={toUpperCase}
+            validityMessages={{
+              patternMismatch: <FormattedMessage {...messages.metaPixelError} />,
+            }}
+          />
+          <SimpleFormField
+            disabled={app.locked !== 'unlocked'}
+            help={
+              <FormattedMessage
+                {...messages.msClarityIDDescription}
+                values={{
+                  link: (link) => (
+                    <Link
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      to="../../../docs/guides/analytics"
+                    >
+                      {link}
+                    </Link>
+                  ),
+                }}
+              />
+            }
+            label={<FormattedMessage {...messages.msClarityIDLabel} />}
+            maxLength={15}
+            name="msClarityID"
+            pattern={msClarityIDPattern}
+            validityMessages={{
+              patternMismatch: <FormattedMessage {...messages.msClarityError} />,
+            }}
+          />
+          <SimpleFormField
+            disabled={app.locked !== 'unlocked'}
             help={<FormattedMessage {...messages.sentryDsnDescription} />}
             label={<FormattedMessage {...messages.sentryDsnLabel} />}
             name="sentryDsn"
@@ -353,6 +434,27 @@ export function SettingsPage(): ReactNode {
             label={<FormattedMessage {...messages.sentryEnvironmentLabel} />}
             name="sentryEnvironment"
           />
+          <SimpleFormField
+            component={SelectField}
+            disabled={app.locked !== 'unlocked'}
+            help={<FormattedMessage {...messages.supportedLanguagesHelp} />}
+            label={<FormattedMessage {...messages.supportedLanguages} />}
+            multiple
+            name="supportedLanguages"
+            preprocess={(selectedValue, oldValues) => {
+              const { supportedLanguages } = oldValues;
+              if (supportedLanguages.includes(selectedValue)) {
+                return (supportedLanguages as string[]).filter((lang) => lang !== selectedValue);
+              }
+              return [selectedValue, ...supportedLanguages];
+            }}
+          >
+            {languageIds.data?.map((lang) => (
+              <option key={lang} value={lang}>
+                {getLanguageDisplayName(lang)}
+              </option>
+            ))}
+          </SimpleFormField>
           <FormButtons>
             <SimpleSubmit color="primary" disabled={app.locked !== 'unlocked'} type="submit">
               <FormattedMessage {...messages.saveChanges} />

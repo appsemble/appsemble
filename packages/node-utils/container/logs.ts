@@ -73,9 +73,9 @@ export async function getLogs(
   logger.silly(`Using namespace ${appsembleNamespace}`);
 
   try {
-    pods = (
-      await coreApi.listNamespacedPod(fromAppsemble ? appsembleNamespace : containerNamespace)
-    ).body;
+    pods = await coreApi.listNamespacedPod({
+      namespace: fromAppsemble ? appsembleNamespace : containerNamespace,
+    });
   } catch (error: unknown) {
     handleKubernetesError(error);
     return [];

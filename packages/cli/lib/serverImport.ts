@@ -1,6 +1,8 @@
 import { AppsembleError } from '@appsemble/node-utils';
 import { has } from '@appsemble/utils';
 
+import { fileURLToPath } from 'url';
+
 const PROMPT = process.platform === 'win32' ? '>' : '$';
 const COMMAND = /yarn/.test(process.env.npm_execpath ?? '')
   ? 'yarn add --dev --ignore-workspace-root-check'
@@ -18,15 +20,19 @@ ${PROMPT} ${COMMAND} @appsemble/server
  */
 export async function serverImport<
   T extends
+    | 'backupProductionData'
     | 'chargeOrganizationSubscriptions'
     | 'checkDownMigrations'
     | 'checkMigrations'
     | 'cleanupDemoAppMembers'
+    | 'cleanupExpiredDomains'
     | 'cleanupResourcesAndAssets'
     | 'cleanupSoftDeletedRecords'
     | 'fuzzMigrations'
     | 'migrate'
     | 'migrateAppDefinitions'
+    | 'reencryptSecrets'
+    | 'restoreDataFromBackup'
     | 'runCronJobs'
     | 'scaleContainers'
     | 'setArgv'
@@ -34,7 +40,7 @@ export async function serverImport<
     | 'synchronizeTrainings',
 >(...members: T[]): Promise<Record<T, any>> {
   try {
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore Because the the server isn’t built and published, an error is expected here at
     // build time, but while type checking.
     const mod = await import('@appsemble/server');
@@ -47,7 +53,7 @@ export async function serverImport<
   } catch (error: unknown) {
     if (
       (error as any).code !== 'MODULE_NOT_FOUND' ||
-      (error as any).requireStack?.[0] !== __filename
+      (error as any).requireStack?.[0] !== fileURLToPath(import.meta.url)
     ) {
       throw error;
     }

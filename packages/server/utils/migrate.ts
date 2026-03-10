@@ -23,7 +23,13 @@ async function handleMigration(
 ): Promise<void> {
   try {
     await db.transaction(async (t: Transaction) => {
-      await migration[type](t, db);
+      try {
+        await migration[type](t, db);
+      } catch (migrationError) {
+        logger.error(`Error during migration "${migration.key}" (${type})`);
+        logger.error(migrationError);
+        throw migrationError;
+      }
     });
   } catch (error) {
     const Meta = (db.models.Meta ?? db.models.AppMeta) as ModelStatic<MetaType>;
@@ -79,7 +85,7 @@ export async function migrate(
     return;
   }
   [meta] = metas;
-  if (semver.eq(to, meta.version)) {
+  if (semver.eq(to, meta.dataValues.version)) {
     logger.info(`Database ${dbName} is already on version ${to}. Nothing to migrate.`);
     return;
   }

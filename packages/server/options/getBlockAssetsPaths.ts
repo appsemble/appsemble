@@ -20,7 +20,7 @@ export async function getBlocksAssetsPaths({
     ],
     where: {
       [Op.or]: identifiableBlocks.map(({ type, version }) => {
-        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore-error 2488
         const [OrganizationId, name] = parseBlockName(type);
         return { name, OrganizationId, version };

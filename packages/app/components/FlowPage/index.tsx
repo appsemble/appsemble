@@ -89,6 +89,7 @@ export function FlowPage({
     appId,
     appUrl: window.location.origin,
     url: window.location.href,
+    group: appMemberSelectedGroup,
     getMessage,
     getVariable,
     appMemberInfo,
@@ -365,6 +366,7 @@ export function FlowPage({
         flowActions={flowActions}
         key={currentStep}
         pageDefinition={pageDefinition}
+        pageLayout={steps[currentStep].layout}
         prefix={
           pageDefinition.type === 'loop'
             ? `${generateLoopPrefix(prefix)}.blocks`

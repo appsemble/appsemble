@@ -137,6 +137,10 @@ export function builder(yargs: Argv): Argv {
     .option('proxy', {
       desc: 'Trust proxy headers. This is used to detect the source IP for logging.',
       default: false,
+    })
+    .option('security-email', {
+      desc: 'The default security contact email for reporting security vulnerabilities.',
+      default: 'security@appsemble.com',
     });
 }
 

@@ -277,7 +277,9 @@ it('should convert undefined attributes to null', () => {
 
 it('should throw if a parser error is found', () => {
   const xml = 'invalid';
-  expect(() => xmlToJson(xml, { type: 'string' })).toThrow('1:7: text data outside of root node.');
+  expect(() => xmlToJson(xml, { type: 'string' })).toThrowError(
+    '1:7: text data outside of root node.',
+  );
 });
 
 it('should be able to parse an RSS feed', () => {

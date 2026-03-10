@@ -27,7 +27,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       body: { locale, name, password, phoneNumber, picture, properties = {}, timezone = '' },
     },
   } = ctx;
-  const { AppMember } = await getAppDB(appId);
+  const { AppMember, AppMemberEmailAuthorization } = await getAppDB(appId);
   const email = ctx.request.body.email.toLowerCase();
   const hashedPassword = await hash(password, 10);
   const key = randomBytes(40).toString('hex');
@@ -126,13 +126,17 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       password: hashedPassword,
       email,
       role: app.definition.security.default.role,
-      emailKey: key,
       picture: picture ? await uploadToBuffer(picture.path) : null,
       properties: parseAppMemberProperties(properties),
       timezone,
       locale,
       demo: app.demoMode,
       phoneNumber,
+    });
+    await AppMemberEmailAuthorization.create({
+      email,
+      key,
+      AppMemberId: appMember.id,
     });
   } catch (error: unknown) {
     if (error instanceof AppMemberPropertiesError) {

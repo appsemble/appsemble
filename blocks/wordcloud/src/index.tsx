@@ -50,7 +50,7 @@ bootstrap(({ events, parameters: { fields, options, shape = 'circle' }, ready, u
     });
     setError(hasListener);
     ready();
-  }, [events, ready]);
+  }, [events, ready, fields, utils]);
 
   if (error) {
     return <FormattedMessage id="error" />;

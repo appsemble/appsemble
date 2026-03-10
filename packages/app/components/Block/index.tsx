@@ -345,6 +345,8 @@ export function Block({
         data-block={blockName}
         data-path={prefix}
         data-path-index={prefixIndex}
+        // eslint-disable-next-line react/forbid-dom-props
+        style={{ gridArea: block.gridArea }}
       >
         {header}
         {/* @ts-expect-error 2322 null is not assignable to type (strictNullChecks) */}

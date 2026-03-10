@@ -1,11 +1,10 @@
-import { Icon } from '@appsemble/preact-components';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type ComponentChild, type ComponentChildren, type VNode } from 'preact';
 import { type MutableRef, useCallback, useRef } from 'preact/hooks';
 
 import styles from './index.module.css';
-import { Button, useClickOutside, useToggle } from '../index.js';
+import { Button, Icon, useClickOutside, useToggle } from '../index.js';
 
 interface DropdownProps {
   /**

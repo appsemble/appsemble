@@ -1,5 +1,20 @@
 import { filter, literalValues, param } from '@odata/parser';
-import { addMilliseconds, format, parse, parseISO } from 'date-fns';
+import {
+  addMilliseconds,
+  endOfMonth,
+  endOfQuarter,
+  endOfWeek,
+  endOfYear,
+  format,
+  parse,
+  parseISO,
+  set as setDate,
+  startOfMonth,
+  startOfQuarter,
+  startOfWeek,
+  startOfYear,
+} from 'date-fns';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import equal from 'fast-deep-equal';
 import { XMLParser } from 'fast-xml-parser';
 import { createEvent, type EventAttributes } from 'ics';
@@ -10,6 +25,7 @@ import { getDuration, processLocation } from './ics.js';
 import { mapValues } from './mapValues.js';
 import { has, stripNullValues } from './miscellaneous.js';
 import {
+  type AppMemberGroup,
   type AppMemberInfo,
   type ArrayRemapper,
   type Remapper,
@@ -65,6 +81,11 @@ export interface RemapperContext {
   appId: number;
 
   /**
+   * The metadata of the group selected by the app member.
+   */
+  group: AppMemberGroup | undefined;
+
+  /**
    * The current URL.
    */
   url: string;
@@ -98,6 +119,11 @@ export interface RemapperContext {
    * Custom data that is available in the page.
    */
   pageData?: unknown;
+
+  /**
+   * Translated name of the current page.
+   */
+  pageName?: string;
 
   /**
    * The OpenID compatible userinfo object for the current app member.
@@ -217,6 +243,44 @@ export function remap(
   return result;
 }
 
+// Comparison functions for array.sort
+const compareNumeric = (aVal: unknown, bVal: unknown): number => {
+  const aNum = Number(aVal);
+  const bNum = Number(bVal);
+  const aIsNaN = Number.isNaN(aNum);
+  const bIsNaN = Number.isNaN(bNum);
+  if (aIsNaN && bIsNaN) {
+    return 0;
+  }
+  if (aIsNaN) {
+    return 1;
+  }
+  if (bIsNaN) {
+    return -1;
+  }
+  return aNum - bNum;
+};
+
+const compareLexicographic = (aVal: unknown, bVal: unknown): number =>
+  String(aVal).localeCompare(String(bVal));
+
+const compareDate = (aVal: unknown, bVal: unknown): number => {
+  const aDate = aVal instanceof Date ? aVal : parseISO(String(aVal));
+  const bDate = bVal instanceof Date ? bVal : parseISO(String(bVal));
+  const aInvalid = Number.isNaN(aDate.getTime());
+  const bInvalid = Number.isNaN(bDate.getTime());
+  if (aInvalid && bInvalid) {
+    return 0;
+  }
+  if (aInvalid) {
+    return 1;
+  }
+  if (bInvalid) {
+    return -1;
+  }
+  return aDate.getTime() - bDate.getTime();
+};
+
 /**
  * Implementations of all remappers.
  *
@@ -244,6 +308,9 @@ const mapperImplementations: MapperImplementations = {
     }
     if (prop === 'url') {
       return context.url;
+    }
+    if (prop === 'name') {
+      return context.pageName;
     }
     throw new Error(`Unknown page property: ${prop}`);
   },
@@ -293,26 +360,36 @@ const mapperImplementations: MapperImplementations = {
   },
 
   step(mapper, input, context) {
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 18048 variable is possibly undefined (strictNullChecks)
     return context.stepRef.current[mapper];
   },
 
   'tab.name'(mapper, input, context) {
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 18048 variable is possibly undefined (strictNullChecks)
     return context.tabRef.current.name;
   },
 
   gt: ([left, right], input: any, context) =>
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
     remap(left, input, context) > remap(right, input, context),
 
+  gte: ([left, right], input: any, context) =>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
+    remap(left, input, context) >= remap(right, input, context),
+
   lt: ([left, right], input: any, context) =>
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
     remap(left, input, context) < remap(right, input, context),
+
+  lte: ([left, right], input: any, context) =>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
+    remap(left, input, context) <= remap(right, input, context),
 
   ics(mappers, input, context) {
     let event;
@@ -370,6 +447,11 @@ const mapperImplementations: MapperImplementations = {
     return remap(condition ? mappers.then : mappers.else, input, context);
   },
 
+  focus({ do: doRemapper, on }, input, context) {
+    const newRoot = remap(on, input, context);
+    return remap(doRemapper, input, { ...context, root: newRoot });
+  },
+
   match(mappers, input, context) {
     return (
       remap(
@@ -388,7 +470,7 @@ const mapperImplementations: MapperImplementations = {
     ...mapValues(mappers, (mapper) => remap(mapper, input, context)),
   }),
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'object.omit'(keys, input: Record<string, any>) {
     const result = { ...input };
@@ -485,7 +567,7 @@ const mapperImplementations: MapperImplementations = {
     return typeof input;
   },
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'array.map': (mapper, input: any[], context) =>
     input?.map((item, index) =>
@@ -500,6 +582,14 @@ const mapperImplementations: MapperImplementations = {
         },
       }),
     ) ?? [],
+
+  'array.range'(countRemapper, input, context) {
+    const count = remap(countRemapper, input, context);
+    if (typeof count !== 'number' || !Number.isInteger(count) || count < 0) {
+      return [];
+    }
+    return Array.from({ length: count }, (item, idx) => idx);
+  },
 
   'array.contains'(mapper, input, context) {
     if (!Array.isArray(input)) {
@@ -520,6 +610,111 @@ const mapperImplementations: MapperImplementations = {
       return input;
     }
     return input.join(separator ?? undefined);
+  },
+
+  'array.groupBy'(propertyName, input) {
+    if (!Array.isArray(input)) {
+      return [];
+    }
+
+    const groups = new Map<unknown, unknown[]>();
+    for (const item of input) {
+      const key = item?.[propertyName];
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)!.push(item);
+    }
+
+    return [...groups.entries()].map(([key, items]) => ({ key, items }));
+  },
+
+  'array.toObject'({ key: keyMapper, value: valueMapper }, input, context) {
+    if (!Array.isArray(input)) {
+      return {};
+    }
+
+    const result: Record<string, unknown> = {};
+    for (const [index, item] of input.entries()) {
+      const itemContext = {
+        ...context,
+        array: {
+          index,
+          length: input.length,
+          item,
+          prevItem: input[index - 1],
+          nextItem: input[index + 1],
+        },
+      };
+      const key = remap(keyMapper, item, itemContext);
+      const value = remap(valueMapper, item, itemContext);
+      if (key != null) {
+        result[String(key)] = value;
+      }
+    }
+
+    return result;
+  },
+
+  'array.sort'(mapper, input) {
+    if (!Array.isArray(input)) {
+      return input;
+    }
+
+    // Normalize mapper: string becomes { by: string }, null/undefined becomes {}
+    const {
+      by,
+      descending = false,
+      strategy = 'infer',
+    } = typeof mapper === 'string'
+      ? { by: mapper, descending: false, strategy: 'infer' as const }
+      : (mapper ?? {});
+
+    // Extract values for sorting
+    const getValue = (item: unknown): unknown =>
+      by ? (item as Record<string, unknown>)?.[by] : item;
+
+    // Determine effective strategy for 'infer' mode
+    let effectiveStrategy = strategy;
+    if (strategy === 'infer') {
+      // Find first non-null value to determine type
+      const firstValue = input.map(getValue).find((v) => v != null);
+      if (typeof firstValue === 'number') {
+        effectiveStrategy = 'numeric';
+      } else if (firstValue instanceof Date) {
+        effectiveStrategy = 'date';
+      } else {
+        effectiveStrategy = 'lexicographic';
+      }
+    }
+
+    const compare =
+      effectiveStrategy === 'numeric'
+        ? compareNumeric
+        : effectiveStrategy === 'date'
+          ? compareDate
+          : compareLexicographic;
+
+    const sorted = [...input].sort((a, b) => {
+      const aValue = getValue(a);
+      const bValue = getValue(b);
+
+      // Handle nullish values - push them to the end
+      if (aValue == null && bValue == null) {
+        return 0;
+      }
+      if (aValue == null) {
+        return 1;
+      }
+      if (bValue == null) {
+        return -1;
+      }
+
+      const comparison = compare(aValue, bValue);
+      return descending ? -comparison : comparison;
+    });
+
+    return sorted;
   },
 
   'array.unique'(mapper, input, context) {
@@ -552,11 +747,11 @@ const mapperImplementations: MapperImplementations = {
     });
   },
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   array: (prop, input: any[], context) => context.array?.[prop],
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'array.filter'(mapper, input: any[], context) {
     if (!Array.isArray(input)) {
@@ -580,7 +775,7 @@ const mapperImplementations: MapperImplementations = {
     });
   },
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'array.find'(mapper, input: any[], context) {
     if (!Array.isArray(input)) {
@@ -694,7 +889,7 @@ const mapperImplementations: MapperImplementations = {
     return remapped;
   },
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'date.parse': (fmt, input: string) => (fmt ? parse(input, fmt, new Date()) : parseISO(input)),
 
@@ -721,9 +916,97 @@ const mapperImplementations: MapperImplementations = {
     return args ? format(date, args) : date.toJSON();
   },
 
+  'date.startOf'(unit, input) {
+    const date =
+      input instanceof Date
+        ? input
+        : typeof input === 'number'
+          ? new Date(input)
+          : parseISO(String(input));
+    let result: Date;
+    switch (unit) {
+      case 'year':
+        result = startOfYear(date);
+        break;
+      case 'quarter':
+        result = startOfQuarter(date);
+        break;
+      case 'month':
+        result = startOfMonth(date);
+        break;
+      case 'week':
+        result = startOfWeek(date, { weekStartsOn: 1 });
+        break;
+      case 'weekSun':
+        result = startOfWeek(date, { weekStartsOn: 0 });
+        break;
+      default:
+        return input;
+    }
+    return result.toJSON();
+  },
+
+  'date.endOf'(unit, input) {
+    const date =
+      input instanceof Date
+        ? input
+        : typeof input === 'number'
+          ? new Date(input)
+          : parseISO(String(input));
+    let result: Date;
+    switch (unit) {
+      case 'year':
+        result = endOfYear(date);
+        break;
+      case 'quarter':
+        result = endOfQuarter(date);
+        break;
+      case 'month':
+        result = endOfMonth(date);
+        break;
+      case 'week':
+        result = endOfWeek(date, { weekStartsOn: 1 });
+        break;
+      case 'weekSun':
+        result = endOfWeek(date, { weekStartsOn: 0 });
+        break;
+      default:
+        return input;
+    }
+    return result.toJSON();
+  },
+
+  'date.set'(args, input, context) {
+    const date =
+      input instanceof Date
+        ? input
+        : typeof input === 'number'
+          ? new Date(input)
+          : parseISO(String(input));
+
+    const remapped = mapValues(args, (mapper) => remap(mapper, input, context));
+
+    const setValues: { year?: number; month?: number; date?: number } = {};
+    if (typeof remapped.year === 'number') {
+      setValues.year = remapped.year;
+    }
+    if (typeof remapped.month === 'number') {
+      // Convert from 1-indexed (user-facing) to 0-indexed (date-fns)
+      setValues.month = remapped.month - 1;
+    }
+    if (typeof remapped.day === 'number') {
+      setValues.date = remapped.day;
+    }
+
+    // Convert to UTC-zoned date so set operates in UTC
+    const zonedDate = utcToZonedTime(date, 'UTC');
+    const result = setDate(zonedDate, setValues);
+    return zonedTimeToUtc(result, 'UTC').toJSON();
+  },
+
   'null.strip': (args, input) => stripNullValues(input, args || {}),
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'random.choice': (args, input: any[]) =>
     Array.isArray(input) ? input[Math.floor(Math.random() * input.length)] : input,
@@ -751,7 +1034,7 @@ const mapperImplementations: MapperImplementations = {
 
   root: (args, input, context) => context.root,
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   len: (args, input: any[] | string) => input?.length,
 
@@ -765,7 +1048,7 @@ const mapperImplementations: MapperImplementations = {
     ...mapValues(props, (mapper) => remap(mapper, context.history?.[index], context)),
   }),
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'omit.history'({ index, keys }, input: Record<string, any>, context) {
     const result = { ...(context.history?.[index] as Record<string, any>) };
@@ -803,7 +1086,7 @@ const mapperImplementations: MapperImplementations = {
     return input.includes(stringToCheck);
   },
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'string.startsWith'(substring: SubstringCaseType | string, input: string) {
     if (typeof substring === 'string') {
@@ -815,7 +1098,7 @@ const mapperImplementations: MapperImplementations = {
     return input.toLowerCase().startsWith(substring.substring.toLowerCase());
   },
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'string.endsWith'(substring: SubstringCaseType | string, input: string) {
     if (typeof substring === 'string') {
@@ -827,7 +1110,7 @@ const mapperImplementations: MapperImplementations = {
     return input.toLowerCase().endsWith(substring.substring.toLowerCase());
   },
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
   slice(sliceIndex: number | [number, number], input: string | []) {
     try {
@@ -871,6 +1154,8 @@ const mapperImplementations: MapperImplementations = {
     const message = context.getMessage({ id: remappedId });
     return message.format() || `{${remappedId}}`;
   },
+
+  group: (property, input, context) => context.group?.[property],
 
   'app.member': (property, input, context) => context.appMemberInfo?.[property],
 

@@ -4,9 +4,9 @@ import { AllowNull, Column, DataType, Model, PrimaryKey, Table } from 'sequelize
 export class Coupon extends Model {
   @PrimaryKey
   @Column(DataType.STRING)
-  code!: string;
+  declare code: string;
 
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  discount!: number;
+  declare discount: number;
 }

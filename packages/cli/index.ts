@@ -7,11 +7,13 @@ import yargs, { type CommandModule } from 'yargs';
 
 import * as app from './commands/app/index.js';
 import * as asset from './commands/asset/index.js';
+import * as backupProductionData from './commands/backupProductionData.js';
 import * as block from './commands/block/index.js';
 import * as chargeOrganizationSubscriptions from './commands/chargeOrganizationSubscriptions.js';
 import * as checkDownMigrations from './commands/checkDownMigrations.js';
 import * as checkAppMigrations from './commands/checkMigrations.js';
 import * as cleanupDemoAppMembers from './commands/cleanupDemoAppMembers.js';
+import * as cleanupExpiredDomains from './commands/cleanupExpiredDomains.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
 import * as cleanupSoftDeletedRecords from './commands/cleanupSoftDeletedRecords.js';
 import * as config from './commands/config/index.js';
@@ -21,8 +23,10 @@ import * as login from './commands/login.js';
 import * as logout from './commands/logout.js';
 import * as migrate from './commands/migrate.js';
 import * as migrateAppDefinitions from './commands/migrateAppDefinitions.js';
+import * as reencryptSecrets from './commands/reencryptSecrets.js';
 import * as organization from './commands/organization/index.js';
 import * as resource from './commands/resource/index.js';
+import * as restoreDataFromBackup from './commands/restoreDataFromBackup.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
 import * as serve from './commands/serve.js';
@@ -62,7 +66,10 @@ let parser = yargs(process.argv.slice(2))
   .command(asset)
   .command(block)
   .command(cleanupResourcesAndAssets as unknown as CommandModule)
+  .command(backupProductionData as unknown as CommandModule)
+  .command(restoreDataFromBackup as unknown as CommandModule)
   .command(cleanupDemoAppMembers as unknown as CommandModule)
+  .command(cleanupExpiredDomains as unknown as CommandModule)
   .command(cleanupSoftDeletedRecords as unknown as CommandModule)
   .command(checkAppMigrations as unknown as CommandModule)
   .command(checkDownMigrations as unknown as CommandModule)
@@ -72,6 +79,7 @@ let parser = yargs(process.argv.slice(2))
   .command(logout as unknown as CommandModule)
   .command(migrate as unknown as CommandModule)
   .command(migrateAppDefinitions as unknown as CommandModule)
+  .command(reencryptSecrets as unknown as CommandModule)
   .command(organization)
   .command(resource)
   .command(runCronJobs as unknown as CommandModule)

@@ -36,6 +36,7 @@ export type ActionDefinition =
   | EmailActionDefinition
   | EventActionDefinition
   | FlowToActionDefinition
+  | GroupMemberCreateActionDefinition
   | GroupMemberDeleteActionDefinition
   | GroupMemberInviteActionDefinition
   | GroupMemberQueryActionDefinition
@@ -60,6 +61,7 @@ export type ActionDefinition =
   | ResourceSubscriptionToggleActionDefinition
   | ResourceSubscriptionUnsubscribeActionDefinition
   | ResourceUpdateActionDefinition
+  | ResourceUpdateGroupActionDefinition
   | ResourceUpdatePositionsActionDefinition
   | ShareActionDefinition
   | StaticActionDefinition
@@ -96,6 +98,7 @@ export type ActionName =
   | 'flow.finish'
   | 'flow.next'
   | 'flow.to'
+  | 'group.member.create'
   | 'group.member.delete'
   | 'group.member.invite'
   | 'group.member.query'
@@ -123,6 +126,7 @@ export type ActionName =
   | 'resource.subscription.subscribe'
   | 'resource.subscription.toggle'
   | 'resource.subscription.unsubscribe'
+  | 'resource.update.group'
   | 'resource.update.positions'
   | 'resource.update'
   | 'share'
@@ -513,6 +517,24 @@ export interface GroupMemberInviteActionDefinition
   role: Remapper;
 }
 
+export interface GroupMemberCreateActionDefinition
+  extends BaseActionDefinition<'group.member.create'> {
+  /**
+   * The ID of the group to add the user to.
+   */
+  id: Remapper;
+
+  /**
+   * The id of the app member to add.
+   */
+  appMemberId: Remapper;
+
+  /**
+   * The role of the group member.
+   */
+  role: Remapper;
+}
+
 export interface GroupMemberQueryActionDefinition
   extends BaseActionDefinition<'group.member.query'> {
   /**
@@ -782,6 +804,11 @@ export type ResourceQueryActionDefinition = OwnResourceDefinition &
 export type ResourceCountActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
+export type ResourceUpdateGroupActionDefinition =
+  ResourceActionDefinition<'resource.update.group'> &
+    ResourceActionWithIdDefinition & {
+      groupId?: Remapper;
+    };
 export type ResourceUpdatePositionsActionDefinition =
   ResourceActionDefinition<'resource.update.positions'> & ResourceActionWithIdDefinition;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'> &

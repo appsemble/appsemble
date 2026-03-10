@@ -14,17 +14,17 @@ import {
 } from 'sequelize-typescript';
 
 export class AppInviteGlobal extends Model {
-  email!: string;
+  declare email: string;
 
-  key!: string;
+  declare key: string;
 
-  role!: AppRole;
+  declare role: AppRole;
 
-  userId?: string;
+  declare userId?: string;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 }
 
 export function createAppInviteModel(sequelize: Sequelize): typeof AppInviteGlobal {
@@ -33,26 +33,26 @@ export function createAppInviteModel(sequelize: Sequelize): typeof AppInviteGlob
     @PrimaryKey
     @AllowNull(false)
     @Column(DataType.STRING)
-    email!: string;
+    declare email: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    key!: string;
+    declare key: string;
 
     @Default('Member')
     @AllowNull(false)
     @Column(DataType.STRING)
-    role!: AppRole;
+    declare role: AppRole;
 
     @Column(DataType.UUID)
     @Index({ name: 'AppInvite_UserId_key', unique: true })
-    userId?: string;
+    declare userId?: string;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
   }
 
   sequelize.addModels([AppInvite]);

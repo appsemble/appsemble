@@ -1,5 +1,22 @@
 import { type AppRole } from './roles.js';
 
+export interface AppMemberGroup {
+  /**
+   * The ID of the group.
+   */
+  id: number;
+
+  /**
+   * The display name of the group.
+   */
+  name: string;
+
+  /**
+   * The role of the app member inside the group.
+   */
+  role: AppRole;
+}
+
 export interface AppMemberInfo {
   /**
    * The subject (end-user) identifier. This member is always present in a claims set.
@@ -65,4 +82,14 @@ export interface AppMemberInfo {
    * Whether this app member is a copy of a seed app member.
    */
   $ephemeral: boolean;
+
+  /**
+   * Unverified email of the user, this will replace the current email when verified.
+   */
+  unverifiedEmail?: string;
+
+  /**
+   * Whether TOTP (two-factor authentication) is enabled for this app member.
+   */
+  totpEnabled?: boolean;
 }

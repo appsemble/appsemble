@@ -26,7 +26,7 @@ export async function queryAppDemoMembers(ctx: Context): Promise<void> {
   const filter = parseMemberFilterQuery(parsedFilter ?? '');
   const commonFilters = {
     demo: true,
-    ...(ctx.client && 'app' in ctx.client ? { seed: false } : {}),
+    seed: false,
     ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
   };
 

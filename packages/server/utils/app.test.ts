@@ -34,7 +34,7 @@ describe('app', () => {
       });
 
       const result = await getApp(
-        { origin: 'http://test-app.test-organization.localhost:9999' },
+        { URL: new URL('http://test-app.test-organization.localhost:9999') },
         {
           attributes: [
             'definition',
@@ -75,7 +75,7 @@ describe('app', () => {
       });
 
       const result = await getApp(
-        { origin: 'http://localhost:9999' },
+        { URL: new URL('http://localhost:9999') },
         {
           attributes: [
             'definition',
@@ -118,7 +118,7 @@ describe('app', () => {
       });
 
       const result = await getApp(
-        { origin: 'http://example.com' },
+        { URL: new URL('http://example.com') },
         {
           attributes: [
             'definition',
@@ -147,7 +147,7 @@ describe('app', () => {
     });
 
     it('should resolve if no app is found', async () => {
-      const result = await getApp({ origin: 'http://my-app.my-org.localhost' }, {});
+      const result = await getApp({ URL: new URL('http://my-app.my-org.localhost') }, {});
 
       expect(result).toStrictEqual({
         appPath: 'my-app',
@@ -157,7 +157,7 @@ describe('app', () => {
     });
 
     it('should resolve if a URL only matches an organization id', async () => {
-      const result = await getApp({ origin: 'http://my-org.localhost' }, {});
+      const result = await getApp({ URL: new URL('http://my-org.localhost') }, {});
 
       expect(result).toStrictEqual({
         appPath: undefined,

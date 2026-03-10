@@ -57,7 +57,6 @@ export async function patchCurrentUserAppAccount(ctx: Context): Promise<void> {
 
   const appMember = await AppMember.findOne({
     where: {
-      AppId: appId,
       userId: authSubject!.id,
     },
     include: [

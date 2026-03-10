@@ -12,7 +12,9 @@ describe('iconHandler', () => {
     request.defaults.responseType = 'arraybuffer';
     const app = new Koa();
     app.use((ctx, next) => {
-      Object.defineProperty(ctx, 'origin', { value: 'http://test-app.testorg.localhost:9999' });
+      Object.defineProperty(ctx, 'URL', {
+        value: new URL('http://test-app.testorg.localhost:9999'),
+      });
       return next();
     });
     app.use(appRouter);

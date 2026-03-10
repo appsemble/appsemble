@@ -98,4 +98,9 @@ export interface BlockDefinition extends ControllerDefinition {
    * The exact meaning of the parameters depends on the project type.
    */
   parameters?: JsonObject;
+
+  /**
+   * Grid area defined in the page layout definition
+   */
+  gridArea?: string;
 }

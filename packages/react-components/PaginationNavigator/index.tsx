@@ -1,4 +1,4 @@
-import { Button, SelectField } from '@appsemble/react-components';
+import { Button, SelectField } from '../index.js';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 

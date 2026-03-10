@@ -43,7 +43,13 @@ export async function getRemapperContext(
   options: Options,
   context: ParameterizedContext<DefaultState, DefaultContext, any>,
 ): Promise<RemapperContext> {
-  const { getAppMessages, getAppUrl, getAppVariables, getCurrentAppMember } = options;
+  const {
+    getAppMessages,
+    getAppUrl,
+    getAppVariables,
+    getCurrentAppMember,
+    getCurrentAppMemberSelectedGroup,
+  } = options;
 
   const appUrl = String(await getAppUrl({ context, app }));
 
@@ -56,6 +62,7 @@ export async function getRemapperContext(
   const appVariables = await getAppVariables({ context, app });
 
   const appMemberInfo = await getCurrentAppMember({ context, app });
+  const groupInfo = await getCurrentAppMemberSelectedGroup({ context, app });
 
   const cache = objectCache(
     (message) =>
@@ -93,6 +100,7 @@ export async function getRemapperContext(
     appMemberInfo,
     context: {},
     locale: appMemberInfo?.locale ?? app.definition.defaultLanguage ?? defaultLocale,
+    group: groupInfo ?? undefined,
   };
 }
 

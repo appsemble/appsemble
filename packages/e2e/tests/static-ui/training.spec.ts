@@ -1,4 +1,4 @@
-import { expect, test } from '../../fixtures/index.js';
+import { expect, baseTest as test } from '../../fixtures/index.js';
 
 test.describe('Training', () => {
   // Prevent worker from being logged in automatically

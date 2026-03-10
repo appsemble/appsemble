@@ -1,8 +1,8 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.34.22-test.5/config/assets/logo.svg) Appsemble End 2 End Tests
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.36.5-test.2/config/assets/logo.svg) Appsemble End 2 End Tests
 
 > Run end 2 end tests on an Appsemble environment and provide Appsemble fixtures
 
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.34.22-test.5/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.5)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.36.5-test.2/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5-test.2)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -38,6 +38,15 @@ test('should navigate to app', async ({ visitApp }) => {
 });
 ```
 
+## Development
+
+This package depends on other packages in the Appsemble monorepo. To make sure all tests run
+normally, go to each Appsemble dependency and run the following command:
+
+```sh
+npm run prepack
+```
+
 ## Appsemble end-to-end tests
 
 To run end to end tests, run:
@@ -53,14 +62,11 @@ further inspection.
 
 On the first retry of a failed job, its trace will be uploaded to the same directory. This trace can
 be viewed locally, or it can be uploaded to the
-[online trace viewer](https://trace.playwright.dev/). This shows you step-by-step whawt happened
+[online trace viewer](https://trace.playwright.dev/). This shows you step-by-step what happened
 during the test as if you ran it using `ui mode`.
 
 The end to end tests use the following environment variables:
 
-- `BOT_ACCOUNT_EMAIL` — The email address used to login.
-- `BOT_ACCOUNT_PASSWORD` — The password used to login.
-- `ACCESS_TOKEN` — The access token of the account that's logged in.
 - `CI` — Whether the tests are run in CI.
 - `CI_MERGE_REQUEST_IID` — The id of the merge request if it's present.
 - `APPSEMBLE_REVIEW_DOMAIN` — The review appsemble domain to use.
@@ -71,16 +77,21 @@ are used.
 
 ## Authentication
 
-Some fixtures call the Appsemble API using the Playwright `request` object. This expects you to have
-set an access token as environment variable with the name **ACCESS_TOKEN** beforehand. The easiest
-way to do this is by setting it in a setup step using the `loginUser` fixture.
-
-`auth.setup.ts`
+Some fixtures call the Appsemble API using the Playwright `request` object. This expects the worker
+to have logged in and set the access token in the `request` fixture beforehand. This can look like
+so:
 
 ```ts
-setup('authenticate', async ({ loginUser }) => {
-  const accessToken = await loginUser('bot', '12345');
-  process.env.ACCESS_TOKEN = accessToken;
+export const test = base.extend<object>({
+  async request({}, use) {
+    const newRequest = await request.newContext({
+      extraHTTPHeaders: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    await use(newRequest);
+    await newRequest.dispose();
+  },
 });
 ```
 
@@ -91,5 +102,5 @@ When writing end-to-end tests, have a look at the
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.34.22-test.5/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.36.5-test.2/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

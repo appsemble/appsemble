@@ -1,7 +1,7 @@
 import { AppPermission, predefinedAppRoles } from '@appsemble/lang-sdk';
 import { OrganizationPermission, predefinedOrganizationRoles } from '@appsemble/types';
 
-import { expect, test } from '../../index.js';
+import { expect, baseTest as test } from '../../index.js';
 
 test.describe('Docs', () => {
   test('should render the index page', async ({ page }) => {

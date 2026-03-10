@@ -7,7 +7,7 @@ import { App, getAppDB, initDB, Organization, transactional, User } from '../mod
 import { argv } from '../utils/argv.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
-export const command = 'cleanup-soft-deleted';
+export const command = 'cleanup-soft-deleted-records';
 export const description =
   'Permanently deleted soft deleted records that are older than three months';
 
@@ -32,7 +32,6 @@ export async function handler(): Promise<void> {
     handleDBError(error as Error);
   }
 
-  logger.info('Cleaning up all demo users');
   // Delete records that have been deleted at least 90 days ago.
   const deletedAt = Date.now() - 90 * 24 * 60 * 60 * 1000;
   await transactional(async (transaction) => {
@@ -50,7 +49,15 @@ export async function handler(): Promise<void> {
     const apps = await App.findAll({ attributes: ['id'] });
     await Promise.all(
       apps.map(async (app) => {
-        const { Asset, Resource, sequelize } = await getAppDB(app.id);
+        let appDB;
+        try {
+          appDB = await getAppDB(app.id);
+        } catch {
+          logger.warn(`Failed to connect to database for app ${app.id}, skipping cleanup.`);
+          return;
+        }
+
+        const { Asset, Resource, sequelize } = appDB;
         try {
           await sequelize.transaction(async (appTransaction) => {
             logger.info(`Deleting resources soft deleted before ${deletedAtParsed}`);

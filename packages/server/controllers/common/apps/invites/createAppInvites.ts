@@ -23,7 +23,19 @@ export async function createAppInvites(ctx: Context): Promise<void> {
     request: { body },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'path', 'OrganizationId', 'domain'],
+    attributes: [
+      'id',
+      'definition',
+      'path',
+      'OrganizationId',
+      'emailName',
+      'emailPort',
+      'emailUser',
+      'emailHost',
+      'emailPassword',
+      'emailSecure',
+      'domain',
+    ],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
@@ -100,7 +112,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
             key,
             role: invite.role,
           }
-        : { email: invite.email, role: invite.role, key, AppId: appId };
+        : { email: invite.email, role: invite.role, key };
     }),
   );
 
@@ -125,6 +137,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
           name: user?.name || 'null',
           appName: app.definition.name,
         },
+        app,
       });
     }),
   );

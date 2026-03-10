@@ -10,7 +10,9 @@ describe('manifestHandler', () => {
   beforeAll(async () => {
     const app = new Koa();
     app.use((ctx, next) => {
-      Object.defineProperty(ctx, 'origin', { value: 'http://test-app.manitest.localhost:9999' });
+      Object.defineProperty(ctx, 'URL', {
+        value: new URL('http://test-app.manitest.localhost:9999'),
+      });
       return next();
     });
     app.use(appRouter);

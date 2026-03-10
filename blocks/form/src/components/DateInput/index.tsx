@@ -1,10 +1,11 @@
 import { useBlock } from '@appsemble/preact';
 import { DateTimeField } from '@appsemble/preact-components';
 import classNames from 'classnames';
+import { getMonth, getYear } from 'date-fns';
 import { type JSX, type VNode } from 'preact';
-import { useCallback, useMemo } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
-import { type DateField, type InputProps } from '../../../block.js';
+import { type DateDecoration, type DateField, type InputProps } from '../../../block.js';
 import { useLocale } from '../../hooks/useLocale.js';
 import { extractDate } from '../../utils/extractDate.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
@@ -26,7 +27,11 @@ export function DateInput({
   onChange,
   readOnly,
 }: DateTimeInputProps): VNode {
-  const { utils } = useBlock();
+  const {
+    actions,
+    utils,
+    utils: { remap },
+  } = useBlock();
   const { help, inline, label, name, placeholder, tag } = field;
 
   const value = getValueByNameSequence(name, formValues);
@@ -34,6 +39,11 @@ export function DateInput({
   const confirmLabel = utils.formatMessage('confirmLabel');
 
   const required = isRequired(field, utils, formValues);
+
+  const [decorations, setDecorations] = useState<DateDecoration[]>([]);
+  const [focusedMonthYear, setFocusedMonthYear] = useState<{ month: number; year: number } | null>(
+    null,
+  );
 
   const handleOnChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>, v: string): void =>
@@ -53,6 +63,35 @@ export function DateInput({
 
   const locale = useLocale(field);
 
+  useEffect(() => {
+    function handleDecorations({
+      decorations: decs,
+    }: {
+      decorations: DateDecoration[];
+      disabledDates: string[];
+    }): void {
+      setDecorations(decs);
+    }
+    const data = {
+      month: focusedMonthYear ? focusedMonthYear.month : getMonth(new Date()) + 1,
+      year: focusedMonthYear ? focusedMonthYear.year : getYear(new Date()),
+    };
+    if (field.decorations && 'action' in field.decorations) {
+      const actionName = field.decorations.action;
+      const action = actions[actionName];
+
+      action?.(data).then(handleDecorations);
+    } else if (field.decorations && 'remap' in field.decorations) {
+      const remapper = field.decorations.remap;
+      const val = remap(remapper, data);
+      setDecorations(val as any);
+    }
+  }, [actions, field.decorations, remap, focusedMonthYear]);
+
+  const handleMonthYearChange = useCallback(({ month, year }: { month: number; year: number }) => {
+    setFocusedMonthYear({ month, year });
+  }, []);
+
   return (
     <DateTimeField
       allowInput={field.allowInput}
@@ -64,6 +103,7 @@ export function DateInput({
       // @ts-expect-error There’s a mismatch between the `Remapper` type in the shared types and
       // the SDK.
       dateFormat={field.dateFormat}
+      decorations={decorations}
       disable={disable}
       disabled={disabled}
       error={dirty ? error : null}
@@ -78,6 +118,8 @@ export function DateInput({
       minDate={minDate}
       name={name}
       onChange={handleOnChange}
+      onMonthChange={handleMonthYearChange}
+      onYearChange={handleMonthYearChange}
       optionalLabel={utils.formatMessage('optionalLabel')}
       placeholder={(utils.remap(placeholder, value) as string) || dateLabel || name}
       readOnly={readOnly}

@@ -14,6 +14,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
+import { emailPattern } from '@appsemble/utils';
 
 interface BillingInformationBoxProps {
   /**
@@ -44,20 +45,20 @@ export function BillingInformationBox({
 }: BillingInformationBoxProps): ReactNode {
   const countryNames = countries.getNames('en');
   const [country, setCountry] = useState<string>(organization.countryCode || '');
-  const { setOrganizations } = useUser();
+  const { setOrganizations, userInfo } = useUser();
   const defaultValues = useMemo(
     () => ({
-      email: organization.email || '',
+      email: organization.email || userInfo.email || '',
       vatIdNumber: organization.vatIdNumber || '',
       invoiceReference: organization.invoiceReference || '',
       streetName: organization.streetName || '',
       houseNumber: organization.houseNumber || '',
       city: organization.city || '',
       zipCode: organization.zipCode || '',
-      countryCode: organization.countryCode,
+      countryCode: organization.countryCode || '',
       name: organization.name || organization.id || '',
     }),
-    [organization],
+    [organization, userInfo.email],
   );
 
   const changeCountry = useCallback(
@@ -172,7 +173,12 @@ export function BillingInformationBox({
         help={<FormattedMessage {...messages.emailDescription} />}
         label={<FormattedMessage {...messages.email} />}
         name="email"
+        pattern={emailPattern}
         type="email"
+        validityMessages={{
+          typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+          patternMismatch: <FormattedMessage {...messages.emailInvalid} />,
+        }}
       />
       <SimpleFormField
         help={<FormattedMessage {...messages.descriptionStreetName} />}
@@ -209,7 +215,7 @@ export function BillingInformationBox({
         name="invoiceReference"
       />
       <FormButtons>
-        <SimpleSubmit allowPristine={false}>
+        <SimpleSubmit>
           <FormattedMessage {...messages.submit} />
         </SimpleSubmit>
       </FormButtons>

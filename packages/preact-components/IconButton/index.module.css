@@ -1,0 +1,24 @@
+.root {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  outline: none;
+  pointer-events: initial !important;
+
+  &[disabled] {
+    cursor: not-allowed;
+  }
+
+  &:not([disabled]) {
+    &:active,
+    &:focus,
+    &:hover {
+      background-image: radial-gradient(
+        circle closest-side,
+        hsl(218deg 100% 66% / 43%),
+        transparent
+      );
+    }
+  }
+}

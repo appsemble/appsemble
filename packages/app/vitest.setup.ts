@@ -1,6 +1,7 @@
 import { noop } from '@appsemble/utils';
+// eslint-disable-next-line import-x/no-extraneous-dependencies
 import 'fake-indexeddb/auto';
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-x/no-extraneous-dependencies
 import jsdom from 'jsdom';
 
 // There is no support for application/xml in happy-dom's DOMParser yet
@@ -36,4 +37,6 @@ window.settings = {
   vapidPublicKey: '123',
   appUpdated: '1970-01-01T00:00:00.000Z',
   showDemoLogin: false,
+  supportedLanguages: ['en'],
+  totp: 'disabled',
 };

@@ -13,15 +13,15 @@ import {
 } from 'sequelize-typescript';
 
 export class AppVariableGlobal extends Model {
-  id!: number;
+  declare id: number;
 
-  name!: string;
+  declare name: string;
 
-  value?: string;
+  declare value?: string;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 }
 
 export function createAppVariableModel(sequelize: Sequelize): typeof AppVariableGlobal {
@@ -30,21 +30,21 @@ export function createAppVariableModel(sequelize: Sequelize): typeof AppVariable
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
-    id!: number;
+    declare id: number;
 
     @AllowNull(false)
     @Index({ name: 'UniqueNameIndex', unique: true })
     @Column(DataType.STRING)
-    name!: string;
+    declare name: string;
 
     @Column(DataType.STRING)
-    value?: string;
+    declare value?: string;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
   }
 
   sequelize.addModels([AppVariable]);

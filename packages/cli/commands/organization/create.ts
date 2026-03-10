@@ -1,7 +1,6 @@
 import { type ReadStream } from 'node:fs';
 
 import { authenticate } from '@appsemble/node-utils';
-import { type PaymentProvider } from '@appsemble/types';
 import { type Argv } from 'yargs';
 
 import { coerceFile } from '../../lib/coercers.js';
@@ -15,7 +14,6 @@ interface CreateOrganizationArguments extends BaseArguments {
   name: string;
   website: string;
   icon: ReadStream;
-  preferredPaymentProvider: PaymentProvider;
   vatIdNumber: string;
   streetName: string;
   houseNumber: string;
@@ -23,6 +21,7 @@ interface CreateOrganizationArguments extends BaseArguments {
   zipCode: string;
   countryCode: string;
   invoiceReference: string;
+  locale: string;
 }
 
 export const command = 'create <id>';
@@ -50,9 +49,6 @@ export function builder(yargs: Argv): Argv<any> {
       describe: 'The file location of the icon representing the organization.',
       coerce: coerceFile,
     })
-    .option('preferredPaymentProvider', {
-      describe: 'The preferred payment provider of the organization.',
-    })
     .option('vatIdNumber', {
       describe: 'The VAT id number of the organization.',
     })
@@ -73,6 +69,9 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('invoiceReference', {
       describe: 'Optional reference the organization can set to appear on the invoice.',
+    })
+    .option('locale', {
+      describe: 'Locale of the organization in which subscription emails will be delivered.',
     });
 }
 
@@ -86,8 +85,8 @@ export async function handler({
   icon,
   id,
   invoiceReference,
+  locale,
   name,
-  preferredPaymentProvider,
   remote,
   streetName,
   vatIdNumber,
@@ -99,10 +98,10 @@ export async function handler({
     description: desc,
     email,
     invoiceReference,
+    locale,
     icon,
     id,
     name,
-    preferredPaymentProvider,
     website,
     streetName,
     houseNumber,

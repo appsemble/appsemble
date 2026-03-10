@@ -112,7 +112,7 @@ export async function syncBlock({
 
 export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 2488 [...] | undefined must have a '[Symbol.iterator]()'
     const [OrganizationId, name] = parseBlockName(type);
     return {

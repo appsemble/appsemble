@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { beforeEach } from 'node:test';
 
 import { PaymentMethod, SubscriptionPlanType, SubscriptionRenewalPeriod } from '@appsemble/types';
@@ -15,6 +15,7 @@ import {
 import { argv } from '../../argv.js';
 import { type PricingInfo } from '../../calculateVat.js';
 import { type Payments } from '../payments.js';
+import { readFixture } from '@appsemble/node-utils';
 
 let organization: Partial<Organization>;
 let customer: Stripe.Customer;
@@ -113,7 +114,7 @@ describe('stripePayments', () => {
       };
       customer = await stripe.customers.create(customerCreateParams);
       writeFileSync(
-        'packages/server/stripe-responses/stripe-customer.json',
+        'packages/server/fixtures/stripe-responses/stripe-customer.json',
         JSON.stringify(customer, null, 2),
       );
 
@@ -156,16 +157,12 @@ describe('stripePayments', () => {
       stripeInvoice = await stripe.checkout.sessions.create(createInvoiceParams);
 
       writeFileSync(
-        'packages/server/stripe-responses/stripe-invoice.json',
+        'packages/server/fixtures/stripe-responses/stripe-invoice.json',
         JSON.stringify(stripeInvoice, null, 2),
       );
     } else {
-      customer = JSON.parse(
-        readFileSync('packages/server/stripe-responses/stripe-customer.json', 'utf8'),
-      );
-      stripeInvoice = JSON.parse(
-        readFileSync('packages/server/stripe-responses/stripe-invoice.json', 'utf8'),
-      );
+      customer = JSON.parse(await readFixture('stripe-responses/stripe-customer.json', 'utf8'));
+      stripeInvoice = JSON.parse(await readFixture('stripe-responses/stripe-invoice.json', 'utf8'));
     }
   });
 

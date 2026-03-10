@@ -102,6 +102,8 @@ describe('registerOAuth2Authorization', () => {
               profile: 'https://example.com/user',
               picture: 'https://exmaple.com/user.jpg',
             },
+            // Test secret for mocking OAuth2 token
+            // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
             'secret',
           ),
         },
@@ -158,6 +160,8 @@ describe('registerOAuth2Authorization', () => {
               profile: 'https://example.com/user',
               picture: 'https://exmaple.com/user.jpg',
             },
+            // Test secret for mocking OAuth2 token
+            // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
             'secret',
           ),
         },

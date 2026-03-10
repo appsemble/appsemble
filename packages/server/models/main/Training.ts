@@ -15,14 +15,14 @@ import { TrainingCompleted } from './TrainingCompleted.js';
 export class Training extends Model {
   @PrimaryKey
   @Column(DataType.STRING)
-  id!: string;
+  declare id: string;
 
   @HasMany(() => TrainingCompleted)
-  CompletedTrainings!: TrainingCompleted[];
+  declare CompletedTrainings: TrainingCompleted[];
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @UpdatedAt
-  updated!: Date;
+  declare updated: Date;
 }

@@ -204,7 +204,7 @@ describe('appsTokenHandler', () => {
           error: 'invalid_grant',
         },
       });
-      await expect(authCode.reload()).rejects.toThrow(
+      await expect(authCode.reload()).rejects.toThrowError(
         'Instance could not be reloaded because it does not exist anymore (find call returned null)',
       );
     });
@@ -284,7 +284,7 @@ describe('appsTokenHandler', () => {
           token_type: 'bearer',
         },
       });
-      await expect(authCode.reload()).rejects.toThrow(
+      await expect(authCode.reload()).rejects.toThrowError(
         'Instance could not be reloaded because it does not exist anymore (find call returned null)',
       );
       const payload = jwt.decode(response.data.access_token);

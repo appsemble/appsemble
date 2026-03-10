@@ -30,6 +30,21 @@ this problem, we use the \`null.strip\` remapper to remove any null values which
 array.
 `,
   },
+  'array.range': {
+    $ref: '#/components/schemas/RemapperDefinition',
+    description: `
+Creates an array of numbers from 0 to N-1, where N is the resolved value of the remapper.
+This is useful for creating a dynamically-sized array.
+
+If the resolved value is not a non-negative integer, an empty array is returned.
+
+${schemaExample('array.range')}
+
+It's particularly powerful when combined with \`array.map\` to generate a list of arbitrary elements.
+
+${schemaExample('array.range.map', { input: 'pretty' })}
+`,
+  },
   'array.join': {
     type: 'string',
     description: `Join the items of an array using the input separator, a comma(,) is used if no separator is provided.
@@ -37,6 +52,41 @@ array.
     If the input is not an array, input is returned without any modifications.
 
     ${schemaExample('array.join')}
+`,
+  },
+  'array.groupBy': {
+    type: 'string',
+    description: `
+Groups an array of objects by a common property value.
+
+Returns an array of group objects, each containing a \`key\` (the grouped property value)
+and \`items\` (array of objects with that property value).
+
+If the input is not an array, returns an empty array.
+
+${schemaExample('array.groupBy')}
+
+The groups preserve the order of first occurrence of each key value.
+`,
+  },
+  'array.toObject': {
+    type: 'object',
+    additionalProperties: false,
+    required: ['key', 'value'],
+    properties: {
+      key: { $ref: '#/components/schemas/RemapperDefinition' },
+      value: { $ref: '#/components/schemas/RemapperDefinition' },
+    },
+    description: `
+Converts an array of objects into a single object using specified key and value remappers.
+
+For each item in the array, the \`key\` remapper determines the property name and the \`value\`
+remapper determines the property value in the resulting object.
+
+If the input is not an array, returns an empty object.
+If multiple items produce the same key, later items overwrite earlier ones.
+
+${schemaExample('array.toObject')}
 `,
   },
   'array.unique': {
@@ -304,6 +354,58 @@ ${schemaExample('array.flatten', { input: 'pretty', exclude: ['remapper'] })}
     description: `
 Checks if the input array includes the provided item.
 ${schemaExample('array.contains')}
+`,
+  },
+  'array.sort': {
+    oneOf: [
+      { type: 'string' },
+      {
+        type: 'object',
+        nullable: true,
+        additionalProperties: false,
+        properties: {
+          by: { type: 'string' },
+          descending: { type: 'boolean', default: false },
+          strategy: {
+            type: 'string',
+            enum: ['infer', 'numeric', 'lexicographic', 'date'],
+            default: 'infer',
+          },
+        },
+      },
+    ],
+    description: `
+Sorts an array of items.
+
+Can sort by a property (for arrays of objects) or by the items themselves (for primitive arrays).
+Supports ascending and descending order, and handles numbers, strings, and dates.
+
+When a string is provided, it's used as the property name to sort by (ascending).
+
+**Sorting strategy (\`strategy\` option):**
+
+- \`infer\` (default): Determines comparison type from the first non-null value.
+  Numbers use numeric comparison, Dates use timestamp comparison, everything else
+  uses lexicographic (string) comparison. Mixed types fall back to lexicographic.
+- \`numeric\`: Coerces values to numbers. Non-numeric values (NaN) are pushed to the end.
+- \`lexicographic\`: Converts values to strings and uses \`localeCompare()\`.
+- \`date\`: Parses values as ISO dates and compares timestamps. Invalid dates are pushed to the end.
+
+Nullish values (null/undefined) are always pushed to the end regardless of strategy.
+
+${schemaExample('array.sort')}
+
+For arrays of objects, you can simply use a string to sort by that property:
+
+${schemaExample('array.sort.by')}
+
+Use \`descending: true\` to sort in descending order:
+
+${schemaExample('array.sort.desc')}
+
+Use \`strategy: numeric\` to force numeric comparison (useful for string numbers):
+
+${schemaExample('array.sort.numeric')}
 `,
   },
 };

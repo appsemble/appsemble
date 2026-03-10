@@ -1,8 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ locale }}" translate="no">
   <head>
     <base href="/" />
     <meta charset="utf-8" />
+    <meta name="google" content="notranslate" />
     {{#noIndex}}
     <meta name="robots" content="noindex" />
     {{/noIndex}}
@@ -90,11 +91,17 @@
     <script id="app-controller" nonce="{{ nonce }}"></script>
     {{{ settings }}}
   </head>
-  <body class="has-navbar-fixed-top">
-    <div class="is-fixed-top is-primary navbar">
+  <body
+    class="{{^app.definition.layout.hideTitleBar}}has-navbar-fixed-top{{/app.definition.layout.hideTitleBar}}"
+  >
+    <div
+      class="{{^app.definition.layout.hideTitleBar}}is-fixed-top is-primary navbar{{/app.definition.layout.hideTitleBar}}"
+    >
+      {{^app.definition.layout.hideTitleBar}}
       <header class="navbar-brand">
         <h2 class="navbar-item title is-4">{{ app.definition.name }}</h2>
       </header>
+      {{/app.definition.layout.hideTitleBar}}
     </div>
     <div id="app">
       <noscript>

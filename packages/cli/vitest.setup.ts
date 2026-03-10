@@ -9,7 +9,7 @@ import {
 } from '@appsemble/node-utils';
 import { getRootDB, models, setupTestDatabase } from '@appsemble/server';
 import { type Sequelize } from 'sequelize';
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-x/no-extraneous-dependencies
 import { afterAll, afterEach, beforeAll, beforeEach, vi } from 'vitest';
 
 setFixtureBase(import.meta);

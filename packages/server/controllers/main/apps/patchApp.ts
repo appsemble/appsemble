@@ -39,6 +39,7 @@ import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
+import { isValidSentryDsn } from '../../../utils/sentry.js';
 
 export async function patchApp(ctx: Context): Promise<void> {
   const {
@@ -69,6 +70,8 @@ export async function patchApp(ctx: Context): Promise<void> {
         icon,
         iconBackground,
         maskableIcon,
+        metaPixelID,
+        msClarityID,
         path,
         readmes,
         screenshots,
@@ -79,7 +82,9 @@ export async function patchApp(ctx: Context): Promise<void> {
         showAppsembleLogin,
         showAppsembleOAuth2Login,
         skipGroupInvites,
+        supportedLanguages,
         template,
+        totp,
         visibility,
         yaml,
       },
@@ -118,14 +123,28 @@ export async function patchApp(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, dbApp);
 
-  const { AppMember, Resource: OldResource, sequelize: oldAppDB } = await getAppDB(appId);
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  let Resource = OldResource;
-  let appDB = oldAppDB;
-
   await checkAppLimit(ctx, dbApp, visibility);
 
+  // TOTP cannot be enabled in demo mode apps
+  const effectiveDemoMode = demoMode === undefined ? dbApp.demoMode : demoMode;
+  const effectiveTotp = totp === undefined ? dbApp.totp : totp;
+  assertKoaCondition(
+    !effectiveDemoMode || !effectiveTotp || effectiveTotp === 'disabled',
+    ctx,
+    400,
+    'TOTP cannot be enabled for demo mode apps',
+  );
+
   try {
+    if (sentryDsn !== undefined) {
+      assertKoaCondition(!sentryDsn || isValidSentryDsn(sentryDsn), ctx, 400, 'Invalid Sentry DSN');
+    }
+
+    const { AppMember, Resource: OldResource, sequelize: oldAppDB } = await getAppDB(appId);
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    let Resource = OldResource;
+    let appDB = oldAppDB;
+
     const permissionsToCheck: OrganizationPermission[] = [];
     if (yaml) {
       permissionsToCheck.push(OrganizationPermission.UpdateApps);
@@ -217,6 +236,14 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.googleAnalyticsID = googleAnalyticsID;
     }
 
+    if (metaPixelID !== undefined) {
+      result.metaPixelID = metaPixelID;
+    }
+
+    if (msClarityID !== undefined) {
+      result.msClarityID = msClarityID;
+    }
+
     if (showAppDefinition !== undefined) {
       result.showAppDefinition = showAppDefinition;
     }
@@ -257,6 +284,10 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.enableUnsecuredServiceSecrets = enableUnsecuredServiceSecrets;
     }
 
+    if (totp !== undefined) {
+      result.totp = totp;
+    }
+
     if (coreStyle !== undefined) {
       result.coreStyle = validateStyle(coreStyle);
     }
@@ -291,6 +322,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (dbUser) {
       result.dbUser = dbUser;
+    }
+
+    if (supportedLanguages?.length) {
+      result.supportedLanguages = JSON.parse(supportedLanguages);
     }
 
     if (dbPassword) {

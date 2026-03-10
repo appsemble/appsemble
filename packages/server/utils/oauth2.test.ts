@@ -177,7 +177,7 @@ describe('oauth2', () => {
     });
 
     it('should throw if no subject could be found', async () => {
-      await expect(getUserInfo('')).rejects.toThrow(
+      await expect(getUserInfo('')).rejects.toThrowError(
         new AppsembleError('No subject could be found while logging in using OAuth2'),
       );
     });

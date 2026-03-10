@@ -1,5 +1,5 @@
 import { authenticate, logger } from '@appsemble/node-utils';
-import { type AppLock, type AppVisibility } from '@appsemble/types';
+import { type AppLock, type AppTotp, type AppVisibility } from '@appsemble/types';
 import { type Argv } from 'yargs';
 
 import { patchApp } from '../../lib/app.js';
@@ -15,6 +15,7 @@ interface PatchAppArguments extends BaseArguments {
   template?: boolean;
   demoMode?: boolean;
   locked?: AppLock;
+  totp?: AppTotp;
   showAppsembleOAuth2Login?: boolean;
   showAppsembleLogin?: boolean;
   displayAppMemberName?: boolean;
@@ -57,6 +58,12 @@ export function builder(yargs: Argv): Argv<any> {
       description: 'Change the value of AppLock for your app.',
       type: 'string',
       choices: ['fullLock', 'studioLock', 'unlocked'],
+    })
+    .option('totp', {
+      description:
+        'The TOTP (two-factor authentication) setting for the app. Use "disabled" to turn off, "enabled" to make it optional, or "required" to enforce for all app members. WARNING: Setting "required" will lock out existing users who have not yet enabled 2FA.',
+      type: 'string',
+      choices: ['disabled', 'enabled', 'required'],
     })
     .option('showAppsembleOAuth2Login', {
       description: 'Whether the Appsemble OAuth2 login method should be shown',

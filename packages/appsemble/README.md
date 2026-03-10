@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.34.22-test.5/config/assets/logo.svg) Appsemble
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.36.5-test.2/config/assets/logo.svg) Appsemble
 
 > Quickly run Appsemble CLI using `npx`
 
 [![npm](https://img.shields.io/npm/v/appsemble)](https://www.npmjs.com/package/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.34.22-test.5/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.34.22-test.5)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.36.5-test.2/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5-test.2)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -14,7 +14,8 @@
 
 ## Installation
 
-It’s recommended to install [`@appsemle/cli`](https://www.npmjs.com/package/@appsemble/cli) instead.
+It’s recommended to install [`@appsemble/cli`](https://www.npmjs.com/package/@appsemble/cli)
+instead.
 
 ```sh
 npm install @appsemble/cli
@@ -30,5 +31,5 @@ For more information, see [`@appsemble/cli`](https://www.npmjs.com/package/@apps
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.34.22-test.5/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.36.5-test.2/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

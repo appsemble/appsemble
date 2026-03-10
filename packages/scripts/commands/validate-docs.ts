@@ -56,20 +56,17 @@ interface Args {
   remote: string;
 }
 
-const snippetTypes = {
-  resources: 'resources-snippet',
-  page: 'page-snippet',
-  pages: 'pages-snippet',
-  block: 'block-snippet',
-  blocks: 'blocks-snippet',
-  'flow-blocks': 'flow-blocks-snippet',
-  cron: 'cron-snippet',
-  controller: 'controller-snippet',
-  security: 'security-snippet',
-  members: 'members-snippet',
-};
-
-type SnippetType = keyof typeof snippetTypes;
+type SnippetType =
+  | 'resources'
+  | 'page'
+  | 'pages'
+  | 'block'
+  | 'blocks'
+  | 'flow-blocks'
+  | 'cron'
+  | 'controller'
+  | 'security'
+  | 'members';
 
 interface SnippetInfo {
   type: SnippetType;

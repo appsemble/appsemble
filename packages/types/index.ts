@@ -213,6 +213,15 @@ export enum SubscriptionRenewalPeriod {
  */
 export type AppLock = 'fullLock' | 'studioLock' | 'unlocked';
 
+/**
+ * A type to represent the app TOTP requirement setting.
+ *
+ * - `disabled`: TOTP is not available for app members.
+ * - `enabled`: TOTP is available but optional for app members.
+ * - `required`: TOTP is required for all app members.
+ */
+export type AppTotp = 'disabled' | 'enabled' | 'required';
+
 export interface SubscriptionResponseResource {
   create: boolean;
   update: boolean;
@@ -282,9 +291,24 @@ export interface App {
   googleAnalyticsID?: string;
 
   /**
+   * The Meta Pixel ID of the app.
+   */
+  metaPixelID?: string;
+
+  /**
+   * The MS Clarity ID of the app.
+   */
+  msClarityID?: string;
+
+  /**
    * Whether the app is currently locked.
    */
   locked: AppLock;
+
+  /**
+   * The TOTP (two-factor authentication) setting for the app.
+   */
+  totp: AppTotp;
 
   /**
    * Whether the app is a template.
@@ -457,6 +481,11 @@ export interface App {
    * The user of the app database.
    */
   dbUser: string;
+
+  /**
+   * The languages supported by an app.
+   */
+  supportedLanguages?: string[];
 }
 
 /**
@@ -526,14 +555,14 @@ export interface Organization {
   email: string;
 
   /**
+   * The locale that is used for administrative organization emails.
+   */
+  locale: string;
+
+  /**
    * The URL at which the organization’s icon can be found.
    */
   iconUrl: string;
-
-  /**
-   * The preferred payment provider of the organization.
-   */
-  preferredPaymentProvider: PaymentProvider;
 
   /**
    * The vat id number of the organization.

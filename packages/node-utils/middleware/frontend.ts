@@ -16,7 +16,7 @@ export async function frontend(
   argv: Record<string, any>,
   serveStudio = false,
 ): Promise<Middleware> {
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore Because the webpack core config isn’t built when building the server, an error is
   // expected here at build time, but while type checking.
   const { createAppConfig, createStudioConfig } = await import('@appsemble/webpack-core');

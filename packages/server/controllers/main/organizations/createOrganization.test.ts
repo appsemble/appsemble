@@ -1,5 +1,5 @@
 import { createFormData, organizationBlocklist, readFixture } from '@appsemble/node-utils';
-import { PaymentProvider, PredefinedOrganizationRole } from '@appsemble/types';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -55,6 +55,7 @@ describe('createOrganization', () => {
       data: {
         id: 'foo',
         name: 'Foooo',
+        locale: 'en',
         members: [
           {
             id: expect.any(String),
@@ -100,7 +101,6 @@ describe('createOrganization', () => {
     const formData = createFormData({
       id: 'foo',
       name: 'Foooo',
-      preferredPaymentProvider: PaymentProvider.Stripe,
       vatIdNumber: 'number123',
       streetName: 'street',
       houseNumber: '1',
@@ -125,7 +125,6 @@ describe('createOrganization', () => {
           },
         ],
         invites: [],
-        preferredPaymentProvider: 'stripe',
         vatIdNumber: 'number123',
         streetName: 'street',
         houseNumber: '1',

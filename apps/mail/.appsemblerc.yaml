@@ -17,11 +17,13 @@ context:
     visibility: public
     assets: true
     demoMode: true
+    supportedLanguages: ['en', 'nl']
   review:
     organization: appsemble
     visibility: public
     assets: true
     demoMode: true
+    supportedLanguages: ['en', 'nl']
   staging:
     id: 1220
     organization: appsemble
@@ -29,3 +31,4 @@ context:
     visibility: public
     assets: true
     demoMode: true
+    supportedLanguages: ['en', 'nl']

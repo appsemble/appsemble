@@ -4,3 +4,6 @@ export { requestAppMemberPasswordReset } from './requestAppMemberPasswordReset.j
 export { resendAppMemberEmailVerification } from './resendAppMemberEmailVerification.js';
 export { resetAppMemberPassword } from './resetAppMemberPassword.js';
 export { verifyAppMemberEmail } from './verifyAppMemberEmail.js';
+export { patchAppMemberPassword } from './patchAppMemberPassword.js';
+export { requestAppMemberEmailUpdate } from './requestAppMemberEmailUpdate.js';
+export { deleteCurrentAppMemberUnverifiedEmail } from './deleteCurrentAppMemberUnverifiedEmail.js';

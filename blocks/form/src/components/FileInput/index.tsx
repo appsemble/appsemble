@@ -132,7 +132,9 @@ export function FileInput({
             errorLinkRef={errorLinkRef}
             field={field}
             formDataLoading={formDataLoading}
-            formValues={{}}
+            // @ts-expect-error breaks with multiple file entries if {} is passed
+            // FIXME
+            formValues={null}
             handleFileEntryReady={handleFileEntryReady}
             name={`${name}.${(value as string[]).length}`}
             onChange={handleInput}

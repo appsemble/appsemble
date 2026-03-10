@@ -2,6 +2,7 @@ import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import {
   getSubscriptionPlanByName,
   OrganizationPermission,
+  PaymentProvider,
   SubscriptionRenewalPeriod,
 } from '@appsemble/types';
 import { Decimal } from 'decimal.js';
@@ -43,7 +44,7 @@ export async function sendInvoice(ctx: Context): Promise<void> {
       subscription!.renewalPeriod = SubscriptionRenewalPeriod.Month;
       break;
   }
-  subscription!.save();
+  await subscription!.save();
 
   const wantedPlan = getSubscriptionPlanByName(subscriptionType);
   const pricingInformation = await calculateSubscriptionPrice(
@@ -81,7 +82,7 @@ export async function sendInvoice(ctx: Context): Promise<void> {
       },
       { transaction },
     );
-    invoice.pdfInvoice = Buffer.from(await createInvoice(invoice));
+    invoice.pdfInvoice = Buffer.from(await createInvoice(invoice, organization?.locale));
     await invoice.save({ transaction });
     await transaction!.commit();
   } catch {
@@ -92,12 +93,12 @@ export async function sendInvoice(ctx: Context): Promise<void> {
   }
   assertKoaError(!invoice, ctx, 500, 'Problem creating invoice.');
 
-  const payments = await getPaymentObject(organization!.preferredPaymentProvider!);
+  const payments = await getPaymentObject(PaymentProvider.Stripe);
 
   const stripeCustomerId = await payments.createOrUpdateCustomer(organization!);
   assertKoaError(!stripeCustomerId, ctx, 500, 'Problem creating customer.');
   organization!.stripeCustomerId = stripeCustomerId;
-  organization!.save();
+  await organization!.save();
 
   const invoiceInformation = await payments.createInvoice(
     invoice,
@@ -107,7 +108,7 @@ export async function sendInvoice(ctx: Context): Promise<void> {
   );
   assertKoaError(!invoiceInformation, ctx, 500, 'Problem creating invoice.');
   invoice.stripeInvoiceId = invoiceInformation.id;
-  invoice.save();
+  await invoice.save();
 
   ctx.body = {
     url: invoiceInformation.paymentUrl,

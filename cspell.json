@@ -193,6 +193,13 @@
     "formcomp",
     "Klokgebouw",
     "DATEONLY",
-    "klarna"
+    "klarna",
+    "lanczos",
+    "nosemgrep",
+    "tolerations",
+    "totp",
+    "Totp",
+    "otpauth",
+    "reencrypted"
   ]
 }

@@ -5,9 +5,10 @@ import {
   type RequestLikeActionDefinition,
   type ResourceQueryActionDefinition,
 } from '@appsemble/lang-sdk';
-import { getRemapperContext } from '@appsemble/node-utils';
+import { getRemapperContext, logger } from '@appsemble/node-utils';
 import { formatRequestAction } from '@appsemble/utils';
 import axios from 'axios';
+import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-filtering-agent';
 
 import { type ServerActionParameters } from './index.js';
 import { applyAppServiceSecrets } from '../../options/applyAppServiceSecrets.js';
@@ -78,7 +79,42 @@ export async function request({
     context,
     axiosConfig,
   });
-  const response = await axios(newAxiosConfig);
+
+  // Apply SSRF protection
+  // This blocks requests to private IPs, localhost, link-local addresses,
+  // and hostnames that resolve to private IPs (prevents DNS rebinding attacks)
+  //
+  // VITEST_CONF_ALLOW_PRIVATE_IP_PROXY: Test-only env var set in vitest.setup.ts
+  // to allow proxy tests to use localhost servers. SSRF tests explicitly unset this.
+  // This env var should NEVER be set in production.
+  const allowPrivateIPAddress = process.env.VITEST_CONF_ALLOW_PRIVATE_IP_PROXY === '1';
+
+  // Preserve any existing agent options (e.g., client certs from applyAppServiceSecrets)
+  // while still applying SSRF protection
+  const existingHttpsOptions = newAxiosConfig.httpsAgent?.options ?? {};
+  const existingHttpOptions = newAxiosConfig.httpAgent?.options ?? {};
+
+  newAxiosConfig.httpAgent = new RequestFilteringHttpAgent({
+    ...existingHttpOptions,
+    allowPrivateIPAddress,
+  });
+  newAxiosConfig.httpsAgent = new RequestFilteringHttpsAgent({
+    ...existingHttpsOptions,
+    allowPrivateIPAddress,
+  });
+
+  let response;
+  try {
+    response = await axios(newAxiosConfig);
+  } catch (err: unknown) {
+    // Check if this is an SSRF block from request-filtering-agent
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    if (errorMessage.includes('is not allowed') || errorMessage.includes('private')) {
+      logger.warn(`SSRF blocked: ${errorMessage}`);
+      throw new Error('Access to private network addresses is not allowed');
+    }
+    throw err;
+  }
 
   let responseBody = response.data;
   // Check if it's safe to represent the response as a string (i.e. not a binary file)

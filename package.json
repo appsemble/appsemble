@@ -28,39 +28,25 @@
       "prettier --check"
     ],
     "*.{js,md,ts,tsx}": [
-      "eslint"
-    ],
-    "**/*.ts?(x)": [
-      "npx --workspaces tsc --noEmit"
+      "eslint",
+      "npx -- cspell"
     ],
     "**/{messages.ts,package.json,tsconfig.json,vitest.config.js,LICENSE.md,packages/{cli/assets/appsemblerc.schema.json,types/cli.ts}}": [
       "sh -c 'tsx packages/scripts/index.ts validate'"
     ]
   },
   "overrides": {
-    "axios": "~1.2.0"
+    "axios": "~1.12.0"
   },
   "devDependencies": {
-    "@lhci/cli": "0.14.0",
-    "@typescript-eslint/eslint-plugin": "6.21.0",
-    "@typescript-eslint/parser": "6.21.0",
+    "@appsemble/eslint-config": "0.36.5-test.2",
+    "@lhci/cli": "0.15.1",
     "@vitest/coverage-v8": "2.1.9",
     "@vitest/ui": "2.1.9",
-    "cspell": "8.17.3",
+    "cspell": "8.19.4",
     "dictionary-en": "4.0.0",
     "dictionary-nl": "2.0.0",
-    "eslint": "8.57.1",
-    "eslint-config-remcohaszing": "10.0.1",
-    "eslint-formatter-gitlab": "5.1.0",
-    "eslint-plugin-compat": "4.2.0",
-    "eslint-plugin-formatjs": "4.13.3",
-    "eslint-plugin-import": "2.31.0",
-    "eslint-plugin-jsx-a11y": "6.10.2",
-    "eslint-plugin-markdown": "3.0.1",
-    "eslint-plugin-playwright": "0.22.2",
-    "eslint-plugin-react": "7.37.5",
-    "eslint-plugin-react-hooks": "4.6.2",
-    "eslint-plugin-vitest": "0.5.4",
+    "eslint-formatter-gitlab": "7.0.1",
     "husky": "8.0.3",
     "identity-obj-proxy": "3.0.0",
     "jsdom": "22.1.0",
@@ -68,22 +54,22 @@
     "postcss": "8.4.49",
     "postcss-preset-env": "9.6.0",
     "prettier": "3.4.2",
-    "prettier-plugin-packagejson": "2.5.10",
-    "remark-cli": "^12.0.0",
-    "remark-frontmatter": "^5.0.0",
-    "remark-gfm": "^4.0.0",
-    "remark-lint-heading-increment": "^4.0.0",
-    "remark-lint-no-duplicate-defined-urls": "^3.0.0",
-    "remark-lint-no-duplicate-definitions": "^4.0.0",
-    "remark-lint-no-empty-url": "^4.0.0",
-    "remark-lint-no-reference-like-url": "^4.0.0",
-    "remark-lint-no-undefined-references": "^5.0.0",
-    "remark-lint-no-unneeded-full-reference-image": "^4.0.0",
-    "remark-lint-no-unneeded-full-reference-link": "^4.0.0",
-    "remark-lint-no-unused-definitions": "^4.0.0",
-    "remark-retext": "^6.0.0",
-    "remark-toc": "^9.0.0",
-    "remark-validate-links": "^13.0.0",
+    "prettier-plugin-packagejson": "2.5.22",
+    "remark-cli": "12.0.1",
+    "remark-frontmatter": "5.0.0",
+    "remark-gfm": "4.0.1",
+    "remark-lint-heading-increment": "4.0.1",
+    "remark-lint-no-duplicate-defined-urls": "3.0.1",
+    "remark-lint-no-duplicate-definitions": "4.0.1",
+    "remark-lint-no-empty-url": "4.0.1",
+    "remark-lint-no-reference-like-url": "4.0.1",
+    "remark-lint-no-undefined-references": "5.0.2",
+    "remark-lint-no-unneeded-full-reference-image": "4.0.1",
+    "remark-lint-no-unneeded-full-reference-link": "4.0.1",
+    "remark-lint-no-unused-definitions": "4.0.2",
+    "remark-retext": "6.0.1",
+    "remark-toc": "9.0.0",
+    "remark-validate-links": "13.1.0",
     "retext-dutch": "5.0.0",
     "retext-english": "5.0.0",
     "retext-indefinite-article": "5.0.0",
@@ -91,13 +77,13 @@
     "retext-repeated-words": "5.0.0",
     "retext-spell": "6.1.0",
     "retext-syntax-urls": "4.0.0",
-    "sharp": "0.32.6",
+    "sharp": "0.34.5",
     "style-search": "0.1.0",
-    "stylelint": "16.13.2",
+    "stylelint": "16.26.1",
     "stylelint-color-format": "1.1.0",
     "stylelint-config-css-modules": "4.4.0",
     "stylelint-config-standard": "36.0.1",
-    "stylelint-no-unsupported-browser-features": "8.0.4",
+    "stylelint-no-unsupported-browser-features": "8.0.5",
     "stylelint-order": "6.0.4",
     "stylelint-prettier": "5.0.3",
     "ts-json-schema-generator": "1.5.1",
@@ -109,7 +95,7 @@
     "vitest": "2.1.9"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "appsembleServer": {
     "database-host": "localhost",
@@ -131,7 +117,9 @@
     "s3-secret-key": "password"
   },
   "dependencies": {
+    "gitleaks-secret-scanner": "^1.2.2",
     "i18n-iso-countries": "^7.14.0",
+    "tslib": "^2.8.1",
     "vite-tsconfig-paths": "^5.0.0"
   },
   "optionalDependencies": {

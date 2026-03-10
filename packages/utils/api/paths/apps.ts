@@ -38,6 +38,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
               demoMode: {
                 $ref: '#/components/schemas/App/properties/demoMode',
               },
+              totp: {
+                $ref: '#/components/schemas/App/properties/totp',
+              },
               yaml: {
                 type: 'string',
                 description: 'The original YAML definition used to define the app.',
@@ -67,6 +70,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
               sharedStyle: {
                 type: 'string',
                 description: 'The custom style to apply to all parts of app.',
+              },
+              supportedLanguages: {
+                $ref: '#/components/schemas/App/properties/supportedLanguages',
               },
               screenshots: {
                 type: 'array',

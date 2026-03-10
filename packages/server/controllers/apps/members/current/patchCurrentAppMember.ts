@@ -34,7 +34,6 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
     assertKoaCondition(enabled, ctx, 400, 'App does not allow registering phone numbers');
     const phoneNumberExists = await AppMember.count({
       where: {
-        AppId: appId,
         phoneNumber: parsePhoneNumber(phoneNumber, 'NL').format('INTERNATIONAL'),
       },
     });

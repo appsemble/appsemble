@@ -1,11 +1,11 @@
 import { SelectField } from '@appsemble/react-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import { languages } from '../../../utils/settings.js';
+import { languages, supportedLanguages } from '../../../utils/settings.js';
 
 export function LanguagePreference(): ReactNode {
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ export function LanguagePreference(): ReactNode {
   const [preferredLanguage, setPreferredLanguage] = useState(
     localStorage.getItem('preferredLanguage') ?? lang,
   );
+  const { formatMessage } = useIntl();
 
   const onLanguageChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>, language: string) => {
@@ -36,7 +37,9 @@ export function LanguagePreference(): ReactNode {
     >
       {languages.map((language) => (
         <option key={language} value={language}>
-          {getLanguageDisplayName(language)}
+          {supportedLanguages.includes(language)
+            ? `${getLanguageDisplayName(language)} (${formatMessage(messages.supported)})`
+            : getLanguageDisplayName(language)}
         </option>
       ))}
     </SelectField>

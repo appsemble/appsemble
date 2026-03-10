@@ -76,9 +76,6 @@ export const test = base.extend<AppCollectionFixtures>({
           `/api/organizations/${organizationId}/app-collections`,
           {
             multipart: formData,
-            headers: {
-              Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-            },
           },
         );
         expect(response.status()).toBe(201);
@@ -91,11 +88,7 @@ export const test = base.extend<AppCollectionFixtures>({
 
   async deleteAppCollection({ request }, use) {
     await use(async (collectionId) => {
-      const response = await request.delete(`/api/app-collections/${collectionId}`, {
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-        },
-      });
+      const response = await request.delete(`/api/app-collections/${collectionId}`);
       expect(response.status()).toBe(204);
     });
   },
@@ -105,9 +98,6 @@ export const test = base.extend<AppCollectionFixtures>({
       const response = await request.post(`/api/app-collections/${collectionId}/apps`, {
         data: {
           AppId: appId,
-        },
-        headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
         },
       });
       expect(response.status()).toBe(204);

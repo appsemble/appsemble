@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/react-components",
-  "version": "0.34.22-test.5",
+  "version": "0.36.5-test.2",
   "private": true,
   "description": "Reusable React components for internal use",
   "keywords": [
@@ -32,12 +32,13 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.34.22-test.5",
-    "@appsemble/utils": "0.34.22-test.5",
-    "@appsemble/web-utils": "0.34.22-test.5",
+    "@appsemble/types": "0.36.5-test.2",
+    "@appsemble/utils": "0.36.5-test.2",
+    "@appsemble/web-utils": "0.36.5-test.2",
+    "@appsemble/lang-sdk": "0.36.5-test.2",
     "@creativebulma/bulma-tagsinput": "^1.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
-    "@sentry/browser": "^7.0.0",
+    "@sentry/browser": "^10.0.0",
     "@types/creativebulma__bulma-tagsinput": "^1.0.0",
     "@types/css-modules": "^1.0.0",
     "@types/react": "^18.0.0",
@@ -48,7 +49,6 @@
     "@zxcvbn-ts/core": "^3.0.0",
     "axios": "^1.0.0",
     "classnames": "^2.0.0",
-    "date-fns": "^2.0.0",
     "fast-deep-equal": "^3.0.0",
     "flatpickr": "^4.0.0",
     "react": "^18.0.0",
@@ -58,7 +58,8 @@
     "react-transition-group": "^4.0.0"
   },
   "devDependencies": {
-    "@testing-library/react": "16.3.0",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/react": "16.3.2",
     "vitest": "2.1.9"
   }
 }

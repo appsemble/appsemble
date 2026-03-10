@@ -120,6 +120,7 @@ describe('queryAppMembers', () => {
           "properties": {},
           "role": "Admin",
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
@@ -220,6 +221,7 @@ describe('queryAppMembers', () => {
           "properties": {},
           "role": "Manager",
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "totpEnabled": false,
           "zoneinfo": null,
         },
         {
@@ -235,6 +237,7 @@ describe('queryAppMembers', () => {
           "properties": {},
           "role": "Staff",
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
@@ -316,6 +319,7 @@ describe('queryAppMembers', () => {
         properties: {},
         role: 'Manager',
         demo: false,
+        totpEnabled: false,
         $seed: false,
         $ephemeral: false,
       },
@@ -331,6 +335,7 @@ describe('queryAppMembers', () => {
         properties: {},
         role: 'Staff',
         demo: false,
+        totpEnabled: false,
         $seed: false,
         $ephemeral: false,
       },
@@ -413,6 +418,7 @@ describe('queryAppMembers', () => {
           "properties": {},
           "role": "Staff",
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
@@ -500,6 +506,7 @@ describe('queryAppMembers', () => {
           "properties": {},
           "role": "Manager",
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "totpEnabled": false,
           "zoneinfo": null,
         },
         {
@@ -515,6 +522,7 @@ describe('queryAppMembers', () => {
           "properties": {},
           "role": "Staff",
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "totpEnabled": false,
           "zoneinfo": null,
         },
       ]

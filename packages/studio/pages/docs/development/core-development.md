@@ -7,6 +7,7 @@ development use-cases and some common errors.
 
 - [Setup](#setup)
 - [Development](#development)
+- [Debugging](#debugging)
 - [Common errors](#common-errors)
 
 ## Setup
@@ -18,7 +19,7 @@ websites of these tools.
 - [Git](https://git-scm.com/)
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
-- [NodeJS 20.18](https://nodejs.org/docs/latest-v20.x/api/index.html)
+- [NodeJS 24](https://nodejs.org/docs/latest-v24.x/api/index.html)
 
 You can start local development by cloning the git repository and installing the dependencies. Run
 the following commands to get started.
@@ -30,7 +31,7 @@ npm ci
 ```
 
 The project requires a PostgreSQL database. To make the development process easy,
-`docker-compose.yml` contains the configuration to spin up a preconfigured database with ease.
+`docker-compose.yml` contains the configuration to spin up a pre-configured database with ease.
 
 ```sh copy
 docker compose up -d
@@ -170,6 +171,39 @@ to a table etc.
 - If the type needs to be accessed in `studio` or `app` packages, add an implementation of your type
   to `packages/types/`.
 - Add a schema for your type or modify existing schema in `packages/utils/api/components/schema/`.
+
+## Debugging
+
+### Request-Query Correlation
+
+Every HTTP request is assigned a unique request ID (first 8 characters of a UUID). This ID is
+included in both HTTP request logs and SQL query logs, allowing you to correlate slow requests with
+their specific database queries.
+
+To enable SQL query timing, start the server with benchmark mode:
+
+```sh
+npm start -- --database-benchmark
+```
+
+Or set the environment variable:
+
+```sh
+DATABASE_BENCHMARK=true npm start
+```
+
+Log output example:
+
+```
+[a1b2c3d4] GET /api/apps — 127.0.0.1
+[a1b2c3d4] (12ms) SELECT * FROM "App" WHERE ...
+[a1b2c3d4] Slow query (150ms): SELECT * FROM "Resource" WHERE ...
+[a1b2c3d4] GET /api/apps 200 OK 180ms
+```
+
+You can filter logs by request ID in Loki or other log aggregation tools to see all queries for a
+specific request. The `--slow-query-threshold` option (default: 100ms) controls when queries are
+logged as warnings.
 
 ## Common errors
 

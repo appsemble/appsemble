@@ -1,7 +1,6 @@
 import { type ReadStream } from 'node:fs';
 
 import { logger } from '@appsemble/node-utils';
-import { type PaymentProvider } from '@appsemble/types';
 import axios from 'axios';
 import FormData from 'form-data';
 
@@ -11,8 +10,8 @@ interface OrganizationArguments {
   id: string;
   icon: ReadStream;
   name: string;
+  locale: string;
   website: string;
-  preferredPaymentProvider: PaymentProvider;
   vatIdNumber: string | null;
   streetName: string | null;
   houseNumber: string | null;
@@ -31,8 +30,8 @@ export async function createOrganization({
   icon,
   id,
   invoiceReference,
+  locale,
   name,
-  preferredPaymentProvider,
   streetName,
   vatIdNumber,
   website,
@@ -64,11 +63,6 @@ export async function createOrganization({
   if (website) {
     logger.info(`Setting website to ${website}`);
     formData.append('website', website);
-  }
-
-  if (preferredPaymentProvider) {
-    logger.info(`Setting preferred payment provider to ${preferredPaymentProvider}`);
-    formData.append('preferredPaymentProvider', preferredPaymentProvider);
   }
 
   if (vatIdNumber) {
@@ -106,6 +100,11 @@ export async function createOrganization({
     formData.append('invoiceReference', invoiceReference);
   }
 
+  if (locale) {
+    logger.info(`Setting locale to ${locale}`);
+    formData.append('locale', locale);
+  }
+
   logger.info(`Creating organization ${id}${name ? ` (${name})` : ''}`);
   try {
     await axios.post('/api/organizations', formData);
@@ -125,8 +124,8 @@ export async function updateOrganization({
   icon,
   id,
   invoiceReference,
+  locale,
   name,
-  preferredPaymentProvider,
   streetName,
   vatIdNumber,
   website,
@@ -159,11 +158,6 @@ export async function updateOrganization({
   if (website) {
     logger.info(`Setting website to ${website}`);
     formData.append('website', website);
-  }
-
-  if (preferredPaymentProvider) {
-    logger.info(`Setting preferred payment provider to ${preferredPaymentProvider}`);
-    formData.append('preferredPaymentProvider', preferredPaymentProvider);
   }
 
   if (vatIdNumber) {
@@ -201,6 +195,11 @@ export async function updateOrganization({
     formData.append('invoiceReference', invoiceReference);
   }
 
+  if (locale) {
+    logger.info(`Setting locale to ${locale}`);
+    formData.append('locale', locale);
+  }
+
   try {
     await axios.patch(`/api/organizations/${id}`, formData);
     logger.info(`Successfully updated organization ${id}${name ? ` (${name})` : ''}`);
@@ -219,8 +218,8 @@ export async function upsertOrganization({
   icon,
   id,
   invoiceReference,
+  locale,
   name,
-  preferredPaymentProvider,
   streetName,
   vatIdNumber,
   website,
@@ -233,9 +232,9 @@ export async function upsertOrganization({
       email,
       icon,
       id,
+      locale,
       name,
       website,
-      preferredPaymentProvider,
       vatIdNumber,
       streetName,
       houseNumber,
@@ -251,9 +250,9 @@ export async function upsertOrganization({
         email,
         icon,
         id,
+        locale,
         name,
         website,
-        preferredPaymentProvider,
         vatIdNumber,
         streetName,
         houseNumber,

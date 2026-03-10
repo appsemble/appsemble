@@ -129,7 +129,7 @@ describe('group', () => {
           remote: testApp.defaults.baseURL!,
           clientCredentials,
         }),
-      ).rejects.toThrow('Request failed with status code 404');
+      ).rejects.toThrowError('Request failed with status code 404');
     });
   });
 
@@ -211,7 +211,7 @@ describe('group', () => {
       const clientCredentials = await authorizeCLI('groups:write', testApp);
       await expect(() =>
         deleteGroup({ appId: app.id, id: 1, remote: testApp.defaults.baseURL!, clientCredentials }),
-      ).rejects.toThrow('Request failed with status code 404');
+      ).rejects.toThrowError('Request failed with status code 404');
     });
   });
 
@@ -302,7 +302,7 @@ describe('group', () => {
           name: 'test2',
           clientCredentials,
         }),
-      ).rejects.toThrow('Request failed with status code 404');
+      ).rejects.toThrowError('Request failed with status code 404');
     });
 
     it('should throw an error if the user is not authenticated', async () => {
@@ -340,7 +340,7 @@ describe('group', () => {
           remote: testApp.defaults.baseURL!,
           name: 'test2',
         }),
-      ).rejects.toThrow('Request failed with status code 401');
+      ).rejects.toThrowError('Request failed with status code 401');
     });
   });
 
@@ -437,7 +437,7 @@ describe('group', () => {
           user: user.primaryEmail,
           role: 'Reader',
         }),
-      ).rejects.toThrow('Request failed with status code 400');
+      ).rejects.toThrowError('Request failed with status code 400');
     });
   });
 
@@ -540,7 +540,7 @@ describe('group', () => {
           role: 'Updater',
           id: group.id,
         }),
-      ).rejects.toThrow('Request failed with status code 404');
+      ).rejects.toThrowError('Request failed with status code 404');
     });
   });
 
@@ -649,7 +649,7 @@ describe('group', () => {
           user: user.id,
           id: group.id,
         }),
-      ).rejects.toThrow('Request failed with status code 404');
+      ).rejects.toThrowError('Request failed with status code 404');
     });
   });
 
@@ -665,7 +665,7 @@ describe('group', () => {
 
     it('should throw an error if annotations are not in right format', () => {
       const unresolvedAnnotations = ['foo:bar', 'hello.world'];
-      expect(() => resolveAnnotations(unresolvedAnnotations)).toThrow(
+      expect(() => resolveAnnotations(unresolvedAnnotations)).toThrowError(
         'One of the annotations did not follow the pattern of key=value',
       );
     });

@@ -130,7 +130,7 @@ export async function getAppById(ctx: Context): Promise<void> {
       if (app.visibility === 'private') {
         throw error;
       }
-      propertyFilters.push('yaml');
+      propertyFilters.push('yaml', 'definition');
     }
   }
 
@@ -152,5 +152,19 @@ export async function getAppById(ctx: Context): Promise<void> {
   applyAppMessages(app, language, baseLanguage);
 
   ctx.status = 200;
+  if (propertyFilters.includes('definition')) {
+    const { defaultLanguage, defaultPage, description, name } = app.definition;
+    ctx.body = Object.assign(app.toJSON(propertyFilters), {
+      definition: {
+        name,
+        description,
+        defaultLanguage,
+        defaultPage,
+        ...(app.definition.resources ? { resources: {} } : {}),
+        ...(app.definition.security ? { security: {} } : {}),
+      },
+    });
+    return;
+  }
   ctx.body = app.toJSON(propertyFilters);
 }

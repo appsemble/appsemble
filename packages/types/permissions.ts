@@ -285,6 +285,12 @@ export enum OrganizationPermission {
   CreateGroupInvites,
 
   /**
+   * The permission to add new members to a group.
+   *
+   */
+  CreateGroupMembers,
+
+  /**
    * The permission to query group invites.
    */
   QueryGroupInvites,
@@ -345,9 +351,7 @@ export enum OrganizationPermission {
   QueryOrganizationSubscriptions,
 }
 
-export const appOrganizationPermissionMapping: {
-  [key in AppPermission]: OrganizationPermission;
-} = {
+export const appOrganizationPermissionMapping: Record<AppPermission, OrganizationPermission> = {
   [AppPermission.CreateAppInvites]: OrganizationPermission.CreateAppInvites,
   [AppPermission.QueryAppMembers]: OrganizationPermission.QueryAppMembers,
   [AppPermission.DeleteAppMembers]: OrganizationPermission.DeleteAppMembers,
@@ -358,6 +362,7 @@ export const appOrganizationPermissionMapping: {
   [AppPermission.UpdateGroups]: OrganizationPermission.UpdateGroups,
   [AppPermission.DeleteGroups]: OrganizationPermission.DeleteGroups,
   [AppPermission.CreateGroupInvites]: OrganizationPermission.CreateGroupInvites,
+  [AppPermission.CreateGroupMembers]: OrganizationPermission.CreateGroupMembers,
   [AppPermission.QueryGroupMembers]: OrganizationPermission.QueryGroupMembers,
   [AppPermission.RemoveGroupMembers]: OrganizationPermission.RemoveGroupMembers,
   [AppPermission.UpdateGroupMemberRoles]: OrganizationPermission.UpdateGroupMemberRoles,

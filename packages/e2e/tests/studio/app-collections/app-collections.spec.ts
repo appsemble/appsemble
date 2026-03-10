@@ -1,6 +1,6 @@
 import { type AppCollection } from '@appsemble/types';
 
-import { expect, test } from '../../../index.js';
+import { expect, authenticatedTest as test } from '../../../index.js';
 
 let organizationId: string;
 let appCollectionName: string;

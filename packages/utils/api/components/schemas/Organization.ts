@@ -36,10 +36,6 @@ export const Organization: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: 'The URL used to fetch the organization’s icon.',
     },
-    preferredPaymentProvider: {
-      type: 'string',
-      description: 'The preferred payment provider of the organization.',
-    },
     vatIdNumber: {
       type: 'string',
       description: 'The VAT id number of the organization.',

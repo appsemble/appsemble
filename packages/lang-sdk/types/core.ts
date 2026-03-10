@@ -10,8 +10,9 @@ import { type ResourceDefinition } from './resource.js';
 import { type ViewRole } from './roles.js';
 import { type Security } from './security.js';
 import { type Theme } from './theme.js';
+import { type PageLayoutDefinition } from './gridLayout.js';
 
-export type SettingName = 'languages' | 'name' | 'phoneNumber' | 'picture';
+export type SettingName = 'email' | 'languages' | 'name' | 'password' | 'phoneNumber' | 'picture';
 
 export interface AppDefinition {
   /**
@@ -110,6 +111,22 @@ export interface AppDefinition {
      * The settings for displaying the app logo.
      */
     logo?: AppLogo;
+
+    /**
+     * The settings for displaying a tag in the header.
+     */
+    headerTag?: HeaderTag;
+
+    /**
+     * Whether to display app name or the page name in the title bar, displays pageName by default
+     *
+     */
+    titleBarText?: 'appName' | 'pageName';
+
+    /**
+     * Whether to hide the title bar from all pages in the app.
+     */
+    hideTitleBar?: boolean;
   };
 
   /**
@@ -250,11 +267,13 @@ export interface SubPageDefinition {
   name: Remapper;
   roles?: ViewRole[];
   blocks: BlockDefinition[];
+  layout?: PageLayoutDefinition;
 }
 
 export interface BasicPageDefinition extends BasePageDefinition {
   type?: 'page';
   blocks: BlockDefinition[];
+  layout?: PageLayoutDefinition;
 }
 
 export interface ContainerPageDefinition extends BasePageDefinition {
@@ -388,6 +407,18 @@ export interface AppMemberPropertyDefinition {
   reference?: {
     resource: string;
   };
+}
+
+export interface HeaderTag {
+  /**
+   * The text to be displayed in the tag.
+   */
+  text: Remapper;
+
+  /**
+   * Whether to hide the tag.
+   */
+  hide: Remapper;
 }
 
 export interface AppLogo {

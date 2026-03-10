@@ -22,6 +22,7 @@ import {
   type AppsembleMessages,
   type AppsembleRC,
   type AppServiceSecretDefinition,
+  type AppTotp,
   type AppVisibility,
   type Messages,
   type ProjectBuildConfig,
@@ -909,6 +910,13 @@ export async function writeAppMessages(
     const appMessagePrefixes = Object.keys(newAppMessages);
     for (const [key, message] of Object.entries(oldMessages.app ?? {})) {
       const match = /^(pages\.[\dA-Za-z-]+(\..+)?)\.blocks\.\d+.+/.exec(key);
+      const emailMatch =
+        /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|welcome)\.(body|subject)/.test(
+          key,
+        );
+      if (emailMatch) {
+        newAppMessages[key] = message;
+      }
       if (!match) {
         continue;
       }
@@ -1099,6 +1107,16 @@ interface PublishAppParams {
   members?: boolean;
 
   /**
+   * Whether sending emails should be skipped for the group invites,
+   */
+  skipGroupInvites?: boolean;
+
+  /**
+   * Languages officially supported by the app
+   */
+  supportedLanguages?: string[];
+
+  /**
    * Whether assets from the `assets` directory should be published after publishing the app.
    */
   assets?: boolean;
@@ -1118,6 +1136,16 @@ interface PublishAppParams {
    * The ID to use for Google Analytics for the app.
    */
   googleAnalyticsId?: string;
+
+  /**
+   * The ID to use for Meta Pixel for the app.
+   */
+  metaPixelId?: string;
+
+  /**
+   * The ID to use for MS Clarity for the app.
+   */
+  msClarityId?: string;
 
   /**
    * The custom Sentry DSN for the app.
@@ -1153,6 +1181,11 @@ interface PublishAppParams {
    * The password of the external app database.
    */
   dbPassword?: string;
+
+  /**
+   * The TOTP (two-factor authentication) setting for the app.
+   */
+  totp?: AppTotp;
 }
 
 /**
@@ -1223,14 +1256,19 @@ export async function publishApp({
   const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
+  const metaPixelId = appsembleContext.metaPixelId ?? options.metaPixelId;
+  const msClarityId = appsembleContext.msClarityId ?? options.msClarityId;
   const assets = appsembleContext.assets ?? options.assets;
   const resources = appsembleContext.resources ?? options.resources;
   const members = appsembleContext.members ?? options.members;
+  const supportedLanguages = appsembleContext.supportedLanguages ?? options.supportedLanguages;
   const appLock = appsembleContext.appLock || 'unlocked';
   const dbName = appsembleContext.dbName ?? options.dbName;
   const dbHost = appsembleContext.dbHost ?? options.dbHost;
   const dbPort = appsembleContext.dbPort ?? options.dbPort;
   const dbUser = appsembleContext.dbUser ?? options.dbUser;
+  const skipGroupInvites = appsembleContext.skipGroupInvites ?? options.skipGroupInvites ?? false;
+  const totp = appsembleContext.totp ?? options.totp;
   const { dbPassword } = options;
 
   logger.verbose(`App remote: ${remote}`);
@@ -1251,6 +1289,7 @@ export async function publishApp({
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   formData.append('locked', appLock);
+  formData.append('skipGroupInvites', String(skipGroupInvites));
 
   if (dbName) {
     formData.append('dbName', dbName);
@@ -1270,6 +1309,10 @@ export async function publishApp({
 
   if (dbPassword) {
     formData.append('dbPassword', dbPassword);
+  }
+
+  if (supportedLanguages?.length) {
+    formData.append('supportedLanguages', JSON.stringify(supportedLanguages));
   }
 
   if (icon) {
@@ -1299,6 +1342,21 @@ export async function publishApp({
   if (googleAnalyticsId) {
     logger.info('Using Google Analytics');
     formData.append('googleAnalyticsID', googleAnalyticsId);
+  }
+
+  if (metaPixelId) {
+    logger.info('Using Meta Pixel');
+    formData.append('metaPixelID', metaPixelId);
+  }
+
+  if (msClarityId) {
+    logger.info('Using MS Clarity');
+    formData.append('msClarityID', msClarityId);
+  }
+
+  if (totp) {
+    logger.info(`Setting TOTP to ${totp}`);
+    formData.append('totp', totp);
   }
 
   let authScope = 'apps:write';
@@ -1376,7 +1434,6 @@ export async function publishApp({
   logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
 
-  // eslint-disable-next-line max-len
   // @ts-expect-error 2454 Variable used before it was assigned, 2538 Undefined cannot be used as an index type
   const rcCollections = rc?.context?.[context]?.collections;
   if (Array.isArray(rcCollections)) {
@@ -1464,6 +1521,16 @@ interface UpdateAppParams {
   members?: boolean;
 
   /**
+   * Whether sending emails should be skipped for the group invites.
+   */
+  skipGroupInvites?: boolean;
+
+  /**
+   * Languages officially supported by the app
+   */
+  supportedLanguages?: string[];
+
+  /**
    * Whether assets from the `assets` directory should be published after publishing the app.
    */
   assets?: boolean;
@@ -1499,6 +1566,16 @@ interface UpdateAppParams {
   googleAnalyticsId?: string;
 
   /**
+   * The ID to use for Meta Pixel for the app.
+   */
+  metaPixelId?: string;
+
+  /**
+   * The ID to use for MS Clarity for the app.
+   */
+  msClarityId?: string;
+
+  /**
    * The custom Sentry DSN for the app.
    */
   sentryDsn?: string;
@@ -1532,6 +1609,11 @@ interface UpdateAppParams {
    * The password of the external app database.
    */
   dbPassword?: string;
+
+  /**
+   * The TOTP (two-factor authentication) setting for the app.
+   */
+  totp?: AppTotp;
 }
 
 /**
@@ -1600,14 +1682,19 @@ export async function updateApp({
   const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
+  const metaPixelId = appsembleContext.metaPixelId ?? options.metaPixelId;
+  const msClarityId = appsembleContext.msClarityId ?? options.msClarityId;
   const resources = appsembleContext.resources ?? options.resources;
   const members = appsembleContext.members ?? options.members;
+  const skipGroupInvites = appsembleContext.skipGroupInvites ?? options.skipGroupInvites;
+  const supportedLanguages = appsembleContext.supportedLanguages ?? options.supportedLanguages;
   const assets = appsembleContext.assets ?? options.assets;
   const { appLock } = appsembleContext;
   const dbName = appsembleContext.dbName ?? options.dbName;
   const dbHost = appsembleContext.dbHost ?? options.dbHost;
   const dbPort = appsembleContext.dbPort ?? options.dbPort;
   const dbUser = appsembleContext.dbUser ?? options.dbUser;
+  const totp = appsembleContext.totp ?? options.totp;
   const { dbPassword } = options;
 
   logger.info(`App id: ${id}`);
@@ -1647,10 +1734,18 @@ export async function updateApp({
     formData.append('dbPassword', dbPassword);
   }
 
+  if (supportedLanguages?.length) {
+    formData.append('supportedLanguages', JSON.stringify(supportedLanguages));
+  }
+
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
     logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
     formData.append('icon', realIcon);
+  }
+
+  if (skipGroupInvites !== undefined) {
+    formData.append('skipGroupInvites', String(skipGroupInvites));
   }
 
   if (maskableIcon) {
@@ -1674,6 +1769,21 @@ export async function updateApp({
   if (googleAnalyticsId) {
     logger.info('Using Google Analytics');
     formData.append('googleAnalyticsID', googleAnalyticsId);
+  }
+
+  if (metaPixelId) {
+    logger.info('Using Meta Pixel');
+    formData.append('metaPixelID', metaPixelId);
+  }
+
+  if (msClarityId) {
+    logger.info('Using MS Clarity');
+    formData.append('msClarityID', msClarityId);
+  }
+
+  if (totp) {
+    logger.info(`Setting TOTP to ${totp}`);
+    formData.append('totp', totp);
   }
 
   let authScope = 'apps:write';
@@ -1812,6 +1922,16 @@ interface PatchAppParams {
   displayInstallationPrompt?: boolean;
 
   /**
+   * Languages officially supported by the app
+   */
+  supportedLanguages?: string[];
+
+  /**
+   * Whether sending emails should be skipped for the group invites.
+   */
+  skipGroupInvites?: boolean;
+
+  /**
    * Whether the Appsemble OAuth2 login method should be shown.
    */
   showAppsembleOAuth2Login?: boolean;
@@ -1825,13 +1945,25 @@ interface PatchAppParams {
    * Whether the app is currently locked.
    */
   locked?: AppLock;
+
+  /**
+   * The TOTP (two-factor authentication) setting for the app.
+   */
+  totp?: AppTotp;
 }
 
 export async function patchApp({ id, remote, ...options }: PatchAppParams): Promise<void> {
   const formData = new FormData();
+  if (options.supportedLanguages?.length) {
+    formData.append('supportedLanguages', JSON.stringify(options.supportedLanguages));
+  }
   if (options.path !== undefined) {
     logger.info(`Setting app path to ${options.path}`);
     formData.append('path', options.path);
+  }
+  if (options.skipGroupInvites !== undefined) {
+    logger.info(`Setting skipGroupInvites to ${options.skipGroupInvites}`);
+    formData.append('skipGroupInvites', String(options.skipGroupInvites));
   }
   if (options.force !== undefined) {
     formData.append('force', String(options.force));
@@ -1875,6 +2007,10 @@ export async function patchApp({ id, remote, ...options }: PatchAppParams): Prom
   if (options.enableSelfRegistration !== undefined) {
     logger.info(`Setting enableSelfRegistration to ${options.enableSelfRegistration}`);
     formData.append('enableSelfRegistration', String(options.enableSelfRegistration));
+  }
+  if (options.totp !== undefined) {
+    logger.info(`Setting totp to ${options.totp}`);
+    formData.append('totp', options.totp);
   }
   try {
     if (!formData.getLengthSync() && options.locked === undefined) {

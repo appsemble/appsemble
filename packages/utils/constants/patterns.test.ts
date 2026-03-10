@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   domainPattern,
+  emailPattern,
   googleAnalyticsIDPattern,
   normalized,
   partialNormalized,
@@ -94,9 +95,19 @@ describe('googleAnalyticsIDPattern', () => {
   );
 
   it.each([' ', 'AU-123456789-0', 'UA-123-123', 'UA-1234-12345', 'G-012345678abc'])(
-    'should match %j',
+    'should not match %j',
     (string) => {
       expect(string).not.toMatch(googleAnalyticsIDPattern);
     },
   );
+});
+
+describe('emailPattern', () => {
+  it.each(['name@domain.com', '1@1.c'])('should match %j', (string) => {
+    expect(string).toMatch(emailPattern);
+  });
+
+  it.each(['@domain.com', 'name@.com', 'name@domain'])('should not match %j', (string) => {
+    expect(string).not.toMatch(emailPattern);
+  });
 });

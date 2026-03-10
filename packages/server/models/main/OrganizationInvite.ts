@@ -21,37 +21,37 @@ export class OrganizationInvite extends Model {
   @PrimaryKey
   @AllowNull(false)
   @Column(DataType.STRING)
-  email!: string;
+  declare email: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  key!: string;
+  declare key: string;
 
   @Default('Member')
   @AllowNull(false)
   @Column(DataType.ENUM(...predefinedOrganizationRoles))
-  role!: PredefinedOrganizationRole;
+  declare role: PredefinedOrganizationRole;
 
   @ForeignKey(() => User)
   @Index({ name: 'OrganizationInvite_UserId_OrganizationId_key', unique: true })
   @Column(DataType.UUID)
-  UserId?: string;
+  declare UserId?: string;
 
   @BelongsTo(() => User)
-  User?: Awaited<User>;
+  declare User?: Awaited<User>;
 
   @PrimaryKey
   @ForeignKey(() => Organization)
   @Index({ name: 'OrganizationInvite_UserId_OrganizationId_key', unique: true })
   @Column(DataType.STRING)
-  OrganizationId!: string;
+  declare OrganizationId: string;
 
   @BelongsTo(() => Organization)
-  organization?: Awaited<Organization>;
+  declare organization?: Awaited<Organization>;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @UpdatedAt
-  updated!: Date;
+  declare updated: Date;
 }

@@ -34,7 +34,7 @@ export function onFetch(event: FetchEvent): void {
   }
 
   // App assets are immutable and can be cached.
-  if (/^\/api\/apps\/\d+\/assets\//.test(pathname)) {
+  if (/^\/api\/apps\/\d+\/assets\//.test(pathname) && request.method !== 'HEAD') {
     event.respondWith(cacheFirst(request));
     return;
   }

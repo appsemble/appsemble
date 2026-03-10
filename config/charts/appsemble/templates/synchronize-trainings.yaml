@@ -20,6 +20,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true
+          resources:
+            {{- toYaml .Values.resources.jobs | nindent 12 }}
           args:
             - synchronize-trainings
             - -vv

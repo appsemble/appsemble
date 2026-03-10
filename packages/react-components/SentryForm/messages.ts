@@ -2,8 +2,8 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   disclaimer: {
-    id: 'react-components.2825oe',
-    defaultMessage: 'Your feedback will be shared with the Appsemble group using Sentry',
+    id: 'react-components.OKw4a6',
+    defaultMessage: 'Your feedback will be shared with the Appsemble Team using Sentry',
   },
   submitError: {
     id: 'react-components.9i2X0U',
@@ -40,5 +40,13 @@ export const messages = defineMessages({
   submit: {
     id: 'react-components.lXIQ7a',
     defaultMessage: 'Submit error report',
+  },
+  emailInvalid: {
+    id: 'react-components.jv0FOj',
+    defaultMessage: 'This must be a valid email address',
+  },
+  emailRequired: {
+    id: 'react-components.KssJcX',
+    defaultMessage: 'An email address is required',
   },
 });

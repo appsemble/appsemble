@@ -93,7 +93,7 @@ export async function chargeOrganizationSubscriptions(
 
     const stripeCustomerId = await payments.createOrUpdateCustomer(organization!);
     organization!.stripeCustomerId = stripeCustomerId;
-    organization!.update({ stripeCustomerId });
+    await organization!.update({ stripeCustomerId });
 
     const invoiceInformation = await payments.createInvoice(
       invoice!,
@@ -101,7 +101,7 @@ export async function chargeOrganizationSubscriptions(
       subscription.renewalPeriod!,
     );
     invoice!.stripeInvoiceId = invoiceInformation.id;
-    invoice!.update({ stripeInvoiceId: invoiceInformation.id });
+    await invoice!.update({ stripeInvoiceId: invoiceInformation.id });
     await payments.chargeInvoice(invoiceInformation.id);
   }
 

@@ -29,16 +29,46 @@ ingress:
   tls:
     {}
     # secretName: chart-example-tls
-    # wildcardSecretName: chart-example-tls-wildcard
+  # wildcardSecretName: chart-example-tls-wildcard
+
+# OpenShift Route configuration (alternative to Ingress)
+route:
+  enabled: false
+  host: ''
+  annotations: {}
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
 
 resources:
-  {}
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+  deployment:
+    limits:
+      memory: 4Gi
+      cpu: '2'
+    requests:
+      memory: 2Gi
+      cpu: 500m
+  jobs:
+    limits:
+      memory: 2Gi
+      cpu: '1'
+    requests:
+      memory: 512Mi
+      cpu: 250m
+  cronjobs:
+    limits:
+      memory: 2Gi
+      cpu: '2'
+    requests:
+      memory: 512Mi
+      cpu: 250m
+  backupCronjob:
+    limits:
+      memory: 4Gi
+      cpu: '2'
+    requests:
+      memory: 1Gi
+      cpu: 500m
 
 nodeSelector: {}
 
@@ -93,13 +123,34 @@ global:
     service:
       ports:
         postgresql: 5432
+  security:
+    allowInsecureImages: true
 
 postgresql:
   fullnameOverride: appsemble-postgresql
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: 17.6.0-debian-12-r4@sha256:926356130b77d5742d8ce605b258d35db9b62f2f8fd1601f9dbaef0c8a710a8d
+  primary:
+    extendedConfiguration: |
+      shared_preload_libraries = 'pgaudit,pg_stat_statements'
+      pg_stat_statements.max = 10000
+      pg_stat_statements.track = all
+    initdb:
+      scripts:
+        00_init_pg_stat_statements.sql: |
+          CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+          GRANT pg_read_all_stats TO appsemble;
 
 postgresSSL: false
 
+databaseBenchmark: true
+slowQueryThreshold: 100
+
 remote: null
+
+securityEmail: security@appsemble.com
 
 quotas:
   appEmail:
@@ -124,6 +175,10 @@ mailpit:
 
 minio:
   fullnameOverride: appsemble-minio
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/minio
+    tag: 2024.12.18-debian-12-r1@sha256:c0ede65eb88e47138470202c517bacf55ab3c27df848030b7b46e69d34b7d192
   auth:
     existingSecret: s3
     rootUserSecretKey: access-key
@@ -136,3 +191,27 @@ minio:
     enabled: true
     tls: true
     ingressClassName: nginx
+
+backups:
+  enabled: true
+  bucket: appsemble-backups-exampleenv
+  filename: appsemble_backup
+  port: 443
+  secure: true
+  existingSecret: backups-secret
+
+assetsBackups:
+  enabled: false
+  schedule: '20 2 * * *'
+  sourceEndpoint: null
+  sourceRegion: us-east-1
+  destinationRegion: eu-central-1
+  prefix: assets/app-buckets
+  verifyAfterSync: true
+  maxDelete: 2000
+  checkers: 16
+  transfers: 8
+  archiveRetentionDays: 90
+  enableMonthlyFullSnapshot: true
+  fullSnapshotDay: 1
+  fullSnapshotRetentionMonths: 12

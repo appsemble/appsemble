@@ -42,6 +42,7 @@ interface RequestLikeAction<T extends Action['type']> extends BaseAction<T> {
 export type RequestAction = RequestLikeAction<'request'>;
 export type ResourceCreateAction = RequestLikeAction<'resource.create'>;
 export type ResourceDeleteAction = RequestLikeAction<'resource.delete'>;
+export type ResourceUpdateGroupAction = RequestLikeAction<'resource.update.group'>;
 export type ResourceUpdatePositionsAction = RequestLikeAction<'resource.update.positions'>;
 export type ResourceDeleteAllAction = RequestLikeAction<'resource.delete.all'>;
 export type ResourceDeleteBulkAction = RequestLikeAction<'resource.delete.bulk'>;
@@ -81,6 +82,7 @@ export type Action =
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
   | BaseAction<'flow.to'>
+  | BaseAction<'group.member.create'>
   | BaseAction<'group.member.delete'>
   | BaseAction<'group.member.invite'>
   | BaseAction<'group.member.query'>
@@ -118,4 +120,5 @@ export type Action =
   | ResourcePatchAction
   | ResourceQueryAction
   | ResourceUpdateAction
+  | ResourceUpdateGroupAction
   | ResourceUpdatePositionsAction;

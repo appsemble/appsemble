@@ -44,6 +44,15 @@ describe('patchOrganization', () => {
     expect(response).toMatchObject({ data: { id: organization.id, name: 'Test' } });
   });
 
+  it('should update the locale of the organization', async () => {
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/organizations/${organization.id}`,
+      createFormData({ locale: 'nl' }),
+    );
+    expect(response).toMatchObject({ data: { id: organization.id, locale: 'nl' } });
+  });
+
   it('should update the logo of the organization', async () => {
     const formData = new FormData();
     const buffer = await readFixture('testpattern.png');

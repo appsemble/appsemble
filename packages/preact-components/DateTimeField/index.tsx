@@ -1,6 +1,8 @@
 // TODO: don't depend on this, declare your own type
 import { type Remapper } from '@appsemble/lang-sdk';
 import { useBlock } from '@appsemble/preact';
+import classNames from 'classnames';
+import { isSameDay, parseISO } from 'date-fns';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
@@ -9,6 +11,7 @@ import { type ComponentProps, type JSX, type VNode } from 'preact';
 import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { FormComponent, Input, type SharedFormComponentProps } from '../index.js';
+import styles from './index.module.css';
 
 type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
   Pick<
@@ -69,6 +72,28 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
      * The ref to the element used for scrolling to the field error
      */
     readonly errorLinkRef?: MutableRef<HTMLElement>;
+
+    readonly decorations?: {
+      date: string;
+      type?: 'border' | 'dot' | 'overlay';
+      color?: string;
+      label?: string;
+      borderStyle?: 'dashed' | 'dotted' | 'double' | 'solid';
+    }[];
+
+    /**
+     * Called when the month is changed.
+     *
+     * @param data An object with the new year and month.
+     */
+    readonly onMonthChange?: (data: { year: number; month: number }) => void;
+
+    /**
+     * Called when the year is changed.
+     *
+     * @param data An object with the new year and month.
+     */
+    readonly onYearChange?: (data: { year: number; month: number }) => void;
   };
 
 export function DateTimeField({
@@ -92,6 +117,8 @@ export function DateTimeField({
   mode = 'single',
   name,
   onChange,
+  onMonthChange,
+  onYearChange,
   optionalLabel,
   required,
   tag,
@@ -104,12 +131,15 @@ export function DateTimeField({
   minuteIncrement = 5,
   inline,
   errorLinkRef,
+  decorations,
   ...props
 }: DateTimeFieldProps): VNode {
   const wrapper = useRef<HTMLDivElement>();
   const internal = useRef<HTMLDivElement>();
   const positionElement = useRef<HTMLDivElement>();
   const [picker, setPicker] = useState<flatpickr.Instance | null>(null);
+  const decorationsRef = useRef(decorations);
+  decorationsRef.current = decorations;
   const {
     utils: { remap },
   } = useBlock();
@@ -176,6 +206,60 @@ export function DateTimeField({
           },
           date,
         ) as string,
+      onMonthChange(dates: Date[], currentDateString: string, self: flatpickr.Instance) {
+        // Convert from 0-indexed (flatpickr) to 1-indexed (user-facing)
+        onMonthChange?.({ year: self.currentYear, month: self.currentMonth + 1 });
+      },
+      onYearChange(dates: Date[], currentDateString: string, self: flatpickr.Instance) {
+        // Convert from 0-indexed (flatpickr) to 1-indexed (user-facing)
+        onYearChange?.({ year: self.currentYear, month: self.currentMonth + 1 });
+      },
+      onDayCreate(
+        dates: Date[],
+        currentDateString: string,
+        self: flatpickr.Instance,
+        dayElem: HTMLElement & { dateObj: Date },
+      ) {
+        const { dateObj } = dayElem;
+        const matchingDecorations =
+          decorationsRef.current?.filter((decoration) =>
+            isSameDay(dateObj, parseISO(decoration.date)),
+          ) ?? [];
+
+        // One decoration per type
+        let hasDot = false;
+        let hasOverlay = false;
+        let hasBorder = false;
+
+        for (const decoration of matchingDecorations) {
+          const type = decoration.type ?? 'dot';
+
+          if (type === 'dot' && !hasDot) {
+            hasDot = true;
+          } else if (type === 'overlay' && !hasOverlay) {
+            hasOverlay = true;
+          } else if (type === 'border' && !hasBorder) {
+            hasBorder = true;
+          } else {
+            continue;
+          }
+
+          const span = document.createElement('span');
+          span.dataset.dateColor = decoration.color ?? 'default';
+          span.dataset.decorationType = type;
+          span.classList.add(styles.dayDecoration);
+
+          if (decoration.label) {
+            span.title = decoration.label;
+          }
+
+          if (type === 'border' && decoration.borderStyle) {
+            span.style.setProperty('--date-border-style', decoration.borderStyle);
+          }
+
+          dayElem.append(span);
+        }
+      },
     });
 
     setPicker(p);
@@ -203,7 +287,17 @@ export function DateTimeField({
     mode,
     noCalendar,
     remap,
+    onMonthChange,
+    onYearChange,
   ]);
+
+  // Redraw calendar when decorations change (without destroying the picker)
+  useEffect(() => {
+    if (picker && decorations) {
+      // Trigger a redraw by calling redraw - this will re-invoke onDayCreate for visible days
+      picker.redraw();
+    }
+  }, [picker, decorations]);
 
   useEffect(() => {
     if (value) {
@@ -212,7 +306,11 @@ export function DateTimeField({
   }, [picker, value]);
 
   return (
-    <div className={className} id="wrapper" ref={wrapper as MutableRef<HTMLDivElement>}>
+    <div
+      className={classNames(className, styles.dateDecorations)}
+      id="wrapper"
+      ref={wrapper as MutableRef<HTMLDivElement>}
+    >
       <FormComponent
         error={error}
         help={help}

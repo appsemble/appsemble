@@ -51,12 +51,12 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
   ) => {
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
     useImperativeHandle(ref, () => inputRef.current);
 
     const handleChange = useCallback(
-      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
       (event: ChangeEvent<HTMLInputElement>) => onChange(event, event?.currentTarget.files?.[0]),
       [onChange],
@@ -65,7 +65,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     useEffect(() => {
       // Make sure the input is cleared when the value is cleared.
       if (!value) {
-        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
         inputRef.current.value = null;
       }

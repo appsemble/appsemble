@@ -5,6 +5,7 @@ import { throwKoaError } from './koa.js';
 
 type HttpMethod = 'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put';
 
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 type Route = {
   [method in HttpMethod]?: Middleware;
 } & {

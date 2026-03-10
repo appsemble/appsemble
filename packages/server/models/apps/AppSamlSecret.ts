@@ -20,39 +20,39 @@ export const DEFAULT_SAML_EMAIL_ATTRIBUTE =
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
 
 export class AppSamlSecretGlobal extends Model {
-  id!: number;
+  declare id: number;
 
-  idpCertificate!: string;
+  declare idpCertificate: string;
 
-  entityId!: string;
+  declare entityId: string;
 
-  ssoUrl!: string;
+  declare ssoUrl: string;
 
-  name!: string;
+  declare name: string;
 
-  icon!: IconName;
+  declare icon: IconName;
 
-  spPrivateKey!: string;
+  declare spPrivateKey: string;
 
-  spPublicKey!: string;
+  declare spPublicKey: string;
 
-  spCertificate!: string;
+  declare spCertificate: string;
 
-  emailAttribute!: string;
+  declare emailAttribute: string;
 
-  emailVerifiedAttribute?: string;
+  declare emailVerifiedAttribute?: string;
 
-  nameAttribute?: string;
+  declare nameAttribute?: string;
 
-  objectIdAttribute?: string;
+  declare objectIdAttribute?: string;
 
-  created!: Date;
+  declare created: Date;
 
-  updated!: Date;
+  declare updated: Date;
 
-  AppSamlAuthorizations!: AppSamlAuthorization[];
+  declare AppSamlAuthorizations: AppSamlAuthorization[];
 
-  SamlLoginRequests!: SamlLoginRequest[];
+  declare SamlLoginRequests: SamlLoginRequest[];
 }
 
 export function createAppSamlSecretModel(sequelize: Sequelize): typeof AppSamlSecretGlobal {
@@ -75,60 +75,60 @@ export function createAppSamlSecretModel(sequelize: Sequelize): typeof AppSamlSe
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
-    id!: number;
+    declare id: number;
 
     @AllowNull(false)
     @Column(DataType.TEXT)
-    idpCertificate!: string;
+    declare idpCertificate: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    entityId!: string;
+    declare entityId: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    ssoUrl!: string;
+    declare ssoUrl: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    name!: string;
+    declare name: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    icon!: IconName;
+    declare icon: IconName;
 
     @AllowNull(false)
     @Column(DataType.TEXT)
-    spPrivateKey!: string;
+    declare spPrivateKey: string;
 
     @AllowNull(false)
     @Column(DataType.TEXT)
-    spPublicKey!: string;
+    declare spPublicKey: string;
 
     @AllowNull(false)
     @Column(DataType.TEXT)
-    spCertificate!: string;
+    declare spCertificate: string;
 
     @AllowNull(false)
     @Default(DEFAULT_SAML_EMAIL_ATTRIBUTE)
     @Column(DataType.STRING)
-    emailAttribute!: string;
+    declare emailAttribute: string;
 
     @Column(DataType.STRING)
-    emailVerifiedAttribute?: string;
+    declare emailVerifiedAttribute?: string;
 
     @Column(DataType.STRING)
-    nameAttribute?: string;
+    declare nameAttribute?: string;
 
     // Unique identifier of the external user
     @Column(DataType.STRING)
-    objectIdAttribute?: string;
+    declare objectIdAttribute?: string;
 
     @CreatedAt
-    created!: Date;
+    declare created: Date;
 
     @UpdatedAt
-    updated!: Date;
+    declare updated: Date;
 
     static associate(models: AppModels): void {
       AppSamlSecret.hasMany(models.AppSamlAuthorization, { onDelete: 'CASCADE' });

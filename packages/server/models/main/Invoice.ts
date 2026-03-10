@@ -21,94 +21,94 @@ export class Invoice extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  subscriptionId!: number;
+  declare subscriptionId: number;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  organizationId!: string;
+  declare organizationId: string;
 
   @Column(DataType.STRING)
-  reference?: string;
+  declare reference?: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  amount!: string;
+  declare amount: string;
 
   @Column(DataType.STRING(24))
-  vatIdNumber?: string;
+  declare vatIdNumber?: string;
 
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  vatPercentage!: number;
+  declare vatPercentage: number;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  customerName!: string;
+  declare customerName: string;
 
   @Default(InvoiceStatus.Pending)
   @AllowNull(false)
   @Column(DataType.ENUM(...Object.values(InvoiceStatus)))
-  invoiceStatus!: InvoiceStatus;
+  declare invoiceStatus: InvoiceStatus;
 
   @Column(DataType.ENUM(...Object.values(SubscriptionPlanType)))
-  subscriptionPlan!: SubscriptionPlanType;
+  declare subscriptionPlan: SubscriptionPlanType;
 
   @Column(DataType.STRING)
-  stripeInvoiceId?: string;
-
-  @AllowNull(false)
-  @Column(DataType.STRING)
-  customerStreetName!: string;
+  declare stripeInvoiceId?: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  customerHouseNumber!: string;
+  declare customerStreetName: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  declare customerHouseNumber: string;
 
   @AllowNull(false)
   @Column(DataType.STRING(85))
-  customerCity!: string;
+  declare customerCity: string;
 
   @AllowNull(false)
   @Column(DataType.STRING(15))
-  customerZipCode!: string;
+  declare customerZipCode: string;
 
   @AllowNull(false)
   @Column(DataType.STRING(2))
-  customerCountryCode!: string;
+  declare customerCountryCode: string;
 
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  kvkNumber!: number;
+  declare kvkNumber: number;
 
   @AllowNull(false)
   @Column(DataType.TEXT)
-  serviceSupplied!: string;
+  declare serviceSupplied: string;
 
   @AllowNull(true)
   @Column(DataType.BLOB)
-  pdfInvoice!: Buffer;
+  declare pdfInvoice: Buffer;
 
   @AllowNull(false)
   @Column(DataType.DATE)
-  activationDate!: Date;
+  declare activationDate: Date;
 
   @AllowNull(false)
   @Column(DataType.STRING(8))
-  invoiceNumberPrefix!: string;
+  declare invoiceNumberPrefix: string;
 
   @HasMany(() => InvoiceTransaction)
-  InvoiceTransaction!: InvoiceTransaction;
+  declare InvoiceTransaction: InvoiceTransaction;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @UpdatedAt
-  updated?: Date;
+  declare updated?: Date;
 
   @DeletedAt
-  deleted?: Date;
+  declare deleted?: Date;
 }

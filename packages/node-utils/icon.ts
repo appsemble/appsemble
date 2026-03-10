@@ -83,7 +83,6 @@ export async function serveIcon(
   if (raw) {
     const { format } = await img.metadata();
     ctx.body = buffer;
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     ctx.type = format;
     return;
   }
@@ -107,7 +106,6 @@ export async function serveIcon(
     // Make the regular icon maskable
     const actual = img;
     const metadata = await actual.metadata();
-    // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     const angle = Math.atan(metadata.height / metadata.width);
     actual.resize({
       // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)

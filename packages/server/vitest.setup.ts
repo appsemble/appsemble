@@ -9,23 +9,28 @@ import {
 import axiosSnapshotSerializer, { setResponseTransformer } from 'jest-axios-snapshot';
 // @ts-expect-error We define this manually to make it compatible with Vite.
 // https://vitest.dev/guide/snapshot.html#image-snapshots
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-x/no-extraneous-dependencies
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import { type Sequelize } from 'sequelize';
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-x/no-extraneous-dependencies
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from 'vitest';
 
 import { dropAndCloseAllAppDBs } from './models/index.js';
 import { getRootDB, setupTestDatabase } from './utils/test/testSchema.js';
+
+// Allow private IP addresses in proxy tests (e.g., localhost test servers).
+// This env var is checked by the SSRF protection in @appsemble/node-utils.
+// SSRF tests explicitly unset this to verify protection works.
+process.env.VITEST_CONF_ALLOW_PRIVATE_IP_PROXY = '1';
 
 interface CustomMatchers<R = unknown> {
   toMatchImageSnapshot: () => R;
 }
 
 declare module 'vitest' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface Assertion<T = any> extends CustomMatchers<T> {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface AsymmetricMatchersContaining extends CustomMatchers {}
 }
 

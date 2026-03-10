@@ -16,31 +16,31 @@ import { User } from '../index.js';
 export class OAuth2ClientCredentials extends Model {
   @PrimaryKey
   @Column(DataType.STRING)
-  id!: string;
+  declare id: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  description!: string;
+  declare description: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  secret!: string;
+  declare secret: string;
 
   @Column(DataType.DATE)
-  expires?: Date;
+  declare expires?: Date;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  scopes!: string;
+  declare scopes: string;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @AllowNull(false)
   @ForeignKey(() => User)
   @Column(DataType.UUID)
-  UserId!: string;
+  declare UserId: string;
 
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
-  User?: Awaited<User>;
+  declare User?: Awaited<User>;
 }

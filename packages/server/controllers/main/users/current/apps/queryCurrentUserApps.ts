@@ -20,7 +20,26 @@ export async function queryCurrentUserApps(ctx: Context): Promise<void> {
 
   const apps = await App.findAll({
     attributes: {
-      exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
+      exclude: [
+        'icon',
+        'coreStyle',
+        'sharedStyle',
+        'yaml',
+        'controllerCode',
+        'controllerImplementations',
+        'sentryDsn',
+        'sentryEnvironment',
+        'domain',
+        'displayAppMemberName',
+        'displayInstallationPrompt',
+        'enableSelfRegistration',
+        'enableUnsecuredServiceSecrets',
+        'emailName',
+        'showAppDefinition',
+        'showAppsembleLogin',
+        'showAppsembleOAuth2Login',
+        'screenshotUrls',
+      ],
       include: [
         [literal('"App".icon IS NOT NULL'), 'hasIcon'],
         [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
@@ -69,5 +88,13 @@ export async function queryCurrentUserApps(ctx: Context): Promise<void> {
       return app;
     })
     .sort(compareApps)
-    .map((app) => app.toJSON(['yaml']));
+    .map((app) =>
+      Object.assign(app.toJSON(['yaml']), {
+        definition: {
+          name: app.definition.name,
+          description: app.definition.description,
+          defaultLanguage: app.definition.defaultLanguage,
+        },
+      }),
+    );
 }

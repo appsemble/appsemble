@@ -45,6 +45,10 @@ export const messages = defineMessages({
     id: 'studio.UHheiE',
     defaultMessage: 'The email address users can use to contact this organization.',
   },
+  emailInvalid: {
+    id: 'studio.jv0FOj',
+    defaultMessage: 'This must be a valid email address',
+  },
   website: {
     id: 'studio.JkLHGw',
     defaultMessage: 'Website',
@@ -72,14 +76,6 @@ export const messages = defineMessages({
   selectFile: {
     id: 'studio.G5EJ8b',
     defaultMessage: 'Select logo',
-  },
-  descriptionPreferredPaymentProvider: {
-    defaultMessage: 'The payment provider you want to use.',
-    id: 'studio.vGE/z+',
-  },
-  preferredPaymentProvider: {
-    defaultMessage: 'Preferred payment provider',
-    id: 'studio.Fj9LvW',
   },
   descriptionVatIdNumber: {
     defaultMessage: 'Your VAT id number.',
@@ -148,5 +144,22 @@ export const messages = defineMessages({
   invoiceReference: {
     defaultMessage: 'Invoice reference',
     id: 'studio.u8z2PJ',
+  },
+  payments: {
+    defaultMessage: 'Payments',
+    id: 'studio.iYc3Ld',
+  },
+  paymentsHelp: {
+    defaultMessage:
+      'Settings in this section are related to payments concerning Appsemble subscriptions. Configuring in-app payments for your apps is done on App level, in app settings.',
+    id: 'studio.hFIbId',
+  },
+  preferredLanguage: {
+    id: 'studio.R/13HH',
+    defaultMessage: 'Preferred language',
+  },
+  preferredLanguageHelp: {
+    id: 'studio.bL6DuQ',
+    defaultMessage: 'The preferred language to use for Organization related emails.',
   },
 });

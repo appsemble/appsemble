@@ -49,6 +49,7 @@ const OrganizationAppGroupMembersManagerPermissions = [
   OrganizationPermission.QueryGroupMembers,
   OrganizationPermission.RemoveGroupMembers,
   OrganizationPermission.UpdateGroupMemberRoles,
+  OrganizationPermission.CreateGroupMembers,
 ];
 
 const OrganizationAppGroupManagerPermissions = [

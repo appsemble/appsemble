@@ -1,6 +1,7 @@
 import { type Readable } from 'node:stream';
 
 import {
+  type AppMemberGroup,
   type BlockDefinition,
   type ControllerDefinition,
   type CustomAppPermission,
@@ -56,9 +57,12 @@ declare module 'koa' {
 declare module 'koas-security' {
   interface Clients {
     app: { scope: string; app: App };
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     basic: {};
     cli: { scope: string };
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     studio: {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     webhook: {};
   }
 
@@ -140,6 +144,10 @@ declare module 'koas-parameters' {
     selectedGroupId: number;
     $own: boolean;
     delimiter?: string;
+    email: string;
+    width?: number;
+    height?: number;
+    secret: string;
   }
 }
 
@@ -253,6 +261,7 @@ export interface CreateSettingsParams {
   controllerDefinition?: ControllerDefinition;
   hostname: string;
   languages: string[];
+  nonce: string;
 }
 
 export interface GetCspParams {
@@ -264,6 +273,11 @@ export interface GetCspParams {
 }
 
 export interface GetCurrentAppMemberParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  app: App;
+}
+
+export interface GetCurrentAppMemberSelectedGroupParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
 }
@@ -448,7 +462,11 @@ export interface ParsedQuery {
 export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
 export interface Options {
+  getSecurityEmail: () => string;
   getCurrentAppMember: (params: GetCurrentAppMemberParams) => Promise<AppMemberInfo | null>;
+  getCurrentAppMemberSelectedGroup: (
+    params: GetCurrentAppMemberSelectedGroupParams,
+  ) => Promise<AppMemberGroup | null>;
   getCurrentAppMemberGroups: (params: GetCurrentAppMemberGroupsParams) => Promise<Group[] | null>;
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;

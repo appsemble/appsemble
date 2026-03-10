@@ -11,17 +11,17 @@ import {
 import { type AppMember, type AppModels } from '../index.js';
 
 export class OAuth2AuthorizationCodeGlobal extends Model {
-  code!: string;
+  declare code: string;
 
-  redirectUri!: string;
+  declare redirectUri: string;
 
-  scope!: string;
+  declare scope: string;
 
-  expires!: Date;
+  declare expires: Date;
 
-  AppMemberId!: string;
+  declare AppMemberId: string;
 
-  AppMember?: Awaited<AppMember>;
+  declare AppMember?: Awaited<AppMember>;
 }
 
 export function createOAuth2AuthorizationCodeModel(
@@ -32,23 +32,23 @@ export function createOAuth2AuthorizationCodeModel(
     @PrimaryKey
     @AllowNull(false)
     @Column(DataType.STRING)
-    code!: string;
+    declare code: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    redirectUri!: string;
+    declare redirectUri: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    scope!: string;
+    declare scope: string;
 
     @AllowNull(false)
     @Column(DataType.DATE)
-    expires!: Date;
+    declare expires: Date;
 
     @AllowNull(false)
     @Column(DataType.UUID)
-    AppMemberId!: string;
+    declare AppMemberId: string;
 
     static associate(models: AppModels): void {
       OAuth2AuthorizationCode.belongsTo(models.AppMember, {

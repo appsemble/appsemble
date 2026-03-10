@@ -20,45 +20,45 @@ export class AppScreenshot extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 
   @AllowNull(false)
   @Column(DataType.BLOB)
-  screenshot!: Buffer;
+  declare screenshot: Buffer;
 
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  width!: number;
+  declare width: number;
 
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  height!: number;
+  declare height: number;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  mime!: string;
+  declare mime: string;
 
   @Default(0)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  index!: number;
+  declare index: number;
 
   @Default('unspecified')
   @AllowNull(false)
   @Column(DataType.STRING)
-  language!: string;
+  declare language: string;
 
   @UpdatedAt
-  updated!: Date;
+  declare updated: Date;
 
   @CreatedAt
-  created!: Date;
+  declare created: Date;
 
   @ForeignKey(() => App)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  AppId!: number;
+  declare AppId: number;
 
   @BelongsTo(() => App)
-  App?: Awaited<App>;
+  declare App?: Awaited<App>;
 }

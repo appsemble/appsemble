@@ -8,6 +8,6 @@ export async function deleteAppScimUser(ctx: Context): Promise<void> {
     pathParams: { appId, appMemberId },
   } = ctx;
   const { AppMember } = await getAppDB(appId);
-  const deletedRows = await AppMember.destroy({ where: { id: appMemberId, AppId: appId } });
+  const deletedRows = await AppMember.destroy({ where: { id: appMemberId } });
   scimAssert(deletedRows, ctx, 404, 'User not found');
 }

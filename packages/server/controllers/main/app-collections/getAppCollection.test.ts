@@ -31,7 +31,7 @@ describe('getAppCollection', () => {
     vi.setSystemTime(0);
     user = await createTestUser();
     organization = await Organization.create({
-      id: 'testorganization',
+      id: String(Math.floor(100_000 + Math.random() * 900_000)),
       name: 'Test Organization',
     });
     await OrganizationMember.create({
@@ -102,7 +102,7 @@ describe('getAppCollection', () => {
     expect(response2.data).toMatchObject({
       id: 1,
       name: 'Private Collection',
-      OrganizationId: 'testorganization',
+      OrganizationId: organization.id,
       visibility: 'private',
       $expert: {
         name: 'Expert van den Expert',

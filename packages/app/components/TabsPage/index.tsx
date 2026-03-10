@@ -71,11 +71,12 @@ export function TabsPage({
         url: window.location.href,
         getMessage,
         getVariable,
+        group: appMemberSelectedGroup,
         appMemberInfo,
         context: { name: pageDefinition.name },
         locale: lang,
       }) as RemapperContext,
-    [appMemberInfo, getMessage, getVariable, lang, pageDefinition.name],
+    [appMemberInfo, appMemberSelectedGroup, getMessage, getVariable, lang, pageDefinition.name],
   );
 
   const checkSubPagePermissions = useCallback(
@@ -208,7 +209,7 @@ export function TabsPage({
           })}
         </Tabs>
         <MetaSwitch title={pageName}>
-          {pageTabs.map(({ blocks, name, roles }, index) => {
+          {pageTabs.map(({ blocks, layout, name, roles }, index) => {
             const defaultMessage =
               typeof name === 'string' ? name : String(remap(name, data, remapperContext));
             const translatedName = createdTabs.length
@@ -231,6 +232,7 @@ export function TabsPage({
                       ee={ee}
                       name={translatedName}
                       pageDefinition={pageDefinition}
+                      pageLayout={layout}
                       prefix={`${prefix}.tabs.${index}.blocks`}
                       prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
                       remap={remap}

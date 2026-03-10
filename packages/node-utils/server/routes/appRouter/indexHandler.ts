@@ -24,6 +24,12 @@ export function createIndexHandler({
   return async (ctx: Context) => {
     const { hostname, path } = ctx;
     const host = getHost({ context: ctx });
+    // Prevent mime-type sniffing,
+    // Visit https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Content-Type-Options to know more.
+    ctx.set('x-content-type-options', 'nosniff');
+    // Less strict due to the OAuth mechanism
+    // Visit https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy to know more.
+    ctx.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
     // Most of the fields here are used either directly or indirectly that's why no attributes query
     const app = await getApp({ context: ctx });
@@ -49,9 +55,9 @@ export function createIndexHandler({
     const appUrl = await getAppUrl({ app, context: ctx });
 
     if (appUrl.hostname !== hostname) {
-      appUrl.pathname = path;
-      appUrl.search = ctx.querystring;
-      ctx.redirect(String(appUrl));
+      const redirectUrl = new URL(path, appUrl);
+      redirectUrl.search = ctx.search;
+      ctx.redirect(String(redirectUrl));
       return;
     }
 
@@ -64,6 +70,8 @@ export function createIndexHandler({
 
     const identifiableBlocks = getAppBlocks(app.definition);
 
+    const nonce = randomBytes(16).toString('base64');
+
     const [settingsHash, settings] = await createSettings({
       context: ctx,
       app,
@@ -71,9 +79,8 @@ export function createIndexHandler({
       hostname,
       identifiableBlocks,
       languages,
+      nonce,
     });
-
-    const nonce = randomBytes(16).toString('base64');
 
     const csp = getCsp({ app, settingsHash, hostname, host, nonce });
     ctx.set('Content-Security-Policy', makeCSP(csp));

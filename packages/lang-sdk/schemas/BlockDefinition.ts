@@ -92,5 +92,9 @@ The exact meaning of the parameters depends on the block type.
       },
     },
     events: { $ref: '#/components/schemas/EventsDefinition' },
+    gridArea: {
+      type: 'string',
+      description: 'Grid area defined in the page layout definition',
+    },
   },
 };

@@ -25,6 +25,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
+    security: [{ studio: [] }, { app: [] }, {}],
   },
   post: {
     tags: ['main', 'seed-app-members', 'demo-member', 'app'],

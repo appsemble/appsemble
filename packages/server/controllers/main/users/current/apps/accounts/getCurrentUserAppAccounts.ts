@@ -13,31 +13,38 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
     query: includeOptions,
   } = parseLanguage(ctx, ctx.query?.language ?? []);
 
-  const apps = await App.findAll({
-    attributes: {
-      include: [
-        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
-        [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
-      ],
-      exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
-    },
-    include: [
-      {
-        model: Organization,
-        attributes: {
-          include: [
-            'id',
-            'name',
-            'updated',
-            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
-          ],
-        },
-      },
-      ...includeOptions,
-    ],
-  });
+  // Disable endpoint for now as it overloads the server causing a temporary outage
+  ctx.body = [];
+  return;
 
-  ctx.body = await Promise.all(
+  // eslint-disable-next-line no-unreachable
+  const apps = (
+    await App.findAll({
+      attributes: {
+        include: [
+          [literal('"App".icon IS NOT NULL'), 'hasIcon'],
+          [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
+        ],
+        exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
+      },
+      include: [
+        {
+          model: Organization,
+          attributes: {
+            include: [
+              'id',
+              'name',
+              'updated',
+              [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+            ],
+          },
+        },
+        ...includeOptions,
+      ],
+    })
+  ).filter((app) => app.definition.security);
+
+  const appAccounts = await Promise.all(
     apps.map(async (app) => {
       applyAppMessages(app, language, baseLanguage);
 
@@ -67,7 +74,7 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
       });
 
       if (!appMember) {
-        return {};
+        return;
       }
 
       return {
@@ -77,4 +84,7 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
       };
     }),
   );
+
+  // eslint-disable-next-line no-unreachable
+  ctx.body = appAccounts.filter((appAccount) => appAccount !== undefined);
 }

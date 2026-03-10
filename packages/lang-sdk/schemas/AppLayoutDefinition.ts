@@ -30,7 +30,7 @@ If set to \`navigation\`, it will only be visible if \`login\` is also visible i
     enabledSettings: {
       type: 'array',
       items: {
-        enum: ['name', 'phoneNumber', 'picture', 'languages'],
+        enum: ['email', 'name', 'phoneNumber', 'picture', 'languages', 'password'],
       },
       description: 'A list of the settings to display on the settings page.',
     },
@@ -70,6 +70,32 @@ If this is omitted, a collapsable side navigation menu will be rendered on the l
         },
         asset: { type: 'string' },
       },
+    },
+    headerTag: {
+      type: 'object',
+      description: 'Header text to be shown in a tag next to the page name',
+      additionalProperties: false,
+      properties: {
+        text: {
+          description: 'Text to be shown inside the tag',
+          $ref: '#/components/schemas/RemapperDefinition',
+        },
+        hide: {
+          description: 'Whether to hide the tag',
+          $ref: '#/components/schemas/RemapperDefinition',
+        },
+      },
+    },
+    titleBarText: {
+      description:
+        'Whether to display app name or the page name in the title bar, displays pageName by default',
+      type: 'string',
+      enum: ['appName', 'pageName'],
+    },
+    hideTitleBar: {
+      description: 'Whether to hide the title bar',
+      type: 'boolean',
+      default: false,
     },
   },
 };
