@@ -14,6 +14,13 @@ The published chart is also available on
 
 This page focuses on TLS setup patterns for Helm deployments.
 
+## Database migrations
+
+The Helm chart runs database migrations automatically after each `helm install` and `helm upgrade`.
+
+For operational migration checks and troubleshooting commands, use the chart documentation on
+[Artifact Hub](https://artifacthub.io/packages/helm/appsemble/appsemble) (see section `Migrations`).
+
 ## Cert-manager
 
 Cert-manager is manages TLS certificates in Kubernetes. It can be used to automatically provision
