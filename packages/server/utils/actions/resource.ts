@@ -16,10 +16,9 @@ import {
   getResourceDefinition,
   processResourceBody,
   type QueryParams,
-  serializeServerResource,
   uploadAssets,
+  serializeServerResource,
 } from '@appsemble/node-utils';
-import { serializeResource } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
@@ -165,19 +164,15 @@ export async function create({
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
-  const body = (remap(action.body ?? null, data, internalContext) ?? data) as
-    | Record<string, unknown>
-    | Record<string, unknown>[];
+  // eslint-disable-next-line prettier/prettier
+  const body = action.body ? ((remap(action.body ?? null, data, internalContext) ?? data) as
+        | Record<string, unknown>
+        | Record<string, unknown>[])
+    : (data as any);
 
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
-  if (context.is && context.is('multipart/form-data')) {
-    Object.assign(context.request, { body: serializeServerResource(body) });
-  } else {
-    Object.assign(context, { body: serializeResource(body) });
-    Object.assign(context, { request: {} });
-  }
 
   const [processedBody, preparedAssets] = processResourceBody(
     context,
@@ -185,6 +180,8 @@ export async function create({
     undefined,
     undefined,
     appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
+    false,
+    serializeServerResource(body),
   );
 
   const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
@@ -219,10 +216,12 @@ export async function update({
   const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(app.id);
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
-  const body = (remap(action.body ?? null, actionData, internalContext) ?? actionData) as Record<
-    string,
-    unknown
-  >;
+  // eslint-disable-next-line prettier/prettier
+  const body = action.body ? ((remap(action.body ?? null, actionData, internalContext) ?? actionData) as Record<
+        string,
+        unknown
+      >)
+    : (actionData as any);
 
   // Support action.id remapper (like client-side) or fallback to body.id
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
@@ -248,19 +247,14 @@ export async function update({
   const { getAppAssets } = options;
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
 
-  if (context.is && context.is('multipart/form-data')) {
-    Object.assign(context.request, { body: serializeServerResource(body) });
-  } else {
-    Object.assign(context, { body: serializeResource(body) });
-    Object.assign(context, { request: {} });
-  }
-
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
     context,
     definition,
     appAssets.filter((asset) => asset.resourceId === resource.id).map((asset) => asset.id),
     resource.expires,
     appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
+    false,
+    serializeServerResource(body),
   );
 
   const {
@@ -328,10 +322,10 @@ export async function patch({
   const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(app.id);
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
-  const body = (remap(action.body ?? null, actionData, internalContext) ?? actionData) as Record<
-    string,
-    unknown
-  >;
+  // eslint-disable-next-line prettier/prettier
+  const body = action.body ? ((remap(action.body ?? null, actionData, internalContext) ?? actionData) as
+    Record<string, unknown>)
+    : (actionData as any);
 
   // Support action.id remapper (like client-side) or fallback to body.id
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
@@ -356,13 +350,6 @@ export async function patch({
   const { getAppAssets } = options;
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
 
-  if (context.is && context.is('multipart/form-data')) {
-    Object.assign(context.request, { body: serializeServerResource(body) });
-  } else {
-    Object.assign(context, { body: serializeResource(body) });
-    Object.assign(context, { request: {} });
-  }
-
   const [patchedResource, preparedAssets, deletedAssetIds] = processResourceBody(
     context,
     definition,
@@ -370,6 +357,7 @@ export async function patch({
     resource.expires,
     appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
     true,
+    serializeServerResource(body),
   );
 
   const {

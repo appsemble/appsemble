@@ -36,7 +36,7 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
 
   // Check permissions for app auth and guest (not for webhook secret auth)
   if (!isWebhookSecretAuth) {
-    logger.info(`Checking permissions for webhook '${webhookName}'`);
+    logger.verbose(`Checking permissions for webhook '${webhookName}'`);
     await checkAppPermissions({
       context: ctx,
       app: app.toJSON(),
