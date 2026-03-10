@@ -92,6 +92,38 @@ helm repo update
 helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.auth.existingSecret=postgresql-secret' --set 'ingress.host=my-appsemble.example.com'
 ```
 
+## Migrations
+
+The chart runs database migrations automatically using the `migrate` Job hook after each install and
+upgrade.
+
+If the migration job fails, the Appsemble pod can still start but requests may fail with database
+errors such as `relation "AppCollection" does not exist`.
+
+Check migration status and logs after install/upgrade:
+
+```sh
+kubectl get jobs
+kubectl logs job/my-appsemble-migrate
+```
+
+If you use another namespace, add `-n <namespace>`.
+
+Optionally wait for the migration job to complete before validating the deployment:
+
+```sh
+kubectl wait --for=condition=complete job/my-appsemble-migrate --timeout=10m
+```
+
+To force migration to the latest known version during upgrade:
+
+```sh
+helm upgrade my-appsemble appsemble/appsemble \
+  --set 'global.postgresql.auth.existingSecret=postgresql-secret' \
+  --set 'ingress.host=my-appsemble.example.com' \
+  --set 'migrateTo=next'
+```
+
 ### Updating Secrets
 
 If you make changes to one or more secrets, the Appsemble kubernetes pod needs to be restarted for
