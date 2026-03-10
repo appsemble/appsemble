@@ -959,7 +959,7 @@ review:
     on_stop: stop review
     auto_stop_in: 1 day
   variables:
-    GIT_STRATEGY: none
+    GIT_STRATEGY: fetch
   retry:
     max: 1
     when:
@@ -1389,7 +1389,7 @@ cleanup review environments:
       when: manual
   allow_failure: true
   variables:
-    GIT_STRATEGY: none
+    GIT_STRATEGY: fetch
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:review"
     - apk add --no-cache curl jq tar
