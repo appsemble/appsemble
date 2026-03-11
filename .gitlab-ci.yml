@@ -99,7 +99,7 @@ workflow:
     - git commit --message "$MESSAGE" --cleanup whitespace --gpg-sign
     - git tag "$VERSION" --message "$MESSAGE" --cleanup whitespace --sign
     - RELEASE_TARGET_BRANCH="$CI_COMMIT_REF_NAME"
-    - echo "Pushing release commit to branch: $RELEASE_TARGET_BRANCH"
+    - 'echo "Pushing release commit to branch: $RELEASE_TARGET_BRANCH"'
     - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:"$RELEASE_TARGET_BRANCH"
     - |
       if [ $? -eq 0 ]; then
