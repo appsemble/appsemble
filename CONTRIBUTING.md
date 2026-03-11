@@ -542,11 +542,26 @@ npm --silent run scripts -- get-release-notes
 A release can be created by a maintainer triggering one of the release jos in the pipeline for the
 `main` branch.
 
+Release jobs can also be run from branches named `hotfix/<name>`. In that case, the generated
+release commit is pushed back to that same branch.
+
 We support the following releases:
 
 - prerelease --identifier test - Internal testing or testing with clients
 - patch - Backward-compatible bug fixes
 - minor - Backward-compatible new features or significant updates
+
+For prereleases, the GitLab `release test` job resolves the identifier from exactly one source:
+
+- `main` branch -> `test`
+- `hotfix/<name>` branch -> `<name>`
+
+The identifier must only contain letters, numbers, and hyphens (`[0-9A-Za-z-]`).
+
+Examples:
+
+- `test` -> `0.36.5-test.6`
+- `openshift` -> `0.36.5-openshift.0`
 
 > **Note**: Migrations are still added manually. Make sure the release matches any new migrations.
 > For example, if you’re releasing version `1.2.3`, make sure existing migrations in
