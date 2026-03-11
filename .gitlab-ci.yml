@@ -22,6 +22,8 @@ workflow:
     - if: $CI_MERGE_REQUEST_ID
     # By default, run jobs for every commit on main.
     - if: $CI_COMMIT_BRANCH == 'main'
+    # By default, run jobs for every hotfix branch.
+    - if: $CI_COMMIT_BRANCH =~ /^hotfix\/[0-9A-Za-z-]+$/
     # By default, run jobs for every commit on staging.
     - if: $CI_COMMIT_BRANCH == 'staging'
     # By default, run jobs for every tag
