@@ -153,7 +153,7 @@ helm install \
     --set  'ingress.annotations.nginx\.ingress\.kubernetes\.io/ssl-redirect="false"' \
     --set 'ingress.annotations.nginx\.ingres\.kubernetes\.io/force-ssl-redirect="false"' \
     `# or: if you want to use SSL locally, but don’t have a certificate` \
-    --set 'ingress.tls.secretName=""'
+    --set 'ingress.tls=false'
 ```
 
 If you want to set more values, you can also create a `values.yml` file somewhere, and pass

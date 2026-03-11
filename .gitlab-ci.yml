@@ -945,7 +945,7 @@ update dependencies:
 
 # Deploy the Docker image for a branch to a review environment.
 review:
-  image: dtzar/helm-kubectl:3.16.0@sha256:3d0876a8a4159fddfb381fcccf23c774bcfcd4b4ffdbb80c1a5c10c1eb23de54
+  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
   stage: deploy
   needs:
     - build docker image
@@ -1020,8 +1020,9 @@ review:
       --set "ingress.clusterIssuer=acme-issuer-dev"
       --set "ingress.enabled=true"
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
-      --set "ingress.tls.secretName=review-$CI_MERGE_REQUEST_IID-tls"
-      --set "ingress.tls.wildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
+      --set "ingress.tls=true"
+      --set "ingress.tlsSecretName=review-$CI_MERGE_REQUEST_IID-tls"
+      --set "ingress.tlsWildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
       --set "migrateTo=next"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
       --set "postgresql.primary.persistence.size=1Gi"
@@ -1112,8 +1113,9 @@ staging:
       --set "ingress.clusterIssuer=acme-issuer-dev"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.eu"
-      --set "ingress.tls.secretName=staging-tls"
-      --set "ingress.tls.wildcardSecretName=staging-tls-wildcard"
+      --set "ingress.tls=true"
+      --set "ingress.tlsSecretName=staging-tls"
+      --set "ingress.tlsWildcardSecretName=staging-tls-wildcard"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=1G"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/force-ssl-redirect=\"true\""
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/ssl-redirect=\"true\""
@@ -1225,8 +1227,9 @@ production:
       --set "ingress.clusterIssuer=acme-issuer-prod"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
-      --set "ingress.tls.secretName=appsemble-tls"
-      --set "ingress.tls.wildcardSecretName=appsemble-tls-wildcard"
+      --set "ingress.tls=true"
+      --set "ingress.tlsSecretName=appsemble-tls"
+      --set "ingress.tlsWildcardSecretName=appsemble-tls-wildcard"
       --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
       --set "postgresql.enabled=true"
