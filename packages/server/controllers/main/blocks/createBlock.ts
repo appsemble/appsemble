@@ -138,16 +138,16 @@ export async function createBlock(ctx: Context): Promise<void> {
         { logging: false, transaction },
       );
 
-      if (messages) {
-        await BlockMessages.bulkCreate(
-          Object.entries(messages).map(([language, content]) => ({
-            language,
-            messages: content,
-            BlockVersionId: createdBlock.id,
-          })),
-          { transaction },
-        );
-      }
+      createdBlock.BlockMessages = messages
+        ? await BlockMessages.bulkCreate(
+            Object.entries(messages).map(([language, content]) => ({
+              language,
+              messages: content,
+              BlockVersionId: createdBlock.id,
+            })),
+            { transaction },
+          )
+        : [];
 
       createdBlock.Organization = new Organization({ id: OrganizationId });
       if (!icon) {
@@ -156,7 +156,10 @@ export async function createBlock(ctx: Context): Promise<void> {
         });
       }
 
-      ctx.body = blockVersionToJson(createdBlock);
+      const manifestJson = blockVersionToJson(createdBlock);
+      await createdBlock.update({ manifestJson }, { transaction });
+
+      ctx.body = manifestJson;
     });
   } catch (err: unknown) {
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
