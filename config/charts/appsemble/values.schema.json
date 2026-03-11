@@ -72,18 +72,8 @@
           "description": "The host name on which the ingress will expose the service."
         },
         "tls": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "secretName": {
-              "type": "string",
-              "description": "The secret name to use to configure TLS for the top level host."
-            },
-            "wildcardSecretName": {
-              "type": "string",
-              "description": "The secret name to use to configure TLS for the direct wildcard host."
-            }
-          }
+          "type": "boolean",
+          "description": "Whether TLS should be configured for the top level and wildcard hosts."
         },
         "issuer": {
           "type": "string",
@@ -92,6 +82,14 @@
         "clusterIssuer": {
           "type": "string",
           "description": "The name of the cert-manager cluster issuer to use for apps."
+        },
+        "tlsSecretName": {
+          "type": "string",
+          "description": "The secret name to use to configure TLS for the top level host."
+        },
+        "tlsWildcardSecretName": {
+          "type": "string",
+          "description": "The secret name to use to configure TLS for the direct wildcard host."
         }
       }
     },

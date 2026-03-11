@@ -26,10 +26,9 @@ ingress:
     nginx.ingress.kubernetes.io/limit-rps: '400'
     nginx.ingress.kubernetes.io/limit-connections: '150'
   host: ''
-  tls:
-    {}
-    # secretName: chart-example-tls
-  # wildcardSecretName: chart-example-tls-wildcard
+  tls: false
+  tlsSecretName: ''
+  tlsWildcardSecretName: ''
 
 # OpenShift Route configuration (alternative to Ingress)
 route:
