@@ -16,7 +16,8 @@ export const semver = new RegExp(`^${partialSemver.source}$`);
 /**
  * A pattern for extracting a normalized string.
  */
-export const partialNormalized = /([\da-z](?:(?!.*--)[\da-z-]*[\da-z])?)/;
+// eslint-disable-next-line unicorn/better-regex
+export const partialNormalized = /([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)/;
 
 /**
  * A pattern for exactly matching a lower case hyphen separated string.
@@ -35,19 +36,22 @@ export const domainPattern = new RegExp(`^(${partialNormalized.source}+\\.)+[a-z
 /**
  * A pattern to match a Google Analytics ID or an empty string.
  */
-export const googleAnalyticsIDPattern = /^(|UA-\d{4,10}-\d{1,4}|G-[\dA-Z]{4,})$/;
+// eslint-disable-next-line unicorn/better-regex
+export const googleAnalyticsIDPattern = /^(|UA-[0-9]{4,10}-[0-9]{1,4}|G-[0-9A-Z]{4,})$/;
 
 /**
  * A pattern to match a Meta (Facebook) Pixel ID or an empty string.
  * Meta Pixel IDs are numeric strings, usually 5–20 digits.
  */
-export const metaPixelIDPattern = /^(|\d{5,20})$/;
+// eslint-disable-next-line unicorn/better-regex
+export const metaPixelIDPattern = /^(|[0-9]{5,20})$/;
 
 /**
  * A pattern to match a MS Clarity Project ID or an empty string.
  * Clarity IDs are alphanumeric strings, typically 8–20 characters long.
  */
-export const msClarityIDPattern = /^(|[\dA-Za-z]{8,20})$/;
+// eslint-disable-next-line unicorn/better-regex
+export const msClarityIDPattern = /^(|[0-9A-Za-z]{8,20})$/;
 
 /**
  * A pattern which matches a UUID 4.
