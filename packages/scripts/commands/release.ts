@@ -303,8 +303,13 @@ export function builder(yargs: Argv): Argv<any> {
 export async function handler({ identifier, increment }: Args): Promise<void> {
   const workspaces = await getWorkspaces(process.cwd());
   logger.info(`Old version: ${version}`);
-  const newVersion = semver.inc(version, increment, identifier);
-  if (newVersion == null) {
+  const newVersion =
+    increment === 'prerelease' && identifier
+      ? identifier !== 'test' && semver.prerelease(version) == null
+        ? `${version}-${identifier}.0`
+        : semver.inc(version, increment, identifier)
+      : semver.inc(version, increment);
+  if (newVersion == null || semver.valid(newVersion) == null) {
     throw new Error(`Invalid version increment: ${increment}, semver.inc returned ${newVersion}`);
   }
   logger.info(`New version: ${newVersion}`);
