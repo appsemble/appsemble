@@ -175,7 +175,7 @@ build docker image:
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
     # Extract dist/ from the built image for sourcemap uploads to Sentry
     - mkdir -p dist
-    - docker run --rm -v $(pwd)/dist:/host/dist "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" cp -r /app/dist /host/
+    - docker run --rm --user 0:0 --entrypoint cp -v $(pwd):/host "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" -r /app/dist /host/
   artifacts:
     paths:
       - dist/
