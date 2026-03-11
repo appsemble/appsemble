@@ -1,7 +1,7 @@
 default:
   tags:
     - dcentralize
-  image: node:24-trixie-slim@sha256:4fc981bf8dfc5e36e15e0cb73c5761a14cabff0932dcad1cf26cd3c3425db5d4
+  image: node:24-trixie-slim
 
 stages:
   - security
@@ -34,8 +34,8 @@ workflow:
 .docker:
   interruptible: true
   services:
-    - docker:dind@sha256:1ba18449911d01f477a3fc104123c85d677addc60701b14b3fcb5381f9c4a537
-  image: docker@sha256:1ba18449911d01f477a3fc104123c85d677addc60701b14b3fcb5381f9c4a537
+    - docker:dind
+  image: docker
   dependencies: []
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
@@ -94,7 +94,7 @@ workflow:
 # Automatically approve merge requests from Renovate bot after build succeeds
 auto-approve-renovate:
   stage: test
-  image: alpine:latest@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+  image: alpine:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\// && $CI_MERGE_REQUEST_APPROVED != "true"
   needs:
@@ -113,7 +113,7 @@ auto-approve-renovate:
 
 secret-scan-mr:
   stage: security
-  image: node:24-trixie@sha256:81649592d9833d9220423561fc517b34e932b751873274024c2a969ff4a9bfc2
+  image: node:24-trixie
   variables:
     BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
     HEAD_SHA: ${CI_COMMIT_SHA}
@@ -197,13 +197,13 @@ seed database:
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
   services:
-    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
+    - name: postgres:17
       alias: database
       variables:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    - name: minio/minio:latest
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
@@ -308,7 +308,7 @@ pack:
 
 # Package the Helm chart
 helm package:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   stage: build
   needs: []
   script:
@@ -344,7 +344,7 @@ eslint:
 
 # Lint Helm charts.
 helm lint:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   stage: test
   needs: []
   script:
@@ -352,7 +352,7 @@ helm lint:
 
 # Lint shell scripts
 shellcheck:
-  image: koalaman/shellcheck-alpine@sha256:920e1ce5b6839f906344c37b0cc34d207347d23db3858b647369bebe973fc653
+  image: koalaman/shellcheck-alpine
   stage: test
   needs: []
   script:
@@ -391,9 +391,9 @@ stylelint:
 test node:
   extends: .npm
   services:
-    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
+    - name: postgres:17
       alias: postgres
-    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    - name: minio/minio:latest
       alias: minio
       command: ['server', '/data']
       variables:
@@ -443,7 +443,7 @@ check migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
+    - name: postgres:17
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -459,7 +459,7 @@ check down migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
+    - name: postgres:17
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -475,7 +475,7 @@ fuzz migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
+    - name: postgres:17
       alias: postgres
   variables:
     POSTGRES_DB: testAppsemble
@@ -524,7 +524,7 @@ validate snippets:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    - name: minio/minio:latest
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
@@ -557,7 +557,7 @@ validate snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.58.1-noble@sha256:feae0b1581609d3dc2ba22567b4703dd6a3e7a219984bb86a19ed35007148a91
+  image: mcr.microsoft.com/playwright:v1.58.1-noble
   interruptible: true
   needs:
     - build docker image
@@ -581,7 +581,7 @@ e2e node:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    - name: minio/minio:latest
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
@@ -798,7 +798,7 @@ publish docker:
 
 # Publish the Helm chart to https://charts.appsemble.com
 publish helm:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   needs:
     - helm package
   stage: publish
@@ -871,7 +871,7 @@ sentry release:
     - job: build docker image
       artifacts: true
   image:
-    name: getsentry/sentry-cli:2@sha256:2a60d341709d8ae040b842556c66f98443cc6d59101cab751f9811f3a1df9362
+    name: getsentry/sentry-cli:2
     entrypoint: [/bin/sh, -c]
   stage: publish
   rules:
@@ -945,7 +945,7 @@ update dependencies:
 
 # Deploy the Docker image for a branch to a review environment.
 review:
-  image: dtzar/helm-kubectl:3.16.0@sha256:3d0876a8a4159fddfb381fcccf23c774bcfcd4b4ffdbb80c1a5c10c1eb23de54
+  image: dtzar/helm-kubectl:3.16.0
   stage: deploy
   needs:
     - build docker image
@@ -1052,7 +1052,7 @@ review:
 
 # Stop a review environment.
 stop review:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   dependencies: []
   stage: deploy
   rules:
@@ -1074,7 +1074,7 @@ stop review:
 
 # Deploy the Docker image for main to the staging environment.
 staging:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
     - build docker image
@@ -1166,7 +1166,7 @@ staging:
     - kubectl -n default get cronjob staging-s3-assets-backup -o jsonpath='{.spec.schedule}{"\n"}'
 
 production:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
     - publish docker
@@ -1380,7 +1380,7 @@ provision production:
 
 # Stop and cleanup all review environments.
 cleanup review environments:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   dependencies: []
   stage: cleanup
   rules:
