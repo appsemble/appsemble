@@ -36,7 +36,7 @@ export const description = 'Prepare files for a new release.';
 
 interface Args {
   increment: 'minor' | 'patch' | 'prerelease';
-  identifier: 'test';
+  identifier?: string;
 }
 
 interface Changes {
@@ -265,11 +265,16 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('identifier', {
       description: `The identifier to use for the pre-release version:
-        - test: Internal testing or testing with clients (e.g., test.3).`,
-      choices: ['test'],
+        - test: Internal testing or testing with clients (e.g., test.3).
+        - openshift: OpenShift specific backports (e.g., openshift.0).`,
       default: undefined,
     })
     .check((argv) => {
+      if (argv.identifier && !/^[\dA-Za-z-]+$/.test(argv.identifier)) {
+        throw new Error(
+          'The "identifier" must only contain letters, numbers, or hyphens to be valid semver pre-release metadata.',
+        );
+      }
       if (argv.increment === 'prerelease' && !argv.identifier) {
         throw new Error(
           'The "identifier" must be specified when incrementing the pre-release version.',
@@ -286,6 +291,8 @@ export function builder(yargs: Argv): Argv<any> {
       'Examples:\n' +
         '  Increment to the next test version:\n' +
         '    npm run scripts -- release prerelease --identifier test\n' +
+        '  Increment to the next openshift version:\n' +
+        '    npm run scripts -- release prerelease --identifier openshift\n' +
         '  Increment the minor version:\n' +
         '    npm run scripts -- release minor\n' +
         '  Increment the patch version:\n' +
