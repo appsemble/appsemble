@@ -54,7 +54,7 @@ workflow:
   extends: .npm
   stage: publish
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'main' || $CI_COMMIT_BRANCH =~ /^hotfix\/[0-9A-Za-z-]+$/
       when: manual
   allow_failure: true
   script:
@@ -62,8 +62,28 @@ workflow:
     - apt-get install --yes git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
     - |
-      if [ -n "$IDENTIFIER" ]; then
-        npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
+      resolve_identifier_from_branch_name() {
+        case "$CI_COMMIT_REF_NAME" in
+          hotfix/*)
+            printf '%s\n' "${CI_COMMIT_REF_NAME##*/}" |
+              sed -nE 's/^([0-9A-Za-z-]+)$/\1/p'
+            ;;
+        esac
+      }
+
+      if [ "$INCREMENT" = 'prerelease' ]; then
+        if [ "$CI_COMMIT_REF_NAME" = 'main' ]; then
+          RELEASE_IDENTIFIER='test'
+        else
+          RELEASE_IDENTIFIER="$(resolve_identifier_from_branch_name)"
+        fi
+        if [ -z "$RELEASE_IDENTIFIER" ]; then
+          echo 'No pre-release identifier resolved.'
+          echo 'Use main for test prereleases or a hotfix/<identifier> branch for custom prereleases.'
+          exit 1
+        fi
+        echo "Using pre-release identifier: $RELEASE_IDENTIFIER"
+        npm run scripts -- release "$INCREMENT" --identifier "$RELEASE_IDENTIFIER"
       else
         npm run scripts -- release "$INCREMENT"
       fi
@@ -78,13 +98,15 @@ workflow:
     - git add .
     - git commit --message "$MESSAGE" --cleanup whitespace --gpg-sign
     - git tag "$VERSION" --message "$MESSAGE" --cleanup whitespace --sign
-    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:main
+    - RELEASE_TARGET_BRANCH="$CI_COMMIT_REF_NAME"
+    - echo "Pushing release commit to branch: $RELEASE_TARGET_BRANCH"
+    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:"$RELEASE_TARGET_BRANCH"
     - |
       if [ $? -eq 0 ]; then
-        echo "Code push successful. Pushing tags..."
+        echo "Code push to $RELEASE_TARGET_BRANCH successful. Pushing tags..."
         git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" --tags
       else
-        echo "Push to main branch failed. Tags will not be pushed."
+        echo "Code push to $RELEASE_TARGET_BRANCH failed. Tags will not be pushed."
       fi
 
 ###################################################################################################
@@ -707,12 +729,14 @@ sentry release:
     - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
     - sentry-cli releases files upload-sourcemaps dist/
 
-# Create a test pre-release
+# Create a pre-release. By default this creates a test release.
+# Branch behavior:
+# - main -> test prerelease identifier
+# - hotfix/<name> -> <name> prerelease identifier
 release test:
   extends: .release
   variables:
     INCREMENT: prerelease
-    IDENTIFIER: test
 
 # Create a patch release
 release patch:
