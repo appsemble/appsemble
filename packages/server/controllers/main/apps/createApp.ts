@@ -247,7 +247,7 @@ export async function createApp(ctx: Context): Promise<void> {
     } catch (error) {
       // AppsembleError is only thrown when dryRun is set, meaning it’s only used to test
       if (error instanceof AppsembleError) {
-        await App.destroy({ where: { id: createdApp.id }, force: true });
+        await App.destroy({ where: { id: createdApp.id }, force: true, individualHooks: true });
         ctx.status = 204;
         return;
       }
