@@ -30,5 +30,10 @@ spec:
                 - cleanup-soft-deleted-records
                 - -vv
               env:
+                - name: AES_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.secretSecret | quote }}
+                      key: aes-secret
 {{ include "appsemble.postgres" . | indent 16 }}
 {{ end }}
