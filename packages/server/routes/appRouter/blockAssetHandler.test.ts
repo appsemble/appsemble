@@ -29,6 +29,7 @@ describe('blockAssetHandler', () => {
     });
     expect(response.status).toBe(200);
     expect(response.headers['content-type']).toBe('image/png');
+    expect(response.headers['cache-control']).toBe('max-age=31536000,immutable');
     expect(response.data).toMatchImageSnapshot();
   });
 
