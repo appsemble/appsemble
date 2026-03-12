@@ -103,6 +103,13 @@ describe('createBlock', () => {
         messages: { test: 'bar' },
       },
     ]);
+
+    expect(blockVersionMessages.manifestJson).toMatchObject({
+      files: ['build/standing.png', 'build/testblock.js'],
+      languages: ['en', 'nl'],
+      name: '@xkcd/standing',
+      version: '1.32.9',
+    });
   });
 
   it('should not accept messages when publishing blocks if english is excluded', async () => {
