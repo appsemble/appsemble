@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
 
-npx gitleaks-secret-scanner --diff-mode staged && npx lint-staged
+npx gitleaks-secret-scanner --diff-mode staged &&
+  npx lint-staged --config package.json --relative
