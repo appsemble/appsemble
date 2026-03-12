@@ -395,7 +395,7 @@ pages:
   - name: Test
     blocks:
       - type: button-list
-        version: 0.32.2-openshift.0
+        version: 0.32.2-openshift.1
         actions:
           handle:
             type: request

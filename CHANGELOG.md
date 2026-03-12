@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.2-openshift.1](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-openshift.1)] - 2026-03-12
+
 ## \[[0.32.2-openshift.0](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-openshift.0)] - 2026-03-11
 
 ## \[[0.32.2](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2)] - 2025-06-11
