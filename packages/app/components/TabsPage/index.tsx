@@ -243,9 +243,7 @@ export function TabsPage({
                   ) : null
                 }
                 key={defaultMessage}
-                path={`/${normalize(translatedName)}${String(
-                  (pageDefinition.parameters || []).map((param) => `/:${param}`),
-                )}`}
+                path={`/${normalize(translatedName)}${(pageDefinition.parameters || []).map((param) => `/:${param}`).join('')}`}
               />
             );
           })}

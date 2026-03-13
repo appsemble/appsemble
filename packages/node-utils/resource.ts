@@ -68,6 +68,25 @@ export function serializeServerResource(
   };
 }
 
+export type SerializedServerResourceBody = ReturnType<typeof serializeServerResource>;
+type SerializedMultipartBody = Extract<
+  SerializedServerResourceBody,
+  { resource: JsonValue; assets: TempFile[] }
+>;
+
+function isSerializedMultipartBody(
+  value: SerializedServerResourceBody,
+): value is SerializedMultipartBody {
+  return (
+    value != null &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    'resource' in value &&
+    'assets' in value &&
+    Array.isArray(value.assets)
+  );
+}
+
 /**
  * Get the resource definition of an app by name.
  *
@@ -118,6 +137,8 @@ export function getResourceDefinition(
  * Extracts the IDs of resource request body.
  *
  * @param ctx The Koa context to extract the body from.
+ * @param suppliedBody A resource body to use directly without reading from context.
+ *   Supports multipart-style `{ resource, assets }` input.
  * @returns A tuple which consists of:
  *
  *   1. One or more resources processed from the request body.
@@ -125,17 +146,29 @@ export function getResourceDefinition(
  *   3. preValidateProperty function used for reconstructing resources from a CSV file.
  */
 export function extractResourceBody(
-  ctx: Context | ParameterizedContext<DefaultState, DefaultContext, any>,
+  ctx: Context | ParameterizedContext<DefaultState, DefaultContext, any> | undefined,
+  suppliedBody?: SerializedServerResourceBody,
 ): [
   Record<string, unknown> | Record<string, unknown>[],
   TempFile[],
   PreValidatePropertyFunction | undefined,
 ] {
   let body: ResourceType | ResourceType[];
-  let assets: TempFile[];
+  let assets: TempFile[] = [];
   let preValidateProperty: PreValidatePropertyFunction | undefined;
 
-  if (ctx?.request?.body && ctx.is('multipart/form-data')) {
+  if (suppliedBody !== undefined) {
+    if (isSerializedMultipartBody(suppliedBody)) {
+      assets = suppliedBody.assets;
+      body = suppliedBody.resource as ResourceType | ResourceType[];
+
+      if (Array.isArray(body) && body.length === 1) {
+        [body] = body;
+      }
+    } else {
+      body = suppliedBody as ResourceType | ResourceType[];
+    }
+  } else if (ctx?.request?.body && ctx.is('multipart/form-data')) {
     ({ assets = [], resource: body } = ctx.request.body);
 
     if (Array.isArray(body) && body.length === 1) {
@@ -146,10 +179,10 @@ export function extractResourceBody(
       preValidateProperty = preProcessCSV;
     }
     ({ body } = ctx.request);
-    assets = [];
-  } else {
+  } else if (ctx) {
     ({ body } = ctx);
-    assets = [];
+  } else {
+    throw new Error('No resource body provided.');
   }
 
   return [
@@ -171,6 +204,7 @@ export function extractResourceBody(
  * @param knownExpires A previously known expires value.
  * @param knownAssetNameIds A list of asset ids with asset names that already exist.
  * @param [isPatch] if the "PATCH" HTTP method is being used.
+ * @param resourceBody Used to process resources from non-request contexts.
  * @returns A tuple which consists of:
  *
  *   1. One or more resources processed from the request body.
@@ -184,8 +218,9 @@ export function processResourceBody(
   knownExpires?: Date,
   knownAssetNameIds: { id: string; name?: string }[] = [],
   isPatch = false,
+  resourceBody?: SerializedServerResourceBody,
 ): [Record<string, unknown> | Record<string, unknown>[], PreparedAsset[], string[]] {
-  const [resource, assets, preValidateProperty] = extractResourceBody(ctx);
+  const [resource, assets, preValidateProperty] = extractResourceBody(ctx, resourceBody);
   const validator = new Validator();
 
   const reusedAssets = new Set<string>();

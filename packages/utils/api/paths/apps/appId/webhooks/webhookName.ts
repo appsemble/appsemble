@@ -31,6 +31,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
-    security: [{ webhook: [] }],
+    security: [{ webhook: [] }, { app: ['email', 'profile'] }, {}],
   },
 };

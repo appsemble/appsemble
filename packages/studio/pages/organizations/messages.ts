@@ -285,4 +285,8 @@ export const messages = defineMessages({
     id: 'studio.wui5o0',
     defaultMessage: 'The permission to view subscriptions.',
   },
+  InvokeAppWebhooks: {
+    id: 'studio.9CzlTo',
+    defaultMessage: 'The permission to invoke app webhooks.',
+  },
 });

@@ -1,6 +1,7 @@
 import { type Readable } from 'node:stream';
 
 import {
+  type ActionDefinition,
   type AppMemberGroup,
   type BlockDefinition,
   type ControllerDefinition,
@@ -409,6 +410,19 @@ export interface SendNotificationsParams {
   link: string;
 }
 
+export interface HandleActionParams {
+  app: App;
+  action: ActionDefinition;
+  mailer: any;
+  data: any;
+  options: Options;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+}
+
+export type ServerAction = (params: HandleActionParams) => Promise<any>;
+
+export type ServerActions = Partial<Record<ActionDefinition['type'], ServerAction>>;
+
 export interface AppDetails {
   appPath: string;
   organizationId: string;
@@ -510,6 +524,8 @@ export interface Options {
   email: (params: EmailParams) => Promise<void>;
   sendNotifications: (params: SendNotificationsParams) => Promise<void>;
   getAppVariables: (params: GetAppVariablesParams) => Promise<AppConfigEntry[]>;
+  handleAction?: (serverAction: ServerAction, params: HandleActionParams) => Promise<any>;
+  serverActions?: ServerActions;
 }
 
 export class TempFile {

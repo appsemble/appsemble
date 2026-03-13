@@ -71,7 +71,8 @@ export type ActionDefinition =
   | StorageReadActionDefinition
   | StorageSubtractActionDefinition
   | StorageUpdateActionDefinition
-  | StorageWriteActionDefinition;
+  | StorageWriteActionDefinition
+  | WebhookActionDefinition;
 
 export type ActionName =
   | 'analytics'
@@ -139,7 +140,8 @@ export type ActionName =
   | 'storage.subtract'
   | 'storage.update'
   | 'storage.write'
-  | 'throw';
+  | 'throw'
+  | 'webhook';
 
 export interface BaseActionDefinition<T extends ActionName> {
   /**
@@ -921,4 +923,20 @@ export interface CsvParserActionDefinition extends BaseActionDefinition<'csv.par
    * Delimiter
    */
   delimiter?: Remapper;
+}
+
+export interface WebhookActionDefinition extends BaseActionDefinition<'webhook'> {
+  /**
+   * The name of the webhook to invoke.
+   *
+   * This must be a webhook defined in the app's `webhooks` section.
+   */
+  name: string;
+
+  /**
+   * A remapper for the webhook body.
+   *
+   * If this isn't specified, the raw input data is passed to the webhook.
+   */
+  body?: Remapper;
 }
