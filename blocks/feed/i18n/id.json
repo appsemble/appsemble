@@ -1,6 +1,7 @@
 {
   "anonymousLabel": "Anonim",
   "emptyLabel": "Tidak ada data untuk ditampilkan",
+  "permissionDeniedLabel": "Hubungi administrator Anda untuk meningkatkan peran Anda jika Anda mengharapkan data di sini",
   "replyErrorMessage": "Ada yang tidak beres saat mencoba mengirim pesan ini.",
   "replyLabel": "Tinggalkan pesan…"
 }

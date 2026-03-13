@@ -1,6 +1,7 @@
 {
   "anonymousLabel": "Anonym",
   "emptyLabel": "Keine Daten zum Anzeigen",
+  "permissionDeniedLabel": "Kontaktiere deinen Administrator, um deine Rolle hochzustufen, wenn du hier Daten erwartet hast",
   "replyErrorMessage": "Beim Versuch, diese Nachricht zu senden, ist ein Fehler aufgetreten.",
   "replyLabel": "Nachricht hinterlassen…"
 }
