@@ -62,6 +62,11 @@ export interface ProjectConfig {
    * ^\d+\.\d+\.\d+$
    */
   version: string;
+
+  /**
+   * The URL to the source code repository of the project.
+   */
+  repositoryUrl?: string;
 }
 
 export interface ProjectImplementations {

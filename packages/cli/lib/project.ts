@@ -62,8 +62,16 @@ export async function makeProjectPayload(
 
   const gatheredData = {} as BlockManifest;
 
-  const { description, layout, longDescription, name, version, visibility, wildcardActions } =
-    buildConfig;
+  const {
+    description,
+    layout,
+    longDescription,
+    name,
+    repositoryUrl,
+    version,
+    visibility,
+    wildcardActions,
+  } = buildConfig;
 
   const { actions, events, messages, parameters } = getProjectImplementations(buildConfig);
 
@@ -89,6 +97,7 @@ export async function makeProjectPayload(
   append('actions', actions);
   append('description', description);
   append('longDescription', longDescription);
+  append('repositoryUrl', repositoryUrl);
   append('events', events);
   append('layout', layout);
   append('name', name);
