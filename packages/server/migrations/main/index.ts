@@ -46,6 +46,7 @@ import * as m0_35_7 from './0.35.7.js';
 import * as m0_36_3 from './0.36.3.js';
 import * as m0_36_4 from './0.36.4.js';
 import * as m0_36_5_test_6 from './0.36.5-test.6.js';
+import * as m0_36_5 from './0.36.5.js';
 import { type Migration } from '../../utils/migrate.js';
 
 export const migrations: Migration[] = [
@@ -97,4 +98,5 @@ export const migrations: Migration[] = [
   m0_36_3,
   m0_36_4,
   m0_36_5_test_6,
+  m0_36_5,
 ];

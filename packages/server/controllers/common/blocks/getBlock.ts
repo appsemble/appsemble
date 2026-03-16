@@ -17,6 +17,7 @@ export async function getBlock(ctx: Context): Promise<void> {
       'examples',
       'longDescription',
       'name',
+      'repositoryUrl',
       'version',
       'actions',
       'events',

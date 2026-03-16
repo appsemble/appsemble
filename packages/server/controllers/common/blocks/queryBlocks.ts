@@ -22,6 +22,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
       bv.name,
       bv."OrganizationId",
       bv.parameters,
+      bv."repositoryUrl",
       bv.version,
       bv.visibility,
       bv."wildcardActions",
@@ -51,6 +52,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
       name,
       organizationUpdated,
       parameters,
+      repositoryUrl,
       version,
       wildcardActions,
     } = blockVersion;
@@ -65,6 +67,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
       name: `@${OrganizationId}/${name}`,
       description,
       longDescription,
+      repositoryUrl,
       version,
       actions,
       events,

@@ -52,6 +52,9 @@ export class BlockVersion extends Model {
   @Column(DataType.TEXT)
   declare longDescription?: string;
 
+  @Column(DataType.TEXT)
+  declare repositoryUrl?: string;
+
   @Column(DataType.JSON)
   declare parameters?: Schema;
 

@@ -19,6 +19,7 @@ export async function getBlockVersions(ctx: Context): Promise<void> {
       'events',
       'examples',
       'layout',
+      'repositoryUrl',
       'version',
       'parameters',
       'wildcardActions',

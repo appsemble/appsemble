@@ -6,11 +6,50 @@ import { AppsembleError, resolveFixture } from '@appsemble/node-utils';
 import { ts } from 'ts-json-schema-generator';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getProjectImplementations } from './config.js';
+import { getProjectImplementations, getRepositoryUrl } from './config.js';
 
 describe('config', () => {
   beforeEach(() => {
     vi.spyOn(process, 'cwd').mockReturnValue(resolveFixture('.'));
+  });
+
+  describe('getRepositoryUrl', () => {
+    it('should return undefined if no repository field exists', () => {
+      expect(getRepositoryUrl({})).toBeUndefined();
+    });
+
+    it('should return the URL directly if repository is a string', () => {
+      expect(getRepositoryUrl({ repository: 'https://gitlab.com/appsemble/appsemble' })).toBe(
+        'https://gitlab.com/appsemble/appsemble',
+      );
+    });
+
+    it('should return undefined if repository object has no url', () => {
+      expect(getRepositoryUrl({ repository: { type: 'git' } as any })).toBeUndefined();
+    });
+
+    it('should strip .git suffix from repository url', () => {
+      expect(
+        getRepositoryUrl({
+          repository: {
+            type: 'git',
+            url: 'https://gitlab.com/appsemble/appsemble.git',
+          },
+        }),
+      ).toBe('https://gitlab.com/appsemble/appsemble');
+    });
+
+    it('should append directory path for GitLab repositories', () => {
+      expect(
+        getRepositoryUrl({
+          repository: {
+            type: 'git',
+            url: 'https://gitlab.com/appsemble/appsemble.git',
+            directory: 'blocks/form',
+          },
+        }),
+      ).toBe('https://gitlab.com/appsemble/appsemble/-/tree/main/blocks/form');
+    });
   });
 
   describe('getProjectImplementations', () => {
