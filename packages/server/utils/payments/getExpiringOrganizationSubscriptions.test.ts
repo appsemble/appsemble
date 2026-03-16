@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { getExpiringOrganizationSubscriptions } from './getExpiringOrganizationSubscriptions.js';
-import { Organization, OrganizationSubscription } from '../models/index.js';
+import { Organization, OrganizationSubscription } from '../../models/index.js';
 
 describe('getExpiringOrganizationSubscriptions', () => {
   const date = dayjs().add(1, 'day');
