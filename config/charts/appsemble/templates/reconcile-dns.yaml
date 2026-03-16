@@ -42,11 +42,7 @@ spec:
             - name: SERVICE_PORT
               value: http
             - name: HOST
-              {{ if .Values.ingress.enabled -}}
-              value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
-              {{- else }}
-              value: http://{{ include "appsemble.fullname" . }}
-              {{- end }}
+              value: {{ include "appsemble.host" . }}
             {{- with .Values.ingress.issuer }}
             - name: ISSUER
               value: {{ . | quote }}
