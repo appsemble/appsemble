@@ -13,6 +13,8 @@ export function createVitestConfig({ url }) {
   );
 
   const setupFilesAfterEnv = [];
+  const isGitLabCi = process.env.GITLAB_CI === 'true';
+  const maxWorkers = process.env.VITEST_MAX_WORKERS ?? (isGitLabCi ? '90%' : '50%');
 
   // Load vitest.setup.ts if it exists, otherwise skip it.
   const setup = new URL('vitest.setup.ts', url);
@@ -28,6 +30,7 @@ export function createVitestConfig({ url }) {
       mockReset: true,
       hookTimeout: 60_000,
       testTimeout: 60_000,
+      maxWorkers,
       environment: lib.includes('dom') || lib.includes('webworker') ? 'jsdom' : 'node',
       setupFiles: setupFilesAfterEnv,
       environmentOptions: {

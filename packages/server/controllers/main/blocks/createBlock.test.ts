@@ -58,6 +58,7 @@ describe('createBlock', () => {
       languages: null,
       layout: null,
       parameters: null,
+      repositoryUrl: null,
       version: '1.32.9',
       description: null,
       longDescription: null,
@@ -65,6 +66,27 @@ describe('createBlock', () => {
     });
 
     expect(status).toBe(201);
+  });
+
+  it('should accept and return repositoryUrl when publishing blocks', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append(
+      'repositoryUrl',
+      'https://gitlab.com/appsemble/appsemble/-/tree/main/blocks/form',
+    );
+    formData.append('files', createFixtureStream('standing.png'), {
+      filename: encodeURIComponent('build/standing.png'),
+    });
+
+    await authorizeClientCredentials('blocks:write');
+    const { data, status } = await request.post('/api/blocks', formData);
+
+    expect(status).toBe(201);
+    expect(data.repositoryUrl).toBe(
+      'https://gitlab.com/appsemble/appsemble/-/tree/main/blocks/form',
+    );
   });
 
   it('should accept messages when publishing blocks', async () => {
@@ -103,6 +125,13 @@ describe('createBlock', () => {
         messages: { test: 'bar' },
       },
     ]);
+
+    expect(blockVersionMessages.manifestJson).toMatchObject({
+      files: ['build/standing.png', 'build/testblock.js'],
+      languages: ['en', 'nl'],
+      name: '@xkcd/standing',
+      version: '1.32.9',
+    });
   });
 
   it('should not accept messages when publishing blocks if english is excluded', async () => {
@@ -425,6 +454,7 @@ be broken by alterations of block definitions.
           },
           "type": "object",
         },
+        "repositoryUrl": null,
         "version": "1.2.3",
         "wildcardActions": false,
       }

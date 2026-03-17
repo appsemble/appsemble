@@ -88,6 +88,7 @@ export type Action =
   | BaseAction<'group.member.query'>
   | BaseAction<'group.member.role.update'>
   | BaseAction<'group.query'>
+  | BaseAction<'group.selected.update'>
   | BaseAction<'link.back'>
   | BaseAction<'link.next'>
   | BaseAction<'match'>
@@ -107,6 +108,7 @@ export type Action =
   | BaseAction<'storage.update'>
   | BaseAction<'storage.write'>
   | BaseAction<'throw'>
+  | BaseAction<'webhook'>
   | LinkAction
   | LogAction
   | RequestAction

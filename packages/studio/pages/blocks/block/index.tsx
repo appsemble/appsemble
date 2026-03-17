@@ -108,6 +108,19 @@ export function BlockPage(): ReactNode {
           </Title>
           <Subtitle lang={defaultLocale} level={4}>
             <Link to={`../../organizations/${organization.replace(/^@/, '')}`}>{organization}</Link>
+            {selectedBlockManifest.repositoryUrl ? (
+              <>
+                <span className="mx-2">·</span>
+                <a
+                  href={selectedBlockManifest.repositoryUrl}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <i className="fas fa-code fa-xs mr-2" />
+                  <FormattedMessage {...messages.sourceCode} />
+                </a>
+              </>
+            ) : null}
           </Subtitle>
         </header>
       </>

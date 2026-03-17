@@ -1,4 +1,4 @@
-import { type ActionType, type EventType } from '@appsemble/types';
+import { type ActionType, type BlockManifest, type EventType } from '@appsemble/types';
 import { type Schema } from 'jsonschema';
 import {
   AllowNull,
@@ -52,6 +52,9 @@ export class BlockVersion extends Model {
   @Column(DataType.TEXT)
   declare longDescription?: string;
 
+  @Column(DataType.TEXT)
+  declare repositoryUrl?: string;
+
   @Column(DataType.JSON)
   declare parameters?: Schema;
 
@@ -78,6 +81,9 @@ export class BlockVersion extends Model {
   @Default([])
   @Column(DataType.JSONB)
   declare examples: string[];
+
+  @Column(DataType.JSONB)
+  declare manifestJson?: BlockManifest | null;
 
   @BelongsTo(() => Organization)
   declare Organization?: Awaited<Organization>;

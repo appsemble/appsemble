@@ -52,6 +52,16 @@ export function SubPageBlockItem({
     [onChange],
   );
 
+  const blockType = saveStack.getIn([
+    'pages',
+    subBlock.parent,
+    subBlock.type === 'flow' ? 'steps' : 'tabs',
+    subBlock.subParent,
+    'blocks',
+    subBlock.block,
+    'type',
+  ]) as string;
+
   return (
     <Button
       className={classNames(styles.childItem, {
@@ -65,11 +75,7 @@ export function SubPageBlockItem({
       onDragStart={(e) => handleDragStart(e, block.block, pageIndex, 1)}
       onDrop={(e) => handleDrop(e, subBlock.block, pageIndex, subBlock.subParent)}
     >
-      {subBlock.type === 'flow'
-        ? saveStack.toJS().pages[subBlock.parent].steps[subBlock.subParent].blocks[subBlock.block]
-            .type
-        : saveStack.toJS().pages[subBlock.parent].tabs[subBlock.subParent].blocks[subBlock.block]
-            .type}
+      {blockType}
     </Button>
   );
 }

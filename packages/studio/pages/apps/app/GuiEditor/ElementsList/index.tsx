@@ -41,82 +41,93 @@ export function ElementsList({
   const [dragPageIndex, setDragPageIndex] = useState<number>(-1);
   const [dragIndex, setDragIndex] = useState<number>(0);
   const { formatMessage } = useIntl();
+  const pagesSequence = saveStack.getIn(['pages']) as YAMLSeq | undefined;
+  const pageItems = (pagesSequence?.items ?? []) as YAMLMap[];
 
-  const pageNames: string[] = (saveStack.getIn(['pages']) as YAMLSeq).items.map(
-    (page: YAMLSeq, pageIndex: number) => saveStack.getIn(['pages', pageIndex, 'name']) as string,
-  );
+  const pageNames: string[] = pageItems.map((page: YAMLMap) => page.getIn(['name']) as string);
 
   // A list of the blocks with their parents to construct the hierarchy.
-  const blocks: Block[] = (saveStack.getIn(['pages']) as YAMLSeq).items.flatMap(
-    (page: YAMLMap, pageIndex: number) => {
-      if (!page.getIn(['type']) || page.getIn(['type']) === 'page') {
-        return (page.getIn(['blocks']) as YAMLSeq).items.map((block: any, blockIndex: number) => ({
-          type: 'page',
-          parent: pageIndex,
-          subParent: -1,
-          block: blockIndex,
-        }));
-      }
-      if (page.getIn(['type']) === 'flow') {
-        return (page.getIn(['steps']) as YAMLSeq).items.flatMap(
-          (subPage: any, subPageIndex: number) =>
-            subPage.getIn(['blocks']).items.map((block: any, blockIndex: number) => ({
-              type: 'flow',
-              parent: pageIndex,
-              subParent: subPageIndex,
-              block: blockIndex,
-            })),
-        );
-      }
-      if (page.getIn(['type']) === 'tabs') {
-        return (page.getIn(['tabs']) as YAMLSeq).items.flatMap(
-          (subPage: any, subPageIndex: number) =>
-            subPage.getIn(['blocks']).items.map((block: any, blockIndex: number) => ({
-              type: 'tabs',
-              parent: pageIndex,
-              subParent: subPageIndex,
-              block: blockIndex,
-            })),
-        );
-      }
-    },
-  );
-
-  const pages: Page[] = (saveStack.getIn(['pages']) as YAMLSeq).items.flatMap(
-    (page: YAMLMap, pageIndex: number) => ({
-      name: page.getIn(['name']) as string,
-      type: (page.getIn(['type']) ?? 'page') as string,
-      index: pageIndex,
-    }),
-  );
-
-  const getSubPages = (pageIndex: number): Page[] => {
-    if (pages[pageIndex].type && pages[pageIndex].type !== 'page') {
-      return (
-        saveStack.getIn([
-          'pages',
-          pageIndex,
-          pages[pageIndex].type === 'flow' ? 'steps' : 'tabs',
-        ]) as YAMLSeq
-      ).items.map((subPage: any) => ({
-        name: subPage.getIn(['name']) as string,
-        type: 'subPage',
-        index: pageIndex,
+  const blocks: Block[] = pageItems.flatMap((page: YAMLMap, pageIndex: number) => {
+    if (!page.getIn(['type']) || page.getIn(['type']) === 'page') {
+      const pageBlocks = page.getIn(['blocks']) as YAMLSeq | undefined;
+      return (pageBlocks?.items ?? []).map((block: any, blockIndex: number) => ({
+        type: 'page',
+        parent: pageIndex,
+        subParent: -1,
+        block: blockIndex,
       }));
     }
+    if (page.getIn(['type']) === 'flow') {
+      const steps = page.getIn(['steps']) as YAMLSeq | undefined;
+      return (steps?.items ?? []).flatMap((subPage: any, subPageIndex: number) =>
+        ((subPage.getIn(['blocks']) as YAMLSeq | undefined)?.items ?? []).map(
+          (block: any, blockIndex: number) => ({
+            type: 'flow',
+            parent: pageIndex,
+            subParent: subPageIndex,
+            block: blockIndex,
+          }),
+        ),
+      );
+    }
+    if (page.getIn(['type']) === 'tabs') {
+      const tabs = page.getIn(['tabs']) as YAMLSeq | undefined;
+      return (tabs?.items ?? []).flatMap((subPage: any, subPageIndex: number) =>
+        ((subPage.getIn(['blocks']) as YAMLSeq | undefined)?.items ?? []).map(
+          (block: any, blockIndex: number) => ({
+            type: 'tabs',
+            parent: pageIndex,
+            subParent: subPageIndex,
+            block: blockIndex,
+          }),
+        ),
+      );
+    }
+
+    return [];
+  });
+
+  const pages: Page[] = pageItems.flatMap((page: YAMLMap, pageIndex: number) => ({
+    name: page.getIn(['name']) as string,
+    type: (page.getIn(['type']) ?? 'page') as string,
+    index: pageIndex,
+  }));
+
+  const getSubPages = (pageIndex: number): Page[] => {
+    const pageType = pages[pageIndex]?.type;
+    if (pageType !== 'flow' && pageType !== 'tabs') {
+      return [];
+    }
+
+    const subPages = saveStack.getIn([
+      'pages',
+      pageIndex,
+      pageType === 'flow' ? 'steps' : 'tabs',
+    ]) as YAMLSeq | undefined;
+
+    return (subPages?.items ?? []).map((subPage: any) => ({
+      name: subPage.getIn(['name']) as string,
+      type: 'subPage',
+      index: pageIndex,
+    }));
   };
 
   const getBlocks = (pageIndex: number): YAMLMap[] => {
-    if (!pages[pageIndex].type || pages[pageIndex].type === 'page') {
-      return (saveStack.getIn(['pages', pageIndex, 'blocks']) as YAMLSeq).items as YAMLMap[];
+    const pageType = pages[pageIndex]?.type;
+    if (!pageType || pageType === 'page') {
+      const pageBlocks = saveStack.getIn(['pages', pageIndex, 'blocks']) as YAMLSeq | undefined;
+      return (pageBlocks?.items ?? []) as YAMLMap[];
     }
-    return pages[pageIndex].type === 'flow'
-      ? (saveStack.getIn(['pages', pageIndex, 'steps', 'blocks']) as YAMLSeq).items.flatMap(
-          (subPage: any) => subPage as YAMLMap[],
-        )
-      : (saveStack.getIn(['pages', pageIndex, 'tabs', 'blocks']) as YAMLSeq).items.flatMap(
-          (subPage: any) => subPage as YAMLMap[],
-        );
+
+    const subPageBlocks = saveStack.getIn([
+      'pages',
+      pageIndex,
+      pageType === 'flow' ? 'steps' : 'tabs',
+      selectedSubParent >= 0 ? selectedSubParent : 0,
+      'blocks',
+    ]) as YAMLSeq | undefined;
+
+    return (subPageBlocks?.items ?? []) as YAMLMap[];
   };
 
   const handleDragStart = (

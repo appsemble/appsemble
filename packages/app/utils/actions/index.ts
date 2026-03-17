@@ -21,7 +21,7 @@ import { each } from './each.js';
 import { email } from './email.js';
 import { event } from './event.js';
 import * as flow from './flow.js';
-import { groupQuery } from './group.js';
+import { groupQuery, groupSelectedUpdate } from './group.js';
 import {
   groupMemberCreate,
   groupMemberDelete,
@@ -41,6 +41,7 @@ import { share } from './share.js';
 import { staticAction } from './static.js';
 import * as storage from './storage.js';
 import { throwAction } from './throw.js';
+import { webhook } from './webhook.js';
 import { type MakeActionParameters } from '../../types.js';
 
 type ActionProperties<T extends ActionDefinition['type']> = Omit<
@@ -121,6 +122,7 @@ export const actionCreators: ActionCreators = {
   'group.member.query': groupMemberQuery,
   'group.member.delete': groupMemberDelete,
   'group.member.role.update': groupMemberRoleUpdate,
+  'group.selected.update': groupSelectedUpdate,
   throw: throwAction,
   'app.member.login': appMemberLogin,
   'app.member.register': appMemberRegister,
@@ -132,4 +134,5 @@ export const actionCreators: ActionCreators = {
   'app.member.query': appMemberQuery,
   'app.member.delete': appMemberDelete,
   'csv.parse': csvParser,
+  webhook,
 };

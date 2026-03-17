@@ -8,6 +8,7 @@ import * as checkDownMigrations from './commands/checkDownMigrations.js';
 import * as checkMigrations from './commands/checkMigrations.js';
 import * as cleanup from './commands/cleanup.js';
 import * as cleanupDemoAppMembers from './commands/cleanupDemoAppMembers.js';
+import * as cleanupExpiredDomains from './commands/cleanupExpiredDomains.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
 import * as cleanupSoftDeletedRecords from './commands/cleanupSoftDeletedRecords.js';
 import * as fuzzMigrations from './commands/fuzzMigrations.js';
@@ -68,6 +69,7 @@ const parser = yargs()
   .command(cleanupSoftDeletedRecords as CommandModule)
   .command(chargeOrganizationSubscriptions as CommandModule)
   .command(backupProductionData as CommandModule)
+  .command(cleanupExpiredDomains as CommandModule)
   .fail(handleError)
   .help('help', 'Show this help message.')
   .alias('h', 'help')

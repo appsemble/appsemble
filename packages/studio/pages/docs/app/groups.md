@@ -131,7 +131,7 @@ pages:
       - Manager
     blocks:
       - type: form
-        version: 0.36.5-test.2
+        version: 0.36.5-test.6
         actions:
           onSubmit:
             type: resource.create
@@ -154,7 +154,7 @@ pages:
       - GroupMember
     blocks:
       - type: action-button
-        version: 0.36.5-test.2
+        version: 0.36.5-test.6
         parameters:
           icon: plus
         roles:
@@ -169,7 +169,7 @@ pages:
       - Player
     blocks:
       - type: form
-        version: 0.36.5-test.2
+        version: 0.36.5-test.6
         actions:
           onSubmit:
             type: resource.create
@@ -192,7 +192,7 @@ pages:
       - Manager
     blocks:
       - type: action-button
-        version: 0.36.5-test.2
+        version: 0.36.5-test.6
         parameters:
           icon: plus
         roles:
@@ -205,7 +205,7 @@ pages:
   - name: About
     blocks:
       - type: html
-        version: 0.36.5-test.2
+        version: 0.36.5-test.6
         parameters:
           placeholders:
             summary: This is the groups app
@@ -223,6 +223,7 @@ button which links to `Create strategy`. The `About` page is accessible to anyon
 The following group related actions are can be used within an app:
 
 - [`group.query`](../actions/groups.mdx#groupquery)
+- [`group.selected.update`](../actions/groups.mdx#groupselectedupdate)
 - [`group.member.invite`](../actions/groups.mdx#groupmemberinvite)
 - [`group.member.query`](../actions/groups.mdx#groupmemberquery)
 - [`group.member.delete`](../actions/groups.mdx#groupmemberdelete)

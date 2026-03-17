@@ -20,6 +20,7 @@ import { RequestActionDefinition } from '../../schemas/actions/RequestActionDefi
 import { ShareActionDefinition } from '../../schemas/actions/ShareActionDefinition.js';
 import { StaticActionDefinition } from '../../schemas/actions/StaticActionDefinition.js';
 import { ThrowActionDefinition } from '../../schemas/actions/ThrowActionDefinition.js';
+import { WebhookActionDefinition } from '../../schemas/actions/WebhookActionDefinition.js';
 
 export const miscellaneousActions: Record<string, OpenAPIV3.SchemaObject> = {
   analytics: AnalyticsActionDefinition,
@@ -42,4 +43,5 @@ export const miscellaneousActions: Record<string, OpenAPIV3.SchemaObject> = {
   share: ShareActionDefinition,
   static: StaticActionDefinition,
   throw: ThrowActionDefinition,
+  webhook: WebhookActionDefinition,
 };

@@ -560,7 +560,7 @@ export default function EditPage(): ReactNode {
   useBeforeUnload(unsavedChanges);
 
   useEffect(() => {
-    updateAppPreview();
+    updateAppPreview().catch(noop);
   }, [setIndex, updateAppPreview]);
 
   if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {

@@ -1,7 +1,7 @@
 default:
   tags:
     - dcentralize
-  image: node:24-trixie-slim@sha256:4fc981bf8dfc5e36e15e0cb73c5761a14cabff0932dcad1cf26cd3c3425db5d4
+  image: node:24-trixie-slim
 
 stages:
   - security
@@ -34,8 +34,8 @@ workflow:
 .docker:
   interruptible: true
   services:
-    - docker:dind@sha256:8bcbad4b45f0bff9d3e809d85a7ac589390f0be8acbc526850c998c35c1243fd
-  image: docker@sha256:1ba18449911d01f477a3fc104123c85d677addc60701b14b3fcb5381f9c4a537
+    - docker:dind
+  image: docker
   dependencies: []
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
@@ -94,7 +94,7 @@ workflow:
 # Automatically approve merge requests from Renovate bot after build succeeds
 auto-approve-renovate:
   stage: test
-  image: alpine:latest@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+  image: alpine:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\// && $CI_MERGE_REQUEST_APPROVED != "true"
   needs:
@@ -113,7 +113,7 @@ auto-approve-renovate:
 
 secret-scan-mr:
   stage: security
-  image: node:24-trixie@sha256:81649592d9833d9220423561fc517b34e932b751873274024c2a969ff4a9bfc2
+  image: node:24-trixie
   variables:
     BASE_SHA: ${CI_MERGE_REQUEST_DIFF_BASE_SHA}
     HEAD_SHA: ${CI_COMMIT_SHA}
@@ -151,6 +151,8 @@ npm_ci:
 
 # Build the Docker image.
 build docker image:
+  tags:
+    - saas-linux-small-amd64
   extends: .docker
   stage: build
   cache:
@@ -173,13 +175,15 @@ build docker image:
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
     # Extract dist/ from the built image for sourcemap uploads to Sentry
     - mkdir -p dist
-    - docker run --rm -v $(pwd)/dist:/host/dist "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" cp -r /app/dist /host/
+    - docker run --rm --user 0:0 --entrypoint cp -v $(pwd):/host "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" -r /app/dist /host/
   artifacts:
     paths:
       - dist/
 
 # Populate a postgres database with the 'default' data it needs to function
 seed database:
+  tags:
+    - saas-linux-small-amd64
   stage: build
   interruptible: true
   needs:
@@ -193,13 +197,13 @@ seed database:
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
   services:
-    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
+    - name: postgres:17
       alias: database
       variables:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    - name: minio/minio:latest
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
@@ -249,6 +253,8 @@ seed database:
 
 # Build the database into a docker image for use in other jobs
 build seeded db image:
+  tags:
+    - saas-linux-small-amd64
   extends: .docker
   stage: build
   needs:
@@ -302,7 +308,7 @@ pack:
 
 # Package the Helm chart
 helm package:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   stage: build
   needs: []
   script:
@@ -338,7 +344,7 @@ eslint:
 
 # Lint Helm charts.
 helm lint:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   stage: test
   needs: []
   script:
@@ -346,7 +352,7 @@ helm lint:
 
 # Lint shell scripts
 shellcheck:
-  image: koalaman/shellcheck-alpine@sha256:920e1ce5b6839f906344c37b0cc34d207347d23db3858b647369bebe973fc653
+  image: koalaman/shellcheck-alpine
   stage: test
   needs: []
   script:
@@ -385,9 +391,9 @@ stylelint:
 test node:
   extends: .npm
   services:
-    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
+    - name: postgres:17
       alias: postgres
-    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    - name: minio/minio:latest
       alias: minio
       command: ['server', '/data']
       variables:
@@ -437,7 +443,7 @@ check migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
+    - name: postgres:17
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -453,7 +459,7 @@ check down migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
+    - name: postgres:17
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -469,7 +475,7 @@ fuzz migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17@sha256:2cd82735a36356842d5eb1ef80db3ae8f1154172f0f653db48fde079b2a0b7f7
+    - name: postgres:17
       alias: postgres
   variables:
     POSTGRES_DB: testAppsemble
@@ -518,7 +524,7 @@ validate snippets:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    - name: minio/minio:latest
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
@@ -551,7 +557,7 @@ validate snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.58.1-noble@sha256:feae0b1581609d3dc2ba22567b4703dd6a3e7a219984bb86a19ed35007148a91
+  image: mcr.microsoft.com/playwright:v1.58.1-noble
   interruptible: true
   needs:
     - build docker image
@@ -575,7 +581,7 @@ e2e node:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    - name: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    - name: minio/minio:latest
       alias: minio
       entrypoint: ['sh', '-c', 'minio server /data']
       variables:
@@ -792,7 +798,7 @@ publish docker:
 
 # Publish the Helm chart to https://charts.appsemble.com
 publish helm:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   needs:
     - helm package
   stage: publish
@@ -865,7 +871,7 @@ sentry release:
     - job: build docker image
       artifacts: true
   image:
-    name: getsentry/sentry-cli:2@sha256:2a60d341709d8ae040b842556c66f98443cc6d59101cab751f9811f3a1df9362
+    name: getsentry/sentry-cli:2
     entrypoint: [/bin/sh, -c]
   stage: publish
   rules:
@@ -939,7 +945,7 @@ update dependencies:
 
 # Deploy the Docker image for a branch to a review environment.
 review:
-  image: dtzar/helm-kubectl:3.16.0@sha256:3d0876a8a4159fddfb381fcccf23c774bcfcd4b4ffdbb80c1a5c10c1eb23de54
+  image: dtzar/helm-kubectl:3.16.0
   stage: deploy
   needs:
     - build docker image
@@ -953,7 +959,7 @@ review:
     on_stop: stop review
     auto_stop_in: 1 day
   variables:
-    GIT_STRATEGY: none
+    GIT_STRATEGY: fetch
   retry:
     max: 1
     when:
@@ -969,6 +975,7 @@ review:
     - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete secret review-$CI_MERGE_REQUEST_IID-mailpit-tls || true
+    - ./scripts/pre-review-capacity-check.sh
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
@@ -1013,8 +1020,9 @@ review:
       --set "ingress.clusterIssuer=acme-issuer-dev"
       --set "ingress.enabled=true"
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
-      --set "ingress.tls.secretName=review-$CI_MERGE_REQUEST_IID-tls"
-      --set "ingress.tls.wildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
+      --set "ingress.tls=true"
+      --set "ingress.tlsSecretName=review-$CI_MERGE_REQUEST_IID-tls"
+      --set "ingress.tlsWildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
       --set "migrateTo=next"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
       --set "postgresql.primary.persistence.size=1Gi"
@@ -1045,7 +1053,7 @@ review:
 
 # Stop a review environment.
 stop review:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   dependencies: []
   stage: deploy
   rules:
@@ -1067,7 +1075,7 @@ stop review:
 
 # Deploy the Docker image for main to the staging environment.
 staging:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
     - build docker image
@@ -1105,8 +1113,9 @@ staging:
       --set "ingress.clusterIssuer=acme-issuer-dev"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.eu"
-      --set "ingress.tls.secretName=staging-tls"
-      --set "ingress.tls.wildcardSecretName=staging-tls-wildcard"
+      --set "ingress.tls=true"
+      --set "ingress.tlsSecretName=staging-tls"
+      --set "ingress.tlsWildcardSecretName=staging-tls-wildcard"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=1G"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/force-ssl-redirect=\"true\""
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/ssl-redirect=\"true\""
@@ -1159,7 +1168,7 @@ staging:
     - kubectl -n default get cronjob staging-s3-assets-backup -o jsonpath='{.spec.schedule}{"\n"}'
 
 production:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
     - publish docker
@@ -1218,8 +1227,9 @@ production:
       --set "ingress.clusterIssuer=acme-issuer-prod"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
-      --set "ingress.tls.secretName=appsemble-tls"
-      --set "ingress.tls.wildcardSecretName=appsemble-tls-wildcard"
+      --set "ingress.tls=true"
+      --set "ingress.tlsSecretName=appsemble-tls"
+      --set "ingress.tlsWildcardSecretName=appsemble-tls-wildcard"
       --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
       --set "postgresql.enabled=true"
@@ -1373,7 +1383,7 @@ provision production:
 
 # Stop and cleanup all review environments.
 cleanup review environments:
-  image: dtzar/helm-kubectl:3@sha256:d02d8d02a24d67e4851503cc443e7eb2358383c9c052f699c262409cd05dae55
+  image: dtzar/helm-kubectl:3
   dependencies: []
   stage: cleanup
   rules:
@@ -1382,7 +1392,7 @@ cleanup review environments:
       when: manual
   allow_failure: true
   variables:
-    GIT_STRATEGY: none
+    GIT_STRATEGY: fetch
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:review"
     - apk add --no-cache curl jq tar

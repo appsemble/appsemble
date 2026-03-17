@@ -106,6 +106,7 @@ export function Block({
     appMemberSelectedGroup,
     logout,
     passwordLogin,
+    setAppMemberSelectedGroup,
     setAppMemberInfo,
   } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
@@ -182,6 +183,18 @@ export function Block({
       passwordLogout: logout,
       setAppMemberInfo,
       refetchDemoAppMembers,
+      setAppMemberSelectedGroup(groupId) {
+        const selectedGroup =
+          groupId == null ? null : (appMemberGroups.find((group) => group.id === groupId) ?? null);
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks)
+        setAppMemberSelectedGroup(selectedGroup);
+        sessionStorage.setItem(
+          `appsemble-group-${appId}-appMemberSelectedGroup`,
+          JSON.stringify(selectedGroup),
+        );
+        navigate(0);
+        return selectedGroup;
+      },
       getAppMemberSelectedGroup: () => appMemberSelectedGroup,
     });
     const theme = mergeThemes(
@@ -286,6 +299,7 @@ export function Block({
     getVariable,
     appMemberGroups,
     addAppMemberGroup,
+    setAppMemberSelectedGroup,
     setAppMemberInfo,
     appMemberInfoRef,
     appMemberSelectedGroup,

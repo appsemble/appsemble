@@ -6,16 +6,20 @@
 - [Helm](https://helm.sh)
 - (Optional) [Cert-manager](https://cert-manager.io) for automatic TLS certificate management
 
-Appsemble can be installed using Helm by running the following commands.
+For installation, upgrades, values, and chart-specific caveats, use the
+[Appsemble chart README](https://gitlab.com/appsemble/appsemble/-/tree/main/config/charts/appsemble).
 
-```sh copy
-helm repo add appsemble https://charts.appsemble.com
-helm repo update
-helm install --name my-appsemble appsemble/appsemble
-```
-
-For more detailed instructions, see Appsemble on
+The published chart is also available on
 [Artifact Hub](https://artifacthub.io/packages/helm/appsemble/appsemble).
+
+This page focuses on TLS setup patterns for Helm deployments.
+
+## Database migrations
+
+The Helm chart runs database migrations automatically after each `helm install` and `helm upgrade`.
+
+For operational migration checks and troubleshooting commands, use the chart documentation on
+[Artifact Hub](https://artifacthub.io/packages/helm/appsemble/appsemble) (see section `Migrations`).
 
 ## Cert-manager
 
@@ -84,17 +88,18 @@ helm install --name my-appsemble appsemble/appsemble \
 --set "ingress.clusterIssuer=letsencrypt-prod" \
 --set "ingress.enabled=true" \
 --set "ingress.host=example.com" \
---set "ingress.tls.secretName=my-appsemble-tls" \
---set "ingress.tls.wildcardSecretName=my-appsemble-tls-wildcard"
+--set "ingress.tls=true" \
+--set "ingress.tlsSecretName=my-appsemble-tls" \
+--set "ingress.tlsWildcardSecretName=my-appsemble-tls-wildcard"
 # ...
 ```
 
 ## Use HTTPS configured elsewhere
 
-If you’re not using `cert-manager` and can’t add the `ingress.tls` and
-`ingress.tls.wildcardSecretName` values (e.g. your TLS is configured at the ingress controller
-level, or you’re using a service like Cloudflare), you can force Appsemble to use HTTPS as the
-protocol for URLs by setting the `forceProtocolHttps` value to `true`.
+If you’re not using `cert-manager` and can’t add the `ingress.tls`, `ingress.tlsSecretName`, and
+`ingress.tlsWildcardSecretName` values (e.g. your TLS is configured at the ingress controller level,
+or you’re using a service like Cloudflare), you can force Appsemble to use HTTPS as the protocol for
+URLs by setting the `forceProtocolHttps` value to `true`.
 
 ```sh
 helm install --name my-appsemble appsemble/appsemble \

@@ -656,6 +656,62 @@ describe('resource', () => {
         },
       ]);
     });
+
+    it('should keep request context usable when chaining to resource.patch', async () => {
+      const action: ActionDefinition = {
+        type: 'resource.create',
+        resource: 'person',
+        body: {
+          'object.from': {
+            firstName: { prop: 'firstName' },
+            lastName: { prop: 'lastName' },
+          },
+        },
+        onSuccess: {
+          type: 'resource.patch',
+          resource: 'person',
+          remapBefore: {
+            'object.from': {
+              id: { prop: 'id' },
+              firstName: [{ history: 0 }, { prop: 'firstNamePatched' }],
+            },
+          },
+        },
+      };
+
+      const app = await exampleApp('testorg', action);
+      const context = {
+        request: {
+          is: vi.fn(() => false),
+        },
+        is(type: string) {
+          return this.request.is(type);
+        },
+      } as any;
+
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
+      const result = await handleAction(create, {
+        app,
+        action,
+        mailer,
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+          firstNamePatched: 'Squidward',
+        },
+        options,
+        context,
+      });
+
+      expect(result).toStrictEqual(
+        expect.objectContaining({
+          id: 1,
+          firstName: 'Squidward',
+          lastName: 'Squarepants',
+        }),
+      );
+    });
   });
 
   describe('resource.update', () => {

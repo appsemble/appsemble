@@ -1,6 +1,6 @@
-# syntax=docker/dockerfile:1.7-labs@sha256:b99fecfe00268a8b556fad7d9c37ee25d716ae08a5d7320e6d51c4dd83246894
+# syntax=docker/dockerfile:1.7-labs
 # Build production files
-FROM node:24-trixie-slim@sha256:4fc981bf8dfc5e36e15e0cb73c5761a14cabff0932dcad1cf26cd3c3425db5d4 AS build
+FROM node:24-trixie-slim AS build
 WORKDIR /app
 
 # Get the system dependencies installed regardless of any package.json or lockfile changes
@@ -32,7 +32,7 @@ RUN npm --workspace @appsemble/eslint-plugin run prepack
 RUN npm --workspace @appsemble/server run prepack
 
 # Install production dependencies
-FROM node:24-trixie-slim@sha256:4fc981bf8dfc5e36e15e0cb73c5761a14cabff0932dcad1cf26cd3c3425db5d4 AS prod
+FROM node:24-trixie-slim AS prod
 WORKDIR /app
 COPY --from=build /app/packages/node-utils packages/node-utils
 COPY --from=build /app/packages/sdk packages/sdk
@@ -50,8 +50,8 @@ RUN find . -name '*.ts' -delete
 RUN rm -r package-lock.json
 
 # Setup the production docker image.
-FROM node:24-trixie-slim@sha256:4fc981bf8dfc5e36e15e0cb73c5761a14cabff0932dcad1cf26cd3c3425db5d4
-ARG version=0.36.5-test.2
+FROM node:24-trixie-slim
+ARG version=0.36.5-test.6
 ARG date
 
 COPY --from=prod /app /app

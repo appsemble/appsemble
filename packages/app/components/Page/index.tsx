@@ -49,11 +49,12 @@ export function Page(): ReactNode {
     isLoggedIn,
     logout,
     passwordLogin,
+    setAppMemberSelectedGroup,
     setAppMemberInfo,
   } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const params = useParams();
   const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
@@ -255,6 +256,20 @@ export function Page(): ReactNode {
         remap,
         params,
         showMessage,
+        setAppMemberSelectedGroup(groupId) {
+          const selectedGroup =
+            groupId == null
+              ? null
+              : (appMemberGroups.find((group) => group.id === groupId) ?? null);
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks)
+          setAppMemberSelectedGroup(selectedGroup);
+          sessionStorage.setItem(
+            `appsemble-group-${appId}-appMemberSelectedGroup`,
+            JSON.stringify(selectedGroup),
+          );
+          navigate(0);
+          return selectedGroup;
+        },
         getAppMemberSelectedGroup: () => appMemberSelectedGroup,
         getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,
@@ -285,6 +300,7 @@ export function Page(): ReactNode {
       appMemberSelectedGroup,
       appMemberGroups,
       addAppMemberGroup,
+      setAppMemberSelectedGroup,
     ],
   );
 
@@ -366,10 +382,9 @@ export function Page(): ReactNode {
     }).format() as string;
     const normalizedPageName = normalize(pageName);
 
-    if (pageId !== normalize(normalizedPageName)) {
-      // Redirect to page with untranslated page name
-      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
-      return <Navigate to={pathname.replace(pageId, normalizedPageName)} />;
+    if (pageId && pageId !== normalize(normalizedPageName)) {
+      // Redirect to page with untranslated page name, preserving query params
+      return <Navigate to={{ pathname: pathname.replace(pageId, normalizedPageName), search }} />;
     }
 
     return (
@@ -421,14 +436,17 @@ export function Page(): ReactNode {
                     stepRef={stepRef}
                   />
                 ) : pageDefinition.type === 'container' ? (
-                  pageDefinition.pages.some(checkPagePermissionsCallback) ? (
+                  pageDefinition.pages.some(checkPagePermissionsCallback) && pageId ? (
                     <Navigate
-                      to={pathname.replace(
-                        pageId,
-                        // @ts-expect-error 2345 argument of type is not assignable to parameter
-                        // of type (strictNullChecks)
-                        normalize(pageDefinition.pages.find(checkPagePermissionsCallback)?.name),
-                      )}
+                      to={{
+                        pathname: pathname.replace(
+                          pageId,
+                          // @ts-expect-error 2345 argument of type is not assignable to parameter
+                          // of type (strictNullChecks)
+                          normalize(pageDefinition.pages.find(checkPagePermissionsCallback)?.name),
+                        ),
+                        search,
+                      }}
                     />
                   ) : (
                     defaultErrorPage()
@@ -450,7 +468,7 @@ export function Page(): ReactNode {
                   />
                 )
               }
-              path={String((pageDefinition.parameters || []).map((param) => `/:${param}`))}
+              path={(pageDefinition.parameters || []).map((param) => `/:${param}`).join('')}
             />
           </MetaSwitch>
         )}
