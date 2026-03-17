@@ -59,8 +59,7 @@ describe('getCurrentAppMember', () => {
     const response = await request.get(`/api/apps/${app.id}/members/current`);
 
     expect(response.data).toMatchInlineSnapshot(
-      { sub: expect.stringMatching(uuid4Pattern) },
-      `
+      { sub: expect.stringMatching(uuid4Pattern) }, `
       {
         "$ephemeral": false,
         "$seed": false,
@@ -72,13 +71,14 @@ describe('getCurrentAppMember', () => {
         "phoneNumber": null,
         "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
         "properties": {},
-        "role": "Member",
+        "roles": [
+          "Member",
+        ],
         "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
-    `,
-    );
+    `);
   });
 
   it('should throw 404 if the app doesn’t exist', async () => {

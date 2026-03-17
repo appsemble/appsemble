@@ -64,8 +64,7 @@ describe('patchCurrentAppMember', () => {
     );
 
     expect(response.data).toMatchInlineSnapshot(
-      { sub: expect.stringMatching(uuid4Pattern) },
-      `
+      { sub: expect.stringMatching(uuid4Pattern) }, `
       {
         "$ephemeral": false,
         "$seed": false,
@@ -79,13 +78,14 @@ describe('patchCurrentAppMember', () => {
         "properties": {
           "test": "Property",
         },
-        "role": "Member",
+        "roles": [
+          "Member",
+        ],
         "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
-    `,
-    );
+    `);
     await appMember.reload();
     expect(appMember.name).toBe('Me');
     expect(appMember.email).toBe('test@example.com');
@@ -127,8 +127,7 @@ describe('patchCurrentAppMember', () => {
     );
 
     expect(response.data).toMatchInlineSnapshot(
-      { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) },
-      `
+      { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) }, `
       {
         "$ephemeral": false,
         "$seed": false,
@@ -140,13 +139,14 @@ describe('patchCurrentAppMember', () => {
         "phoneNumber": null,
         "picture": Any<String>,
         "properties": {},
-        "role": "Member",
+        "roles": [
+          "Member",
+        ],
         "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
-    `,
-    );
+    `);
     expect(response.data.picture).toBe(
       `http://localhost/api/apps/${app.id}/app-members/${appMember.id}/picture?updated=0`,
     );
@@ -166,8 +166,7 @@ describe('patchCurrentAppMember', () => {
       }),
     );
     expect(response.data).toMatchInlineSnapshot(
-      { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) },
-      `
+      { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) }, `
       {
         "$ephemeral": false,
         "$seed": false,
@@ -179,13 +178,14 @@ describe('patchCurrentAppMember', () => {
         "phoneNumber": null,
         "picture": Any<String>,
         "properties": {},
-        "role": "Member",
+        "roles": [
+          "Member",
+        ],
         "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
-    `,
-    );
+    `);
     expect(response.data.picture).toMatch(/https:\/\/www\.gravatar\.com\/avatar\/.*/gm);
     await appMember.reload();
     expect(appMember.picture).toBeNull();

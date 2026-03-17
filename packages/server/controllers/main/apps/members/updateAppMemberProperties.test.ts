@@ -85,8 +85,7 @@ describe('patchAppMemberProperties', () => {
     );
 
     expect(response).toMatchInlineSnapshot(
-      { data: { sub: expect.stringMatching(uuid4Pattern) } },
-      `
+      { data: { sub: expect.stringMatching(uuid4Pattern) } }, `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -104,13 +103,14 @@ describe('patchAppMemberProperties', () => {
           "foo": "bar",
           "test": "Property",
         },
-        "role": "Member",
+        "roles": [
+          "Member",
+        ],
         "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "totpEnabled": false,
         "zoneinfo": null,
       }
-    `,
-    );
+    `);
   });
 
   it('should overwrite the existing properties that are not in the request body', async () => {
