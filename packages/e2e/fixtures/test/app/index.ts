@@ -144,7 +144,7 @@ export const test = base.extend<AppFixtures>({
     await use(async (appId, role) => {
       const page = await browser.newPage();
 
-      await page.goto(`/en/apps/${appId}/-/users`);
+      await page.goto(`/en/apps/${appId}/-/members`);
       const select = page.locator('tr', { hasText: 'It’s you!' }).locator('select[class=""]');
       await select.selectOption(role);
 
