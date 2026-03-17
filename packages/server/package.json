@@ -139,7 +139,7 @@
     "axios-test-instance": "7.0.0",
     "cross-fetch": "4.1.0",
     "ein-validator": "1.0.1",
-    "jest-image-snapshot": "6.4.0",
+    "jest-image-snapshot": "6.5.2",
     "jsvat": "2.5.4",
     "memfs": "4.17.0",
     "strip-indent": "4.0.0",
