@@ -7,11 +7,11 @@ export const messages = defineMessages({
   },
   changeRoleSuccess: {
     id: 'studio.qmqkl9',
-    defaultMessage: 'Successfully changed role of {name} to {role}.',
+    defaultMessage: 'Successfully changed roles of {name} to {roles}.',
   },
   changeRoleError: {
     id: 'studio.2oB417',
-    defaultMessage: 'Something went wrong when trying to change this user’s role.',
+    defaultMessage: 'Something went wrong when trying to change this user’s roles.',
   },
   empty: {
     id: 'studio.+RhnH+',

@@ -62,7 +62,7 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
       defaultMessage: appDefinition.security?.roles[role]?.description || role,
     }).format() as string;
 
-  const selectedDemoAppMemberRoleDescription = getRoleDescription(demoAppMember?.role);
+  const selectedDemoAppMemberRoleDescription = getRoleDescription(demoAppMember?.roles?.[0] ?? selectedAppRole);
 
   const selectedAppRoleDescription = getRoleDescription(selectedAppRole);
 

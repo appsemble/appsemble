@@ -4,7 +4,13 @@ import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, getAppDB } from '../../../../models/index.js';
-import { getAppMemberInfo, parseMemberFilterQuery } from '../../../../utils/appMember.js';
+import {
+  compareAppMembersByRoles,
+  getAppMemberIdsByRoles,
+  getAppMemberInfo,
+  hasAppMemberRole,
+  parseMemberFilterQuery,
+} from '../../../../utils/appMember.js';
 
 export async function queryAppDemoMembers(ctx: Context): Promise<void> {
   const {
@@ -17,24 +23,30 @@ export async function queryAppDemoMembers(ctx: Context): Promise<void> {
   });
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
-
   assertKoaCondition(app.demoMode, ctx, 401, 'App is not in demo mode');
 
   const supportedAppRoles = getAppRoles(app.definition.security);
-
-  const passedRoles = roles ? roles.split(',') : [];
-  const filter = parseMemberFilterQuery(parsedFilter ?? '');
-  const commonFilters = {
-    demo: true,
-    seed: false,
-    ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
-  };
+  const passedRoles = roles ? roles.split(',').filter(Boolean) : [];
 
   if (passedRoles.length) {
     const passedRolesAreSupported = passedRoles.every((role) => supportedAppRoles.includes(role));
 
     assertKoaCondition(passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
   }
+
+  const memberIds = passedRoles.length ? await getAppMemberIdsByRoles(appId, passedRoles) : null;
+
+  if (memberIds?.length === 0) {
+    ctx.body = [];
+    return;
+  }
+
+  const filter = parseMemberFilterQuery(parsedFilter ?? '');
+  const commonFilters = {
+    demo: true,
+    seed: false,
+    ...(memberIds ? { id: { [Op.in]: memberIds } } : {}),
+  };
 
   const appMembers = await AppMember.findAll({
     where: {
@@ -43,6 +55,7 @@ export async function queryAppDemoMembers(ctx: Context): Promise<void> {
   });
 
   ctx.body = appMembers
-    .filter((member) => member.role !== 'cron')
+    .filter((member) => !hasAppMemberRole(member, 'cron'))
+    .sort(compareAppMembersByRoles)
     .map((appMember) => getAppMemberInfo(appId, appMember));
 }

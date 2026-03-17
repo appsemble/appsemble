@@ -31,7 +31,7 @@ interface BottomNavigationProps {
 export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
-  const { appMemberInfo, appMemberRole, appMemberSelectedGroup, isLoggedIn, logout } =
+  const { appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn, logout } =
     useAppMember();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
@@ -40,8 +40,8 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const install = usePWAInstall();
 
   const showMenu = useMemo(
-    () => shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup),
-    [definition, appMemberRole, appMemberSelectedGroup],
+    () => shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup),
+    [definition, appMemberRoles, appMemberSelectedGroup],
   );
 
   return (

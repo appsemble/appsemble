@@ -658,9 +658,9 @@ export interface AppMemberRoleUpdateAction extends BaseActionDefinition<'app.mem
   sub: Remapper;
 
   /**
-   * The role of the updated app member
+   * The roles of the updated app member.
    */
-  role: Remapper;
+  roles: Remapper;
 }
 
 export interface AppMemberPropertiesPatchAction extends BaseActionDefinition<'app.member.properties.patch'> {

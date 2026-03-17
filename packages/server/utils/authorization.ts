@@ -24,8 +24,6 @@ import {
   OrganizationMember,
 } from '../models/index.js';
 
-// XXX: Too many functions checking too many things.
-
 interface CheckAppPermissionsParams {
   context: Context;
   appId: number;
@@ -39,16 +37,15 @@ interface CheckOrganizationPermissionsParams {
   requiredPermissions: OrganizationPermission[];
 }
 
-async function getAppMemberScopedRole(
-  appMember: AppMember,
+async function getAppMemberScopedRoles(
+  appMember: AppMember | null,
   appId: number,
   groupId?: number,
-): Promise<AppRole> {
+): Promise<AppRole[]> {
   const { GroupMember } = await getAppDB(appId);
 
   if (!appMember) {
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-    return null;
+    return [];
   }
 
   if (groupId) {
@@ -59,40 +56,35 @@ async function getAppMemberScopedRole(
       },
     });
 
-    if (!groupMember) {
-      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-      return null;
-    }
-
-    return groupMember.role;
+    return groupMember ? [groupMember.role] : [];
   }
 
-  return appMember.role;
+  return appMember.roles;
 }
 
-async function getAppMemberAppRole(
+async function getAppMemberAppRoles(
   appMemberId: string,
   appId: number,
   groupId?: number,
-): Promise<AppRole> {
+): Promise<AppRole[]> {
   const { AppMember } = await getAppDB(appId);
-  const appMember = await AppMember.findByPk(appMemberId, { attributes: ['id', 'role'] });
+  const appMember = await AppMember.findByPk(appMemberId, { attributes: ['id'] });
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  return getAppMemberScopedRole(appMember, appId, groupId);
+  return getAppMemberScopedRoles(appMember, appId, groupId);
 }
 
-async function getUserAppRole(userId: string, appId: number, groupId?: number): Promise<AppRole> {
+async function getUserAppRoles(
+  userId: string,
+  appId: number,
+  groupId?: number,
+): Promise<AppRole[]> {
   const { AppMember } = await getAppDB(appId);
   const appMember = await AppMember.findOne({
-    attributes: ['id', 'role'],
+    attributes: ['id'],
     where: { userId },
   });
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  return getAppMemberScopedRole(appMember, appId, groupId);
+  return getAppMemberScopedRoles(appMember, appId, groupId);
 }
 
 async function getUserOrganizationRole(
@@ -158,10 +150,10 @@ export async function checkAppMemberAppPermissions({
 
   assertKoaCondition(appMember != null, context, 403, 'App member not found');
 
-  const appMemberAppRole = await getAppMemberAppRole(appMember.id, appId, groupId);
+  const appMemberAppRoles = await getAppMemberAppRoles(appMember.id, appId, groupId);
 
   assertKoaCondition(
-    checkAppRoleAppPermissions(app.definition.security, appMemberAppRole, requiredPermissions),
+    checkAppRoleAppPermissions(app.definition.security, appMemberAppRoles, requiredPermissions),
     context,
     403,
     'App member does not have sufficient app permissions.',
@@ -212,12 +204,14 @@ export async function checkUserAppPermissions({
     return;
   }
 
-  const userAppRole = await getUserAppRole(authSubject!.id, appId, groupId);
+  assertKoaCondition(authSubject != null, context, 401);
 
-  const userOrganizationRole = await getUserOrganizationRole(authSubject!.id, app.OrganizationId);
+  const userAppRoles = await getUserAppRoles(authSubject.id, appId, groupId);
+
+  const userOrganizationRole = await getUserOrganizationRole(authSubject.id, app.OrganizationId);
 
   assertKoaCondition(
-    checkAppRoleAppPermissions(app.definition.security, userAppRole, requiredPermissions) ||
+    checkAppRoleAppPermissions(app.definition.security, userAppRoles, requiredPermissions) ||
       checkOrganizationRoleAppPermissions(userOrganizationRole, requiredPermissions),
     context,
     403,

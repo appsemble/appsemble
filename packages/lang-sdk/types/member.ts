@@ -59,9 +59,9 @@ export interface AppMemberInfo {
   zoneinfo?: string;
 
   /**
-   * The role of the app member.
+   * The direct roles of the app member.
    */
-  role: AppRole;
+  roles: AppRole[];
 
   /**
    * The end-user's additional properties

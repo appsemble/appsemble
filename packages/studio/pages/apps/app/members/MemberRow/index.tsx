@@ -14,7 +14,7 @@ import {
 } from '@appsemble/react-components';
 import { type AppMemberInfo } from '@appsemble/types';
 import axios from 'axios';
-import { type ChangeEvent, type ReactNode, useCallback, useMemo } from 'react';
+import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -64,7 +64,7 @@ export function MemberRow({
   onChanged,
   onDeleted,
 }: AppMemberRowProperties): ReactNode {
-  const { demo, email, name, properties, role, sub } = member;
+  const { demo, email, name, properties, roles, sub } = member;
   const {
     userInfo: { email: currentUserEmail },
   } = useUser();
@@ -90,23 +90,19 @@ export function MemberRow({
   );
 
   const onChangeRole = useCallback(
-    async (event: ChangeEvent<HTMLSelectElement>): Promise<void> => {
-      event.preventDefault();
-      const { value } = event.currentTarget;
+    async (_event: React.ChangeEvent<HTMLSelectElement>, value: string | string[]): Promise<void> => {
+      const selectedRoles = Array.isArray(value) ? value : value ? [value] : [];
 
       try {
-        const { data } = await axios.put<AppMemberInfo>(
-          `/api/apps/${app.id}/app-members/${sub}/role`,
-          {
-            role: value,
-          },
-        );
+        const { data } = await axios.put<AppMemberInfo>(`/api/apps/${app.id}/app-members/${sub}/role`, {
+          roles: selectedRoles,
+        });
 
         push({
           color: 'success',
           body: formatMessage(messages.changeRoleSuccess, {
             name: data.name || data.email || data.sub,
-            role: value,
+            roles: selectedRoles.join(', '),
           }),
         });
         onChanged(data);
@@ -187,10 +183,17 @@ export function MemberRow({
         </td>
         <td className="has-text-right">
           <div className="control is-inline">
-            <AsyncSelect defaultValue={role} disabled={!mayUpdateRoles} onChange={onChangeRole}>
-              {roleKeys.map((r) => (
-                <option key={r} value={r}>
-                  {r}
+            <AsyncSelect
+              data-testid={`app-member-roles-${email || sub}`}
+              disabled={!mayUpdateRoles}
+              multiple
+              onChange={onChangeRole}
+              size={Math.min(Math.max(roleKeys.length, 2), 6)}
+              value={roles}
+            >
+              {roleKeys.map((roleKey) => (
+                <option key={roleKey} value={roleKey}>
+                  {roleKey}
                 </option>
               ))}
             </AsyncSelect>

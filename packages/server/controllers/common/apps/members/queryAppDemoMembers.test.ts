@@ -103,8 +103,7 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      },
-      `
+      }, `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -120,14 +119,15 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
-          "role": "Admin",
+          "roles": [
+            "Admin",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
-    `,
-    );
+    `);
   });
 
   it('should fetch app members by roles', async () => {
@@ -208,28 +208,11 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      },
-      `
+      }, `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       [
-        {
-          "$ephemeral": false,
-          "$seed": false,
-          "demo": true,
-          "email": "staff@example.com",
-          "email_verified": false,
-          "locale": null,
-          "name": "Test Member",
-          "phoneNumber": null,
-          "picture": Any<String>,
-          "properties": {},
-          "role": "Staff",
-          "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
-          "totpEnabled": false,
-          "zoneinfo": null,
-        },
         {
           "$ephemeral": false,
           "$seed": false,
@@ -241,14 +224,33 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
-          "role": "Manager",
+          "roles": [
+            "Manager",
+          ],
+          "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "totpEnabled": false,
+          "zoneinfo": null,
+        },
+        {
+          "$ephemeral": false,
+          "$seed": false,
+          "demo": true,
+          "email": "staff@example.com",
+          "email_verified": false,
+          "locale": null,
+          "name": "Test Member",
+          "phoneNumber": null,
+          "picture": Any<String>,
+          "properties": {},
+          "roles": [
+            "Staff",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
-    `,
-    );
+    `);
   });
 
   it('should allow filtering app members using oDataFilters', async () => {
@@ -325,7 +327,7 @@ describe('queryAppMembers', () => {
           locale: null,
           zoneinfo: null,
           properties: {},
-          role: 'Manager',
+          roles: ['Manager'],
           demo: true,
           $seed: false,
           $ephemeral: false,
@@ -341,7 +343,7 @@ describe('queryAppMembers', () => {
           locale: null,
           zoneinfo: null,
           properties: {},
-          role: 'Staff',
+          roles: ['Staff'],
           demo: true,
           $seed: false,
           $ephemeral: false,
@@ -411,8 +413,7 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      },
-      `
+      }, `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -428,14 +429,15 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
-          "role": "Staff",
+          "roles": [
+            "Staff",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
-    `,
-    );
+    `);
   });
 
   it('should fetch app members by no roles', async () => {
@@ -502,28 +504,11 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      },
-      `
+      }, `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       [
-        {
-          "$ephemeral": false,
-          "$seed": false,
-          "demo": true,
-          "email": "staff@example.com",
-          "email_verified": false,
-          "locale": null,
-          "name": "Test Member",
-          "phoneNumber": null,
-          "picture": Any<String>,
-          "properties": {},
-          "role": "Staff",
-          "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
-          "totpEnabled": false,
-          "zoneinfo": null,
-        },
         {
           "$ephemeral": false,
           "$seed": false,
@@ -535,14 +520,33 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
-          "role": "Manager",
+          "roles": [
+            "Manager",
+          ],
+          "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "totpEnabled": false,
+          "zoneinfo": null,
+        },
+        {
+          "$ephemeral": false,
+          "$seed": false,
+          "demo": true,
+          "email": "staff@example.com",
+          "email_verified": false,
+          "locale": null,
+          "name": "Test Member",
+          "phoneNumber": null,
+          "picture": Any<String>,
+          "properties": {},
+          "roles": [
+            "Staff",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
-    `,
-    );
+    `);
   });
 
   it('should only return invited members if policy is set to invite', async () => {

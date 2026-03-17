@@ -20,7 +20,10 @@ export interface SelectProps extends Omit<ComponentPropsWithoutRef<'select'>, 'o
   /**
    * This is fired when the input value has changed.
    */
-  readonly onChange?: (event: ChangeEvent<HTMLSelectElement>, value: string) => void;
+  readonly onChange?: (
+    event: ChangeEvent<HTMLSelectElement>,
+    value: string | string[],
+  ) => void;
 }
 
 /**
@@ -33,9 +36,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLSelectElement>) => {
-        onChange?.(event, event.currentTarget.value);
+        onChange?.(
+          event,
+          multiple
+            ? Array.from(event.currentTarget.selectedOptions, ({ value }) => value)
+            : event.currentTarget.value,
+        );
       },
-      [onChange],
+      [multiple, onChange],
     );
 
     return (

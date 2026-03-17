@@ -33,10 +33,10 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
     const key = randomBytes(40).toString('hex');
 
     await (existingAppMember
-      ? existingAppMember.update({ role: invite.role, password: hashedPassword })
+      ? existingAppMember.update({ roles: [invite.role], password: hashedPassword })
       : AppMember.create({
           email: invite.email.toLowerCase(),
-          role: invite.role,
+          roles: [invite.role],
           password: hashedPassword,
           emailKey: null,
           emailVerified: true,

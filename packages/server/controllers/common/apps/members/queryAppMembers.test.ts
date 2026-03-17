@@ -101,8 +101,7 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      },
-      `
+      }, `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -118,14 +117,15 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
-          "role": "Admin",
+          "roles": [
+            "Admin",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
-    `,
-    );
+    `);
   });
 
   it('should fetch app members by roles', async () => {
@@ -202,8 +202,7 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      },
-      `
+      }, `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -219,7 +218,9 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
-          "role": "Manager",
+          "roles": [
+            "Manager",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
@@ -235,14 +236,15 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
-          "role": "Staff",
+          "roles": [
+            "Staff",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
-    `,
-    );
+    `);
   });
 
   it('should allow filtering app members using oDataFilters', async () => {
@@ -317,7 +319,7 @@ describe('queryAppMembers', () => {
         locale: null,
         zoneinfo: null,
         properties: {},
-        role: 'Manager',
+        roles: ['Manager'],
         demo: false,
         totpEnabled: false,
         $seed: false,
@@ -333,7 +335,7 @@ describe('queryAppMembers', () => {
         locale: null,
         zoneinfo: null,
         properties: {},
-        role: 'Staff',
+        roles: ['Staff'],
         demo: false,
         totpEnabled: false,
         $seed: false,
@@ -399,8 +401,7 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      },
-      `
+      }, `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -416,14 +417,15 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
-          "role": "Staff",
+          "roles": [
+            "Staff",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
-    `,
-    );
+    `);
   });
 
   it('should fetch app members by no roles', async () => {
@@ -487,8 +489,7 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      },
-      `
+      }, `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -504,7 +505,9 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
-          "role": "Manager",
+          "roles": [
+            "Manager",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
@@ -520,14 +523,45 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
-          "role": "Staff",
+          "roles": [
+            "Staff",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
-    `,
-    );
+    `);
+  });
+
+  it('should respond with 401 when querying app members without authentication', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/members`);
+    expect(response).toMatchObject({
+      status: 401,
+      data: {
+        message: 'Unauthorized',
+      },
+    });
   });
 
   it('should only return invited members if policy is set to invite', async () => {

@@ -10,9 +10,12 @@ export const AppMember: OpenAPIV3.NonArraySchemaObject = {
       readOnly: true,
       description: 'The id of the app member.',
     },
-    role: {
-      type: 'string',
-      description: 'The role of the app member within the app.',
+    roles: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+      description: 'The direct roles of the app member within the app.',
     },
     name: {
       type: 'string',

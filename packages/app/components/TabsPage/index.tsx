@@ -56,7 +56,7 @@ export function TabsPage({
   const [data, setData] = useState<unknown>({});
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { appMemberInfo, appMemberRole, appMemberSelectedGroup } = useAppMember();
+  const { appMemberInfo, appMemberRoles, appMemberSelectedGroup } = useAppMember();
   const [tabsWithPermissions, setTabsWithPermissions] = useState<SubPageDefinition[]>([]);
   const [defaultTab, setDefaultTab] = useState<{ id: string; name: string } | null>(null);
   const { getVariable } = useAppVariables();
@@ -88,9 +88,9 @@ export function TabsPage({
         blocks: [],
       };
 
-      return checkPagePermissions(pd, appDefinition, appMemberRole, appMemberSelectedGroup);
+      return checkPagePermissions(pd, appDefinition, appMemberRoles, appMemberSelectedGroup);
     },
-    [remap, data, remapperContext, appDefinition, appMemberRole, appMemberSelectedGroup],
+    [remap, data, remapperContext, appDefinition, appMemberRoles, appMemberSelectedGroup],
   );
 
   const events = createEvents(

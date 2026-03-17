@@ -60,7 +60,7 @@ describe('app.member.register', () => {
         email: 'test@example.com',
         email_verified: true,
         name: 'name',
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -98,7 +98,7 @@ describe('app.member.invite', () => {
         email: 'test@example.com',
         email_verified: true,
         name: 'name',
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -171,7 +171,7 @@ describe('app.member.login', () => {
         email: 'test@example.com',
         email_verified: true,
         name: 'name',
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -243,7 +243,7 @@ describe('app.member.query', () => {
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -330,7 +330,7 @@ describe('app.member.query', () => {
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -412,7 +412,7 @@ describe('app.member.query', () => {
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: true,
         $seed: false,
         $ephemeral: false,
@@ -505,6 +505,7 @@ describe('app.member.current.patch', () => {
         emailVerified: false,
         name: 'name',
         picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
+        roles: [PredefinedAppRole.Member],
         properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
     ]);
@@ -521,7 +522,7 @@ describe('app.member.current.patch', () => {
         email_verified: true,
         picture: 'https://example.com/old-avatar.jpg',
         properties: { test: [1, 2, 3], property: 'Property', bool: true },
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -537,6 +538,7 @@ describe('app.member.current.patch', () => {
       email: 'email@example.com',
       emailVerified: false,
       picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
+      roles: [PredefinedAppRole.Member],
       properties: {
         bool: 'true',
         property: 'Property',
@@ -549,6 +551,7 @@ describe('app.member.current.patch', () => {
       emailVerified: false,
       name: 'name',
       picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
+      roles: [PredefinedAppRole.Member],
       properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
     });
     expect(refetchDemoAppMembers).toHaveBeenCalledWith();
@@ -597,7 +600,7 @@ describe('app.member.current.patch', () => {
         email_verified: true,
         picture: 'https://example.com/old-avatar.jpg',
         properties: {},
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -643,7 +646,7 @@ describe('app.member.role.update', () => {
         email: 'email@example.com',
         emailVerified: false,
         name: 'name',
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
         picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
@@ -652,7 +655,7 @@ describe('app.member.role.update', () => {
       definition: {
         type: 'app.member.role.update',
         sub: 'some-user-id',
-        role: { prop: 'role' },
+        roles: { prop: 'roles' },
       },
       getAppMemberInfo: () => ({
         sub: 'manager-id',
@@ -661,7 +664,7 @@ describe('app.member.role.update', () => {
         email_verified: true,
         picture: 'https://example.com/old-avatar.jpg',
         properties: { test: [1, 2, 3], property: 'Property', bool: true },
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -672,14 +675,14 @@ describe('app.member.role.update', () => {
       refetchDemoAppMembers,
     });
 
-    const result = await action({ role: PredefinedAppRole.Member });
+    const result = await action({ roles: [PredefinedAppRole.Member] });
     expect(result).toStrictEqual({
       id: 'some-user-id',
       name: 'name',
       email: 'email@example.com',
       emailVerified: false,
       picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
-      role: PredefinedAppRole.Member,
+      roles: [PredefinedAppRole.Member],
       properties: {
         bool: 'true',
         property: 'Property',
@@ -694,7 +697,7 @@ describe('app.member.role.update', () => {
       definition: {
         type: 'app.member.role.update',
         sub: 'some-user-id',
-        role: PredefinedAppRole.ResourcesManager,
+        roles: { static: [PredefinedAppRole.ResourcesManager] },
       },
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
@@ -742,7 +745,7 @@ describe('app.member.properties.patch', () => {
         email_verified: true,
         picture: 'https://example.com/old-avatar.jpg',
         properties: { test: [1, 2, 3], property: 'Property', bool: true },
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -819,7 +822,7 @@ describe('app.member.delete', () => {
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: false,
         $seed: false,
         $ephemeral: false,

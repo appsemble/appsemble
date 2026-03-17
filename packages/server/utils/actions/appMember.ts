@@ -4,7 +4,12 @@ import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { getAppDB } from '../../models/index.js';
-import { getAppMemberInfo, parseMemberFilterQuery } from '../appMember.js';
+import {
+  getAppMemberIdsByRoles,
+  getAppMemberInfo,
+  normalizeAppMemberRoles,
+  parseMemberFilterQuery,
+} from '../appMember.js';
 
 export async function appMemberQuery({
   action,
@@ -23,14 +28,23 @@ export async function appMemberQuery({
   Object.assign(remapperContext, {
     history: internalContext?.history ?? [],
   });
-  const remappedRoles = (remap(action.roles ?? null, data, remapperContext) || []) as AppRole[];
+
+  const remappedRoles = remap(action.roles ?? null, data, remapperContext) as
+    | AppRole[]
+    | AppRole
+    | null;
+  const roles = normalizeAppMemberRoles(remappedRoles);
   const query = (remap(action.query ?? '', data, remapperContext) ?? {}) as { $filter?: string };
   const parsedFilter = parseMemberFilterQuery(query.$filter ?? '');
+  const memberIds = roles.length ? await getAppMemberIdsByRoles(app.id, roles) : null;
+
+  if (memberIds?.length === 0) {
+    return [];
+  }
+
   const commonFilters = {
     demo: false,
-    ...(remappedRoles.length
-      ? { role: { [Op.in]: Array.isArray(remappedRoles) ? remappedRoles : [remappedRoles] } }
-      : {}),
+    ...(memberIds ? { id: { [Op.in]: memberIds } } : {}),
   };
 
   const { AppMember } = await getAppDB(app.id);

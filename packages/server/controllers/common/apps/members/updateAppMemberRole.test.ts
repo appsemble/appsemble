@@ -35,7 +35,6 @@ describe('updateAppMemberRole', () => {
   });
 
   beforeEach(async () => {
-    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
     vi.clearAllTimers();
     vi.setSystemTime(0);
     user = await createTestUser();
@@ -81,7 +80,7 @@ describe('updateAppMemberRole', () => {
   it('should throw for non existent apps', async () => {
     authorizeStudio();
     const response = await request.put(`/api/apps/55/app-members/${appMember.id}/role`, {
-      role: 'User',
+      roles: ['User'],
     });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -95,10 +94,79 @@ describe('updateAppMemberRole', () => {
     `);
   });
 
+  it('should require roles to be an array', async () => {
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/app-members/${appMember.id}/role`, {
+      role: 'User',
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
+          {
+            "argument": "role",
+            "instance": {
+              "role": "User",
+            },
+            "message": "is not allowed to have the additional property "role"",
+            "name": "additionalProperties",
+            "path": [],
+            "property": "instance",
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "roles": {
+                  "items": {
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+              },
+              "required": [
+                "roles",
+              ],
+              "type": "object",
+            },
+            "stack": "instance is not allowed to have the additional property "role"",
+          },
+          {
+            "argument": "roles",
+            "instance": {
+              "role": "User",
+            },
+            "message": "requires property "roles"",
+            "name": "required",
+            "path": [],
+            "property": "instance",
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "roles": {
+                  "items": {
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+              },
+              "required": [
+                "roles",
+              ],
+              "type": "object",
+            },
+            "stack": "instance requires property "roles"",
+          },
+        ],
+        "message": "JSON schema validation failed",
+      }
+    `);
+  });
+
   it('should throw if the app member does not exist', async () => {
     authorizeStudio();
     const response = await request.put(`/api/apps/${app.id}/app-members/${randomUUID()}/role`, {
-      role: 'User',
+      roles: ['User'],
     });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -115,7 +183,7 @@ describe('updateAppMemberRole', () => {
   it('should not allow changing own role', async () => {
     authorizeAppMember(app, appMember);
     const response = await request.put(`/api/apps/${app.id}/app-members/${appMember.id}/role`, {
-      role: 'User',
+      roles: ['User'],
     });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 401 Unauthorized
@@ -129,11 +197,11 @@ describe('updateAppMemberRole', () => {
     `);
   });
 
-  it('should throw for the invalid roles', async () => {
+  it('should throw for invalid roles', async () => {
     authorizeAppMember(app, appMember);
     const appMember2 = await createTestAppMember(app.id, 'test2@example.com');
     const response = await request.put(`/api/apps/${app.id}/app-members/${appMember2.id}/role`, {
-      role: 'invalid',
+      roles: ['invalid'],
     });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 401 Unauthorized
@@ -155,7 +223,7 @@ describe('updateAppMemberRole', () => {
     const appMember2 = await createTestAppMember(app.id, 'test2@example.com');
     authorizeStudio();
     const response = await request.put(`/api/apps/${app.id}/app-members/${appMember2.id}/role`, {
-      role: 'Admin',
+      roles: ['Admin'],
     });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -169,18 +237,18 @@ describe('updateAppMemberRole', () => {
     `);
   });
 
-  it('should update the role', async () => {
+  it('should update multiple roles', async () => {
     const appMember2 = await createTestAppMember(app.id, 'test2@example.com');
     await appMember.update({ role: PredefinedAppRole.Owner });
     authorizeAppMember(app, appMember);
 
     const response = await request.put(`/api/apps/${app.id}/app-members/${appMember2.id}/role`, {
-      role: 'Admin',
+      roles: ['Admin', 'User'],
     });
     expect(response.status).toBe(200);
     expect(response.data).toMatchObject({
       sub: appMember2.id,
-      role: 'Admin',
+      roles: ['Admin', 'User'],
     });
   });
 });

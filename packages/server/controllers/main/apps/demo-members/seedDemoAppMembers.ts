@@ -1,23 +1,47 @@
-import { type AppDefinition } from '@appsemble/lang-sdk';
+import { type AppDefinition, type AppRole } from '@appsemble/lang-sdk';
 import { assertKoaCondition } from '@appsemble/node-utils';
-import { type AppMemberInfo, OrganizationPermission } from '@appsemble/types';
+import { OrganizationPermission } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../models/index.js';
-import { getAppMemberInfo, parseAppMemberProperties } from '../../../../utils/appMember.js';
+import {
+  getAppMemberInfo,
+  normalizeAppMemberRoles,
+  parseAppMemberProperties,
+} from '../../../../utils/appMember.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
-type AppMemberInfoWithoutId = Omit<AppMemberInfo, 'demo' | 'sub'>;
+interface SeedAppMember {
+  name: string;
+  roles: AppRole[];
+  properties?: Record<string, any>;
+  timezone: string;
+}
 
 function validateAppMemberRoles(
+  ctx: Context,
   definition: AppDefinition,
-  appMembers: (AppMemberInfoWithoutId & { timezone: string })[],
-): AppMemberInfoWithoutId[] {
-  const roles = Object.keys(definition.security?.roles ?? {});
-  return (appMembers ?? [])
-    .filter((member) => !(member.role in roles) && member.role !== 'cron')
-    .map((member) => ({ ...member, zoneinfo: member.timezone }));
+  appMembers: SeedAppMember[],
+): SeedAppMember[] {
+  const supportedRoles = new Set(Object.keys(definition.security?.roles ?? {}));
+
+  return (appMembers ?? []).map((member) => {
+    const roles = normalizeAppMemberRoles(member.roles);
+
+    assertKoaCondition(roles.length > 0, ctx, 400, 'Each demo app member must have at least one role');
+    assertKoaCondition(
+      roles.every((role) => supportedRoles.has(role)),
+      ctx,
+      400,
+      'Role not allowed',
+    );
+
+    return {
+      ...member,
+      roles,
+    };
+  });
 }
 
 export async function seedDemoAppMembers(ctx: Context): Promise<void> {
@@ -38,13 +62,13 @@ export async function seedDemoAppMembers(ctx: Context): Promise<void> {
   });
 
   const { AppMember } = await getAppDB(appId);
-  const filteredMembers = validateAppMemberRoles(app.definition, body);
+  const validatedMembers = validateAppMemberRoles(ctx, app.definition, body);
   const createdMembers = await AppMember.bulkCreate(
-    filteredMembers.map(({ name, properties, role, zoneinfo: timezone }) => ({
+    validatedMembers.map(({ name, properties, roles, timezone }) => ({
       email: `demo-${Math.random().toString(36).slice(2)}@example.com`,
-      role,
+      roles,
       emailVerified: true,
-      name: `${name} ${role}`,
+      name: `${name} ${roles.join(', ')}`,
       locale: app.definition.defaultLanguage || defaultLocale,
       demo: true,
       timezone,
@@ -55,11 +79,11 @@ export async function seedDemoAppMembers(ctx: Context): Promise<void> {
   );
 
   const createdEphemeralMembers = await AppMember.bulkCreate(
-    createdMembers.map(({ email, locale, name, properties, role, timezone }) => ({
+    createdMembers.map(({ email, locale, name, properties, roles, timezone }) => ({
       email,
       locale,
       name,
-      role,
+      roles,
       demo: true,
       seed: false,
       ephemeral: true,
@@ -68,5 +92,6 @@ export async function seedDemoAppMembers(ctx: Context): Promise<void> {
       properties: parseAppMemberProperties(properties ?? {}),
     })),
   );
+
   ctx.body = createdEphemeralMembers.map((member) => getAppMemberInfo(appId, member));
 }

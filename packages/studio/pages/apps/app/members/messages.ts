@@ -19,7 +19,7 @@ export const messages = defineMessages({
   },
   role: {
     id: 'studio.1ZgrhW',
-    defaultMessage: 'Role',
+    defaultMessage: 'Roles',
   },
   noMembers: {
     id: 'studio.jRZz4r',

@@ -1,7 +1,9 @@
 import { getAppRoles } from '@appsemble/lang-sdk';
 import { type SendNotificationsParams } from '@appsemble/node-utils';
+import { Op } from 'sequelize';
 
 import { App, getAppDB } from '../models/index.js';
+import { getAppMemberIdsByRoles } from '../utils/appMember.js';
 import { sendNotification } from '../utils/sendNotification.js';
 
 export async function sendNotifications({
@@ -11,7 +13,7 @@ export async function sendNotifications({
   title,
   to,
 }: SendNotificationsParams): Promise<void> {
-  const { AppMember, AppSubscription } = await getAppDB(app.id!);
+  const { AppSubscription } = await getAppDB(app.id!);
   const persistedApp = (await App.findByPk(app.id, {
     attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'],
   }))!;
@@ -23,20 +25,23 @@ export async function sendNotifications({
       ? [to]
       : [];
 
+  const memberIds = toValidRoles.length ? await getAppMemberIdsByRoles(app.id!, toValidRoles) : [];
+
+  if (to !== 'all' && (appRoles.includes(to as string) || toValidRoles.length) && !memberIds.length) {
+    return;
+  }
+
   const appSubscriptions = await AppSubscription.findAll({
     attributes: ['id', 'auth', 'p256dh', 'endpoint'],
     ...(to === 'all'
       ? {}
-      : appRoles.includes(to) || toValidRoles.length
+      : appRoles.includes(to as string) || toValidRoles.length
         ? {
-            include: [
-              {
-                model: AppMember,
-                where: {
-                  role: toValidRoles,
-                },
+            where: {
+              AppMemberId: {
+                [Op.in]: memberIds,
               },
-            ],
+            },
           }
         : { where: { AppMemberId: to } }),
   });

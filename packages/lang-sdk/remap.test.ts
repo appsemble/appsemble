@@ -2084,7 +2084,7 @@ describe('user', () => {
         email: 'me@example.com',
         email_verified: true,
         picture: '',
-        role: 'Member',
+        roles: ['Member'],
         demo: false,
         $seed: false,
         $ephemeral: false,

@@ -49,7 +49,6 @@ test.describe('Individual app', () => {
   }) => {
     await clickAppSideMenuItem('Editor');
     page.on('dialog', (alert) => {
-      // If a dialog comes up at all, the test should fail
       expect(alert).toBeNull();
     });
 

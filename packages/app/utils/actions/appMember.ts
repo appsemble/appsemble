@@ -211,12 +211,13 @@ export const appMemberRoleUpdate: ActionCreator<'app.member.role.update'> = ({
     }
 
     const sub = remap(definition.sub, data);
-    const role = remap(definition.role, data);
+    const mappedRoles = remap(definition.roles, data);
+    const roles = Array.isArray(mappedRoles) ? mappedRoles : mappedRoles ? [mappedRoles] : [];
     const selectedGroupId = getAppMemberSelectedGroup?.()?.id;
 
     const { data: response } = await axios.put<AppMemberInfo>(
       `${apiUrl}/api/apps/${appId}/app-members/${sub}/role${selectedGroupId ? `?selectedGroupId=${selectedGroupId}` : ''}`,
-      { role },
+      { roles },
     );
 
     await refetchDemoAppMembers();
