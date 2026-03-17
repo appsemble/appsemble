@@ -1,4 +1,4 @@
-import { normalize, type PageDefinition, remap } from '@appsemble/lang-sdk';
+import { type PageDefinition, remap } from '@appsemble/lang-sdk';
 import {
   Button,
   CollapsibleMenuSection,
@@ -14,6 +14,7 @@ import { usePWAInstall } from 'react-use-pwa-install';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
+import { getPageDisplayName, getPagePathSegment } from '../../utils/pageUtils.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -66,10 +67,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
 
   const generateNameAndNavName = useCallback(
     (page: PageDefinition): [string, string] => {
-      const name = getAppMessage({
-        id: `pages.${normalize(page.name)}`,
-        defaultMessage: page.name,
-      }).format() as string;
+      const name = getPageDisplayName(page, getAppMessage);
       const remapperContext = createRemapperContext(name);
       const navName = page.navTitle
         ? (remap(page.navTitle, null, remapperContext) as string)
@@ -107,7 +105,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
               icon={page.icon}
               key={page.name}
               title={navName}
-              to={`${url}/${normalize(name)}`}
+              to={`${url}/${getPagePathSegment(page)}`}
             >
               {navName}
             </MenuItem>
