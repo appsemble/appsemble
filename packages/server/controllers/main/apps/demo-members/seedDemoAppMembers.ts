@@ -29,7 +29,12 @@ function validateAppMemberRoles(
   return (appMembers ?? []).map((member) => {
     const roles = normalizeAppMemberRoles(member.roles);
 
-    assertKoaCondition(roles.length > 0, ctx, 400, 'Each demo app member must have at least one role');
+    assertKoaCondition(
+      roles.length > 0,
+      ctx,
+      400,
+      'Each demo app member must have at least one role',
+    );
     assertKoaCondition(
       roles.every((role) => supportedRoles.has(role)),
       ctx,

@@ -303,7 +303,6 @@ async function validateAppMemberProperties(
   instance.properties = parsedProperties;
 }
 
-
 function markAppMemberRolesDirty(instance: AppMemberGlobal, dirty: boolean): void {
   Object.assign(instance as AppMemberGlobal & { appMemberRolesDirty?: boolean }, {
     appMemberRolesDirty: dirty,
@@ -537,9 +536,7 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
     }
 
     @AfterFind
-    static async loadAssignedRoles(
-      instance: AppMember | AppMember[] | null,
-    ): Promise<void> {
+    static async loadAssignedRoles(instance: AppMember | AppMember[] | null): Promise<void> {
       if (!sequelize.models.AppMemberAssignedRole) {
         return;
       }

@@ -20,10 +20,7 @@ export interface SelectProps extends Omit<ComponentPropsWithoutRef<'select'>, 'o
   /**
    * This is fired when the input value has changed.
    */
-  readonly onChange?: (
-    event: ChangeEvent<HTMLSelectElement>,
-    value: string | string[],
-  ) => void;
+  readonly onChange?: (event: ChangeEvent<HTMLSelectElement>, value: string | string[]) => void;
 }
 
 /**

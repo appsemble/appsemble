@@ -14,7 +14,7 @@ import {
 } from '@appsemble/react-components';
 import { type AppMemberInfo } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactNode, useCallback, useMemo } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -90,13 +90,16 @@ export function MemberRow({
   );
 
   const onChangeRole = useCallback(
-    async (_event: React.ChangeEvent<HTMLSelectElement>, value: string | string[]): Promise<void> => {
-      const selectedRoles = Array.isArray(value) ? value : value ? [value] : [];
+    async (event: ChangeEvent<HTMLSelectElement>): Promise<void> => {
+      const selectedRoles = Array.from(event.currentTarget.selectedOptions, ({ value }) => value);
 
       try {
-        const { data } = await axios.put<AppMemberInfo>(`/api/apps/${app.id}/app-members/${sub}/role`, {
-          roles: selectedRoles,
-        });
+        const { data } = await axios.put<AppMemberInfo>(
+          `/api/apps/${app.id}/app-members/${sub}/role`,
+          {
+            roles: selectedRoles,
+          },
+        );
 
         push({
           color: 'success',

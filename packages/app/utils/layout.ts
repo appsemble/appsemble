@@ -18,7 +18,9 @@ function shouldShowPage(
   if (pageDefinition.navigation === 'hidden' || pageDefinition.navigation === 'profileDropdown') {
     return false;
   }
-  if (!checkPagePermissions(pageDefinition, appDefinition, appMemberRoles, appMemberSelectedGroup)) {
+  if (
+    !checkPagePermissions(pageDefinition, appDefinition, appMemberRoles, appMemberSelectedGroup)
+  ) {
     return false;
   }
 

@@ -62,10 +62,12 @@ test.describe('Studio member roles', () => {
     await page.reload();
 
     await expect
-      .poll(async () =>
-        page.getByTestId(`app-member-roles-${email}`).evaluate((element) =>
-          Array.from((element as HTMLSelectElement).selectedOptions, ({ value }) => value),
-        ),
+      .poll(() =>
+        page
+          .getByTestId(`app-member-roles-${email}`)
+          .evaluate((element) =>
+            Array.from((element as HTMLSelectElement).selectedOptions, ({ value }) => value),
+          ),
       )
       .toEqual(['Admin', 'Auditor']);
   });

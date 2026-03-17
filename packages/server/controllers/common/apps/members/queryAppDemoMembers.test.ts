@@ -103,7 +103,8 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      }, `
+      },
+      `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -127,7 +128,8 @@ describe('queryAppMembers', () => {
           "zoneinfo": null,
         },
       ]
-    `);
+    `,
+    );
   });
 
   it('should fetch app members by roles', async () => {
@@ -208,7 +210,8 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      }, `
+      },
+      `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -250,7 +253,8 @@ describe('queryAppMembers', () => {
           "zoneinfo": null,
         },
       ]
-    `);
+    `,
+    );
   });
 
   it('should allow filtering app members using oDataFilters', async () => {
@@ -413,7 +417,8 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      }, `
+      },
+      `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -437,7 +442,8 @@ describe('queryAppMembers', () => {
           "zoneinfo": null,
         },
       ]
-    `);
+    `,
+    );
   });
 
   it('should fetch app members by no roles', async () => {
@@ -504,7 +510,8 @@ describe('queryAppMembers', () => {
             sub: expect.stringMatching(uuid4Pattern),
           },
         ],
-      }, `
+      },
+      `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -546,7 +553,8 @@ describe('queryAppMembers', () => {
           "zoneinfo": null,
         },
       ]
-    `);
+    `,
+    );
   });
 
   it('should only return invited members if policy is set to invite', async () => {

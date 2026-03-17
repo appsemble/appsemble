@@ -26,7 +26,7 @@ vi.mock('axios', () => ({
   },
 }));
 
-function TestComponent({ url }: { url: string }): ReactNode {
+function TestComponent({ url }: { readonly url: string }): ReactNode {
   useData(url);
   return null;
 }

@@ -27,7 +27,11 @@ export async function sendNotifications({
 
   const memberIds = toValidRoles.length ? await getAppMemberIdsByRoles(app.id!, toValidRoles) : [];
 
-  if (to !== 'all' && (appRoles.includes(to as string) || toValidRoles.length) && !memberIds.length) {
+  if (
+    to !== 'all' &&
+    (appRoles.includes(to as string) || toValidRoles.length) &&
+    !memberIds.length
+  ) {
     return;
   }
 

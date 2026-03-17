@@ -61,7 +61,9 @@ export function useData<T>(url: string): UseAxiosResult<T> {
     setError(undefined);
     setResult(undefined);
 
-    const accessToken = url.startsWith('/') ? globalThis.localStorage?.getItem('access_token') : null;
+    const accessToken = url.startsWith('/')
+      ? globalThis.localStorage?.getItem('access_token')
+      : null;
     const headers = accessToken ? { authorization: `Bearer ${accessToken}` } : undefined;
 
     axios
