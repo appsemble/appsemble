@@ -17,6 +17,7 @@ import * as migrate from './commands/migrate.js';
 import * as migrateAppDefinitions from './commands/migrateAppDefinitions.js';
 import * as reconcile from './commands/reconcileDNS.js';
 import * as reencryptSecrets from './commands/reencryptSecrets.js';
+import * as restoreDataFromBackup from './commands/restoreDataFromBackup.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
 import * as start from './commands/start.js';
@@ -70,6 +71,7 @@ const parser = yargs()
   .command(chargeOrganizationSubscriptions as CommandModule)
   .command(backupProductionData as CommandModule)
   .command(cleanupExpiredDomains as CommandModule)
+  .command(restoreDataFromBackup as CommandModule)
   .fail(handleError)
   .help('help', 'Show this help message.')
   .alias('h', 'help')
