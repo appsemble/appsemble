@@ -124,9 +124,15 @@ function getAppMemberRoles(instance: AppMemberGlobal): AppRole[] {
     return normalizeAppMemberRoles(roles);
   }
 
-  return normalizeAppMemberRoles(
-    instance.AppMemberAssignedRoles?.map((assignedRole) => assignedRole.role) ?? [],
-  );
+  const assignedRoles = instance.AppMemberAssignedRoles?.map((assignedRole) => assignedRole.role);
+
+  if (assignedRoles?.length) {
+    return normalizeAppMemberRoles(assignedRoles);
+  }
+
+  const role = instance.getDataValue('role');
+
+  return normalizeAppMemberRoles(role ? [role] : []);
 }
 
 function getDefaultValue(
@@ -344,10 +350,9 @@ async function hydrateAppMemberRoles(
 
   for (const instance of instances) {
     instance.AppMemberAssignedRoles = assignedRolesByMemberId[instance.id] ?? [];
-    instance.setDataValue(
-      'roles',
-      normalizeAppMemberRoles(instance.AppMemberAssignedRoles.map(({ role }) => role)),
-    );
+    const roles = getAppMemberRoles(instance);
+    instance.setDataValue('roles', roles);
+    instance.setDataValue('role', roles[0] ?? null);
     markAppMemberRolesDirty(instance, false);
   }
 }
@@ -399,12 +404,14 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
     @Column(DataType.UUID)
     declare id: string;
 
+    @AllowNull(true)
     @Column({
-      type: DataType.VIRTUAL,
+      type: DataType.STRING,
       get(this: AppMember): AppRole | null {
-        return getAppMemberRoles(this)[0] ?? null;
+        return this.getDataValue('role') ?? getAppMemberRoles(this)[0] ?? null;
       },
       set(this: AppMember, value: AppRole | null): void {
+        this.setDataValue('role', value);
         this.setDataValue('roles', normalizeAppMemberRoles(value ? [value] : []));
         markAppMemberRolesDirty(this, true);
       },
@@ -593,7 +600,9 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
     @BeforeCreate
     @BeforeUpdate
     static normalizeRoles(instance: AppMember): void {
-      instance.setDataValue('roles', getAppMemberRoles(instance));
+      const roles = getAppMemberRoles(instance);
+      instance.setDataValue('roles', roles);
+      instance.setDataValue('role', roles[0] ?? null);
     }
 
     @BeforeBulkCreate

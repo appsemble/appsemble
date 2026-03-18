@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { App, getAppDB, Organization } from '../index.js';
@@ -23,6 +25,7 @@ describe('AppMember', () => {
           },
         },
       },
+      dbName: `app-member-test-${randomUUID()}`,
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
@@ -39,6 +42,22 @@ describe('AppMember', () => {
         phoneNumber: '+31 6 1234 567',
       }),
     ).rejects.toThrow('Invalid Phone Number');
+  });
+
+  it('should sync legacy role inserts into assigned roles', async () => {
+    const { AppMember, sequelize } = await getAppDB(1);
+
+    await sequelize.query(
+      `
+        INSERT INTO "AppMember" (id, email, "emailVerified", role, created, updated)
+        VALUES ('00000000-0000-4000-8000-000000000001', 'legacy@example.com', true, 'Admin', NOW(), NOW())
+      `,
+    );
+
+    const member = await AppMember.findByPk('00000000-0000-4000-8000-000000000001');
+
+    expect(member?.role).toBe('Admin');
+    expect(member?.roles).toStrictEqual(['Admin']);
   });
 
   it('should use NL as default country code', async () => {
