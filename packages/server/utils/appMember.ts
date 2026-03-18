@@ -53,18 +53,34 @@ export async function getAppMemberIdsByRoles(
     return [];
   }
 
-  const { AppMemberAssignedRole } = await getAppDB(appId);
-  const assignedRoles = await AppMemberAssignedRole.findAll({
-    attributes: ['AppMemberId'],
-    where: {
-      role: {
-        [Op.in]: roles,
+  const { AppMember, AppMemberAssignedRole } = await getAppDB(appId);
+  const [assignedRoles, legacyMembers] = await Promise.all([
+    AppMemberAssignedRole.findAll({
+      attributes: ['AppMemberId'],
+      where: {
+        role: {
+          [Op.in]: roles,
+        },
       },
-    },
-    transaction,
-  });
+      transaction,
+    }),
+    AppMember.findAll({
+      attributes: ['id'],
+      where: {
+        role: {
+          [Op.in]: roles,
+        },
+      },
+      transaction,
+    }),
+  ]);
 
-  return Array.from(new Set(assignedRoles.map(({ AppMemberId }) => AppMemberId)));
+  return Array.from(
+    new Set([
+      ...assignedRoles.map(({ AppMemberId }) => AppMemberId),
+      ...legacyMembers.map(({ id }) => id),
+    ]),
+  );
 }
 
 export async function getAppMembersByRoles(

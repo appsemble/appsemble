@@ -8,6 +8,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import {
   App,
   type AppMember,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -235,6 +236,32 @@ describe('updateAppMemberRole', () => {
         "statusCode": 403,
       }
     `);
+  });
+
+  it('should allow legacy role app members to update roles', async () => {
+    const { sequelize } = await getAppDB(app.id);
+    const legacyAppMemberId = randomUUID();
+
+    await sequelize.query(
+      `
+        INSERT INTO "AppMember" (id, email, role, created, updated)
+        VALUES ('${legacyAppMemberId}', 'legacy-owner@example.com', 'Owner', NOW(), NOW())
+      `,
+    );
+
+    const appMember2 = await createTestAppMember(app.id, 'test2@example.com');
+
+    authorizeAppMember(app, { id: legacyAppMemberId } as AppMember);
+
+    const response = await request.put(`/api/apps/${app.id}/app-members/${appMember2.id}/role`, {
+      roles: ['Admin', 'User'],
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data).toMatchObject({
+      sub: appMember2.id,
+      roles: ['Admin', 'User'],
+    });
   });
 
   it('should update multiple roles', async () => {

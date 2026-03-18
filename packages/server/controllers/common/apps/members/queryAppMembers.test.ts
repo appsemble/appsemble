@@ -130,6 +130,49 @@ describe('queryAppMembers', () => {
     );
   });
 
+  it('should fetch legacy app members by roles', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Staff',
+            policy: 'everyone',
+          },
+          roles: {
+            User: {},
+            Staff: {},
+            Manager: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { sequelize } = await getAppDB(app.id);
+    await sequelize.query(
+      `
+        INSERT INTO "AppMember" (id, email, role, created, updated)
+        VALUES ('00000000-0000-4000-8000-000000000011', 'legacy-staff@example.com', 'Staff', NOW(), NOW())
+      `,
+    );
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/members?roles=Staff`);
+
+    expect(response.status).toBe(200);
+    expect(response.data).toContainEqual(
+      expect.objectContaining({
+        email: 'legacy-staff@example.com',
+        roles: ['Staff'],
+      }),
+    );
+  });
+
   it('should fetch app members by roles', async () => {
     const app = await App.create({
       definition: {

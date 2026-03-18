@@ -68,7 +68,7 @@ async function getAppMemberAppRoles(
   groupId?: number,
 ): Promise<AppRole[]> {
   const { AppMember } = await getAppDB(appId);
-  const appMember = await AppMember.findByPk(appMemberId, { attributes: ['id'] });
+  const appMember = await AppMember.findByPk(appMemberId, { attributes: ['id', 'role'] });
 
   return getAppMemberScopedRoles(appMember, appId, groupId);
 }
@@ -80,7 +80,7 @@ async function getUserAppRoles(
 ): Promise<AppRole[]> {
   const { AppMember } = await getAppDB(appId);
   const appMember = await AppMember.findOne({
-    attributes: ['id'],
+    attributes: ['id', 'role'],
     where: { userId },
   });
 
@@ -146,7 +146,7 @@ export async function checkAppMemberAppPermissions({
     return;
   }
 
-  const appMember = await AppMember.findByPk(authSubject!.id, { attributes: ['id'] });
+  const appMember = await AppMember.findByPk(authSubject!.id, { attributes: ['id', 'role'] });
 
   assertKoaCondition(appMember != null, context, 403, 'App member not found');
 
