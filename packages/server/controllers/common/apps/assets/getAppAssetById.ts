@@ -1,6 +1,7 @@
 import {
   assertKoaCondition,
   getS3File,
+  getS3FileBuffer,
   getS3FileStats,
   setAssetHeaders,
   uploadS3File,
@@ -12,6 +13,34 @@ import sharp from 'sharp';
 
 import { App, getAppDB } from '../../../../models/index.js';
 
+function getAssetFilename(assetId: string, filename?: string | null, mime?: string | null): string {
+  if (filename) {
+    return filename;
+  }
+
+  if (mime) {
+    const ext = extension(mime);
+    if (ext) {
+      return `${assetId}.${ext}`;
+    }
+  }
+
+  return assetId;
+}
+
+function getDerivedAssetName(assetId: string, width: number, height: number): string {
+  return `${assetId}${width}x${height}`;
+}
+
+function getDerivedFilename(assetId: string, filename?: string | null): string {
+  if (!filename) {
+    return `${assetId}.avif`;
+  }
+
+  const dotIndex = filename.lastIndexOf('.');
+  return dotIndex === -1 ? `${filename}.avif` : `${filename.slice(0, dotIndex)}.avif`;
+}
+
 export async function getAppAssetById(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, assetId },
@@ -22,109 +51,93 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
   const { Asset } = await getAppDB(appId);
-  let asset;
-  let resizedImage;
-  let stats;
-  let stream;
-  let filename;
-  let mime;
+  const parsedWidth = Math.round(Number(width));
+  const parsedHeight = Math.round(Number(height));
+  const shouldResize = Number.isFinite(parsedWidth) && Number.isFinite(parsedHeight);
+  const sourceAsset = await Asset.findOne({
+    where: {
+      [Op.or]: [{ id: assetId }, { name: assetId }],
+      ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+    },
+    attributes: ['id', 'mime', 'filename', 'name'],
+  });
+  assertKoaCondition(sourceAsset != null, ctx, 404, 'Asset not found');
 
-  if (width && height) {
-    asset = await Asset.findOne({
+  const bucketName = `app-${appId}`;
+  const sourceFilename = getAssetFilename(sourceAsset.id, sourceAsset.filename, sourceAsset.mime);
+
+  if (shouldResize && sourceAsset.mime?.startsWith('image')) {
+    let cachedAsset = await Asset.findOne({
       where: {
-        [Op.or]: [{ name: `${assetId}${Math.round(width)}x${Math.round(height)}` }],
+        name: getDerivedAssetName(sourceAsset.id, parsedWidth, parsedHeight),
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
       attributes: ['id', 'mime', 'filename', 'name'],
     });
-    if (asset) {
+
+    if (cachedAsset) {
       try {
-        stats = await getS3FileStats(`app-${appId}`, asset.id);
-        stream = await getS3File(`app-${appId}`, asset.id);
-        ({ filename, mime } = asset);
-        if (!filename) {
-          filename = asset.id;
-          if (mime) {
-            const ext = extension(mime);
-            if (ext) {
-              filename += `.${ext}`;
-            }
-          }
-        }
+        const stats = await getS3FileStats(bucketName, cachedAsset.id);
+        const stream = await getS3File(bucketName, cachedAsset.id);
+        setAssetHeaders(
+          ctx,
+          'image/avif',
+          getDerivedFilename(sourceAsset.id, sourceAsset.filename),
+          stats,
+        );
+        ctx.body = stream;
+        return;
       } catch (error) {
         if (!['NotFound', 'NoSuchKey'].includes((error as { code?: string })?.code ?? '')) {
           throw error;
         }
-        await asset.destroy();
-        asset = null;
+        await cachedAsset.destroy();
+        cachedAsset = null;
       }
     }
-  }
 
-  if (!asset) {
-    asset = await Asset.findOne({
-      where: {
-        [Op.or]: [{ id: assetId }, { name: assetId }],
+    const sourceBuffer = await getS3FileBuffer(bucketName, sourceAsset.id);
+    const image = sharp(sourceBuffer);
+    const metadata = await image.metadata();
+    assertKoaCondition(
+      metadata.width != null && metadata.height != null,
+      ctx,
+      422,
+      'Invalid asset',
+    );
+
+    if (metadata.width > parsedWidth * 4 && metadata.height > parsedHeight * 4) {
+      const resizedImage = await image
+        .rotate()
+        .resize({
+          width: parsedWidth * 4,
+          kernel: sharp.kernel.lanczos3,
+        })
+        .gamma()
+        .resize(parsedWidth, parsedHeight, {
+          kernel: sharp.kernel.lanczos3,
+          fit: 'cover',
+        })
+        .avif()
+        .toBuffer();
+
+      const newAsset = await Asset.create({
+        name: getDerivedAssetName(sourceAsset.id, parsedWidth, parsedHeight),
+        mime: 'image/avif',
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
-      },
-      attributes: ['id', 'mime', 'filename', 'name'],
-    });
-    assertKoaCondition(asset != null, ctx, 404, 'Asset not found');
+      });
 
-    stats = await getS3FileStats(`app-${appId}`, asset.id);
-    stream = await getS3File(`app-${appId}`, asset.id);
-    ({ filename, mime } = asset);
-    if (!filename) {
-      filename = asset.id;
-      if (mime) {
-        const ext = extension(mime);
-        if (ext) {
-          filename += `.${ext}`;
-        }
-      }
-    }
+      await uploadS3File(bucketName, newAsset.id, resizedImage);
 
-    if (width && height && mime?.startsWith('image')) {
-      const mid = sharp();
-      stream.pipe(mid);
-      const metadata = await mid.metadata();
-      assertKoaCondition(
-        metadata.width != null && metadata.height != null,
-        ctx,
-        422,
-        'Invalid asset',
-      );
-      if (metadata.width > width * 4 && metadata.height > height * 4) {
-        resizedImage = await mid
-          .resize({
-            width: Math.round(width) * 4,
-            kernel: sharp.kernel.lanczos3,
-          })
-          .gamma()
-          .toBuffer();
-        stream = await sharp(resizedImage)
-          .resize(Math.round(width), Math.round(height), {
-            kernel: sharp.kernel.lanczos3,
-            fit: 'cover',
-          })
-          .avif()
-          .toBuffer();
-
-        const newAsset = await Asset.create({
-          name: `${assetId}${Math.round(width)}x${Math.round(height)}`,
-          mime: 'image/avif',
-        });
-
-        await uploadS3File(`app-${appId}`, newAsset.id, stream);
-      } else {
-        stream = await mid.avif().toBuffer();
-      }
+      setAssetHeaders(ctx, 'image/avif', getDerivedFilename(sourceAsset.id, sourceAsset.filename));
+      ctx.body = resizedImage;
+      return;
     }
   }
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  setAssetHeaders(ctx, mime, filename, stats);
+  const stats = await getS3FileStats(bucketName, sourceAsset.id);
+  const stream = await getS3File(bucketName, sourceAsset.id);
 
+  setAssetHeaders(ctx, sourceAsset.mime ?? 'application/octet-stream', sourceFilename, stats);
   ctx.body = stream;
 }

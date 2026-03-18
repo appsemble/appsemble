@@ -3592,15 +3592,17 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "maxHeight": {
-            "description": "The maximum height of uploaded files.",
+            "description": "The optional client-side resize height limit for uploaded images.",
             "type": "number",
           },
           "maxSize": {
-            "description": "The maximum size of uploaded files.",
+            "description": "The maximum allowed size of uploaded files.
+
+This only validates the upload. It does not resize or compress the file.",
             "type": "number",
           },
           "maxWidth": {
-            "description": "The maximum width of uploaded files.",
+            "description": "The optional client-side resize width limit for uploaded images.",
             "type": "number",
           },
           "name": {
@@ -3612,7 +3614,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "quality": {
-            "description": "The quality modifier to use when uploading images, in percentages.",
+            "description": "The optional client-side image re-encode quality, in percentages.",
             "type": "number",
           },
           "readOnly": {

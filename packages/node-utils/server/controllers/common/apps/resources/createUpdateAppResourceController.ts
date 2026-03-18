@@ -58,7 +58,7 @@ export function createUpdateAppResourceController(options: Options): Middleware 
 
     const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx);
 
-    const [processedBody, preparedAssets, deletedAssetIds] = processResourceBody(
+    const [processedBody, preparedAssets, deletedAssetIds] = await processResourceBody(
       ctx,
       resourceDefinition,
       appAssets.filter((asset) => asset.resourceId === resourceId).map((asset) => asset.id),

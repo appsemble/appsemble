@@ -1,7 +1,13 @@
-import { createFixtureStream, createFormData, getS3FileBuffer } from '@appsemble/node-utils';
+import {
+  createFixtureStream,
+  createFormData,
+  getS3FileBuffer,
+  readFixture,
+} from '@appsemble/node-utils';
 import { type Asset as AssetType, PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
+import FormData from 'form-data';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
@@ -185,6 +191,53 @@ describe('createAppAsset', () => {
       }
     `,
     );
+  });
+
+  it('should sniff image uploads from content', async () => {
+    authorizeStudio();
+    const image = await readFixture('10x50.png');
+    const form = new FormData();
+    form.append('file', image, {
+      contentType: 'application/octet-stream',
+      filename: 'uploaded.bin',
+    });
+
+    const response = await request.post<Asset>(`/api/apps/${app.id}/assets`, form);
+
+    expect(response.status).toBe(201);
+    expect(response.data).toMatchObject({
+      filename: 'uploaded.bin',
+      mime: 'image/png',
+    });
+
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.findByPk(response.data.id);
+
+    expect(asset).toMatchObject({
+      filename: 'uploaded.bin',
+      mime: 'image/png',
+    });
+    expect(await getS3FileBuffer(`app-${app.id}`, response.data.id)).toStrictEqual(image);
+  });
+
+  it('should reject invalid image uploads by content', async () => {
+    authorizeStudio();
+    const form = new FormData();
+    form.append('file', Buffer.from('not an image'), {
+      contentType: 'image/png',
+      filename: 'broken.png',
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/assets`, form);
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        message: 'Image uploads must contain a valid image',
+        statusCode: 400,
+      },
+    });
   });
 
   it('should not create assets for apps that don’t exist', async () => {

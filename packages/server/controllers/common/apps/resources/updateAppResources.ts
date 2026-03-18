@@ -4,6 +4,7 @@ import {
   extractResourceBody,
   getCompressedFileMeta,
   getResourceDefinition,
+  logger,
   processResourceBody,
   throwKoaError,
   uploadAssets,
@@ -69,7 +70,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     ],
   });
 
-  const [preparedResources, preparedAssets, unusedAssetIds] = processResourceBody(
+  const [preparedResources, preparedAssets, unusedAssetIds] = await processResourceBody(
     ctx,
     definition,
     existingResources.flatMap((resource) => resource.Assets.map((asset) => asset.id)),
@@ -89,62 +90,80 @@ export async function updateAppResources(ctx: Context): Promise<void> {
   }
 
   let updatedResources: Resource[];
-  await sequelize.transaction(async (transaction) => {
-    updatedResources = await Promise.all(
-      processedResources.map(async ({ $author, $created, $editor, $updated, id, ...data }) => {
-        const [, [resource]] = await Resource.update(
-          {
-            data,
-            EditorId: appMember?.sub,
-          },
-          { where: { id }, transaction, returning: true },
-        );
-        return resource;
-      }),
-    );
+  if (preparedAssets.length) {
+    await uploadAssets(app.id, preparedAssets);
+  }
 
-    if (definition.history) {
-      const historyDefinition = definition.history;
-      await ResourceVersion.bulkCreate(
-        existingResources.map((resource) => ({
-          ResourceId: resource.id,
-          AppMemberId: resource.EditorId,
-          data: historyDefinition === true || historyDefinition.data ? resource.data : undefined,
-        })),
-      );
-    } else if (unusedAssetIds.length) {
-      await Asset.destroy({
-        where: { id: unusedAssetIds },
-        transaction,
-      });
-
-      await deleteS3Files(`app-${appId}`, unusedAssetIds);
-    }
-
-    if (preparedAssets.length) {
-      await Asset.bulkCreate(
-        preparedAssets.map((asset) => {
-          const index = processedResources.indexOf(asset.resource as ResourceInterface);
-          const { id: ResourceId } = processedResources[index];
-          return {
-            ...asset,
-            ...getCompressedFileMeta(asset),
-            GroupId: selectedGroupId ?? null,
-            ResourceId,
-            AppMemberId: appMember?.sub,
-          };
+  try {
+    await sequelize.transaction(async (transaction) => {
+      updatedResources = await Promise.all(
+        processedResources.map(async ({ $author, $created, $editor, $updated, id, ...data }) => {
+          const [, [resource]] = await Resource.update(
+            {
+              data,
+              EditorId: appMember?.sub,
+            },
+            { where: { id }, transaction, returning: true },
+          );
+          return resource;
         }),
-        { logging: false, transaction },
       );
 
-      await uploadAssets(app.id, preparedAssets);
-    }
+      if (definition.history) {
+        const historyDefinition = definition.history;
+        await ResourceVersion.bulkCreate(
+          existingResources.map((resource) => ({
+            ResourceId: resource.id,
+            AppMemberId: resource.EditorId,
+            data: historyDefinition === true || historyDefinition.data ? resource.data : undefined,
+          })),
+        );
+      } else if (unusedAssetIds.length) {
+        await Asset.destroy({
+          where: { id: unusedAssetIds },
+          transaction,
+        });
 
-    ctx.body = updatedResources;
+        transaction.afterCommit(async () => {
+          try {
+            await deleteS3Files(`app-${appId}`, unusedAssetIds);
+          } catch (error) {
+            logger.error(error);
+          }
+        });
+      }
 
-    for (const resource of updatedResources) {
-      processReferenceHooks(app, resource, 'update', options, ctx);
-      processHooks(app, resource, 'update', options, ctx);
+      if (preparedAssets.length) {
+        await Asset.bulkCreate(
+          preparedAssets.map((asset) => {
+            const index = processedResources.indexOf(asset.resource as ResourceInterface);
+            const { id: ResourceId } = processedResources[index];
+            return {
+              ...asset,
+              ...getCompressedFileMeta(asset),
+              GroupId: selectedGroupId ?? null,
+              ResourceId,
+              AppMemberId: appMember?.sub,
+            };
+          }),
+          { logging: false, transaction },
+        );
+      }
+
+      ctx.body = updatedResources;
+
+      for (const resource of updatedResources) {
+        processReferenceHooks(app, resource, 'update', options, ctx);
+        processHooks(app, resource, 'update', options, ctx);
+      }
+    });
+  } catch (error) {
+    if (preparedAssets.length) {
+      await deleteS3Files(
+        `app-${appId}`,
+        preparedAssets.map((asset) => asset.id),
+      );
     }
-  });
+    throw error;
+  }
 }

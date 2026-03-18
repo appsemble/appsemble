@@ -18,6 +18,7 @@ import { type JsonObject, type JsonValue } from 'type-fest';
 import { preProcessCSV } from './csv.js';
 import { handleValidatorResult, type PreparedAsset, TempFile } from './index.js';
 import { throwKoaError } from './koa.js';
+import { AssetUploadValidationError, validateUploadedFile } from './uploadValidation.js';
 
 export function stripResource({
   $author,
@@ -211,7 +212,7 @@ export function extractResourceBody(
  *   2. A list of newly uploaded assets which should be linked to the resources.
  *   3. Asset IDs from the `knownAssetIds` array which are no longer used.
  */
-export function processResourceBody(
+export async function processResourceBody(
   ctx: Context | ParameterizedContext<DefaultState, DefaultContext, any>,
   definition: ResourceDefinition,
   knownAssetIds: string[] = [],
@@ -219,12 +220,35 @@ export function processResourceBody(
   knownAssetNameIds: { id: string; name?: string }[] = [],
   isPatch = false,
   resourceBody?: SerializedServerResourceBody,
-): [Record<string, unknown> | Record<string, unknown>[], PreparedAsset[], string[]] {
+): Promise<[Record<string, unknown> | Record<string, unknown>[], PreparedAsset[], string[]]> {
   const [resource, assets, preValidateProperty] = extractResourceBody(ctx, resourceBody);
   const validator = new Validator();
 
   const reusedAssets = new Set<string>();
   const usedAssetIndices = new Set<number>();
+  const validatedAssetMimes = new Map<number, string>();
+  const customErrors: ValidationError[] = [];
+
+  for (const [index, asset] of assets.entries()) {
+    try {
+      validatedAssetMimes.set(index, await validateUploadedFile(asset));
+    } catch (error) {
+      if (!(error instanceof AssetUploadValidationError)) {
+        throw error;
+      }
+
+      customErrors.push(
+        new ValidationError(
+          error.message,
+          index,
+          undefined,
+          ['assets', index],
+          'binary',
+          'content',
+        ),
+      );
+    }
+  }
 
   const thumbnailAssetSuffix = '-thumbnail.png';
 
@@ -239,7 +263,7 @@ export function processResourceBody(
     asset: {
       id: randomUUID(),
       filename,
-      mime,
+      mime: validatedAssetMimes.get(index) ?? mime,
       path,
     } as PreparedAsset,
   }));
@@ -326,7 +350,6 @@ export function processResourceBody(
       ),
     },
   };
-  const customErrors: ValidationError[] = [];
   const expiresDuration = definition.expires ? parseDuration(definition.expires) : undefined;
   const result = validator.validate(
     resource,

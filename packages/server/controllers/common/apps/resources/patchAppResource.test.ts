@@ -634,6 +634,7 @@ describe('patchAppResource', () => {
   });
 
   it('should delete dereferenced assets', async () => {
+    vi.useRealTimers();
     const { Asset, Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testAssets',
@@ -650,19 +651,12 @@ describe('patchAppResource', () => {
       createFormData({ resource: { file: '0' }, assets: Buffer.alloc(1) }),
     );
 
-    expect(response).toMatchInlineSnapshot(
-      { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
-      `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-        "id": 1,
-      }
-    `,
+    expect(response.status).toBe(200);
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        id: 1,
+      }),
     );
     await expect(() => asset.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',

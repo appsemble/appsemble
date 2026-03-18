@@ -1,15 +1,27 @@
 import { randomUUID } from 'node:crypto';
+import { copyFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 
 import { type Context, type Middleware } from 'koa';
 
 import {
-  type AssetToUpload,
   getResourceDefinition,
   type Options,
   processResourceBody,
-  uploadAssets,
+  type PreparedAsset,
 } from '../../../../../index.js';
+
+function clonePreparedAssets(preparedAssets: PreparedAsset[]): Promise<PreparedAsset[]> {
+  return Promise.all(
+    preparedAssets.map(async (asset) => {
+      const path = join(tmpdir(), `${Date.now()}-${randomUUID()}`);
+      await copyFile(asset.path, path);
+      return { ...asset, path };
+    }),
+  );
+}
 
 /**
  * Create a controller for resource creation.
@@ -48,7 +60,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
     const appAssets = await getAppAssets({ app, context: ctx });
 
-    const [processedBody, preparedAssets] = processResourceBody(
+    const [processedBody, preparedAssets] = await processResourceBody(
       ctx,
       resourceDefinition,
       appAssets.map(({ id }) => id),
@@ -63,9 +75,10 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
 
-    const assetsToUpload: AssetToUpload[] = [];
     if (!(ctx.client && 'app' in ctx.client) && query?.seed === 'true') {
-      const preparedSeedAssets = structuredClone(preparedAssets);
+      const preparedSeedAssets = app.demoMode
+        ? await clonePreparedAssets(structuredClone(preparedAssets))
+        : structuredClone(preparedAssets);
       const preparedSeedResources: Record<string, unknown>[] = resources.map((resource) => {
         const cleanResource = { ...resource };
         if (app.demoMode) {
@@ -111,13 +124,8 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
       if (!app.demoMode) {
         ctx.body = Array.isArray(processedBody) ? createdSeedResources : createdSeedResources[0];
-        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-        // (strictNullChecks)
-        await uploadAssets(app.id, preparedSeedAssets);
         return;
       }
-
-      assetsToUpload.push(...preparedSeedAssets);
     }
 
     const createdResources = await createAppResourcesWithAssets({
@@ -134,11 +142,6 @@ export function createCreateAppResourceController(options: Options): Middleware 
       resourceType,
       options,
     });
-
-    assetsToUpload.push(...preparedAssets);
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
-    await uploadAssets(app.id, assetsToUpload);
 
     ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];
   };

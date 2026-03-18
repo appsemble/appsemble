@@ -1,4 +1,4 @@
-import { uploadS3File } from '@appsemble/node-utils';
+import { getS3FileBuffer, uploadS3File } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import sharp from 'sharp';
@@ -107,7 +107,7 @@ describe('getAppAssetById', () => {
   it('should return original image when larger size is specified.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      mime: 'image/avif',
+      mime: 'image/png',
     });
     const image = await sharp({
       create: {
@@ -117,7 +117,7 @@ describe('getAppAssetById', () => {
         background: { r: 255, g: 0, b: 0 },
       },
     })
-      .avif()
+      .png()
       .toBuffer();
 
     await uploadS3File(`app-${app.id}`, asset.id, image);
@@ -132,8 +132,8 @@ describe('getAppAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/png',
+        'content-disposition': `inline; filename="${asset.id}.png"`,
         'cache-control': 'max-age=31536000,immutable',
       }),
     });
@@ -147,7 +147,7 @@ describe('getAppAssetById', () => {
   it('should return original image when specified size is too similar.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      mime: 'image/avif',
+      mime: 'image/png',
     });
     const image = await sharp({
       create: {
@@ -157,7 +157,7 @@ describe('getAppAssetById', () => {
         background: { r: 255, g: 0, b: 0 },
       },
     })
-      .avif()
+      .png()
       .toBuffer();
 
     await uploadS3File(`app-${app.id}`, asset.id, image);
@@ -172,8 +172,8 @@ describe('getAppAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/png',
+        'content-disposition': `inline; filename="${asset.id}.png"`,
         'cache-control': 'max-age=31536000,immutable',
       }),
     });
@@ -213,7 +213,7 @@ describe('getAppAssetById', () => {
   it('should resize the image, store it in s3 and return it.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      mime: 'image/avif',
+      mime: 'image/png',
     });
     const image = await sharp({
       create: {
@@ -223,7 +223,7 @@ describe('getAppAssetById', () => {
         background: { r: 255, g: 0, b: 0 },
       },
     })
-      .avif()
+      .png()
       .toBuffer();
 
     await uploadS3File(`app-${app.id}`, asset.id, image);
@@ -250,10 +250,75 @@ describe('getAppAssetById', () => {
     expect(metadata.height).toBe(10);
   });
 
+  it('should reuse cached resized assets on later requests', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+    });
+    const image = await sharp({
+      create: {
+        width: 100,
+        height: 100,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const firstResponse = await request.get(
+      `/api/apps/${app.id}/assets/${asset.id}?width=10&height=10`,
+      {
+        responseType: 'arraybuffer',
+      },
+    );
+
+    expect(firstResponse).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': `inline; filename="${asset.id}.avif"`,
+      }),
+    });
+
+    const cachedAssets = await Asset.findAll({
+      where: { name: `${asset.id}10x10` },
+      attributes: ['id'],
+    });
+    expect(cachedAssets).toHaveLength(1);
+
+    const cachedBuffer = await getS3FileBuffer(`app-${app.id}`, cachedAssets[0].id);
+
+    const secondResponse = await request.get(
+      `/api/apps/${app.id}/assets/${asset.id}?width=10&height=10`,
+      {
+        responseType: 'arraybuffer',
+      },
+    );
+
+    expect(secondResponse).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': `inline; filename="${asset.id}.avif"`,
+      }),
+    });
+    expect(Buffer.from(secondResponse.data)).toStrictEqual(cachedBuffer);
+
+    const cachedAssetsAfter = await Asset.findAll({
+      where: { name: `${asset.id}10x10` },
+      attributes: ['id'],
+    });
+    expect(cachedAssetsAfter).toHaveLength(1);
+    expect(cachedAssetsAfter[0].id).toBe(cachedAssets[0].id);
+  });
+
   it('should regenerate resized assets when cached image is missing from s3', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      mime: 'image/avif',
+      mime: 'image/png',
     });
     const staleResizedAsset = await Asset.create({
       name: `${asset.id}10x10`,
@@ -267,7 +332,7 @@ describe('getAppAssetById', () => {
         background: { r: 255, g: 0, b: 0 },
       },
     })
-      .avif()
+      .png()
       .toBuffer();
 
     await uploadS3File(`app-${app.id}`, asset.id, image);

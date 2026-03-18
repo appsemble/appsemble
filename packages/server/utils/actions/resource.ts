@@ -11,9 +11,11 @@ import {
   type ResourceUpdateActionDefinition,
 } from '@appsemble/lang-sdk';
 import {
+  deleteS3Files,
   getCompressedFileMeta,
   getRemapperContext,
   getResourceDefinition,
+  logger,
   processResourceBody,
   type QueryParams,
   uploadAssets,
@@ -174,7 +176,7 @@ export async function create({
 
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
 
-  const [processedBody, preparedAssets] = processResourceBody(
+  const [processedBody, preparedAssets] = await processResourceBody(
     context,
     definition,
     undefined,
@@ -199,8 +201,6 @@ export async function create({
     resourceType: action.resource,
     options,
   });
-
-  await uploadAssets(app.id, preparedAssets);
 
   return Array.isArray(processedBody) ? createdResources : createdResources[0];
 }
@@ -247,7 +247,7 @@ export async function update({
   const { getAppAssets } = options;
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
 
-  const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
+  const [updatedResource, preparedAssets, deletedAssetIds] = await processResourceBody(
     context,
     definition,
     appAssets.filter((asset) => asset.resourceId === resource.id).map((asset) => asset.id),
@@ -265,44 +265,64 @@ export async function update({
     ...data
   } = updatedResource as Record<string, unknown>;
 
-  await sequelize.transaction((transaction) => {
-    const oldData = resource.data;
-    const previousEditorId = resource.EditorId;
-    const promises: Promise<unknown>[] = [
-      resource.update({ data, clonable, expires }, { transaction }),
-    ];
+  if (preparedAssets.length) {
+    await uploadAssets(app.id, preparedAssets);
+  }
 
+  try {
+    await sequelize.transaction((transaction) => {
+      const oldData = resource.data;
+      const previousEditorId = resource.EditorId;
+      const promises: Promise<unknown>[] = [
+        resource.update({ data, clonable, expires }, { transaction }),
+      ];
+
+      if (preparedAssets.length) {
+        promises.push(
+          Asset.bulkCreate(
+            preparedAssets.map((asset) => ({
+              ...asset,
+              ...getCompressedFileMeta(asset),
+              ResourceId: resource.id,
+            })),
+            { logging: false, transaction },
+          ),
+        );
+      }
+
+      if (definition.history) {
+        promises.push(
+          ResourceVersion.create(
+            {
+              ResourceId: resource.id,
+              AppMemberId: previousEditorId,
+              data: definition.history === true || definition.history.data ? oldData : undefined,
+            },
+            { transaction },
+          ),
+        );
+      } else if (deletedAssetIds.length) {
+        promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
+        transaction.afterCommit(async () => {
+          try {
+            await deleteS3Files(`app-${app.id}`, deletedAssetIds);
+          } catch (error) {
+            logger.error(error);
+          }
+        });
+      }
+
+      return Promise.all(promises);
+    });
+  } catch (error) {
     if (preparedAssets.length) {
-      promises.push(
-        Asset.bulkCreate(
-          preparedAssets.map((asset) => ({
-            ...asset,
-            ...getCompressedFileMeta(asset),
-            ResourceId: resource.id,
-          })),
-          { logging: false, transaction },
-        ),
-        uploadAssets(app.id, preparedAssets),
+      await deleteS3Files(
+        `app-${app.id}`,
+        preparedAssets.map((asset) => asset.id),
       );
     }
-
-    if (definition.history) {
-      promises.push(
-        ResourceVersion.create(
-          {
-            ResourceId: resource.id,
-            AppMemberId: previousEditorId,
-            data: definition.history === true || definition.history.data ? oldData : undefined,
-          },
-          { transaction },
-        ),
-      );
-    } else {
-      promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
-    }
-
-    return Promise.all(promises);
-  });
+    throw error;
+  }
   await resource.reload({ include: [{ association: 'Editor' }] });
 
   processReferenceHooks(app, resource, 'update', options, context);
@@ -362,7 +382,7 @@ export async function patch({
   const { getAppAssets } = options;
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
 
-  const [patchedResource, preparedAssets, deletedAssetIds] = processResourceBody(
+  const [patchedResource, preparedAssets, deletedAssetIds] = await processResourceBody(
     context,
     definition,
     appAssets.filter((asset) => asset.resourceId === resource.id).map((asset) => asset.id),
@@ -380,45 +400,58 @@ export async function patch({
     ...data
   } = patchedResource as Record<string, unknown>;
 
-  await sequelize.transaction((transaction) => {
-    const oldData = resource.data;
-    const patchedData = { ...oldData, ...data };
-    const previousEditorId = resource.EditorId;
-    const promises: Promise<unknown>[] = [
-      resource.update({ data: patchedData, clonable, expires }, { transaction }),
-    ];
+  if (preparedAssets.length) {
+    await uploadAssets(app.id, preparedAssets);
+  }
 
+  try {
+    await sequelize.transaction((transaction) => {
+      const oldData = resource.data;
+      const patchedData = { ...oldData, ...data };
+      const previousEditorId = resource.EditorId;
+      const promises: Promise<unknown>[] = [
+        resource.update({ data: patchedData, clonable, expires }, { transaction }),
+      ];
+
+      if (preparedAssets.length) {
+        promises.push(
+          Asset.bulkCreate(
+            preparedAssets.map((asset) => ({
+              ...asset,
+              ...getCompressedFileMeta(asset),
+              ResourceId: resource.id,
+            })),
+            { logging: false, transaction },
+          ),
+        );
+      }
+
+      if (definition.history) {
+        promises.push(
+          ResourceVersion.create(
+            {
+              ResourceId: resource.id,
+              AppMemberId: previousEditorId,
+              data: definition.history === true || definition.history.data ? oldData : undefined,
+            },
+            { transaction },
+          ),
+        );
+      } else {
+        promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
+      }
+
+      return Promise.all(promises);
+    });
+  } catch (error) {
     if (preparedAssets.length) {
-      promises.push(
-        Asset.bulkCreate(
-          preparedAssets.map((asset) => ({
-            ...asset,
-            ...getCompressedFileMeta(asset),
-            ResourceId: resource.id,
-          })),
-          { logging: false, transaction },
-        ),
-        uploadAssets(app.id, preparedAssets),
+      await deleteS3Files(
+        `app-${app.id}`,
+        preparedAssets.map((asset) => asset.id),
       );
     }
-
-    if (definition.history) {
-      promises.push(
-        ResourceVersion.create(
-          {
-            ResourceId: resource.id,
-            AppMemberId: previousEditorId,
-            data: definition.history === true || definition.history.data ? oldData : undefined,
-          },
-          { transaction },
-        ),
-      );
-    } else {
-      promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
-    }
-
-    return Promise.all(promises);
-  });
+    throw error;
+  }
   await resource.reload({ include: [{ association: 'Editor' }] });
 
   return resource.toJSON();
