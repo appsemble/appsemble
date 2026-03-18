@@ -6,7 +6,6 @@ export const key = '0.36.5-test.3';
 /**
  * Summary:
  * - Backfill missing `AppMemberAssignedRole` rows from the legacy `AppMember.role` shim.
- * - Keep legacy `AppMember.role` inserts and updates synchronized with `AppMemberAssignedRole`.
  *
  * @param transaction Sequelize transaction
  * @param db The Sequelize Database.
@@ -25,72 +24,21 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     `,
     { transaction },
   );
-
-  logger.info('Recreating legacy role compatibility trigger');
-  await db.query(
-    'DROP TRIGGER IF EXISTS "syncAppMemberAssignedRoleFromLegacyRole" ON "AppMember"',
-    { transaction },
-  );
-  await db.query('DROP FUNCTION IF EXISTS "syncAppMemberAssignedRoleFromLegacyRole"()', {
-    transaction,
-  });
-
-  await db.query(
-    `
-      CREATE FUNCTION "syncAppMemberAssignedRoleFromLegacyRole"()
-      RETURNS TRIGGER
-      LANGUAGE plpgsql
-      AS $$
-      BEGIN
-        DELETE FROM "AppMemberAssignedRole"
-        WHERE "AppMemberId" = NEW.id
-          AND source = 'manual';
-
-        IF NEW.role IS NOT NULL THEN
-          INSERT INTO "AppMemberAssignedRole" ("AppMemberId", role, source, created, updated)
-          VALUES (
-            NEW.id,
-            NEW.role,
-            'manual',
-            COALESCE(NEW.created, NOW()),
-            COALESCE(NEW.updated, NOW())
-          )
-          ON CONFLICT ("AppMemberId", role)
-          DO UPDATE SET updated = EXCLUDED.updated;
-        END IF;
-
-        RETURN NEW;
-      END;
-      $$
-    `,
-    { transaction },
-  );
-
-  await db.query(
-    `
-      CREATE TRIGGER "syncAppMemberAssignedRoleFromLegacyRole"
-      AFTER INSERT OR UPDATE OF role ON "AppMember"
-      FOR EACH ROW
-      EXECUTE FUNCTION "syncAppMemberAssignedRoleFromLegacyRole"()
-    `,
-    { transaction },
-  );
 }
 
 /**
  * Summary:
- * - Remove the legacy role compatibility trigger.
+ * - No-op down migration for legacy role backfill data.
  *
  * @param transaction Sequelize transaction
  * @param db The Sequelize Database.
+ * @returns A resolved promise because this migration only backfills data.
  */
-export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
-  logger.info('Dropping legacy role compatibility trigger');
-  await db.query(
-    'DROP TRIGGER IF EXISTS "syncAppMemberAssignedRoleFromLegacyRole" ON "AppMember"',
-    { transaction },
-  );
-  await db.query('DROP FUNCTION IF EXISTS "syncAppMemberAssignedRoleFromLegacyRole"()', {
-    transaction,
-  });
+export function down(transaction: Transaction, db: Sequelize): Promise<void> {
+  if (!transaction || !db) {
+    throw new Error('Expected migration context for down()');
+  }
+
+  logger.info('No schema changes to revert for `AppMember.role` compatibility backfill');
+  return Promise.resolve();
 }

@@ -44,8 +44,8 @@ describe('AppMember', () => {
     ).rejects.toThrow('Invalid Phone Number');
   });
 
-  it('should sync legacy role inserts into assigned roles', async () => {
-    const { AppMember, AppMemberAssignedRole, sequelize } = await getAppDB(1);
+  it('should expose legacy role inserts through roles', async () => {
+    const { AppMember, sequelize } = await getAppDB(1);
 
     await sequelize.query(
       `
@@ -55,14 +55,9 @@ describe('AppMember', () => {
     );
 
     const member = await AppMember.findByPk('00000000-0000-4000-8000-000000000001');
-    const assignedRoles = await AppMemberAssignedRole.findAll({
-      where: { AppMemberId: '00000000-0000-4000-8000-000000000001' },
-      order: [['role', 'ASC']],
-    });
 
     expect(member?.role).toBe('Admin');
     expect(member?.roles).toStrictEqual(['Admin']);
-    expect(assignedRoles.map(({ role }) => role)).toStrictEqual(['Admin']);
   });
 
   it('should use NL as default country code', async () => {
