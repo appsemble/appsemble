@@ -134,7 +134,6 @@ function getAppMemberRoles(instance: AppMemberGlobal): AppRole[] {
 
   return normalizeAppMemberRoles(role ? [role] : []);
 }
-
 function getDefaultValue(
   propertyDefinition: AppMemberPropertyDefinition | OpenAPIV3.SchemaObject,
 ): Record<string, any> | boolean | number | [] | null {
