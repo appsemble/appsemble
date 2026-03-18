@@ -331,6 +331,7 @@ describe('reseedDemoApp', () => {
           ],
           "lastCompletedTask": 3,
         },
+        "roles": [],
       }
     `);
 
@@ -346,6 +347,7 @@ describe('reseedDemoApp', () => {
           "completedTasks": [],
           "lastCompletedTask": 0,
         },
+        "roles": [],
       }
     `);
 

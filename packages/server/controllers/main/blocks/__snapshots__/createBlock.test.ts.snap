@@ -4735,19 +4735,18 @@ Does nothing if the app member is not logged in.",
                     "onSuccess": {},
                     "remapAfter": {},
                     "remapBefore": {},
-                    "role": {
+                    "roles": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The updated role of the app member.
+                      "description": "The updated roles of the app member.
 
-The role must exist in the roles property of the app's security definition or in the predefined app roles in the system -
-\`Member\`, \`MembersManager\`, \`GroupMembersManager\`, \`GroupsManager\`, \`ResourcesManager\` and \`Owner\`",
+Every role must exist in the roles property of the app's security definition.",
                     },
                     "sub": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The id of the app member.",
                     },
                     "type": {
-                      "description": "Allows the app member to update the role of another app member account.
+                      "description": "Allows the app member to update the roles of another app member account.
 
 Does nothing if the app member isn’t logged in.",
                       "enum": [
@@ -4777,7 +4776,7 @@ Does nothing if the app member isn’t logged in.",
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Allows the app member to update the role of another app member account.
+                  "description": "Allows the app member to update the roles of another app member account.
 
 Does nothing if the app member isn’t logged in.",
                   "enum": [
@@ -10516,19 +10515,18 @@ Does nothing if the app member is not logged in.",
             "onSuccess": {},
             "remapAfter": {},
             "remapBefore": {},
-            "role": {
+            "roles": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The updated role of the app member.
+              "description": "The updated roles of the app member.
 
-The role must exist in the roles property of the app's security definition or in the predefined app roles in the system -
-\`Member\`, \`MembersManager\`, \`GroupMembersManager\`, \`GroupsManager\`, \`ResourcesManager\` and \`Owner\`",
+Every role must exist in the roles property of the app's security definition.",
             },
             "sub": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The id of the app member.",
             },
             "type": {
-              "description": "Allows the app member to update the role of another app member account.
+              "description": "Allows the app member to update the roles of another app member account.
 
 Does nothing if the app member isn’t logged in.",
               "enum": [
@@ -10558,7 +10556,7 @@ Does nothing if the app member isn’t logged in.",
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Allows the app member to update the role of another app member account.
+          "description": "Allows the app member to update the roles of another app member account.
 
 Does nothing if the app member isn’t logged in.",
           "enum": [
