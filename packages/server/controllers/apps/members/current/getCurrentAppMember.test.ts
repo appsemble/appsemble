@@ -59,7 +59,8 @@ describe('getCurrentAppMember', () => {
     const response = await request.get(`/api/apps/${app.id}/members/current`);
 
     expect(response.data).toMatchInlineSnapshot(
-      { sub: expect.stringMatching(uuid4Pattern) }, `
+      { sub: expect.stringMatching(uuid4Pattern) },
+      `
       {
         "$ephemeral": false,
         "$seed": false,
@@ -78,7 +79,8 @@ describe('getCurrentAppMember', () => {
         "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
-    `);
+    `,
+    );
   });
 
   it('should throw 404 if the app doesn’t exist', async () => {

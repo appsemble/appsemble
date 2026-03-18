@@ -73,7 +73,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   await queryInterface.addColumn(
     'AppMember',
     'role',
-    { type: DataTypes.STRING, allowNull: false, defaultValue: 'Member' },
+    { type: DataTypes.STRING, allowNull: false },
     { transaction },
   );
 

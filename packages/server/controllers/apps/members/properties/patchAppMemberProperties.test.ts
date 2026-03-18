@@ -88,7 +88,8 @@ describe('patchAppMemberProperties', () => {
     );
 
     expect(response).toMatchInlineSnapshot(
-      { data: { sub: expect.stringMatching(uuid4Pattern) } }, `
+      { data: { sub: expect.stringMatching(uuid4Pattern) } },
+      `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -113,7 +114,8 @@ describe('patchAppMemberProperties', () => {
         "totpEnabled": false,
         "zoneinfo": null,
       }
-    `);
+    `,
+    );
   });
 
   it('should not update the existing properties that are not in the request body', async () => {

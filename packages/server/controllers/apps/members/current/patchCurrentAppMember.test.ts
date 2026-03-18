@@ -64,7 +64,8 @@ describe('patchCurrentAppMember', () => {
     );
 
     expect(response.data).toMatchInlineSnapshot(
-      { sub: expect.stringMatching(uuid4Pattern) }, `
+      { sub: expect.stringMatching(uuid4Pattern) },
+      `
       {
         "$ephemeral": false,
         "$seed": false,
@@ -85,7 +86,8 @@ describe('patchCurrentAppMember', () => {
         "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
-    `);
+    `,
+    );
     await appMember.reload();
     expect(appMember.name).toBe('Me');
     expect(appMember.email).toBe('test@example.com');
@@ -127,7 +129,8 @@ describe('patchCurrentAppMember', () => {
     );
 
     expect(response.data).toMatchInlineSnapshot(
-      { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) }, `
+      { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) },
+      `
       {
         "$ephemeral": false,
         "$seed": false,
@@ -146,7 +149,8 @@ describe('patchCurrentAppMember', () => {
         "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
-    `);
+    `,
+    );
     expect(response.data.picture).toBe(
       `http://localhost/api/apps/${app.id}/app-members/${appMember.id}/picture?updated=0`,
     );
@@ -166,7 +170,8 @@ describe('patchCurrentAppMember', () => {
       }),
     );
     expect(response.data).toMatchInlineSnapshot(
-      { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) }, `
+      { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) },
+      `
       {
         "$ephemeral": false,
         "$seed": false,
@@ -185,7 +190,8 @@ describe('patchCurrentAppMember', () => {
         "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
-    `);
+    `,
+    );
     expect(response.data.picture).toMatch(/https:\/\/www\.gravatar\.com\/avatar\/.*/gm);
     await appMember.reload();
     expect(appMember.picture).toBeNull();
