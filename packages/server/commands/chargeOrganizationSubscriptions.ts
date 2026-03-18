@@ -6,7 +6,7 @@ import { Op, type Sequelize } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { getExpiringOrganizationSubscriptions } from './getExpiringOrganizationSubscriptions.js';
+import { getExpiringOrganizationSubscriptions } from '../utils/payments/getExpiringOrganizationSubscriptions.js';
 import { initDB, Organization } from '../models/index.js';
 import { Invoice } from '../models/main/Invoice.js';
 import { argv } from '../utils/argv.js';
