@@ -134,9 +134,6 @@ global:
     service:
       ports:
         postgresql: 5432
-  security:
-    allowInsecureImages: true
-
 postgresql:
   fullnameOverride: appsemble-postgresql
   tls:
@@ -233,6 +230,9 @@ mailpit:
           name: mailpit-ui
 
 minio:
+  global:
+    security:
+      allowInsecureImages: true
   fullnameOverride: appsemble-minio
   image:
     registry: docker.io
