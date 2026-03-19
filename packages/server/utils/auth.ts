@@ -105,7 +105,7 @@ export async function handleUniqueAppMemberEmailIndex(
     );
     const memberToLink = await AppMember.findOne({
       where: { email },
-      attributes: ['id', 'email', 'UserId'],
+      attributes: ['id', 'email', 'userId'],
       include: [
         {
           model: AppOAuth2Authorization,
