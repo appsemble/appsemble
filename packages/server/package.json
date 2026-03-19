@@ -142,7 +142,7 @@
     "jest-image-snapshot": "6.5.2",
     "jsvat": "2.5.4",
     "memfs": "4.17.0",
-    "strip-indent": "4.0.0",
+    "strip-indent": "4.1.1",
     "validate-vat": "0.9.0",
     "vitest": "2.1.9",
     "xpath": "0.0.34"
