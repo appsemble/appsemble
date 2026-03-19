@@ -23,6 +23,9 @@ export function builder(argv: Argv): Argv<any> {
     })
     .option('clientCredentials', {
       type: 'string',
+    })
+    .option('organization', {
+      type: 'string',
     });
 }
 
@@ -32,14 +35,16 @@ interface Args {
   password: string;
   timezone?: string;
   clientCredentials?: string;
+  organization?: string;
 }
 
 export async function handler({
   clientCredentials,
   email,
   name,
+  organization,
   password,
   timezone,
 }: Args): Promise<void> {
-  await createUser(name, email, password, timezone, clientCredentials);
+  await createUser(name, email, password, timezone, clientCredentials, organization);
 }
