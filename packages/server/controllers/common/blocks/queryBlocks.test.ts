@@ -36,7 +36,7 @@ describe('queryBlocks', () => {
 
   it('should be possible to query block definitions', async () => {
     const formDataA = new FormData();
-    formDataA.append('name', '@xkcd/apple');
+    formDataA.append('name', '@xkcd/query-blocks-apple');
     formDataA.append('version', '0.0.0');
     formDataA.append('description', 'I’ve got an apple.');
     formDataA.append('files', createFixtureStream('standing.png'), {
@@ -44,10 +44,14 @@ describe('queryBlocks', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: apple } = await request.post<BlockManifest>('/api/blocks', formDataA);
+    const { data: apple, status: appleStatus } = await request.post<BlockManifest>(
+      '/api/blocks',
+      formDataA,
+    );
+    expect(appleStatus).toBe(201);
 
     const formDataB = new FormData();
-    formDataB.append('name', '@xkcd/pen');
+    formDataB.append('name', '@xkcd/query-blocks-pen');
     formDataB.append('version', '0.0.0');
     formDataB.append('description', 'I’ve got a pen.');
     formDataB.append('files', createFixtureStream('standing.png'), {
@@ -55,7 +59,11 @@ describe('queryBlocks', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: pen } = await request.post<BlockManifest>('/api/blocks', formDataB);
+    const { data: pen, status: penStatus } = await request.post<BlockManifest>(
+      '/api/blocks',
+      formDataB,
+    );
+    expect(penStatus).toBe(201);
 
     const { data: bam } = await request.get<BlockManifest[]>('/api/blocks');
     expect(bam).toStrictEqual(
