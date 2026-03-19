@@ -13,6 +13,18 @@ import { App, getAppDB } from '../../../../models/index.js';
 import { getCurrentAppMember } from '../../../../options/index.js';
 import { checkAppPermissions } from '../../../../utils/authorization.js';
 
+export async function deleteAppAssets(appId: number, assetIds: string[]): Promise<void> {
+  await deleteS3Files(`app-${appId}`, assetIds);
+}
+
+export async function deleteAppAssetsWithLogging(appId: number, assetIds: string[]): Promise<void> {
+  try {
+    await deleteAppAssets(appId, assetIds);
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
 export async function patchAppResource(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
@@ -108,11 +120,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
       } else if (deletedAssetIds.length) {
         promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
         transaction.afterCommit(async () => {
-          try {
-            await deleteS3Files(`app-${app.id}`, deletedAssetIds);
-          } catch (error) {
-            logger.error(error);
-          }
+          await deleteAppAssetsWithLogging(app.id, deletedAssetIds);
         });
       }
 
@@ -120,8 +128,8 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     });
   } catch (error) {
     if (preparedAssets.length) {
-      await deleteS3Files(
-        `app-${app.id}`,
+      await deleteAppAssets(
+        app.id,
         preparedAssets.map((asset) => asset.id),
       );
     }

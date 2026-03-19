@@ -47,9 +47,8 @@ export interface AssetToUpload {
   path: string;
 }
 
-export async function uploadAsset(appId: number, asset: AssetToUpload): Promise<string[]> {
+export async function uploadAsset(appId: number, asset: AssetToUpload): Promise<void> {
   const { id, path } = asset;
-  const filesToUnlink = [path];
 
   try {
     const stats = await stat(path);
@@ -59,22 +58,14 @@ export async function uploadAsset(appId: number, asset: AssetToUpload): Promise<
     logger.error(error);
     throw error;
   }
-
-  return filesToUnlink;
 }
 
 export async function uploadAssets(appId: number, assets: AssetToUpload[]): Promise<void> {
-  const filesToUnlink: string[] = [];
+  const filesToUnlink = [...new Set(assets.map(({ path }) => path))];
 
   try {
     for (const asset of assets) {
-      const toUnlink = await uploadAsset(appId, asset);
-
-      for (const path of toUnlink) {
-        if (!filesToUnlink.includes(path)) {
-          filesToUnlink.push(path);
-        }
-      }
+      await uploadAsset(appId, asset);
     }
   } finally {
     await removeUploads(filesToUnlink);

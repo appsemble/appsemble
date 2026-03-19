@@ -250,6 +250,41 @@ describe('getAppAssetById', () => {
     expect(metadata.height).toBe(10);
   });
 
+  it('should append an avif extension when resizing images without a filename extension', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+      filename: 'logo',
+    });
+    const image = await sharp({
+      create: {
+        width: 100,
+        height: 100,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const response = await request.get(
+      `/api/apps/${app.id}/assets/${asset.id}?width=10&height=10`,
+      {
+        responseType: 'arraybuffer',
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': 'inline; filename="logo.avif"',
+      }),
+    });
+  });
+
   it('should reuse cached resized assets on later requests', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({

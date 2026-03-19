@@ -1,3 +1,4 @@
+import * as nodeUtils from '@appsemble/node-utils';
 import {
   createFixtureStream,
   createFormData,
@@ -8,7 +9,7 @@ import { type Asset as AssetType, PredefinedOrganizationRole } from '@appsemble/
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,
@@ -64,6 +65,10 @@ describe('createAppAsset', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should be able to create an asset', async () => {
@@ -237,6 +242,21 @@ describe('createAppAsset', () => {
         message: 'Image uploads must contain a valid image',
         statusCode: 400,
       },
+    });
+  });
+
+  it('should return an internal server error for unexpected upload validation failures', async () => {
+    authorizeStudio();
+    vi.spyOn(nodeUtils, 'validateUploadedFile').mockRejectedValue(new Error('boom'));
+
+    const response = await request.post(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: Buffer.from('Test asset') }),
+    );
+
+    expect(response).toMatchObject({
+      status: 500,
+      data: 'Internal Server Error',
     });
   });
 

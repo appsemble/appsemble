@@ -1,9 +1,12 @@
 import { PredefinedAppRole } from '@appsemble/lang-sdk';
+import * as nodeUtils from '@appsemble/node-utils';
 import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
+
+import { deleteAppAssetsWithLogging } from './patchAppResource.js';
 import { PredefinedOrganizationRole, type Resource as ResourceType } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
 
 import {
@@ -53,6 +56,10 @@ describe('patchAppResource', () => {
       role: PredefinedOrganizationRole.Maintainer,
     });
     app = await exampleApp(organization.id);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   afterAll(() => {
@@ -660,6 +667,45 @@ describe('patchAppResource', () => {
     );
     await expect(() => asset.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+  });
+
+  it('should log and ignore s3 deletion failures during cleanup', async () => {
+    const error = new Error('s3 failed');
+    vi.spyOn(nodeUtils, 'deleteS3Files').mockRejectedValue(error);
+    const loggerSpy = vi
+      .spyOn(nodeUtils.logger, 'error')
+      .mockImplementation(() => nodeUtils.logger);
+
+    await deleteAppAssetsWithLogging(app.id, ['asset-id']);
+
+    expect(loggerSpy).toHaveBeenCalledWith(error);
+  });
+
+  it('should delete uploaded s3 files if patching the resource fails after upload', async () => {
+    vi.useRealTimers();
+    const { Resource, sequelize } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testAssets',
+      data: { file: 'old-asset' },
+    });
+
+    const transactionSpy = vi
+      .spyOn(sequelize, 'transaction')
+      .mockRejectedValueOnce(new Error('transaction failed'));
+    const deleteSpy = vi.spyOn(nodeUtils, 'deleteS3Files').mockResolvedValue();
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      createFormData({ resource: { file: '0' }, assets: Buffer.alloc(1) }),
+    );
+
+    expect(response.status).toBe(500);
+    expect(transactionSpy).toHaveBeenCalledWith(expect.any(Function));
+    expect(deleteSpy).toHaveBeenCalledWith(
+      `app-${app.id}`,
+      expect.arrayContaining([expect.stringMatching(uuid4Pattern)]),
     );
   });
 
