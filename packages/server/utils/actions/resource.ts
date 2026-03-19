@@ -32,6 +32,16 @@ import {
   processReferenceTriggers,
 } from '../resource.js';
 
+export const resourceCleanup = {
+  async deleteDereferencedS3Assets(appId: number, deletedAssetIds: string[]): Promise<void> {
+    try {
+      await deleteS3Files(`app-${appId}`, deletedAssetIds);
+    } catch (error) {
+      logger.error(error);
+    }
+  },
+};
+
 export async function get({
   action,
   app,
@@ -269,6 +279,8 @@ export async function update({
     await uploadAssets(app.id, preparedAssets);
   }
 
+  const shouldDeleteDereferencedAssets = !definition.history && deletedAssetIds.length > 0;
+
   try {
     await sequelize.transaction((transaction) => {
       const oldData = resource.data;
@@ -301,15 +313,8 @@ export async function update({
             { transaction },
           ),
         );
-      } else if (deletedAssetIds.length) {
+      } else if (shouldDeleteDereferencedAssets) {
         promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
-        transaction.afterCommit(async () => {
-          try {
-            await deleteS3Files(`app-${app.id}`, deletedAssetIds);
-          } catch (error) {
-            logger.error(error);
-          }
-        });
       }
 
       return Promise.all(promises);
@@ -323,6 +328,11 @@ export async function update({
     }
     throw error;
   }
+
+  if (shouldDeleteDereferencedAssets) {
+    await resourceCleanup.deleteDereferencedS3Assets(app.id, deletedAssetIds);
+  }
+
   await resource.reload({ include: [{ association: 'Editor' }] });
 
   processReferenceHooks(app, resource, 'update', options, context);
@@ -404,6 +414,8 @@ export async function patch({
     await uploadAssets(app.id, preparedAssets);
   }
 
+  const shouldDeleteDereferencedAssets = !definition.history && deletedAssetIds.length > 0;
+
   try {
     await sequelize.transaction((transaction) => {
       const oldData = resource.data;
@@ -437,7 +449,7 @@ export async function patch({
             { transaction },
           ),
         );
-      } else {
+      } else if (shouldDeleteDereferencedAssets) {
         promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
       }
 
@@ -452,6 +464,11 @@ export async function patch({
     }
     throw error;
   }
+
+  if (shouldDeleteDereferencedAssets) {
+    await resourceCleanup.deleteDereferencedS3Assets(app.id, deletedAssetIds);
+  }
+
   await resource.reload({ include: [{ association: 'Editor' }] });
 
   return resource.toJSON();
