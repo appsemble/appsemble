@@ -32,6 +32,7 @@ export function useServiceWorkerRegistration(): ServiceWorkerRegistrationContext
 }
 
 const apiVersionUrl = `${apiUrl}/api`;
+const VERSION_CHECK_COOLDOWN_MS = 60_000;
 
 export function ServiceWorkerRegistrationProvider({
   children,
@@ -41,6 +42,8 @@ export function ServiceWorkerRegistrationProvider({
   const [subscription, setSubscription] = useState<PushSubscription | null>();
   const [serviceWorkerError, setServiceWorkerError] = useState<Error | null>(null);
   const hasReloadedForControllerChange = useRef(false);
+  const lastVersionCheckAtRef = useRef(0);
+  const versionCheckPromiseRef = useRef<Promise<string | null> | null>(null);
 
   useEffect(() => {
     const onControllerChange = (): void => {
@@ -95,30 +98,75 @@ export function ServiceWorkerRegistrationProvider({
     }
   }, [serviceWorkerRegistrationPromise]);
 
-  useEffect(() => {
-    axios
-      .get(apiVersionUrl)
-      .then((res) => localStorage.setItem('appsembleVersion', res.headers['x-appsemble-version']))
-      .catch((error: unknown) => {
-        addBreadcrumb({
-          category: 'appsemble.version-check',
-          data: {
-            error: error instanceof Error ? error.message : String(error),
-          },
-          level: 'warning',
+  const checkLatestAppsembleVersion = useCallback(
+    ({
+      force = false,
+      persist = false,
+    }: { readonly force?: boolean; readonly persist?: boolean } = {}) => {
+      const now = Date.now();
+
+      if (!force) {
+        if (versionCheckPromiseRef.current) {
+          return versionCheckPromiseRef.current;
+        }
+
+        if (now - lastVersionCheckAtRef.current < VERSION_CHECK_COOLDOWN_MS) {
+          return null;
+        }
+      }
+
+      lastVersionCheckAtRef.current = now;
+      const request = axios
+        .get(apiVersionUrl)
+        .then((res) => {
+          const version = res.headers['x-appsemble-version'] as string | undefined;
+
+          if (persist && version) {
+            localStorage.setItem('appsembleVersion', version);
+          }
+
+          return version ?? null;
+        })
+        .catch((error: unknown) => {
+          addBreadcrumb({
+            category: 'appsemble.version-check',
+            data: {
+              error: error instanceof Error ? error.message : String(error),
+            },
+            level: 'warning',
+          });
+
+          return null;
+        })
+        .finally(() => {
+          versionCheckPromiseRef.current = null;
         });
-      });
-  }, []);
+
+      versionCheckPromiseRef.current = request;
+
+      return request;
+    },
+    [],
+  );
+
+  useEffect(() => {
+    checkLatestAppsembleVersion({ force: true, persist: true });
+  }, [checkLatestAppsembleVersion]);
 
   useEffect(() => {
     const interceptor = axios.interceptors.request.use(async (config) => {
       try {
         const url = new URL(axios.getUri(config));
+
         if (url.origin === apiUrl && url.href !== apiVersionUrl) {
-          const res = await axios.get(apiVersionUrl);
-          const newAppsembleVersion = res.headers['x-appsemble-version'];
           const appsembleVersion = localStorage.getItem('appsembleVersion');
-          if (appsembleVersion && appsembleVersion !== newAppsembleVersion) {
+          const newAppsembleVersion = await checkLatestAppsembleVersion();
+
+          if (newAppsembleVersion) {
+            localStorage.setItem('appsembleVersion', newAppsembleVersion);
+          }
+
+          if (appsembleVersion && newAppsembleVersion && appsembleVersion !== newAppsembleVersion) {
             await update();
           }
         }
@@ -129,7 +177,7 @@ export function ServiceWorkerRegistrationProvider({
       return config;
     });
     return () => axios.interceptors.request.eject(interceptor);
-  }, [update]);
+  }, [checkLatestAppsembleVersion, update]);
 
   useEffect(() => {
     serviceWorkerRegistrationPromise
