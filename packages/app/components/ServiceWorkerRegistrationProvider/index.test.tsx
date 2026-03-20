@@ -114,6 +114,23 @@ describe('ServiceWorkerRegistrationProvider', () => {
     expect(caches.delete).not.toHaveBeenCalled();
   });
 
+  it('should throttle repeated version checks during the cooldown window', async () => {
+    const registration = createRegistration();
+
+    renderProvider(registration);
+
+    await waitFor(() => expect(requestInterceptor).toBeTruthy());
+    axiosGet.mockClear();
+
+    await act(async () => {
+      await requestInterceptor?.({ url: 'https://appsemble.app/api/apps/42/resources/tasks' });
+      await requestInterceptor?.({ url: 'https://appsemble.app/api/apps/42/resources/updates' });
+    });
+
+    expect(axiosGet).not.toHaveBeenCalled();
+    expect(registration.update).toHaveBeenCalledTimes(1);
+  });
+
   it('should use SKIP_WAITING for an explicit update when a waiting worker exists', async () => {
     const waiting = { postMessage: vi.fn() } as unknown as ServiceWorker;
     const registration = createRegistration({ waiting });
@@ -147,6 +164,9 @@ describe('ServiceWorkerRegistrationProvider', () => {
   });
 
   it('should trigger update flow on version mismatch without clearing caches', async () => {
+    const nowSpy = vi.spyOn(Date, 'now');
+    nowSpy.mockReturnValue(0);
+
     const waiting = { postMessage: vi.fn() } as unknown as ServiceWorker;
     const registration = createRegistration({ waiting });
 
@@ -155,12 +175,15 @@ describe('ServiceWorkerRegistrationProvider', () => {
     expect(localStorage.getItem('appsembleVersion')).toBe('v1');
 
     vi.mocked(waiting.postMessage).mockClear();
+    axiosGet.mockClear();
     axiosGet.mockResolvedValueOnce({ headers: { 'x-appsemble-version': 'v2' } });
+    nowSpy.mockReturnValue(60_001);
 
     await act(async () => {
       await requestInterceptor?.({ url: 'https://appsemble.app/api/apps/42/resources/tasks' });
     });
 
+    expect(axiosGet).toHaveBeenCalledTimes(1);
     expect(waiting.postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' });
     expect(caches.keys).not.toHaveBeenCalled();
   });
