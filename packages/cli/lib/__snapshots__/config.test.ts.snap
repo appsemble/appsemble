@@ -1350,6 +1350,9 @@ Compatible data that is received will be displayed.",
     "emptyLabel": {
       "description": "The label that’s displayed when there are no feed items available.",
     },
+    "permissionDeniedLabel": {
+      "description": "The label that’s displayed when feed data cannot be loaded due to missing permissions.",
+    },
     "replyErrorMessage": {
       "description": "The error message shown when an error occurs while submitting a reply.",
     },
