@@ -1203,12 +1203,14 @@ production:
         echo "Maximum number of attempts reached. Chart not found."
         exit 1
       fi
+    - '[ -n "$BACKUPS_HOST" ] || { echo "Please set BACKUPS_HOST for production backup destination" >&2; exit 1; }'
+    # Keep Mailpit in production.
+    # Only remove this after verifying the mail demo app works without the production Mailpit SMTP sink.
     - kubectl delete secret appsemble-mailpit-tls || true
     - apk add --no-cache openssl
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=appsemble-mailpit-smtp" -addext "subjectAltName=DNS:appsemble-mailpit-smtp"
     - kubectl create secret tls appsemble-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
-    - '[ -n "$BACKUPS_HOST" ] || { echo "Please set BACKUPS_HOST for production backup destination" >&2; exit 1; }'
     - kubectl get secret backups-secret >/dev/null
     - kubectl rollout restart deployment appsemble-mailpit || true
     - helm upgrade appsemble appsemble/appsemble
