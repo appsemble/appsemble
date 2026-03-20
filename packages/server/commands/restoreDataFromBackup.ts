@@ -9,7 +9,7 @@ import { type Argv } from 'yargs';
 import { databaseBuilder } from './builder/database.js';
 import { App, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
-import { decrypt } from '../utils/crypto.js';
+import { encrypt } from '../utils/crypto.js';
 import { buildPostgresUri } from '../utils/database.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
@@ -63,8 +63,6 @@ async function restoreDatabaseFromS3(
   bucket: string,
   key: string,
 ): Promise<void> {
-  logger.info(`Restoring ${bucket}/${key} into ${connectionString}`);
-
   const gunzip = createGunzip();
   const restore = spawn('psql', [`--dbname=${connectionString}`], {
     stdio: ['pipe', 'inherit', 'pipe'],
@@ -157,11 +155,18 @@ export async function handler(): Promise<void> {
   const apps = await App.findAll({
     attributes: ['id', 'dbName', 'dbUser', 'dbPassword', 'dbHost', 'dbPort'],
   });
+  const dbPassword = argv.databasePassword;
 
   for (const app of apps) {
     try {
+      // Migrating to a new database hence the settings from the new DB should be used.
+      await app.update({
+        dbHost: argv.databaseHost,
+        dbPort: argv.databasePort,
+        dbUser: argv.databaseUser,
+        dbPassword: encrypt(dbPassword, argv.aesSecret || 'Local Appsemble development AES secret'),
+      });
       const dbName = app.dbName ?? `app-${app.id}`;
-      const dbPassword = decrypt(app.dbPassword, argv.aesSecret);
 
       const appDbUrl = buildPostgresUri({
         dbHost: app.dbHost,
