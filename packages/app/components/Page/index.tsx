@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { normalize, remap, type Remapper } from '@appsemble/lang-sdk';
+import { normalize, remap, type PageDefinition, type Remapper } from '@appsemble/lang-sdk';
 import {
   Button,
   Content,
@@ -455,9 +455,7 @@ export function Page(): ReactNode {
   const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, appDefinition);
   const defaultPage = appDefinition.pages.find((p) => p.name === defaultPageName);
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  if (checkPagePermissionsCallback(defaultPage)) {
+  if (defaultPage && checkPagePermissionsCallback(defaultPage)) {
     return <Navigate replace to={`${url}/${getPagePathSegment(defaultPage)}`} />;
   }
 
