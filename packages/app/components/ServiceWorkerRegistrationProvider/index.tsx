@@ -10,6 +10,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -39,10 +40,20 @@ export function ServiceWorkerRegistrationProvider({
   const [permission, setPermission] = useState<Permission>(window.Notification?.permission);
   const [subscription, setSubscription] = useState<PushSubscription | null>();
   const [serviceWorkerError, setServiceWorkerError] = useState<Error | null>(null);
+  const hasReloadedForControllerChange = useRef(false);
 
-  // Refresh when the new SW takes control
   useEffect(() => {
-    navigator.serviceWorker?.addEventListener('controllerchange', () => window.location.reload());
+    const onControllerChange = (): void => {
+      if (hasReloadedForControllerChange.current) {
+        return;
+      }
+      hasReloadedForControllerChange.current = true;
+      window.location.reload();
+    };
+
+    navigator.serviceWorker?.addEventListener('controllerchange', onControllerChange);
+    return () =>
+      navigator.serviceWorker?.removeEventListener('controllerchange', onControllerChange);
   }, []);
 
   useEffect(() => {
@@ -52,13 +63,21 @@ export function ServiceWorkerRegistrationProvider({
       .catch(setServiceWorkerError);
   }, [serviceWorkerRegistrationPromise]);
 
-  const update = useCallback(async () => {
+  const checkForUpdates = useCallback(async () => {
     try {
-      if ('caches' in window) {
-        const cacheKeys = await caches.keys();
-        await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+      const registration = await serviceWorkerRegistrationPromise;
+      if (!registration) {
+        return;
       }
 
+      await registration.update();
+    } catch (error) {
+      setServiceWorkerError(error as Error);
+    }
+  }, [serviceWorkerRegistrationPromise]);
+
+  const update = useCallback(async () => {
+    try {
       const registration = await serviceWorkerRegistrationPromise;
       if (!registration) {
         return;
@@ -67,10 +86,10 @@ export function ServiceWorkerRegistrationProvider({
       if (registration.waiting) {
         // eslint-disable-next-line unicorn/require-post-message-target-origin
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-      } else {
-        // Trigger SW to check for updates
-        await registration.update();
+        return;
       }
+
+      await registration.update();
     } catch (error) {
       setServiceWorkerError(error as Error);
     }
@@ -101,7 +120,6 @@ export function ServiceWorkerRegistrationProvider({
           const appsembleVersion = localStorage.getItem('appsembleVersion');
           if (appsembleVersion && appsembleVersion !== newAppsembleVersion) {
             await update();
-            window.location.reload();
           }
         }
       } catch (error) {
@@ -134,17 +152,16 @@ export function ServiceWorkerRegistrationProvider({
           }
         };
 
-        // Kick off initial update
-        update();
+        return checkForUpdates();
       })
       .catch(setServiceWorkerError);
-  }, [serviceWorkerRegistrationPromise, update]);
+  }, [checkForUpdates, serviceWorkerRegistrationPromise]);
 
   // Poll for updates every hour
   useEffect(() => {
-    const interval = setInterval(update, 60 * 60_000);
+    const interval = setInterval(checkForUpdates, 60 * 60_000);
     return () => clearInterval(interval);
-  }, [serviceWorkerRegistrationPromise, update]);
+  }, [checkForUpdates]);
 
   const requestPermission = useCallback(async () => {
     if (window.Notification?.permission === 'default') {
