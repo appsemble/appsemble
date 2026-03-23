@@ -9,9 +9,6 @@ export const description =
 
 export function builder(yargs: Argv): Argv<any> {
   return yargs
-    .option('aesSecret', {
-      desc: 'Aes Secret used for encrypting DB password in the backup DB',
-    })
     .option('database-host', {
       desc: 'The host of the database to connect to. This defaults to the connected database container.',
     })
