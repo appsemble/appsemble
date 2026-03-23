@@ -17,6 +17,35 @@ export const command = 'restore-data-from-backup';
 export const description =
   'Restore appsemble data from a specified backup for the main database and app databases';
 
+const localDevelopmentAesSecret = 'Local Appsemble development AES secret';
+
+export function assertRestoreDataFromBackupAesSecret(
+  aesSecret: string | null | undefined,
+  nodeEnv = process.env.NODE_ENV,
+): void {
+  if (nodeEnv !== 'development' && (aesSecret == null || aesSecret.trim() === '')) {
+    throw new Error('The --aes-secret argument is required and cannot be empty.');
+  }
+}
+
+export interface RestoreDataFromBackupOptions {
+  aesSecret: string | undefined;
+  backupsAccessKey: string;
+  backupsBucket: string;
+  backupsHost: string;
+  backupsPort: number | undefined;
+  backupsSecretKey: string;
+  backupsSecure: boolean;
+  databaseHost: string;
+  databaseName: string;
+  databasePassword: string;
+  databasePort: number;
+  databaseSsl: boolean;
+  databaseUrl: string;
+  databaseUser: string;
+  restoreBackupFilename: string;
+}
+
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs).option('restoreBackupFilename', {
     type: 'string',
@@ -91,28 +120,47 @@ async function restoreDatabaseFromS3(
   logger.info(`Database restored from ${key}`);
 }
 
-export async function handler(): Promise<void> {
+export async function restoreDataFromBackup({
+  aesSecret,
+  backupsAccessKey,
+  backupsBucket,
+  backupsHost,
+  backupsPort,
+  backupsSecretKey,
+  backupsSecure,
+  databaseHost,
+  databaseName,
+  databasePassword,
+  databasePort,
+  databaseSsl,
+  databaseUrl,
+  databaseUser,
+  restoreBackupFilename,
+}: RestoreDataFromBackupOptions): Promise<boolean> {
   let db;
 
+  assertRestoreDataFromBackupAesSecret(aesSecret);
+  const effectiveAesSecret = aesSecret || localDevelopmentAesSecret;
+
   const adminUri = buildPostgresUri({
-    dbUser: argv.databaseUser,
-    dbPassword: argv.databasePassword,
-    dbHost: argv.databaseHost,
-    dbPort: argv.databasePort,
+    dbUser: databaseUser,
+    dbPassword: databasePassword,
+    dbHost: databaseHost,
+    dbPort: databasePort,
     dbName: 'postgres',
-    ssl: argv.databaseSsl,
+    ssl: databaseSsl,
   });
-  await recreateDatabase(argv.databaseName, adminUri);
+  await recreateDatabase(databaseName, adminUri);
 
   try {
     db = initDB({
-      host: argv.databaseHost,
-      port: argv.databasePort,
-      username: argv.databaseUser,
-      password: argv.databasePassword,
-      database: argv.databaseName,
-      ssl: argv.databaseSsl,
-      uri: argv.databaseUrl,
+      host: databaseHost,
+      port: databasePort,
+      username: databaseUser,
+      password: databasePassword,
+      database: databaseName,
+      ssl: databaseSsl,
+      uri: databaseUrl,
     });
   } catch (error: unknown) {
     handleDBError(error as Error);
@@ -120,11 +168,11 @@ export async function handler(): Promise<void> {
 
   try {
     initS3Client({
-      endPoint: argv.backupsHost,
-      port: argv.backupsPort,
-      useSSL: argv.backupsSecure,
-      accessKey: argv.backupsAccessKey,
-      secretKey: argv.backupsSecretKey,
+      endPoint: backupsHost,
+      port: backupsPort,
+      useSSL: backupsSecure,
+      accessKey: backupsAccessKey,
+      secretKey: backupsSecretKey,
     });
   } catch (error: unknown) {
     logger.warn(`S3Error: ${error}`);
@@ -136,16 +184,16 @@ export async function handler(): Promise<void> {
   // Backup main database
   try {
     logger.info('Restoring main database...');
-    const key = `sql/main/${argv.restoreBackupFilename}`;
+    const key = `sql/main/${restoreBackupFilename}`;
     const mainDbUrl = buildPostgresUri({
-      dbUser: argv.databaseUser,
-      dbPassword: argv.databasePassword,
-      dbHost: argv.databaseHost,
-      dbPort: argv.databasePort,
-      dbName: argv.databaseName,
-      ssl: argv.databaseSsl,
+      dbUser: databaseUser,
+      dbPassword: databasePassword,
+      dbHost: databaseHost,
+      dbPort: databasePort,
+      dbName: databaseName,
+      ssl: databaseSsl,
     });
-    await restoreDatabaseFromS3(mainDbUrl, argv.backupsBucket, key);
+    await restoreDatabaseFromS3(mainDbUrl, backupsBucket, key);
   } catch (err) {
     failed = true;
     logger.error('Failed to restore main database:', err);
@@ -155,16 +203,16 @@ export async function handler(): Promise<void> {
   const apps = await App.findAll({
     attributes: ['id', 'dbName', 'dbUser', 'dbPassword', 'dbHost', 'dbPort'],
   });
-  const dbPassword = argv.databasePassword;
+  const dbPassword = databasePassword;
 
   for (const app of apps) {
     try {
       // Migrating to a new database hence the settings from the new DB should be used.
       await app.update({
-        dbHost: argv.databaseHost,
-        dbPort: argv.databasePort,
-        dbUser: argv.databaseUser,
-        dbPassword: encrypt(dbPassword, argv.aesSecret || 'Local Appsemble development AES secret'),
+        dbHost: databaseHost,
+        dbPort: databasePort,
+        dbUser: databaseUser,
+        dbPassword: encrypt(dbPassword, effectiveAesSecret),
       });
       const dbName = app.dbName ?? `app-${app.id}`;
 
@@ -174,12 +222,12 @@ export async function handler(): Promise<void> {
         dbPassword,
         dbPort: app.dbPort,
         dbUser: app.dbUser,
-        ssl: argv.databaseSsl,
+        ssl: databaseSsl,
       });
 
-      const key = `sql/apps/${app.id}/${argv.restoreBackupFilename}`;
+      const key = `sql/apps/${app.id}/${restoreBackupFilename}`;
       await recreateDatabase(dbName, adminUri);
-      await restoreDatabaseFromS3(appDbUrl, argv.backupsBucket, key);
+      await restoreDatabaseFromS3(appDbUrl, backupsBucket, key);
     } catch (err) {
       failed = true;
       logger.error(`Failed to restore app ${app.id} database:`);
@@ -188,5 +236,28 @@ export async function handler(): Promise<void> {
   }
 
   await db.close();
+
+  return failed;
+}
+
+export async function handler(): Promise<void> {
+  const failed = await restoreDataFromBackup({
+    aesSecret: argv.aesSecret,
+    backupsAccessKey: argv.backupsAccessKey,
+    backupsBucket: argv.backupsBucket,
+    backupsHost: argv.backupsHost,
+    backupsPort: argv.backupsPort,
+    backupsSecretKey: argv.backupsSecretKey,
+    backupsSecure: argv.backupsSecure ?? true,
+    databaseHost: argv.databaseHost,
+    databaseName: argv.databaseName,
+    databasePassword: argv.databasePassword,
+    databasePort: argv.databasePort,
+    databaseSsl: argv.databaseSsl,
+    databaseUrl: argv.databaseUrl,
+    databaseUser: argv.databaseUser,
+    restoreBackupFilename: argv.restoreBackupFilename,
+  });
+
   process.exit(failed ? 1 : 0);
 }
