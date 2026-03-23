@@ -1293,6 +1293,7 @@ provision review:
     - npm run appsemble -- config set context review
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
+    - npm run scripts -- wait-for-ssl
     - npm run appsemble -- block create --organization appsemble --template vanilla --name template-vanilla --path blocks
     - npm run appsemble -- block create --organization appsemble --template preact --name template-preact --path blocks
     - npm run appsemble -- block create --organization appsemble --template mini-jsx --name template-mini-jsx --path blocks
