@@ -77,6 +77,14 @@ export interface AppFixtures {
    * @param organizationId ID of the organization that owns the app
    */
   aliasAppDomain: (appPath: string, organizationId: string) => Promise<void>;
+
+  /**
+   * Delete an app member using its email.
+   *
+   * @param appId ID of the app
+   * @param email email of the member to be deleted.
+   */
+  deleteAppMember: (appId: number, email: string) => Promise<void>;
 }
 
 export const test = base.extend<AppFixtures>({
@@ -144,7 +152,7 @@ export const test = base.extend<AppFixtures>({
     await use(async (appId, role) => {
       const page = await browser.newPage();
 
-      await page.goto(`/en/apps/${appId}/-/users`);
+      await page.goto(`/en/apps/${appId}/-/members`);
       const select = page.locator('tr', { hasText: 'It’s you!' }).locator('select[class=""]');
       await select.selectOption(role);
 
@@ -175,6 +183,16 @@ export const test = base.extend<AppFixtures>({
 
       expect(response.status()).toBe(201);
       return (await response.json()) as AppMessages;
+    });
+  },
+
+  async deleteAppMember({ request }, use) {
+    await use(async (appId, email) => {
+      const members = (await (
+        await request.get(`/api/apps/${appId}/members?filter=email+eq+'${email}'`)
+      ).json()) as { sub: string }[];
+      const response = await request.delete(`/api/apps/${appId}/app-members/${members[0].sub}`);
+      await expect(response).toBeOK();
     });
   },
 

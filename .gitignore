@@ -44,3 +44,5 @@ public/
 *.tsbuildinfo
 !*.config.js
 !*rc.js
+
+/packages/e2e/playwright.config.js
