@@ -973,6 +973,7 @@ review:
     # This is the only way to make sure the review environment can be overwritten
     - helm delete "review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" || true
+    - kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete secret review-$CI_MERGE_REQUEST_IID-mailpit-tls || true
     - ./scripts/pre-review-capacity-check.sh
