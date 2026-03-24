@@ -10,6 +10,7 @@ import { handleDBError } from '../utils/sqlUtils.js';
 interface AdditionalArguments {
   oldAesSecret?: string;
   batch?: number;
+  skipAppDBPasswords?: boolean;
 }
 
 export const command = 'reencrypt-secrets';
@@ -27,6 +28,10 @@ export function builder(yargs: Argv): Argv {
       desc: 'The number of apps to process in each batch',
       type: 'number',
       default: 50,
+    })
+    .option('skip-app-db-passwords', {
+      desc: 'Skip app DB passwords, useful when data is imported using restore-data-from-backup command',
+      type: 'boolean',
     });
 }
 
@@ -34,6 +39,7 @@ export interface ReencryptSecretsOptions {
   oldAesSecret: string;
   newAesSecret: string;
   batch?: number;
+  skipAppDBPasswords?: boolean;
 }
 
 export interface ReencryptSecretsResult {
@@ -49,6 +55,7 @@ export async function reencryptSecrets({
   batch = 50,
   newAesSecret,
   oldAesSecret,
+  skipAppDBPasswords,
 }: ReencryptSecretsOptions): Promise<ReencryptSecretsResult> {
   const result: ReencryptSecretsResult = {
     totalApps: 0,
@@ -102,7 +109,7 @@ export async function reencryptSecrets({
           stripeWebhookSecret: Buffer;
         }> = {};
 
-        if (app.dbPassword) {
+        if (app.dbPassword && !skipAppDBPasswords) {
           try {
             logger.info(`Updating app ${app.id} dbPassword`);
             const decrypted = decrypt(app.dbPassword, oldAesSecret);
@@ -168,7 +175,13 @@ export async function reencryptSecrets({
           AppServiceSecret,
           AppWebhookSecret,
           sequelize: appDB,
-        } = await getAppDB(app.id, undefined, undefined, true, oldAesSecret);
+        } = await getAppDB(
+          app.id,
+          undefined,
+          undefined,
+          true,
+          skipAppDBPasswords ? newAesSecret : oldAesSecret,
+        );
 
         await appDB.transaction(async (appTransaction) => {
           // Re-encrypt AppServiceSecret
@@ -248,6 +261,7 @@ export async function reencryptSecrets({
 export async function handler({
   batch = 50,
   oldAesSecret,
+  skipAppDBPasswords,
 }: AdditionalArguments = {}): Promise<void> {
   const { aesSecret: newAesSecret } = argv;
 
@@ -282,7 +296,7 @@ export async function handler({
     handleDBError(error as Error);
   }
 
-  await reencryptSecrets({ oldAesSecret, newAesSecret, batch });
+  await reencryptSecrets({ oldAesSecret, newAesSecret, batch, skipAppDBPasswords });
 
   await db.close();
   process.exit(0);

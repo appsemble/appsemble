@@ -259,4 +259,57 @@ describe('reencryptSecrets', () => {
     expect(result.reencryptedWebhookSecrets).toBe(0);
     expect(result.skippedSecrets).toBe(0);
   });
+
+  it('should skip app dbPassword and still re-encrypt app database secrets', async () => {
+    const originalEmailPassword = 'test-email-password';
+    const originalServiceSecret = 'test-service-secret';
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      definition: { name: 'Test App', defaultPage: 'Test' },
+      path: 'test-app-skip-db-password',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      emailPassword: encrypt(originalEmailPassword, OLD_AES_SECRET),
+    });
+
+    const { AppServiceSecret } = await getAppDB(app.id);
+
+    await AppServiceSecret.create({
+      urlPatterns: 'https://example.com/*',
+      authenticationMethod: 'http-basic',
+      identifier: 'test-user',
+      secret: encrypt(originalServiceSecret, OLD_AES_SECRET),
+    });
+
+    await app.update({ dbPassword: encrypt('password', NEW_AES_SECRET) });
+    const unchangedDbPassword = app.dbPassword;
+
+    const result = await reencryptSecrets({
+      oldAesSecret: OLD_AES_SECRET,
+      newAesSecret: NEW_AES_SECRET,
+      skipAppDBPasswords: true,
+    });
+
+    expect(result.reencryptedAppSecrets).toBe(1);
+    expect(result.reencryptedServiceSecrets).toBe(1);
+    expect(result.skippedSecrets).toBe(0);
+
+    await app.reload();
+
+    expect(app.dbPassword).toStrictEqual(unchangedDbPassword);
+    expect(decrypt(app.dbPassword, NEW_AES_SECRET)).toBe('password');
+    expect(decrypt(app.emailPassword!, NEW_AES_SECRET)).toBe(originalEmailPassword);
+
+    const { AppServiceSecret: AppServiceSecretNew } = await getAppDB(
+      app.id,
+      undefined,
+      undefined,
+      true,
+      NEW_AES_SECRET,
+    );
+
+    const serviceSecret = await AppServiceSecretNew.findOne();
+    expect(decrypt(serviceSecret!.secret!, NEW_AES_SECRET)).toBe(originalServiceSecret);
+  });
 });
