@@ -31,7 +31,7 @@ vi.mock('../utils/dns/index.js', () => ({
 }));
 
 const transaction = {};
-const transactionWrapper = vi.fn(async (callback: (transaction: object) => Promise<void>) =>
+const transactionWrapper = vi.fn((callback: (transaction: object) => Promise<void>) =>
   callback(transaction),
 );
 
@@ -85,7 +85,10 @@ describe('provision', () => {
     vi.mocked(User.create).mockResolvedValue({ id: 'user-id' } as never);
     vi.mocked(EmailAuthorization.findByPk).mockResolvedValue(null);
     vi.mocked(Organization.findByPk).mockResolvedValue(null);
-    vi.mocked(Organization.create).mockResolvedValue({ id: 'appsemble', name: 'appsemble' } as never);
+    vi.mocked(Organization.create).mockResolvedValue({
+      id: 'appsemble',
+      name: 'appsemble',
+    } as never);
     vi.mocked(OrganizationMember.findOne).mockResolvedValue(null);
     vi.mocked(OrganizationSubscription.findOne).mockResolvedValue(null);
     vi.mocked(OAuth2ClientCredentials.findByPk).mockResolvedValue(null);

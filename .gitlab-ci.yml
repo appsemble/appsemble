@@ -981,9 +981,8 @@ review:
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     # Stripe webhook setup
-    - LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
-    - URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
-    - curl -L -o stripe.tar.gz "$URL"
+    - STRIPE_RELEASE_URL=$(curl -fsSL -H 'User-Agent: appsemble-ci' https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -er '.assets[] | select(.name | endswith("linux_x86_64.tar.gz")) | .browser_download_url')
+    - curl -fsSL -o stripe.tar.gz "$STRIPE_RELEASE_URL"
     - tar -xvf stripe.tar.gz
     - mv stripe /usr/local/bin/
     - stripe -v

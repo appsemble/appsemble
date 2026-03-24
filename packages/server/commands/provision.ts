@@ -152,18 +152,7 @@ export async function provision({
       where: { primaryEmail: userEmail },
     });
 
-    if (!user) {
-      user = await User.create(
-        {
-          name: userName,
-          password: passwordHash,
-          primaryEmail: userEmail,
-          timezone: userTimezone,
-        },
-        { transaction },
-      );
-      logger.info(`Created bootstrap user ${userEmail}`);
-    } else {
+    if (user) {
       if (user.deleted) {
         await user.restore({ transaction });
       }
@@ -177,45 +166,45 @@ export async function provision({
         { transaction },
       );
       logger.info(`Updated bootstrap user ${userEmail}`);
+    } else {
+      user = await User.create(
+        {
+          name: userName,
+          password: passwordHash,
+          primaryEmail: userEmail,
+          timezone: userTimezone,
+        },
+        { transaction },
+      );
+      logger.info(`Created bootstrap user ${userEmail}`);
     }
 
     const emailAuthorization = await EmailAuthorization.findByPk(userEmail, { transaction });
-    if (!emailAuthorization) {
-      await EmailAuthorization.create(
-        {
-          email: userEmail,
-          UserId: user.id,
-          verified: true,
-        },
-        { transaction },
-      );
-    } else {
-      await emailAuthorization.update(
-        {
-          UserId: user.id,
-          disabled: null,
-          key: null,
-          verified: true,
-        },
-        { transaction },
-      );
-    }
+    await (emailAuthorization
+      ? emailAuthorization.update(
+          {
+            UserId: user.id,
+            disabled: null,
+            key: null,
+            verified: true,
+          },
+          { transaction },
+        )
+      : EmailAuthorization.create(
+          {
+            email: userEmail,
+            UserId: user.id,
+            verified: true,
+          },
+          { transaction },
+        ));
 
     let organization = await Organization.findByPk(organizationId, {
       paranoid: false,
       transaction,
     });
 
-    if (!organization) {
-      organization = await Organization.create(
-        {
-          id: organizationId,
-          name: organizationId,
-        },
-        { transaction },
-      );
-      logger.info(`Created organization ${organizationId}`);
-    } else {
+    if (organization) {
       if (organization.deleted) {
         await organization.restore({ transaction });
       }
@@ -226,6 +215,15 @@ export async function provision({
         { transaction },
       );
       logger.info(`Updated organization ${organizationId}`);
+    } else {
+      organization = await Organization.create(
+        {
+          id: organizationId,
+          name: organizationId,
+        },
+        { transaction },
+      );
+      logger.info(`Created organization ${organizationId}`);
     }
 
     const membership = await OrganizationMember.findOne({
@@ -236,7 +234,11 @@ export async function provision({
       },
     });
 
-    if (!membership) {
+    if (membership) {
+      if (membership.role !== organizationRole) {
+        await membership.update({ role: organizationRole }, { transaction });
+      }
+    } else {
       await OrganizationMember.create(
         {
           OrganizationId: organizationId,
@@ -245,8 +247,6 @@ export async function provision({
         },
         { transaction },
       );
-    } else if (membership.role !== organizationRole) {
-      await membership.update({ role: organizationRole }, { transaction });
     }
 
     const subscription = await OrganizationSubscription.findOne({
@@ -254,57 +254,53 @@ export async function provision({
       where: { OrganizationId: organizationId },
     });
 
-    if (!subscription) {
-      await OrganizationSubscription.create(
-        {
-          cancelled: false,
-          expirationDate: null,
-          OrganizationId: organizationId,
-          renewalPeriod: null,
-          subscriptionPlan: organizationSubscription,
-        },
-        { transaction },
-      );
-    } else {
-      await subscription.update(
-        {
-          cancelled: false,
-          cancelledAt: null,
-          cancellationReason: null,
-          expirationDate: null,
-          renewalPeriod: null,
-          subscriptionPlan: organizationSubscription,
-        },
-        { transaction },
-      );
-    }
+    await (subscription
+      ? subscription.update(
+          {
+            cancelled: false,
+            cancelledAt: null,
+            cancellationReason: null,
+            expirationDate: null,
+            renewalPeriod: null,
+            subscriptionPlan: organizationSubscription,
+          },
+          { transaction },
+        )
+      : OrganizationSubscription.create(
+          {
+            cancelled: false,
+            expirationDate: null,
+            OrganizationId: organizationId,
+            renewalPeriod: null,
+            subscriptionPlan: organizationSubscription,
+          },
+          { transaction },
+        ));
 
     const credentials = await OAuth2ClientCredentials.findByPk(clientId, {
       transaction,
     });
 
-    if (!credentials) {
-      await OAuth2ClientCredentials.create(
-        {
-          description: provisionDescription,
-          id: clientId,
-          scopes: provisionScopes,
-          secret: clientSecretHash,
-          UserId: user.id,
-        },
-        { transaction },
-      );
-    } else {
-      await credentials.update(
-        {
-          description: provisionDescription,
-          scopes: provisionScopes,
-          secret: clientSecretHash,
-          UserId: user.id,
-        },
-        { transaction },
-      );
-    }
+    await (credentials
+      ? credentials.update(
+          {
+            description: provisionDescription,
+            scopes: provisionScopes,
+            secret: clientSecretHash,
+            UserId: user.id,
+          },
+          { transaction },
+        )
+      : OAuth2ClientCredentials.create(
+          {
+            description: provisionDescription,
+            id: clientId,
+            scopes: provisionScopes,
+            secret: clientSecretHash,
+            UserId: user.id,
+          },
+          { transaction },
+        ));
   });
 
   if (appDomainStrategy) {

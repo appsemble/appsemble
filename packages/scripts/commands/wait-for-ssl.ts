@@ -28,12 +28,13 @@ export async function handler(): Promise<void> {
   const pollInterval = Number(WAIT_FOR_SSL_POLL_INTERVAL_MS);
   const timeout = Number(WAIT_FOR_SSL_TIMEOUT_MS);
   const startedAt = Date.now();
+  let status: SSLStatusMap[string] = 'missing';
 
-  while (true) {
+  while (Date.now() - startedAt < timeout) {
     const { data } = await axios.get<SSLStatusMap>(`https://${domain}/api/ssl`, {
       params: { domains: sslDomain },
     });
-    const status = data[sslDomain];
+    status = data[sslDomain];
 
     logger.info(`SSL status for ${sslDomain}: ${status}`);
 
@@ -45,10 +46,8 @@ export async function handler(): Promise<void> {
       throw new Error(`SSL status for ${sslDomain}: ${status}`);
     }
 
-    if (Date.now() - startedAt >= timeout) {
-      throw new Error(`Timed out waiting for SSL for ${sslDomain}. Last status: ${status}`);
-    }
-
     await sleep(pollInterval);
   }
+
+  throw new Error(`Timed out waiting for SSL for ${sslDomain}. Last status: ${status}`);
 }
