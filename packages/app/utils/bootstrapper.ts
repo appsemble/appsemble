@@ -1,4 +1,4 @@
-import { normalizeBlockName, prefixBlockURL } from '@appsemble/lang-sdk';
+import { normalizeBlockName, prefixBlockURL, stripBlockName } from '@appsemble/lang-sdk';
 import {
   type AppsembleBootstrapEvent,
   type AppsembleControllerEvent,
@@ -118,7 +118,7 @@ function getControllerFunction(): Promisable<ControllerFunction> {
 }
 
 function getBootstrapEntryFile(manifest: BlockManifest): string {
-  const entryFile = `${normalizeBlockName(manifest.name)}.js`;
+  const entryFile = `${stripBlockName(manifest.name)}.js`;
 
   if (manifest.files.includes(entryFile)) {
     return entryFile;
