@@ -945,7 +945,7 @@ update dependencies:
 
 # Deploy the Docker image for a branch to a review environment.
 review:
-  image: dtzar/helm-kubectl:3.16.0
+  image: dtzar/helm-kubectl:3.19.1
   stage: deploy
   needs:
     - build docker image
