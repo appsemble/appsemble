@@ -134,6 +134,6 @@ describe('provision', () => {
         ...options,
         clientCredentials: 'invalid',
       }),
-    ).rejects.toThrowError('The --client-credentials value must be formatted as <id>:<secret>.');
+    ).rejects.toThrow('The --client-credentials value must be formatted as <id>:<secret>.');
   });
 });
