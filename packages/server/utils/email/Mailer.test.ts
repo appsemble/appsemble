@@ -42,7 +42,7 @@ describe('Mailer', () => {
       mailer.transport = {
         verify: () => Promise.reject(new Error('fail')),
       } as Partial<Transporter> as Transporter;
-      await expect(mailer.verify()).rejects.toThrowError(new Error('fail'));
+      await expect(mailer.verify()).rejects.toThrow(new Error('fail'));
     });
   });
 
@@ -780,9 +780,7 @@ _Test App_
       vi.advanceTimersByTime(60 * 1000);
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
 
-      await expect(mailer.sendTranslatedEmail(email)).rejects.toThrowError(
-        'Too many emails sent today',
-      );
+      await expect(mailer.sendTranslatedEmail(email)).rejects.toThrow('Too many emails sent today');
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
     });
 
@@ -809,7 +807,7 @@ _Test App_
       vi.advanceTimersByTime(60 * 1000);
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
 
-      await expect(mailer.sendEmail(email)).rejects.toThrowError('Too many emails sent today');
+      await expect(mailer.sendEmail(email)).rejects.toThrow('Too many emails sent today');
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
     });
 
@@ -840,9 +838,7 @@ _Test App_
 
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
 
-      await expect(mailer.sendTranslatedEmail(email)).rejects.toThrowError(
-        'Too many emails sent today',
-      );
+      await expect(mailer.sendTranslatedEmail(email)).rejects.toThrow('Too many emails sent today');
       expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
 
       // After this, the time should be 1970-01-02T00:00:03.000Z
@@ -992,7 +988,7 @@ _Test App_
         sendMail: vi.fn().mockRejectedValue({}),
       } as Partial<Transporter> as Transporter;
 
-      await expect(() => mailer.sendEmail(email)).rejects.toThrowError(
+      await expect(() => mailer.sendEmail(email)).rejects.toThrow(
         'Something went wrong when sending the email.',
       );
     });
@@ -1004,7 +1000,7 @@ _Test App_
         }),
       } as Partial<Transporter> as Transporter;
 
-      await expect(() => mailer.sendEmail(email)).rejects.toThrowError(
+      await expect(() => mailer.sendEmail(email)).rejects.toThrow(
         'Unable to determine the sender or recipient of the message.',
       );
     });
