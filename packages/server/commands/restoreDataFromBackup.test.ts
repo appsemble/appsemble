@@ -195,7 +195,7 @@ describe('restoreDataFromBackup', () => {
         ...baseOptions,
         aesSecret: undefined,
       }),
-    ).rejects.toThrowError('The --aes-secret argument is required and cannot be empty.');
+    ).rejects.toThrow('The --aes-secret argument is required and cannot be empty.');
 
     expect(spawn).not.toHaveBeenCalled();
   });

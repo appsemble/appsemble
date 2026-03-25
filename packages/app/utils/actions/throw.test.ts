@@ -7,7 +7,7 @@ describe('throw', () => {
   it('should return the static value', async () => {
     const action = createTestAction({ definition: { type: 'throw' } });
     const result = action('Input data');
-    await expect(result).rejects.toThrowError(
+    await expect(result).rejects.toThrow(
       new ActionError({ cause: 'Input data', data: null, definition: { type: 'throw' } }),
     );
   });

@@ -165,7 +165,7 @@ describe('config', () => {
           name: '',
           version: '1.33.7',
         }),
-      ).toThrowError(
+      ).toThrow(
         new AppsembleError(
           "Found duplicate interface 'Actions' in 'getProjectImplementations/duplicateActions/index.ts:31'",
         ),
@@ -181,7 +181,7 @@ describe('config', () => {
           name: '',
           version: '1.33.7',
         }),
-      ).toThrowError(
+      ).toThrow(
         new AppsembleError(
           "Found duplicate interface 'EventEmitters' in 'getProjectImplementations/duplicateEventEmitters/index.ts:31'",
         ),
@@ -197,7 +197,7 @@ describe('config', () => {
           name: '',
           version: '1.33.7',
         }),
-      ).toThrowError(
+      ).toThrow(
         new AppsembleError(
           "Found duplicate interface 'EventListeners' in 'getProjectImplementations/duplicateEventListeners/index.ts:31'",
         ),
@@ -213,7 +213,7 @@ describe('config', () => {
           name: '',
           version: '1.33.7',
         }),
-      ).toThrowError(
+      ).toThrow(
         new AppsembleError(
           "Found duplicate interface 'Parameters' in 'getProjectImplementations/duplicateParameters/index.ts:31'",
         ),
@@ -256,8 +256,8 @@ describe('config', () => {
         });
       }
 
-      expect(fn).toThrowError(AppsembleError);
-      expect(fn).toThrowError(/'unused' is declared but its value is never read/);
+      expect(fn).toThrow(AppsembleError);
+      expect(fn).toThrow(/'unused' is declared but its value is never read/);
     });
 
     it('should extract comments', () => {
