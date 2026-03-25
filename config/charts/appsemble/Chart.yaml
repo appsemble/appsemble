@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.36.5-test.6
-appVersion: 0.36.5-test.6
+version: 0.36.5
+appVersion: 0.36.5
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,8 +31,18 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "E2e: Add new fixture deleteAppMember to delete app members by emails."
+    - kind: added
+      description: "Node-utils: Add support for creating organization members in createUser."
+    - kind: added
+      description: "Scripts: Add validation for server binary missing commands."
+    - kind: added
+      description: "Server: Add webhook-type action that can be invoked by clients via
+        HTTP requests."
+    - kind: fixed
+      description: "E2e: Point changeAppMemberRole fixture to the right page."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
