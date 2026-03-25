@@ -14,9 +14,11 @@ import * as cleanupSoftDeletedRecords from './commands/cleanupSoftDeletedRecords
 import * as fuzzMigrations from './commands/fuzzMigrations.js';
 import * as health from './commands/health.js';
 import * as migrate from './commands/migrate.js';
+import * as provision from './commands/provision.js';
 import * as migrateAppDefinitions from './commands/migrateAppDefinitions.js';
 import * as reconcile from './commands/reconcileDNS.js';
 import * as reencryptSecrets from './commands/reencryptSecrets.js';
+import * as restoreDataFromBackup from './commands/restoreDataFromBackup.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
 import * as start from './commands/start.js';
@@ -64,12 +66,14 @@ const parser = yargs()
   .command(start as CommandModule)
   .command(synchronizeTrainings as CommandModule)
   .command(migrate as CommandModule)
+  .command(provision as CommandModule)
   .command(migrateAppDefinitions as CommandModule)
   .command(reencryptSecrets as CommandModule)
   .command(cleanupSoftDeletedRecords as CommandModule)
   .command(chargeOrganizationSubscriptions as CommandModule)
   .command(backupProductionData as CommandModule)
   .command(cleanupExpiredDomains as CommandModule)
+  .command(restoreDataFromBackup as CommandModule)
   .fail(handleError)
   .help('help', 'Show this help message.')
   .alias('h', 'help')

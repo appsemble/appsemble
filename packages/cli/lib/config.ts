@@ -16,6 +16,36 @@ import { type PackageJson } from 'type-fest';
 import { type Configuration } from 'webpack';
 
 /**
+ * Extract a repository URL from package.json's repository field.
+ *
+ * @param pkg The package.json content.
+ * @returns A URL to the repository, or undefined if not available.
+ */
+export function getRepositoryUrl(pkg: PackageJson): string | undefined {
+  const repo = pkg.repository;
+
+  if (!repo) {
+    return undefined;
+  }
+
+  if (typeof repo === 'string') {
+    return repo;
+  }
+
+  if (!repo.url) {
+    return undefined;
+  }
+
+  const baseUrl = repo.url.replace(/\.git$/, '');
+
+  if (!repo.directory) {
+    return baseUrl;
+  }
+
+  return `${baseUrl}/-/tree/main/${repo.directory}`;
+}
+
+/**
  * Get the build configuration from a project directory.
  *
  * @param dir The directory in which to search for the configuration file.
@@ -51,6 +81,7 @@ export async function getProjectBuildConfig(dir: string): Promise<ProjectBuildCo
     longDescription,
     name: pkg.name,
     version: pkg.version,
+    repositoryUrl: getRepositoryUrl(pkg),
     dir,
     ...config,
   };

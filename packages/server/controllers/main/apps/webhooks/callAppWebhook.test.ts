@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
+import { PredefinedAppRole } from '@appsemble/lang-sdk';
 import { createFixtureStream, createFormData } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
@@ -16,7 +17,12 @@ import {
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { encrypt } from '../../../../utils/crypto.js';
-import { createTestUser } from '../../../../utils/test/authorization.js';
+import {
+  authorizeAppMember,
+  createTestAppMember,
+  createTestUser,
+  unauthorize,
+} from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
 let user: User;
@@ -218,15 +224,18 @@ describe('callAppWebhook', () => {
     `);
   });
 
-  it('should reject unauthorized', async () => {
-    const res = await request.post(`/api/apps/${app.id}/webhooks/createRecord`, {});
+  it('should allow guests when app has no security definition', async () => {
+    // Apps without security definition allow guest access to webhooks
+    // But schema validation still applies
+    const res = await request.post(`/api/apps/${app.id}/webhooks/createRecord`, { foo: 'bar' });
 
-    expect(res).toMatchInlineSnapshot(`
-      HTTP/1.1 401 Unauthorized
-      Content-Type: text/plain; charset=utf-8
-
-      Unauthorized
-    `);
+    expect(res.status).toBe(200);
+    expect(res.data).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'bar',
+      }),
+    );
   });
 
   it('should handle webhook schema validation', async () => {
@@ -359,14 +368,13 @@ describe('callAppWebhook', () => {
       { foo: 'bar' },
       { headers: { Authorization: `Bearer ${createSecret.secret.toString('hex')}` } },
     );
-    expect(res).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "foo": "bar",
-      }
-    `);
+    expect(res.status).toBe(200);
+    expect(res.data).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'bar',
+      }),
+    );
     const { Resource } = await getAppDB(app.id);
     const resource = (await Resource.findOne())!;
     expect(resource.toJSON()).toStrictEqual(
@@ -387,12 +395,15 @@ describe('callAppWebhook', () => {
       }),
       { headers: { Authorization: `Bearer ${createSecret.secret.toString('hex')}` } },
     );
-    expect(res).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: text/plain; charset=utf-8
-
-      OK
-    `);
+    expect(res.status).toBe(200);
+    expect(res.data).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'bar',
+        pdf: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        xml: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    );
     const { Resource } = await getAppDB(app.id);
     const resource = (await Resource.findOne())!;
     expect(resource.toJSON()).toStrictEqual(
@@ -412,12 +423,14 @@ describe('callAppWebhook', () => {
       }),
       { headers: { Authorization: `Bearer ${patchSecret.secret.toString('hex')}` } },
     );
-    expect(res2).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: text/plain; charset=utf-8
-
-      OK
-    `);
+    expect(res2.status).toBe(200);
+    expect(res2.data).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'baz',
+        pdf: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    );
 
     await resource.reload();
     expect(resource.toJSON()).toStrictEqual(
@@ -437,12 +450,15 @@ describe('callAppWebhook', () => {
       }),
       { headers: { Authorization: `Bearer ${updateSecret.secret.toString('hex')}` } },
     );
-    expect(res3).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: text/plain; charset=utf-8
-
-      OK
-    `);
+    expect(res3.status).toBe(200);
+    expect(res3.data).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'bam',
+        pdf: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        xml: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    );
 
     await resource.reload();
     expect(resource.toJSON()).toStrictEqual(
@@ -450,6 +466,440 @@ describe('callAppWebhook', () => {
         foo: 'bam',
         pdf: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
         xml: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    );
+  });
+});
+
+describe('callAppWebhook permissions', () => {
+  let appWithSecurity: App;
+  let appWithGuestWebhookPermission: App;
+  let createSecretForSecurityApp: AppWebhookSecret;
+
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv(argv);
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    user = await createTestUser();
+
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+
+    // App with security but NO guest webhook permission
+    appWithSecurity = await App.create({
+      path: 'app-with-security',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      definition: {
+        name: 'App With Security',
+        defaultPage: 'Test Page',
+        security: {
+          default: { role: 'User' },
+          roles: {
+            User: {
+              permissions: [
+                '$webhook:createRecord:invoke',
+                '$webhook:patchFirstRecord:invoke',
+                '$webhook:createThenPatchRecord:invoke',
+              ],
+            },
+          },
+          // Guest has NO webhook permissions
+        },
+        resources: {
+          record: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                foo: { type: 'string' },
+                pdf: { type: 'string', format: 'binary' },
+                xml: { type: 'string', format: 'binary' },
+              },
+            },
+          },
+        },
+        webhooks: {
+          createRecord: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['foo'],
+              properties: {
+                foo: { type: 'string' },
+              },
+            },
+            action: {
+              type: 'resource.create',
+              resource: 'record',
+            },
+          },
+          patchFirstRecord: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['foo'],
+              properties: {
+                foo: { type: 'string' },
+                pdf: { type: 'string', format: 'binary' },
+                xml: { type: 'string', format: 'binary' },
+              },
+            },
+            action: {
+              type: 'resource.query',
+              resource: 'record',
+              onSuccess: {
+                remapBefore: [
+                  {
+                    'object.from': {
+                      id: [{ prop: 0 }, { prop: 'id' }],
+                      foo: [{ history: 0 }, { prop: 'foo' }],
+                      pdf: [{ history: 0 }, { prop: 'pdf' }],
+                      xml: [{ history: 0 }, { prop: 'xml' }],
+                    },
+                  },
+                ],
+                type: 'resource.patch',
+                resource: 'record',
+              },
+            },
+          },
+          createThenPatchRecord: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['foo', 'fooPatched'],
+              properties: {
+                foo: { type: 'string' },
+                fooPatched: { type: 'string' },
+              },
+            },
+            action: {
+              type: 'resource.create',
+              resource: 'record',
+              body: {
+                'object.from': {
+                  foo: { prop: 'foo' },
+                },
+              },
+              onSuccess: {
+                remapBefore: {
+                  'object.from': {
+                    id: { prop: 'id' },
+                    foo: [{ history: 0 }, { prop: 'fooPatched' }],
+                  },
+                },
+                type: 'resource.patch',
+                resource: 'record',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // App with guest webhook permission
+    appWithGuestWebhookPermission = await App.create({
+      path: 'app-with-guest-permission',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      definition: {
+        name: 'App With Guest Permission',
+        defaultPage: 'Test Page',
+        security: {
+          default: { role: 'User' },
+          guest: {
+            permissions: ['$webhook:createRecord:invoke'],
+          },
+          roles: {
+            User: {
+              permissions: [],
+            },
+          },
+        },
+        resources: {
+          record: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                foo: { type: 'string' },
+              },
+            },
+          },
+        },
+        webhooks: {
+          createRecord: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['foo'],
+              properties: {
+                foo: { type: 'string' },
+              },
+            },
+            action: {
+              type: 'resource.create',
+              resource: 'record',
+            },
+          },
+        },
+      },
+    });
+
+    const { AppWebhookSecret } = await getAppDB(appWithSecurity.id);
+    createSecretForSecurityApp = await AppWebhookSecret.create({
+      webhookName: 'createRecord',
+      secret: encrypt(randomBytes(40).toString('hex'), aesSecret),
+    });
+  });
+
+  it('should reject unauthenticated requests when guest has no webhook permission', async () => {
+    unauthorize();
+    const res = await request.post(`/api/apps/${appWithSecurity.id}/webhooks/createRecord`, {
+      foo: 'bar',
+    });
+
+    expect(res).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "Guest does not have sufficient app permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should allow unauthenticated requests when guest has webhook permission', async () => {
+    unauthorize();
+    const res = await request.post(
+      `/api/apps/${appWithGuestWebhookPermission.id}/webhooks/createRecord`,
+      { foo: 'bar' },
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.data).toStrictEqual(
+      expect.objectContaining({
+        foo: 'bar',
+        id: 1,
+      }),
+    );
+
+    const { Resource } = await getAppDB(appWithGuestWebhookPermission.id);
+    const resource = (await Resource.findOne())!;
+    expect(resource.toJSON()).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'bar',
+      }),
+    );
+  });
+
+  it('should reject app member requests when member role has no webhook permission', async () => {
+    // Create app member with 'User' role that has no webhook permissions
+    const appMember = await createTestAppMember(
+      appWithGuestWebhookPermission.id,
+      'member@example.com',
+      PredefinedAppRole.Member,
+    );
+    authorizeAppMember(appWithGuestWebhookPermission, appMember);
+
+    const res = await request.post(
+      `/api/apps/${appWithGuestWebhookPermission.id}/webhooks/createRecord`,
+      { foo: 'bar' },
+    );
+
+    expect(res).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "App member does not have sufficient app permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should allow app member requests when member role has webhook permission', async () => {
+    // Create app member with 'User' role that HAS webhook permissions
+    const appMember = await createTestAppMember(
+      appWithSecurity.id,
+      'member@example.com',
+      'User' as PredefinedAppRole,
+    );
+    authorizeAppMember(appWithSecurity, appMember);
+
+    const res = await request.post(`/api/apps/${appWithSecurity.id}/webhooks/createRecord`, {
+      foo: 'bar',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.data).toStrictEqual(
+      expect.objectContaining({
+        foo: 'bar',
+        id: 1,
+      }),
+    );
+
+    const { Resource } = await getAppDB(appWithSecurity.id);
+    const resource = (await Resource.findOne())!;
+    expect(resource.toJSON()).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'bar',
+      }),
+    );
+  });
+
+  it('should allow app member requests to run resource.create webhook actions with multipart bodies', async () => {
+    const appMember = await createTestAppMember(
+      appWithSecurity.id,
+      'member@example.com',
+      'User' as PredefinedAppRole,
+    );
+    authorizeAppMember(appWithSecurity, appMember);
+
+    const res = await request.post(
+      `/api/apps/${appWithSecurity.id}/webhooks/createRecord`,
+      createFormData({
+        foo: 'multipart-create',
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.data).toStrictEqual(
+      expect.objectContaining({
+        foo: 'multipart-create',
+        id: 1,
+      }),
+    );
+  });
+
+  it('should allow app member requests to run resource.patch webhook actions with multipart bodies', async () => {
+    const appMember = await createTestAppMember(
+      appWithSecurity.id,
+      'member@example.com',
+      'User' as PredefinedAppRole,
+    );
+    authorizeAppMember(appWithSecurity, appMember);
+
+    const createResponse = await request.post(
+      `/api/apps/${appWithSecurity.id}/webhooks/createRecord`,
+      {
+        foo: 'before-patch',
+      },
+    );
+    expect(createResponse.status).toBe(200);
+
+    const patchResponse = await request.post(
+      `/api/apps/${appWithSecurity.id}/webhooks/patchFirstRecord`,
+      createFormData({
+        foo: 'after-patch',
+        pdf: createFixtureStream('note.xml'),
+      }),
+    );
+
+    expect(patchResponse.status).toBe(200);
+    expect(patchResponse.data).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'after-patch',
+        pdf: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    );
+
+    const { Resource } = await getAppDB(appWithSecurity.id);
+    const resource = (await Resource.findOne())!;
+    expect(resource.toJSON()).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'after-patch',
+        pdf: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    );
+  });
+
+  it('should allow chaining resource.create and resource.patch in one webhook invocation', async () => {
+    const appMember = await createTestAppMember(
+      appWithSecurity.id,
+      'member@example.com',
+      'User' as PredefinedAppRole,
+    );
+    authorizeAppMember(appWithSecurity, appMember);
+
+    const response = await request.post(
+      `/api/apps/${appWithSecurity.id}/webhooks/createThenPatchRecord`,
+      {
+        foo: 'before-chain-patch',
+        fooPatched: 'after-chain-patch',
+      },
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'after-chain-patch',
+      }),
+    );
+
+    const { Resource } = await getAppDB(appWithSecurity.id);
+    const resource = (await Resource.findOne())!;
+    expect(resource.toJSON()).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        foo: 'after-chain-patch',
+      }),
+    );
+  });
+
+  it('should always allow webhook secret authentication regardless of permissions', async () => {
+    // Even though guest has no permission, webhook secret should bypass all checks
+    const res = await request.post(
+      `/api/apps/${appWithSecurity.id}/webhooks/createRecord`,
+      { foo: 'bar' },
+      { headers: { Authorization: `Bearer ${createSecretForSecurityApp.secret.toString('hex')}` } },
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.data).toStrictEqual(
+      expect.objectContaining({
+        foo: 'bar',
+        id: 1,
+      }),
+    );
+  });
+
+  it('should return the action result in the response body', async () => {
+    const res = await request.post(
+      `/api/apps/${appWithSecurity.id}/webhooks/createRecord`,
+      { foo: 'test-result' },
+      { headers: { Authorization: `Bearer ${createSecretForSecurityApp.secret.toString('hex')}` } },
+    );
+
+    expect(res.status).toBe(200);
+    // Resource.create returns the full resource with metadata
+    expect(res.data).toStrictEqual(
+      expect.objectContaining({
+        foo: 'test-result',
+        id: expect.any(Number),
       }),
     );
   });

@@ -55,7 +55,7 @@ export function Page(): ReactNode {
   } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const params = useParams();
   const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
@@ -338,9 +338,14 @@ export function Page(): ReactNode {
     const canonicalPageId = getPagePathSegment(pageDefinition);
 
     if (pageId !== canonicalPageId) {
-      // Redirect translated or legacy aliases to the canonical internal page slug.
-      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
-      return <Navigate replace to={pathname.replace(pageId, canonicalPageId)} />;
+      // Redirect translated or legacy aliases to the canonical internal page slug,
+      // while preserving query params.
+      return (
+        <Navigate
+          replace
+          to={{ pathname: pathname.replace(pageId, canonicalPageId), search }}
+        />
+      );
     }
 
     return (
@@ -392,14 +397,17 @@ export function Page(): ReactNode {
                     stepRef={stepRef}
                   />
                 ) : pageDefinition.type === 'container' ? (
-                  pageDefinition.pages.some(checkPagePermissionsCallback) ? (
+                  pageDefinition.pages.some(checkPagePermissionsCallback) && pageId ? (
                     <Navigate
-                      to={pathname.replace(
-                        pageId,
-                        // @ts-expect-error 2345 argument of type is not assignable to parameter
-                        // of type (strictNullChecks)
-                        normalize(pageDefinition.pages.find(checkPagePermissionsCallback)?.name),
-                      )}
+                      to={{
+                        pathname: pathname.replace(
+                          pageId,
+                          // @ts-expect-error 2345 argument of type is not assignable to parameter
+                          // of type (strictNullChecks)
+                          normalize(pageDefinition.pages.find(checkPagePermissionsCallback)?.name),
+                        ),
+                        search,
+                      }}
                     />
                   ) : (
                     defaultErrorPage()
@@ -421,7 +429,7 @@ export function Page(): ReactNode {
                   />
                 )
               }
-              path={String((pageDefinition.parameters || []).map((param) => `/:${param}`))}
+              path={(pageDefinition.parameters || []).map((param) => `/:${param}`).join('')}
             />
           </MetaSwitch>
         )}

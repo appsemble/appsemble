@@ -323,6 +323,111 @@ async function validateContext(assert: Assert, types: string, cli: string): Prom
   }
 }
 
+function unwrapExpression(expression: ts.Expression): ts.Expression {
+  if (ts.isAsExpression(expression) || ts.isParenthesizedExpression(expression)) {
+    return unwrapExpression(expression.expression);
+  }
+
+  return expression;
+}
+
+async function validateServerCommands(assert: Assert): Promise<void> {
+  const serverDir = 'packages/server';
+  const commandsDir = join(serverDir, 'commands');
+  const commandFiles: string[] = [];
+
+  const commandEntries = await fsExtra.readdir(commandsDir, { withFileTypes: true });
+
+  for (const entry of commandEntries) {
+    if (!entry.isFile()) {
+      continue;
+    }
+
+    if (
+      entry.name.endsWith('.test.ts') ||
+      entry.name.endsWith('.d.ts') ||
+      !entry.name.endsWith('.ts')
+    ) {
+      continue;
+    }
+
+    const commandSource = await readFile(join(commandsDir, entry.name), 'utf8');
+    if (!commandSource.includes('export const command')) {
+      continue;
+    }
+
+    commandFiles.push(entry.name.replace(/\.ts$/, ''));
+  }
+
+  const binPath = join(serverDir, 'bin.ts');
+  const binSource = ts.createSourceFile(
+    binPath,
+    await readFile(binPath, 'utf8'),
+    ts.ScriptTarget.ES2019,
+    true,
+  );
+  const importedCommands = new Map<string, string>();
+  const registeredCommands = new Set<string>();
+
+  for (const statement of binSource.statements) {
+    if (!ts.isImportDeclaration(statement)) {
+      continue;
+    }
+
+    const importSource = statement.moduleSpecifier;
+    const importBinding = statement.importClause?.namedBindings;
+
+    if (
+      !ts.isStringLiteral(importSource) ||
+      !importBinding ||
+      !ts.isNamespaceImport(importBinding)
+    ) {
+      continue;
+    }
+
+    const commandMatch = /^\.\/commands\/(?<command>[\dA-Za-z-]+)\.js$/.exec(importSource.text);
+    if (!commandMatch?.groups?.command) {
+      continue;
+    }
+
+    importedCommands.set(importBinding.name.text, commandMatch.groups.command);
+  }
+
+  ts.forEachChild(binSource, function visit(node): void {
+    if (
+      ts.isCallExpression(node) &&
+      ts.isPropertyAccessExpression(node.expression) &&
+      node.expression.name.text === 'command'
+    ) {
+      const argument = node.arguments[0];
+      if (!argument) {
+        return;
+      }
+
+      const commandRef = unwrapExpression(argument);
+      if (!ts.isIdentifier(commandRef)) {
+        return;
+      }
+
+      const commandFile = importedCommands.get(commandRef.text);
+      if (commandFile) {
+        registeredCommands.add(commandFile);
+      }
+    }
+
+    ts.forEachChild(node, visit);
+  });
+
+  for (const commandFile of commandFiles.sort()) {
+    assert(
+      registeredCommands.has(commandFile),
+      'bin.ts',
+      `The command file "commands/${commandFile}.ts" should be registered`,
+      serverDir,
+    );
+  }
+}
+
 export async function handler(): Promise<void> {
   const results: Result[] = [];
   const paths = await getWorkspaces(process.cwd());
@@ -371,6 +476,15 @@ export async function handler(): Promise<void> {
   }
 
   await validateTranslations((pass, filename, message, workspace = '') =>
+    results.push({
+      filename,
+      message,
+      pass,
+      workspace: { dir: workspace, pkg: '' as unknown as PackageJson },
+    }),
+  );
+
+  await validateServerCommands((pass, filename, message, workspace = '') =>
     results.push({
       filename,
       message,

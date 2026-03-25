@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/app",
-  "version": "0.36.5-test.5",
+  "version": "0.36.5",
   "private": true,
   "description": "The base for Appsemble apps",
   "keywords": [
@@ -31,12 +31,12 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.36.5-test.5",
-    "@appsemble/sdk": "0.36.5-test.5",
-    "@appsemble/types": "0.36.5-test.5",
-    "@appsemble/lang-sdk": "0.36.5-test.5",
-    "@appsemble/utils": "0.36.5-test.5",
-    "@appsemble/web-utils": "0.36.5-test.5",
+    "@appsemble/react-components": "0.36.5",
+    "@appsemble/sdk": "0.36.5",
+    "@appsemble/types": "0.36.5",
+    "@appsemble/lang-sdk": "0.36.5",
+    "@appsemble/utils": "0.36.5",
+    "@appsemble/web-utils": "0.36.5",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",
@@ -72,7 +72,7 @@
   "devDependencies": {
     "@types/jsdom": "21.1.7",
     "fake-indexeddb": "5.0.2",
-    "happy-dom": "20.0.11",
+    "happy-dom": "20.8.4",
     "jsdom": "22.1.0",
     "vitest": "2.1.9",
     "react-is": "18.3.1",

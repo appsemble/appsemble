@@ -47,42 +47,42 @@ export async function handler(): Promise<void> {
     const deletedAtParsed = new Date(deletedAt).toLocaleString();
 
     const apps = await App.findAll({ attributes: ['id'] });
-    await Promise.all(
-      apps.map(async (app) => {
-        let appDB;
-        try {
-          appDB = await getAppDB(app.id);
-        } catch {
-          logger.warn(`Failed to connect to database for app ${app.id}, skipping cleanup.`);
-          return;
-        }
+    for (const app of apps) {
+      let appDB;
+      try {
+        appDB = await getAppDB(app.id);
+      } catch {
+        logger.warn(`Failed to connect to database for app ${app.id}, skipping cleanup.`);
+        continue;
+      }
 
-        const { Asset, Resource, sequelize } = appDB;
-        try {
-          await sequelize.transaction(async (appTransaction) => {
-            logger.info(`Deleting resources soft deleted before ${deletedAtParsed}`);
-            const deletedResources = await Resource.destroy({
-              ...deleteQuery,
-              transaction: appTransaction,
-            });
-            logger.info(`Successfully deleted ${deletedResources} resources from app ${app.id}.`);
-
-            logger.info(`Deleting assets soft deleted before ${deletedAtParsed}`);
-            const deletedAssets = await Asset.destroy({
-              ...deleteQuery,
-              transaction: appTransaction,
-            });
-            logger.info(`Successfully deleted ${deletedAssets} assets from app ${app.id}.`);
+      const { Asset, Resource, sequelize } = appDB;
+      try {
+        await sequelize.transaction(async (appTransaction) => {
+          logger.info(`Deleting resources soft deleted before ${deletedAtParsed}`);
+          const deletedResources = await Resource.destroy({
+            ...deleteQuery,
+            transaction: appTransaction,
           });
-        } catch (error) {
-          logger.error(error);
-          await transaction.rollback();
-        }
-      }),
-    );
+          logger.info(`Successfully deleted ${deletedResources} resources from app ${app.id}.`);
+
+          logger.info(`Deleting assets soft deleted before ${deletedAtParsed}`);
+          const deletedAssets = await Asset.destroy({
+            ...deleteQuery,
+            transaction: appTransaction,
+          });
+          logger.info(`Successfully deleted ${deletedAssets} assets from app ${app.id}.`);
+        });
+      } catch (error) {
+        logger.error(`Failed to cleanup soft deleted records for app ${app.id}.`);
+        logger.error(error);
+      } finally {
+        await sequelize.close();
+      }
+    }
 
     logger.info(`Deleting apps soft deleted before ${deletedAtParsed}`);
-    const deletedApps = await App.destroy(deleteQuery);
+    const deletedApps = await App.destroy({ ...deleteQuery, individualHooks: true });
     logger.info(`Successfully deleted ${deletedApps} apps.`);
 
     logger.info(`Deleting organizations soft deleted before ${deletedAtParsed}`);

@@ -6,8 +6,10 @@ import styles from './index.module.css';
 import { type ShowDialogParams } from '../../types.js';
 import { BlockList } from '../BlockList/index.js';
 
-interface PageDialogProps
-  extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks' | 'prefix' | 'prefixIndex'> {
+interface PageDialogProps extends Omit<
+  ComponentPropsWithoutRef<typeof BlockList>,
+  'blocks' | 'prefix' | 'prefixIndex'
+> {
   readonly dialog?: ShowDialogParams;
 }
 

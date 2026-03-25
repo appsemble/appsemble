@@ -305,7 +305,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Missing id');
+      ).rejects.toThrow('Missing id');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -349,7 +349,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource not found');
+      ).rejects.toThrow('Resource not found');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -487,7 +487,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource validation failed');
+      ).rejects.toThrow('Resource validation failed');
     });
 
     it('should check if app has the specified resource definition', async () => {
@@ -509,7 +509,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('App does not have resources called testResourceC');
+      ).rejects.toThrow('App does not have resources called testResourceC');
 
       const { Resource } = await getAppDB(app.id);
       const remainingResources = await Resource.findAll();
@@ -607,7 +607,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource validation failed');
+      ).rejects.toThrow('Resource validation failed');
     });
 
     it('should accept an array of resources', async () => {
@@ -655,6 +655,62 @@ describe('resource', () => {
           lastName: 'Star',
         },
       ]);
+    });
+
+    it('should keep request context usable when chaining to resource.patch', async () => {
+      const action: ActionDefinition = {
+        type: 'resource.create',
+        resource: 'person',
+        body: {
+          'object.from': {
+            firstName: { prop: 'firstName' },
+            lastName: { prop: 'lastName' },
+          },
+        },
+        onSuccess: {
+          type: 'resource.patch',
+          resource: 'person',
+          remapBefore: {
+            'object.from': {
+              id: { prop: 'id' },
+              firstName: [{ history: 0 }, { prop: 'firstNamePatched' }],
+            },
+          },
+        },
+      };
+
+      const app = await exampleApp('testorg', action);
+      const context = {
+        request: {
+          is: vi.fn(() => false),
+        },
+        is(type: string) {
+          return this.request.is(type);
+        },
+      } as any;
+
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
+      const result = await handleAction(create, {
+        app,
+        action,
+        mailer,
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+          firstNamePatched: 'Squidward',
+        },
+        options,
+        context,
+      });
+
+      expect(result).toStrictEqual(
+        expect.objectContaining({
+          id: 1,
+          firstName: 'Squidward',
+          lastName: 'Squarepants',
+        }),
+      );
     });
   });
 
@@ -779,7 +835,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Missing id');
+      ).rejects.toThrow('Missing id');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -837,7 +893,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource not found');
+      ).rejects.toThrow('Resource not found');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -891,7 +947,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource not found');
+      ).rejects.toThrow('Resource not found');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -940,7 +996,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource not found');
+      ).rejects.toThrow('Resource not found');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -988,7 +1044,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource validation failed');
+      ).rejects.toThrow('Resource validation failed');
     });
 
     it('should set clonable if specified in the request', async () => {
@@ -1116,7 +1172,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource validation failed');
+      ).rejects.toThrow('Resource validation failed');
     });
 
     it('should clear the updater', async () => {
@@ -1409,6 +1465,49 @@ describe('resource', () => {
       });
     });
 
+    it('should patch resource using a nested resource body', async () => {
+      const action: ActionDefinition = {
+        type: 'resource.patch',
+        resource: 'person',
+      };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+        },
+      });
+
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
+      const result = await handleAction(patch, {
+        app,
+
+        action,
+        mailer,
+        data: {
+          id: 1,
+          resource: {
+            firstName: 'Squidward',
+          },
+        },
+        options,
+        context: {} as any,
+      });
+
+      expect(result).toStrictEqual({
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        id: 1,
+        firstName: 'Squidward',
+        lastName: 'Squarepants',
+      });
+    });
+
     it('should not be able to patch a resource when missing an id', async () => {
       const action: ActionDefinition = {
         type: 'resource.patch',
@@ -1442,7 +1541,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Missing id');
+      ).rejects.toThrow('Missing id');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -1500,7 +1599,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource not found');
+      ).rejects.toThrow('Resource not found');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -1554,7 +1653,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource not found');
+      ).rejects.toThrow('Resource not found');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -1603,7 +1702,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource not found');
+      ).rejects.toThrow('Resource not found');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -1651,7 +1750,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('App does not have resources called testResourceC');
+      ).rejects.toThrow('App does not have resources called testResourceC');
     });
 
     it('should not validate required properties', async () => {
@@ -1819,7 +1918,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource validation failed');
+      ).rejects.toThrow('Resource validation failed');
     });
 
     it('should clear the updater', async () => {
@@ -2161,7 +2260,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Missing id');
+      ).rejects.toThrow('Missing id');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -2219,7 +2318,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource not found');
+      ).rejects.toThrow('Resource not found');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -2273,7 +2372,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource not found');
+      ).rejects.toThrow('Resource not found');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());
@@ -2322,7 +2421,7 @@ describe('resource', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Resource not found');
+      ).rejects.toThrow('Resource not found');
 
       const remainingResources = await Resource.findAll();
       const mappedResources = remainingResources.map((resource) => resource.toJSON());

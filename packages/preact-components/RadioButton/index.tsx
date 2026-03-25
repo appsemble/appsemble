@@ -5,8 +5,10 @@ import { useCallback } from 'preact/hooks';
 import styles from './index.module.css';
 import { Icon, useValuePicker } from '../index.js';
 
-interface RadioButtonProps<T>
-  extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'name' | 'onChange' | 'value'> {
+interface RadioButtonProps<T> extends Omit<
+  JSX.HTMLAttributes<HTMLInputElement>,
+  'name' | 'onChange' | 'value'
+> {
   /**
    * The node to render as a label.
    */

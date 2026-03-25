@@ -6,8 +6,10 @@ import { type MutableRef, useCallback } from 'preact/hooks';
 import { Option, type OptionProps } from '../Option/index.js';
 import { useCombinedRefs } from '../useCombinedRefs.js';
 
-export interface SelectProps
-  extends Omit<ComponentProps<'select'>, 'loading' | 'onChange' | 'onInput'> {
+export interface SelectProps extends Omit<
+  ComponentProps<'select'>,
+  'loading' | 'onChange' | 'onInput'
+> {
   /**
    * A custom class name to add to the select box.
    */

@@ -129,7 +129,7 @@ describe('getSentryClientSettings', () => {
 
     expect(() => {
       getSentryClientSettings('example.com');
-    }).toThrowError('Invalid Sentry DSN');
+    }).toThrow('Invalid Sentry DSN');
   });
 
   it('should return an empty object if a custom sentry DSN is malformed', () => {

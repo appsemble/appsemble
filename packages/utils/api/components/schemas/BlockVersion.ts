@@ -30,6 +30,11 @@ This uses the same form as scoped npm packages. For example, \`@appsemble/form\`
       type: 'string',
       description: 'The long description of the block.',
     },
+    repositoryUrl: {
+      type: 'string',
+      format: 'uri',
+      description: 'A URL to the source code repository of the block.',
+    },
     icon: {
       type: 'string',
       format: 'binary',

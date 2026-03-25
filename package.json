@@ -25,11 +25,14 @@
       "remark --frail --no-stdout"
     ],
     "*.{html,json,md,mdx,scss,yaml,yml}": [
-      "prettier --check"
+      "prettier --write"
     ],
     "*.{js,md,ts,tsx}": [
       "eslint",
       "npx -- cspell"
+    ],
+    "{apps,blocks,packages}/**/*.ts?(x)": [
+      "sh -c 'npx --workspaces tsc --incremental --noEmit'"
     ],
     "**/{messages.ts,package.json,tsconfig.json,vitest.config.js,LICENSE.md,packages/{cli/assets/appsemblerc.schema.json,types/cli.ts}}": [
       "sh -c 'tsx packages/scripts/index.ts validate'"
@@ -39,7 +42,7 @@
     "axios": "~1.12.0"
   },
   "devDependencies": {
-    "@appsemble/eslint-config": "0.36.5-test.5",
+    "@appsemble/eslint-config": "0.36.5",
     "@lhci/cli": "0.15.1",
     "@vitest/coverage-v8": "2.1.9",
     "@vitest/ui": "2.1.9",
@@ -50,10 +53,10 @@
     "husky": "8.0.3",
     "identity-obj-proxy": "3.0.0",
     "jsdom": "22.1.0",
-    "lint-staged": "15.4.3",
-    "postcss": "8.4.49",
+    "lint-staged": "15.5.2",
+    "postcss": "8.5.8",
     "postcss-preset-env": "9.6.0",
-    "prettier": "3.4.2",
+    "prettier": "3.8.1",
     "prettier-plugin-packagejson": "2.5.22",
     "remark-cli": "12.0.1",
     "remark-frontmatter": "5.0.0",
@@ -81,13 +84,13 @@
     "style-search": "0.1.0",
     "stylelint": "16.26.1",
     "stylelint-color-format": "1.1.0",
-    "stylelint-config-css-modules": "4.4.0",
+    "stylelint-config-css-modules": "4.6.0",
     "stylelint-config-standard": "36.0.1",
-    "stylelint-no-unsupported-browser-features": "8.0.5",
+    "stylelint-no-unsupported-browser-features": "8.1.1",
     "stylelint-order": "6.0.4",
     "stylelint-prettier": "5.0.3",
     "ts-json-schema-generator": "1.5.1",
-    "tsx": "4.19.3",
+    "tsx": "4.21.0",
     "typescript": "5.7.3",
     "unified": "11.0.5",
     "unified-consistency": "2.0.0",

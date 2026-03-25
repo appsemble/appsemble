@@ -33,6 +33,7 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
       'description',
       'examples',
       'longDescription',
+      'repositoryUrl',
       'version',
       'wildcardActions',
       [literal('"BlockVersion".icon IS NOT NULL'), 'hasIcon'],

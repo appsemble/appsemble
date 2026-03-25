@@ -71,7 +71,8 @@ export type ActionDefinition =
   | StorageReadActionDefinition
   | StorageSubtractActionDefinition
   | StorageUpdateActionDefinition
-  | StorageWriteActionDefinition;
+  | StorageWriteActionDefinition
+  | WebhookActionDefinition;
 
 export type ActionName =
   | 'analytics'
@@ -139,7 +140,8 @@ export type ActionName =
   | 'storage.subtract'
   | 'storage.update'
   | 'storage.write'
-  | 'throw';
+  | 'throw'
+  | 'webhook';
 
 export interface BaseActionDefinition<T extends ActionName> {
   /**
@@ -501,8 +503,7 @@ export interface StorageWriteActionDefinition extends BaseActionDefinition<'stor
   expiry?: '1d' | '3d' | '7d' | '12h';
 }
 
-export interface GroupMemberInviteActionDefinition
-  extends BaseActionDefinition<'group.member.invite'> {
+export interface GroupMemberInviteActionDefinition extends BaseActionDefinition<'group.member.invite'> {
   /**
    * The ID of the group to invite the user to.
    */
@@ -519,8 +520,7 @@ export interface GroupMemberInviteActionDefinition
   role: Remapper;
 }
 
-export interface GroupMemberCreateActionDefinition
-  extends BaseActionDefinition<'group.member.create'> {
+export interface GroupMemberCreateActionDefinition extends BaseActionDefinition<'group.member.create'> {
   /**
    * The ID of the group to add the user to.
    */
@@ -537,24 +537,21 @@ export interface GroupMemberCreateActionDefinition
   role: Remapper;
 }
 
-export interface GroupMemberQueryActionDefinition
-  extends BaseActionDefinition<'group.member.query'> {
+export interface GroupMemberQueryActionDefinition extends BaseActionDefinition<'group.member.query'> {
   /**
    * The ID of the group to query the members of.
    */
   id: Remapper;
 }
 
-export interface GroupMemberDeleteActionDefinition
-  extends BaseActionDefinition<'group.member.delete'> {
+export interface GroupMemberDeleteActionDefinition extends BaseActionDefinition<'group.member.delete'> {
   /**
    * The ID of the group member to delete.
    */
   id: Remapper;
 }
 
-export interface GroupMemberRoleUpdateActionDefinition
-  extends BaseActionDefinition<'group.member.role.update'> {
+export interface GroupMemberRoleUpdateActionDefinition extends BaseActionDefinition<'group.member.role.update'> {
   /**
    * The ID of the group member to update the role of.
    */
@@ -566,8 +563,7 @@ export interface GroupMemberRoleUpdateActionDefinition
   role: Remapper;
 }
 
-export interface GroupSelectedUpdateActionDefinition
-  extends BaseActionDefinition<'group.selected.update'> {
+export interface GroupSelectedUpdateActionDefinition extends BaseActionDefinition<'group.selected.update'> {
   /**
    * The ID of the group to select.
    */
@@ -667,8 +663,7 @@ export interface AppMemberRoleUpdateAction extends BaseActionDefinition<'app.mem
   role: Remapper;
 }
 
-export interface AppMemberPropertiesPatchAction
-  extends BaseActionDefinition<'app.member.properties.patch'> {
+export interface AppMemberPropertiesPatchAction extends BaseActionDefinition<'app.member.properties.patch'> {
   /**
    * The id of the app member to update.
    */
@@ -682,8 +677,7 @@ export interface AppMemberPropertiesPatchAction
   properties: Remapper;
 }
 
-export interface AppMemberCurrentPatchAction
-  extends BaseActionDefinition<'app.member.current.patch'> {
+export interface AppMemberCurrentPatchAction extends BaseActionDefinition<'app.member.current.patch'> {
   /**
    * The display name to update.
    */
@@ -724,8 +718,9 @@ interface RequestActionHeaders {
     | 'text/plain';
 }
 
-export interface RequestLikeActionDefinition<T extends ActionName = ActionName>
-  extends BaseActionDefinition<T> {
+export interface RequestLikeActionDefinition<
+  T extends ActionName = ActionName,
+> extends BaseActionDefinition<T> {
   /**
    * The HTTP method to use for making a request.
    */
@@ -766,8 +761,9 @@ export interface RequestLikeActionDefinition<T extends ActionName = ActionName>
   headers?: RequestActionHeaders;
 }
 
-export interface ResourceActionDefinition<T extends ActionName>
-  extends RequestLikeActionDefinition<T> {
+export interface ResourceActionDefinition<
+  T extends ActionName,
+> extends RequestLikeActionDefinition<T> {
   /**
    * The name of the resource.
    */
@@ -825,8 +821,9 @@ export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.p
   ResourceActionWithIdDefinition;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
 
-export interface BaseResourceSubscribeActionDefinition<T extends ActionName>
-  extends BaseActionDefinition<T> {
+export interface BaseResourceSubscribeActionDefinition<
+  T extends ActionName,
+> extends BaseActionDefinition<T> {
   /**
    * The name of the resource.
    */
@@ -921,4 +918,20 @@ export interface CsvParserActionDefinition extends BaseActionDefinition<'csv.par
    * Delimiter
    */
   delimiter?: Remapper;
+}
+
+export interface WebhookActionDefinition extends BaseActionDefinition<'webhook'> {
+  /**
+   * The name of the webhook to invoke.
+   *
+   * This must be a webhook defined in the app's `webhooks` section.
+   */
+  name: string;
+
+  /**
+   * A remapper for the webhook body.
+   *
+   * If this isn't specified, the raw input data is passed to the webhook.
+   */
+  body?: Remapper;
 }

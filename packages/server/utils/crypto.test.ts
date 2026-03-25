@@ -27,7 +27,7 @@ describe('crypto', () => {
     const keyB = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567891';
     const input = 'Super secret message';
     const encrypted = encrypt(input, keyA);
-    expect(() => decrypt(encrypted, keyB)).toThrowError(
+    expect(() => decrypt(encrypted, keyB)).toThrow(
       'Unsupported state or unable to authenticate data',
     );
   });

@@ -2252,6 +2252,210 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should allow resource.query with view when only view-specific permission exists', async () => {
+    // Bug: validation fails when action uses view and only view-specific permission exists
+    const app = createTestApp();
+    app.security!.guest = { permissions: ['$resource:person:query:public'] };
+    app.resources!.person.views = {
+      public: { remap: { 'object.from': { name: { prop: 'name' } } } },
+    };
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: { onLoad: { type: 'resource.query', resource: 'person', view: 'public' } },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: { onLoad: {} },
+      },
+    ]);
+
+    expect(result.errors).toStrictEqual([]);
+    expect(result.valid).toBe(true);
+  });
+
+  it('should allow resource.query with $resource:all:query permission', async () => {
+    const app = createTestApp();
+    app.security!.guest = { permissions: ['$resource:all:query'] };
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: { onLoad: { type: 'resource.query', resource: 'person' } },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: { onLoad: {} },
+      },
+    ]);
+
+    expect(result.errors).toStrictEqual([]);
+    expect(result.valid).toBe(true);
+  });
+
+  it('should allow resource.query with $resource:name:own:query permission on a role', async () => {
+    const app = createTestApp();
+    // Own permissions are only valid for roles, not guests (guests have no identity)
+    app.security!.roles = { User: { permissions: ['$resource:person:own:query'] } };
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: { onLoad: { type: 'resource.query', resource: 'person' } },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: { onLoad: {} },
+      },
+    ]);
+
+    expect(result.errors).toStrictEqual([]);
+    expect(result.valid).toBe(true);
+  });
+
+  it('should report error when webhook action references non-existent webhook', async () => {
+    const app = createTestApp();
+    app.webhooks = { existingWebhook: { schema: { type: 'object' }, action: { type: 'noop' } } };
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: { onLoad: { type: 'webhook', name: 'nonExistent' } },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: { onLoad: {} },
+      },
+    ]);
+
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        "webhook 'nonExistent' does not exist in the app's webhooks definition",
+        'webhook',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onLoad', 'name'],
+      ),
+    ]);
+  });
+
+  it('should report error when no one has permission to invoke webhook action', async () => {
+    const app = createTestApp();
+    app.webhooks = { myWebhook: { schema: { type: 'object' }, action: { type: 'noop' } } };
+    // No webhook permissions defined
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: { onLoad: { type: 'webhook', name: 'myWebhook' } },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: { onLoad: {} },
+      },
+    ]);
+
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'there is no one in the app who has permissions to invoke this webhook',
+        'webhook',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onLoad', 'name'],
+      ),
+    ]);
+  });
+
+  it('should allow webhook action when guest has permission', async () => {
+    const app = createTestApp();
+    app.webhooks = { myWebhook: { schema: { type: 'object' }, action: { type: 'noop' } } };
+    app.security!.guest = { permissions: ['$webhook:myWebhook:invoke'] };
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: { onLoad: { type: 'webhook', name: 'myWebhook' } },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: { onLoad: {} },
+      },
+    ]);
+
+    expect(result.errors).toStrictEqual([]);
+    expect(result.valid).toBe(true);
+  });
+
+  it('should allow webhook action with $webhook:all:invoke permission', async () => {
+    const app = createTestApp();
+    app.webhooks = { anyWebhook: { schema: { type: 'object' }, action: { type: 'noop' } } };
+    app.security!.guest = { permissions: ['$webhook:all:invoke'] };
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: { onLoad: { type: 'webhook', name: 'anyWebhook' } },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: { onLoad: {} },
+      },
+    ]);
+
+    expect(result.errors).toStrictEqual([]);
+    expect(result.valid).toBe(true);
+  });
+
+  it('should allow resource.count with $resource:name:query permission', async () => {
+    const app = createTestApp();
+    app.security!.guest = { permissions: ['$resource:person:query'] };
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: { onLoad: { type: 'resource.count', resource: 'person' } },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: { onLoad: {} },
+      },
+    ]);
+
+    expect(result.errors).toStrictEqual([]);
+    expect(result.valid).toBe(true);
+  });
+
   it('should throw if an app is null', async () => {
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)

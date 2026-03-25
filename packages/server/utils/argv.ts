@@ -510,6 +510,46 @@ export interface Argv {
   restoreBackupFilename: string;
 
   /**
+   * Client credentials used by the provision command.
+   */
+  clientCredentials: string;
+
+  /**
+   * The organization id to provision.
+   */
+  organizationId: string;
+
+  /**
+   * The organization role to grant to the bootstrap user.
+   */
+  organizationRole: string;
+
+  /**
+   * The organization subscription plan to provision.
+   */
+  organizationSubscription: string;
+
+  /**
+   * The bootstrap user email address.
+   */
+  userEmail: string;
+
+  /**
+   * The bootstrap user name.
+   */
+  userName: string;
+
+  /**
+   * The bootstrap user password.
+   */
+  userPassword: string;
+
+  /**
+   * The bootstrap user timezone.
+   */
+  userTimezone: string;
+
+  /**
    * The default security contact email for reporting security vulnerabilities.
    *
    * @default 'security@appsemble.com'
@@ -638,6 +678,22 @@ const defaults: Argv = {
   backupsSecretKey: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   restoreBackupFilename: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  clientCredentials: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  organizationId: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  organizationRole: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  organizationSubscription: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  userEmail: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  userName: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  userPassword: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  userTimezone: undefined,
   securityEmail: 'security@appsemble.com',
 };
 

@@ -7,8 +7,10 @@ import {
 
 import { useValuePicker } from '../index.js';
 
-interface RadioButtonProps<T>
-  extends Omit<ComponentPropsWithoutRef<'input'>, 'name' | 'onChange' | 'value'> {
+interface RadioButtonProps<T> extends Omit<
+  ComponentPropsWithoutRef<'input'>,
+  'name' | 'onChange' | 'value'
+> {
   /**
    * The node to render as a label.
    */

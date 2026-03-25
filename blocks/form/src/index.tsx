@@ -578,9 +578,9 @@ bootstrap(
               color="primary"
               disabled={Boolean(
                 loading ||
-                  submitting ||
-                  utils.remap(disabled, values) ||
-                  (triedToSubmit && (formErrors.some(Boolean) || !isFormValid(errors))),
+                submitting ||
+                utils.remap(disabled, values) ||
+                (triedToSubmit && (formErrors.some(Boolean) || !isFormValid(errors))),
               )}
               type="submit"
             >

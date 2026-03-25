@@ -41,6 +41,7 @@ import { share } from './share.js';
 import { staticAction } from './static.js';
 import * as storage from './storage.js';
 import { throwAction } from './throw.js';
+import { webhook } from './webhook.js';
 import { type MakeActionParameters } from '../../types.js';
 
 type ActionProperties<T extends ActionDefinition['type']> = Omit<
@@ -133,4 +134,5 @@ export const actionCreators: ActionCreators = {
   'app.member.query': appMemberQuery,
   'app.member.delete': appMemberDelete,
   'csv.parse': csvParser,
+  webhook,
 };

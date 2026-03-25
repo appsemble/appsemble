@@ -21,6 +21,7 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
     longDescription,
     name,
     parameters,
+    repositoryUrl,
     version,
     wildcardActions,
   } = blockVersion;
@@ -45,6 +46,7 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
     longDescription,
     name: blockName,
     parameters,
+    repositoryUrl,
     version,
     wildcardActions,
     languages: blockVersion.BlockMessages?.length

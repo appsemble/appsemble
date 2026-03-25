@@ -12,10 +12,13 @@ export type CustomAppOwnResourcePermission = `$resource:${string}:own:${OwnResou
 
 export type CustomAppResourceViewPermission = `$resource:${string}:${ResourceViewAction}:${string}`;
 
+export type CustomAppWebhookPermission = `$webhook:${string}:invoke`;
+
 export type CustomAppGuestPermission =
   | AppPermission
   | CustomAppResourcePermission
-  | CustomAppResourceViewPermission;
+  | CustomAppResourceViewPermission
+  | CustomAppWebhookPermission;
 
 export type CustomAppPermission = CustomAppGuestPermission | CustomAppOwnResourcePermission;
 

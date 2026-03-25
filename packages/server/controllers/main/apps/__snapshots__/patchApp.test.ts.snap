@@ -107,7 +107,7 @@ Some examples:
 - \`form\`
 - \`@amsterdam/splash\`
 ",
-              "pattern": "^(@([\\da-z](?:(?!.*--)[\\da-z-]*[\\da-z])?)/)?([\\da-z](?:(?!.*--)[\\da-z-]*[\\da-z])?)$",
+              "pattern": "^(@([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)/)?([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)$",
               "type": "string",
             },
             "version": {
@@ -2138,7 +2138,7 @@ Some examples:
 - \`form\`
 - \`@amsterdam/splash\`
 ",
-              "pattern": "^(@([\\da-z](?:(?!.*--)[\\da-z-]*[\\da-z])?)/)?([\\da-z](?:(?!.*--)[\\da-z-]*[\\da-z])?)$",
+              "pattern": "^(@([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)/)?([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)$",
               "type": "string",
             },
             "version": {

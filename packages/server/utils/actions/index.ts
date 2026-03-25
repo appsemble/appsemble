@@ -88,6 +88,7 @@ export const actions = {
   'group.query': noop,
   'group.selected.update': noop,
   throw: throwAction,
+  webhook: noop,
   'app.member.register': noop,
   'app.member.invite': noop,
   'app.member.login': noop,

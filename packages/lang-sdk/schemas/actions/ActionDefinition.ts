@@ -97,6 +97,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/AppMemberPropertiesPatchActionDefinition' },
         { $ref: '#/components/schemas/AppMemberQueryActionDefinition' },
         { $ref: '#/components/schemas/AppMemberDeleteActionDefinition' },
+        { $ref: '#/components/schemas/WebhookActionDefinition' },
       ],
     },
   ],

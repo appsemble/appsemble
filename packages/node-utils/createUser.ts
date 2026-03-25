@@ -31,6 +31,7 @@ async function insert(
  * @param password Password
  * @param timezone Timezone of the user
  * @param clientCredentials Used to make OAuth client credentials for permissions
+ * @param organization Optional organization id to add the user to if it exists
  */
 export async function createUser(
   name: string,
@@ -38,6 +39,7 @@ export async function createUser(
   password: string,
   timezone?: string,
   clientCredentials?: string,
+  organization?: string,
 ): Promise<void> {
   if (!DATABASE_HOST || !DATABASE_NAME || !DATABASE_PASSWORD || !DATABASE_PORT || !DATABASE_USER) {
     throw new Error('Missing database credentials');
@@ -68,6 +70,28 @@ export async function createUser(
     [email, true, 'NOW()', 'NOW()', userId],
     client,
   );
+
+  const organizationIds = new Set(['appsemble']);
+
+  if (organization) {
+    organizationIds.add(organization);
+  }
+
+  for (const organizationId of organizationIds) {
+    const organizationResult = await client.query<{ id: string }>(
+      'SELECT id FROM "Organization" WHERE id = $1',
+      [organizationId],
+    );
+
+    if (organizationResult.rows.length > 0) {
+      await insert(
+        'OrganizationMember',
+        ['"OrganizationId"', '"UserId"', 'role', 'created', 'updated'],
+        [organizationId, userId, 'Maintainer', 'NOW()', 'NOW()'],
+        client,
+      );
+    }
+  }
 
   if (clientCredentials) {
     const [clientId, clientPassword] = clientCredentials.split(':');

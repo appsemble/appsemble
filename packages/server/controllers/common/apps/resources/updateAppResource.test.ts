@@ -761,7 +761,7 @@ describe('updateAppResource', () => {
       }),
     );
 
-    await expect(() => asset.reload()).rejects.toThrowError(
+    await expect(() => asset.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
   });

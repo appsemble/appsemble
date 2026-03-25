@@ -6,11 +6,50 @@ import { AppsembleError, resolveFixture } from '@appsemble/node-utils';
 import { ts } from 'ts-json-schema-generator';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getProjectImplementations } from './config.js';
+import { getProjectImplementations, getRepositoryUrl } from './config.js';
 
 describe('config', () => {
   beforeEach(() => {
     vi.spyOn(process, 'cwd').mockReturnValue(resolveFixture('.'));
+  });
+
+  describe('getRepositoryUrl', () => {
+    it('should return undefined if no repository field exists', () => {
+      expect(getRepositoryUrl({})).toBeUndefined();
+    });
+
+    it('should return the URL directly if repository is a string', () => {
+      expect(getRepositoryUrl({ repository: 'https://gitlab.com/appsemble/appsemble' })).toBe(
+        'https://gitlab.com/appsemble/appsemble',
+      );
+    });
+
+    it('should return undefined if repository object has no url', () => {
+      expect(getRepositoryUrl({ repository: { type: 'git' } as any })).toBeUndefined();
+    });
+
+    it('should strip .git suffix from repository url', () => {
+      expect(
+        getRepositoryUrl({
+          repository: {
+            type: 'git',
+            url: 'https://gitlab.com/appsemble/appsemble.git',
+          },
+        }),
+      ).toBe('https://gitlab.com/appsemble/appsemble');
+    });
+
+    it('should append directory path for GitLab repositories', () => {
+      expect(
+        getRepositoryUrl({
+          repository: {
+            type: 'git',
+            url: 'https://gitlab.com/appsemble/appsemble.git',
+            directory: 'blocks/form',
+          },
+        }),
+      ).toBe('https://gitlab.com/appsemble/appsemble/-/tree/main/blocks/form');
+    });
   });
 
   describe('getProjectImplementations', () => {
@@ -126,7 +165,7 @@ describe('config', () => {
           name: '',
           version: '1.33.7',
         }),
-      ).toThrowError(
+      ).toThrow(
         new AppsembleError(
           "Found duplicate interface 'Actions' in 'getProjectImplementations/duplicateActions/index.ts:31'",
         ),
@@ -142,7 +181,7 @@ describe('config', () => {
           name: '',
           version: '1.33.7',
         }),
-      ).toThrowError(
+      ).toThrow(
         new AppsembleError(
           "Found duplicate interface 'EventEmitters' in 'getProjectImplementations/duplicateEventEmitters/index.ts:31'",
         ),
@@ -158,7 +197,7 @@ describe('config', () => {
           name: '',
           version: '1.33.7',
         }),
-      ).toThrowError(
+      ).toThrow(
         new AppsembleError(
           "Found duplicate interface 'EventListeners' in 'getProjectImplementations/duplicateEventListeners/index.ts:31'",
         ),
@@ -174,7 +213,7 @@ describe('config', () => {
           name: '',
           version: '1.33.7',
         }),
-      ).toThrowError(
+      ).toThrow(
         new AppsembleError(
           "Found duplicate interface 'Parameters' in 'getProjectImplementations/duplicateParameters/index.ts:31'",
         ),
@@ -217,8 +256,8 @@ describe('config', () => {
         });
       }
 
-      expect(fn).toThrowError(AppsembleError);
-      expect(fn).toThrowError(/'unused' is declared but its value is never read/);
+      expect(fn).toThrow(AppsembleError);
+      expect(fn).toThrow(/'unused' is declared but its value is never read/);
     });
 
     it('should extract comments', () => {

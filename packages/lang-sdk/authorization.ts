@@ -7,6 +7,7 @@ import {
   type CustomAppPermission,
   type CustomAppResourcePermission,
   type CustomAppResourceViewPermission,
+  type CustomAppWebhookPermission,
   type PredefinedAppRole,
   predefinedAppRolePermissions,
   type Security,
@@ -23,6 +24,8 @@ function checkAppPermissions(
     /^\$resource:[^:]+:own:(get|query|delete|patch|update)$/;
 
   const customAppResourceViewPermissionPattern = /^\$resource:[^:]+:(get|query):[^:]+$/;
+
+  const customAppWebhookPermissionPattern = /^\$webhook:[^:]+:invoke$/;
 
   return requiredPermissions.every((p) => {
     if (acquiredPermissions.includes(p)) {
@@ -64,6 +67,17 @@ function checkAppPermissions(
         acquiredPermissions.includes(
           `$resource:all:${resourceAction}:${view}` as CustomAppPermission,
         )
+      );
+    }
+
+    if (customAppWebhookPermissionPattern.test(p)) {
+      // $webhook:all:invoke grants access to all webhooks
+      // $webhook:<name>:invoke grants access to specific webhook
+      const [, webhookName] = (p as CustomAppWebhookPermission).split(':');
+      return (
+        acquiredPermissions.includes('$webhook:all:invoke' as CustomAppPermission) ||
+        (webhookName !== 'all' &&
+          acquiredPermissions.includes(`$webhook:${webhookName}:invoke` as CustomAppPermission))
       );
     }
   });
@@ -187,6 +201,9 @@ export function getAppPossibleGuestPermissions(
           `$resource:all:get:${view}`,
         ]),
       ],
+    ),
+    ...Object.keys(appDefinition.webhooks || {}).map(
+      (webhookName) => `$webhook:${webhookName}:invoke`,
     ),
   ] as CustomAppGuestPermission[];
 }

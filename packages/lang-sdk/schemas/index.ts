@@ -66,6 +66,7 @@ export * from './actions/StorageSubtractActionDefinition.js';
 export * from './actions/StorageUpdateActionDefinition.js';
 export * from './actions/StorageWriteActionDefinition.js';
 export * from './actions/ThrowActionDefinition.js';
+export * from './actions/WebhookActionDefinition.js';
 export * from './AppDefinition.js';
 export * from './AppLayoutDefinition.js';
 export * from './AppMemberPropertyDefinition.js';
