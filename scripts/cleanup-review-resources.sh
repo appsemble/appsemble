@@ -17,14 +17,17 @@ ACTIVE=$(printf '%s\n' "$ACTIVE" 2>/dev/null | tr -s '[:space:]' '\n' | awk '/^[
 keep() { echo " $ACTIVE " | grep -q " $1 "; }
 
 for r in $(helm list -a --short | grep '^review-[0-9][0-9]*$' || true); do
-  iid=${r#review-}; keep "$iid" && continue
+  iid=${r#review-}
+  keep "$iid" && continue
   echo "[review-cleanup] deleting $r"
   helm delete "$r" --no-hooks || true
   kubectl delete all,ingress,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=$r" --ignore-not-found=true || true
+  kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=$r" --ignore-not-found=true || true
 done
 
 for n in $(kubectl get namespaces --no-headers -o custom-columns=:metadata.name | grep '^companion-containers-review-[0-9][0-9]*$' || true); do
-  iid=${n#companion-containers-review-}; keep "$iid" || kubectl delete namespace "$n" --ignore-not-found=true || true
+  iid=${n#companion-containers-review-}
+  keep "$iid" || kubectl delete namespace "$n" --ignore-not-found=true || true
 done
 
 for s in $(kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep -E '^(review-[0-9]+-mailpit-tls|stripe-webhook-secret-[0-9]+)$' || true); do

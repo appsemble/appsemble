@@ -973,6 +973,7 @@ review:
     # This is the only way to make sure the review environment can be overwritten
     - helm delete "review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" || true
+    - kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete secret review-$CI_MERGE_REQUEST_IID-mailpit-tls || true
     - ./scripts/pre-review-capacity-check.sh
@@ -980,9 +981,11 @@ review:
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     # Stripe webhook setup
-    - LATEST_TAG=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | jq -r '.tag_name')
-    - URL="https://github.com/stripe/stripe-cli/releases/download/${LATEST_TAG}/stripe_${LATEST_TAG#v}_linux_x86_64.tar.gz"
-    - curl -L -o stripe.tar.gz "$URL"
+    - |
+      STRIPE_RELEASE_URL=$(curl -fsSL -H 'User-Agent: appsemble-ci' \
+        https://api.github.com/repos/stripe/stripe-cli/releases/latest \
+        | jq -er '.assets[] | select(.name | endswith("linux_x86_64.tar.gz")) | .browser_download_url')
+    - curl -fsSL -o stripe.tar.gz "$STRIPE_RELEASE_URL"
     - tar -xvf stripe.tar.gz
     - mv stripe /usr/local/bin/
     - stripe -v
@@ -1293,6 +1296,7 @@ provision review:
     - npm run appsemble -- config set context review
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
+    - npm run scripts -- wait-for-ssl
     - npm run appsemble -- block create --organization appsemble --template vanilla --name template-vanilla --path blocks
     - npm run appsemble -- block create --organization appsemble --template preact --name template-preact --path blocks
     - npm run appsemble -- block create --organization appsemble --template mini-jsx --name template-mini-jsx --path blocks

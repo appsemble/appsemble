@@ -1465,6 +1465,49 @@ describe('resource', () => {
       });
     });
 
+    it('should patch resource using a nested resource body', async () => {
+      const action: ActionDefinition = {
+        type: 'resource.patch',
+        resource: 'person',
+      };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+        },
+      });
+
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
+      const result = await handleAction(patch, {
+        app,
+
+        action,
+        mailer,
+        data: {
+          id: 1,
+          resource: {
+            firstName: 'Squidward',
+          },
+        },
+        options,
+        context: {} as any,
+      });
+
+      expect(result).toStrictEqual({
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        id: 1,
+        firstName: 'Squidward',
+        lastName: 'Squarepants',
+      });
+    });
+
     it('should not be able to patch a resource when missing an id', async () => {
       const action: ActionDefinition = {
         type: 'resource.patch',
