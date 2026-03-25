@@ -1,3 +1,4 @@
+import { type BulkCreateOptions, type CreateOptions } from 'sequelize';
 import { logger } from '@appsemble/node-utils';
 import { SubscriptionPlanType } from '@appsemble/types';
 import {
@@ -109,20 +110,29 @@ export class Organization extends Model {
   declare OrganizationMember?: Awaited<OrganizationMember>;
 
   @AfterCreate
-  static async afterCreateHook(instance: Organization): Promise<void> {
-    const subscription = await OrganizationSubscription.create({
-      cancelled: true,
-      expirationDate: null,
-      subscriptionPlan: SubscriptionPlanType.Free,
-      OrganizationId: instance.id,
-      renewalPeriod: null,
-    });
+  static async afterCreateHook(
+    instance: Organization,
+    options: CreateOptions<Organization>,
+  ): Promise<void> {
+    const subscription = await OrganizationSubscription.create(
+      {
+        cancelled: true,
+        expirationDate: null,
+        subscriptionPlan: SubscriptionPlanType.Free,
+        OrganizationId: instance.id,
+        renewalPeriod: null,
+      },
+      { transaction: options.transaction },
+    );
 
     logger.info(`Created default subscription with id ${subscription.id}`);
   }
 
   @AfterBulkCreate
-  static async afterBulkCreateHook(instances: Organization[]): Promise<void> {
+  static async afterBulkCreateHook(
+    instances: Organization[],
+    options: BulkCreateOptions<Organization>,
+  ): Promise<void> {
     const subscriptions = await OrganizationSubscription.bulkCreate(
       instances.map((instance) => ({
         cancelled: true,
@@ -131,6 +141,7 @@ export class Organization extends Model {
         OrganizationId: instance.id,
         renewalPeriod: null,
       })),
+      { transaction: options.transaction },
     );
 
     logger.info(`created ${subscriptions.length} default subscriptions`);

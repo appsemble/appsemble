@@ -287,10 +287,10 @@ export default function EditPage(): ReactNode {
 
   const disabled = Boolean(
     pristine ||
-      app.locked !== 'unlocked' ||
-      appDefinitionErrorCount ||
-      coreStyleErrorCount ||
-      sharedStyleErrorCount,
+    app.locked !== 'unlocked' ||
+    appDefinitionErrorCount ||
+    coreStyleErrorCount ||
+    sharedStyleErrorCount,
   );
 
   return (

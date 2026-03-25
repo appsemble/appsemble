@@ -7,10 +7,10 @@ MIN_FREE_MI=${REVIEW_MIN_FREE_MEMORY_MI:-2048}
 to_mi() {
   v="$1"
   case "$v" in
-  *Ki) echo $(( ${v%Ki} / 1024 )) ;;
+  *Ki) echo $((${v%Ki} / 1024)) ;;
   *Mi) echo "${v%Mi}" ;;
-  *Gi) echo $(( ${v%Gi} * 1024 )) ;;
-  *Ti) echo $(( ${v%Ti} * 1024 * 1024 )) ;;
+  *Gi) echo $((${v%Gi} * 1024)) ;;
+  *Ti) echo $((${v%Ti} * 1024 * 1024)) ;;
   *) echo 0 ;;
   esac
 }
@@ -18,7 +18,7 @@ to_mi() {
 alloc=0
 for m in $(kubectl get nodes -o json | jq -r '.items[].status.allocatable.memory'); do alloc=$((alloc + $(to_mi "$m"))); done
 req=0
-for m in $(kubectl get pods -A -o json | jq -r '.items[] | .spec.containers[]?.resources.requests.memory // empty'); do req=$((req + $(to_mi "$m"))); done
+for m in $(kubectl get pods -A -o json | jq -r '.items[] | select(.status.phase == "Pending" or .status.phase == "Running") | .spec.containers[]?.resources.requests.memory // empty'); do req=$((req + $(to_mi "$m"))); done
 free=$((alloc - req))
 pressure=$(kubectl get nodes -o json | jq -r '.items[] | select(any(.status.conditions[]; .type=="MemoryPressure" and .status=="True")) | .metadata.name')
 
@@ -26,7 +26,10 @@ echo "[review-capacity] alloc=${alloc}Mi req=${req}Mi free=${free}Mi min=${MIN_F
 
 if [ -n "$pressure" ] || [ "$free" -lt "$MIN_FREE_MI" ]; then
   echo '[review-capacity] Not enough memory for a new review deploy.'
-  [ -n "$pressure" ] && { echo '[review-capacity] MemoryPressure nodes:'; printf '%s\n' "$pressure" | sed 's/^/  - /'; }
+  [ -n "$pressure" ] && {
+    echo '[review-capacity] MemoryPressure nodes:'
+    printf '%s\n' "$pressure" | sed 's/^/  - /'
+  }
   echo '[review-capacity] Running review releases:'
   (helm list -a --short | grep '^review-[0-9][0-9]*$' | sed 's/^/  - /') || echo '  - none'
   echo '[review-capacity] Open MRs to consider closing/stopping:'

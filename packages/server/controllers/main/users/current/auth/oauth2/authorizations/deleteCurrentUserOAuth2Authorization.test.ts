@@ -40,7 +40,7 @@ describe('deleteCurrentUserOAuth2Authorization', () => {
       data: '',
     });
 
-    await expect(oauthAuthorization.reload()).rejects.toThrowError(
+    await expect(oauthAuthorization.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
   });

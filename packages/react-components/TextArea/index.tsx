@@ -1,8 +1,10 @@
 import classNames from 'classnames';
 import { type ChangeEvent, type ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
 
-export interface TextAreaProps
-  extends Omit<ComponentPropsWithoutRef<'textarea'>, 'label' | 'onChange'> {
+export interface TextAreaProps extends Omit<
+  ComponentPropsWithoutRef<'textarea'>,
+  'label' | 'onChange'
+> {
   /**
    * Whether to render the input in an error state.
    */

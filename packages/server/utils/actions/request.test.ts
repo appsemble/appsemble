@@ -244,7 +244,7 @@ describe('request action', () => {
           options,
           context: {} as any,
         }),
-      ).rejects.toThrowError('Network Error');
+      ).rejects.toThrow('Network Error');
     });
   });
 });

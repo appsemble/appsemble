@@ -362,7 +362,7 @@ describe('app', () => {
           visibility: 'unlisted',
           iconBackground: '#ffffff',
         }),
-      ).rejects.toThrowError('Request failed with status code 401');
+      ).rejects.toThrow('Request failed with status code 401');
       vi.useFakeTimers();
       const app = await App.findOne();
       expect(app).toBeNull();
@@ -1085,7 +1085,7 @@ describe('app', () => {
           visibility: 'unlisted',
           iconBackground: '#ffffff',
         }),
-      ).rejects.toThrowError('is not a known block type');
+      ).rejects.toThrow('is not a known block type');
       const app = await App.findOne();
       expect(app).toBeNull();
     });
@@ -1284,7 +1284,7 @@ describe('app', () => {
           visibility: 'unlisted',
           iconBackground: '#ffffff',
         }),
-      ).rejects.toThrowError('Request failed with status code 401');
+      ).rejects.toThrow('Request failed with status code 401');
       vi.useFakeTimers();
       await app.reload();
       expect(app).toMatchObject({
@@ -2088,7 +2088,7 @@ describe('app', () => {
           visibility: 'public',
           iconBackground: '#fff999',
         }),
-      ).rejects.toThrowError('Request failed with status code 403');
+      ).rejects.toThrow('Request failed with status code 403');
       await app.reload();
       expect(app).toMatchInlineSnapshot(`
         {
@@ -2164,7 +2164,7 @@ describe('app', () => {
           visibility: 'unlisted',
           iconBackground: '#ffffff',
         }),
-      ).rejects.toThrowError('is not a known block type');
+      ).rejects.toThrow('is not a known block type');
       vi.useFakeTimers();
       await app.reload();
       expect(app).toMatchInlineSnapshot(`
@@ -2568,7 +2568,7 @@ describe('app', () => {
         // @ts-expect-error 2345 argument of type is not assignable to parameter of type
         // (strictNullChecks)
         traverseAppDirectory(resolveFixture('apps/empty'), null, formData),
-      ).rejects.toThrowError('No app definition found');
+      ).rejects.toThrow('No app definition found');
     });
   });
 
@@ -2604,7 +2604,7 @@ describe('app', () => {
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           null,
         ),
-      ).rejects.toThrowError('App ID was not found');
+      ).rejects.toThrow('App ID was not found');
     });
 
     it('should throw if the remote is not found in context and defaultAppRemote is not specified', async () => {
@@ -2619,7 +2619,7 @@ describe('app', () => {
       await expect(() =>
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         resolveAppIdAndRemote(resolveFixture('apps/test'), 'notFound', null, app.id),
-      ).rejects.toThrowError('App remote was not found');
+      ).rejects.toThrow('App remote was not found');
     });
   });
 
@@ -2628,7 +2628,7 @@ describe('app', () => {
       const clientCredentials = await authorizeCLI('apps:delete', testApp);
       await expect(() =>
         deleteApp({ id: 1, remote: testApp.defaults.baseURL!, clientCredentials }),
-      ).rejects.toThrowError('Request failed with status code 404');
+      ).rejects.toThrow('Request failed with status code 404');
     });
 
     it('should delete an app', async () => {
@@ -2701,7 +2701,7 @@ describe('app', () => {
     it('should throw if the language file does not exist', async () => {
       await expect(() =>
         writeAppMessages(resolveFixture('apps/test-messages'), ['hr'], [], 'json'),
-      ).rejects.toThrowError('Missing translations file');
+      ).rejects.toThrow('Missing translations file');
     });
 
     it('should throw if there are empty messages in a verified file', async () => {
@@ -2713,13 +2713,13 @@ describe('app', () => {
       });
       await expect(() =>
         writeAppMessages(resolveFixture('apps/test-messages'), ['nl'], ['nl'], 'json'),
-      ).rejects.toThrowError('Missing translation');
+      ).rejects.toThrow('Missing translation');
     });
 
     it('should throw if app definition does not exist in the app folder', async () => {
       await expect(() =>
         writeAppMessages(resolveFixture('apps/empty'), ['nl'], [], 'json'),
-      ).rejects.toThrowError('Couldn’t find app definition');
+      ).rejects.toThrow('Couldn’t find app definition');
     });
   });
 });

@@ -24,7 +24,11 @@ export function FooterListColumn({ column }: { column: FooterColumnWithLinks }):
           {title}
         </p>
       ) : null}
-      <ul>{column.items?.map((item) => <FooterListItem item={item} />)}</ul>
+      <ul>
+        {column.items?.map((item) => (
+          <FooterListItem item={item} />
+        ))}
+      </ul>
     </div>
   );
 }

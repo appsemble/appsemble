@@ -162,7 +162,7 @@ describe('makeActions', () => {
       actions: { onClick: {} },
       context: { actions: { onClick: { type: 'throw' } } },
     });
-    await expect(actions.onClick('input')).rejects.toThrowError(
+    await expect(actions.onClick('input')).rejects.toThrow(
       new ActionError({ cause: null, data: null, definition: { type: 'throw' } }),
     );
   });

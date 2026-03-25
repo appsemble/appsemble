@@ -320,16 +320,28 @@ export async function patch({
   options,
 }: ServerActionParameters<ResourcePatchActionDefinition>): Promise<unknown> {
   const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(app.id);
+  const nestedActionData =
+    actionData && typeof actionData === 'object' && !Array.isArray(actionData)
+      ? (actionData as Record<string, unknown>)
+      : undefined;
+  const usesNestedBody =
+    !action.body &&
+    nestedActionData &&
+    nestedActionData.resource &&
+    typeof nestedActionData.resource === 'object' &&
+    !Array.isArray(nestedActionData.resource) &&
+    ('id' in nestedActionData || action.id);
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   // eslint-disable-next-line prettier/prettier
   const body = action.body ? ((remap(action.body ?? null, actionData, internalContext) ?? actionData) as
     Record<string, unknown>)
-    : (actionData as any);
+    : ((usesNestedBody ? nestedActionData.resource : actionData) as any);
 
   // Support action.id remapper (like client-side) or fallback to body.id
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  const resourceId = action.id ? remap(action.id, actionData, internalContext) : body?.id;
+  const remappedResourceId = action.id ? remap(action.id, actionData, internalContext) : undefined;
+  const resourceId = remappedResourceId ?? body?.id ?? nestedActionData?.id;
   if (!resourceId) {
     throw new Error('Missing id');
   }
