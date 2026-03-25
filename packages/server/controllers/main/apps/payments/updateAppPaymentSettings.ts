@@ -73,9 +73,9 @@ export async function updateAppPaymentSettings(ctx: Context): Promise<void> {
     cancelUrl: app.cancelUrl,
     enablePayments: Boolean(
       result.stripeApiSecretKey ||
-        result.stripeWebhookSecret ||
-        result.successUrl ||
-        result.cancelUrl,
+      result.stripeWebhookSecret ||
+      result.successUrl ||
+      result.cancelUrl,
     ),
   };
 }

@@ -25,7 +25,8 @@
   animation: border-dance-enlarge 1s infinite linear;
 
   /* border: 3px dashed lightcoral; */
-  background-image: linear-gradient(90deg, hsl(0deg 79% 72%) 50%, transparent 50%),
+  background-image:
+    linear-gradient(90deg, hsl(0deg 79% 72%) 50%, transparent 50%),
     linear-gradient(90deg, hsl(0deg 79% 72%) 50%, transparent 50%),
     linear-gradient(0deg, hsl(0deg 79% 72%) 50%, transparent 50%),
     linear-gradient(0deg, hsl(0deg 79% 72%) 50%, transparent 50%);

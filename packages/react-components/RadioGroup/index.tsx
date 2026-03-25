@@ -2,8 +2,10 @@ import { type ChangeEvent, type ComponentPropsWithoutRef, type ReactNode } from 
 
 import { FormComponent, ValuePickerProvider } from '../index.js';
 
-interface RadioGroupProps
-  extends Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'onChange' | 'value'> {
+interface RadioGroupProps extends Omit<
+  ComponentPropsWithoutRef<'input'>,
+  'label' | 'onChange' | 'value'
+> {
   readonly children: ReactNode;
 
   /**

@@ -1,8 +1,10 @@
 import classNames from 'classnames';
 import { type ChangeEvent, type ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
 
-export interface InputProps
-  extends Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'loading' | 'onChange' | 'pattern'> {
+export interface InputProps extends Omit<
+  ComponentPropsWithoutRef<'input'>,
+  'label' | 'loading' | 'onChange' | 'pattern'
+> {
   /**
    * If specified, a datalist element will be rendered to provided auto complete options.
    */

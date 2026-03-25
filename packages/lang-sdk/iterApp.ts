@@ -49,7 +49,7 @@ export function iterAction(
   if (action.type === 'condition') {
     return Boolean(
       iterAction(action.then ?? { type: 'noop' }, callbacks, [...prefix, 'then']) ||
-        iterAction(action.else ?? { type: 'noop' }, callbacks, [...prefix, 'else']),
+      iterAction(action.else ?? { type: 'noop' }, callbacks, [...prefix, 'else']),
     );
   }
 

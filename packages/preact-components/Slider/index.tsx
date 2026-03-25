@@ -6,8 +6,10 @@ import { type MutableRef, useCallback } from 'preact/hooks';
 import styles from './index.module.css';
 import { useCombinedRefs } from '../useCombinedRefs.js';
 
-export interface SliderProps
-  extends Omit<ComponentProps<'input'>, 'label' | 'onChange' | 'onInput' | 'type'> {
+export interface SliderProps extends Omit<
+  ComponentProps<'input'>,
+  'label' | 'onChange' | 'onInput' | 'type'
+> {
   /**
    * Whether to render the input in an error state.
    */

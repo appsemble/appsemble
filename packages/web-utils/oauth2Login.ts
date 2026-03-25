@@ -32,8 +32,10 @@ export interface OAuth2State {
 /**
  * The options required to initiate a login using the authorization code grant type.
  */
-export interface OAuth2LoginOptions
-  extends Pick<OAuth2Provider, 'authorizationUrl' | 'clientId' | 'scope'> {
+export interface OAuth2LoginOptions extends Pick<
+  OAuth2Provider,
+  'authorizationUrl' | 'clientId' | 'scope'
+> {
   /**
    * Where the user should be redirected upon approval. This may be a relative URL.
    */
