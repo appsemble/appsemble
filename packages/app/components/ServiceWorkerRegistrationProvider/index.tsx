@@ -32,6 +32,7 @@ export function useServiceWorkerRegistration(): ServiceWorkerRegistrationContext
 }
 
 const apiVersionUrl = `${apiUrl}/api`;
+// cspell:ignore cooldown
 const VERSION_CHECK_COOLDOWN_MS = 60_000;
 
 export function ServiceWorkerRegistrationProvider({

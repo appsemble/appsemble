@@ -337,14 +337,11 @@ export function Page(): ReactNode {
     const pageName = getPageDisplayName(pageDefinition, getAppMessage);
     const canonicalPageId = getPagePathSegment(pageDefinition);
 
-    if (pageId !== canonicalPageId) {
+    if (pageId && pageId !== canonicalPageId) {
       // Redirect translated or legacy aliases to the canonical internal page slug,
       // while preserving query params.
       return (
-        <Navigate
-          replace
-          to={{ pathname: pathname.replace(pageId, canonicalPageId), search }}
-        />
+        <Navigate replace to={{ pathname: pathname.replace(pageId, canonicalPageId), search }} />
       );
     }
 
