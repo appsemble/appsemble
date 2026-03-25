@@ -13,8 +13,10 @@ import { FormattedMessage } from 'react-intl';
 import { messages } from './messages.js';
 import { TextAreaField } from '../index.js';
 
-interface JSONFieldProps
-  extends Omit<ComponentPropsWithoutRef<typeof TextAreaField>, 'onChange' | 'value'> {
+interface JSONFieldProps extends Omit<
+  ComponentPropsWithoutRef<typeof TextAreaField>,
+  'onChange' | 'value'
+> {
   /**
    * This is called when he input has changed to match a new valid JSON value.
    *

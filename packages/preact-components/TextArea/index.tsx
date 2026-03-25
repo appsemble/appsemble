@@ -5,8 +5,10 @@ import { type MutableRef, useCallback } from 'preact/hooks';
 
 import { useCombinedRefs } from '../useCombinedRefs.js';
 
-export interface TextAreaProps
-  extends Omit<ComponentProps<'textarea'>, 'label' | 'loading' | 'onChange' | 'onInput'> {
+export interface TextAreaProps extends Omit<
+  ComponentProps<'textarea'>,
+  'label' | 'loading' | 'onChange' | 'onInput'
+> {
   /**
    * Whether to render the input in an error state.
    */

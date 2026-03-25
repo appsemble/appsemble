@@ -10,8 +10,10 @@ import {
 
 import { Form } from '../index.js';
 
-interface SimpleFormProps<T>
-  extends Omit<ComponentPropsWithoutRef<typeof Form>, 'onSubmit' | 'ref'> {
+interface SimpleFormProps<T> extends Omit<
+  ComponentPropsWithoutRef<typeof Form>,
+  'onSubmit' | 'ref'
+> {
   readonly children: ReactNode;
   readonly defaultValues: T;
   readonly onSubmit: (values: T) => void;

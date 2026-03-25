@@ -2,11 +2,10 @@ import { type ComponentPropsWithoutRef, forwardRef, useCallback, useRef } from '
 
 import { IconButton, InputField, TextAreaField, useCombinedRefs, useMessages } from '../index.js';
 
-interface FormOutputProps
-  extends Omit<
-    ComponentPropsWithoutRef<typeof InputField>,
-    'control' | 'onChange' | 'readOnly' | 'required'
-  > {
+interface FormOutputProps extends Omit<
+  ComponentPropsWithoutRef<typeof InputField>,
+  'control' | 'onChange' | 'readOnly' | 'required'
+> {
   /**
    * The message to display if there was a problem copying the content.
    */

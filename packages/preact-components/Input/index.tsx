@@ -5,8 +5,10 @@ import { type MutableRef, useCallback } from 'preact/hooks';
 
 import { useCombinedRefs } from '../useCombinedRefs.js';
 
-export interface InputProps
-  extends Omit<ComponentProps<'input'>, 'label' | 'loading' | 'onChange' | 'onInput' | 'pattern'> {
+export interface InputProps extends Omit<
+  ComponentProps<'input'>,
+  'label' | 'loading' | 'onChange' | 'onInput' | 'pattern'
+> {
   /**
    * If specified, a datalist element will be rendered to provided auto complete options.
    */

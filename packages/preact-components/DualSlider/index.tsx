@@ -7,8 +7,10 @@ import { type MutableRef, useEffect, useRef } from 'preact/hooks';
 import styles from './index.module.css';
 import { useCombinedRefs } from '../useCombinedRefs.js';
 
-export interface DualSliderProps
-  extends Omit<ComponentProps<'input'>, 'label' | 'onChange' | 'onInput' | 'type'> {
+export interface DualSliderProps extends Omit<
+  ComponentProps<'input'>,
+  'label' | 'onChange' | 'onInput' | 'type'
+> {
   readonly from: number;
   readonly to: number;
 
