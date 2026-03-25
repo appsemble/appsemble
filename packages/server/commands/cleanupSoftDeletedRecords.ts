@@ -82,7 +82,7 @@ export async function handler(): Promise<void> {
     }
 
     logger.info(`Deleting apps soft deleted before ${deletedAtParsed}`);
-    const deletedApps = await App.destroy(deleteQuery);
+    const deletedApps = await App.destroy({ ...deleteQuery, individualHooks: true });
     logger.info(`Successfully deleted ${deletedApps} apps.`);
 
     logger.info(`Deleting organizations soft deleted before ${deletedAtParsed}`);
