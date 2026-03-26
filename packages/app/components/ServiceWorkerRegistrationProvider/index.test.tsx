@@ -164,7 +164,7 @@ describe('ServiceWorkerRegistrationProvider', () => {
     expect(caches.keys).not.toHaveBeenCalled();
   });
 
-  it('should trigger update flow on version mismatch without clearing caches', async () => {
+  it('should trigger cache clearing and update flow on version mismatch', async () => {
     const nowSpy = vi.spyOn(Date, 'now');
     nowSpy.mockReturnValue(0);
 
@@ -185,8 +185,61 @@ describe('ServiceWorkerRegistrationProvider', () => {
     });
 
     expect(axiosGet).toHaveBeenCalledTimes(1);
+    expect(caches.keys).toHaveBeenCalledTimes(1);
+    expect(caches.delete).toHaveBeenCalledWith('appsemble');
     expect(waiting.postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' });
+  });
+
+  it('should not clear caches or trigger update when the version did not change', async () => {
+    const nowSpy = vi.spyOn(Date, 'now');
+    nowSpy.mockReturnValue(0);
+
+    const waiting = { postMessage: vi.fn() } as unknown as ServiceWorker;
+    const registration = createRegistration({ waiting });
+
+    renderProvider(registration);
+    await waitFor(() => expect(requestInterceptor).toBeTruthy());
+
+    vi.mocked(waiting.postMessage).mockClear();
+    axiosGet.mockClear();
+    axiosGet.mockResolvedValueOnce({ headers: { 'x-appsemble-version': 'v1' } });
+    nowSpy.mockReturnValue(60_001);
+
+    await act(async () => {
+      await requestInterceptor?.({ url: 'https://appsemble.app/api/apps/42/resources/tasks' });
+    });
+
+    expect(axiosGet).toHaveBeenCalledTimes(1);
     expect(caches.keys).not.toHaveBeenCalled();
+    expect(caches.delete).not.toHaveBeenCalled();
+    expect(waiting.postMessage).not.toHaveBeenCalled();
+    expect(registration.update).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not clear caches or trigger update when version lookup fails', async () => {
+    const nowSpy = vi.spyOn(Date, 'now');
+    nowSpy.mockReturnValue(0);
+
+    const waiting = { postMessage: vi.fn() } as unknown as ServiceWorker;
+    const registration = createRegistration({ waiting });
+
+    renderProvider(registration);
+    await waitFor(() => expect(requestInterceptor).toBeTruthy());
+
+    vi.mocked(waiting.postMessage).mockClear();
+    axiosGet.mockClear();
+    axiosGet.mockRejectedValueOnce(new Error('network error'));
+    nowSpy.mockReturnValue(60_001);
+
+    await act(async () => {
+      await requestInterceptor?.({ url: 'https://appsemble.app/api/apps/42/resources/tasks' });
+    });
+
+    expect(axiosGet).toHaveBeenCalledTimes(1);
+    expect(caches.keys).not.toHaveBeenCalled();
+    expect(caches.delete).not.toHaveBeenCalled();
+    expect(waiting.postMessage).not.toHaveBeenCalled();
+    expect(registration.update).toHaveBeenCalledTimes(1);
   });
 
   it('should register a controllerchange listener on the service worker container', async () => {

@@ -99,6 +99,15 @@ export function ServiceWorkerRegistrationProvider({
     }
   }, [serviceWorkerRegistrationPromise]);
 
+  const clearServiceWorkerCaches = useCallback(async () => {
+    if (!('caches' in window)) {
+      return;
+    }
+
+    const cacheKeys = await caches.keys();
+    await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+  }, []);
+
   const checkLatestAppsembleVersion = useCallback(
     ({
       force = false,
@@ -168,6 +177,7 @@ export function ServiceWorkerRegistrationProvider({
           }
 
           if (appsembleVersion && newAppsembleVersion && appsembleVersion !== newAppsembleVersion) {
+            await clearServiceWorkerCaches();
             await update();
           }
         }
@@ -178,7 +188,7 @@ export function ServiceWorkerRegistrationProvider({
       return config;
     });
     return () => axios.interceptors.request.eject(interceptor);
-  }, [checkLatestAppsembleVersion, update]);
+  }, [checkLatestAppsembleVersion, clearServiceWorkerCaches, update]);
 
   useEffect(() => {
     serviceWorkerRegistrationPromise
