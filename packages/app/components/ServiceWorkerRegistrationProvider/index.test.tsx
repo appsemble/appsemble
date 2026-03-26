@@ -1,4 +1,4 @@
-// cspell:ignore cooldown
+// CSpell:ignore cooldown
 import { act, render, waitFor } from '@testing-library/react';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
