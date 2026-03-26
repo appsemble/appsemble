@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { normalize, type PageDefinition, remap, type Remapper } from '@appsemble/lang-sdk';
+import { normalize, remap, type PageDefinition, type Remapper } from '@appsemble/lang-sdk';
 import {
   Button,
   Content,
@@ -20,6 +20,7 @@ import { messages } from './messages.js';
 import { ShareDialog, type ShareDialogState } from './ShareDialog/index.js';
 import { type ShowDialogParams, type ShowShareDialog } from '../../types.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
+import { findPageById, getPageDisplayName, getPagePathSegment } from '../../utils/pageUtils.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { makeActions } from '../../utils/makeActions.js';
 import { apiUrl, appId } from '../../utils/settings.js';
@@ -127,56 +128,13 @@ export function Page(): ReactNode {
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const normalizedPageId = normalize(pageId);
-  let index = appDefinition.pages.findIndex((p) => normalize(p.name) === normalizedPageId);
-
-  if (index < 0) {
-    const pageMessages = appMessageIds.filter((id) => id.startsWith('pages.'));
-    const translatedPage = pageMessages.find(
-      (id) => normalize(getAppMessage({ id }).format() as string) === normalizedPageId,
-    );
-
-    if (translatedPage) {
-      const pageName = translatedPage.split('.').pop();
-      index = appDefinition.pages.findIndex((p) => normalize(p.name) === pageName);
-    }
-  }
-  const findPageById = useCallback(
-    (pages: PageDefinition[]): PageDefinition | null => {
-      for (const internalPage of pages) {
-        const normalizedName = normalize(internalPage.name);
-
-        if (normalizedName === normalizedPageId) {
-          return internalPage;
-        }
-
-        // Check for translated page name
-        const pageMessages = appMessageIds.filter((id) => id.startsWith('pages.'));
-        const translatedPage = pageMessages.find(
-          (id) => normalize(getAppMessage({ id }).format() as string) === normalizedPageId,
-        );
-
-        if (translatedPage) {
-          const pageName = translatedPage.split('.').pop();
-          if (normalize(internalPage.name) === pageName) {
-            return internalPage;
-          }
-        }
-
-        if (internalPage.type === 'container') {
-          const foundPage = findPageById(internalPage.pages);
-          if (foundPage) {
-            return foundPage;
-          }
-        }
-      }
-
-      return null;
-    },
-    [appMessageIds, getAppMessage, normalizedPageId],
+  const pageDefinition = findPageById(
+    appDefinition.pages,
+    normalizedPageId,
+    appMessageIds,
+    getAppMessage,
   );
-
-  const pageDefinition =
-    index === -1 ? findPageById(appDefinition.pages) : appDefinition.pages[index];
+  const index = pageDefinition ? appDefinition.pages.indexOf(pageDefinition) : -1;
   const internalPageName = pageDefinition ? normalize(pageDefinition.name) : null;
   const prefix = internalPageName ? `pages.${internalPageName}` : null;
   const prefixIndex = index === -1 ? null : `pages.${index}`;
@@ -376,15 +334,15 @@ export function Page(): ReactNode {
 
   // If the user is on an existing page and is allowed to view it, render it.
   if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
-    const pageName = getAppMessage({
-      id: prefix ?? undefined,
-      defaultMessage: pageDefinition.name,
-    }).format() as string;
-    const normalizedPageName = normalize(pageName);
+    const pageName = getPageDisplayName(pageDefinition, getAppMessage);
+    const canonicalPageId = getPagePathSegment(pageDefinition);
 
-    if (pageId && pageId !== normalize(normalizedPageName)) {
-      // Redirect to page with untranslated page name, preserving query params
-      return <Navigate to={{ pathname: pathname.replace(pageId, normalizedPageName), search }} />;
+    if (pageId && pageId !== canonicalPageId) {
+      // Redirect translated or legacy aliases to the canonical internal page slug,
+      // while preserving query params.
+      return (
+        <Navigate replace to={{ pathname: pathname.replace(pageId, canonicalPageId), search }} />
+      );
     }
 
     return (
@@ -502,21 +460,8 @@ export function Page(): ReactNode {
   const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, appDefinition);
   const defaultPage = appDefinition.pages.find((p) => p.name === defaultPageName);
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  if (checkPagePermissionsCallback(defaultPage)) {
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
-    const defaultPagePrefix = `pages.${normalize(defaultPage?.name)}`;
-    let pageName = defaultPage?.name;
-
-    if (appMessageIds.includes(defaultPagePrefix)) {
-      pageName = getAppMessage({ id: defaultPagePrefix }).format() as string;
-    }
-
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
-    return <Navigate to={`${url}/${normalize(pageName)}`} />;
+  if (defaultPage && checkPagePermissionsCallback(defaultPage)) {
+    return <Navigate replace to={`${url}/${getPagePathSegment(defaultPage)}`} />;
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
@@ -524,14 +469,7 @@ export function Page(): ReactNode {
     (pd) => checkPagePermissionsCallback(pd) && !pd.parameters,
   );
   if (redirectPage) {
-    const normalizedRedirectPageName = `pages.${normalize(redirectPage.name)}`;
-    let pageName = redirectPage.name;
-
-    if (appMessageIds.includes(normalizedRedirectPageName)) {
-      pageName = getAppMessage({ id: normalizedRedirectPageName }).format() as string;
-    }
-
-    return <Navigate to={`${url}/${normalize(pageName)}`} />;
+    return <Navigate replace to={`${url}/${getPagePathSegment(redirectPage)}`} />;
   }
 
   // If the user isn’t allowed to view any pages, show an error message.

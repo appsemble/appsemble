@@ -41,7 +41,7 @@ export function createAppRouter(options: Options): Middleware {
     },
     {
       route: '/service-worker.js',
-      get: createServiceWorkerHandler(options),
+      get: createServiceWorkerHandler(),
     },
     {
       route: /^\/icon-(?<size>\d+)\.png$/,

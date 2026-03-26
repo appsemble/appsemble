@@ -1,4 +1,4 @@
-import { normalizeBlockName, prefixBlockURL } from '@appsemble/lang-sdk';
+import { normalizeBlockName, prefixBlockURL, stripBlockName } from '@appsemble/lang-sdk';
 import {
   type AppsembleBootstrapEvent,
   type AppsembleControllerEvent,
@@ -117,6 +117,22 @@ function getControllerFunction(): Promisable<ControllerFunction> {
   });
 }
 
+function getBootstrapEntryFile(manifest: BlockManifest): string {
+  const entryFile = `${stripBlockName(manifest.name)}.js`;
+
+  if (manifest.files.includes(entryFile)) {
+    return entryFile;
+  }
+
+  const fallbackFile = manifest.files.find((file) => file.endsWith('.js'));
+
+  if (!fallbackFile) {
+    throw new Error(`No JavaScript entry file found for ${manifest.name}@${manifest.version}`);
+  }
+
+  return fallbackFile;
+}
+
 export function getHandlerFunction(handler: string): HandlerFunction {
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return handlerFunctions.get(handler);
@@ -136,23 +152,22 @@ export async function callBootstrap(
   const blockNameVersion = `${name}@${manifest.version}`;
 
   if (!loadedBlocks.has(blockNameVersion)) {
-    for (const url of manifest.files) {
-      if (url.endsWith('.js')) {
-        const script = document.createElement('script');
+    const entryFile = getBootstrapEntryFile(manifest);
+    const script = document.createElement('script');
 
-        script.src = prefixBlockURL({ type: manifest.name, version: manifest.version }, url);
+    script.src = prefixBlockURL({ type: manifest.name, version: manifest.version }, entryFile);
 
-        // @ts-expect-error Not a default event
-        script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {
-          event.stopImmediatePropagation();
-          event.preventDefault();
-          registerBlock(script, event, blockNameVersion);
-        });
-        document.head.append(script);
-      }
-    }
+    // @ts-expect-error Not a default event
+    script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      registerBlock(script, event, blockNameVersion);
+    });
+
+    document.head.append(script);
     loadedBlocks.add(blockNameVersion);
   }
+
   const bootstrap = await getBootstrapFunction(blockNameVersion);
   const result = await bootstrap(params);
   if (result instanceof Element) {

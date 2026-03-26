@@ -25,6 +25,7 @@ export async function getBlockVersionAsset(ctx: Context): Promise<void> {
     `Block has no asset named "${filename}"`,
   );
 
+  ctx.set('Cache-Control', 'max-age=31536000,immutable');
   ctx.body = block.BlockAssets[0].content;
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   ctx.type = block.BlockAssets[0].mime;

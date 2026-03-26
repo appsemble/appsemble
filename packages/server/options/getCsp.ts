@@ -49,6 +49,7 @@ export function getCsp({
       app.msClarityID ? 'https://clarity.ms' : false,
     ],
     'default-src': ["'self'"],
+    'worker-src': ["'self'", 'blob:'],
     'script-src': scriptSrc,
     'img-src': [
       '*',
