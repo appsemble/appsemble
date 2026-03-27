@@ -1,4 +1,9 @@
-import { type PageDefinition, remap } from '@appsemble/lang-sdk';
+import {
+  getPageDisplayName,
+  getPagePathSegment,
+  type PageDefinition,
+  remap,
+} from '@appsemble/lang-sdk';
 import {
   Button,
   CollapsibleMenuSection,
@@ -14,7 +19,6 @@ import { usePWAInstall } from 'react-use-pwa-install';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
-import { getPageDisplayName, getPagePathSegment } from '../../utils/pageUtils.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';

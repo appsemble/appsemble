@@ -1,4 +1,6 @@
-import { normalize, type MessageGetter, type PageDefinition } from '@appsemble/lang-sdk';
+import { normalize } from './normalize.js';
+import { type MessageGetter } from './remap.js';
+import { type PageDefinition } from './types/index.js';
 
 type NamedPage = Pick<PageDefinition, 'name'>;
 
