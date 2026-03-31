@@ -22,6 +22,9 @@ npm install @appsemble/lang-sdk
 
 This package provides utilities and tools for working with the language DSL used in Appsemble.
 
+It also includes helpers for working with app page definitions, translated page labels, and
+canonical page path segments.
+
 ## Exports
 
 ### 1. **Validators**
@@ -90,6 +93,10 @@ This package provides utilities and tools for working with the language DSL used
 ### 6. **Miscellaneous**
 
 - `findPageByName`
+- `findPageById`
+- `getPageDisplayName`
+- `getPageMessageId`
+- `getPagePathSegment`
 - `examples`
 - `noop`
 - `schemaExample`

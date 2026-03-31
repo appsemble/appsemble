@@ -1,6 +1,6 @@
-import { type PageDefinition } from '@appsemble/lang-sdk';
 import { describe, expect, it } from 'vitest';
 
+import { type PageDefinition } from './types/index.js';
 import {
   findPageById,
   getPageDisplayName,

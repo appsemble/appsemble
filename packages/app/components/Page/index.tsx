@@ -1,6 +1,14 @@
 import { EventEmitter } from 'events';
 
-import { normalize, remap, type PageDefinition, type Remapper } from '@appsemble/lang-sdk';
+import {
+  findPageById,
+  getPageDisplayName,
+  getPagePathSegment,
+  normalize,
+  remap,
+  type PageDefinition,
+  type Remapper,
+} from '@appsemble/lang-sdk';
 import {
   Button,
   Content,
@@ -20,7 +28,6 @@ import { messages } from './messages.js';
 import { ShareDialog, type ShareDialogState } from './ShareDialog/index.js';
 import { type ShowDialogParams, type ShowShareDialog } from '../../types.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
-import { findPageById, getPageDisplayName, getPagePathSegment } from '../../utils/pageUtils.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { makeActions } from '../../utils/makeActions.js';
 import { apiUrl, appId } from '../../utils/settings.js';

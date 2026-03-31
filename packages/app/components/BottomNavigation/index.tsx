@@ -1,4 +1,10 @@
-import { type PageDefinition, remap, type RemapperContext } from '@appsemble/lang-sdk';
+import {
+  getPageDisplayName,
+  getPagePathSegment,
+  type PageDefinition,
+  remap,
+  type RemapperContext,
+} from '@appsemble/lang-sdk';
 import { Button, Icon } from '@appsemble/react-components';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -9,7 +15,6 @@ import './index.css';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { shouldShowMenu } from '../../utils/layout.js';
-import { getPageDisplayName, getPagePathSegment } from '../../utils/pageUtils.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
