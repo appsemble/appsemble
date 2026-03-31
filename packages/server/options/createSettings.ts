@@ -87,6 +87,7 @@ export async function createSettings({
 
   const persistedApp = (await App.findOne({
     attributes: [
+      'definition',
       'id',
       'icon',
       'updated',
@@ -160,7 +161,10 @@ export async function createSettings({
         })),
       ],
       vapidPublicKey: persistedApp.vapidPublicKey,
-      definition: sanitizeAppDefinitionForPublicSettings(app.definition, app.showAppDefinition),
+      definition: sanitizeAppDefinitionForPublicSettings(
+        persistedApp.definition,
+        app.showAppDefinition,
+      ),
       snapshotId: persistedApp.AppSnapshots?.[0]?.id,
       demoMode: persistedApp.demoMode,
       showAppsembleLogin: persistedApp.showAppsembleLogin ?? false,
