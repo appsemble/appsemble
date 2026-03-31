@@ -30,7 +30,7 @@
     "@appsemble/preact": "0.36.6-test.0",
     "@appsemble/sdk": "0.36.6-test.0",
     "@appsemble/utils": "0.36.6-test.0",
-    "@types/node": "22.15.21",
+    "@types/node": "22.19.15",
     "preact": "^10.0.0"
   },
   "devDependencies": {
