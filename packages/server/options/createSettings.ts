@@ -1,4 +1,4 @@
-import { parseBlockName } from '@appsemble/lang-sdk';
+import { parseBlockName, type AppDefinition } from '@appsemble/lang-sdk';
 import {
   type CreateSettingsParams,
   createSettings as createUtilsSettings,
@@ -9,6 +9,51 @@ import { Op } from 'sequelize';
 import { App, AppSnapshot, BlockAsset, BlockVersion, getAppDB } from '../models/index.js';
 import { createGtagCode, createMetaPixelCode, createMSClarityCode } from '../utils/render.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
+
+function sanitizeAppDefinitionForPublicSettings(
+  definition: AppDefinition,
+  showAppDefinition: boolean,
+): AppDefinition {
+  if (showAppDefinition || !definition.security) {
+    return definition;
+  }
+
+  return {
+    ...definition,
+    security: {
+      ...definition.security,
+      ...(definition.security.guest
+        ? {
+            guest: {
+              ...definition.security.guest,
+              permissions: undefined,
+            },
+          }
+        : {}),
+      ...(definition.security.cron
+        ? {
+            cron: {
+              ...definition.security.cron,
+              permissions: undefined,
+            },
+          }
+        : {}),
+      ...(definition.security.roles
+        ? {
+            roles: Object.fromEntries(
+              Object.entries(definition.security.roles).map(([name, role]) => [
+                name,
+                {
+                  ...role,
+                  permissions: undefined,
+                },
+              ]),
+            ),
+          }
+        : {}),
+    },
+  };
+}
 
 export async function createSettings({
   app,
@@ -49,7 +94,6 @@ export async function createSettings({
       'sentryDsn',
       'sentryEnvironment',
       'vapidPublicKey',
-      'definition',
       'showAppsembleLogin',
       'showAppsembleOAuth2Login',
       'enableSelfRegistration',
@@ -116,7 +160,10 @@ export async function createSettings({
         })),
       ],
       vapidPublicKey: persistedApp.vapidPublicKey,
-      definition: persistedApp.definition,
+      definition: sanitizeAppDefinitionForPublicSettings(
+        persistedApp.definition,
+        app.showAppDefinition,
+      ),
       snapshotId: persistedApp.AppSnapshots?.[0]?.id,
       demoMode: persistedApp.demoMode,
       showAppsembleLogin: persistedApp.showAppsembleLogin ?? false,
@@ -131,7 +178,7 @@ export async function createSettings({
       appUpdated: persistedApp.updated.toISOString(),
       e2e: process.env.E2E,
       supportedLanguages: persistedApp.supportedLanguages ?? [
-        persistedApp.definition.defaultLanguage ?? defaultLocale,
+        app.definition.defaultLanguage ?? defaultLocale,
       ],
     },
     Boolean(app.metaPixelID) || Boolean(app.msClarityID) ? nonce : undefined,
