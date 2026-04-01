@@ -1,7 +1,6 @@
 {
   "private": true,
   "type": "module",
-  "license": "LGPL-3.0-only",
   "workspaces": [
     "blocks/*",
     "packages/*",
