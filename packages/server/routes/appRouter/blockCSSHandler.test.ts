@@ -64,6 +64,59 @@ describe('blockCSSHandler', () => {
     });
   });
 
+  it('should serve already processed block CSS without replacement', async () => {
+    await Organization.create({ id: 'org' });
+    const app = await App.create({
+      OrganizationId: 'org',
+      definition: {},
+      path: 'app',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const { AppBlockStyle } = await getAppDB(app.id);
+    await AppBlockStyle.create({
+      block: '@foo/bar',
+      style: `body{background-image:url('http://localhost/api/apps/${app.id}/assets/hero-bg')}`,
+    });
+
+    const response = await request.get('/@foo/bar.css');
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: {
+        'content-type': 'text/css; charset=utf-8',
+      },
+      data: `body{background-image:url('http://localhost/api/apps/${app.id}/assets/hero-bg')}`,
+    });
+  });
+
+  it('should serve already processed absolute, root and data URLs in block CSS', async () => {
+    await Organization.create({ id: 'org' });
+    const app = await App.create({
+      OrganizationId: 'org',
+      definition: {},
+      path: 'app',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const { AppBlockStyle } = await getAppDB(app.id);
+    await AppBlockStyle.create({
+      block: '@foo/bar',
+      style:
+        "a{background:url('https://example.com/x')}b{background:url('/x')}c{background:url('data:image/png;base64,AAAA')}",
+    });
+
+    const response = await request.get('/@foo/bar.css');
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: {
+        'content-type': 'text/css; charset=utf-8',
+      },
+      data: "a{background:url('https://example.com/x')}b{background:url('/x')}c{background:url('data:image/png;base64,AAAA')}",
+    });
+  });
+
   it('should handle if an app is not found', async () => {
     const response = await request.get('/@foo/bar.css');
     expect(response).toMatchObject({
