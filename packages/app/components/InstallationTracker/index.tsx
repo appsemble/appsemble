@@ -10,15 +10,32 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-const userAgent = navigator.userAgent.toLowerCase();
-const isIOS = /iphone|ipad|ipod/.test(userAgent);
-const isAndroid = /android/.test(userAgent);
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+interface NavigatorWithStandalone extends Navigator {
+  standalone?: boolean;
+}
+
+function getInstallationState(): {
+  isAndroid: boolean;
+  isIOS: boolean;
+  isSafari: boolean;
+  isStandalone: boolean;
+} {
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(userAgent);
+  const isAndroid = /android/.test(userAgent);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const isStandalone =
+    window.matchMedia?.('(display-mode: standalone)').matches === true ||
+    (navigator as NavigatorWithStandalone).standalone === true;
+
+  return { isAndroid, isIOS, isSafari, isStandalone };
+}
 
 export function InstallationTracker(): ReactNode {
   const promptToggle = useToggle(true);
   const hasPromptedRef = useRef(false);
   const [showPrompt, setShowPrompt] = useState(false);
+  const { isAndroid, isIOS, isSafari, isStandalone } = getInstallationState();
 
   const visitCountKey = 'visitCount';
   const lastPromptTimeKey = 'lastPromptTime';
@@ -28,13 +45,17 @@ export function InstallationTracker(): ReactNode {
 
   const visitCountString = localStorage.getItem(visitCountKey) || '0';
   const visitCount = Number.parseInt(visitCountString);
-  localStorage.setItem(visitCountKey, String(visitCount + 1));
+
+  if (!isStandalone) {
+    localStorage.setItem(visitCountKey, String(visitCount + 1));
+  }
 
   const currentTime = Date.now();
   const lastPromptTimeString = localStorage.getItem(lastPromptTimeKey) || '0';
   const lastPromptTime = Number.parseInt(lastPromptTimeString);
 
   const showInstallationPrompt =
+    !isStandalone &&
     visitCount + 1 >= visitThreshold &&
     displayInstallationPrompt &&
     (!lastPromptTime || currentTime - lastPromptTime > cooldownPeriod);
@@ -76,9 +97,7 @@ export function InstallationTracker(): ReactNode {
     }
   }, [setPrompted, showInstallationPrompt, promptSupported]);
 
-  // Always show manual instructions on Safari iOS (ignores beforeinstallprompt).
   const shouldShowSafariIOS = isIOS && isSafari && showInstallationPrompt;
-  // Show explicit unsupported message on Safari desktop.
   const shouldShowSafariDesktop = !isIOS && isSafari && showInstallationPrompt;
 
   if (
