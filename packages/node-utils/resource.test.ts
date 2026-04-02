@@ -28,6 +28,6 @@ describe('processResourceBody', () => {
           assets: [{ filename: 'asset.bin', mime: 'application/octet-stream', path: '/tmp/asset' }],
         },
       ),
-    ).rejects.toThrowError('boom');
+    ).rejects.toThrow('boom');
   });
 });
