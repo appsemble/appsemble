@@ -160,10 +160,7 @@ export async function createSettings({
         })),
       ],
       vapidPublicKey: persistedApp.vapidPublicKey,
-      definition: sanitizeAppDefinitionForPublicSettings(
-        persistedApp.definition,
-        app.showAppDefinition,
-      ),
+      definition: sanitizeAppDefinitionForPublicSettings(app.definition, app.showAppDefinition),
       snapshotId: persistedApp.AppSnapshots?.[0]?.id,
       demoMode: persistedApp.demoMode,
       showAppsembleLogin: persistedApp.showAppsembleLogin ?? false,
