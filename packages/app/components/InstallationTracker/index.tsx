@@ -97,7 +97,9 @@ export function InstallationTracker(): ReactNode {
     }
   }, [setPrompted, showInstallationPrompt, promptSupported]);
 
+  // Always show manual instructions on Safari iOS (ignores beforeinstallprompt).
   const shouldShowSafariIOS = isIOS && isSafari && showInstallationPrompt;
+  // Show explicit unsupported message on Safari desktop.
   const shouldShowSafariDesktop = !isIOS && isSafari && showInstallationPrompt;
 
   if (
