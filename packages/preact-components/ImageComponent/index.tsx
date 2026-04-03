@@ -4,6 +4,24 @@ import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preac
 
 import styles from './index.module.css';
 
+function getDevicePixelRatio(): number {
+  if (typeof window === 'undefined') {
+    return 1;
+  }
+
+  const ratio = window.devicePixelRatio || 1;
+
+  if (ratio >= 2.5) {
+    return 3;
+  }
+
+  if (ratio >= 1.5) {
+    return 2;
+  }
+
+  return 1;
+}
+
 interface ImageComponentProps {
   /**
    * The image is scaled with bulma sizes.
@@ -67,6 +85,9 @@ export function ImageComponent({
     }
   }
 
+  const requestedWidth = Math.ceil(width * getDevicePixelRatio());
+  const requestedHeight = Math.ceil(height * getDevicePixelRatio());
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -120,7 +141,7 @@ export function ImageComponent({
                 src={
                   isVisible
                     ? /\/api\/apps\/\d+\/assets\//.test(src)
-                      ? `${src}?width=${width}&height=${height}`
+                      ? `${src}${src.includes('?') ? '&' : '?'}width=${requestedWidth}&height=${requestedHeight}`
                       : src
                     : undefined
                 }
