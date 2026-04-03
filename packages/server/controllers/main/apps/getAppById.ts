@@ -119,6 +119,37 @@ export async function getAppById(ctx: Context): Promise<void> {
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const propertyFilters: (keyof AppType)[] = [];
+  if (!ctx.user && app.visibility === 'unlisted') {
+    propertyFilters.push(
+      '$created',
+      '$updated',
+      'controllerCode',
+      'controllerImplementations',
+      'demoMode',
+      'displayAppMemberName',
+      'displayInstallationPrompt',
+      'emailName',
+      'enableSelfRegistration',
+      'enableUnsecuredServiceSecrets',
+      'googleAnalyticsID',
+      'metaPixelID',
+      'msClarityID',
+      'OrganizationId',
+      'OrganizationName',
+      'sentryDsn',
+      'sentryEnvironment',
+      'showAppDefinition',
+      'showAppsembleLogin',
+      'showAppsembleOAuth2Login',
+      'skipGroupInvites',
+      'supportedLanguages',
+      'template',
+      'totp',
+      'version',
+      'visibility',
+      'locked',
+    );
+  }
   if (app.visibility === 'private' || !app.showAppDefinition) {
     try {
       await checkUserOrganizationPermissions({
