@@ -42,6 +42,7 @@ import { checkUserOrganizationPermissions } from '../../../../utils/authorizatio
 import { getBlockVersions } from '../../../../utils/block.js';
 import { createDynamicIndexes } from '../../../../utils/dynamicIndexes.js';
 import { processHooks, processReferenceHooks } from '../../../../utils/resource.js';
+import { syncResourceUniqueIndexes } from '../../../../utils/resourceUniqueIndexes.js';
 
 export async function importApp(ctx: Context): Promise<void> {
   const {
@@ -160,6 +161,16 @@ export async function importApp(ctx: Context): Promise<void> {
           try {
             const resourcesFolder =
               zip.folder('resources')?.filter((filename) => filename.endsWith('json')) ?? [];
+
+            if (record!.definition.resources) {
+              await syncResourceUniqueIndexes(
+                record!.id,
+                undefined,
+                record!.definition.resources,
+                appTransaction,
+              );
+            }
+
             if (resourcesFolder.length) {
               for (const [
                 resourceType,

@@ -9,11 +9,13 @@ import {
   getAppPossiblePermissions,
   getAppRolePermissions,
 } from './authorization.js';
+import { BlockParamInstanceValidator } from './BasicValidator.js';
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
+import { partialNormalized } from './constants/index.js';
 import { findPageByName } from './findPageByName.js';
-import { BlockParamInstanceValidator, normalize, partialNormalized } from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
+import { normalize } from './normalize.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
 import {
   type AppDefinition,
@@ -192,6 +194,7 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
     }
 
     const { enforceOrderingGroupByFields, positioning, schema } = resource;
+    const resourcePrefix = ['resources', resourceName];
     const prefix = ['resources', resourceName, 'schema'];
 
     if (!positioning && enforceOrderingGroupByFields?.length) {
@@ -292,6 +295,39 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
           }
         } else if (propertyName.startsWith('$')) {
           report(propertySchema, 'may not start with $', [...prefix, 'properties', propertyName]);
+        }
+      }
+    }
+
+    if ('unique' in resource && resource.unique !== undefined) {
+      const propertyNames = new Set(Object.keys(schema.properties ?? {}));
+      const seenConstraints = new Set<string>();
+
+      for (const [constraintIdx, constraint] of resource.unique.entries()) {
+        const fields = ([] as string[]).concat(constraint);
+        const normalizedConstraint = fields.toSorted().join('\0');
+
+        if (seenConstraints.has(normalizedConstraint)) {
+          report(constraint, 'duplicates another unique constraint', [
+            ...resourcePrefix,
+            'unique',
+            constraintIdx,
+          ]);
+        }
+        seenConstraints.add(normalizedConstraint);
+
+        for (const [fieldIdx, field] of fields.entries()) {
+          const path = Array.isArray(constraint)
+            ? [...resourcePrefix, 'unique', constraintIdx, fieldIdx]
+            : [...resourcePrefix, 'unique', constraintIdx];
+
+          if ([...reservedKeywords, 'id'].includes(field)) {
+            report(field, `unique field cannot be a reserved keyword: ${field}`, path);
+          }
+
+          if (!propertyNames.has(field)) {
+            report(field, `unique field must be defined in properties: ${field}`, path);
+          }
         }
       }
     }

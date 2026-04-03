@@ -20,6 +20,10 @@ import {
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { decrypt, encrypt } from '../../../utils/crypto.js';
+import {
+  getResourceUniqueIndexName,
+  syncResourceUniqueIndexes,
+} from '../../../utils/resourceUniqueIndexes.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
 import { createTestDBWithUser } from '../../../utils/test/testSchema.js';
 
@@ -419,6 +423,174 @@ describe('patchApp', () => {
           "type": "testResource",
         },
       ]
+    `);
+  });
+
+  it('should create unique indexes for resources when added to the app definition', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: { schema: { type: 'object', properties: { foo: { type: 'string' } } } },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    authorizeStudio(user);
+    const { status } = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: string
+              unique:
+                - foo
+        `),
+      }),
+    );
+
+    expect(status).toBe(200);
+
+    const { sequelize } = await getAppDB(app.id);
+    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+      name: string;
+    }[];
+
+    expect(indexes.map(({ name }) => name)).toContain(
+      getResourceUniqueIndexName('testResource', ['foo']),
+    );
+  });
+
+  it('should remove unique indexes for resources when removed from the app definition', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            unique: ['foo'],
+            schema: { type: 'object', properties: { foo: { type: 'string' } } },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await syncResourceUniqueIndexes(app.id, undefined, app.definition.resources);
+
+    authorizeStudio(user);
+    const { status } = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: string
+        `),
+      }),
+    );
+
+    expect(status).toBe(200);
+
+    const { sequelize } = await getAppDB(app.id);
+    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+      name: string;
+    }[];
+
+    expect(indexes.map(({ name }) => name)).not.toContain(
+      getResourceUniqueIndexName('testResource', ['foo']),
+    );
+  });
+
+  it('should reject adding a unique constraint if duplicate resources already exist', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: { schema: { type: 'object', properties: { foo: { type: 'string' } } } },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.bulkCreate([
+      { type: 'testResource', data: { foo: 'duplicate' } },
+      { type: 'testResource', data: { foo: 'duplicate' } },
+    ]);
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: string
+              unique:
+                - foo
+        `),
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 409 Conflict
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Conflict",
+        "message": "Can’t apply unique constraint to resource “testResource” for fields “foo” because existing resources contain duplicates.",
+        "statusCode": 409,
+      }
     `);
   });
 

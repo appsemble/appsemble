@@ -15,6 +15,7 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
+import { syncResourceUniqueIndexes } from '../../../../utils/resourceUniqueIndexes.js';
 import {
   authorizeAppMember,
   authorizeClientCredentials,
@@ -350,6 +351,44 @@ describe('updateAppResource', () => {
         "error": "Bad Request",
         "message": "Resource validation failed",
         "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should reject updates that violate unique constraints', async () => {
+    const definition = {
+      ...app.definition,
+      resources: {
+        ...app.definition.resources,
+        testResource: {
+          ...app.definition.resources!.testResource,
+          unique: ['foo'],
+        },
+      },
+    };
+    await app.update({ definition });
+    await syncResourceUniqueIndexes(app.id, undefined, definition.resources);
+
+    const { Resource } = await getAppDB(app.id);
+    const [firstResource, secondResource] = await Promise.all([
+      Resource.create({ type: 'testResource', data: { foo: 'first' } }),
+      Resource.create({ type: 'testResource', data: { foo: 'second' } }),
+    ]);
+
+    authorizeStudio();
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${secondResource.id}`,
+      { foo: firstResource.data.foo },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 409 Conflict
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Conflict",
+        "message": "A resource of type “testResource” with the same values for fields “foo” already exists.",
+        "statusCode": 409,
       }
     `);
   });

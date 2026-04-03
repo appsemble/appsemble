@@ -1,9 +1,24 @@
+import { createRequire } from 'node:module';
+
 import { version } from '@appsemble/node-utils';
 import * as Sentry from '@sentry/node';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { matcher } from 'matcher';
 
 import { argv } from './argv.js';
+
+const require = createRequire(import.meta.url);
+
+function getProfilingIntegration(): ReturnType<typeof Sentry.postgresIntegration> | undefined {
+  try {
+    const { nodeProfilingIntegration } = require('@sentry/profiling-node') as {
+      nodeProfilingIntegration: () => ReturnType<typeof Sentry.postgresIntegration>;
+    };
+
+    return nodeProfilingIntegration();
+  } catch {
+    return undefined;
+  }
+}
 
 interface SentrySettings {
   /**
@@ -126,12 +141,16 @@ export function configureSentry(settings: {
   if (sentryDsn) {
     const effectiveTracesSampleRate = parseSampleRate(tracesSampleRate, 0.2);
     const effectiveProfileSampleRate = parseSampleRate(profileSampleRate, 0.25);
+    const profilingIntegration = getProfilingIntegration();
+    const integrations = [profilingIntegration, Sentry.postgresIntegration()].filter(
+      (integration): integration is NonNullable<typeof integration> => integration !== undefined,
+    );
 
     Sentry.init({
       dsn: sentryDsn,
       environment: sentryEnvironment,
       release: version,
-      integrations: [nodeProfilingIntegration(), Sentry.postgresIntegration()],
+      integrations,
       tracesSampleRate: effectiveTracesSampleRate,
       profilesSampleRate: effectiveProfileSampleRate,
       profileSessionSampleRate: effectiveProfileSampleRate,

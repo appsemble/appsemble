@@ -18,11 +18,17 @@ import {
   type IncludeOptions,
   Op,
   type Transaction,
-  UniqueConstraintError,
+  type UniqueConstraintError,
 } from 'sequelize';
 import sharp from 'sharp';
 
 import { argv } from './argv.js';
+import {
+  isUniqueConstraintErrorLike,
+  ResourceUniqueConstraintConflictError,
+  ResourceUniqueConstraintDefinitionError,
+  throwResourceUniqueConstraintKoaError,
+} from './resourceUniqueIndexes.js';
 import { App, AppMessages, AppReadme, AppScreenshot } from '../models/index.js';
 
 interface GetAppValue {
@@ -335,7 +341,19 @@ export async function createAppReadmes(
 }
 
 export function handleAppValidationError(ctx: Context, error: Error, app: Partial<App>): never {
-  if (error instanceof UniqueConstraintError) {
+  if (error instanceof ResourceUniqueConstraintDefinitionError) {
+    throwKoaError(ctx, 400, error.message);
+  }
+
+  if (error instanceof ResourceUniqueConstraintConflictError) {
+    throwKoaError(ctx, 409, error.message);
+  }
+
+  if (isUniqueConstraintErrorLike(error)) {
+    if (app.definition) {
+      throwResourceUniqueConstraintKoaError(ctx, app.definition, error as UniqueConstraintError);
+    }
+
     throwKoaError(
       ctx,
       409,

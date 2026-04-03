@@ -16,6 +16,7 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
+import { syncResourceUniqueIndexes } from '../../../../utils/resourceUniqueIndexes.js';
 import {
   authorizeAppMember,
   authorizeClientCredentials,
@@ -183,6 +184,41 @@ describe('createAppResource', () => {
         "error": "Bad Request",
         "message": "Resource validation failed",
         "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should reject duplicate resources for unique constraints', async () => {
+    const definition = {
+      ...app.definition,
+      resources: {
+        ...app.definition.resources,
+        testResource: {
+          ...app.definition.resources!.testResource,
+          unique: ['foo'],
+        },
+      },
+    };
+    await app.update({ definition });
+    await syncResourceUniqueIndexes(app.id, undefined, definition.resources);
+
+    authorizeStudio();
+    const firstResponse = await request.post(`/api/apps/${app.id}/resources/testResource`, {
+      foo: 'duplicate',
+    });
+    const secondResponse = await request.post(`/api/apps/${app.id}/resources/testResource`, {
+      foo: 'duplicate',
+    });
+
+    expect(firstResponse.status).toBe(201);
+    expect(secondResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 409 Conflict
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Conflict",
+        "message": "A resource of type “testResource” with the same values for fields “foo” already exists.",
+        "statusCode": 409,
       }
     `);
   });

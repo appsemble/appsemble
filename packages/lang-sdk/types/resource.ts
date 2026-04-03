@@ -16,6 +16,8 @@ export type ResourceAction =
   | 'update.positions'
   | 'update';
 
+export type ResourceUniqueConstraint = string | [string, string, ...string[]];
+
 export interface ResourceDefinition {
   /**
    * A definition of how versioning should happen for instances of this resource.
@@ -96,6 +98,14 @@ export interface ResourceDefinition {
    * The references this resources has to other resources.
    */
   references?: Record<string, ResourceReference>;
+
+  /**
+   * The unique constraints that should be enforced across all instances of this resource.
+   *
+   * Each constraint can be a single field name or an array of field names for a composite unique
+   * key.
+   */
+  unique?: ResourceUniqueConstraint[];
 
   /**
    * A time string representing when a resource should expire.

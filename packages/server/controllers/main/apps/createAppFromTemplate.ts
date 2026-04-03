@@ -26,6 +26,7 @@ import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
+import { syncResourceUniqueIndexes } from '../../../utils/resourceUniqueIndexes.js';
 
 export async function createAppFromTemplate(ctx: Context): Promise<void> {
   const {
@@ -195,6 +196,10 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       }
     }
 
+    if (record.definition.resources) {
+      await syncResourceUniqueIndexes(record.id, undefined, record.definition.resources);
+    }
+
     if (resources) {
       const templateResources = await TemplateResource.findAll({ where: { clonable: true } });
       await RecordResource.bulkCreate(
@@ -324,6 +329,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     if (error instanceof UniqueConstraintError) {
       throwKoaError(ctx, 409, `Another app with path “${path}” already exists`);
     }
+
     throw error;
   }
 }

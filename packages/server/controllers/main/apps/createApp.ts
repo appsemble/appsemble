@@ -33,6 +33,7 @@ import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
+import { syncResourceUniqueIndexes } from '../../../utils/resourceUniqueIndexes.js';
 import { isValidSentryDsn } from '../../../utils/sentry.js';
 
 export async function createApp(ctx: Context): Promise<void> {
@@ -238,6 +239,13 @@ export async function createApp(ctx: Context): Promise<void> {
     try {
       await appDB.transaction(async (appTransaction) => {
         if (createdApp.definition.resources) {
+          await syncResourceUniqueIndexes(
+            createdApp.id,
+            undefined,
+            createdApp.definition.resources,
+            appTransaction,
+          );
+
           for (const [
             resourceType,
             { enforceOrderingGroupByFields, positioning },

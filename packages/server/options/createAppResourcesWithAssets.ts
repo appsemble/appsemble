@@ -9,11 +9,15 @@ import {
   uploadAssets,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
-import { Op } from 'sequelize';
+import { Op, type UniqueConstraintError } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { App, getAppDB, type Resource } from '../models/index.js';
 import { parseQuery, processHooks, processReferenceHooks } from '../utils/resource.js';
+import {
+  isUniqueConstraintErrorLike,
+  throwResourceUniqueConstraintKoaErrorForResource,
+} from '../utils/resourceUniqueIndexes.js';
 
 export async function createAppResourcesWithAssets({
   app,
@@ -26,6 +30,7 @@ export async function createAppResourcesWithAssets({
 }: CreateAppResourcesWithAssetsParams): Promise<ResourceInterface[]> {
   const { Asset, Resource, sequelize } = await getAppDB(app.id!);
   const appMember = await getCurrentAppMember({ context, app });
+  const resourceDefinition = getResourceDefinition(app.definition, resourceType);
 
   if (preparedAssets.length) {
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
@@ -74,6 +79,7 @@ export async function createAppResourcesWithAssets({
                   ? Number.parseFloat(String(lastPositionResource?.Position ?? 0)) + (idx + 1) * 10
                   : null,
               );
+
               return {
                 GroupId: groupId ?? null,
                 type: resourceType,
@@ -137,6 +143,16 @@ export async function createAppResourcesWithAssets({
         preparedAssets.map((asset) => asset.id),
       );
     }
+
+    if (isUniqueConstraintErrorLike(error)) {
+      throwResourceUniqueConstraintKoaErrorForResource(
+        context,
+        resourceType,
+        resourceDefinition,
+        error as UniqueConstraintError,
+      );
+    }
+
     throw error;
   }
 
