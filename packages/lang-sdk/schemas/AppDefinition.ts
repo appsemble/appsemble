@@ -94,6 +94,19 @@ The most basic resource has a \`schema\` property and defines the minimal securi
     theme: {
       $ref: '#/components/schemas/Theme',
     },
+    contentSecurityPolicy: {
+      type: 'object',
+      description: `Additional CSP source expressions for the published app page.
+
+If specified, Appsemble applies a stricter default CSP for broad directives such as \`connect-src\`,
+\`img-src\`, \`media-src\`, \`font-src\`, and \`object-src\`. The configured source expressions
+are then appended per directive.
+`,
+      additionalProperties: {
+        type: 'array',
+        items: { type: 'string' },
+      },
+    },
     cron: {
       type: 'object',
       minProperties: 1,
