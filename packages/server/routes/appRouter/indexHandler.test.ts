@@ -219,12 +219,12 @@ describe('indexHandler', () => {
       response.headers['content-security-policy'] = csp.replace(responseNonce, nonce);
     }
 
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Security-Policy: base-uri 'self'; connect-src * blob: data:; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-K6r4ZcCdlHM2RMHKUTdq24LZ1uJpbodSHflnSZwsRzg=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       {
         "data": {
@@ -424,12 +424,12 @@ describe('indexHandler', () => {
       response.headers['content-security-policy'] = csp.replace(responseNonce, nonce);
     }
 
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Security-Policy: base-uri 'self'; connect-src * blob: data: https://clarity.ms https://www.clarity.ms; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example https://clarity.ms https://www.clarity.ms; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clarity.ms https://scripts.clarity.ms https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       {
         "data": {
@@ -568,11 +568,11 @@ describe('indexHandler', () => {
 
   it('should render a 404 page if no app is found', async () => {
     const response = await request.get('/');
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       {
         "data": {
@@ -588,12 +588,12 @@ describe('indexHandler', () => {
   it('should redirect if only the organization id is given', async () => {
     requestURL = new URL('http://org.host.example');
     const response = await request.get('/');
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 302 Found
       Content-Type: text/html; charset=utf-8
       Location: http://host.example/organizations/org
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       Redirecting to http://host.example/organizations/org.
     `);
@@ -613,12 +613,12 @@ describe('indexHandler', () => {
       vapidPrivateKey: '',
     });
     const response = await request.get('/en?query=param');
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 302 Found
       Content-Type: text/html; charset=utf-8
       Location: http://custom.example/en?query=param
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       Redirecting to http://custom.example/en?query=param.
     `);
@@ -627,12 +627,12 @@ describe('indexHandler', () => {
   it('should redirect to the app root if the organization id is disallowed', async () => {
     requestURL = new URL('http://www.host.example');
     const response = await request.get('/');
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 302 Found
       Content-Type: text/html; charset=utf-8
       Location: http://host.example/
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       Redirecting to http://host.example/.
     `);

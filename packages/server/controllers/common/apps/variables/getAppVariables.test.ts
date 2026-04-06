@@ -83,6 +83,7 @@ describe('getAppVariables', () => {
 
     const response = await request.get(`/api/apps/${app.id}/variables`);
 
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
