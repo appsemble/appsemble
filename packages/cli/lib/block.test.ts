@@ -140,6 +140,21 @@ export const string = 'with-icon';
 --${boundary}--\r
 `);
     });
+    it('should normalize locale codes from translation filenames', async () => {
+      const [, gatheredData] = await makeProjectPayload({
+        webpack: 'webpack.config',
+        name: '@org/block',
+        output: 'output',
+        version: '1.2.3',
+        dir: resolveFixture('makeProjectPayload/with-i18n'),
+      });
+
+      expect(gatheredData.messages).toStrictEqual({
+        en: { empty: 'Empty' },
+        'pt-br': { empty: 'Vazio' },
+        'zh-hans': { empty: '空' },
+      });
+    });
   });
 
   describe('deleteBlock', () => {

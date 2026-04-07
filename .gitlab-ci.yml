@@ -107,6 +107,42 @@ auto-approve-renovate:
         --header "PRIVATE-TOKEN: $GITLAB_APPROVAL_TOKEN" \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/approve"
 
+# Automatically enable auto-merge for Weblate merge requests.
+auto-merge-weblate:
+  stage: test
+  image: alpine:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble' && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^weblate($|[-\/])/ && $GITLAB_ACCESS_TOKEN
+  allow_failure: true
+  script:
+    - apk add --no-cache curl jq
+    - |
+      merge_request="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID"
+
+      curl --fail --silent --show-error \
+        --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+        "$merge_request" \
+        | tee /tmp/merge-request.json \
+        | jq '{iid, source_branch, detailed_merge_status, merge_when_pipeline_succeeds}'
+
+      if jq -e '.merge_when_pipeline_succeeds' /tmp/merge-request.json > /dev/null; then
+        echo 'Auto-merge already enabled.'
+        exit 0
+      fi
+
+      if [ "$(jq -r '.detailed_merge_status' /tmp/merge-request.json)" = 'conflict' ]; then
+        echo 'Merge request has conflicts.'
+        exit 0
+      fi
+
+      curl --fail --request PUT \
+        --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+        --url "$merge_request/merge" \
+        --data-urlencode "auto_merge=true" \
+        --data-urlencode "sha=$CI_COMMIT_SHA" \
+        --data-urlencode "should_remove_source_branch=true" \
+        | jq '{iid, detailed_merge_status, merge_when_pipeline_succeeds, should_remove_source_branch}'
+
 ###################################################################################################
 #  Security Stage                                                                                 #
 ###################################################################################################

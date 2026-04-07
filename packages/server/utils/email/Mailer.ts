@@ -6,7 +6,7 @@ import {
   logger,
 } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
-import { defaultLocale, has } from '@appsemble/utils';
+import { defaultLocale, has, normalizeLocale } from '@appsemble/utils';
 import { startOfDay } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import addrs, { type ParsedMailbox } from 'email-addresses';
@@ -256,11 +256,11 @@ export class Mailer {
     app?: App;
   }): Promise<void> {
     const emailLocale = locale || defaultLocale;
-    const lang = emailLocale.toLowerCase();
+    const lang = normalizeLocale(emailLocale);
     const baseLanguage = tags(lang)
       .subtags()
       .find((sub) => sub.type() === 'language');
-    const baseLang = baseLanguage && String(baseLanguage).toLowerCase();
+    const baseLang = baseLanguage ? normalizeLocale(String(baseLanguage)) : undefined;
     const appMessages = appId
       ? await AppMessages.findAll({
           where: {

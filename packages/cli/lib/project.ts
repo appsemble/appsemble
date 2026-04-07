@@ -10,7 +10,7 @@ import {
   type ProjectImplementations,
   type ProjectManifest,
 } from '@appsemble/types';
-import { compareStrings } from '@appsemble/utils';
+import { compareStrings, normalizeLocale } from '@appsemble/utils';
 import axios from 'axios';
 import { build, type BuildOptions, type BuildResult } from 'esbuild';
 import FormData from 'form-data';
@@ -123,8 +123,13 @@ export async function makeProjectPayload(
     const messagesResult: Record<string, Record<string, string>> = {};
     const messagesPath = join(dir, 'i18n');
 
-    const translations = (await readdir(messagesPath)).map((language) => language.toLowerCase());
-    if (!translations.includes('en.json')) {
+    const translationFiles = (await readdir(messagesPath)).filter((filename) =>
+      filename.endsWith('.json'),
+    );
+    const translations = translationFiles.map((filename) =>
+      normalizeLocale(basename(filename, '.json')),
+    );
+    if (!translations.includes('en')) {
       throw new AppsembleError('Could not find ‘en.json’. Try running extract-messages');
     }
 
@@ -136,8 +141,8 @@ export async function makeProjectPayload(
       throw new AppsembleError(`Found duplicate language codes: ‘${duplicates.join('’, ')}`);
     }
 
-    for (const languageFile of translations.filter((t) => t.endsWith('.json'))) {
-      const language = basename(languageFile, '.json');
+    for (const languageFile of translationFiles) {
+      const language = normalizeLocale(basename(languageFile, '.json'));
       const languagePath = join(messagesPath, languageFile);
       const [m] = await readData<Record<string, string>>(languagePath);
       const languageKeys = Object.keys(m).sort(compareStrings);

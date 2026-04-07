@@ -9,7 +9,7 @@ import {
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { extractAppMessages, StyleValidationError } from '@appsemble/utils';
+import { extractAppMessages, normalizeLocale, StyleValidationError } from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
 import { lookup } from 'mime-types';
@@ -237,7 +237,7 @@ export async function createAppScreenshots(
 
   for (const screenshot of screenshots) {
     const { filename } = screenshot;
-    let language = filename.slice(0, filename.indexOf('-'));
+    let language = normalizeLocale(filename.slice(0, filename.indexOf('-')));
 
     if (!supportedLanguages.has(language)) {
       language = 'unspecified';
@@ -314,7 +314,9 @@ export async function createAppReadmes(
     await Promise.all(
       readmes.map(async ({ filename, path }: TempFile) => {
         const contents = await uploadToBuffer(path);
-        let language = filename.slice(filename.indexOf('.') + 1, filename.lastIndexOf('.'));
+        let language = normalizeLocale(
+          filename.slice(filename.indexOf('.') + 1, filename.lastIndexOf('.')),
+        );
 
         if (!supportedLanguages.has(language)) {
           language = 'unspecified';
