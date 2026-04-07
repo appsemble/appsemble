@@ -1031,7 +1031,7 @@ update dependencies:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_SLUG"
-      --set "ingress.clusterIssuer=acme-issuer-dev"
+      --set "ingress.clusterIssuer=acme-issuer-review"
       --set "ingress.enabled=true"
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "ingress.tls=true"
@@ -1058,9 +1058,9 @@ update dependencies:
       --set "minio.persistence.size=1Gi"
       --set "minio.fullnameOverride=review-$CI_MERGE_REQUEST_IID-minio"
       --set "minio.ingress.hostname=console.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
-      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-review"
       --set "minio.apiIngress.hostname=api.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
-      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-review"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
       --set "backups.enabled=false"
@@ -1328,6 +1328,10 @@ provision review:
   script:
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context review
+    - |
+      REVIEW_HOST="$CI_MERGE_REQUEST_IID.$APPSEMBLE_REVIEW_DOMAIN"
+      REVIEW_IP=$(node -e 'const host = process.argv[1]; fetch(`https://dns.google/resolve?name=${host}&type=A`).then((response) => response.json()).then((data) => { const answer = (data.Answer || []).find((entry) => entry.type === 1); if (!answer) { process.stderr.write(`No A record found for ${host}\n`); process.exit(1); } process.stdout.write(answer.data); }).catch((error) => { console.error(error); process.exit(1); });' "$REVIEW_HOST")
+      echo "$REVIEW_IP $REVIEW_HOST" >> /etc/hosts
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
     - npm run scripts -- wait-for-ssl
