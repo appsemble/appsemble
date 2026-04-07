@@ -2502,6 +2502,21 @@ describe('createApp', () => {
                     "minItems": 1,
                     "type": "array",
                   },
+                  "contentSecurityPolicy": {
+                    "additionalProperties": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                    "description": "Additional CSP source expressions for the published app page.
+
+      If specified, Appsemble applies a stricter default CSP for broad directives such as \`connect-src\`,
+      \`img-src\`, \`media-src\`, \`font-src\`, and \`object-src\`. The configured source expressions
+      are then appended per directive.
+      ",
+                    "type": "object",
+                  },
                   "controller": {
                     "$ref": "#/components/schemas/ControllerDefinition",
                   },
