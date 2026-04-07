@@ -944,15 +944,13 @@ update dependencies:
       -o merge_request.remove_source_branch
 
 # Deploy the Docker image for a branch to a review environment.
-review:
+.review-deploy:
   image: dtzar/helm-kubectl:3.19.1
   stage: deploy
   needs:
     - build docker image
     - job: helm package
       artifacts: true
-  rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   environment:
     name: review/$CI_MERGE_REQUEST_IID
     url: https://$CI_MERGE_REQUEST_IID.appsemble.review
@@ -969,6 +967,20 @@ review:
     - kubectl config use-context "$CI_PROJECT_PATH:review"
     - apk add --no-cache curl jq tar openssl
     - ./scripts/cleanup-review-resources.sh
+    - |
+      set +e
+      ./scripts/pre-review-capacity-check.sh "$REVIEW_CAPACITY_MODE"
+      status=$?
+      set -e
+
+      if [ "$status" -eq 20 ] && [ "$REVIEW_CAPACITY_MODE" = 'auto' ]; then
+        echo '[review-capacity] Auto review deploy skipped to preserve two manual review slots.'
+        exit 0
+      fi
+
+      if [ "$status" -ne 0 ]; then
+        exit "$status"
+      fi
     # This is the only way to make sure the review environment can be overwritten
     - helm delete "review-$CI_MERGE_REQUEST_IID" --no-hooks --ignore-not-found || true
     - kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
@@ -976,7 +988,6 @@ review:
     - kubectl delete secret -l "owner=helm,name=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
     - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
     - kubectl delete secret review-$CI_MERGE_REQUEST_IID-mailpit-tls --ignore-not-found=true || true
-    - ./scripts/pre-review-capacity-check.sh
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
@@ -1053,6 +1064,24 @@ review:
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
       --set "backups.enabled=false"
+
+review:
+  extends: .review-deploy
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+  variables:
+    GIT_STRATEGY: fetch
+    REVIEW_CAPACITY_MODE: auto
+
+review manual:
+  extends: .review-deploy
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+      when: manual
+  allow_failure: true
+  variables:
+    GIT_STRATEGY: fetch
+    REVIEW_CAPACITY_MODE: manual
 
 # Stop a review environment.
 stop review:
@@ -1291,7 +1320,10 @@ provision review:
     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
     APPSEMBLE_STAGING_DOMAIN: 'appsemble.eu'
   needs:
-    - review
+    - job: review
+      optional: true
+    - job: review manual
+      optional: true
     - npm_ci
   script:
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
