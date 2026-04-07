@@ -1320,10 +1320,7 @@ provision review:
     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
     APPSEMBLE_STAGING_DOMAIN: 'appsemble.eu'
   needs:
-    - job: review
-      optional: true
-    - job: review manual
-      optional: true
+    - review
     - npm_ci
   script:
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
