@@ -22,7 +22,7 @@ describe('getAppsembleMessages', () => {
 
   beforeEach(() => {
     readdir.mockResolvedValue(['en.json', 'pt_BR.json', 'zh_Hans.json']);
-    readFile.mockImplementation(async (url: URL | string) => {
+    readFile.mockImplementation((url: URL | string) => {
       const path = typeof url === 'string' ? url : fileURLToPath(url);
       switch (path) {
         case `${translationsDir}en.json`:
@@ -38,16 +38,14 @@ describe('getAppsembleMessages', () => {
   });
 
   it('should normalize supported languages from filenames', async () => {
-    await expect(getSupportedLanguages()).resolves.toStrictEqual(
-      new Set(['en', 'pt-br', 'zh-hans']),
-    );
+    expect(await getSupportedLanguages()).toStrictEqual(new Set(['en', 'pt-br', 'zh-hans']));
   });
 
   it('should read normalized language requests from underscored filenames', async () => {
-    await expect(getAppsembleMessages('pt-br')).resolves.toStrictEqual({ hello: 'Olá' });
+    expect(await getAppsembleMessages('pt-br')).toStrictEqual({ hello: 'Olá' });
   });
 
   it('should merge base language messages from underscored filenames', async () => {
-    await expect(getAppsembleMessages('zh-hans', 'en')).resolves.toStrictEqual({ hello: '你好' });
+    expect(await getAppsembleMessages('zh-hans', 'en')).toStrictEqual({ hello: '你好' });
   });
 });

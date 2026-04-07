@@ -140,6 +140,7 @@ export const string = 'with-icon';
 --${boundary}--\r
 `);
     });
+
     it('should normalize locale codes from translation filenames', async () => {
       const [, gatheredData] = await makeProjectPayload({
         webpack: 'webpack.config',
