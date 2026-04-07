@@ -994,8 +994,8 @@ update dependencies:
     # Stripe webhook setup
     - |
       STRIPE_RELEASE_URL=$(curl -fsSL -H 'User-Agent: appsemble-ci' \
-        https://api.github.com/repos/stripe/stripe-cli/releases/latest \
-        | jq -er '.assets[] | select(.name | endswith("linux_x86_64.tar.gz")) | .browser_download_url')
+        'https://api.github.com/repos/stripe/stripe-cli/releases?per_page=20' \
+        | jq -er '[.[] | .assets[]? | select(.name | endswith("linux_x86_64.tar.gz")) | .browser_download_url][0]')
     - curl -fsSL -o stripe.tar.gz "$STRIPE_RELEASE_URL"
     - tar -xvf stripe.tar.gz
     - mv stripe /usr/local/bin/
