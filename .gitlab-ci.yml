@@ -1040,6 +1040,8 @@ update dependencies:
       --set "migrateTo=next"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
       --set "postgresql.primary.persistence.size=1Gi"
+      --set "postgresql.primary.resources.requests.memory=256Mi"
+      --set "postgresql.primary.resources.limits.memory=512Mi"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
