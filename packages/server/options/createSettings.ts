@@ -14,44 +14,72 @@ function sanitizeAppDefinitionForPublicSettings(
   definition: AppDefinition,
   showAppDefinition: boolean,
 ): AppDefinition {
-  if (showAppDefinition || !definition.security) {
-    return definition;
-  }
-
-  return {
-    ...definition,
-    security: {
-      ...definition.security,
-      ...(definition.security.guest
-        ? {
-            guest: {
-              ...definition.security.guest,
-              permissions: undefined,
-            },
-          }
-        : {}),
-      ...(definition.security.cron
-        ? {
-            cron: {
-              ...definition.security.cron,
-              permissions: undefined,
-            },
-          }
-        : {}),
-      ...(definition.security.roles
-        ? {
-            roles: Object.fromEntries(
-              Object.entries(definition.security.roles).map(([name, role]) => [
-                name,
-                {
-                  ...role,
+  const security =
+    showAppDefinition || !definition.security
+      ? definition.security
+      : {
+          ...definition.security,
+          ...(definition.security.guest
+            ? {
+                guest: {
+                  ...definition.security.guest,
                   permissions: undefined,
                 },
-              ]),
-            ),
-          }
-        : {}),
-    },
+              }
+            : {}),
+          ...(definition.security.cron
+            ? {
+                cron: {
+                  ...definition.security.cron,
+                  permissions: undefined,
+                },
+              }
+            : {}),
+          ...(definition.security.roles
+            ? {
+                roles: Object.fromEntries(
+                  Object.entries(definition.security.roles).map(([name, role]) => [
+                    name,
+                    {
+                      ...role,
+                      permissions: undefined,
+                    },
+                  ]),
+                ),
+              }
+            : {}),
+        };
+
+  return {
+    controller: definition.controller,
+    defaultLanguage: definition.defaultLanguage,
+    defaultPage: definition.defaultPage,
+    layout: definition.layout
+      ? {
+          debug: definition.layout.debug,
+          enabledSettings: definition.layout.enabledSettings,
+          feedback: definition.layout.feedback,
+          headerTag: definition.layout.headerTag,
+          hideTitleBar: definition.layout.hideTitleBar,
+          install: definition.layout.install,
+          login: definition.layout.login,
+          logo: definition.layout.logo,
+          navigation: definition.layout.navigation,
+          settings: definition.layout.settings,
+          titleBarText: definition.layout.titleBarText,
+        }
+      : undefined,
+    members: definition.members
+      ? {
+          phoneNumber: definition.members.phoneNumber,
+        }
+      : undefined,
+    name: definition.name,
+    notifications: definition.notifications,
+    pages: definition.pages,
+    resources: definition.resources,
+    security,
+    theme: definition.theme,
   };
 }
 
