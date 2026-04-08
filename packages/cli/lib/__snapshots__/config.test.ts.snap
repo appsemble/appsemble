@@ -5440,6 +5440,11 @@ If this is set to \`true\`, the default values for the fields won't contain data
 By setting this to \`true\`, this won’t happen.",
         "type": "boolean",
       },
+      "startDisabled": {
+        "default": false,
+        "description": "If this remapper yields true, the submit button will start disabled when the form is invalid instead of waiting until the user has pressed submit",
+        "format": "remapper",
+      },
       "title": {
         "description": "Specify a form title",
         "format": "remapper",
