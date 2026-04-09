@@ -1613,6 +1613,14 @@ declare module '@appsemble/sdk' {
     disabled?: Remapper;
 
     /**
+     * If this remapper yields true, the submit button will start disabled when the form is invalid instead of waiting until
+     * the user has pressed submit
+     *
+     * @default false
+     */
+    startDisabled?: Remapper;
+
+    /**
      * A list of objects describing each field that can be entered in the form.
      *
      * @minItems 1

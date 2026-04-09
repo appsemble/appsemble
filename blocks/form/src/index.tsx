@@ -34,6 +34,7 @@ bootstrap(
       dense = true,
       disableDefault = false,
       disabled,
+      startDisabled = false,
       display = 'flex',
       fields: initialFields,
       fullWidth = false,
@@ -68,7 +69,7 @@ bootstrap(
     const [submitting, setSubmitting] = useState(false);
     const [values, setValues] = useState(defaultValues);
     const [lastChanged, setLastChanged] = useState<string | null>(null);
-    const [triedToSubmit, setTriedToSubmit] = useState<boolean>(false);
+    const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false);
     const [longSubmission, setLongSubmission] = useState<boolean>(false);
     const [thumbnails, setThumbnails] = useState<(File | string)[]>([]);
     const [fieldsReady, setFieldsReady] = useState<Record<Field['name'], boolean>>({});
@@ -217,8 +218,8 @@ bootstrap(
         if (!isFormValid(errors, keys) || formErrors.some(Boolean)) {
           setSubmitting(false);
 
-          if (!triedToSubmit) {
-            return setTriedToSubmit(true);
+          if (!hasTriedToSubmit) {
+            return setHasTriedToSubmit(true);
           }
 
           return;
@@ -311,17 +312,17 @@ bootstrap(
         }
       }
     }, [
-      actions,
-      data,
-      errors,
+      submitting,
       fields,
+      errors,
       formErrors,
       longSubmissionDuration,
-      submitting,
-      thumbnails,
-      triedToSubmit,
-      utils,
+      hasTriedToSubmit,
+      actions,
+      data,
       values,
+      thumbnails,
+      utils,
     ]);
 
     const onPrevious = useCallback(() => {
@@ -440,6 +441,36 @@ bootstrap(
 
     const loading = dataLoading || fieldsLoading || Object.values(fieldsReady).includes(false);
 
+    const disableSubmit = useMemo((): boolean => {
+      if (loading || submitting || utils.remap(disabled, values)) {
+        return true;
+      }
+
+      if (utils.remap(startDisabled, values)) {
+        if (formErrors.some(Boolean) || !isFormValid(errors)) {
+          return true;
+        }
+      } else if (hasTriedToSubmit) {
+        if (formErrors.some(Boolean) || !isFormValid(errors)) {
+          return true;
+        }
+      } else {
+        return false;
+      }
+
+      return false;
+    }, [
+      loading,
+      submitting,
+      utils,
+      disabled,
+      values,
+      hasTriedToSubmit,
+      startDisabled,
+      formErrors,
+      errors,
+    ]);
+
     const getFieldsContainerClass = (): string => {
       switch (display) {
         case 'flex':
@@ -543,7 +574,7 @@ bootstrap(
             ))}
         </div>
 
-        {errorLink && triedToSubmit ? (
+        {errorLink && hasTriedToSubmit ? (
           <div
             className={classNames(
               styles['error-link-container'],
@@ -574,16 +605,7 @@ bootstrap(
             </Button>
           ) : null}
           {utils.remap(hideSubmitButton, values) ? null : (
-            <Button
-              color="primary"
-              disabled={Boolean(
-                loading ||
-                submitting ||
-                utils.remap(disabled, values) ||
-                (triedToSubmit && (formErrors.some(Boolean) || !isFormValid(errors))),
-              )}
-              type="submit"
-            >
+            <Button color="primary" disabled={disableSubmit} type="submit">
               {utils.formatMessage('submitLabel')}
             </Button>
           )}
