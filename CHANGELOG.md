@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.36.6](https://gitlab.com/appsemble/appsemble/-/releases/0.36.6)] - 2026-04-10
+
+### Added
+
+- Block(`form`): Added `startDisabled` parameter.
+
 ## \[[0.36.6-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.36.6-test.0)] - 2026-03-30
 
 ## \[[0.36.5](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5)] - 2026-03-25
