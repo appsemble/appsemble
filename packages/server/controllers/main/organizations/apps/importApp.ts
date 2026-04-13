@@ -15,7 +15,7 @@ import {
   uploadS3File,
 } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
-import { normalize, validateStyle } from '@appsemble/utils';
+import { normalize, normalizeLocale, validateStyle } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { lookup } from 'mime-types';
@@ -122,7 +122,7 @@ export async function importApp(ctx: Context): Promise<void> {
 
         const i18Folder = zip.folder('i18n')?.filter((filename) => filename.endsWith('json')) ?? [];
         for (const json of i18Folder) {
-          const language = json.name.slice(5, 7);
+          const language = normalizeLocale(basename(json.name, '.json'));
           const messages = await json.async('text');
           record.AppMessages = [
             await AppMessages.create(
@@ -254,8 +254,9 @@ export async function importApp(ctx: Context): Promise<void> {
             const screenshotDirectoryPath = dirname(name);
             const screenshotDirectoryName = basename(screenshotDirectoryPath);
 
-            const language = supportedLanguages.has(screenshotDirectoryName)
-              ? screenshotDirectoryName
+            const normalizedScreenshotDirectoryName = normalizeLocale(screenshotDirectoryName);
+            const language = supportedLanguages.has(normalizedScreenshotDirectoryName)
+              ? normalizedScreenshotDirectoryName
               : 'unspecified';
 
             const uploadsPath = join(tmpdir(), 'screenshots');

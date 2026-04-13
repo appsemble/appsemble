@@ -1,3 +1,7 @@
+export function normalizeLocale(language: string): string {
+  return language.replaceAll('_', '-').toLowerCase();
+}
+
 /**
  * Sort locales by specificity
  *
@@ -12,7 +16,7 @@
  * @returns A sorted list of lower case languages in order of preference.
  */
 export function sortLocales(languages: readonly string[]): string[] {
-  const copy = languages.map((language) => language.toLowerCase());
+  const copy = languages.map(normalizeLocale);
   // Compare every language to the previous in the array. The first item is skipped, since there is
   // nothing to compare against.
   for (let i = 1; i < copy.length; i += 1) {

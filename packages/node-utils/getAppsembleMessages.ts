@@ -1,12 +1,33 @@
 import { readdir, readFile } from 'node:fs/promises';
 
-import { defaultLocale } from '@appsemble/utils';
+import { defaultLocale, normalizeLocale } from '@appsemble/utils';
+
+import { AppsembleError } from './AppsembleError.js';
 
 const translationsDir = new URL('../../i18n/', import.meta.url);
 
-export async function getSupportedLanguages(): Promise<Set<string>> {
+async function getLanguageFiles(): Promise<Map<string, string>> {
   const files = await readdir(translationsDir);
-  return new Set(files.map((lang) => lang.split('.json')[0].toLowerCase()));
+  const result = new Map<string, string>();
+
+  for (const file of files) {
+    if (!file.endsWith('.json')) {
+      continue;
+    }
+
+    const language = normalizeLocale(file.slice(0, -'.json'.length));
+    if (result.has(language)) {
+      throw new AppsembleError(`Found duplicate language codes: ‘${language}’`);
+    }
+
+    result.set(language, file);
+  }
+
+  return result;
+}
+
+export async function getSupportedLanguages(): Promise<Set<string>> {
+  return new Set((await getLanguageFiles()).keys());
 }
 
 /**
@@ -20,18 +41,16 @@ export async function getAppsembleMessages(
   language: string,
   baseLanguage?: string,
 ): Promise<Record<string, string>> {
-  const lang = language.toLowerCase();
-  const baseLang = baseLanguage?.toLowerCase();
+  const lang = normalizeLocale(language);
+  const baseLang = baseLanguage ? normalizeLocale(baseLanguage) : undefined;
 
-  const languages = await getSupportedLanguages();
+  const languages = await getLanguageFiles();
   const messages = {};
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  if (baseLang && languages.has(baseLanguage)) {
+  if (baseLang && languages.has(baseLang)) {
     Object.assign(
       messages,
-      JSON.parse(await readFile(new URL(`${baseLang}.json`, translationsDir), 'utf8')),
+      JSON.parse(await readFile(new URL(languages.get(baseLang)!, translationsDir), 'utf8')),
     );
   }
 
@@ -40,17 +59,17 @@ export async function getAppsembleMessages(
       messages,
       Object.fromEntries(
         Object.entries(
-          JSON.parse(await readFile(new URL(`${lang}.json`, translationsDir), 'utf8')),
+          JSON.parse(await readFile(new URL(languages.get(lang)!, translationsDir), 'utf8')),
         ).filter(([, value]) => Boolean(value)),
       ),
     );
   }
 
-  // Fall back to reading the default locale’s messages if no core messages were found.
   if (!languages.has(lang) && (!baseLang || !languages.has(baseLang))) {
+    const defaultLanguage = normalizeLocale(defaultLocale);
     Object.assign(
       messages,
-      JSON.parse(await readFile(new URL(`${defaultLocale}.json`, translationsDir), 'utf8')),
+      JSON.parse(await readFile(new URL(languages.get(defaultLanguage)!, translationsDir), 'utf8')),
     );
   }
 

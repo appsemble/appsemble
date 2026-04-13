@@ -1,5 +1,5 @@
 import { getAppsembleMessages, getSupportedLanguages, readAsset } from '@appsemble/node-utils';
-import { defaultLocale } from '@appsemble/utils';
+import { defaultLocale, normalizeLocale } from '@appsemble/utils';
 import { Decimal } from 'decimal.js';
 import tags from 'language-tags';
 import { PDFDocument, type PDFFont, type PDFPage, rgb, StandardFonts } from 'pdf-lib';
@@ -283,10 +283,14 @@ export async function createInvoice(invoice: Invoice, lang = defaultLocale): Pro
   const baseLanguage = tags(lang)
     .subtags()
     .find((sub) => sub.type() === 'language');
-  const baseLang = baseLanguage && String(baseLanguage).toLowerCase();
+  const baseLang = baseLanguage ? normalizeLocale(String(baseLanguage)) : undefined;
   let invoiceTranslations;
-  if ((await supportedLanguages).has(baseLang!) || (await supportedLanguages).has(lang)) {
-    const coreMessages = await getAppsembleMessages(lang, baseLang);
+  const locale = normalizeLocale(lang);
+  if (
+    (baseLang && (await supportedLanguages).has(baseLang)) ||
+    (await supportedLanguages).has(locale)
+  ) {
+    const coreMessages = await getAppsembleMessages(locale, baseLang);
     invoiceTranslations = {
       invoice: coreMessages['server.invoice.invoice'],
       invoiceNumber: coreMessages['server.invoice.invoiceNumber'],
