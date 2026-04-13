@@ -967,20 +967,7 @@ update dependencies:
     - kubectl config use-context "$CI_PROJECT_PATH:review"
     - apk add --no-cache curl jq tar openssl
     - ./scripts/cleanup-review-resources.sh
-    - |
-      set +e
-      ./scripts/pre-review-capacity-check.sh "$REVIEW_CAPACITY_MODE"
-      status=$?
-      set -e
-
-      if [ "$status" -eq 20 ] && [ "$REVIEW_CAPACITY_MODE" = 'auto' ]; then
-        echo '[review-capacity] Auto review deploy skipped to preserve two manual review slots.'
-        exit 0
-      fi
-
-      if [ "$status" -ne 0 ]; then
-        exit "$status"
-      fi
+    - ./scripts/pre-review-capacity-check.sh
     # This is the only way to make sure the review environment can be overwritten
     - helm delete "review-$CI_MERGE_REQUEST_IID" --no-hooks --ignore-not-found || true
     - kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
@@ -1070,20 +1057,17 @@ update dependencies:
 review:
   extends: .review-deploy
   rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-  variables:
-    GIT_STRATEGY: fetch
-    REVIEW_CAPACITY_MODE: auto
-
-review manual:
-  extends: .review-deploy
-  rules:
+    - if: >-
+        $CI_MERGE_REQUEST_ID &&
+        $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble' &&
+        (
+          $CI_COMMIT_MESSAGE =~ /\bdeploy-review\b/ ||
+          $CI_MERGE_REQUEST_TITLE =~ /\bdeploy-review\b/ ||
+          $CI_MERGE_REQUEST_DESCRIPTION =~ /\bdeploy-review\b/
+        )
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
       when: manual
-  allow_failure: true
-  variables:
-    GIT_STRATEGY: fetch
-    REVIEW_CAPACITY_MODE: manual
+      allow_failure: true
 
 # Stop a review environment.
 stop review:

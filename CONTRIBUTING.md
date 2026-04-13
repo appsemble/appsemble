@@ -39,6 +39,12 @@ Create confidential merge requests for confidential issues like security related
 merge a confidential merge request, follow
 [this guide](https://docs.gitlab.com/user/project/merge_requests/confidential/#create-a-confidential-merge-request).
 
+#### Review deployments
+
+Review deployments are manual by default in merge request pipelines. Run the `review` job manually
+when you need one, or add `deploy-review` to the commit message, merge request title, or merge
+request description to let that pipeline deploy automatically.
+
 #### API
 
 Please follow the guidelines and best practices for naming API endpoints described
@@ -377,7 +383,6 @@ collected here that may help you build your end 2 end tests:
     ```
 - When testing a specific app you might need to test the flows of different app members with
   different roles. We generally have 3 ways of approaching this:
-
   1. **(CI only)** Seed app member accounts with roles before running the test (see
      [Restaurants](https://gitlab.com/appsemble/apps/restaurants/-/blob/main/.gitlab-ci.yml?ref_type=heads#L155))
   2. Publish the app in **demo** mode so you can freely create new app members and change their
