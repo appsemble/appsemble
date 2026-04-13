@@ -2,30 +2,13 @@
 
 set -eu
 
-MODE=${1:-manual}
 MIN_FREE_MI=${REVIEW_MIN_FREE_MEMORY_MI:-2048}
 HARD_MAX_ACTIVE=${REVIEW_HARD_MAX_ACTIVE:-8}
-RESERVED_MANUAL_SLOTS=${REVIEW_RESERVED_MANUAL_SLOTS:-2}
-AUTO_MAX_ACTIVE=$((HARD_MAX_ACTIVE - RESERVED_MANUAL_SLOTS))
-SKIP_EXIT_CODE=20
 CURRENT_IID=${CI_MERGE_REQUEST_IID:-}
 CURRENT_RELEASE=''
 
 if [ -n "$CURRENT_IID" ]; then
   CURRENT_RELEASE="review-$CURRENT_IID"
-fi
-
-case "$MODE" in
-auto | manual) ;;
-*)
-  echo "[review-capacity] Unknown mode: $MODE"
-  exit 1
-  ;;
-esac
-
-if [ "$AUTO_MAX_ACTIVE" -lt 0 ]; then
-  echo '[review-capacity] REVIEW_RESERVED_MANUAL_SLOTS must be smaller than REVIEW_HARD_MAX_ACTIVE.'
-  exit 1
 fi
 
 fetch_open_mrs() {
@@ -38,7 +21,7 @@ fetch_open_mrs() {
       tok="$GITLAB_ACCESS_TOKEN"
     fi
 
-    curl -sS --header "$hdr: $tok" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests?state=opened&order_by=created_at&sort=asc&per_page=100"
+    curl -sS --header "$hdr: $tok" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests?state=opened&per_page=100"
     return
   fi
 
@@ -46,7 +29,7 @@ fetch_open_mrs() {
 }
 
 print_open_mrs() {
-  open_mrs="$1"
+  open_mrs=$(fetch_open_mrs)
 
   echo '[review-capacity] Open MRs to consider closing/stopping:'
   if [ "$open_mrs" = '[]' ]; then
@@ -58,8 +41,7 @@ print_open_mrs() {
 }
 
 print_running_releases() {
-  releases="$1"
-  count=$(printf '%s\n' "$releases" | jq 'length')
+  count=$(printf '%s\n' "$active_releases" | jq 'length')
 
   echo '[review-capacity] Running review releases:'
   if [ "$count" -eq 0 ]; then
@@ -67,28 +49,15 @@ print_running_releases() {
     return
   fi
 
-  printf '%s\n' "$releases" | jq -r '.[] | "  - \(.name) [\(.status)]"' || true
-}
-
-skip_auto() {
-  reason="$1"
-  releases="$2"
-  open_mrs="$3"
-
-  echo "$reason"
-  print_running_releases "$releases"
-  print_open_mrs "$open_mrs"
-  exit "$SKIP_EXIT_CODE"
+  printf '%s\n' "$active_releases" | jq -r '.[] | "  - \(.name) [\(.status)]"' || true
 }
 
 fail_capacity() {
   reason="$1"
-  releases="$2"
-  open_mrs="$3"
 
   echo "$reason"
-  print_running_releases "$releases"
-  print_open_mrs "$open_mrs"
+  print_running_releases
+  print_open_mrs
   exit 1
 }
 
@@ -110,32 +79,22 @@ if [ -n "$CURRENT_RELEASE" ] && printf '%s\n' "$active_releases" | jq -e --arg c
   current_release_exists='true'
 fi
 
-open_mrs=$(fetch_open_mrs)
-current_rank=''
-if [ -n "$CURRENT_IID" ] && [ "$open_mrs" != '[]' ]; then
-  current_rank=$(printf '%s\n' "$open_mrs" | jq -r --arg iid "$CURRENT_IID" '[to_entries[] | select((.value.iid | tostring) == $iid) | .key + 1][0] // empty')
-fi
+echo "[review-capacity] active=$active_count hard-max=$HARD_MAX_ACTIVE current-release-exists=$current_release_exists"
 
-echo "[review-capacity] mode=$MODE active=$active_count auto-max=$AUTO_MAX_ACTIVE hard-max=$HARD_MAX_ACTIVE reserved-manual=$RESERVED_MANUAL_SLOTS current-release-exists=$current_release_exists"
-
-if [ "$current_release_exists" != 'true' ]; then
-  if [ "$MODE" = 'auto' ] && [ -n "$current_rank" ] && [ "$current_rank" -gt "$AUTO_MAX_ACTIVE" ]; then
-    skip_auto "[review-capacity] Auto review deploy skipped. MR !$CURRENT_IID is outside the first $AUTO_MAX_ACTIVE open review slots (rank: $current_rank)." "$active_releases" "$open_mrs"
-  fi
-
-  if [ "$MODE" = 'auto' ] && [ "$active_count" -ge "$AUTO_MAX_ACTIVE" ]; then
-    skip_auto "[review-capacity] Auto review deploy skipped. Active review releases ($active_count) reached the auto limit ($AUTO_MAX_ACTIVE)." "$active_releases" "$open_mrs"
-  fi
-
-  if [ "$MODE" = 'manual' ] && [ "$active_count" -ge "$HARD_MAX_ACTIVE" ]; then
-    fail_capacity "[review-capacity] Manual review deploy blocked. Active review releases ($active_count) reached the hard limit ($HARD_MAX_ACTIVE)." "$active_releases" "$open_mrs"
-  fi
+if [ "$current_release_exists" != 'true' ] && [ "$active_count" -ge "$HARD_MAX_ACTIVE" ]; then
+  fail_capacity "[review-capacity] Review deploy blocked. Active review releases ($active_count) reached the hard limit ($HARD_MAX_ACTIVE)."
 fi
 
 alloc=0
-for m in $(kubectl get nodes -o json | jq -r '.items[].status.allocatable.memory'); do alloc=$((alloc + $(to_mi "$m"))); done
+for memory in $(kubectl get nodes -o json | jq -r '.items[].status.allocatable.memory'); do
+  alloc=$((alloc + $(to_mi "$memory")))
+done
+
 req=0
-for m in $(kubectl get pods -A -o json | jq -r '.items[] | select(.status.phase == "Pending" or .status.phase == "Running") | .spec.containers[]?.resources.requests.memory // empty'); do req=$((req + $(to_mi "$m"))); done
+for memory in $(kubectl get pods -A -o json | jq -r '.items[] | select(.status.phase == "Pending" or .status.phase == "Running") | .spec.containers[]?.resources.requests.memory // empty'); do
+  req=$((req + $(to_mi "$memory")))
+done
+
 free=$((alloc - req))
 pressure=$(kubectl get nodes -o json | jq -r '.items[] | select(any(.status.conditions[]; .type=="MemoryPressure" and .status=="True")) | .metadata.name')
 
@@ -150,11 +109,7 @@ if [ -n "$pressure" ] || [ "$free" -lt "$MIN_FREE_MI" ]; then
     printf '%s\n' "$pressure" | sed 's/^/  - /'
   fi
 
-  if [ "$MODE" = 'auto' ]; then
-    skip_auto "$reason" "$active_releases" "$open_mrs"
-  else
-    fail_capacity "$reason" "$active_releases" "$open_mrs"
-  fi
+  fail_capacity "$reason"
 fi
 
 echo '[review-capacity] Capacity check passed.'
