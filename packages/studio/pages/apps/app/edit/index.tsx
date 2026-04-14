@@ -45,6 +45,12 @@ import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { InputList } from '../GuiEditor/Components/InputList/index.js';
 import { useApp } from '../index.js';
 
+interface ResourceUniqueConstraintConflictData {
+  code?: string;
+  fields?: string[];
+  resourceType?: string;
+}
+
 export default function EditPage(): ReactNode {
   useMeta(messages.title);
   const { app, setApp } = useApp();
@@ -188,7 +194,27 @@ export default function EditPage(): ReactNode {
       // Update App State
       setApp(data);
       setPristine(true);
-    } catch {
+    } catch (error) {
+      const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintConflictData }>(error)
+        ? error.response?.data?.data
+        : undefined;
+
+      if (
+        data?.code === 'RESOURCE_UNIQUE_CONSTRAINT_CONFLICT' &&
+        data.resourceType &&
+        Array.isArray(data.fields) &&
+        data.fields.length
+      ) {
+        push({
+          body: formatMessage(messages.uniqueConstraintConflict, {
+            fields: data.fields.map((field) => `“${field}”`).join(', '),
+            resourceType: `“${data.resourceType}”`,
+          }),
+          color: 'danger',
+        });
+        return;
+      }
+
       push(formatMessage(messages.errorUpdate));
     }
   }, [appDefinition, coreStyle, formatMessage, id, push, setApp, sharedStyle]);

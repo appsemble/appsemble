@@ -346,7 +346,11 @@ export function handleAppValidationError(ctx: Context, error: Error, app: Partia
   }
 
   if (error instanceof ResourceUniqueConstraintConflictError) {
-    throwKoaError(ctx, 409, error.message);
+    throwKoaError(ctx, 409, error.message, {
+      code: 'RESOURCE_UNIQUE_CONSTRAINT_CONFLICT',
+      fields: error.fields,
+      resourceType: error.resourceType,
+    });
   }
 
   if (isUniqueConstraintErrorLike(error)) {

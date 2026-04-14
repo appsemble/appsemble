@@ -41,6 +41,7 @@ import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appV
 // This import is required to prevent the 'unexpected usage' bug.
 import '../../../../components/MonacoEditor/custom.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
+import { messages as editorMessages } from '../edit/messages.js';
 import { useApp } from '../index.js';
 
 type TabTypes = 'general' | 'pages' | 'resources' | 'security' | 'style' | 'theme';
@@ -88,6 +89,12 @@ const tabs: GuiEditorTabs[] = [
     icon: 'fas fa-lock',
   },
 ];
+
+interface ResourceUniqueConstraintConflictData {
+  code?: string;
+  fields?: string[];
+  resourceType?: string;
+}
 
 export default function EditPage(): ReactNode {
   useMeta(messages.title);
@@ -491,6 +498,20 @@ export default function EditPage(): ReactNode {
       }
       if (definition.errors.length > 0) {
         return formatMessage(messages.yamlError);
+      }
+      const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintConflictData }>(error)
+        ? error.response?.data?.data
+        : undefined;
+      if (
+        data?.code === 'RESOURCE_UNIQUE_CONSTRAINT_CONFLICT' &&
+        data.resourceType &&
+        Array.isArray(data.fields) &&
+        data.fields.length
+      ) {
+        return formatMessage(editorMessages.uniqueConstraintConflict, {
+          fields: data.fields.map((field) => `“${field}”`).join(', '),
+          resourceType: `“${data.resourceType}”`,
+        });
       }
       if (error) {
         return `${formatMessage(messages.errorIn)} ${unsaved.join('')}`;

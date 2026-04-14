@@ -587,8 +587,15 @@ describe('patchApp', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "data": {
+          "code": "RESOURCE_UNIQUE_CONSTRAINT_CONFLICT",
+          "fields": [
+            "foo",
+          ],
+          "resourceType": "testResource",
+        },
         "error": "Conflict",
-        "message": "Can’t apply unique constraint to resource “testResource” for fields “foo” because existing resources contain duplicates.",
+        "message": "Can’t apply unique constraint to resource “testResource” for fields “foo” because existing resources contain duplicates. Update or delete the conflicting resources before publishing this app.",
         "statusCode": 409,
       }
     `);

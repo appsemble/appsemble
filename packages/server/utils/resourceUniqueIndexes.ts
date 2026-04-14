@@ -30,7 +30,7 @@ export class ResourceUniqueConstraintConflictError extends AppsembleError {
 
   constructor(resourceType: string, fields: string[]) {
     super(
-      `Can’t apply unique constraint to resource “${resourceType}” for fields ${formatFields(fields)} because existing resources contain duplicates.`,
+      `Can’t apply unique constraint to resource “${resourceType}” for fields ${formatFields(fields)} because existing resources contain duplicates. Update or delete the conflicting resources before publishing this app.`,
     );
     this.name = 'ResourceUniqueConstraintConflictError';
     this.resourceType = resourceType;
