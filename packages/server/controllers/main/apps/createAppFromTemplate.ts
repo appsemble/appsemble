@@ -204,13 +204,13 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
           seed,
         })),
       );
-      Object.entries(template.definition.resources ?? {}).map(
-        ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
-          if (positioning && enforceOrderingGroupByFields) {
-            createDynamicIndexes(enforceOrderingGroupByFields, record.id, resourceType);
-          }
-        },
-      );
+      for (const [resourceType, { enforceOrderingGroupByFields, positioning }] of Object.entries(
+        template.definition.resources ?? {},
+      )) {
+        if (positioning && enforceOrderingGroupByFields) {
+          await createDynamicIndexes(enforceOrderingGroupByFields, record.id, resourceType);
+        }
+      }
     }
 
     if (variables) {

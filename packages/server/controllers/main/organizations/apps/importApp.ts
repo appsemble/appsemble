@@ -161,18 +161,19 @@ export async function importApp(ctx: Context): Promise<void> {
             const resourcesFolder =
               zip.folder('resources')?.filter((filename) => filename.endsWith('json')) ?? [];
             if (resourcesFolder.length) {
-              Object.entries(record!.definition.resources ?? {}).map(
-                ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
-                  if (positioning && enforceOrderingGroupByFields) {
-                    createDynamicIndexes(
-                      enforceOrderingGroupByFields,
-                      record!.id,
-                      resourceType,
-                      appTransaction,
-                    );
-                  }
-                },
-              );
+              for (const [
+                resourceType,
+                { enforceOrderingGroupByFields, positioning },
+              ] of Object.entries(record!.definition.resources ?? {})) {
+                if (positioning && enforceOrderingGroupByFields) {
+                  await createDynamicIndexes(
+                    enforceOrderingGroupByFields,
+                    record!.id,
+                    resourceType,
+                    appTransaction,
+                  );
+                }
+              }
             }
 
             for (const file of resourcesFolder) {

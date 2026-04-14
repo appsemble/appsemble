@@ -238,18 +238,19 @@ export async function createApp(ctx: Context): Promise<void> {
     try {
       await appDB.transaction(async (appTransaction) => {
         if (createdApp.definition.resources) {
-          Object.entries(createdApp.definition.resources ?? {}).map(
-            ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
-              if (positioning && enforceOrderingGroupByFields) {
-                createDynamicIndexes(
-                  enforceOrderingGroupByFields,
-                  createdApp.id,
-                  resourceType,
-                  appTransaction,
-                );
-              }
-            },
-          );
+          for (const [
+            resourceType,
+            { enforceOrderingGroupByFields, positioning },
+          ] of Object.entries(createdApp.definition.resources ?? {})) {
+            if (positioning && enforceOrderingGroupByFields) {
+              await createDynamicIndexes(
+                enforceOrderingGroupByFields,
+                createdApp.id,
+                resourceType,
+                appTransaction,
+              );
+            }
+          }
         }
 
         if (createdApp.definition.cron && createdApp.definition.security?.cron) {
