@@ -30,7 +30,7 @@ export function DropdownComponent({ content, dropdown }: DropdownComponentProps)
     <Dropdown
       asButton={false}
       icon={dropdown?.icon}
-      iconClassName="is-justify-content-end is-align-items-end"
+      iconClassName="p-4 box is-align-items-center"
       label={remap(dropdown?.label, content, content) as string}
     >
       {dropdown?.options.map((option, i) => {
