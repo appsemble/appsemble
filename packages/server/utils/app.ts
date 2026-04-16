@@ -28,6 +28,7 @@ import {
   isUniqueConstraintErrorLike,
   ResourceUniqueConstraintConflictError,
   ResourceUniqueConstraintDefinitionError,
+  ResourceUniqueConstraintValueError,
 } from './resourceUniqueIndexes.js';
 import { App, AppMessages, AppReadme, AppScreenshot } from '../models/index.js';
 
@@ -351,6 +352,10 @@ export function handleAppValidationError(ctx: Context, error: Error, app: Partia
       fields: error.fields,
       resourceType: error.resourceType,
     });
+  }
+
+  if (error instanceof ResourceUniqueConstraintValueError) {
+    throwKoaError(ctx, 400, error.message);
   }
 
   if (isUniqueConstraintErrorLike(error)) {

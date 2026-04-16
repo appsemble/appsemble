@@ -686,6 +686,69 @@ describe('patchApp', () => {
     `);
   });
 
+  it('should reject adding a typed unique constraint if existing values do not comply with the field schema', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            schema: {
+              type: 'object',
+              properties: {
+                foo: { type: 'integer' },
+              },
+            },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'abc' } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: integer
+              unique:
+                - foo
+        `),
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Can’t apply unique constraint to resource “testResource” for field “foo” because some values do not comply with the field schema.",
+        "statusCode": 400,
+      }
+    `);
+  });
+
   it('should update the email settings', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },

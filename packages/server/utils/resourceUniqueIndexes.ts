@@ -2,12 +2,14 @@ import { createHash } from 'node:crypto';
 
 import { normalize, type AppDefinition, type ResourceDefinition } from '@appsemble/lang-sdk';
 import { AppsembleError, throwKoaError } from '@appsemble/node-utils';
+import { type Schema, Validator } from 'jsonschema';
 import { type Context } from 'koa';
 import { UniqueConstraintError, type Transaction } from 'sequelize';
 
 import { getAppDB } from '../models/index.js';
 
 const supportedUniqueFieldTypes = new Set(['boolean', 'integer', 'number', 'string']);
+const schemaValidator = new Validator();
 type SqlLiteralValue = boolean | Date | number | string;
 
 function formatFields(fields: string[]): string {
@@ -35,6 +37,21 @@ export class ResourceUniqueConstraintConflictError extends AppsembleError {
     this.name = 'ResourceUniqueConstraintConflictError';
     this.resourceType = resourceType;
     this.fields = fields;
+  }
+}
+
+export class ResourceUniqueConstraintValueError extends AppsembleError {
+  readonly resourceType: string;
+
+  readonly field: string;
+
+  constructor(resourceType: string, field: string) {
+    super(
+      `Can’t apply unique constraint to resource “${resourceType}” for field “${field}” because some values do not comply with the field schema.`,
+    );
+    this.name = 'ResourceUniqueConstraintValueError';
+    this.resourceType = resourceType;
+    this.field = field;
   }
 }
 
@@ -85,16 +102,101 @@ function inferUniqueFieldType(propertySchema: Record<string, any> | undefined): 
   return '';
 }
 
+function getUniqueFieldSchema(
+  resourceDefinition: ResourceDefinition,
+  field: string,
+): Schema | undefined {
+  return resourceDefinition.schema.properties?.[field] as Schema | undefined;
+}
+
+function assertUniqueConstraintFieldType(
+  resourceType: string,
+  resourceDefinition: ResourceDefinition,
+  field: string,
+): void {
+  if (
+    !inferUniqueFieldType(
+      getUniqueFieldSchema(resourceDefinition, field) as Record<string, any> | undefined,
+    )
+  ) {
+    throw new ResourceUniqueConstraintDefinitionError(resourceType, field);
+  }
+}
+
+/**
+ * Validate that resource values participating in unique constraints comply with
+ * the declared field schemas.
+ *
+ * Use this before applying unique indexes to raw resource payloads such as
+ * imported or cloned data, so invalid values fail with a user-facing `400`
+ * instead of a database cast error.
+ *
+ * @param resourceType The resource type being validated.
+ * @param resourceDefinition The resource definition that contains `unique`.
+ * @param resources The resource payloads to validate.
+ */
+export function assertResourceUniqueConstraintSchemaValues(
+  resourceType: string,
+  resourceDefinition: ResourceDefinition,
+  resources: readonly Record<string, unknown>[],
+): void {
+  const requiredFields = new Set(resourceDefinition.schema.required ?? []);
+
+  for (const fields of getUniqueConstraints(resourceDefinition)) {
+    for (const field of fields) {
+      const schema = getUniqueFieldSchema(resourceDefinition, field);
+
+      assertUniqueConstraintFieldType(resourceType, resourceDefinition, field);
+
+      const isRequired = requiredFields.has(field);
+      const validationSchema = schema
+        ? { ...schema, required: isRequired }
+        : { required: isRequired };
+      const hasInvalidValue = resources.some((resource) => {
+        const { valid } = schemaValidator.validate(resource[field], validationSchema, {
+          nestedErrors: true,
+        });
+
+        return !valid;
+      });
+
+      if (hasInvalidValue) {
+        throw new ResourceUniqueConstraintValueError(resourceType, field);
+      }
+    }
+  }
+}
+
+async function assertPersistedResourceUniqueConstraintSchemaValues(
+  appId: number,
+  resourceType: string,
+  resourceDefinition: ResourceDefinition,
+  transaction?: Transaction,
+): Promise<void> {
+  const { Resource } = await getAppDB(appId);
+  const resources = await Resource.findAll({
+    attributes: ['data'],
+    logging: false,
+    transaction,
+    where: { deleted: null, type: resourceType },
+  });
+
+  assertResourceUniqueConstraintSchemaValues(
+    resourceType,
+    resourceDefinition,
+    resources.map(({ data }) => data as Record<string, unknown>),
+  );
+}
+
 function getFieldExpression(
   sequelizeEscape: (value: SqlLiteralValue) => string,
   resourceType: string,
   resourceDefinition: ResourceDefinition,
   field: string,
 ): string {
-  const propertySchema = resourceDefinition.schema.properties?.[field] as
-    | Record<string, any>
-    | undefined;
-  const type = inferUniqueFieldType(propertySchema);
+  const type = inferUniqueFieldType(
+    getUniqueFieldSchema(resourceDefinition, field) as Record<string, any> | undefined,
+  );
 
   if (!type) {
     throw new ResourceUniqueConstraintDefinitionError(resourceType, field);
@@ -123,10 +225,9 @@ function getFieldValueLiteral(
   field: string,
   value: unknown,
 ): string {
-  const propertySchema = resourceDefinition.schema.properties?.[field] as
-    | Record<string, any>
-    | undefined;
-  const type = inferUniqueFieldType(propertySchema);
+  const type = inferUniqueFieldType(
+    getUniqueFieldSchema(resourceDefinition, field) as Record<string, any> | undefined,
+  );
 
   if (!type) {
     throw new ResourceUniqueConstraintDefinitionError(resourceType, field);
@@ -260,10 +361,18 @@ async function assertNoDuplicateResourceConstraintValues(
 async function createResourceUniqueIndex(
   appId: number,
   specification: { expressions: string[]; fields: string[]; name: string; resourceType: string },
+  resourceDefinition: ResourceDefinition,
   transaction?: Transaction,
 ): Promise<void> {
   const { sequelize } = await getAppDB(appId);
   const indexExpressions = specification.expressions.map((expression) => `(${expression})`);
+
+  await assertPersistedResourceUniqueConstraintSchemaValues(
+    appId,
+    specification.resourceType,
+    resourceDefinition,
+    transaction,
+  );
 
   await assertNoDuplicateResourceConstraintValues(
     specification.resourceType,
@@ -286,11 +395,19 @@ async function createResourceUniqueIndex(
 async function recreateResourceUniqueIndex(
   appId: number,
   specification: { expressions: string[]; fields: string[]; name: string; resourceType: string },
+  resourceDefinition: ResourceDefinition,
   transaction?: Transaction,
 ): Promise<void> {
   const { sequelize } = await getAppDB(appId);
   const previousIndexName = `${specification.name}_old`;
   const indexExpressions = specification.expressions.map((expression) => `(${expression})`);
+
+  await assertPersistedResourceUniqueConstraintSchemaValues(
+    appId,
+    specification.resourceType,
+    resourceDefinition,
+    transaction,
+  );
 
   await assertNoDuplicateResourceConstraintValues(
     specification.resourceType,
@@ -356,14 +473,19 @@ export async function syncResourceUniqueIndexes(
 
   for (const [indexName, specification] of nextIndexes) {
     const previousSpecification = previousIndexes.get(indexName);
+    const resourceDefinition = nextDefinitions?.[specification.resourceType];
+
+    if (!resourceDefinition) {
+      continue;
+    }
 
     if (!previousSpecification) {
-      await createResourceUniqueIndex(appId, specification, transaction);
+      await createResourceUniqueIndex(appId, specification, resourceDefinition, transaction);
       continue;
     }
 
     if (previousSpecification.expressions.join(',') !== specification.expressions.join(',')) {
-      await recreateResourceUniqueIndex(appId, specification, transaction);
+      await recreateResourceUniqueIndex(appId, specification, resourceDefinition, transaction);
     }
   }
 

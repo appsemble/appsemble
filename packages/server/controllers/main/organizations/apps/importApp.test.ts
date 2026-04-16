@@ -633,4 +633,65 @@ describe('importApp', () => {
 
     vi.useFakeTimers();
   });
+
+  it('should report invalid resource values on app import for typed unique constraints', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      resources: {
+        person: {
+          unique: ['age'],
+          schema: {
+            additionalProperties: false,
+            properties: {
+              age: { type: 'integer' },
+            },
+            type: 'object',
+          },
+        },
+      },
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    zip.file('icon.png', await readFixture('nodejs-logo.png'));
+    zip.file(
+      'resources/person.json',
+      Buffer.from(
+        JSON.stringify([{ age: 'abc', $clonable: false, $ephemeral: false, $seed: false }]),
+      ),
+    );
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Maintainer },
+      { where: { UserId: user.id } },
+    );
+    authorizeStudio();
+
+    const response = await request.post(
+      `/api/organizations/${organization.id}/apps/import`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'application/zip',
+        },
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message:
+          'Can’t apply unique constraint to resource “person” for field “age” because some values do not comply with the field schema.',
+        statusCode: 400,
+      },
+    });
+
+    const importedApp = await App.findOne({ where: { path: 'test-app' }, paranoid: false });
+
+    expect(importedApp).toBeNull();
+
+    vi.useFakeTimers();
+  });
 });

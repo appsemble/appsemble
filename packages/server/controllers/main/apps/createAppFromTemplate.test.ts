@@ -423,6 +423,65 @@ describe('createAppFromTemplate', () => {
     expect(clonedApp).toBeNull();
   });
 
+  it('should report invalid resource values when cloning resources for a typed unique constraint', async () => {
+    const template = await App.create({
+      path: 'invalid-unique-value-template',
+      template: true,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+      definition: {
+        defaultPage: 'People',
+        name: 'Invalid Unique Value Template',
+        pages: [{ name: 'People', blocks: [] }],
+        resources: {
+          person: {
+            unique: ['age'],
+            schema: {
+              additionalProperties: false,
+              properties: {
+                age: { type: 'integer' },
+              },
+              type: 'object',
+            },
+          },
+        },
+      },
+    });
+    await AppSnapshot.create({ AppId: template.id, yaml: stringify(template.definition) });
+
+    const { Resource } = await getAppDB(template.id);
+    await Resource.create({ clonable: true, data: { age: 'abc' }, type: 'person' });
+    const cloneName = `Invalid Age ${template.id}`;
+    const clonePath = `invalid-age-${template.id}`;
+
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.post('/api/app-templates', {
+      templateId: template.id,
+      name: cloneName,
+      description: 'Clone with invalid unique values',
+      organizationId: 'testorganization',
+      resources: true,
+    });
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message:
+          'Can’t apply unique constraint to resource “person” for field “age” because some values do not comply with the field schema.',
+        statusCode: 400,
+      },
+    });
+
+    const clonedApp = await App.findOne({
+      where: { path: clonePath },
+      paranoid: false,
+    });
+
+    expect(clonedApp).toBeNull();
+  });
+
   it('should create a new app with example assets', async () => {
     const [, template] = templates;
     vi.useRealTimers();

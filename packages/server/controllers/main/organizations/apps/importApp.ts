@@ -41,7 +41,10 @@ import { checkUserOrganizationPermissions } from '../../../../utils/authorizatio
 import { getBlockVersions } from '../../../../utils/block.js';
 import { createDynamicIndexes } from '../../../../utils/dynamicIndexes.js';
 import { processHooks, processReferenceHooks } from '../../../../utils/resource.js';
-import { syncResourceUniqueIndexes } from '../../../../utils/resourceUniqueIndexes.js';
+import {
+  assertResourceUniqueConstraintSchemaValues,
+  syncResourceUniqueIndexes,
+} from '../../../../utils/resourceUniqueIndexes.js';
 
 export async function importApp(ctx: Context): Promise<void> {
   const {
@@ -189,6 +192,15 @@ export async function importApp(ctx: Context): Promise<void> {
             const [resourceType] = resourceJsonName.split('.');
             const resourcesText = await file.async('text');
             const resources = JSON.parse(resourcesText);
+            const resourceDefinition = record!.definition.resources?.[resourceType];
+
+            if (resourceDefinition) {
+              assertResourceUniqueConstraintSchemaValues(
+                resourceType,
+                resourceDefinition,
+                resources,
+              );
+            }
 
             const createdResources = await Resource.bulkCreate(
               resources.map(

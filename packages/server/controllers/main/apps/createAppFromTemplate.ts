@@ -24,7 +24,10 @@ import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
-import { syncResourceUniqueIndexes } from '../../../utils/resourceUniqueIndexes.js';
+import {
+  assertResourceUniqueConstraintSchemaValues,
+  syncResourceUniqueIndexes,
+} from '../../../utils/resourceUniqueIndexes.js';
 
 export async function createAppFromTemplate(ctx: Context): Promise<void> {
   const {
@@ -203,6 +206,19 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
 
     if (resources) {
       const templateResources = await TemplateResource.findAll({ where: { clonable: true } });
+
+      for (const [resourceType, resourceDefinition] of Object.entries(
+        template.definition.resources ?? {},
+      )) {
+        assertResourceUniqueConstraintSchemaValues(
+          resourceType,
+          resourceDefinition,
+          templateResources
+            .filter((resource) => resource.type === resourceType)
+            .map(({ data }) => data),
+        );
+      }
+
       await RecordResource.bulkCreate(
         templateResources.map(({ data, seed, type }) => ({
           type,
