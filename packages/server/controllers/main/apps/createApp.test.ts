@@ -214,6 +214,53 @@ describe('createApp', () => {
     );
   });
 
+  it('should clean up the app if unique indexes cannot be created after app creation', async () => {
+    authorizeStudio();
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        yaml: stripIndent(`
+          name: Invalid Unique Cleanup App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      type: string
+              unique:
+                - tags
+        `),
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message:
+          'Resource “testResource” unique constraint field “tags” must have type string, integer, number, boolean, or enum.',
+        statusCode: 400,
+      },
+    });
+
+    const createdApp = await App.findOne({
+      where: { path: 'invalid-unique-cleanup-app' },
+      paranoid: false,
+    });
+
+    expect(createdApp).toBeNull();
+  });
+
   it('should create an app with supportedLanguages', async () => {
     authorizeStudio();
     const response = await request.post<AppType>(

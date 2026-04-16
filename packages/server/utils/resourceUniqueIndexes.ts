@@ -618,11 +618,6 @@ export function getResourceUniqueConstraintViolationError(
     return new ResourceUniqueConstraintViolationError(violation.resourceType, violation.fields);
   }
 
-  const [firstConstraint] = getUniqueConstraints(resourceDefinition);
-  if (firstConstraint?.length) {
-    return new ResourceUniqueConstraintViolationError(resourceType, firstConstraint);
-  }
-
   return undefined;
 }
 
