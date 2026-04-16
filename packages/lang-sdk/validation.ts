@@ -223,6 +223,7 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
       'expires',
       // XXX: is position reserved?
     ]);
+    const uniqueReservedKeywords = new Set([...reservedKeywords, 'id', '$created', '$updated']);
 
     if (reservedKeywords.has(resourceName)) {
       report(schema, 'is a reserved keyword', ['resources', resourceName]);
@@ -321,7 +322,7 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
             ? [...resourcePrefix, 'unique', constraintIdx, fieldIdx]
             : [...resourcePrefix, 'unique', constraintIdx];
 
-          if ([...reservedKeywords, 'id'].includes(field)) {
+          if (uniqueReservedKeywords.has(field)) {
             report(field, `unique field cannot be a reserved keyword: ${field}`, path);
           }
 

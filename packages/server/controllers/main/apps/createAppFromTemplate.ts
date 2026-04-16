@@ -21,7 +21,7 @@ import {
   AppSnapshot,
   getAppDB,
 } from '../../../models/index.js';
-import { setAppPath } from '../../../utils/app.js';
+import { handleAppValidationError, setAppPath } from '../../../utils/app.js';
 import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
@@ -101,9 +101,11 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
   }
 
   const path = name ? normalize(name) : normalize(template.definition.name);
+  let createdApp: App | undefined;
+  let result: Partial<App> | undefined;
   try {
     const keys = webpush.generateVAPIDKeys();
-    const result: Partial<App> = {
+    result = {
       definition: {
         ...template.definition,
         description,
@@ -131,6 +133,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     }
     await checkAppLimit(ctx, result);
     const record = await App.create(result, { include: [AppMessages, AppScreenshot, AppReadme] });
+    createdApp = record;
 
     const appStyleUpdates: Partial<App> = {};
 
@@ -326,6 +329,14 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     ctx.body = record.toJSON();
     ctx.status = 201;
   } catch (error: unknown) {
+    if (createdApp) {
+      await App.destroy({ where: { id: createdApp.id }, force: true, individualHooks: true });
+    }
+
+    if (error instanceof UniqueConstraintError && result) {
+      handleAppValidationError(ctx, error, result);
+    }
+
     if (error instanceof UniqueConstraintError) {
       throwKoaError(ctx, 409, `Another app with path “${path}” already exists`);
     }

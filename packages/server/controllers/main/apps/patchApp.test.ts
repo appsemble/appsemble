@@ -1,3 +1,4 @@
+import { type ResourceDefinition } from '@appsemble/lang-sdk';
 import { createFormData } from '@appsemble/node-utils';
 import {
   type App as AppType,
@@ -475,7 +476,7 @@ describe('patchApp', () => {
     }[];
 
     expect(indexes.map(({ name }) => name)).toContain(
-      getResourceUniqueIndexName('testResource', ['foo']),
+      getResourceUniqueIndexName('testResource', ['foo'], app.definition.resources!.testResource),
     );
   });
 
@@ -531,8 +532,92 @@ describe('patchApp', () => {
     }[];
 
     expect(indexes.map(({ name }) => name)).not.toContain(
-      getResourceUniqueIndexName('testResource', ['foo']),
+      getResourceUniqueIndexName('testResource', ['foo'], app.definition.resources!.testResource),
     );
+  });
+
+  it('should recreate unique indexes when the indexed field type changes', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            unique: ['foo'],
+            schema: { type: 'object', properties: { foo: { type: 'string' } } },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await syncResourceUniqueIndexes(app.id, undefined, app.definition.resources);
+
+    const { sequelize } = await getAppDB(app.id);
+    const previousIndexName = getResourceUniqueIndexName(
+      'testResource',
+      ['foo'],
+      app.definition.resources!.testResource,
+    );
+    const [beforePatch] = (await sequelize.query(
+      `SELECT indexdef AS "indexDefinition" FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ${sequelize.escape(previousIndexName)};`,
+    )) as [{ indexDefinition: string }[], unknown];
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: integer
+              unique:
+                - foo
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(200);
+
+    const nextResourceDefinition: ResourceDefinition = {
+      schema: {
+        additionalProperties: false,
+        properties: { foo: { type: 'integer' } },
+        type: 'object',
+      },
+      unique: ['foo'],
+    };
+    const nextIndexName = getResourceUniqueIndexName(
+      'testResource',
+      ['foo'],
+      nextResourceDefinition,
+    );
+
+    const [afterPatch] = (await sequelize.query(
+      `SELECT indexdef AS "indexDefinition" FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ${sequelize.escape(nextIndexName)};`,
+    )) as [{ indexDefinition: string }[], unknown];
+    const [removedIndex] = (await sequelize.query(
+      `SELECT indexdef AS "indexDefinition" FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ${sequelize.escape(previousIndexName)};`,
+    )) as [{ indexDefinition: string }[], unknown];
+
+    expect(beforePatch[0].indexDefinition).not.toContain('::bigint');
+    expect(afterPatch[0].indexDefinition).toContain('::bigint');
+    expect(removedIndex).toStrictEqual([]);
   });
 
   it('should reject adding a unique constraint if duplicate resources already exist', async () => {

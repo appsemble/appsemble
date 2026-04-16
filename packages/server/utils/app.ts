@@ -24,10 +24,10 @@ import sharp from 'sharp';
 
 import { argv } from './argv.js';
 import {
+  getResourceUniqueConstraintViolationErrorForDefinition,
   isUniqueConstraintErrorLike,
   ResourceUniqueConstraintConflictError,
   ResourceUniqueConstraintDefinitionError,
-  throwResourceUniqueConstraintKoaError,
 } from './resourceUniqueIndexes.js';
 import { App, AppMessages, AppReadme, AppScreenshot } from '../models/index.js';
 
@@ -355,7 +355,14 @@ export function handleAppValidationError(ctx: Context, error: Error, app: Partia
 
   if (isUniqueConstraintErrorLike(error)) {
     if (app.definition) {
-      throwResourceUniqueConstraintKoaError(ctx, app.definition, error as UniqueConstraintError);
+      const violationError = getResourceUniqueConstraintViolationErrorForDefinition(
+        app.definition,
+        error as UniqueConstraintError,
+      );
+
+      if (violationError) {
+        throwKoaError(ctx, 409, violationError.message);
+      }
     }
 
     throwKoaError(

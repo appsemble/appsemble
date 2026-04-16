@@ -1540,6 +1540,37 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should report reserved metadata fields in unique constraints', async () => {
+    const app = createTestApp();
+    app.resources!.person.schema.properties = {
+      $created: { type: 'string', format: 'date-time' },
+      $updated: { type: 'string', format: 'date-time' },
+      name: { type: 'string' },
+    };
+    app.resources!.person.unique = [
+      ['$created', 'name'],
+      ['$updated', 'name'],
+    ];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'unique field cannot be a reserved keyword: $created',
+        '$created',
+        undefined,
+        ['resources', 'person', 'unique', 0, 0],
+      ),
+      new ValidationError(
+        'unique field cannot be a reserved keyword: $updated',
+        '$updated',
+        undefined,
+        ['resources', 'person', 'unique', 1, 0],
+      ),
+    ]);
+  });
+
   it('should report duplicate unique constraints after normalization', async () => {
     const app = createTestApp();
     app.resources!.person.schema.properties = {

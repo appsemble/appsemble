@@ -1,7 +1,7 @@
 import { getRemapperContext } from '@appsemble/node-utils';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { compareApps, getApp } from './app.js';
+import { compareApps, getApp, handleAppValidationError } from './app.js';
 import { setArgv } from './argv.js';
 import { App, AppMessages, Organization } from '../models/index.js';
 import { options } from '../options/options.js';
@@ -240,6 +240,43 @@ describe('app', () => {
       // @ts-expect-error 2345 argument of type is not assignable to parameter of type
       // (strictNullChecks)
       expect(apps.sort(compareApps)).toMatchObject([a, b, c, d, e]);
+    });
+  });
+
+  describe('handleAppValidationError', () => {
+    it('should fall back to the duplicate app path response for non-resource unique errors', () => {
+      const thrown = new Error('ctx.throw');
+      const ctx = {
+        response: {},
+        throw() {
+          throw thrown;
+        },
+      } as any;
+      const error = Object.assign(new Error('duplicate key value violates unique constraint'), {
+        name: 'SequelizeUniqueConstraintError',
+        original: {
+          code: '23505',
+          constraint: 'App_path_OrganizationId_key',
+        },
+      });
+
+      expect(() =>
+        handleAppValidationError(ctx, error, {
+          OrganizationId: 'test-organization',
+          definition: { name: 'Test App', defaultPage: 'Test Page', pages: [] },
+          path: 'test-app',
+        }),
+      ).toThrow(thrown);
+
+      expect(ctx.response).toStrictEqual({
+        body: {
+          data: undefined,
+          error: 'Conflict',
+          message: 'Another app with path “@test-organization/test-app” already exists',
+          statusCode: 409,
+        },
+        status: 409,
+      });
     });
   });
 });

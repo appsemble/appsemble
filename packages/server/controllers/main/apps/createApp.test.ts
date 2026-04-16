@@ -27,6 +27,7 @@ import {
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { decrypt } from '../../../utils/crypto.js';
+import { getResourceUniqueIndexName } from '../../../utils/resourceUniqueIndexes.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
 import { createTestDBWithUser } from '../../../utils/test/testSchema.js';
 
@@ -167,6 +168,50 @@ describe('createApp', () => {
     `);
     const { data: retrieved } = await request.get(`/api/apps/${createdResponse.data.id}`);
     expect(retrieved).toStrictEqual(createdResponse.data);
+  });
+
+  it('should create unique indexes for resources on app creation', async () => {
+    authorizeStudio();
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: string
+              unique:
+                - foo
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(201);
+
+    const { sequelize } = await getAppDB(response.data.id!);
+    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+      name: string;
+    }[];
+
+    expect(indexes.map(({ name }) => name)).toContain(
+      getResourceUniqueIndexName(
+        'testResource',
+        ['foo'],
+        response.data.definition.resources!.testResource,
+      ),
+    );
   });
 
   it('should create an app with supportedLanguages', async () => {

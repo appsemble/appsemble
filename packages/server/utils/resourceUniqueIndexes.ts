@@ -155,11 +155,27 @@ function getFieldValueLiteral(
  *
  * @param resourceType The resource type the constraint belongs to.
  * @param fields The fields that participate in the uniqueness constraint.
+ * @param resourceDefinition The resource definition used to derive field-type-specific index names.
  * @returns A stable index name derived from the resource type and fields.
  */
-export function getResourceUniqueIndexName(resourceType: string, fields: string[]): string {
+export function getResourceUniqueIndexName(
+  resourceType: string,
+  fields: string[],
+  resourceDefinition?: ResourceDefinition,
+): string {
+  const normalizedFields = [...fields].toSorted();
   const hash = createHash('sha1')
-    .update(`${resourceType}:${fields.toSorted().join('\0')}`)
+    .update(
+      `${resourceType}:${normalizedFields
+        .map((field) => {
+          const propertySchema = resourceDefinition?.schema.properties?.[field] as
+            | Record<string, any>
+            | undefined;
+
+          return `${field}:${inferUniqueFieldType(propertySchema) || 'unknown'}`;
+        })
+        .join('\0')}`,
+    )
     .digest('hex');
   const normalizedType = normalize(resourceType).replaceAll('-', '_').slice(0, 20) || 'resource';
 
@@ -179,7 +195,7 @@ function getResourceUniqueIndexSpecification(
       getFieldExpression(sequelizeEscape, resourceType, resourceDefinition, field),
     ),
     fields: normalizedFields,
-    name: getResourceUniqueIndexName(resourceType, normalizedFields),
+    name: getResourceUniqueIndexName(resourceType, normalizedFields, resourceDefinition),
     resourceType,
   };
 }
@@ -247,6 +263,7 @@ async function createResourceUniqueIndex(
   transaction?: Transaction,
 ): Promise<void> {
   const { sequelize } = await getAppDB(appId);
+  const indexExpressions = specification.expressions.map((expression) => `(${expression})`);
 
   await assertNoDuplicateResourceConstraintValues(
     specification.resourceType,
@@ -259,11 +276,44 @@ async function createResourceUniqueIndex(
   await sequelize.query(
     `
       CREATE UNIQUE INDEX IF NOT EXISTS "${specification.name}"
-      ON "Resource" (${specification.expressions.join(', ')})
+      ON "Resource" (${indexExpressions.join(', ')})
       WHERE type = ${sequelize.escape(specification.resourceType)} AND deleted IS NULL;
     `,
     { transaction },
   );
+}
+
+async function recreateResourceUniqueIndex(
+  appId: number,
+  specification: { expressions: string[]; fields: string[]; name: string; resourceType: string },
+  transaction?: Transaction,
+): Promise<void> {
+  const { sequelize } = await getAppDB(appId);
+  const previousIndexName = `${specification.name}_old`;
+  const indexExpressions = specification.expressions.map((expression) => `(${expression})`);
+
+  await assertNoDuplicateResourceConstraintValues(
+    specification.resourceType,
+    specification.fields,
+    specification.expressions,
+    appId,
+    transaction,
+  );
+
+  await sequelize.query(`DROP INDEX IF EXISTS "${previousIndexName}";`, { transaction });
+  await sequelize.query(
+    `ALTER INDEX IF EXISTS "${specification.name}" RENAME TO "${previousIndexName}";`,
+    { transaction },
+  );
+  await sequelize.query(
+    `
+      CREATE UNIQUE INDEX "${specification.name}"
+      ON "Resource" (${indexExpressions.join(', ')})
+      WHERE type = ${sequelize.escape(specification.resourceType)} AND deleted IS NULL;
+    `,
+    { transaction },
+  );
+  await sequelize.query(`DROP INDEX IF EXISTS "${previousIndexName}";`, { transaction });
 }
 
 async function dropResourceUniqueIndex(
@@ -305,8 +355,15 @@ export async function syncResourceUniqueIndexes(
   const nextIndexes = getDesiredResourceUniqueIndexes(escapeValue, nextDefinitions);
 
   for (const [indexName, specification] of nextIndexes) {
-    if (!previousIndexes.has(indexName)) {
+    const previousSpecification = previousIndexes.get(indexName);
+
+    if (!previousSpecification) {
       await createResourceUniqueIndex(appId, specification, transaction);
+      continue;
+    }
+
+    if (previousSpecification.expressions.join(',') !== specification.expressions.join(',')) {
+      await recreateResourceUniqueIndex(appId, specification, transaction);
     }
   }
 
@@ -421,7 +478,7 @@ export function resolveResourceUniqueConstraint(
 
   for (const [resourceType, resourceDefinition] of Object.entries(definition.resources)) {
     for (const fields of getUniqueConstraints(resourceDefinition)) {
-      if (getResourceUniqueIndexName(resourceType, fields) === constraintName) {
+      if (getResourceUniqueIndexName(resourceType, fields, resourceDefinition) === constraintName) {
         return { fields, resourceType };
       }
     }
@@ -509,6 +566,31 @@ export function throwResourceUniqueConstraintKoaError(
   }
 
   throw error;
+}
+
+/**
+ * Convert a DB unique constraint error into a resource-specific domain error by
+ * resolving it against a full app definition.
+ *
+ * Use this in app-level flows where the failing unique constraint may belong to
+ * any resource type in the app, but callers still want to decide themselves how
+ * to handle unresolved unique errors.
+ *
+ * @param definition The app definition used to resolve the constraint name.
+ * @param error The unique constraint error thrown by Sequelize/PostgreSQL.
+ * @returns A typed resource uniqueness violation error, if it can be resolved.
+ */
+export function getResourceUniqueConstraintViolationErrorForDefinition(
+  definition: AppDefinition | Partial<AppDefinition> | undefined,
+  error: UniqueConstraintError,
+): ResourceUniqueConstraintViolationError | undefined {
+  const violation = resolveResourceUniqueConstraint(definition, getConstraintName(error));
+
+  if (violation) {
+    return new ResourceUniqueConstraintViolationError(violation.resourceType, violation.fields);
+  }
+
+  return undefined;
 }
 
 /**
