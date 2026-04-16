@@ -7,7 +7,6 @@ import { pipeline } from 'node:stream/promises';
 
 import { AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
-  AppsembleError,
   assertKoaCondition,
   getSupportedLanguages,
   handleValidatorResult,
@@ -357,12 +356,7 @@ export async function importApp(ctx: Context): Promise<void> {
         await App.destroy({ where: { id: record.id }, force: true, individualHooks: true });
       }
 
-      if (error instanceof AppsembleError) {
-        ctx.status = 204;
-        return;
-      }
-      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
-      ctx.throw(error);
+      throw error;
     }
     ctx.body = rec.toJSON();
     ctx.status = 201;

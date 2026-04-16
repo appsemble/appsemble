@@ -2,14 +2,12 @@ import {
   assertKoaCondition,
   getS3File,
   getS3FileStats,
-  throwKoaError,
   updateCompanionContainers,
   uploadS3File,
 } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import { type Context } from 'koa';
-import { UniqueConstraintError } from 'sequelize';
 import webpush from 'web-push';
 import { parseDocument } from 'yaml';
 
@@ -333,12 +331,8 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       await App.destroy({ where: { id: createdApp.id }, force: true, individualHooks: true });
     }
 
-    if (error instanceof UniqueConstraintError && result) {
-      handleAppValidationError(ctx, error, result);
-    }
-
-    if (error instanceof UniqueConstraintError) {
-      throwKoaError(ctx, 409, `Another app with path “${path}” already exists`);
+    if (result) {
+      handleAppValidationError(ctx, error as Error, result);
     }
 
     throw error;

@@ -575,4 +575,62 @@ describe('importApp', () => {
 
     vi.useFakeTimers();
   });
+
+  it('should report invalid unique constraint definitions on app import', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      resources: {
+        person: {
+          unique: ['tags'],
+          schema: {
+            additionalProperties: false,
+            properties: {
+              tags: {
+                items: { type: 'string' },
+                type: 'array',
+              },
+            },
+            type: 'object',
+          },
+        },
+      },
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    zip.file('icon.png', await readFixture('nodejs-logo.png'));
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Maintainer },
+      { where: { UserId: user.id } },
+    );
+    authorizeStudio();
+
+    const response = await request.post(
+      `/api/organizations/${organization.id}/apps/import`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'application/zip',
+        },
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message:
+          'Resource “person” unique constraint field “tags” must have type string, integer, number, boolean, or enum.',
+        statusCode: 400,
+      },
+    });
+
+    const importedApp = await App.findOne({ where: { path: 'test-app' }, paranoid: false });
+
+    expect(importedApp).toBeNull();
+
+    vi.useFakeTimers();
+  });
 });

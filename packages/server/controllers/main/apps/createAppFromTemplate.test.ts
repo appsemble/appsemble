@@ -366,6 +366,63 @@ describe('createAppFromTemplate', () => {
     expect(clonedApp).toBeNull();
   });
 
+  it('should report invalid unique constraint definitions when cloning a template', async () => {
+    const template = await App.create({
+      path: 'invalid-unique-template',
+      template: true,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+      definition: {
+        defaultPage: 'People',
+        name: 'Invalid Unique Template',
+        pages: [{ name: 'People', blocks: [] }],
+        resources: {
+          person: {
+            unique: ['tags'],
+            schema: {
+              additionalProperties: false,
+              properties: {
+                tags: {
+                  items: { type: 'string' },
+                  type: 'array',
+                },
+              },
+              type: 'object',
+            },
+          },
+        },
+      },
+    });
+    await AppSnapshot.create({ AppId: template.id, yaml: stringify(template.definition) });
+
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.post('/api/app-templates', {
+      templateId: template.id,
+      name: 'Invalid Unique Template Clone',
+      description: 'Clone with invalid unique fields',
+      organizationId: 'testorganization',
+      resources: false,
+    });
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message:
+          'Resource “person” unique constraint field “tags” must have type string, integer, number, boolean, or enum.',
+        statusCode: 400,
+      },
+    });
+
+    const clonedApp = await App.findOne({
+      where: { path: 'invalid-unique-template-clone' },
+      paranoid: false,
+    });
+
+    expect(clonedApp).toBeNull();
+  });
+
   it('should create a new app with example assets', async () => {
     const [, template] = templates;
     vi.useRealTimers();
