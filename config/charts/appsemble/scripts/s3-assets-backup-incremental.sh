@@ -145,7 +145,8 @@ if [ "$DRY_RUN" != "true" ] && [ "$ENABLE_MONTHLY_FULL_SNAPSHOT" = "true" ] && [
 fi
 
 if [ "$DRY_RUN" != "true" ] && printf '%s' "$ARCHIVE_RETENTION_DAYS" | grep -Eq '^[0-9]+$' && [ "$ARCHIVE_RETENTION_DAYS" -gt 0 ]; then
-  cutoff_archive="$(date -u -d "${ARCHIVE_RETENTION_DAYS} days ago" +%Y%m%dT%H%M%SZ)"
+  cutoff_archive_epoch="$(( $(date -u +%s) - ARCHIVE_RETENTION_DAYS * 86400 ))"
+  cutoff_archive="$(date -u -d "@${cutoff_archive_epoch}" +%Y%m%dT%H%M%SZ)"
   archive_root="${DST_REMOTE_NAME}:${DST_S3_BUCKET}/${BACKUP_PREFIX}/archive"
 
   log "Pruning archive directories older than $ARCHIVE_RETENTION_DAYS days (cutoff: $cutoff_archive)"
@@ -167,7 +168,16 @@ if [ "$DRY_RUN" != "true" ] && printf '%s' "$ARCHIVE_RETENTION_DAYS" | grep -Eq 
 fi
 
 if [ "$DRY_RUN" != "true" ] && printf '%s' "$FULL_SNAPSHOT_RETENTION_MONTHS" | grep -Eq '^[0-9]+$' && [ "$FULL_SNAPSHOT_RETENTION_MONTHS" -gt 0 ]; then
-  cutoff_snapshot="$(date -u -d "${FULL_SNAPSHOT_RETENTION_MONTHS} months ago" +%Y-%m-01)"
+  current_year="$(date -u +%Y)"
+  current_month="$(date -u +%m | sed 's/^0*//')"
+  if [ -z "$current_month" ]; then
+    current_month="0"
+  fi
+
+  cutoff_total_months="$(( current_year * 12 + current_month - 1 - FULL_SNAPSHOT_RETENTION_MONTHS ))"
+  cutoff_year="$(( cutoff_total_months / 12 ))"
+  cutoff_month="$(( cutoff_total_months % 12 + 1 ))"
+  cutoff_snapshot="$(printf '%04d-%02d-01' "$cutoff_year" "$cutoff_month")"
   snapshot_root="${DST_REMOTE_NAME}:${DST_S3_BUCKET}/${BACKUP_PREFIX}/snapshots"
 
   log "Pruning monthly snapshots older than $FULL_SNAPSHOT_RETENTION_MONTHS months (cutoff: $cutoff_snapshot)"
