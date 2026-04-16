@@ -18,6 +18,7 @@
   - [Groups](#groups)
   - [Assets](#assets)
   - [Resources](#resources)
+  - [Backup restore](#backup-restore)
   - [Cronjobs](#cronjobs)
 - [License](#license)
 
@@ -303,6 +304,24 @@ And resources can also be updated when they contain an id in the JSON file.
 
 ```sh
 appsemble resource update --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/*
+```
+
+### Backup restore
+
+The Appsemble CLI can be used to restore app and database data from a backup file created by
+`backup-production-data` (for example, `npm run appsemble -- backup-production-data`). Backup files
+use the format `<backupsFilename>_<YYYYMMDDHHmmssSSS>.sql.gz` (for example,
+`appsemble_prod_backup_20250101093045123.sql.gz`). Use the latest backup filename (for example by
+checking it with `rclone`) and your object storage credentials:
+
+```sh
+npm run appsemble -- restore-data-from-backup --restoreBackupFilename <backupsFilename_YYYYMMDDHHmmssSSS.sql.gz> --backupsHost <your-object-storage-host> --backupsAccessKey <your-backups-access-key> --backupsSecretKey <your-backups-secret-key>
+```
+
+After restoring the backup, run the re-encryption command:
+
+```sh
+npm run appsemble -- reencrypt-secrets --old-aes-secret <old-aes-secret>
 ```
 
 ### Cronjobs
