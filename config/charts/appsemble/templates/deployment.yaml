@@ -48,11 +48,7 @@ spec:
 {{ include "appsemble.s3" . | indent 12 }}
 {{ include "appsemble.sentry" . | indent 12 }}
             - name: HOST
-              {{ if .Values.ingress.enabled -}}
-              value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
-              {{- else }}
-              value: http://{{ include "appsemble.fullname" . }}
-              {{- end }}
+              value: {{ include "appsemble.host" . }}
             - name: FORCE_PROTOCOL_HTTPS
               value: {{ .Values.forceProtocolHttps | quote }}
             {{ if .Values.ingress.enabled -}}

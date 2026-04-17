@@ -64,7 +64,26 @@ Create chart name and version as used by the chart label.
 Get the protocol on which Appsemble is accessible.
 */}}
 {{- define "appsemble.protocol" -}}
+{{- if .Values.ingress.enabled -}}
 http{{ if or .Values.forceProtocolHttps .Values.ingress.tls }}s{{ end }}://
+{{- else if .Values.route.enabled -}}
+https://
+{{- else -}}
+http://
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the external host on which Appsemble is accessible.
+*/}}
+{{- define "appsemble.host" -}}
+{{- if .Values.ingress.enabled -}}
+{{ include "appsemble.protocol" . }}{{ .Values.ingress.host }}
+{{- else if .Values.route.enabled -}}
+{{ include "appsemble.protocol" . }}{{ .Values.route.host }}
+{{- else -}}
+http://{{ include "appsemble.fullname" . }}
+{{- end -}}
 {{- end -}}
 
 {{/*
