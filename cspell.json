@@ -201,6 +201,7 @@
     "Totp",
     "otpauth",
     "reencrypted",
-    "datname"
+    "datname",
+    "securitytxt"
   ]
 }

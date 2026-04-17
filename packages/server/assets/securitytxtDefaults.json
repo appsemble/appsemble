@@ -1,0 +1,6 @@
+{
+  "expires": "2026-12-31T00:00:00Z",
+  "canonicalPath": "/.well-known/security.txt",
+  "policy": "https://gitlab.com/appsemble/appsemble/-/blob/main/SECURITY.md",
+  "preferredLanguages": "en, nl"
+}
