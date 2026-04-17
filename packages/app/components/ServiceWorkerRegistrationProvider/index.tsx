@@ -35,6 +35,38 @@ const apiVersionUrl = `${apiUrl}/api`;
 // CSpell:ignore cooldown
 const VERSION_CHECK_COOLDOWN_MS = 60_000;
 
+interface ServiceWorkerNotificationMessage {
+  notification?: {
+    link?: string;
+  };
+  type?: string;
+}
+
+function isNotificationTargetingCurrentPage(link: string): boolean {
+  const notificationUrl = new URL(link, window.location.origin);
+
+  if (notificationUrl.origin !== window.location.origin) {
+    return false;
+  }
+
+  const linkSegments = notificationUrl.pathname.split('/').filter(Boolean);
+  if (!linkSegments.length) {
+    return false;
+  }
+
+  const currentSegments = window.location.pathname.split('/').filter(Boolean);
+  const matches = (segments: string[]): boolean =>
+    linkSegments.every((segment, index) => segments[index] === segment);
+
+  return matches(currentSegments) || matches(currentSegments.slice(1));
+}
+
+export const pageReloader = {
+  reload(): void {
+    window.location.reload();
+  },
+};
+
 export function ServiceWorkerRegistrationProvider({
   children,
   serviceWorkerRegistrationPromise,
@@ -52,12 +84,30 @@ export function ServiceWorkerRegistrationProvider({
         return;
       }
       hasReloadedForControllerChange.current = true;
-      window.location.reload();
+      pageReloader.reload();
     };
 
     navigator.serviceWorker?.addEventListener('controllerchange', onControllerChange);
     return () =>
       navigator.serviceWorker?.removeEventListener('controllerchange', onControllerChange);
+  }, []);
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent<ServiceWorkerNotificationMessage>): void => {
+      if (event.data?.type !== 'appsemble.notification') {
+        return;
+      }
+
+      const link = event.data.notification?.link;
+      if (!link || !isNotificationTargetingCurrentPage(link)) {
+        return;
+      }
+
+      pageReloader.reload();
+    };
+
+    navigator.serviceWorker?.addEventListener('message', onMessage);
+    return () => navigator.serviceWorker?.removeEventListener('message', onMessage);
   }, []);
 
   useEffect(() => {

@@ -1,11 +1,6 @@
 import { partialNormalized } from '@appsemble/utils';
 
-import {
-  cacheFirst,
-  handleModifyAndInvalidateCache,
-  requestFirst,
-  staleWhileRevalidate,
-} from './utils.js';
+import { cacheFirst, handleModifyAndInvalidateCache, requestFirst } from './utils.js';
 
 /**
  * Map all requests to a caching behavior based on the HTTP method and URL.
@@ -39,9 +34,9 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
-  // Cache data endpoints using stale-while-revalidate strategy
+  // Resource data should prefer fresh responses and only fall back to cache offline.
   if (/^\/api\/apps\/\d+\/resources\/[^/?]+/.test(pathname)) {
-    event.respondWith(staleWhileRevalidate(request));
+    event.respondWith(requestFirst(request));
     return;
   }
 

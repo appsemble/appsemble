@@ -4,7 +4,10 @@ import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ServiceWorkerRegistrationProvider, useServiceWorkerRegistration } from './index.js';
+import * as ServiceWorkerRegistrationProviderModule from './index.js';
+
+const { ServiceWorkerRegistrationProvider, useServiceWorkerRegistration } =
+  ServiceWorkerRegistrationProviderModule;
 
 const { axiosGet, requestUse, requestEject, getUri } = vi.hoisted(() => ({
   axiosGet: vi.fn(),
@@ -36,6 +39,7 @@ vi.mock('@sentry/browser', () => ({
 
 let latestContext: ReturnType<typeof useServiceWorkerRegistration> | undefined;
 let requestInterceptor: ((config: { url: string }) => Promise<{ url: string }>) | undefined;
+let serviceWorkerListeners: Record<string, (event: any) => void> = {};
 
 function Consumer(): ReactNode {
   latestContext = useServiceWorkerRegistration();
@@ -73,6 +77,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   latestContext = undefined;
   requestInterceptor = undefined;
+  serviceWorkerListeners = {};
   localStorage.clear();
 
   axiosGet.mockReset();
@@ -94,8 +99,14 @@ beforeEach(() => {
     configurable: true,
     value: {
       controller: {},
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      addEventListener: vi.fn((type, listener) => {
+        serviceWorkerListeners[type] = listener;
+      }),
+      removeEventListener: vi.fn((type, listener) => {
+        if (serviceWorkerListeners[type] === listener) {
+          delete serviceWorkerListeners[type];
+        }
+      }),
     },
   });
 });
@@ -240,6 +251,52 @@ describe('ServiceWorkerRegistrationProvider', () => {
     expect(caches.delete).not.toHaveBeenCalled();
     expect(waiting.postMessage).not.toHaveBeenCalled();
     expect(registration.update).toHaveBeenCalledTimes(1);
+  });
+
+  it('should reload when a push notification targets the current page', async () => {
+    const registration = createRegistration();
+    const reloadSpy = vi
+      .spyOn(ServiceWorkerRegistrationProviderModule.pageReloader, 'reload')
+      .mockImplementation(vi.fn());
+
+    window.history.pushState({}, '', '/nl/feedback');
+    renderProvider(registration);
+
+    await waitFor(() => expect(serviceWorkerListeners.message).toBeTruthy());
+
+    await act(() => {
+      serviceWorkerListeners.message?.({
+        data: {
+          type: 'appsemble.notification',
+          notification: { link: 'feedback' },
+        },
+      });
+    });
+
+    expect(reloadSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should ignore push notifications for another page', async () => {
+    const registration = createRegistration();
+    const reloadSpy = vi
+      .spyOn(ServiceWorkerRegistrationProviderModule.pageReloader, 'reload')
+      .mockImplementation(vi.fn());
+
+    window.history.pushState({}, '', '/nl/updates');
+    renderProvider(registration);
+
+    await waitFor(() => expect(serviceWorkerListeners.message).toBeTruthy());
+
+    await act(() => {
+      serviceWorkerListeners.message?.({
+        data: {
+          type: 'appsemble.notification',
+          notification: { link: 'feedback' },
+        },
+      });
+    });
+
+    expect(reloadSpy).not.toHaveBeenCalled();
   });
 
   it('should register a controllerchange listener on the service worker container', async () => {
