@@ -139,6 +139,8 @@ describe('getAppLanguages', () => {
   });
 
   it('should include defaults for app messages if override is set to false', async () => {
+    const blockName = '@xkcd/get-app-languages-standing';
+    const blockVersion = '9.9.9';
     const organization = await Organization.create({
       id: 'xkcd',
       name: 'xkcd',
@@ -149,8 +151,8 @@ describe('getAppLanguages', () => {
       role: PredefinedOrganizationRole.Maintainer,
     });
     const formData = new FormData();
-    formData.append('name', '@xkcd/standing');
-    formData.append('version', '1.32.9');
+    formData.append('name', blockName);
+    formData.append('version', blockVersion);
     formData.append('files', createFixtureStream('standing.png'), {
       filename: encodeURIComponent('build/standing.png'),
     });
@@ -166,17 +168,19 @@ describe('getAppLanguages', () => {
     );
 
     await authorizeClientCredentials('blocks:write');
-    await request.post('/api/blocks', formData);
+    const { status } = await request.post('/api/blocks', formData);
+
+    expect(status).toBe(201);
     await BlockVersion.findOne({
-      where: { version: '1.32.9', OrganizationId: 'xkcd', name: 'standing' },
+      where: { version: blockVersion, OrganizationId: 'xkcd', name: 'get-app-languages-standing' },
       include: [BlockMessages],
     });
     await app.update({
       definition: {
         ...app.definition,
         pages: [
-          { name: 'test-page', blocks: [{ type: '@xkcd/standing', version: '1.32.9' }] },
-          { name: 'test-page-2', blocks: [{ type: '@xkcd/standing', version: '1.32.9' }] },
+          { name: 'test-page', blocks: [{ type: blockName, version: blockVersion }] },
+          { name: 'test-page-2', blocks: [{ type: blockName, version: blockVersion }] },
         ],
       },
     });
@@ -227,8 +231,8 @@ describe('getAppLanguages', () => {
               'pages.test-page-2.blocks.0.test': 'foo',
             },
             blocks: {
-              '@xkcd/standing': {
-                '1.32.9': {
+              [blockName]: {
+                [blockVersion]: {
                   test: 'foo',
                 },
               },
@@ -255,8 +259,8 @@ describe('getAppLanguages', () => {
               'pages.test-page-2.blocks.0.test': 'bar',
             },
             blocks: {
-              '@xkcd/standing': {
-                '1.32.9': {
+              [blockName]: {
+                [blockVersion]: {
                   test: 'bar',
                 },
               },

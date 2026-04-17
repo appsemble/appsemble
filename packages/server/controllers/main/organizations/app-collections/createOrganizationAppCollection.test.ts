@@ -1,7 +1,7 @@
 import { createFixtureStream, createFormData } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   AppCollection,
@@ -25,6 +25,7 @@ describe('createOrganizationAppCollection', () => {
   });
 
   beforeEach(async () => {
+    vi.useRealTimers();
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',

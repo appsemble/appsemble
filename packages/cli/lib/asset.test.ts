@@ -2,7 +2,6 @@ import { getS3FileBuffer, readFixture, resolveFixture } from '@appsemble/node-ut
 import { createServer, createTestUser, models, setArgv } from '@appsemble/server';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
-import sharp from 'sharp';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { publishAsset } from './asset.js';
@@ -70,15 +69,13 @@ describe('asset', () => {
       const asset = (await Asset.findOne())!;
       expect(asset).toStrictEqual(
         expect.objectContaining({
-          filename: 'tux.avif',
+          filename: 'tux.png',
           name: 'test',
-          mime: 'image/avif',
+          mime: 'image/png',
         }),
       );
       expect(await getS3FileBuffer(`app-${app.id}`, asset.id)).toStrictEqual(
-        await sharp(await readFixture('apps/tux.png'))
-          .toFormat('avif')
-          .toBuffer(),
+        await readFixture('apps/tux.png'),
       );
     });
 

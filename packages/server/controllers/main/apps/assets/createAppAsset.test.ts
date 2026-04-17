@@ -1,8 +1,15 @@
-import { createFixtureStream, createFormData, getS3FileBuffer } from '@appsemble/node-utils';
+import * as nodeUtils from '@appsemble/node-utils';
+import {
+  createFixtureStream,
+  createFormData,
+  getS3FileBuffer,
+  readFixture,
+} from '@appsemble/node-utils';
 import { type Asset as AssetType, PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import FormData from 'form-data';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,
@@ -58,6 +65,10 @@ describe('createAppAsset', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should be able to create an asset', async () => {
@@ -185,6 +196,68 @@ describe('createAppAsset', () => {
       }
     `,
     );
+  });
+
+  it('should sniff image uploads from content', async () => {
+    authorizeStudio();
+    const image = await readFixture('10x50.png');
+    const form = new FormData();
+    form.append('file', image, {
+      contentType: 'application/octet-stream',
+      filename: 'uploaded.bin',
+    });
+
+    const response = await request.post<Asset>(`/api/apps/${app.id}/assets`, form);
+
+    expect(response.status).toBe(201);
+    expect(response.data).toMatchObject({
+      filename: 'uploaded.bin',
+      mime: 'image/png',
+    });
+
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.findByPk(response.data.id);
+
+    expect(asset).toMatchObject({
+      filename: 'uploaded.bin',
+      mime: 'image/png',
+    });
+    expect(await getS3FileBuffer(`app-${app.id}`, response.data.id)).toStrictEqual(image);
+  });
+
+  it('should reject invalid image uploads by content', async () => {
+    authorizeStudio();
+    const form = new FormData();
+    form.append('file', Buffer.from('not an image'), {
+      contentType: 'image/png',
+      filename: 'broken.png',
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/assets`, form);
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        message: 'Image uploads must contain a valid image',
+        statusCode: 400,
+      },
+    });
+  });
+
+  it('should return an internal server error for unexpected upload validation failures', async () => {
+    authorizeStudio();
+    vi.spyOn(nodeUtils, 'validateUploadedFile').mockRejectedValue(new Error('boom'));
+
+    const response = await request.post(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: Buffer.from('Test asset') }),
+    );
+
+    expect(response).toMatchObject({
+      status: 500,
+      data: 'Internal Server Error',
+    });
   });
 
   it('should not create assets for apps that don’t exist', async () => {

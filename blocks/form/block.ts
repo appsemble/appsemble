@@ -1078,17 +1078,19 @@ export interface FileField extends AbstractField, InlineField {
   defaultValue?: string;
 
   /**
-   * The maximum height of uploaded files.
+   * The optional client-side resize height limit for uploaded images.
    */
   maxHeight?: number;
 
   /**
-   * The maximum width of uploaded files.
+   * The optional client-side resize width limit for uploaded images.
    */
   maxWidth?: number;
 
   /**
-   * The maximum size of uploaded files.
+   * The maximum allowed size of uploaded files.
+   *
+   * This only validates the upload. It does not resize or compress the file.
    */
   maxSize?: number;
 
@@ -1100,7 +1102,7 @@ export interface FileField extends AbstractField, InlineField {
   repeated?: boolean;
 
   /**
-   * The quality modifier to use when uploading images, in percentages.
+   * The optional client-side image re-encode quality, in percentages.
    */
   quality?: number;
 

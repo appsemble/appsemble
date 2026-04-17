@@ -3,7 +3,6 @@ import { stat } from 'node:fs/promises';
 
 import { type Context } from 'koa';
 import { type BucketItemStat } from 'minio';
-import sharp from 'sharp';
 
 import { logger } from './logger.js';
 import { uploadS3File } from './s3.js';
@@ -33,25 +32,12 @@ export function setAssetHeaders(
   ctx.set('Cache-Control', 'max-age=31536000,immutable');
 }
 
-const ignoredMimes = new Set<string>(['image/avif']);
-
 interface FileMeta {
   filename?: string;
   mime: string;
 }
 
 export function getCompressedFileMeta({ filename, mime }: FileMeta): FileMeta {
-  if (mime?.startsWith('image') && !ignoredMimes.has(mime)) {
-    return {
-      filename: filename
-        ? filename.includes('.')
-          ? `${filename.slice(0, filename.lastIndexOf('.'))}.avif`
-          : `${filename}.avif`
-        : undefined,
-      mime: 'image/avif',
-    };
-  }
-
   return { filename, mime };
 }
 
@@ -61,40 +47,27 @@ export interface AssetToUpload {
   path: string;
 }
 
-export async function uploadAsset(appId: number, asset: AssetToUpload): Promise<string[]> {
-  const { id, mime, path } = asset;
-  const filesToUnlink: string[] = [path];
-
-  let uploadFrom = path;
-  if (mime?.startsWith('image') && !ignoredMimes.has(mime)) {
-    uploadFrom = `${path}_compressed`;
-    await sharp(path).rotate().toFormat('avif').toFile(uploadFrom);
-    filesToUnlink.push(uploadFrom);
-  }
+export async function uploadAsset(appId: number, asset: AssetToUpload): Promise<void> {
+  const { id, path } = asset;
 
   try {
-    const stats = await stat(uploadFrom);
-    const stream = createReadStream(uploadFrom);
+    const stats = await stat(path);
+    const stream = createReadStream(path);
     await uploadS3File(`app-${appId}`, id, stream, stats.size);
   } catch (error) {
     logger.error(error);
+    throw error;
   }
-
-  return filesToUnlink;
 }
 
 export async function uploadAssets(appId: number, assets: AssetToUpload[]): Promise<void> {
-  const filesToUnlink: string[] = [];
+  const filesToUnlink = [...new Set(assets.map(({ path }) => path))];
 
-  for (const asset of assets) {
-    const toUnlink = await uploadAsset(appId, asset);
-
-    for (const path of toUnlink) {
-      if (!filesToUnlink.includes(path)) {
-        filesToUnlink.push(path);
-      }
+  try {
+    for (const asset of assets) {
+      await uploadAsset(appId, asset);
     }
+  } finally {
+    await removeUploads(filesToUnlink);
   }
-
-  await removeUploads(filesToUnlink);
 }

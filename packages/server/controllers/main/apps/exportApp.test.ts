@@ -1,13 +1,7 @@
-import {
-  getCompressedFileMeta,
-  readFixture,
-  resolveFixture,
-  uploadAsset,
-} from '@appsemble/node-utils';
+import { readFixture, resolveFixture, uploadAsset } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import JSZip from 'jszip';
-import sharp from 'sharp';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -527,7 +521,8 @@ describe('exportApp', () => {
 
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
-      ...getCompressedFileMeta({ mime: 'image/png', filename: 'nodejs-logo.png' }),
+      mime: 'image/png',
+      filename: 'nodejs-logo.png',
     });
 
     vi.useRealTimers();
@@ -563,7 +558,7 @@ describe('exportApp', () => {
       'theme/shared/index.css',
       'i18n/',
       'assets/',
-      'assets/nodejs-logo.avif',
+      'assets/nodejs-logo.png',
     ]);
 
     expect(await archive.file('app-definition.yaml')?.async('text')).toMatchInlineSnapshot(
@@ -587,10 +582,8 @@ describe('exportApp', () => {
               color: var(--link-color)
             }"
     `);
-    expect(await archive.file('assets/nodejs-logo.avif')?.async('nodebuffer')).toStrictEqual(
-      await sharp(await readFixture('nodejs-logo.png'))
-        .toFormat('avif')
-        .toBuffer(),
+    expect(await archive.file('assets/nodejs-logo.png')?.async('nodebuffer')).toStrictEqual(
+      await readFixture('nodejs-logo.png'),
     );
   });
 

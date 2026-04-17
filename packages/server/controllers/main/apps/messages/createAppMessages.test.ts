@@ -110,7 +110,10 @@ describe('createAppMessages', () => {
         },
       ]
     `);
-    const translations = await AppMessages.findAll({ where: { AppId: app.id } });
+    const translations = await AppMessages.findAll({
+      where: { AppId: app.id },
+      order: [['language', 'ASC']],
+    });
     expect(translations).toMatchObject([
       { AppId: app.id, language: 'de', messages: { messageIds: { test: 'Test De' } } },
       { AppId: app.id, language: 'en', messages: { messageIds: { test: 'Test' } } },
