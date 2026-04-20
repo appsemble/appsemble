@@ -2250,7 +2250,7 @@ describe('patchApp', () => {
     });
     expect(subscription).not.toBeNull();
     subscription!.subscriptionPlan = SubscriptionPlanType.Basic;
-    subscription!.save();
+    await subscription!.save();
     await App.create(
       {
         definition: { name: 'Test App 1', defaultPage: 'Test Page' },
