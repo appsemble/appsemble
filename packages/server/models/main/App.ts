@@ -9,9 +9,7 @@ import {
   type ProjectImplementations,
 } from '@appsemble/types';
 import { omit } from 'lodash-es';
-import { type DestroyOptions } from 'sequelize';
 import {
-  AfterDestroy,
   AllowNull,
   AutoIncrement,
   BeforeCreate,
@@ -376,60 +374,6 @@ export class App extends Model {
         argv.aesSecret || 'Local Appsemble development AES secret',
       );
     }
-  }
-
-  @AfterDestroy
-  static async afterDestroyHook(instance: App, options: DestroyOptions = {}): Promise<void> {
-    if (!options.force) {
-      return;
-    }
-
-    const mainDatabaseHost = argv.databaseHost || process.env.DATABASE_HOST || 'localhost';
-
-    if (!instance.dbHost || instance.dbHost !== mainDatabaseHost) {
-      logger.info(
-        `Skipping app database cleanup for app ${instance.id}. App database host is external.`,
-      );
-      return;
-    }
-
-    const appDatabaseName = instance.dbName || `app-${instance.id}`;
-    const escapedAppDatabaseName = appDatabaseName.replaceAll('"', '""');
-
-    const dropDatabase = async (): Promise<void> => {
-      const { sequelize } = instance;
-
-      if (!sequelize) {
-        logger.warn(
-          `Unable to drop app database ${appDatabaseName} for app ${instance.id}. Missing sequelize instance.`,
-        );
-        return;
-      }
-
-      try {
-        await sequelize.query(
-          `SELECT pg_terminate_backend(pid)
-           FROM pg_stat_activity
-           WHERE datname = :appDatabaseName
-           AND pid <> pg_backend_pid();`,
-          { replacements: { appDatabaseName } },
-        );
-
-        await sequelize.query(`DROP DATABASE IF EXISTS "${escapedAppDatabaseName}";`);
-
-        logger.info(`Dropped app database ${appDatabaseName} for app ${instance.id}.`);
-      } catch (error) {
-        logger.error(`Failed to drop app database ${appDatabaseName} for app ${instance.id}.`);
-        logger.error(error);
-      }
-    };
-
-    if (options.transaction) {
-      options.transaction.afterCommit(dropDatabase);
-      return;
-    }
-
-    await dropDatabase();
   }
 
   /**
