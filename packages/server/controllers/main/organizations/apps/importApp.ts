@@ -37,6 +37,7 @@ import {
   handleAppValidationError,
   setAppPath,
 } from '../../../../utils/app.js';
+import { replaceAssetFunctions } from '../../../../utils/assetCssURL.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { getBlockVersions } from '../../../../utils/block.js';
 import { createDynamicIndexes } from '../../../../utils/dynamicIndexes.js';
@@ -114,6 +115,27 @@ export async function importApp(ctx: Context): Promise<void> {
       let record: App | undefined;
       await transactional(async (transaction) => {
         record = await App.create(result);
+
+        const appStyleUpdates: Partial<App> = {};
+
+        if (record.coreStyle != null) {
+          const replacedCoreStyle = replaceAssetFunctions(record.coreStyle, record.id);
+          if (replacedCoreStyle !== record.coreStyle) {
+            appStyleUpdates.coreStyle = replacedCoreStyle;
+          }
+        }
+
+        if (record.sharedStyle != null) {
+          const replacedSharedStyle = replaceAssetFunctions(record.sharedStyle, record.id);
+          if (replacedSharedStyle !== record.sharedStyle) {
+            appStyleUpdates.sharedStyle = replacedSharedStyle;
+          }
+        }
+
+        if (Object.keys(appStyleUpdates).length) {
+          await record.update(appStyleUpdates, { transaction });
+        }
+
         const { AppBlockStyle, Asset, Resource, sequelize: appDB } = await getAppDB(record.id);
 
         record.AppSnapshots = [
@@ -230,7 +252,10 @@ export async function importApp(ctx: Context): Promise<void> {
                 assertKoaCondition(blockVersion != null, ctx, 404, 'Block not found');
                 const style = validateStyle(await block.async('text'));
                 await AppBlockStyle.create(
-                  { style, block: `${orgName}/${blockName}` },
+                  {
+                    style: replaceAssetFunctions(style, appId),
+                    block: `${orgName}/${blockName}`,
+                  },
                   { transaction: appTransaction },
                 );
               }

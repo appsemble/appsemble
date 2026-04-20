@@ -1799,6 +1799,61 @@ describe('createApp', () => {
     `);
   });
 
+  it('should replace asset utility calls in stylesheets when creating an app', async () => {
+    const form = createFormData({
+      OrganizationId: organization.id,
+      yaml: stripIndent(`
+        name: Foobar
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+      `),
+      coreStyle: "body{background-image:url(asset('hero-bg'))}",
+      sharedStyle: "body{background-image:url('/api/apps/999/assets/logo')}",
+    });
+    authorizeStudio();
+    const response = await request.post<AppType>('/api/apps', form);
+
+    const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
+    const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
+
+    expect(coreStyle.data).toBe(
+      `body{background-image:url('http://localhost/api/apps/${response.data.id}/assets/hero-bg')}`,
+    );
+    expect(sharedStyle.data).toBe(
+      `body{background-image:url('http://localhost/api/apps/${response.data.id}/assets/logo')}`,
+    );
+  });
+
+  it('should keep rejected traversal and encoded-slash asset ids unchanged when creating an app', async () => {
+    const form = createFormData({
+      OrganizationId: organization.id,
+      yaml: stripIndent(`
+        name: Foobar
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+      `),
+      coreStyle:
+        "a{background-image:url(asset('../admin'))}b{background-image:url(asset('a%2fb'))}",
+    });
+    authorizeStudio();
+    const response = await request.post<AppType>('/api/apps', form);
+
+    const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
+
+    expect(coreStyle.data).toBe(
+      "a{background-image:url(asset('../admin'))}b{background-image:url(asset('a%2fb'))}",
+    );
+    expect(coreStyle.data).not.toContain('http://localhost/api/apps/');
+  });
+
   it('should not allow invalid core stylesheets when creating an app', async () => {
     const form = createFormData({
       OrganizationId: organization.id,

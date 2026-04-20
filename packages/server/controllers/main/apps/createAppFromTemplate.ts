@@ -22,6 +22,7 @@ import {
   getAppDB,
 } from '../../../models/index.js';
 import { setAppPath } from '../../../utils/app.js';
+import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
@@ -130,6 +131,26 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     await checkAppLimit(ctx, result);
     const record = await App.create(result, { include: [AppMessages, AppScreenshot, AppReadme] });
 
+    const appStyleUpdates: Partial<App> = {};
+
+    if (record.coreStyle != null) {
+      const replacedCoreStyle = replaceAssetFunctions(record.coreStyle, record.id);
+      if (replacedCoreStyle !== record.coreStyle) {
+        appStyleUpdates.coreStyle = replacedCoreStyle;
+      }
+    }
+
+    if (record.sharedStyle != null) {
+      const replacedSharedStyle = replaceAssetFunctions(record.sharedStyle, record.id);
+      if (replacedSharedStyle !== record.sharedStyle) {
+        appStyleUpdates.sharedStyle = replacedSharedStyle;
+      }
+    }
+
+    if (Object.keys(appStyleUpdates).length) {
+      await record.update(appStyleUpdates);
+    }
+
     const {
       AppBlockStyle: RecordAppBlockStyle,
       AppOAuth2Secret: RecordAppOAuth2Secret,
@@ -146,7 +167,10 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
         templateAppBlockStyles.map((blockStyle) => ({
           AppId: record.id,
           block: blockStyle.block,
-          style: blockStyle.style,
+          style:
+            blockStyle.style == null
+              ? blockStyle.style
+              : replaceAssetFunctions(blockStyle.style, record.id),
         })),
       );
     }
