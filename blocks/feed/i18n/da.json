@@ -1,6 +1,7 @@
 {
   "anonymousLabel": "Anonym",
   "emptyLabel": "Ingen data til visning",
+  "permissionDeniedLabel": "Kontakt din administrator for at opgradere din rolle, hvis du forventede at se data her",
   "replyErrorMessage": "Der gik noget galt ved at sende denne besked.",
   "replyLabel": "Læg en besked…"
 }

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { Card } from './components/Card/index.js';
 import styles from './index.module.css';
+import { getFeedErrorState, normalizeFeedData } from './utils/normalizeFeedData.js';
 
 interface Item {
   id: number;
@@ -14,22 +15,25 @@ interface Item {
 bootstrap(({ events, ready }) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Item[]>([]);
+  const [permissionDenied, setPermissionDenied] = useState(false);
 
-  const onUpdate = useCallback(
-    (resource: Item): void => {
-      setData(data.map((entry) => (entry.id === resource.id ? resource : entry)));
-    },
-    [data],
-  );
+  const onUpdate = useCallback((resource: Item): void => {
+    setData((currentData) =>
+      currentData.map((entry) => (entry.id === resource.id ? resource : entry)),
+    );
+  }, []);
 
-  const loadData = useCallback((d: Item[]) => {
+  const loadData = useCallback((receivedData: Item[] | null, error?: string) => {
     setLoading(false);
-    setData(d);
+    setData(normalizeFeedData(receivedData, error));
+    setPermissionDenied(getFeedErrorState(error).permissionDenied);
   }, []);
 
   useEffect(() => {
     events.on.data(loadData);
     ready();
+
+    return () => events.off.data(loadData);
   }, [events, loadData, ready]);
 
   if (loading) {
@@ -39,7 +43,7 @@ bootstrap(({ events, ready }) => {
   if (!data.length) {
     return (
       <div className={styles.empty}>
-        <FormattedMessage id="emptyLabel" />
+        <FormattedMessage id={permissionDenied ? 'permissionDeniedLabel' : 'emptyLabel'} />
       </div>
     );
   }

@@ -18,5 +18,8 @@
   },
   "dependencies": {
     "@appsemble/sdk": "0.36.7"
+  },
+  "devDependencies": {
+    "vitest": "2.1.9"
   }
 }

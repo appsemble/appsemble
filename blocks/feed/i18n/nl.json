@@ -1,6 +1,7 @@
 {
   "anonymousLabel": "Anoniem",
   "emptyLabel": "Geen gegevens beschikbaar",
+  "permissionDeniedLabel": "Neem contact op met je beheerder om je rol te laten upgraden als je hier gegevens had verwacht",
   "replyErrorMessage": "Er is iets misgegaan bij het verzenden van dit bericht.",
   "replyLabel": "Laat een bericht achter…"
 }

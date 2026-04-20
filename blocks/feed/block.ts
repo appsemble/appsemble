@@ -143,6 +143,11 @@ declare module '@appsemble/sdk' {
      * The label that’s displayed when there are no feed items available.
      */
     emptyLabel: never;
+
+    /**
+     * The label that’s displayed when feed data cannot be loaded due to missing permissions.
+     */
+    permissionDeniedLabel: never;
   }
 
   interface Parameters {

@@ -1,6 +1,7 @@
 {
   "anonymousLabel": "Anonymous",
   "emptyLabel": "No data to display",
+  "permissionDeniedLabel": "Contact your administrator to upgrade your role if you expected to see data here",
   "replyErrorMessage": "Something went wrong trying to send this message.",
   "replyLabel": "Leave a message…"
 }
