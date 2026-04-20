@@ -92,6 +92,8 @@ helm repo update
 helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.auth.existingSecret=postgresql-secret' --set 'ingress.host=my-appsemble.example.com'
 ```
 
+Make sure `ingress.host` resolves to the ingress controller with both `A` and `AAAA` records. Point `*.ingress.host` to the same place, preferably with a wildcard `CNAME` to the apex host.
+
 ## Migrations
 
 The chart runs database migrations automatically using the `migrate` Job hook after each install and

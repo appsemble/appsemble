@@ -94,6 +94,8 @@ helm install --name my-appsemble appsemble/appsemble \
 # ...
 ```
 
+Make sure `ingress.host` resolves to the ingress controller with both `A` and `AAAA` records. Point `*.ingress.host` to the same place, preferably with a wildcard `CNAME` to the apex host.
+
 ## Use HTTPS configured elsewhere
 
 If you’re not using `cert-manager` and can’t add the `ingress.tls`, `ingress.tlsSecretName`, and
