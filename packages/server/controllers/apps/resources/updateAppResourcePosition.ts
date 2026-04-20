@@ -126,9 +126,11 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
       where: { type: resourceType },
       order: [['Position', 'ASC']],
     });
-    resetPositionResources.map(async (resource, index) => {
-      await resource.update({ Position: (index + 1) * 10 });
-    });
+    await Promise.all(
+      resetPositionResources.map((resource, index) =>
+        resource.update({ Position: (index + 1) * 10 }),
+      ),
+    );
   }
   await oldResource.update({ Position: updatedPosition });
   ctx.status = 200;

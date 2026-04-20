@@ -415,7 +415,12 @@ export async function patchApp(ctx: Context): Promise<void> {
               let group: string[] | undefined;
               try {
                 if (enforceOrderingGroupByFields) {
-                  createDynamicIndexes(enforceOrderingGroupByFields, appId, key, appTransaction);
+                  await createDynamicIndexes(
+                    enforceOrderingGroupByFields,
+                    appId,
+                    key,
+                    appTransaction,
+                  );
                   group = enforceOrderingGroupByFields.map((field) => `data.${field}`);
                 }
                 const resourcesToUpdate = await Resource.findAll({
