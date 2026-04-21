@@ -54,7 +54,7 @@
     "identity-obj-proxy": "3.0.0",
     "jsdom": "22.1.0",
     "lint-staged": "15.5.2",
-    "postcss": "8.5.9",
+    "postcss": "8.5.10",
     "postcss-preset-env": "9.6.0",
     "prettier": "3.8.3",
     "prettier-plugin-packagejson": "2.5.22",
