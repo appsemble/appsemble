@@ -2316,6 +2316,36 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should allow optimistic resource writes', async () => {
+    const app = createTestApp();
+    app.security!.roles!.User = { permissions: ['$resource:person:update'] };
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'resource.update',
+          resource: 'person',
+          ifMatch: { prop: '$etag' },
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
   it('should report an error if a resource action on a block refers to a non-existent resource', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({

@@ -1,7 +1,11 @@
 import {
+  assertKoaCondition,
+  createResourceEtag,
   deleteS3Files,
   getCompressedFileMeta,
   logger,
+  matchesResourceIfMatch,
+  throwResourcePreconditionFailedKoaError,
   type UpdateAppResourceParams,
   uploadAssets,
 } from '@appsemble/node-utils';
@@ -29,28 +33,29 @@ export async function updateAppResource({
 }: UpdateAppResourceParams): Promise<ResourceInterface | null> {
   const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(app.id!);
   const member = await getCurrentAppMember({ context, app });
+  const ifMatch = context.get('If-Match') || undefined;
 
   const persistedApp = (await App.findOne({ where: { id: app.id } }))!;
 
   const { $clonable: clonable, $expires: expires, ...data } = resource as Record<string, unknown>;
 
   if (preparedAssets.length) {
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
-    await uploadAssets(app.id, preparedAssets);
+    await uploadAssets(app.id!, preparedAssets);
   }
 
   try {
     return await sequelize.transaction(async (transaction) => {
-      const oldResource = (await Resource.findOne({
-        where: { id },
-        include: [
-          { association: 'Author', attributes: ['id', 'name'], required: false },
-          { model: Asset, attributes: ['id'], required: false },
-          { association: 'Group', attributes: ['id', 'name'], required: false },
-        ],
+      const oldResource = await Resource.findOne({
+        where: { id, type },
+        lock: transaction.LOCK.UPDATE,
         transaction,
-      }))!;
+      });
+
+      assertKoaCondition(oldResource != null, context, 404, 'Resource not found');
+
+      if (!matchesResourceIfMatch(ifMatch, createResourceEtag(oldResource.toJSON()))) {
+        throwResourcePreconditionFailedKoaError(context, type, id);
+      }
 
       const oldData = oldResource.data;
       const previousEditorId = oldResource.EditorId;
@@ -103,7 +108,11 @@ export async function updateAppResource({
       }
 
       const reloaded = await newResource.reload({
-        include: [{ association: 'Editor' }],
+        include: [
+          { association: 'Author', attributes: ['id', 'name'], required: false },
+          { association: 'Editor', attributes: ['id', 'name'], required: false },
+          { association: 'Group', attributes: ['id', 'name'], required: false },
+        ],
         transaction,
       });
 

@@ -4,6 +4,7 @@ import {
   getResourceDefinition,
   type Options,
   processResourceBody,
+  setResourceEtagHeader,
 } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
@@ -79,5 +80,7 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       resourceDefinition,
       options,
     });
+
+    setResourceEtagHeader(ctx, ctx.body as Record<string, unknown> | null | undefined);
   };
 }

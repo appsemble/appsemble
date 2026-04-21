@@ -11,11 +11,15 @@ import {
   type ResourceUpdateActionDefinition,
 } from '@appsemble/lang-sdk';
 import {
+  addResourceEtag,
+  createResourceEtag,
+  createResourcePreconditionFailedError,
   deleteS3Files,
   getCompressedFileMeta,
   getRemapperContext,
   getResourceDefinition,
   logger,
+  matchesResourceIfMatch,
   processResourceBody,
   type QueryParams,
   uploadAssets,
@@ -41,6 +45,20 @@ export const resourceCleanup = {
     }
   },
 };
+
+function addEtagToSingleResourceResult<T>(
+  result: T,
+  etag: string,
+): T extends Record<string, unknown> ? T & { $etag: string } : T {
+  if (result && typeof result === 'object' && !Array.isArray(result)) {
+    return {
+      ...(result as Record<string, unknown>),
+      $etag: etag,
+    } as T extends Record<string, unknown> ? T & { $etag: string } : T;
+  }
+
+  return result as T extends Record<string, unknown> ? T & { $etag: string } : T;
+}
 
 export async function get({
   action,
@@ -85,7 +103,7 @@ export async function get({
     throw new Error('Resource not found');
   }
 
-  const parsedResource = resource.toJSON();
+  const parsedResource = addResourceEtag(resource.toJSON());
 
   if (!view) {
     return parsedResource;
@@ -102,7 +120,10 @@ export async function get({
     history: internalContext?.history ?? [],
   });
 
-  return remap(resourceDefinition.views?.[view].remap ?? null, parsedResource, remapperContext);
+  return addEtagToSingleResourceResult(
+    remap(resourceDefinition.views?.[view].remap ?? null, parsedResource, remapperContext),
+    parsedResource.$etag,
+  );
 }
 
 export async function query({
@@ -174,10 +195,8 @@ export async function create({
 }: ServerActionParameters<ResourceCreateActionDefinition>): Promise<unknown> {
   const { createAppResourcesWithAssets, getAppAssets } = options;
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  // eslint-disable-next-line prettier/prettier
-  const body = action.body ? ((remap(action.body ?? null, data, internalContext) ?? data) as
+  const body = action.body
+    ? ((remap(action.body ?? null, data, internalContext!) ?? data) as
         | Record<string, unknown>
         | Record<string, unknown>[])
     : (data as any);
@@ -212,7 +231,7 @@ export async function create({
     options,
   });
 
-  return Array.isArray(processedBody) ? createdResources : createdResources[0];
+  return Array.isArray(processedBody) ? createdResources : addResourceEtag(createdResources[0]);
 }
 
 export async function update({
@@ -224,10 +243,8 @@ export async function update({
   options,
 }: ServerActionParameters<ResourceUpdateActionDefinition>): Promise<unknown> {
   const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(app.id);
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  // eslint-disable-next-line prettier/prettier
-  const body = action.body ? ((remap(action.body ?? null, actionData, internalContext) ?? actionData) as Record<
+  const body = action.body
+    ? ((remap(action.body ?? null, actionData, internalContext!) ?? actionData) as Record<
         string,
         unknown
       >)
@@ -240,6 +257,15 @@ export async function update({
     throw new Error('Missing id');
   }
   body.id = resourceId;
+
+  const ifMatchInput = action.ifMatch
+    ? remap(action.ifMatch, actionData, internalContext!)
+    : undefined;
+  const ifMatch = Array.isArray(ifMatchInput)
+    ? ifMatchInput.map(String)
+    : ifMatchInput == null
+      ? undefined
+      : String(ifMatchInput);
 
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
@@ -282,11 +308,25 @@ export async function update({
   const shouldDeleteDereferencedAssets = !definition.history && deletedAssetIds.length > 0;
 
   try {
-    await sequelize.transaction((transaction) => {
-      const oldData = resource.data;
-      const previousEditorId = resource.EditorId;
+    await sequelize.transaction(async (transaction) => {
+      const lockedResource = await Resource.findOne({
+        where: { id: resourceId, type: action.resource },
+        lock: transaction.LOCK.UPDATE,
+        transaction,
+      });
+
+      if (!lockedResource) {
+        throw new Error('Resource not found');
+      }
+
+      if (!matchesResourceIfMatch(ifMatch, createResourceEtag(lockedResource.toJSON()))) {
+        throw createResourcePreconditionFailedError(action.resource, resourceId);
+      }
+
+      const oldData = lockedResource.data;
+      const previousEditorId = lockedResource.EditorId;
       const promises: Promise<unknown>[] = [
-        resource.update({ data, clonable, expires }, { transaction }),
+        lockedResource.update({ data, clonable, expires }, { transaction }),
       ];
 
       if (preparedAssets.length) {
@@ -295,7 +335,7 @@ export async function update({
             preparedAssets.map((asset) => ({
               ...asset,
               ...getCompressedFileMeta(asset),
-              ResourceId: resource.id,
+              ResourceId: lockedResource.id,
             })),
             { logging: false, transaction },
           ),
@@ -306,7 +346,7 @@ export async function update({
         promises.push(
           ResourceVersion.create(
             {
-              ResourceId: resource.id,
+              ResourceId: lockedResource.id,
               AppMemberId: previousEditorId,
               data: definition.history === true || definition.history.data ? oldData : undefined,
             },
@@ -338,7 +378,7 @@ export async function update({
   processReferenceHooks(app, resource, 'update', options, context);
   processHooks(app, resource, 'update', options, context);
 
-  return resource.toJSON();
+  return addResourceEtag(resource.toJSON());
 }
 
 export async function patch({
@@ -361,11 +401,11 @@ export async function patch({
     typeof nestedActionData.resource === 'object' &&
     !Array.isArray(nestedActionData.resource) &&
     ('id' in nestedActionData || action.id);
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  // eslint-disable-next-line prettier/prettier
-  const body = action.body ? ((remap(action.body ?? null, actionData, internalContext) ?? actionData) as
-    Record<string, unknown>)
+  const body = action.body
+    ? ((remap(action.body ?? null, actionData, internalContext!) ?? actionData) as Record<
+        string,
+        unknown
+      >)
     : ((usesNestedBody ? nestedActionData.resource : actionData) as any);
 
   // Support action.id remapper (like client-side) or fallback to body.id
@@ -377,6 +417,15 @@ export async function patch({
   }
   // Ensure id is available in body for downstream processing
   body.id = resourceId;
+
+  const ifMatchInput = action.ifMatch
+    ? remap(action.ifMatch, actionData, internalContext!)
+    : undefined;
+  const ifMatch = Array.isArray(ifMatchInput)
+    ? ifMatchInput.map(String)
+    : ifMatchInput == null
+      ? undefined
+      : String(ifMatchInput);
 
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
@@ -417,12 +466,26 @@ export async function patch({
   const shouldDeleteDereferencedAssets = !definition.history && deletedAssetIds.length > 0;
 
   try {
-    await sequelize.transaction((transaction) => {
-      const oldData = resource.data;
+    await sequelize.transaction(async (transaction) => {
+      const lockedResource = await Resource.findOne({
+        where: { id: resourceId, type: action.resource },
+        lock: transaction.LOCK.UPDATE,
+        transaction,
+      });
+
+      if (!lockedResource) {
+        throw new Error('Resource not found');
+      }
+
+      if (!matchesResourceIfMatch(ifMatch, createResourceEtag(lockedResource.toJSON()))) {
+        throw createResourcePreconditionFailedError(action.resource, resourceId);
+      }
+
+      const oldData = lockedResource.data;
       const patchedData = { ...oldData, ...data };
-      const previousEditorId = resource.EditorId;
+      const previousEditorId = lockedResource.EditorId;
       const promises: Promise<unknown>[] = [
-        resource.update({ data: patchedData, clonable, expires }, { transaction }),
+        lockedResource.update({ data: patchedData, clonable, expires }, { transaction }),
       ];
 
       if (preparedAssets.length) {
@@ -431,7 +494,7 @@ export async function patch({
             preparedAssets.map((asset) => ({
               ...asset,
               ...getCompressedFileMeta(asset),
-              ResourceId: resource.id,
+              ResourceId: lockedResource.id,
             })),
             { logging: false, transaction },
           ),
@@ -442,7 +505,7 @@ export async function patch({
         promises.push(
           ResourceVersion.create(
             {
-              ResourceId: resource.id,
+              ResourceId: lockedResource.id,
               AppMemberId: previousEditorId,
               data: definition.history === true || definition.history.data ? oldData : undefined,
             },
@@ -471,7 +534,7 @@ export async function patch({
 
   await resource.reload({ include: [{ association: 'Editor' }] });
 
-  return resource.toJSON();
+  return addResourceEtag(resource.toJSON());
 }
 
 export async function remove({

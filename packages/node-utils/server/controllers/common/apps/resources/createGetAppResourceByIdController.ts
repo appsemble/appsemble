@@ -5,6 +5,7 @@ import {
   getRemapperContext,
   getResourceDefinition,
   type Options,
+  setResourceEtagHeader,
 } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
@@ -55,6 +56,8 @@ export function createGetAppResourceByIdController(options: Options): Middleware
       app,
       groupId: selectedGroupId,
     });
+
+    setResourceEtagHeader(ctx, resource);
 
     if (view) {
       const context = await getRemapperContext(

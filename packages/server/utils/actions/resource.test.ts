@@ -1,4 +1,5 @@
 import { type ActionDefinition } from '@appsemble/lang-sdk';
+import { ResourcePreconditionFailedError } from '@appsemble/node-utils';
 import { uuid4Pattern } from '@appsemble/utils';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -240,6 +241,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         name: 'Spongebob',
       });
@@ -274,7 +276,10 @@ describe('resource', () => {
         context: {} as any,
       });
 
-      expect(result).toStrictEqual({ fullName: 'Spongebob Squarepants' });
+      expect(result).toStrictEqual({
+        $etag: expect.any(String),
+        fullName: 'Spongebob Squarepants',
+      });
     });
 
     it('should not be able to get a resource when missing an id', async () => {
@@ -392,6 +397,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Spongebob',
         lastName: 'Squarepants',
@@ -426,6 +432,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         $ephemeral: true,
         id: 1,
         firstName: 'Spongebob',
@@ -461,6 +468,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Spongebob',
         lastName: 'Squarepants',
@@ -540,6 +548,7 @@ describe('resource', () => {
 
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         $expires: '1970-01-01T00:10:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
         id: 1,
@@ -572,6 +581,7 @@ describe('resource', () => {
 
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         $expires: '1970-01-01T00:05:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
         id: 1,
@@ -751,10 +761,132 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Patrick',
         lastName: 'Star',
       });
+    });
+
+    it('should support If-Match for updates', async () => {
+      const action: ActionDefinition = {
+        type: 'resource.update',
+        resource: 'person',
+        ifMatch: { prop: '$etag' },
+      };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+        },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      const result = await handleAction(update as any, {
+        app,
+        action,
+        mailer,
+        data: {
+          $etag: current.$etag,
+          id: 1,
+          firstName: 'Patrick',
+          lastName: 'Star',
+        },
+        options,
+        context: {} as any,
+      });
+
+      expect(result).toStrictEqual({
+        $created: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
+        $updated: '1970-01-01T00:00:00.000Z',
+        id: 1,
+        firstName: 'Patrick',
+        lastName: 'Star',
+      });
+    });
+
+    it('should reject stale If-Match for updates', async () => {
+      const action: ActionDefinition = {
+        type: 'resource.update',
+        resource: 'person',
+        ifMatch: { prop: '$etag' },
+      };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+        },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      await handleAction(update as any, {
+        app,
+        action: { type: 'resource.update', resource: 'person' },
+        mailer,
+        data: {
+          id: 1,
+          firstName: 'Patrick',
+          lastName: 'Star',
+        },
+        options,
+        context: {} as any,
+      });
+
+      const staleUpdate = handleAction(update as any, {
+        app,
+        action,
+        mailer,
+        data: {
+          $etag: current.$etag,
+          id: 1,
+          firstName: 'Squidward',
+          lastName: 'Tentacles',
+        },
+        options,
+        context: {} as any,
+      });
+
+      await expect(staleUpdate).rejects.toBeInstanceOf(ResourcePreconditionFailedError);
+      await expect(staleUpdate).rejects.toMatchObject({
+        data: {
+          code: 'RESOURCE_PRECONDITION_FAILED',
+          resourceId: 1,
+          resourceType: 'person',
+        },
+        error: 'Precondition Failed',
+        statusCode: 412,
+      });
+      await expect(staleUpdate).rejects.toHaveProperty(
+        'message',
+        'This resource has changed since it was loaded. Fetch the latest version and try again.',
+      );
     });
 
     it('should update resource using body', async () => {
@@ -796,6 +928,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Patrick',
         lastName: 'Star',
@@ -1086,6 +1219,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         firstName: 'Squidward',
         id: 1,
         lastName: 'Tentacles',
@@ -1129,6 +1263,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         $expires: '1970-01-01T00:07:00.000Z',
         foo: 'updated',
         id: 1,
@@ -1212,6 +1347,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         firstName: 'Squidward',
         id: 1,
         lastName: 'Tentacles',
@@ -1256,6 +1392,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });
@@ -1308,6 +1445,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });
@@ -1360,6 +1498,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });
@@ -1415,10 +1554,129 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Squidward',
         lastName: 'Squarepants',
       });
+    });
+
+    it('should support If-Match for patches', async () => {
+      const action: ActionDefinition = {
+        type: 'resource.patch',
+        resource: 'person',
+        ifMatch: { prop: '$etag' },
+      };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+        },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      const result = await handleAction(patch as any, {
+        app,
+        action,
+        mailer,
+        data: {
+          $etag: current.$etag,
+          id: 1,
+          firstName: 'Squidward',
+        },
+        options,
+        context: {} as any,
+      });
+
+      expect(result).toStrictEqual({
+        $created: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
+        $updated: '1970-01-01T00:00:00.000Z',
+        id: 1,
+        firstName: 'Squidward',
+        lastName: 'Squarepants',
+      });
+    });
+
+    it('should reject stale If-Match for patches', async () => {
+      const action: ActionDefinition = {
+        type: 'resource.patch',
+        resource: 'person',
+        ifMatch: { prop: '$etag' },
+      };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+        },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      await handleAction(patch as any, {
+        app,
+        action: { type: 'resource.patch', resource: 'person' },
+        mailer,
+        data: {
+          id: 1,
+          firstName: 'Patrick',
+        },
+        options,
+        context: {} as any,
+      });
+
+      const stalePatch = handleAction(patch as any, {
+        app,
+        action,
+        mailer,
+        data: {
+          $etag: current.$etag,
+          id: 1,
+          firstName: 'Squidward',
+        },
+        options,
+        context: {} as any,
+      });
+
+      await expect(stalePatch).rejects.toBeInstanceOf(ResourcePreconditionFailedError);
+      await expect(stalePatch).rejects.toMatchObject({
+        data: {
+          code: 'RESOURCE_PRECONDITION_FAILED',
+          resourceId: 1,
+          resourceType: 'person',
+        },
+        error: 'Precondition Failed',
+        statusCode: 412,
+      });
+      await expect(stalePatch).rejects.toHaveProperty(
+        'message',
+        'This resource has changed since it was loaded. Fetch the latest version and try again.',
+      );
     });
 
     it('should patch resource using body', async () => {
@@ -1459,6 +1717,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Squidward',
         lastName: 'Squarepants',
@@ -1502,6 +1761,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Squidward',
         lastName: 'Squarepants',
@@ -1788,6 +2048,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         firstName: 'Squidward',
         id: 1,
         lastName: 'Squarepants',
@@ -1832,6 +2093,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         firstName: 'Squidward',
         id: 1,
         lastName: 'Squarepants',
@@ -1875,6 +2137,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         $expires: '1970-01-01T00:07:00.000Z',
         foo: 'updated',
         id: 1,
@@ -1957,6 +2220,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         firstName: 'Squidward',
         id: 1,
         lastName: 'Squarepants',
@@ -2001,6 +2265,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });
@@ -2053,6 +2318,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });
@@ -2105,6 +2371,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });

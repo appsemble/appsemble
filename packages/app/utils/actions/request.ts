@@ -19,10 +19,20 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           }
         : formatRequestAction(definition, data, remap, context);
 
+      const ifMatch =
+        'ifMatch' in definition ? remap(definition.ifMatch ?? null, data, context) : undefined;
+      if (ifMatch != null) {
+        req.headers = {
+          ...req.headers,
+          'If-Match': String(ifMatch),
+        };
+      }
+
       if (method === 'PUT' || method === 'POST' || method === 'PATCH') {
         const requestData = body ? remap(body, data, context) : data;
         if (requestData instanceof Blob) {
           req.headers = {
+            ...req.headers,
             'Content-Type': requestData.type,
           };
           req.data = requestData;
@@ -31,11 +41,10 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           // Excluding some common types which should be inferred from BLOB type.
           const contentType = definition.headers?.['Content-Type'];
           if (contentType) {
-            Object.assign(req, {
-              headers: {
-                'Content-Type': contentType,
-              },
-            });
+            req.headers = {
+              ...req.headers,
+              'Content-Type': contentType,
+            };
           }
           req.data = serializeResource(body ? remap(body, data, context) : data);
         }
@@ -100,6 +109,21 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         // (strictNullChecks)
         responseBody = xmlToJson(responseBody, schema);
       }
+
+      if (
+        'resource' in definition &&
+        response.headers.etag &&
+        responseBody &&
+        typeof responseBody === 'object' &&
+        !Array.isArray(responseBody) &&
+        !(responseBody instanceof Blob)
+      ) {
+        responseBody = {
+          ...responseBody,
+          $etag: response.headers.etag,
+        };
+      }
+
       return responseBody;
     },
     {

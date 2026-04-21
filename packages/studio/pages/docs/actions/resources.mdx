@@ -248,6 +248,11 @@ requires at least one of the app permissions `$resource:all:update`, `$resource:
 context. For more information check out [security](../app/security.md#permissions). Here’s an
 example of how you can use this action to update an existing resource of type person.
 
+To avoid overwriting a newer version, keep the `$etag` from the latest resource response and pass it
+using `ifMatch`. If the resource changed in the meantime, the request fails with
+`412 Precondition Failed`. In that case, fetch the latest resource again and ask the user to review
+and retry.
+
 ```yaml validate blocks-snippet
 blocks:
   - type: form
@@ -274,6 +279,29 @@ blocks:
         resource: person
 ```
 
+```yaml validate blocks-snippet
+blocks:
+  - type: form
+    version: 0.36.7
+    actions:
+      onSubmit:
+        type: resource.update
+        resource: person
+        ifMatch: { prop: $etag }
+        onError:
+          type: condition
+          if: { equals: [{ prop: status }, 412] }
+          then:
+            type: resource.get
+            resource: person
+            id: { prop: id }
+            onSuccess:
+              type: message
+              body: This person was updated elsewhere. Review the latest version and try again.
+          else:
+            type: throw
+```
+
 ### resource.patch<Side name="resource.patch" />
 
 <ActionRef action={referenceSchemas.resourceActions['resource.patch']} />
@@ -285,6 +313,11 @@ permissions `$resource:all:patch`, `$resource:all:own:patch`, `$resource:<resour
 `$resource:<resource-name>:own:patch`, depending on the context. For more information check out
 [security](../app/security.md#permissions). Here’s an example of how you can partially update a
 resource of type person using this action.
+
+To avoid overwriting a newer version, keep the `$etag` from the latest resource response and pass it
+using `ifMatch`. If the resource changed in the meantime, the request fails with
+`412 Precondition Failed`. In that case, fetch the latest resource again and ask the user to review
+and retry.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -301,6 +334,30 @@ blocks:
       onSubmit:
         type: resource.patch
         resource: person
+```
+
+```yaml validate blocks-snippet
+blocks:
+  - type: form
+    version: 0.36.7
+    actions:
+      onSubmit:
+        type: resource.patch
+        resource: person
+        id: { prop: id }
+        ifMatch: { prop: $etag }
+        onError:
+          type: condition
+          if: { equals: [{ prop: status }, 412] }
+          then:
+            type: resource.get
+            resource: person
+            id: { prop: id }
+            onSuccess:
+              type: message
+              body: This person was updated elsewhere. Review the latest version and try again.
+          else:
+            type: throw
 ```
 
 ### resource.delete<Side name="resource.delete" />

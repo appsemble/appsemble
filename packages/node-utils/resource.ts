@@ -25,6 +25,7 @@ export function stripResource({
   $created,
   $editor,
   $ephemeral,
+  $etag,
   $group,
   $seed,
   $updated,

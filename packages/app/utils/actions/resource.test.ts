@@ -82,6 +82,20 @@ describe('resource.get', () => {
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ type: 'dog' });
   });
+
+  it('should expose $etag from the response header', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { type: 'cat' }, { etag: '"etag-1"' }];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.get', resource: 'pet' },
+    });
+    const result = await action({ id: 1 });
+    expect(request.method).toBe('get');
+    expect(result).toStrictEqual({ $etag: '"etag-1"', type: 'cat' });
+  });
 });
 
 describe('resource.update.group', () => {
@@ -418,6 +432,25 @@ describe('resource.update', () => {
     expect(request.data).toBe('{"id":84,"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
   });
+
+  it('should send If-Match and expose the new $etag', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { ...JSON.parse(req.data), id: 84 }, { etag: '"etag-2"' }];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: {
+        type: 'resource.update',
+        resource: 'pet',
+        ifMatch: { prop: '$etag' },
+      },
+    });
+    const result = await action({ id: 84, type: 'fish', $etag: '"etag-1"' });
+    expect(request.method).toBe('put');
+    expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBe('"etag-1"');
+    expect(result).toStrictEqual({ $etag: '"etag-2"', id: 84, type: 'fish' });
+  });
 });
 
 describe('resource.patch', () => {
@@ -452,6 +485,26 @@ describe('resource.patch', () => {
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84`);
     expect(request.data).toBe('{"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
+  });
+
+  it('should send If-Match for patches', async () => {
+    mock.onPatch(/.*/).reply((req) => {
+      request = req;
+      return [200, { ...JSON.parse(req.data), id: 84 }, { etag: '"etag-3"' }];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: {
+        type: 'resource.patch',
+        resource: 'pet',
+        id: 84,
+        ifMatch: { prop: '$etag' },
+      },
+    });
+    const result = await action({ type: 'fish', $etag: '"etag-2"' });
+    expect(request.method).toBe('patch');
+    expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBe('"etag-2"');
+    expect(result).toStrictEqual({ $etag: '"etag-3"', id: 84, type: 'fish' });
   });
 });
 

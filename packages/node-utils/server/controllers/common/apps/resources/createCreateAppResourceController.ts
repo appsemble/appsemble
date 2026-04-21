@@ -11,6 +11,7 @@ import {
   type Options,
   processResourceBody,
   type PreparedAsset,
+  setResourceEtagHeader,
 } from '../../../../../index.js';
 
 function clonePreparedAssets(preparedAssets: PreparedAsset[]): Promise<PreparedAsset[]> {
@@ -124,6 +125,9 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
       if (!app.demoMode) {
         ctx.body = Array.isArray(processedBody) ? createdSeedResources : createdSeedResources[0];
+        if (!Array.isArray(ctx.body)) {
+          setResourceEtagHeader(ctx, ctx.body as Record<string, unknown>);
+        }
         return;
       }
     }
@@ -144,5 +148,8 @@ export function createCreateAppResourceController(options: Options): Middleware 
     });
 
     ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];
+    if (!Array.isArray(ctx.body)) {
+      setResourceEtagHeader(ctx, ctx.body as Record<string, unknown>);
+    }
   };
 }

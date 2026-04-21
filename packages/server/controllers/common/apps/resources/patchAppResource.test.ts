@@ -89,6 +89,7 @@ describe('patchAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "8c7rluf8gfrQccir5zr_kIU5zqPZC612rMiG5YM-ge8"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -108,6 +109,7 @@ describe('patchAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "8c7rluf8gfrQccir5zr_kIU5zqPZC612rMiG5YM-ge8"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -118,6 +120,52 @@ describe('patchAppResource', () => {
         }
       `,
     );
+    expect(response.headers.etag).toBeDefined();
+    expect(responseB.headers.etag).toBe(response.headers.etag);
+  });
+
+  it('should reject stale patches with If-Match', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.', bar: 'I am Bar.' },
+    });
+
+    authorizeStudio();
+
+    const initial = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+    const staleEtag = initial.headers.etag;
+
+    await request.patch(`/api/apps/${app.id}/resources/testResource/${resource.id}`, {
+      foo: 'I am not Foo.',
+    });
+
+    const staleResponse = await request.patch(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am stale.' },
+      { headers: { 'If-Match': staleEtag } },
+    );
+
+    expect(staleResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 412 Precondition Failed
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "code": "RESOURCE_PRECONDITION_FAILED",
+          "resourceId": 1,
+          "resourceType": "testResource",
+        },
+        "error": "Precondition Failed",
+        "message": "This resource has changed since it was loaded. Fetch the latest version and try again.",
+        "statusCode": 412,
+      }
+    `);
+
+    const latest = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+
+    expect(latest.data.foo).toBe('I am not Foo.');
+    expect(latest.data.bar).toBe('I am Bar.');
   });
 
   it('should be able to patch an existing resource from another group', async () => {
@@ -173,6 +221,7 @@ describe('patchAppResource', () => {
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "4Ai6FEU2j354YfQK3VXL6LgBCL6BrVgWszroFUJInHI"
 
       {
         "$author": {
@@ -374,6 +423,7 @@ describe('patchAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "4Ai6FEU2j354YfQK3VXL6LgBCL6BrVgWszroFUJInHI"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -409,6 +459,7 @@ describe('patchAppResource', () => {
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "YihDBQUs5xAaFvnHu3hMKUaOO_Uz4in5DPHf25pDFmg"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -422,6 +473,7 @@ describe('patchAppResource', () => {
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "YihDBQUs5xAaFvnHu3hMKUaOO_Uz4in5DPHf25pDFmg"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -493,12 +545,15 @@ describe('patchAppResource', () => {
 
     const { $created, $updated, ...rest } = response.data;
     response.data = rest as ResourceType;
+    expect(response.headers.etag).toMatch(/^".+"$/);
+    response.headers.etag = '<etag>';
 
     expect(response).toMatchInlineSnapshot(
       { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: <etag>
 
       {
         "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
@@ -623,11 +678,15 @@ describe('patchAppResource', () => {
       createFormData({ resource: { file: asset.id } }),
     );
 
+    expect(response.headers.etag).toMatch(/^".+"$/);
+    response.headers.etag = '<etag>';
+
     expect(response).toMatchInlineSnapshot(
       { data: { file: expect.any(String) } },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: <etag>
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -724,6 +783,7 @@ describe('patchAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "QaMMe-eJ1t9wv0eR-zU26oAqsNJiZ8WtGr-p9GGRx4w"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -777,6 +837,7 @@ describe('patchAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "QaMMe-eJ1t9wv0eR-zU26oAqsNJiZ8WtGr-p9GGRx4w"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -838,20 +899,21 @@ describe('patchAppResource', () => {
     expect(response).toMatchInlineSnapshot(
       { data: { $editor: { id: expect.any(String) } } },
       `
-        HTTP/1.1 200 OK
-        Content-Type: application/json; charset=utf-8
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+      Etag: "QOnb4J6PIsY-b3oAuDhFDcegXzYDhsXKtj5og7TiYAU"
 
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$editor": {
-            "id": Any<String>,
-            "name": "Test User",
-          },
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I am Foo too!",
-          "id": 1,
-        }
-      `,
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo too!",
+        "id": 1,
+      }
+    `,
     );
 
     await resource.reload();
@@ -872,6 +934,7 @@ describe('patchAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Pt2An-HVRWQRpfD9o75ULWQ2qloo8gS1oSHJYRXm2-U"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -908,6 +971,7 @@ describe('patchAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Pt2An-HVRWQRpfD9o75ULWQ2qloo8gS1oSHJYRXm2-U"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -944,6 +1008,7 @@ describe('patchAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Pt2An-HVRWQRpfD9o75ULWQ2qloo8gS1oSHJYRXm2-U"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",

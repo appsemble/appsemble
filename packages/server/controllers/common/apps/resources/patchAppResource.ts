@@ -1,10 +1,14 @@
 import {
   assertKoaCondition,
+  createResourceEtag,
   deleteS3Files,
   getCompressedFileMeta,
   getResourceDefinition,
   logger,
+  matchesResourceIfMatch,
   processResourceBody,
+  setResourceEtagHeader,
+  throwResourcePreconditionFailedKoaError,
   uploadAssets,
 } from '@appsemble/node-utils';
 import { type Context } from 'koa';
@@ -56,6 +60,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
   });
 
   const appMember = await getCurrentAppMember({ context: ctx, app: app.toJSON() });
+  const ifMatch = ctx.get('If-Match') || undefined;
 
   const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
@@ -83,12 +88,27 @@ export async function patchAppResource(ctx: Context): Promise<void> {
   }
 
   try {
-    await sequelize.transaction((transaction) => {
-      const oldData = resource.data;
+    ctx.body = await sequelize.transaction(async (transaction) => {
+      const lockedResource = await Resource.findOne({
+        where: { id: resourceId, type: resourceType, GroupId: selectedGroupId ?? null },
+        lock: transaction.LOCK.UPDATE,
+        transaction,
+      });
+
+      assertKoaCondition(lockedResource != null, ctx, 404, 'Resource not found');
+
+      if (!matchesResourceIfMatch(ifMatch, createResourceEtag(lockedResource.toJSON()))) {
+        throwResourcePreconditionFailedKoaError(ctx, resourceType, resourceId);
+      }
+
+      const oldData = lockedResource.data;
       const data = { ...oldData, ...patchData };
-      const previousEditorId = resource.EditorId;
+      const previousEditorId = lockedResource.EditorId;
       const promises: Promise<unknown>[] = [
-        resource.update({ data, clonable, expires, EditorId: appMember?.sub }, { transaction }),
+        lockedResource.update(
+          { data, clonable, expires, EditorId: appMember?.sub },
+          { transaction },
+        ),
       ];
 
       if (preparedAssets.length) {
@@ -98,7 +118,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
               ...asset,
               ...getCompressedFileMeta(asset),
               GroupId: selectedGroupId ?? null,
-              ResourceId: resource.id,
+              ResourceId: lockedResource.id,
               AppMemberId: appMember?.sub,
             })),
             { logging: false, transaction },
@@ -124,7 +144,18 @@ export async function patchAppResource(ctx: Context): Promise<void> {
         });
       }
 
-      return Promise.all(promises);
+      await Promise.all(promises);
+
+      const reloaded = await lockedResource.reload({
+        include: [
+          { association: 'Author', attributes: ['id', 'name'], required: false },
+          { association: 'Editor', attributes: ['id', 'name'], required: false },
+          { association: 'Group', attributes: ['id', 'name'], required: false },
+        ],
+        transaction,
+      });
+
+      return reloaded.toJSON();
     });
   } catch (error) {
     if (preparedAssets.length) {
@@ -135,7 +166,6 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     }
     throw error;
   }
-  await resource.reload({ include: [{ association: 'Editor' }] });
 
-  ctx.body = resource;
+  setResourceEtagHeader(ctx, ctx.body as Record<string, unknown> | null | undefined);
 }
