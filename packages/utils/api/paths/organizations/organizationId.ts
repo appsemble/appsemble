@@ -11,6 +11,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         $ref: '#/components/responses/organization',
       },
     },
+    security: [{ studio: [] }, { cli: ['organizations:write'] }, {}],
   },
   patch: {
     tags: ['main', 'organization'],
