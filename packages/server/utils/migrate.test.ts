@@ -130,6 +130,11 @@ describe('migrate', () => {
     );
     const db = getDB();
     const pendingMigration = migrate(db, '0.0.1', migrations);
+
+    await vi.waitFor(() => {
+      expect(m003.down).toHaveBeenCalledTimes(1);
+    });
+
     expect(m002.down).not.toHaveBeenCalled();
     resolve();
     await pendingMigration;
@@ -138,7 +143,7 @@ describe('migrate', () => {
 
   it('should run upgrades in sequence', async () => {
     const { Meta } = getDB().models;
-    await Meta.create({ version: '0.0.1' });
+    await Meta.create({ version: '0.0.0' });
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     let resolve: () => void = () => {};
     (m001.up as Mock).mockReturnValue(
@@ -148,6 +153,11 @@ describe('migrate', () => {
     );
     const db = getDB();
     const pendingMigration = migrate(db, '0.0.2', migrations);
+
+    await vi.waitFor(() => {
+      expect(m001.up).toHaveBeenCalledTimes(1);
+    });
+
     expect(m002.up).not.toHaveBeenCalled();
     resolve();
     await pendingMigration;
