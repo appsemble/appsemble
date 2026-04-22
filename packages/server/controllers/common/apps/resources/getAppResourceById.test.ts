@@ -21,7 +21,7 @@ import {
 } from '../../../../utils/test/authorization.js';
 import { exampleApp } from '../../../../utils/test/exampleApp.js';
 
-// cspell:ignore LKNMDHNG
+// CSpell:ignore LKNMDHNG
 
 let organization: Organization;
 let orgMember: OrganizationMember;
