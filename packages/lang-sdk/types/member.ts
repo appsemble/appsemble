@@ -59,6 +59,13 @@ export interface AppMemberInfo {
   zoneinfo?: string;
 
   /**
+   * The role of the app member.
+   *
+   * @deprecated Use roles instead.
+   */
+  role?: AppRole;
+
+  /**
    * The direct roles of the app member.
    */
   roles: AppRole[];

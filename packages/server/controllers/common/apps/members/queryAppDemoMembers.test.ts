@@ -120,6 +120,7 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
+          "role": "Admin",
           "roles": [
             "Admin",
           ],
@@ -227,6 +228,7 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
+          "role": "Manager",
           "roles": [
             "Manager",
           ],
@@ -245,6 +247,7 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
+          "role": "Staff",
           "roles": [
             "Staff",
           ],
@@ -331,6 +334,7 @@ describe('queryAppMembers', () => {
           locale: null,
           zoneinfo: null,
           properties: {},
+          role: 'Manager',
           roles: ['Manager'],
           demo: true,
           $seed: false,
@@ -347,6 +351,7 @@ describe('queryAppMembers', () => {
           locale: null,
           zoneinfo: null,
           properties: {},
+          role: 'Staff',
           roles: ['Staff'],
           demo: true,
           $seed: false,
@@ -434,6 +439,7 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
+          "role": "Staff",
           "roles": [
             "Staff",
           ],
@@ -527,6 +533,7 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
+          "role": "Manager",
           "roles": [
             "Manager",
           ],
@@ -545,6 +552,7 @@ describe('queryAppMembers', () => {
           "phoneNumber": null,
           "picture": Any<String>,
           "properties": {},
+          "role": "Staff",
           "roles": [
             "Staff",
           ],

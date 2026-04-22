@@ -36,6 +36,10 @@ export const AppMemberInfo: OpenAPIV3.NonArraySchemaObject = {
       enum: Intl.supportedValuesOf('timeZone'),
       description: 'The time zone of the app member.',
     },
+    role: {
+      type: 'string',
+      description: 'The role of the app member within the app. Deprecated: use roles instead.',
+    },
     roles: {
       type: 'array',
       items: {
