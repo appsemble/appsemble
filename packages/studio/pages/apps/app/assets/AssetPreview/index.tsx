@@ -15,13 +15,14 @@ export function AssetPreview({ asset }: { readonly asset: Asset }): ReactNode {
   }
 
   const url = `/api/apps/${app.id}/assets/${asset.id}`;
+  const downloadUrl = `${url}/download`;
   const isImage = asset.mime.startsWith('image/');
   const isAudio = asset.mime.startsWith('audio/');
   const isVideo = asset.mime.startsWith('video/');
 
   return (
     <Content className={styles.preview}>
-      <Button className="mb-2" component="a" download href={url} icon="download">
+      <Button className="mb-2" component="a" download href={downloadUrl} icon="download">
         <FormattedMessage {...messages.download} />
       </Button>
       <div className="box">

@@ -5,6 +5,15 @@ import { Op } from 'sequelize';
 
 import { App, getAppDB } from '../../../../models/index.js';
 
+function getDerivedFilename(assetId: string, filename?: string | null): string {
+  if (!filename) {
+    return `${assetId}.avif`;
+  }
+
+  const dotIndex = filename.lastIndexOf('.');
+  return dotIndex === -1 ? `${filename}.avif` : `${filename.slice(0, dotIndex)}.avif`;
+}
+
 export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, assetId },
@@ -27,7 +36,10 @@ export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
 
   let { filename, mime } = asset;
 
-  if (!filename) {
+  if (mime?.startsWith('image')) {
+    mime = 'image/avif';
+    filename = getDerivedFilename(asset.id, filename);
+  } else if (!filename) {
     filename = asset.id;
     if (mime) {
       const ext = extension(mime);
@@ -37,7 +49,5 @@ export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
     }
   }
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  setAssetHeaders(ctx, mime, filename);
+  setAssetHeaders(ctx, mime ?? 'application/octet-stream', filename ?? asset.id);
 }
