@@ -4735,6 +4735,12 @@ Does nothing if the app member is not logged in.",
                     "onSuccess": {},
                     "remapAfter": {},
                     "remapBefore": {},
+                    "role": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The updated role of the app member.
+
+Deprecated: use roles instead.",
+                    },
                     "roles": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The updated roles of the app member.
@@ -10515,6 +10521,12 @@ Does nothing if the app member is not logged in.",
             "onSuccess": {},
             "remapAfter": {},
             "remapBefore": {},
+            "role": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The updated role of the app member.
+
+Deprecated: use roles instead.",
+            },
             "roles": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The updated roles of the app member.
