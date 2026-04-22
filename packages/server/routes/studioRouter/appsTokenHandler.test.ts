@@ -315,6 +315,65 @@ describe('appsTokenHandler', () => {
         exp: 946_688_400,
         iat: 946_684_800,
         iss: 'http://localhost',
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'access',
+        scope: 'openid',
+        sub: appMember.id,
+      });
+    });
+
+    it('should return an access token response for apps using a custom domain', async () => {
+      await user.$create('Organization', { id: 'org-custom-domain' });
+      const app = await App.create({
+        OrganizationId: 'org-custom-domain',
+        definition: '',
+        domain: 'custom.example.com',
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+      });
+      const appMember = await createTestAppMember(app.id);
+      const expires = new Date('2000-01-01T00:10:00Z');
+      const redirectUri = 'https://custom.example.com/callback';
+      const { OAuth2AuthorizationCode } = await getAppDB(app.id);
+      const authCode = await OAuth2AuthorizationCode.create({
+        code: 'custom-domain-code',
+        AppMemberId: appMember.id,
+        expires,
+        redirectUri,
+        scope: 'email openid',
+      });
+      const response = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${app.id}`,
+          code: 'custom-domain-code',
+          grant_type: 'authorization_code',
+          redirect_uri: redirectUri,
+          scope: 'openid',
+        }),
+        { headers: { referer: 'https://custom.example.com/login' } },
+      );
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          expires_in: 3600,
+          refresh_token: expect.stringMatching(jwtPattern),
+          token_type: 'bearer',
+        },
+      });
+      expect(response.data.access_token).not.toBe(response.data.refresh_token);
+      await expect(authCode.reload()).rejects.toThrow(
+        'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+      );
+      const payload = jwt.decode(response.data.access_token);
+      expect(payload).toStrictEqual({
+        aud: `app:${app.id}`,
+        exp: 946_688_400,
+        iat: 946_684_800,
+        iss: 'http://localhost',
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'access',
         scope: 'openid',
         sub: appMember.id,
       });
@@ -449,6 +508,8 @@ describe('appsTokenHandler', () => {
         exp: 946_688_400,
         iat: 946_684_800,
         iss: 'http://localhost',
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'access',
         scope: 'blocks:write',
         sub: user.id,
       });
@@ -609,6 +670,8 @@ describe('appsTokenHandler', () => {
         iat: 946_684_800,
         iss: 'http://localhost',
         scope: null,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'access',
         sub: user.id,
       });
     });

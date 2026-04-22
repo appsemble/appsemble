@@ -42,7 +42,11 @@ export function authentication(): SecurityOptions {
 
     // @ts-expect-error Messed up
     async app(accessToken: string) {
-      const { aud, scope, sub } = jwt.verify(accessToken, secret) as JwtPayload;
+      const payload = jwt.verify(accessToken, secret) as JwtPayload;
+      if (payload.token_use !== 'access') {
+        return;
+      }
+      const { aud, scope, sub } = payload;
       // XXX use origin check when default app domains are implemented.
       const [prefix, id] = (aud as string).split(':');
 
@@ -71,7 +75,11 @@ export function authentication(): SecurityOptions {
 
     // @ts-expect-error Messed up
     async cli(accessToken: string) {
-      const { aud, scope, sub } = jwt.verify(accessToken, secret) as JwtPayload;
+      const payload = jwt.verify(accessToken, secret) as JwtPayload;
+      if (payload.token_use !== 'access') {
+        return;
+      }
+      const { aud, scope, sub } = payload;
       const credentials = await OAuth2ClientCredentials.count({
         where: {
           id: aud,
@@ -120,8 +128,11 @@ export function authentication(): SecurityOptions {
 
     // @ts-expect-error Messed up
     studio(accessToken: string) {
-      const { sub } = jwt.verify(accessToken, secret, { audience: host }) as JwtPayload;
-      return User.findByPk(sub, {
+      const payload = jwt.verify(accessToken, secret, { audience: host }) as JwtPayload;
+      if (payload.token_use !== 'access') {
+        return;
+      }
+      return User.findByPk(payload.sub, {
         attributes: ['id'],
       });
     },

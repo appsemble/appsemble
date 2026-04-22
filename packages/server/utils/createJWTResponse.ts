@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { type TokenResponse } from '@appsemble/types';
 import jwt from 'jsonwebtoken';
 
@@ -52,13 +54,18 @@ export function createJWTResponse(
   };
   const response: TokenResponse = {
     // The access token expires in an hour.
-    access_token: jwt.sign({ ...payload, exp: iat + expires }, argv.secret),
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    access_token: jwt.sign({ ...payload, exp: iat + expires, token_use: 'access' }, argv.secret),
     expires_in: expires,
     token_type: 'bearer',
   };
   if (refreshToken) {
     // The refresh token expires in a month.
-    response.refresh_token = jwt.sign({ ...payload, exp: iat + 60 * 60 * 24 * 30 }, argv.secret);
+    response.refresh_token = jwt.sign(
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      { ...payload, exp: iat + 60 * 60 * 24 * 30, rti: randomUUID(), token_use: 'refresh' },
+      argv.secret,
+    );
   }
   return response;
 }

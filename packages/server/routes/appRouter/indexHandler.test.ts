@@ -683,6 +683,34 @@ describe('indexHandler', () => {
     `);
   });
 
+  it('should use the custom domain as apiUrl when served on that domain', async () => {
+    requestURL = new URL('http://custom.example');
+    await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        pages: [],
+      },
+      path: 'app',
+      domain: 'custom.example',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const response = await request.get('/');
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        data: {
+          settings: expect.stringContaining('"apiUrl":"http://custom.example"'),
+        },
+      },
+    });
+  });
+
   it('should redirect to the app root if the organization id is disallowed', async () => {
     requestURL = new URL('http://www.host.example');
     const response = await request.get('/');
