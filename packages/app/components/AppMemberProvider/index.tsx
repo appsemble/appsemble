@@ -145,6 +145,8 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
    * Reset everything to its initial state for a logged out user.
    */
   const logout = useCallback(() => {
+    const rt = localStorage.getItem(REFRESH_TOKEN);
+
     setSentryUser(null);
     localStorage.removeItem(REFRESH_TOKEN);
     setExp(null);
@@ -158,6 +160,21 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     setAppMemberSelectedGroup(null);
+
+    if (!development && rt) {
+      axios
+        .post(
+          `${apiUrl}/apps/${appId}/auth/oauth2/token`,
+          new URLSearchParams({
+            client_id: `app:${appId}`,
+            grant_type: 'revoke_token',
+            refresh_token: rt,
+          }),
+        )
+        .catch(() => {
+          // Do nothing
+        });
+    }
   }, []);
 
   /**

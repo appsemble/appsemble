@@ -1,3 +1,5 @@
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
+
 import { basicAuth } from '@appsemble/node-utils';
 import { type TokenResponse } from '@appsemble/types';
 import { jwtPattern } from '@appsemble/utils';
@@ -13,6 +15,25 @@ import { createServer } from '../../utils/createServer.js';
 import { createTestAppMember, createTestUser } from '../../utils/test/authorization.js';
 
 let user: User;
+
+function hashToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
+}
+
+async function createStoredRefreshToken(appId: number, sub = user.id): Promise<string> {
+  const token = randomBytes(72).toString('base64url');
+  const { AppMemberRefreshSession } = await getAppDB(appId);
+
+  await AppMemberRefreshSession.create({
+    aud: `app:${appId}`,
+    expires: new Date('2000-02-01T00:00:00Z'),
+    id: randomUUID(),
+    sub,
+    tokenHash: hashToken(token),
+  });
+
+  return token;
+}
 
 describe('appsTokenHandler', () => {
   beforeAll(async () => {
@@ -284,6 +305,7 @@ describe('appsTokenHandler', () => {
           token_type: 'bearer',
         },
       });
+      expect(response.data.access_token).not.toBe(response.data.refresh_token);
       await expect(authCode.reload()).rejects.toThrow(
         'Instance could not be reloaded because it does not exist anymore (find call returned null)',
       );
@@ -434,9 +456,25 @@ describe('appsTokenHandler', () => {
   });
 
   describe('refresh_token', () => {
+    let appId: number;
+    let tokenEndpoint: string;
+
+    beforeEach(async () => {
+      const organizationId = `org-${randomUUID()}`;
+      await user.$create('Organization', { id: organizationId });
+      const app = await App.create({
+        OrganizationId: organizationId,
+        definition: '',
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+      });
+      appId = app.id;
+      tokenEndpoint = `apps/${appId}/auth/oauth2/token`;
+    });
+
     it('should verify the refresh token', async () => {
       const response = await request.post(
-        'apps/1/auth/oauth2/token',
+        tokenEndpoint,
         new URLSearchParams({
           grant_type: 'refresh_token',
           refresh_token: 'invalid.refresh.token',
@@ -451,12 +489,106 @@ describe('appsTokenHandler', () => {
       });
     });
 
-    it('should create a refresh token', async () => {
-      const response = await request.post<TokenResponse>(
-        'apps/1/auth/oauth2/token',
+    it('should reject access tokens in the refresh token grant', async () => {
+      const tokens = createJWTResponse(user.id, { aud: `app:${appId}` });
+      const response = await request.post(
+        tokenEndpoint,
         new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: createJWTResponse(user.id).refresh_token!,
+          refresh_token: tokens.access_token,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          error: 'invalid_grant',
+        },
+      });
+    });
+
+    it('should invalidate a refresh token after use', async () => {
+      const token = await createStoredRefreshToken(appId);
+
+      const firstResponse = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: token,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(firstResponse).toMatchObject({
+        status: 200,
+      });
+
+      const secondResponse = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: token,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(secondResponse).toMatchObject({
+        status: 400,
+        data: {
+          error: 'invalid_grant',
+        },
+      });
+    });
+
+    it('should revoke a refresh token', async () => {
+      const token = await createStoredRefreshToken(appId);
+
+      const revokeResponse = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'revoke_token',
+          refresh_token: token,
+        }),
+      );
+      expect(revokeResponse).toMatchObject({
+        status: 200,
+        data: {},
+      });
+
+      const refreshResponse = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: token,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(refreshResponse).toMatchObject({
+        status: 400,
+        data: {
+          error: 'invalid_grant',
+        },
+      });
+    });
+
+    it('should be idempotent when revoking invalid tokens', async () => {
+      const response = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'revoke_token',
+          refresh_token: 'invalid.refresh.token',
+        }),
+      );
+      expect(response).toMatchObject({
+        status: 200,
+        data: {},
+      });
+    });
+
+    it('should create a refresh token', async () => {
+      const response = await request.post<TokenResponse>(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: await createStoredRefreshToken(appId),
           scope: 'resources:manage',
         }),
       );
@@ -469,12 +601,14 @@ describe('appsTokenHandler', () => {
           token_type: 'bearer',
         },
       });
+      expect(response.data.access_token).not.toBe(response.data.refresh_token);
       const payload = jwt.decode(response.data.access_token);
       expect(payload).toStrictEqual({
-        aud: 'http://localhost',
+        aud: `app:${appId}`,
         exp: 946_688_400,
         iat: 946_684_800,
         iss: 'http://localhost',
+        scope: null,
         sub: user.id,
       });
     });

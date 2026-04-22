@@ -48,6 +48,10 @@ import {
 import { type AssetGlobal as Asset, createAssetModel } from './apps/Asset.js';
 import { createGroupModel, type GroupGlobal as Group } from './apps/Group.js';
 import {
+  createAppMemberRefreshSessionModel,
+  type AppMemberRefreshSessionGlobal as AppMemberRefreshSession,
+} from './apps/AppMemberRefreshSession.js';
+import {
   createGroupInviteModel,
   type GroupInviteGlobal as GroupInvite,
 } from './apps/GroupInvite.js';
@@ -279,6 +283,7 @@ export function transactional<T>(callback: (transaction: Transaction) => Promise
 
 export interface AppModels {
   AppBlockStyle: Repository<AppBlockStyle>;
+  AppMemberRefreshSession: Repository<AppMemberRefreshSession>;
   AppInvite: Repository<AppInvite>;
   AppMember: Repository<AppMember>;
   AppMemberEmailAuthorization: Repository<AppMemberEmailAuthorization>;
@@ -375,6 +380,7 @@ export async function initAppDB(
 
     const models: AppModels = {
       AppBlockStyle: createAppBlockStyleModel(appDB),
+      AppMemberRefreshSession: createAppMemberRefreshSessionModel(appDB),
       AppInvite: createAppInviteModel(appDB),
       AppMember: createAppMemberModel(appDB),
       AppMemberEmailAuthorization: createAppMemberEmailAuthorizationModel(appDB),

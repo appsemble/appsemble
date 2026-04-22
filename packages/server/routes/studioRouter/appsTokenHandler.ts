@@ -3,7 +3,6 @@ import querystring from 'node:querystring';
 import { assertKoaCondition, logger } from '@appsemble/node-utils';
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
-import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { type Context } from 'koa';
 import raw from 'raw-body';
 
@@ -13,7 +12,11 @@ import {
   getAppDB,
   OAuth2ClientCredentials,
 } from '../../models/index.js';
-import { argv } from '../../utils/argv.js';
+import {
+  createAppMemberRefreshSession,
+  revokeAppMemberRefreshSession,
+  rotateAppMemberRefreshSession,
+} from '../../utils/appMemberRefreshSession.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { GrantError, hasScope } from '../../utils/oauth2.js';
 
@@ -42,8 +45,9 @@ function checkTokenRequestParameters(
 export async function appsTokenHandler(ctx: Context): Promise<void> {
   const { header } = ctx;
   let aud: string;
-  let refreshToken: boolean;
-  let scope: string;
+  let createRefreshSessionForAppId: number | null = null;
+  let refreshToken: string | undefined;
+  let scope: string | undefined;
   let sub: string;
 
   try {
@@ -97,7 +101,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           throw new GrantError('invalid_scope');
         }
         aud = clientId;
-        refreshToken = true;
+        createRefreshSessionForAppId = appId;
         scope = requestedScope;
         sub = authorizationCode.AppMemberId;
         break;
@@ -133,23 +137,46 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           throw new GrantError('invalid_scope');
         }
         aud = id;
-        refreshToken = false;
         scope = requestedScope;
         sub = client.UserId;
         break;
       }
       case 'refresh_token': {
-        const { refresh_token: token } = checkTokenRequestParameters(query, ['refresh_token']);
+        const { refresh_token: providedToken } = checkTokenRequestParameters(query, [
+          'refresh_token',
+        ]);
+        const match = ctx.path.match(/^\/apps\/(\d+)\/auth\/oauth2\/token$/);
+        if (!match) {
+          throw new GrantError('invalid_request');
+        }
+
         try {
-          const payload = jwt.verify(token, argv.secret) as JwtPayload;
-          // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
-          ({ scope, sub } = payload);
-          aud = payload.aud as string;
-          refreshToken = true;
+          const payload = await rotateAppMemberRefreshSession(ctx, Number(match[1]), {
+            token: providedToken,
+          });
+          ({ aud, scope, sub } = payload);
+          refreshToken = payload.refreshToken;
         } catch {
           throw new GrantError('invalid_grant');
         }
         break;
+      }
+      case 'revoke_token': {
+        const { refresh_token: providedToken } = checkTokenRequestParameters(query, [
+          'refresh_token',
+        ]);
+        const match = ctx.path.match(/^\/apps\/(\d+)\/auth\/oauth2\/token$/);
+        if (!match) {
+          throw new GrantError('invalid_request');
+        }
+
+        await revokeAppMemberRefreshSession(ctx, Number(match[1]), {
+          token: providedToken,
+        });
+
+        ctx.status = 200;
+        ctx.body = {};
+        return;
       }
       case 'password': {
         const {
@@ -192,7 +219,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
         aud = clientId;
         sub = appMember.id;
         scope = requestedScope;
-        refreshToken = true;
+        createRefreshSessionForAppId = appId;
         break;
       }
       case 'urn:ietf:params:oauth:grant-type:demo-login': {
@@ -260,7 +287,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
         aud = clientId;
         sub = appMember!.id;
         scope = requestedScope;
-        refreshToken = true;
+        createRefreshSessionForAppId = appId;
         break;
       }
       default:
@@ -275,5 +302,19 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
     throw error;
   }
 
-  ctx.body = createJWTResponse(sub, { aud, refreshToken, scope });
+  if (createRefreshSessionForAppId != null) {
+    refreshToken = await createAppMemberRefreshSession(ctx, {
+      appId: createRefreshSessionForAppId,
+      aud,
+      scope,
+      sub,
+    });
+  }
+
+  const tokenResponse = createJWTResponse(sub, { aud, refreshToken: false, scope });
+  if (refreshToken) {
+    tokenResponse.refresh_token = refreshToken;
+  }
+
+  ctx.body = tokenResponse;
 }

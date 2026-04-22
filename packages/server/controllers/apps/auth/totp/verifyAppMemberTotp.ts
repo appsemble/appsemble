@@ -3,6 +3,7 @@ import { type Context } from 'koa';
 import { authenticator } from 'otplib';
 
 import { getAppDB } from '../../../../models/index.js';
+import { createAppMemberRefreshSession } from '../../../../utils/appMemberRefreshSession.js';
 import { argv } from '../../../../utils/argv.js';
 import { decrypt } from '../../../../utils/crypto.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
@@ -33,5 +34,15 @@ export async function verifyAppMemberTotp(ctx: Context): Promise<void> {
     throwKoaError(ctx, 401, 'Invalid TOTP token');
   }
 
-  ctx.body = createJWTResponse(member.id, { aud: `app:${appId}`, scope });
+  const aud = `app:${appId}`;
+  const refreshToken = await createAppMemberRefreshSession(ctx, {
+    appId,
+    aud,
+    scope,
+    sub: member.id,
+  });
+
+  const tokenResponse = createJWTResponse(member.id, { aud, refreshToken: false, scope });
+  tokenResponse.refresh_token = refreshToken;
+  ctx.body = tokenResponse;
 }
