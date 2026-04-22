@@ -22,5 +22,11 @@ Does nothing if the app member isn’t logged in.`,
 
 Every role must exist in the roles property of the app's security definition.`,
     },
+    role: {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: `The updated role of the app member.
+
+Deprecated: use roles instead.`,
+    },
   },
 });

@@ -211,7 +211,11 @@ export const appMemberRoleUpdate: ActionCreator<'app.member.role.update'> = ({
     }
 
     const sub = remap(definition.sub, data);
-    const mappedRoles = remap(definition.roles, data);
+    const mappedRoles = definition.roles
+      ? remap(definition.roles, data)
+      : definition.role
+        ? remap(definition.role, data)
+        : [];
     const roles = Array.isArray(mappedRoles) ? mappedRoles : mappedRoles ? [mappedRoles] : [];
     const selectedGroupId = getAppMemberSelectedGroup?.()?.id;
 

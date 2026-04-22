@@ -692,6 +692,60 @@ describe('app.member.role.update', () => {
     expect(refetchDemoAppMembers).toHaveBeenCalledWith();
   });
 
+  it('should support the legacy role property', async () => {
+    mock.onPut(`${apiUrl}/api/apps/${appId}/app-members/some-user-id/role`).reply(() => [
+      201,
+      {
+        id: 'some-user-id',
+        email: 'email@example.com',
+        emailVerified: false,
+        name: 'name',
+        roles: [PredefinedAppRole.Member],
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
+        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
+      },
+    ]);
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.role.update',
+        sub: 'some-user-id',
+        role: { prop: 'role' },
+      },
+      getAppMemberInfo: () => ({
+        sub: 'manager-id',
+        name: 'old name',
+        email: 'email@example.com',
+        email_verified: true,
+        picture: 'https://example.com/old-avatar.jpg',
+        properties: { test: [1, 2, 3], property: 'Property', bool: true },
+        roles: [PredefinedAppRole.MembersManager],
+        demo: false,
+        $seed: false,
+        $ephemeral: false,
+      }),
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
+      refetchDemoAppMembers,
+    });
+
+    const result = await action({ role: PredefinedAppRole.Member });
+    expect(result).toStrictEqual({
+      id: 'some-user-id',
+      name: 'name',
+      email: 'email@example.com',
+      emailVerified: false,
+      picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
+      roles: [PredefinedAppRole.Member],
+      properties: {
+        bool: 'true',
+        property: 'Property',
+        test: '[1,2,3]',
+      },
+    });
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
+  });
+
   it('should do nothing and return the data if the user is not logged in', async () => {
     const action = createTestAction({
       definition: {
