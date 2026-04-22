@@ -339,6 +339,7 @@ parameters:
       'picture',
       'locale',
       'zoneinfo',
+      'role',
       'roles',
       'properties',
       'phoneNumber',
@@ -358,6 +359,7 @@ Provides some fields of app member information taken from the OpenID user info. 
 - \`locale\`: The app member’s default language [\`BCP47\`](https://en.wikipedia.org/wiki/IETF_language_tag)
   language tag (ex. \`en\`) (Broken)
 - \`zoneinfo\`: The app member’s timezone
+- \`role\`: The app member’s first direct role in the app
 - \`roles\`: The direct roles of the app member in the app (\`string[]\`)
 - \`properties\`: Custom properties defined on the app member
 - \`phoneNumber\`: Phone number of the app member if enabled in app definition.
