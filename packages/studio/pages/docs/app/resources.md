@@ -8,6 +8,7 @@ called a `resource`.
 
 - [Defining resources](#defining-resources)
   - [type](#type)
+  - [Unique constraints](#unique-constraints)
 - [Resource actions](#resource-actions)
   - [Example](#example)
 - [Securing resources](#securing-resources)
@@ -68,6 +69,76 @@ The following types can be used to define the type of a property:
 | null      | Null represents a variable with no value                                                      |
 | number    | Number can contain a fractional part (2.56, 1.24, 7E-10) and also integers                    |
 | string    | A string is any sequence of characters (letters, numerals, symbols, punctuation marks, etc.)  |
+
+### Unique constraints
+
+Use the `unique` property on a resource definition to require unique values for one field or a
+combination of fields.
+
+Each entry in `unique` is either:
+
+- a single field name, such as `email`
+- or a list of field names for a composite unique constraint, such as `[countryCode, phoneNumber]`
+
+For example, to require every person to have a unique email address:
+
+```yaml copy validate resources-snippet
+resources:
+  person:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - firstName
+        - email
+      properties:
+        firstName:
+          type: string
+        email:
+          type: string
+          format: email
+    unique:
+      - email
+```
+
+Composite unique constraints are also supported:
+
+```yaml copy validate resources-snippet
+resources:
+  contact:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - countryCode
+        - phoneNumber
+      properties:
+        countryCode:
+          type: string
+        phoneNumber:
+          type: string
+        extension:
+          type: string
+    unique:
+      - [countryCode, phoneNumber]
+      - [countryCode, phoneNumber, extension]
+```
+
+Unique constraints can only be applied to fields whose schema type is:
+
+- `string`
+- `integer`
+- `number`
+- `boolean`
+- or an `enum` whose values all have the same supported primitive type
+
+If you add or change a unique constraint, Appsemble applies it to the existing resource data for
+that app. Publishing, importing, or cloning can fail if:
+
+- existing resources already contain duplicate values for the constrained field or field combination
+- existing or imported resource values do not comply with the schema of a typed unique field
+
+When that happens, fix the conflicting or invalid resource values first, then try again.
 
 ## Resource actions
 
