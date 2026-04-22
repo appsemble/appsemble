@@ -1,4 +1,4 @@
-import { type HTTPMethods } from '@appsemble/lang-sdk';
+import { type HTTPMethods, type Remapper } from '@appsemble/lang-sdk';
 import { formatRequestAction, serializeResource } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 
@@ -19,8 +19,11 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           }
         : formatRequestAction(definition, data, remap, context);
 
+      const ifMatchDefinition = definition as typeof definition & { ifMatch?: Remapper };
       const ifMatch =
-        'ifMatch' in definition ? remap(definition.ifMatch ?? null, data, context) : undefined;
+        ifMatchDefinition.ifMatch == null
+          ? undefined
+          : remap(ifMatchDefinition.ifMatch, data, context);
       if (ifMatch != null) {
         req.headers = {
           ...req.headers,

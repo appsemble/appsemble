@@ -73,6 +73,7 @@ describe('deleteAppResource', () => {
     expect(responseGetA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -260,6 +261,7 @@ describe('deleteAppResource', () => {
     expect(responseGet).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -301,6 +303,7 @@ describe('deleteAppResource', () => {
     expect(responseGet).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -409,6 +412,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResource).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -425,6 +429,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResourceB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Mx_UrKvgJ__y4xG3R-hk3pNt-raDYiBy0gUbl9vkwyo"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -471,6 +476,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResource).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -487,6 +493,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResourceB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Mx_UrKvgJ__y4xG3R-hk3pNt-raDYiBy0gUbl9vkwyo"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -531,6 +538,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResource).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -547,6 +555,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResourceC).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Mx_UrKvgJ__y4xG3R-hk3pNt-raDYiBy0gUbl9vkwyo"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -570,6 +579,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResourceCAfterDeletingTestResource).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Jew5Sxb8OF5pcXLBNoxtWoBeGporxfUOjYONJf7EDM0"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -601,6 +611,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResource).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -617,6 +628,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResourceD).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Mx_UrKvgJ__y4xG3R-hk3pNt-raDYiBy0gUbl9vkwyo"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",

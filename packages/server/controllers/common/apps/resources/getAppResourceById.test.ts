@@ -70,6 +70,7 @@ describe('getAppResourceById', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -102,6 +103,7 @@ describe('getAppResourceById', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "name": "1-bar",
@@ -122,6 +124,7 @@ describe('getAppResourceById', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -259,6 +262,7 @@ describe('getAppResourceById', () => {
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$author": {
@@ -388,6 +392,7 @@ describe('getAppResourceById', () => {
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "ejnExWLaIvr-qLKNMDHNGVeMRGfgXZT4pl8nRyXU_gc"
 
       {
         "$author": {
@@ -427,6 +432,7 @@ describe('getAppResourceById', () => {
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "ejnExWLaIvr-qLKNMDHNGVeMRGfgXZT4pl8nRyXU_gc"
 
       {
         "$author": {
@@ -467,6 +473,7 @@ describe('getAppResourceById', () => {
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "wrHuBm06ZaOOoByzn1-SiAbZHc1b8Uly1BL1nQMYeBM"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -501,6 +508,7 @@ describe('getAppResourceById', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -550,6 +558,7 @@ describe('getAppResourceById', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",

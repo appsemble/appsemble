@@ -57,8 +57,6 @@ export function createGetAppResourceByIdController(options: Options): Middleware
       groupId: selectedGroupId,
     });
 
-    setResourceEtagHeader(ctx, resource);
-
     if (view) {
       const context = await getRemapperContext(
         app,
@@ -69,10 +67,12 @@ export function createGetAppResourceByIdController(options: Options): Middleware
 
       const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx, view);
 
+      setResourceEtagHeader(ctx, resource);
       ctx.body = remap(resourceDefinition.views?.[view].remap ?? null, resource, context);
       return;
     }
 
+    setResourceEtagHeader(ctx, resource);
     ctx.body = resource;
   };
 }

@@ -2786,6 +2786,10 @@ If not specified, the raw input data is used.
                       },
                       "type": "object",
                     },
+                    "ifMatch": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ETag that must match before updating the resource.",
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
@@ -3119,6 +3123,10 @@ If not specified, the raw input data is used.
                     },
                     "id": {
                       "$ref": "#/components/schemas/RemapperDefinition",
+                    },
+                    "ifMatch": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ETag that must match before updating the resource.",
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -8628,6 +8636,10 @@ If not specified, the raw input data is used.
               },
               "type": "object",
             },
+            "ifMatch": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ETag that must match before updating the resource.",
+            },
             "onError": {},
             "onSuccess": {},
             "proxy": {
@@ -8961,6 +8973,10 @@ If not specified, the raw input data is used.
             },
             "id": {
               "$ref": "#/components/schemas/RemapperDefinition",
+            },
+            "ifMatch": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ETag that must match before updating the resource.",
             },
             "onError": {},
             "onSuccess": {},
