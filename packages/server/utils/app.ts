@@ -355,7 +355,11 @@ export function handleAppValidationError(ctx: Context, error: Error, app: Partia
   }
 
   if (error instanceof ResourceUniqueConstraintValueError) {
-    throwKoaError(ctx, 400, error.message);
+    throwKoaError(ctx, 400, error.message, {
+      code: 'RESOURCE_UNIQUE_CONSTRAINT_VALUE_ERROR',
+      field: error.field,
+      resourceType: error.resourceType,
+    });
   }
 
   if (isUniqueConstraintErrorLike(error)) {

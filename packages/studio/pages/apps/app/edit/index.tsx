@@ -44,12 +44,10 @@ import { MonacoEditor } from '../../../../components/MonacoEditor/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { InputList } from '../GuiEditor/Components/InputList/index.js';
 import { useApp } from '../index.js';
-
-interface ResourceUniqueConstraintConflictData {
-  code?: string;
-  fields?: string[];
-  resourceType?: string;
-}
+import {
+  formatResourceUniqueConstraintAppError,
+  type ResourceUniqueConstraintErrorData,
+} from '../uniqueConstraintErrors.js';
 
 export default function EditPage(): ReactNode {
   useMeta(messages.title);
@@ -195,21 +193,14 @@ export default function EditPage(): ReactNode {
       setApp(data);
       setPristine(true);
     } catch (error) {
-      const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintConflictData }>(error)
+      const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintErrorData }>(error)
         ? error.response?.data?.data
         : undefined;
+      const uniqueConstraintError = formatResourceUniqueConstraintAppError(formatMessage, data);
 
-      if (
-        data?.code === 'RESOURCE_UNIQUE_CONSTRAINT_CONFLICT' &&
-        data.resourceType &&
-        Array.isArray(data.fields) &&
-        data.fields.length
-      ) {
+      if (uniqueConstraintError) {
         push({
-          body: formatMessage(messages.uniqueConstraintConflict, {
-            fields: data.fields.map((field) => `“${field}”`).join(', '),
-            resourceType: `“${data.resourceType}”`,
-          }),
+          body: uniqueConstraintError,
           color: 'danger',
         });
         return;

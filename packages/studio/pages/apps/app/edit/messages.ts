@@ -14,6 +14,11 @@ export const messages = defineMessages({
     defaultMessage:
       'Can’t publish yet: existing {resourceType} resources contain duplicate values for {fields}. Update or delete the conflicting resources first.',
   },
+  uniqueConstraintInvalidValue: {
+    id: 'studio.lSOvWw',
+    defaultMessage:
+      'Can’t publish yet: some existing {resourceType} resources contain invalid values for {field}. Fix those resource values first.',
+  },
   updateSuccess: {
     id: 'studio.HcRiD4',
     defaultMessage: 'Successfully updated app definition',
