@@ -18,7 +18,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   await queryInterface.addColumn(
     'AppInvite',
     'roles',
-    { type: DataTypes.JSON, allowNull: true },
+    { type: DataTypes.JSON, allowNull: true, defaultValue: [] },
     { transaction },
   );
 
@@ -38,7 +38,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   await queryInterface.changeColumn(
     'AppInvite',
     'roles',
-    { type: DataTypes.JSON, allowNull: false },
+    { type: DataTypes.JSON, allowNull: false, defaultValue: [] },
     { transaction },
   );
 

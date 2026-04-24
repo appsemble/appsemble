@@ -4707,7 +4707,7 @@ Does nothing if the app member is not logged in.",
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Allows the app member to invite another app member using an email address and a role.
+                  "description": "Allows the app member to invite another app member using an email address and one or more roles.
 
 Does nothing if the app member is not logged in.",
                   "enum": [
@@ -10493,7 +10493,7 @@ Does nothing if the app member is not logged in.",
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Allows the app member to invite another app member using an email address and a role.
+          "description": "Allows the app member to invite another app member using an email address and one or more roles.
 
 Does nothing if the app member is not logged in.",
           "enum": [
