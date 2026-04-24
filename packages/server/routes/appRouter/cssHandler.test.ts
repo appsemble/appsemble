@@ -37,6 +37,7 @@ describe('cssHandler', () => {
       status: 200,
       headers: {
         'content-type': 'text/css; charset=utf-8',
+        'x-content-type-options': 'nosniff',
       },
       data: 'body { color: red; }',
     });
@@ -58,6 +59,7 @@ describe('cssHandler', () => {
       status: 200,
       headers: {
         'content-type': 'text/css; charset=utf-8',
+        'x-content-type-options': 'nosniff',
       },
       data: 'body { color: blue; }',
     });

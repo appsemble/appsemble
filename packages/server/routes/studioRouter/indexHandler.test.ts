@@ -24,12 +24,12 @@ it('should serve the studio index page with correct headers', async () => {
     host: 'http://localhost:9999',
   });
   const response = await request.get('/');
+  expect(response.headers['x-content-type-options']).toBe('nosniff');
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
     Content-Security-Policy: base-uri 'self'; connect-src *; default-src 'self'; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none' http://localhost:9999; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; object-src 'none'; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-BErq6rufCjnrmMVqhZgAEgNe89ZlGySvrhAElUMixDk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
     Referrer-Policy: strict-origin-when-cross-origin
-    X-Content-Type-Options: nosniff
 
     {
       "data": {
@@ -51,12 +51,12 @@ it('should pass login options from argv to the studio', async () => {
     sentryAllowedDomains: '*',
   });
   const response = await request.get('/');
+  expect(response.headers['x-content-type-options']).toBe('nosniff');
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
     Content-Security-Policy: base-uri 'self'; connect-src *; default-src 'self' https://sentry.io; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none' http://localhost:9999; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; object-src 'none'; report-uri https://sentry.io/api/42/security/?sentry_key=secret; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-1E+lVmeNS5pzqW7qxTAE6Sdz08NvhyQtMwDbbGJTro0=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
     Referrer-Policy: strict-origin-when-cross-origin
-    X-Content-Type-Options: nosniff
 
     {
       "data": {

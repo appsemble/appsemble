@@ -59,6 +59,10 @@ export async function createServer({
   app.use(loggerMiddleware());
   app.use(errorMiddleware());
   app.use(range);
+  app.use(async (ctx, next) => {
+    ctx.set('x-content-type-options', 'nosniff');
+    await next();
+  });
   app.use((ctx, next) =>
     startSpan(
       {
