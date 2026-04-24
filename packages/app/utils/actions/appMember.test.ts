@@ -88,7 +88,7 @@ describe('app.member.invite', () => {
       definition: {
         type: 'app.member.invite',
         email: { prop: 'email' },
-        role: { prop: 'role' },
+        roles: { prop: 'roles' },
       },
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
@@ -105,8 +105,14 @@ describe('app.member.invite', () => {
       }),
     });
 
-    const result = await action({ email: 'test@example.com', role: PredefinedAppRole.Member });
-    expect(result).toStrictEqual({ email: 'test@example.com', role: PredefinedAppRole.Member });
+    const result = await action({ email: 'test@example.com', roles: [PredefinedAppRole.Member] });
+    expect(result).toStrictEqual({
+      email: 'test@example.com',
+      roles: [PredefinedAppRole.Member],
+    });
+    expect(mock.history.post[0]?.data).toBe(
+      JSON.stringify([{ email: 'test@example.com', roles: [PredefinedAppRole.Member] }]),
+    );
   });
 
   it('should do nothing and return data if app member is not logged in', async () => {
@@ -115,7 +121,7 @@ describe('app.member.invite', () => {
       definition: {
         type: 'app.member.invite',
         email: { prop: 'email' },
-        role: { prop: 'role' },
+        roles: { prop: 'roles' },
       },
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
@@ -124,8 +130,12 @@ describe('app.member.invite', () => {
       getAppMemberInfo: () => null,
     });
 
-    const result = await action({ email: 'test@example.com', role: PredefinedAppRole.Member });
-    expect(result).toStrictEqual({ email: 'test@example.com', role: PredefinedAppRole.Member });
+    const result = await action({ email: 'test@example.com', roles: [PredefinedAppRole.Member] });
+    expect(result).toStrictEqual({
+      email: 'test@example.com',
+      roles: [PredefinedAppRole.Member],
+    });
+    expect(mock.history.post).toHaveLength(0);
   });
 });
 

@@ -82,7 +82,7 @@ blocks:
 
 <ActionRef action={referenceSchemas.appMemberActions['app.member.invite']} />
 
-The `role` property must exist in the roles property of the app's security definition or in the
+The `roles` property must only contain roles from the app's security definition or from the
 predefined app roles in the system - `Member`, `MembersManager`, `GroupMembersManager`,
 `GroupsManager`, `ResourcesManager` and `Owner`. This action requires the `$member:invite` app
 permission. For more information check out [security](../app/security.md#permissions).
@@ -98,15 +98,15 @@ blocks:
           type: string
           format: email
           requirements: [required: true]
-        - name: email
-          label: { translate: role }
+        - name: roles
+          label: { translate: roles }
           type: string
           requirements: [required: true]
     actions:
       onSubmit:
         type: app.member.invite
         email: { prop: email }
-        role: { prop: role }
+        roles: { prop: roles }
         onSuccess:
           type: log
 ```

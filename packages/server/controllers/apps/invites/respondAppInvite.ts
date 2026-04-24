@@ -6,6 +6,7 @@ import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../models/index.js';
 import { getAppUrl } from '../../../utils/app.js';
+import { normalizeAppMemberRoles } from '../../../utils/appMember.js';
 
 export async function respondAppInvite(ctx: Context): Promise<void> {
   const {
@@ -31,12 +32,15 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
 
     const hashedPassword = await hash(password, 10);
     const key = randomBytes(40).toString('hex');
+    const roles = existingAppMember
+      ? normalizeAppMemberRoles([...existingAppMember.roles, ...invite.roles])
+      : invite.roles;
 
     await (existingAppMember
-      ? existingAppMember.update({ roles: [invite.role], password: hashedPassword })
+      ? existingAppMember.update({ roles, password: hashedPassword })
       : AppMember.create({
           email: invite.email.toLowerCase(),
-          roles: [invite.role],
+          roles,
           password: hashedPassword,
           emailKey: null,
           emailVerified: true,

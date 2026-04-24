@@ -503,7 +503,8 @@ export interface StorageWriteActionDefinition extends BaseActionDefinition<'stor
   expiry?: '1d' | '3d' | '7d' | '12h';
 }
 
-export interface GroupMemberInviteActionDefinition extends BaseActionDefinition<'group.member.invite'> {
+export interface GroupMemberInviteActionDefinition
+  extends BaseActionDefinition<'group.member.invite'> {
   /**
    * The ID of the group to invite the user to.
    */
@@ -520,7 +521,8 @@ export interface GroupMemberInviteActionDefinition extends BaseActionDefinition<
   role: Remapper;
 }
 
-export interface GroupMemberCreateActionDefinition extends BaseActionDefinition<'group.member.create'> {
+export interface GroupMemberCreateActionDefinition
+  extends BaseActionDefinition<'group.member.create'> {
   /**
    * The ID of the group to add the user to.
    */
@@ -537,21 +539,24 @@ export interface GroupMemberCreateActionDefinition extends BaseActionDefinition<
   role: Remapper;
 }
 
-export interface GroupMemberQueryActionDefinition extends BaseActionDefinition<'group.member.query'> {
+export interface GroupMemberQueryActionDefinition
+  extends BaseActionDefinition<'group.member.query'> {
   /**
    * The ID of the group to query the members of.
    */
   id: Remapper;
 }
 
-export interface GroupMemberDeleteActionDefinition extends BaseActionDefinition<'group.member.delete'> {
+export interface GroupMemberDeleteActionDefinition
+  extends BaseActionDefinition<'group.member.delete'> {
   /**
    * The ID of the group member to delete.
    */
   id: Remapper;
 }
 
-export interface GroupMemberRoleUpdateActionDefinition extends BaseActionDefinition<'group.member.role.update'> {
+export interface GroupMemberRoleUpdateActionDefinition
+  extends BaseActionDefinition<'group.member.role.update'> {
   /**
    * The ID of the group member to update the role of.
    */
@@ -563,7 +568,8 @@ export interface GroupMemberRoleUpdateActionDefinition extends BaseActionDefinit
   role: Remapper;
 }
 
-export interface GroupSelectedUpdateActionDefinition extends BaseActionDefinition<'group.selected.update'> {
+export interface GroupSelectedUpdateActionDefinition
+  extends BaseActionDefinition<'group.selected.update'> {
   /**
    * The ID of the group to select.
    */
@@ -633,9 +639,9 @@ export interface AppMemberInviteAction extends BaseActionDefinition<'app.member.
   email: Remapper;
 
   /**
-   * The role to invite the app member with.
+   * The roles to invite the app member with.
    */
-  role: Remapper;
+  roles: Remapper;
 }
 
 export interface AppMemberQueryAction extends BaseActionDefinition<'app.member.query'> {
@@ -670,7 +676,8 @@ export interface AppMemberRoleUpdateAction extends BaseActionDefinition<'app.mem
   role?: Remapper;
 }
 
-export interface AppMemberPropertiesPatchAction extends BaseActionDefinition<'app.member.properties.patch'> {
+export interface AppMemberPropertiesPatchAction
+  extends BaseActionDefinition<'app.member.properties.patch'> {
   /**
    * The id of the app member to update.
    */
@@ -684,7 +691,8 @@ export interface AppMemberPropertiesPatchAction extends BaseActionDefinition<'ap
   properties: Remapper;
 }
 
-export interface AppMemberCurrentPatchAction extends BaseActionDefinition<'app.member.current.patch'> {
+export interface AppMemberCurrentPatchAction
+  extends BaseActionDefinition<'app.member.current.patch'> {
   /**
    * The display name to update.
    */
@@ -725,9 +733,8 @@ interface RequestActionHeaders {
     | 'text/plain';
 }
 
-export interface RequestLikeActionDefinition<
-  T extends ActionName = ActionName,
-> extends BaseActionDefinition<T> {
+export interface RequestLikeActionDefinition<T extends ActionName = ActionName>
+  extends BaseActionDefinition<T> {
   /**
    * The HTTP method to use for making a request.
    */
@@ -768,9 +775,8 @@ export interface RequestLikeActionDefinition<
   headers?: RequestActionHeaders;
 }
 
-export interface ResourceActionDefinition<
-  T extends ActionName,
-> extends RequestLikeActionDefinition<T> {
+export interface ResourceActionDefinition<T extends ActionName>
+  extends RequestLikeActionDefinition<T> {
   /**
    * The name of the resource.
    */
@@ -828,9 +834,8 @@ export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.p
   ResourceActionWithIdDefinition;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
 
-export interface BaseResourceSubscribeActionDefinition<
-  T extends ActionName,
-> extends BaseActionDefinition<T> {
+export interface BaseResourceSubscribeActionDefinition<T extends ActionName>
+  extends BaseActionDefinition<T> {
   /**
    * The name of the resource.
    */

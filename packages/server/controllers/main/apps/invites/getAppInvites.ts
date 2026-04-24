@@ -21,8 +21,8 @@ export async function getAppInvites(ctx: Context): Promise<void> {
   const { AppInvite } = await getAppDB(appId);
   const appInvites = await AppInvite.findAll();
 
-  ctx.body = appInvites.map(({ email, role }) => ({
+  ctx.body = appInvites.map(({ email, roles }) => ({
     email,
-    role,
+    roles,
   }));
 }

@@ -43,6 +43,7 @@ describe('createAppInvite', () => {
           },
           roles: {
             Reader: {},
+            Editor: {},
           },
         },
       },
@@ -64,7 +65,7 @@ describe('createAppInvite', () => {
     const response = await request.post(`/api/apps/${app.id + 5}/invites`, [
       {
         email: 'test2@example.com',
-        role: 'Reader',
+        roles: ['Reader'],
       },
     ]);
     expect(response).toMatchInlineSnapshot(`
@@ -91,7 +92,7 @@ describe('createAppInvite', () => {
     const response = await request.post(`/api/apps/${app.id}/invites`, [
       {
         email: 'test2@example.com',
-        role: 'Reader',
+        roles: ['Reader'],
       },
     ]);
     expect(response).toMatchInlineSnapshot(`
@@ -111,7 +112,7 @@ describe('createAppInvite', () => {
     const response = await request.post(`/api/apps/${app.id}/invites`, [
       {
         email: 'test2@example.com',
-        role: 'invalid',
+        roles: ['invalid'],
       },
     ]);
     expect(response).toMatchInlineSnapshot(`
@@ -131,13 +132,13 @@ describe('createAppInvite', () => {
     const { AppMember } = await getAppDB(app.id);
     await AppMember.create({
       email: 'test2@example.com',
-      role: 'Reader',
+      roles: ['Reader'],
       timezone: 'Europe/Amsterdam',
     });
     const response = await request.post(`/api/apps/${app.id}/invites`, [
       {
         email: 'test2@example.com',
-        role: 'invalid',
+        roles: ['invalid'],
       },
     ]);
     expect(response).toMatchInlineSnapshot(`
@@ -157,11 +158,11 @@ describe('createAppInvite', () => {
     const { status } = await request.post(`/api/apps/${app.id}/invites`, [
       {
         email: 'test@example.com',
-        role: 'Reader',
+        roles: ['Reader'],
       },
       {
         email: 'test2@example.com',
-        role: 'Reader',
+        roles: ['Reader', 'Editor'],
       },
     ]);
     expect(status).toBe(200);
@@ -170,11 +171,11 @@ describe('createAppInvite', () => {
     expect(invites.map((invite) => invite.dataValues)).toStrictEqual([
       expect.objectContaining({
         email: 'test@example.com',
-        role: 'Reader',
+        roles: ['Reader'],
       }),
       expect.objectContaining({
         email: 'test2@example.com',
-        role: 'Reader',
+        roles: ['Reader', 'Editor'],
       }),
     ]);
   });
