@@ -71,4 +71,29 @@ describe('Appsemble server', () => {
     expect(context.state.appCollectionId).toBeDefined();
     expect(context.state.appCollectionId).toStrictEqual(collection.id);
   });
+
+  it('should lookup custom app collection domains case insensitive', async () => {
+    const organization = await Organization.create({
+      id: 'testorganization2',
+      name: 'Test Organization',
+    });
+    const collection = await AppCollection.create({
+      name: 'test',
+      domain: 'test.com',
+      expertName: 'test',
+      visibility: 'public',
+      headerImage: Buffer.from(''),
+      headerImageMimeType: 'image/png',
+      expertProfileImage: Buffer.from(''),
+      expertProfileImageMimeType: 'image/png',
+      OrganizationId: organization.id,
+    });
+
+    fakeHostname = 'TEST.COM';
+    await request.get('/');
+    expect(platformMiddleware).toHaveBeenCalledWith(context, expect.any(Function));
+    expect(appMiddleware).not.toHaveBeenCalled();
+    expect(context.state.appCollectionId).toBeDefined();
+    expect(context.state.appCollectionId).toStrictEqual(collection.id);
+  });
 });

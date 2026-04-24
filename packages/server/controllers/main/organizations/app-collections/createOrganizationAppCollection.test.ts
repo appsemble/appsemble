@@ -117,4 +117,64 @@ describe('createOrganizationAppCollection', () => {
       }
     `);
   });
+
+  it('should normalize a domain on create', async () => {
+    authorizeStudio(user);
+    const response = await request.post(
+      `/api/organizations/${organization.id}/app-collections`,
+      createFormData({
+        name: 'Test Collection',
+        visibility: 'public',
+        expertName: 'Expert van den Expert',
+        expertDescription: "I'm an expert, trust me.",
+        expertProfileImage: createFixtureStream('tux.png'),
+        headerImage: createFixtureStream('standing.png'),
+        domain: 'TeSt.Example.Com',
+      }),
+    );
+
+    expect(response.status).toBe(201);
+    expect(response.data.domain).toBe('test.example.com');
+  });
+
+  it('should reject duplicate domain on create', async () => {
+    authorizeStudio(user);
+
+    await request.post(
+      `/api/organizations/${organization.id}/app-collections`,
+      createFormData({
+        name: 'First Collection',
+        visibility: 'public',
+        expertName: 'Expert van den Expert',
+        expertDescription: "I'm an expert, trust me.",
+        expertProfileImage: createFixtureStream('tux.png'),
+        headerImage: createFixtureStream('standing.png'),
+        domain: 'example.test',
+      }),
+    );
+
+    const response = await request.post(
+      `/api/organizations/${organization.id}/app-collections`,
+      createFormData({
+        name: 'Second Collection',
+        visibility: 'public',
+        expertName: 'Expert van den Expert',
+        expertDescription: "I'm an expert, trust me.",
+        expertProfileImage: createFixtureStream('tux.png'),
+        headerImage: createFixtureStream('standing.png'),
+        domain: 'EXAMPLE.TEST',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 409 Conflict
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Conflict",
+        "message": "Another app collection with domain 'example.test' already exists.",
+        "statusCode": 409,
+      }
+    `);
+  });
 });

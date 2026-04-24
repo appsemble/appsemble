@@ -168,4 +168,81 @@ describe('updateAppCollection', () => {
       }
     `);
   });
+
+  it('should normalize domain on update', async () => {
+    const collection = await AppCollection.create({
+      name: 'Productivity',
+      expertName: 'Expert van den Expert',
+      expertProfileImage: Buffer.from('expertProfileImage'),
+      expertProfileImageMimeType: 'image/png',
+      headerImage: Buffer.from('headerImage'),
+      headerImageMimeType: 'image/png',
+      expertDescription: "I'm an expert, trust me.",
+      OrganizationId: organization.id,
+      visibility: 'public',
+    });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/app-collections/${collection.id}`,
+      createFormData({
+        domain: 'TeSt.Example.Com',
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data.domain).toBe('test.example.com');
+  });
+
+  it('should reject duplicate domain on update', async () => {
+    const firstCollection = await AppCollection.create({
+      name: 'Productivity',
+      expertName: 'Expert van den Expert',
+      expertProfileImage: Buffer.from('expertProfileImage'),
+      expertProfileImageMimeType: 'image/png',
+      headerImage: Buffer.from('headerImage'),
+      headerImageMimeType: 'image/png',
+      expertDescription: "I'm an expert, trust me.",
+      OrganizationId: organization.id,
+      visibility: 'public',
+      domain: 'example.test',
+    });
+
+    const secondCollection = await AppCollection.create({
+      name: 'Productivity',
+      expertName: 'Expert van den Expert',
+      expertProfileImage: Buffer.from('expertProfileImage'),
+      expertProfileImageMimeType: 'image/png',
+      headerImage: Buffer.from('headerImage'),
+      headerImageMimeType: 'image/png',
+      expertDescription: "I'm an expert, trust me.",
+      OrganizationId: organization.id,
+      visibility: 'public',
+      domain: 'second.test',
+    });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/app-collections/${secondCollection.id}`,
+      createFormData({
+        domain: 'EXAMPLE.TEST',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 409 Conflict
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Conflict",
+        "message": "Another app collection with domain 'example.test' already exists.",
+        "statusCode": 409,
+      }
+    `);
+
+    await firstCollection.reload();
+    await secondCollection.reload();
+    expect(firstCollection.domain).toBe('example.test');
+    expect(secondCollection.domain).toBe('second.test');
+  });
 });
