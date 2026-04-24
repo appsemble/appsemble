@@ -1,13 +1,18 @@
 import { createHash, randomUUID } from 'node:crypto';
 
+import { appOAuth2Scope } from '@appsemble/utils';
 import jwt from 'jsonwebtoken';
 import { type Context } from 'koa';
 import { Op, type Transaction } from 'sequelize';
 
 import { getAppDB } from '../models/index.js';
 import { argv } from './argv.js';
+import {
+  APP_REFRESH_TOKEN_COOKIE_NAME,
+  clearAppCookies,
+  setAppRefreshTokenCookie,
+} from './appCookies.js';
 
-const COOKIE_NAME = 'app_refresh_token';
 const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30;
 
 interface SessionRecord {
@@ -30,6 +35,17 @@ interface SessionOptions {
 
 function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
+}
+
+function normalizeSessionRecord(record: SessionRecord): SessionRecord {
+  if (record.scope || !record.aud.startsWith('app:')) {
+    return record;
+  }
+
+  return {
+    ...record,
+    scope: appOAuth2Scope,
+  };
 }
 
 function generateRefreshToken(record: SessionRecord): {
@@ -60,28 +76,8 @@ function generateRefreshToken(record: SessionRecord): {
   };
 }
 
-function setRefreshTokenCookie(ctx: Context, appId: number, token: string): void {
-  ctx.cookies.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    maxAge: REFRESH_TOKEN_TTL_SECONDS * 1000,
-    path: `/apps/${appId}/auth/oauth2/token`,
-    sameSite: 'lax',
-    secure: ctx.secure,
-  });
-}
-
-function clearRefreshTokenCookie(ctx: Context, appId: number): void {
-  ctx.cookies.set(COOKIE_NAME, '', {
-    expires: new Date(0),
-    httpOnly: true,
-    path: `/apps/${appId}/auth/oauth2/token`,
-    sameSite: 'lax',
-    secure: ctx.secure,
-  });
-}
-
 function getRefreshTokenFromRequest(ctx: Context): string | null {
-  const cookieToken = ctx.cookies.get(COOKIE_NAME);
+  const cookieToken = ctx.cookies.get(APP_REFRESH_TOKEN_COOKIE_NAME, { signed: true });
   if (cookieToken) {
     return cookieToken;
   }
@@ -93,22 +89,23 @@ export async function createAppMemberRefreshSession(
   ctx: Context,
   { appId, aud, scope, sub, transaction }: CreateOptions,
 ): Promise<string> {
-  const { expires, token } = generateRefreshToken({ aud, scope, sub });
+  const record = normalizeSessionRecord({ aud, scope, sub });
+  const { expires, token } = generateRefreshToken(record);
   const tokenHash = hashToken(token);
 
   const { AppMemberRefreshSession } = await getAppDB(appId);
   await AppMemberRefreshSession.create(
     {
-      aud,
+      aud: record.aud,
       expires,
-      scope,
-      sub,
+      scope: record.scope,
+      sub: record.sub,
       tokenHash,
     },
     { transaction },
   );
 
-  setRefreshTokenCookie(ctx, appId, token);
+  setAppRefreshTokenCookie(ctx, appId, token);
 
   return token;
 }
@@ -141,12 +138,13 @@ export async function rotateAppMemberRefreshSession(
     throw new Error('Invalid refresh token');
   }
 
-  const record = session.toJSON() as SessionRecord;
+  const record = normalizeSessionRecord(session.toJSON() as SessionRecord);
   const { expires, token: nextToken } = generateRefreshToken(record);
 
   const [updatedRows] = await AppMemberRefreshSession.update(
     {
       expires,
+      scope: record.scope,
       tokenHash: hashToken(nextToken),
     },
     {
@@ -161,7 +159,7 @@ export async function rotateAppMemberRefreshSession(
     throw new Error('Invalid refresh token');
   }
 
-  setRefreshTokenCookie(ctx, appId, nextToken);
+  setAppRefreshTokenCookie(ctx, appId, nextToken);
 
   return {
     ...record,
@@ -176,7 +174,7 @@ export async function revokeAppMemberRefreshSession(
 ): Promise<void> {
   const token = providedToken || getRefreshTokenFromRequest(ctx);
   if (!token) {
-    clearRefreshTokenCookie(ctx, appId);
+    clearAppCookies(ctx, appId);
     return;
   }
 
@@ -188,5 +186,5 @@ export async function revokeAppMemberRefreshSession(
     },
   });
 
-  clearRefreshTokenCookie(ctx, appId);
+  clearAppCookies(ctx, appId);
 }

@@ -67,10 +67,10 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           scope: requestedScope,
         } = checkTokenRequestParameters(query, ['client_id', 'code', 'redirect_uri', 'scope']);
         try {
-          // May throw if the referer is not a valid URL, or if the referer header is missing.
-          const referer = new URL(header.referer!);
+          // May throw if the origin/referer is not a valid URL, or if both headers are missing.
+          const requestOrigin = new URL(header.origin ?? header.referer!);
           const redirect = new URL(redirectUri);
-          if (referer.origin !== redirect.origin) {
+          if (requestOrigin.origin !== redirect.origin) {
             throw new GrantError('invalid_request');
           }
         } catch {

@@ -104,6 +104,47 @@ describe('appsTokenHandler', () => {
       });
     });
 
+    it('should accept an origin header if the referer header is missing', async () => {
+      await user.$create('Organization', { id: 'org' });
+      const app = await App.create({
+        OrganizationId: 'org',
+        definition: '',
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+      });
+      const appMember = await createTestAppMember(app.id);
+      const { OAuth2AuthorizationCode } = await getAppDB(app.id);
+      await OAuth2AuthorizationCode.create({
+        code: 'origin-code',
+        AppMemberId: appMember.id,
+        expires: new Date('2000-01-01T00:10:00Z'),
+        redirectUri: 'http://foo.bar.localhost:9999/Callback',
+        scope: 'openid',
+      });
+
+      const response = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${app.id}`,
+          code: 'origin-code',
+          grant_type: 'authorization_code',
+          redirect_uri: 'http://foo.bar.localhost:9999/Callback',
+          scope: 'openid',
+        }),
+        { headers: { origin: 'http://foo.bar.localhost:9999' } },
+      );
+
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          expires_in: 3600,
+          refresh_token: expect.stringMatching(jwtPattern),
+          token_type: 'bearer',
+        },
+      });
+    });
+
     it('should fail if the referer doesn’t match the redirect URI', async () => {
       const response = await request.post(
         '/apps/1/auth/oauth2/token',
@@ -669,7 +710,7 @@ describe('appsTokenHandler', () => {
         exp: 946_688_400,
         iat: 946_684_800,
         iss: 'http://localhost',
-        scope: null,
+        scope: 'email openid profile resources:manage groups:read groups:write',
         // eslint-disable-next-line @typescript-eslint/naming-convention
         token_use: 'access',
         sub: user.id,

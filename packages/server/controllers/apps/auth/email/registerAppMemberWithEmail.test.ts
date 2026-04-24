@@ -21,10 +21,7 @@ import { createDefaultAppWithSecurity } from '../../../../utils/test/defaultAppS
 let organization: Organization;
 let user: User;
 
-function expectRefreshTokenCookies(
-  response: { headers: Record<string, unknown> },
-  appId: number,
-): void {
+function expectAppAuthCookies(response: { headers: Record<string, unknown> }, appId: number): void {
   const headers = response.headers as Record<string, string[] | undefined>;
   const setCookie = headers['set-cookie'] ?? headers['Set-Cookie'];
 
@@ -32,13 +29,13 @@ function expectRefreshTokenCookies(
     expect.arrayContaining([
       expect.stringMatching(
         new RegExp(
-          `^app_refresh_token=[^;]+; path=/apps/${appId}/auth/oauth2/token; .*httpOnly(?:;.*)?$`,
+          `^app_refresh_token=[^;]+; path=/apps/${appId}/auth/oauth2/token; (?=.*samesite=none)(?=.*partitioned)(?!.*secure)(?!.*httponly).*$`,
           'i',
         ),
       ),
       expect.stringMatching(
         new RegExp(
-          `^app_refresh_token\\.sig=[^;]+; path=/apps/${appId}/auth/oauth2/token; .*httpOnly(?:;.*)?$`,
+          `^app_refresh_token\\.sig=[^;]+; path=/apps/${appId}/auth/oauth2/token; (?=.*samesite=none)(?=.*partitioned)(?!.*secure)(?!.*httponly).*$`,
           'i',
         ),
       ),
@@ -141,7 +138,7 @@ describe('registerAppMemberWithEmail', () => {
         token_type: 'bearer',
       },
     });
-    expectRefreshTokenCookies(response, app.id);
+    expectAppAuthCookies(response, app.id);
 
     const { AppMember } = await getAppDB(app.id);
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
@@ -172,7 +169,7 @@ describe('registerAppMemberWithEmail', () => {
         token_type: 'bearer',
       },
     });
-    expectRefreshTokenCookies(response, app.id);
+    expectAppAuthCookies(response, app.id);
 
     const { AppMember } = await getAppDB(app.id);
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
@@ -208,7 +205,7 @@ describe('registerAppMemberWithEmail', () => {
         token_type: 'bearer',
       },
     });
-    expectRefreshTokenCookies(response, app.id);
+    expectAppAuthCookies(response, app.id);
     expect(m.picture).toStrictEqual(await readFixture('tux.png'));
     expect(responseB.data).toStrictEqual(await readFixture('tux.png'));
   });

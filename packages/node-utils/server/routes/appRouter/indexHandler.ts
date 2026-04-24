@@ -71,12 +71,11 @@ export function createIndexHandler({
     const identifiableBlocks = getAppBlocks(app.definition);
 
     const nonce = randomBytes(16).toString('base64');
-    const settingsHost = app.domain === hostname ? ctx.URL.origin : host;
 
     const [settingsHash, settings] = await createSettings({
       context: ctx,
       app,
-      host: settingsHost,
+      host,
       hostname,
       identifiableBlocks,
       languages,
