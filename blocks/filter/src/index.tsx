@@ -173,7 +173,9 @@ bootstrap(
         </div>
         <div className="is-flex is-align-items-center">
           {hasHighlight ? (
-            <Button onClick={resetFilter}>{utils.formatMessage('clearLabel')}</Button>
+            <Button className="clear-filter-button" onClick={resetFilter}>
+              {utils.formatMessage('clearLabel')}
+            </Button>
           ) : null}
           {showModal ? (
             <>
