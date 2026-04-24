@@ -70,6 +70,18 @@ function createTestApp(): AppDefinition {
 }
 
 describe('validateAppDefinition', () => {
+  it('should accept published app content security policy sources', async () => {
+    const app = createTestApp();
+    app.contentSecurityPolicy = {
+      'connect-src': ['https://api.example.com'],
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
   it('should report unknown block types', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({

@@ -10,6 +10,15 @@ import { createServer } from '../../utils/createServer.js';
 
 let requestURL: URL;
 
+function parseCsp(csp: string): Record<string, string[]> {
+  return Object.fromEntries(
+    csp.split('; ').map((directive) => {
+      const [name, ...values] = directive.split(' ');
+      return [name, values];
+    }),
+  );
+}
+
 describe('indexHandler', () => {
   beforeAll(() => {
     vi.useFakeTimers();
@@ -564,6 +573,56 @@ describe('indexHandler', () => {
         "filename": "app/index.html",
       }
     `);
+  });
+
+  it('should render a stricter published app CSP when contentSecurityPolicy is configured', async () => {
+    await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        contentSecurityPolicy: {
+          'connect-src': ['https://api.example.com'],
+        },
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [],
+          },
+        ],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const response = await request.get('/');
+    const csp = parseCsp(response.headers['content-security-policy'] as string);
+
+    expect(csp['connect-src']).toStrictEqual(
+      expect.arrayContaining([
+        "'self'",
+        'blob:',
+        'data:',
+        'http://host.example',
+        'https://api.example.com',
+      ]),
+    );
+    expect(csp['connect-src']).not.toContain('*');
+    expect(csp['font-src']).toStrictEqual(
+      expect.arrayContaining(["'self'", 'data:', 'https://fonts.gstatic.com']),
+    );
+    expect(csp['font-src']).not.toContain('*');
+    expect(csp['img-src']).toStrictEqual(
+      expect.arrayContaining(["'self'", 'blob:', 'data:', 'http://host.example']),
+    );
+    expect(csp['img-src']).not.toContain('*');
+    expect(csp['media-src']).toStrictEqual(
+      expect.arrayContaining(["'self'", 'blob:', 'data:', 'http://host.example']),
+    );
+    expect(csp['media-src']).not.toContain('*');
+    expect(csp['object-src']).toStrictEqual(["'none'"]);
   });
 
   it('should render a 404 page if no app is found', async () => {
