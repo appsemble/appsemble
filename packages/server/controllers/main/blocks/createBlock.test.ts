@@ -1,10 +1,11 @@
-import { createFixtureStream } from '@appsemble/node-utils';
+import { createFixtureStream, getS3FileBuffer, readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import stripIndent from 'strip-indent';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import {
+  BlockAsset,
   BlockMessages,
   BlockVersion,
   Organization,
@@ -12,6 +13,7 @@ import {
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
+import { getBlockAssetContentHash } from '../../../utils/blockAssets.js';
 import { createServer } from '../../../utils/createServer.js';
 import { authorizeClientCredentials, createTestUser } from '../../../utils/test/authorization.js';
 
@@ -66,6 +68,35 @@ describe('createBlock', () => {
     });
 
     expect(status).toBe(201);
+  });
+
+  it('should upload block assets to S3 and keep metadata in postgres', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filename: encodeURIComponent('build/standing.png'),
+    });
+
+    await authorizeClientCredentials('blocks:write');
+    await request.post('/api/blocks', formData);
+
+    const blockAsset = await BlockAsset.findOne({
+      where: { filename: 'build/standing.png' },
+    });
+
+    const content = await readFixture('standing.png');
+    const contentHash = getBlockAssetContentHash(content);
+
+    expect(blockAsset).toMatchObject({
+      content: null,
+      filename: 'build/standing.png',
+      storageKey: `blocks/xkcd/standing/1.32.9/${contentHash}/build/standing.png`,
+    });
+    expect(blockAsset?.size).toBeGreaterThan(0);
+    expect(await getS3FileBuffer('appsemble-static-public', blockAsset!.storageKey!)).toStrictEqual(
+      content,
+    );
   });
 
   it('should accept and return repositoryUrl when publishing blocks', async () => {

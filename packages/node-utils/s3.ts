@@ -60,6 +60,10 @@ async function ensureBucket(name: string): Promise<void> {
   }
 }
 
+function isS3ErrorCode(error: unknown, code: string): boolean {
+  return error instanceof S3Error && error.code === code;
+}
+
 export async function uploadS3File(
   bucket: string,
   key: string,
@@ -70,6 +74,13 @@ export async function uploadS3File(
     await ensureBucket(bucket);
     await s3Client.putObject(bucket, key, content, size);
   } catch (error) {
+    if (isS3ErrorCode(error, 'NoSuchBucket')) {
+      logger.warn(error);
+      await ensureBucket(bucket);
+      await s3Client.putObject(bucket, key, content, size);
+      return;
+    }
+
     logger.error(error);
     throw error;
   }
@@ -84,6 +95,13 @@ export async function uploadS3FileFromPath(
     await ensureBucket(bucket);
     await s3Client.fPutObject(bucket, key, path);
   } catch (error) {
+    if (isS3ErrorCode(error, 'NoSuchBucket')) {
+      logger.warn(error);
+      await ensureBucket(bucket);
+      await s3Client.fPutObject(bucket, key, path);
+      return;
+    }
+
     logger.error(error);
     throw error;
   }

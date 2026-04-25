@@ -1,11 +1,17 @@
 import { getAppBlocks, type IdentifiableBlock, parseBlockName } from '@appsemble/lang-sdk';
-import { logger } from '@appsemble/node-utils';
+import { logger, uploadS3File } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 import { Op } from 'sequelize';
 
 import { argv } from './argv.js';
+import {
+  deleteUnreferencedBlockAssetObjects,
+  getBlockAssetContentHash,
+  getBlockAssetsBucketName,
+  getBlockAssetStorageKey,
+} from './blockAssets.js';
 import { App, BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
 
 export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
@@ -63,6 +69,8 @@ export async function syncBlock({
   const id = `@${OrganizationId}/${name}`;
   const blockUrl = String(new URL(`/api/blocks/${id}/versions/${version}`, argv.remote));
   logger.info(`Synchronizing block from ${blockUrl}`);
+  const uploadedKeys: string[] = [];
+
   try {
     const { data: block } = await axios.get<BlockManifest>(blockUrl);
     if (block.name !== id) {
@@ -84,7 +92,29 @@ export async function syncBlock({
           responseType: 'arraybuffer',
         });
         const [mime] = headers['content-type'].split(';');
-        await BlockAsset.create({ BlockVersionId, content, mime, filename }, { transaction });
+        const buffer = Buffer.from(content);
+        const contentHash = getBlockAssetContentHash(buffer);
+        const storageKey = getBlockAssetStorageKey({
+          blockName: name,
+          contentHash,
+          filename,
+          organizationId: OrganizationId,
+          version,
+        });
+
+        await uploadS3File(getBlockAssetsBucketName(), storageKey, buffer, buffer.byteLength);
+        uploadedKeys.push(storageKey);
+
+        await BlockAsset.create(
+          {
+            BlockVersionId,
+            filename,
+            mime,
+            size: buffer.byteLength,
+            storageKey,
+          },
+          { transaction },
+        );
       });
 
       if (block.languages) {
@@ -104,6 +134,14 @@ export async function syncBlock({
     logger.info(`Synchronized block from ${blockUrl}`);
     return block;
   } catch (error) {
+    if (uploadedKeys.length) {
+      try {
+        await deleteUnreferencedBlockAssetObjects(uploadedKeys);
+      } catch (cleanupError) {
+        logger.error(cleanupError);
+      }
+    }
+
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       logger.warn(`Failed to synchronize block from ${blockUrl}`);
       return;

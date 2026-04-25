@@ -29,6 +29,18 @@ ingress:
   tls: false
   tlsSecretName: ''
   tlsWildcardSecretName: ''
+  immutableAssets:
+    enabled: false
+    annotations: {}
+    cache:
+      enabled: false
+      zone: appsemble_immutable_assets
+      key: '$scheme$request_method$host$request_uri'
+      methods: GET HEAD
+      valid: 200 365d
+    pathPatterns:
+      - '^/api/blocks/@[^/]+/[^/]+/versions/[^/]+/asset$'
+      - '^/api/blocks/@[^/]+/[^/]+/versions/[^/]+/.+$'
 
 # OpenShift Route configuration (alternative to Ingress)
 route:

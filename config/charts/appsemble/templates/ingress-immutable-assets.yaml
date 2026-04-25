@@ -1,0 +1,68 @@
+{{- if and .Values.ingress.enabled .Values.ingress.immutableAssets.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "appsemble.fullname" . }}-immutable-assets
+  labels:
+    {{ include "appsemble.labels" . }}
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    {{ if .Values.ingress.immutableAssets.cache.enabled }}
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_cache {{ .Values.ingress.immutableAssets.cache.zone }};
+      proxy_cache_key {{ .Values.ingress.immutableAssets.cache.key | quote }};
+      proxy_cache_methods {{ .Values.ingress.immutableAssets.cache.methods }};
+      proxy_cache_valid {{ .Values.ingress.immutableAssets.cache.valid }};
+      proxy_cache_lock on;
+      proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+      proxy_ignore_headers Set-Cookie;
+      proxy_hide_header Set-Cookie;
+      add_header X-Appsemble-Immutable-Cache $upstream_cache_status always;
+    {{ end }}
+    {{ with .Values.ingress.immutableAssets.annotations }}
+    {{ toYaml . | nindent 4 }}
+    {{ end }}
+
+    {{ with .Values.ingress.issuer }}
+    cert-manager.io/issuer: {{ . | quote }}
+    {{ end }}
+    {{ with .Values.ingress.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ . | quote }}
+    {{ end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+{{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+      - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.tlsSecretName }}
+    - hosts:
+      - '*.{{ .Values.ingress.host }}'
+      secretName: {{ .Values.ingress.tlsWildcardSecretName }}
+{{- end }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          {{- range .Values.ingress.immutableAssets.pathPatterns }}
+          - path: {{ . | quote }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ include "appsemble.fullname" $ }}
+                port:
+                  name: http
+          {{- end }}
+    - host: '*.{{ .Values.ingress.host }}'
+      http:
+        paths:
+          {{- range .Values.ingress.immutableAssets.pathPatterns }}
+          - path: {{ . | quote }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ include "appsemble.fullname" $ }}
+                port:
+                  name: http
+          {{- end }}
+{{- end }}

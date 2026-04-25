@@ -1,3 +1,4 @@
+import { uploadS3File } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -8,6 +9,7 @@ import {
   OrganizationMember,
   type User,
 } from '../../../../../models/index.js';
+import { getBlockAssetsBucketName } from '../../../../../utils/blockAssets.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { createTestUser } from '../../../../../utils/test/authorization.js';
@@ -48,8 +50,59 @@ describe('getBlockVersionAsset', () => {
       params: { filename: 'hello.js' },
     });
     expect(response.headers['content-type']).toBe('application/javascript; charset=utf-8');
-    expect(response.headers['cache-control']).toBe('max-age=31536000,immutable');
+    expect(response.headers['cache-control']).toBe('public,max-age=31536000,immutable');
     expect(response.data).toBe('console.log("Hello world!")');
+  });
+
+  it('should serve an S3-backed block asset', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    const content = Buffer.from('console.log("Hello from S3!")');
+    const storageKey = 'blocks/xkcd/test/1.2.3/hello.js';
+
+    await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength);
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      filename: 'hello.js',
+      mime: 'application/javascript',
+      size: content.byteLength,
+      storageKey,
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {
+      params: { filename: 'hello.js' },
+    });
+
+    expect(response.headers['cache-control']).toBe('public,max-age=31536000,immutable');
+    expect(response.headers['content-length']).toBe(String(content.byteLength));
+    expect(response.headers.etag).toBeDefined();
+    expect(response.data).toBe('console.log("Hello from S3!")');
+  });
+
+  it('should fall back to database content if an S3-backed asset is missing in S3', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      content: 'console.log("Hello from Postgres!")',
+      filename: 'hello.js',
+      mime: 'application/javascript',
+      size: Buffer.byteLength('console.log("Hello from Postgres!")'),
+      storageKey: 'blocks/xkcd/test/1.2.3/missing/hello.js',
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {
+      params: { filename: 'hello.js' },
+    });
+
+    expect(response.headers['cache-control']).toBe('public,max-age=31536000,immutable');
+    expect(response.data).toBe('console.log("Hello from Postgres!")');
   });
 
   it('should respond with 404 the version mismatches', async () => {

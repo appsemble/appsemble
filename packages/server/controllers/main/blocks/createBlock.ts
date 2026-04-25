@@ -1,3 +1,6 @@
+import { createReadStream } from 'node:fs';
+import { stat } from 'node:fs/promises';
+
 import {
   type BlockDefinition,
   BlockExampleValidator,
@@ -8,6 +11,7 @@ import {
   handleValidatorResult,
   logger,
   throwKoaError,
+  uploadS3File,
   uploadToBuffer,
 } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
@@ -25,6 +29,12 @@ import {
 } from '../../../models/index.js';
 import { type PublishBlockBody } from '../../../types/index.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import {
+  deleteUnreferencedBlockAssetObjects,
+  getBlockAssetFileHash,
+  getBlockAssetsBucketName,
+  getBlockAssetStorageKey,
+} from '../../../utils/blockAssets.js';
 import { blockVersionToJson } from '../../../utils/block.js';
 
 export async function createBlock(ctx: Context): Promise<void> {
@@ -107,6 +117,8 @@ export async function createBlock(ctx: Context): Promise<void> {
     );
   }
 
+  const uploadedKeys: string[] = [];
+
   try {
     await transactional(async (transaction) => {
       const createdBlock = await BlockVersion.create(
@@ -125,15 +137,37 @@ export async function createBlock(ctx: Context): Promise<void> {
           `Creating block assets for ${name}@${version}: ${decodeURIComponent(file.filename)}`,
         );
       }
+
       createdBlock.BlockAssets = await BlockAsset.bulkCreate(
         await Promise.all(
-          files.map(async (file) => ({
-            name: blockId,
-            BlockVersionId: createdBlock.id,
-            filename: decodeURIComponent(file.filename),
-            mime: file.mime,
-            content: await uploadToBuffer(file.path),
-          })),
+          files.map(async (file) => {
+            const filename = decodeURIComponent(file.filename);
+            const { size } = await stat(file.path);
+            const contentHash = await getBlockAssetFileHash(file.path);
+            const storageKey = getBlockAssetStorageKey({
+              blockName: blockId,
+              contentHash,
+              filename,
+              organizationId: OrganizationId,
+              version,
+            });
+
+            await uploadS3File(
+              getBlockAssetsBucketName(),
+              storageKey,
+              createReadStream(file.path),
+              size,
+            );
+            uploadedKeys.push(storageKey);
+
+            return {
+              BlockVersionId: createdBlock.id,
+              filename,
+              mime: file.mime,
+              size,
+              storageKey,
+            };
+          }),
         ),
         { logging: false, transaction },
       );
@@ -162,6 +196,14 @@ export async function createBlock(ctx: Context): Promise<void> {
       ctx.body = manifestJson;
     });
   } catch (err: unknown) {
+    if (uploadedKeys.length) {
+      try {
+        await deleteUnreferencedBlockAssetObjects(uploadedKeys);
+      } catch (error) {
+        logger.error(error);
+      }
+    }
+
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
       logger.silly(err);
       throwKoaError(ctx, 409, `Block “${name}@${data.version}” already exists`);

@@ -28,9 +28,15 @@ export class BlockAsset extends Model {
   @Column(DataType.INTEGER)
   declare id: number;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @Column(DataType.BLOB)
-  declare content: Buffer;
+  declare content?: Buffer;
+
+  @Column(DataType.STRING)
+  declare storageKey?: string;
+
+  @Column(DataType.INTEGER)
+  declare size?: number;
 
   @AllowNull(false)
   @Column(DataType.STRING)

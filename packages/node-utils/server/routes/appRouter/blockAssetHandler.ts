@@ -12,8 +12,21 @@ export function createBlockAssetHandler({ getBlockAsset }: Options): Middleware 
 
     assertKoaCondition(blockAsset != null, ctx, 404, 'Block asset not found');
 
-    ctx.set('Cache-Control', 'max-age=31536000,immutable');
-    ctx.body = blockAsset.content;
+    ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
+
+    if (blockAsset.size != null) {
+      ctx.set('Content-Length', String(blockAsset.size));
+    }
+
+    if (blockAsset.etag) {
+      ctx.set('ETag', blockAsset.etag);
+    }
+
+    if (blockAsset.lastModified) {
+      ctx.set('Last-Modified', blockAsset.lastModified.toUTCString());
+    }
+
+    ctx.body = blockAsset.stream ?? blockAsset.content;
     ctx.type = blockAsset.mime;
   };
 }
