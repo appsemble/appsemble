@@ -123,6 +123,15 @@ export function EnumInput({
 
   useEffect(() => {
     if ('enum' in field) {
+      setOriginalOptions(field.enum);
+      setOptions(
+        field.filter
+          ? field.enum.filter((choice) =>
+              String(choice.label).toLowerCase().includes(filter.toLowerCase()),
+            )
+          : field.enum,
+      );
+      setLoading(false);
       return;
     }
 
@@ -162,6 +171,7 @@ export function EnumInput({
     events,
     field,
     fieldsetEntryValues,
+    filter,
     formValues,
     originalOptions,
     remapperValues,
