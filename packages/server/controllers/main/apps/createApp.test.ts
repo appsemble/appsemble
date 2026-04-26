@@ -28,6 +28,7 @@ import {
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { findAppMemberByRole } from '../../../utils/appMember.js';
+import { getBlockAssetContentHash } from '../../../utils/blockAssets.js';
 import { createServer } from '../../../utils/createServer.js';
 import { decrypt } from '../../../utils/crypto.js';
 import { getResourceUniqueIndexName } from '../../../utils/resourceUniqueIndexes.js';
@@ -2443,6 +2444,11 @@ describe('createApp', () => {
 
     it('should store the remote block in the local database', async () => {
       authorizeStudio();
+      const uploadS3FileSpy = vi
+        .spyOn(await import('@appsemble/node-utils'), 'uploadS3File')
+        .mockResolvedValue();
+      const aContent = Buffer.from('console.log("a");\n');
+      const bContent = Buffer.from('b{background:blue;}\n');
 
       mock
         .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
@@ -2464,9 +2470,9 @@ describe('createApp', () => {
         .reply(({ params: { filename } }) => {
           switch (filename) {
             case 'a.js':
-              return [200, 'console.log("a");\n', { 'content-type': 'application/javascript' }];
+              return [200, aContent, { 'content-type': 'application/javascript' }];
             case 'b.css':
-              return [200, 'b{background:blue;}\n', { 'content-type': 'text/css' }];
+              return [200, bContent, { 'content-type': 'text/css' }];
             default:
               return [404];
           }
@@ -2476,119 +2482,127 @@ describe('createApp', () => {
           'https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3/messages/en',
         )
         .reply(200, { hello: 'world' });
-      const response = await request.post(
-        '/api/apps',
-        createFormData({
-          OrganizationId: organization.id,
-          path: 'a',
-          yaml: stripIndent(`
-            name: Test App
-            defaultPage: Test Page
-            pages:
-              - name: Test Page
-                blocks:
-                  - type: upstream
-                    version: 1.2.3
-          `),
-        }),
-      );
-      expect(response).toMatchInlineSnapshot(`
-        HTTP/1.1 201 Created
-        Content-Type: application/json; charset=utf-8
+      try {
+        const response = await request.post(
+          '/api/apps',
+          createFormData({
+            OrganizationId: organization.id,
+            path: 'a',
+            yaml: stripIndent(`
+              name: Test App
+              defaultPage: Test Page
+              pages:
+                - name: Test Page
+                  blocks:
+                    - type: upstream
+                      version: 1.2.3
+            `),
+          }),
+        );
+        expect(response).toMatchInlineSnapshot(`
+          HTTP/1.1 201 Created
+          Content-Type: application/json; charset=utf-8
 
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "OrganizationId": "testorganization",
-          "OrganizationName": "Test Organization",
-          "controllerCode": null,
-          "controllerImplementations": null,
-          "definition": {
-            "defaultPage": "Test Page",
-            "name": "Test App",
-            "pages": [
-              {
-                "blocks": [
-                  {
-                    "type": "upstream",
-                    "version": "1.2.3",
-                  },
-                ],
-                "name": "Test Page",
-              },
+          {
+            "$created": "1970-01-01T00:00:00.000Z",
+            "$updated": "1970-01-01T00:00:00.000Z",
+            "OrganizationId": "testorganization",
+            "OrganizationName": "Test Organization",
+            "controllerCode": null,
+            "controllerImplementations": null,
+            "definition": {
+              "defaultPage": "Test Page",
+              "name": "Test App",
+              "pages": [
+                {
+                  "blocks": [
+                    {
+                      "type": "upstream",
+                      "version": "1.2.3",
+                    },
+                  ],
+                  "name": "Test Page",
+                },
+              ],
+            },
+            "demoMode": false,
+            "displayAppMemberName": false,
+            "displayInstallationPrompt": false,
+            "domain": null,
+            "emailName": null,
+            "enableSelfRegistration": true,
+            "enableUnsecuredServiceSecrets": false,
+            "googleAnalyticsID": null,
+            "hasIcon": false,
+            "hasMaskableIcon": false,
+            "iconBackground": "#ffffff",
+            "iconUrl": null,
+            "id": 1,
+            "locked": "unlocked",
+            "metaPixelID": null,
+            "msClarityID": null,
+            "path": "test-app",
+            "screenshotUrls": [],
+            "sentryDsn": null,
+            "sentryEnvironment": null,
+            "showAppDefinition": true,
+            "showAppsembleLogin": false,
+            "showAppsembleOAuth2Login": true,
+            "skipGroupInvites": false,
+            "supportedLanguages": [
+              "en",
             ],
-          },
-          "demoMode": false,
-          "displayAppMemberName": false,
-          "displayInstallationPrompt": false,
-          "domain": null,
-          "emailName": null,
-          "enableSelfRegistration": true,
-          "enableUnsecuredServiceSecrets": false,
-          "googleAnalyticsID": null,
-          "hasIcon": false,
-          "hasMaskableIcon": false,
-          "iconBackground": "#ffffff",
-          "iconUrl": null,
-          "id": 1,
-          "locked": "unlocked",
-          "metaPixelID": null,
-          "msClarityID": null,
-          "path": "test-app",
-          "screenshotUrls": [],
-          "sentryDsn": null,
-          "sentryEnvironment": null,
-          "showAppDefinition": true,
-          "showAppsembleLogin": false,
-          "showAppsembleOAuth2Login": true,
-          "skipGroupInvites": false,
-          "supportedLanguages": [
-            "en",
+            "template": false,
+            "totp": "disabled",
+            "version": 1,
+            "visibility": "unlisted",
+            "yaml": "
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: upstream
+                  version: 1.2.3
+                      ",
+          }
+        `);
+        const block = await BlockVersion.findOne({
+          where: { OrganizationId: 'appsemble', name: 'upstream' },
+          include: [BlockAsset, BlockMessages],
+        });
+        expect(block).toMatchObject({
+          actions: {},
+          description: 'This is a block',
+          events: {},
+          icon: null,
+          layout: 'float',
+          longDescription: 'This is a useful block.',
+          name: 'upstream',
+          OrganizationId: 'appsemble',
+          parameters: {},
+          version: '1.2.3',
+          BlockAssets: [
+            {
+              filename: 'a.js',
+              mime: 'application/javascript',
+              content: null,
+              size: aContent.byteLength,
+              storageKey: `blocks/appsemble/upstream/1.2.3/${getBlockAssetContentHash(aContent)}/a.js`,
+            },
+            {
+              filename: 'b.css',
+              mime: 'text/css',
+              content: null,
+              size: bContent.byteLength,
+              storageKey: `blocks/appsemble/upstream/1.2.3/${getBlockAssetContentHash(bContent)}/b.css`,
+            },
           ],
-          "template": false,
-          "totp": "disabled",
-          "version": 1,
-          "visibility": "unlisted",
-          "yaml": "
-        name: Test App
-        defaultPage: Test Page
-        pages:
-          - name: Test Page
-            blocks:
-              - type: upstream
-                version: 1.2.3
-                  ",
-        }
-      `);
-      const block = await BlockVersion.findOne({
-        where: { OrganizationId: 'appsemble', name: 'upstream' },
-        include: [BlockAsset, BlockMessages],
-      });
-      expect(block).toMatchObject({
-        actions: {},
-        description: 'This is a block',
-        events: {},
-        icon: null,
-        layout: 'float',
-        longDescription: 'This is a useful block.',
-        name: 'upstream',
-        OrganizationId: 'appsemble',
-        parameters: {},
-        version: '1.2.3',
-        BlockAssets: [
-          {
-            filename: 'a.js',
-            mime: 'application/javascript',
-            content: Buffer.from('console.log("a");\n'),
-          },
-          {
-            filename: 'b.css',
-            mime: 'text/css',
-            content: Buffer.from('b{background:blue;}\n'),
-          },
-        ],
-        BlockMessages: [{ language: 'en', messages: { hello: 'world' } }],
-      });
+          BlockMessages: [{ language: 'en', messages: { hello: 'world' } }],
+        });
+      } finally {
+        uploadS3FileSpy.mockRestore();
+      }
     });
   });
 
@@ -2682,21 +2696,6 @@ describe('createApp', () => {
                     },
                     "minItems": 1,
                     "type": "array",
-                  },
-                  "contentSecurityPolicy": {
-                    "additionalProperties": {
-                      "items": {
-                        "type": "string",
-                      },
-                      "type": "array",
-                    },
-                    "description": "Additional CSP source expressions for the published app page.
-
-      If specified, Appsemble applies a stricter default CSP for broad directives such as \`connect-src\`,
-      \`img-src\`, \`media-src\`, \`font-src\`, and \`object-src\`. The configured source expressions
-      are then appended per directive.
-      ",
-                    "type": "object",
                   },
                   "controller": {
                     "$ref": "#/components/schemas/ControllerDefinition",

@@ -124,6 +124,7 @@ describe('getBlockVersion', () => {
       { icon: await readFixture('nodejs-logo.png') },
       { where: { id: 'xkcd' } },
     );
+    vi.useRealTimers();
     const formData = new FormData();
     formData.append('name', '@xkcd/standing');
     formData.append('version', '1.32.9');
