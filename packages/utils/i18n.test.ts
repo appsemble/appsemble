@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { detectLocale, sortLocales } from './i18n.js';
+import { detectLocale, normalizeLocale, sortLocales } from './i18n.js';
 
 describe('sortLocales', () => {
   const tests: [string[], string[]][] = [
@@ -80,5 +80,18 @@ describe('detectLocale', () => {
     const result = detectLocale(languages, choices);
 
     expect(result).toBe(expected);
+  });
+});
+
+describe('normalizeLocale', () => {
+  const tests: [string, string][] = [
+    ['en', 'en'],
+    ['pt_BR', 'pt-br'],
+    ['zh_Hans', 'zh-hans'],
+    ['nl-NL', 'nl-nl'],
+  ];
+
+  it.each(tests)('should normalize %p as %p', (language, expected) => {
+    expect(normalizeLocale(language)).toBe(expected);
   });
 });

@@ -42,7 +42,7 @@
     "axios": "~1.12.0"
   },
   "devDependencies": {
-    "@appsemble/eslint-config": "0.36.5-test.6",
+    "@appsemble/eslint-config": "0.36.7",
     "@lhci/cli": "0.15.1",
     "@vitest/coverage-v8": "2.1.9",
     "@vitest/ui": "2.1.9",
@@ -54,9 +54,9 @@
     "identity-obj-proxy": "3.0.0",
     "jsdom": "22.1.0",
     "lint-staged": "15.5.2",
-    "postcss": "8.5.8",
+    "postcss": "8.5.10",
     "postcss-preset-env": "9.6.0",
-    "prettier": "3.8.1",
+    "prettier": "3.8.3",
     "prettier-plugin-packagejson": "2.5.22",
     "remark-cli": "12.0.1",
     "remark-frontmatter": "5.0.0",

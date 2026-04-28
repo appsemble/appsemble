@@ -1,4 +1,9 @@
-import { normalize, type PageDefinition, remap } from '@appsemble/lang-sdk';
+import {
+  getPageDisplayName,
+  getPagePathSegment,
+  type PageDefinition,
+  remap,
+} from '@appsemble/lang-sdk';
 import {
   Button,
   CollapsibleMenuSection,
@@ -66,10 +71,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
 
   const generateNameAndNavName = useCallback(
     (page: PageDefinition): [string, string] => {
-      const name = getAppMessage({
-        id: `pages.${normalize(page.name)}`,
-        defaultMessage: page.name,
-      }).format() as string;
+      const name = getPageDisplayName(page, getAppMessage);
       const remapperContext = createRemapperContext(name);
       const navName = page.navTitle
         ? (remap(page.navTitle, null, remapperContext) as string)
@@ -107,7 +109,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
               icon={page.icon}
               key={page.name}
               title={navName}
-              to={`${url}/${normalize(name)}`}
+              to={`${url}/${getPagePathSegment(page)}`}
             >
               {navName}
             </MenuItem>

@@ -14,6 +14,8 @@ import { type PageLayoutDefinition } from './gridLayout.js';
 
 export type SettingName = 'email' | 'languages' | 'name' | 'password' | 'phoneNumber' | 'picture';
 
+export type AppContentSecurityPolicy = Record<string, string[]>;
+
 export interface AppDefinition {
   /**
    * The name of the app.
@@ -157,6 +159,15 @@ export interface AppDefinition {
    * The global theme for the app.
    */
   theme?: Partial<Theme>;
+
+  /**
+   * Extra content security policy source expressions for the published app page.
+   *
+   * If specified, the published app page uses a stricter default CSP for broad directives such as
+   * `connect-src`, `img-src`, `media-src`, `font-src`, and `object-src`. The configured sources
+   * are then appended per directive.
+   */
+  contentSecurityPolicy?: AppContentSecurityPolicy;
 
   /**
    * Helper property that can be used to store YAML anchors.

@@ -36,5 +36,5 @@ export function createThemeURL(theme: Theme): string {
   });
   // Sort for cacheability.
   params.sort();
-  return `/bulma/0.9.3/bulma.min.css?${params}`;
+  return `/bulma/0.9.4/bulma.min.css?${params}`;
 }

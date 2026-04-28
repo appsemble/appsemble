@@ -89,6 +89,13 @@ describe('onFetch', () => {
     expect(utils.cacheFirst).not.toHaveBeenCalled();
   });
 
+  it('should try to request app resources first', async () => {
+    const request = new Request('/api/apps/123/resources/feedback');
+    await trigger('fetch', request);
+    expect(utils.requestFirst).toHaveBeenCalledWith(request);
+    expect(utils.cacheFirst).not.toHaveBeenCalled();
+  });
+
   it('should cache block version asset requests', async () => {
     const request = new Request('/api/blocks/@appsemble/form/versions/0.1.2/form.js');
     await trigger('fetch', request);

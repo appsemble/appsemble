@@ -12,6 +12,7 @@ export function createBlockAssetHandler({ getBlockAsset }: Options): Middleware 
 
     assertKoaCondition(blockAsset != null, ctx, 404, 'Block asset not found');
 
+    ctx.set('Cache-Control', 'max-age=31536000,immutable');
     ctx.body = blockAsset.content;
     ctx.type = blockAsset.mime;
   };

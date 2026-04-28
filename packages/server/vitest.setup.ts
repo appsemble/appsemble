@@ -81,6 +81,7 @@ setResponseTransformer(
       date,
       'keep-alive': keepAlive,
       vary,
+      'x-content-type-options': xContentTypeOptions,
       ...headers
     },
     ...response

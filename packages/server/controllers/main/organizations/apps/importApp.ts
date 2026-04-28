@@ -15,7 +15,7 @@ import {
   uploadS3File,
 } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
-import { normalize, validateStyle } from '@appsemble/utils';
+import { normalize, normalizeLocale, validateStyle } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { lookup } from 'mime-types';
@@ -37,6 +37,7 @@ import {
   handleAppValidationError,
   setAppPath,
 } from '../../../../utils/app.js';
+import { replaceAssetFunctions } from '../../../../utils/assetCssURL.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { getBlockVersions } from '../../../../utils/block.js';
 import { createDynamicIndexes } from '../../../../utils/dynamicIndexes.js';
@@ -114,6 +115,27 @@ export async function importApp(ctx: Context): Promise<void> {
       let record: App | undefined;
       await transactional(async (transaction) => {
         record = await App.create(result);
+
+        const appStyleUpdates: Partial<App> = {};
+
+        if (record.coreStyle != null) {
+          const replacedCoreStyle = replaceAssetFunctions(record.coreStyle, record.id);
+          if (replacedCoreStyle !== record.coreStyle) {
+            appStyleUpdates.coreStyle = replacedCoreStyle;
+          }
+        }
+
+        if (record.sharedStyle != null) {
+          const replacedSharedStyle = replaceAssetFunctions(record.sharedStyle, record.id);
+          if (replacedSharedStyle !== record.sharedStyle) {
+            appStyleUpdates.sharedStyle = replacedSharedStyle;
+          }
+        }
+
+        if (Object.keys(appStyleUpdates).length) {
+          await record.update(appStyleUpdates, { transaction });
+        }
+
         const { AppBlockStyle, Asset, Resource, sequelize: appDB } = await getAppDB(record.id);
 
         record.AppSnapshots = [
@@ -122,7 +144,7 @@ export async function importApp(ctx: Context): Promise<void> {
 
         const i18Folder = zip.folder('i18n')?.filter((filename) => filename.endsWith('json')) ?? [];
         for (const json of i18Folder) {
-          const language = json.name.slice(5, 7);
+          const language = normalizeLocale(basename(json.name, '.json'));
           const messages = await json.async('text');
           record.AppMessages = [
             await AppMessages.create(
@@ -139,18 +161,19 @@ export async function importApp(ctx: Context): Promise<void> {
             const resourcesFolder =
               zip.folder('resources')?.filter((filename) => filename.endsWith('json')) ?? [];
             if (resourcesFolder.length) {
-              Object.entries(record!.definition.resources ?? {}).map(
-                ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
-                  if (positioning && enforceOrderingGroupByFields) {
-                    createDynamicIndexes(
-                      enforceOrderingGroupByFields,
-                      record!.id,
-                      resourceType,
-                      appTransaction,
-                    );
-                  }
-                },
-              );
+              for (const [
+                resourceType,
+                { enforceOrderingGroupByFields, positioning },
+              ] of Object.entries(record!.definition.resources ?? {})) {
+                if (positioning && enforceOrderingGroupByFields) {
+                  await createDynamicIndexes(
+                    enforceOrderingGroupByFields,
+                    record!.id,
+                    resourceType,
+                    appTransaction,
+                  );
+                }
+              }
             }
 
             for (const file of resourcesFolder) {
@@ -230,7 +253,10 @@ export async function importApp(ctx: Context): Promise<void> {
                 assertKoaCondition(blockVersion != null, ctx, 404, 'Block not found');
                 const style = validateStyle(await block.async('text'));
                 await AppBlockStyle.create(
-                  { style, block: `${orgName}/${blockName}` },
+                  {
+                    style: replaceAssetFunctions(style, appId),
+                    block: `${orgName}/${blockName}`,
+                  },
                   { transaction: appTransaction },
                 );
               }
@@ -254,8 +280,9 @@ export async function importApp(ctx: Context): Promise<void> {
             const screenshotDirectoryPath = dirname(name);
             const screenshotDirectoryName = basename(screenshotDirectoryPath);
 
-            const language = supportedLanguages.has(screenshotDirectoryName)
-              ? screenshotDirectoryName
+            const normalizedScreenshotDirectoryName = normalizeLocale(screenshotDirectoryName);
+            const language = supportedLanguages.has(normalizedScreenshotDirectoryName)
+              ? normalizedScreenshotDirectoryName
               : 'unspecified';
 
             const uploadsPath = join(tmpdir(), 'screenshots');

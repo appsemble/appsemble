@@ -48,6 +48,7 @@ describe('getBlockVersionAsset', () => {
       params: { filename: 'hello.js' },
     });
     expect(response.headers['content-type']).toBe('application/javascript; charset=utf-8');
+    expect(response.headers['cache-control']).toBe('max-age=31536000,immutable');
     expect(response.data).toBe('console.log("Hello world!")');
   });
 

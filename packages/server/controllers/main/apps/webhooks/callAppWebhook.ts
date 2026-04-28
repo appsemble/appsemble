@@ -69,7 +69,8 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
     'Webhook body validation failed',
   );
 
-  logger.info(`Webhook '${webhookName}' received data:`, JSON.stringify(body, null, 2));
+  logger.info(`Webhook '${webhookName}' received data:`);
+  logger.info(JSON.stringify(body, null, 2));
 
   const action = actions[webhookDefinition.action.type];
   // @ts-expect-error Messed up

@@ -2,6 +2,7 @@ import { PredefinedAppRole } from '@appsemble/lang-sdk';
 import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole, type Resource as ResourceType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import FormData from 'form-data';
 import stripIndent from 'strip-indent';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -29,6 +30,13 @@ let orgMember: OrganizationMember;
 let user: User;
 let app: App;
 let originalSendNotification: typeof webpush.sendNotification;
+
+function createMp4Header(): Buffer {
+  return Buffer.from([
+    0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6f, 0x6d, 0x00, 0x00, 0x02, 0x00,
+    0x69, 0x73, 0x6f, 0x6d, 0x6d, 0x70, 0x34, 0x31,
+  ]);
+}
 
 describe('createAppResource', () => {
   beforeAll(async () => {
@@ -333,6 +341,69 @@ describe('createAppResource', () => {
     expect(await getS3FileBuffer(`app-${app.id}`, assets[0].id)).toStrictEqual(assetContent);
   });
 
+  it('should accept valid video uploads by content', async () => {
+    vi.useRealTimers();
+    authorizeStudio();
+    const videoContent = createMp4Header();
+    const form = new FormData();
+    form.append('resource', JSON.stringify({ file: '0' }));
+    form.append('assets', videoContent, {
+      contentType: 'video/mp4',
+      filename: 'clip.mp4',
+    });
+
+    const response = await request.post<ResourceType>(
+      `/api/apps/${app.id}/resources/testAssets`,
+      form,
+    );
+
+    expect(response.status).toBe(201);
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    );
+
+    const assetId = response.data.file as string;
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.findByPk(assetId);
+
+    expect(asset).toMatchObject({
+      filename: 'clip.mp4',
+      mime: 'video/mp4',
+    });
+    expect(await getS3FileBuffer(`app-${app.id}`, assetId)).toStrictEqual(videoContent);
+  });
+
+  it('should reject invalid video uploads by content', async () => {
+    authorizeStudio();
+    const form = new FormData();
+    form.append('resource', JSON.stringify({ file: '0' }));
+    form.append('assets', Buffer.from('not a video'), {
+      contentType: 'video/mp4',
+      filename: 'broken.mp4',
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/resources/testAssets`, form);
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        message: 'Resource validation failed',
+        statusCode: 400,
+        data: {
+          errors: [
+            expect.objectContaining({
+              message: 'Video uploads must contain a supported video container',
+              path: ['assets', 0],
+            }),
+          ],
+        },
+      },
+    });
+  });
+
   it('should disallow unused files', async () => {
     authorizeStudio();
     const response = await request.post(
@@ -505,6 +576,7 @@ describe('createAppResource', () => {
   });
 
   it('should allow existing assets to be referenced by new resources', async () => {
+    vi.useRealTimers();
     authorizeStudio();
     const { data, status } = await request.post(
       `/api/apps/${app.id}/resources/testAssets`,
@@ -518,16 +590,15 @@ describe('createAppResource', () => {
       file: data.file,
       string: 'bar',
     });
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
+    expect(response.status).toBe(201);
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
         file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
         id: 2,
         string: 'bar',
-      },
-    });
+      }),
+    );
+    expect(response.data.file).toBe(data.file);
   });
 
   it('should block unknown asset references', async () => {

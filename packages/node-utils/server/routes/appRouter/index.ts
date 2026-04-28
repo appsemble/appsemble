@@ -26,7 +26,7 @@ const require = createRequire(import.meta.url);
 const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
 
 export function createAppRouter(options: Options): Middleware {
-  return tinyRouter([
+  const router = tinyRouter([
     {
       route: '/manifest.json',
       get: createManifestHandler(options),
@@ -41,7 +41,7 @@ export function createAppRouter(options: Options): Middleware {
     },
     {
       route: '/service-worker.js',
-      get: createServiceWorkerHandler(options),
+      get: createServiceWorkerHandler(),
     },
     {
       route: /^\/icon-(?<size>\d+)\.png$/,
@@ -101,4 +101,9 @@ export function createAppRouter(options: Options): Middleware {
       get: createIndexHandler(options),
     },
   ]);
+
+  return async (ctx, next) => {
+    ctx.set('x-content-type-options', 'nosniff');
+    await router(ctx, next);
+  };
 }

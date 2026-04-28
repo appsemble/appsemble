@@ -37,6 +37,7 @@ describe('cssHandler', () => {
       status: 200,
       headers: {
         'content-type': 'text/css; charset=utf-8',
+        'x-content-type-options': 'nosniff',
       },
       data: 'body { color: red; }',
     });
@@ -58,8 +59,56 @@ describe('cssHandler', () => {
       status: 200,
       headers: {
         'content-type': 'text/css; charset=utf-8',
+        'x-content-type-options': 'nosniff',
       },
       data: 'body { color: blue; }',
+    });
+  });
+
+  it('should not replace asset utility calls while serving app CSS', async () => {
+    await Organization.create({ id: 'org' });
+    await App.create({
+      OrganizationId: 'org',
+      definition: {},
+      path: 'app',
+      coreStyle: "body{background-image:url(asset('hero-bg'))}",
+      sharedStyle: '',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+
+    const response = await request.get('/core.css');
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: {
+        'content-type': 'text/css; charset=utf-8',
+      },
+      data: "body{background-image:url(asset('hero-bg'))}",
+    });
+  });
+
+  it('should not rewrite absolute, root and data asset utility calls while serving CSS', async () => {
+    await Organization.create({ id: 'org' });
+    await App.create({
+      OrganizationId: 'org',
+      definition: {},
+      path: 'app',
+      coreStyle:
+        "a{background:url(asset('https://example.com/x'))}b{background:url(asset('/x'))}c{background:url(asset('data:image/png;base64,AAAA'))}",
+      sharedStyle: '',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+
+    const response = await request.get('/core.css');
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: {
+        'content-type': 'text/css; charset=utf-8',
+      },
+      data: "a{background:url(asset('https://example.com/x'))}b{background:url(asset('/x'))}c{background:url(asset('data:image/png;base64,AAAA'))}",
     });
   });
 

@@ -1,5 +1,4 @@
 import { logger } from '@appsemble/node-utils';
-import { type SSLStatusMap } from '@appsemble/types';
 import axios from 'axios';
 
 const { APPSEMBLE_REVIEW_DOMAIN, APPSEMBLE_STAGING_DOMAIN, CI_MERGE_REQUEST_IID } = process.env;
@@ -16,8 +15,13 @@ export async function handler(): Promise<void> {
     const interval = setInterval(async () => {
       const url = `https://${domain}`;
       try {
-        logger.info(`Checking if server is ready on ${url}`);
-        await axios.get<SSLStatusMap>(url, { validateStatus: () => true });
+        logger.info(`Checking if server is healthy on ${url}/api/health`);
+        const { status } = await axios.get(`${url}/api/health`, { validateStatus: () => true });
+
+        if (status !== 200) {
+          logger.warn(`API returned ${status}. Checking again in 10 seconds…`);
+          return;
+        }
       } catch {
         logger.warn('API isn’t ready yet. Checking again in 10 seconds…');
         return;

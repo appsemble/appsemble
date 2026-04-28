@@ -26,6 +26,7 @@ import {
   handleAppValidationError,
   setAppPath,
 } from '../../../utils/app.js';
+import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
@@ -184,6 +185,26 @@ export async function createApp(ctx: Context): Promise<void> {
       createdApp = await transactional(async (transaction) => {
         const app = await App.create(result, { transaction });
 
+        const styleUpdates: Partial<App> = {};
+
+        if (app.coreStyle != null) {
+          const replacedCoreStyle = replaceAssetFunctions(app.coreStyle, app.id);
+          if (replacedCoreStyle !== app.coreStyle) {
+            styleUpdates.coreStyle = replacedCoreStyle;
+          }
+        }
+
+        if (app.sharedStyle != null) {
+          const replacedSharedStyle = replaceAssetFunctions(app.sharedStyle, app.id);
+          if (replacedSharedStyle !== app.sharedStyle) {
+            styleUpdates.sharedStyle = replacedSharedStyle;
+          }
+        }
+
+        if (Object.keys(styleUpdates).length) {
+          await app.update(styleUpdates, { transaction });
+        }
+
         await checkAppLimit(ctx, app);
 
         app.AppSnapshots = [await AppSnapshot.create({ AppId: app.id, yaml }, { transaction })];
@@ -217,18 +238,19 @@ export async function createApp(ctx: Context): Promise<void> {
     try {
       await appDB.transaction(async (appTransaction) => {
         if (createdApp.definition.resources) {
-          Object.entries(createdApp.definition.resources ?? {}).map(
-            ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
-              if (positioning && enforceOrderingGroupByFields) {
-                createDynamicIndexes(
-                  enforceOrderingGroupByFields,
-                  createdApp.id,
-                  resourceType,
-                  appTransaction,
-                );
-              }
-            },
-          );
+          for (const [
+            resourceType,
+            { enforceOrderingGroupByFields, positioning },
+          ] of Object.entries(createdApp.definition.resources ?? {})) {
+            if (positioning && enforceOrderingGroupByFields) {
+              await createDynamicIndexes(
+                enforceOrderingGroupByFields,
+                createdApp.id,
+                resourceType,
+                appTransaction,
+              );
+            }
+          }
         }
 
         if (createdApp.definition.cron && createdApp.definition.security?.cron) {

@@ -4,6 +4,10 @@ import { type Context } from 'koa';
 
 import { AppCollection, Organization } from '../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
+import {
+  handleAppCollectionDomainValidationError,
+  normalizeDomain,
+} from '../../../../utils/domain.js';
 
 export async function createOrganizationAppCollection(ctx: Context): Promise<void> {
   const {
@@ -17,30 +21,34 @@ export async function createOrganizationAppCollection(ctx: Context): Promise<voi
     requiredPermissions: [OrganizationPermission.CreateAppCollections],
   });
 
-  const collection = await AppCollection.create({
-    name: body.name,
-    expertName: body.expertName,
-    expertDescription: body.expertDescription,
-    expertProfileImage: body.expertProfileImage.path
-      ? await uploadToBuffer(body.expertProfileImage.path)
-      : undefined,
-    expertProfileImageMimeType: body.expertProfileImage.mime,
-    headerImage: body.headerImage.path ? await uploadToBuffer(body.headerImage.path) : undefined,
-    headerImageMimeType: body.headerImage.mime,
-    OrganizationId: organizationId,
-    visibility: body.visibility ?? 'public',
-    domain: body.domain,
-  });
+  try {
+    const collection = await AppCollection.create({
+      name: body.name,
+      expertName: body.expertName,
+      expertDescription: body.expertDescription,
+      expertProfileImage: body.expertProfileImage.path
+        ? await uploadToBuffer(body.expertProfileImage.path)
+        : undefined,
+      expertProfileImageMimeType: body.expertProfileImage.mime,
+      headerImage: body.headerImage.path ? await uploadToBuffer(body.headerImage.path) : undefined,
+      headerImageMimeType: body.headerImage.mime,
+      OrganizationId: organizationId,
+      visibility: body.visibility ?? 'public',
+      domain: normalizeDomain(body.domain),
+    });
 
-  await collection.reload({
-    include: [
-      {
-        model: Organization,
-        attributes: ['name'],
-      },
-    ],
-  });
+    await collection.reload({
+      include: [
+        {
+          model: Organization,
+          attributes: ['name'],
+        },
+      ],
+    });
 
-  ctx.response.status = 201;
-  ctx.response.body = collection.toJSON();
+    ctx.response.status = 201;
+    ctx.response.body = collection.toJSON();
+  } catch (error: unknown) {
+    handleAppCollectionDomainValidationError(ctx, error, normalizeDomain(body.domain));
+  }
 }

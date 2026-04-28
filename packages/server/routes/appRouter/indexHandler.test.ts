@@ -10,6 +10,15 @@ import { createServer } from '../../utils/createServer.js';
 
 let requestURL: URL;
 
+function parseCsp(csp: string): Record<string, string[]> {
+  return Object.fromEntries(
+    csp.split('; ').map((directive) => {
+      const [name, ...values] = directive.split(' ');
+      return [name, values];
+    }),
+  );
+}
+
 describe('indexHandler', () => {
   beforeAll(() => {
     vi.useFakeTimers();
@@ -219,12 +228,12 @@ describe('indexHandler', () => {
       response.headers['content-security-policy'] = csp.replace(responseNonce, nonce);
     }
 
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Content-Security-Policy: base-uri 'self'; connect-src * blob: data:; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-K6r4ZcCdlHM2RMHKUTdq24LZ1uJpbodSHflnSZwsRzg=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+      Content-Security-Policy: base-uri 'self'; connect-src * blob: data:; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-K6r4ZcCdlHM2RMHKUTdq24LZ1uJpbodSHflnSZwsRzg=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       {
         "data": {
@@ -340,7 +349,7 @@ describe('indexHandler', () => {
           },
           "appUpdated": "1970-01-01T00:00:00.000Z",
           "appUrl": "http://app.test.host.example/",
-          "bulmaURL": "/bulma/0.9.3/bulma.min.css?dangerColor=%23ff2800&fontFamily=Open+Sans&fontSource=google&infoColor=%23a7d0ff&linkColor=%230440ad&primaryColor=%235393ff&splashColor=%23ffffff&successColor=%231fd25b&themeColor=%23ffffff&tileLayer=https%3A%2F%2F%7Bs%7D.tile.openstreetmap.org%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D.png&warningColor=%23fed719",
+          "bulmaURL": "/bulma/0.9.4/bulma.min.css?dangerColor=%23ff2800&fontFamily=Open+Sans&fontSource=google&infoColor=%23a7d0ff&linkColor=%230440ad&primaryColor=%235393ff&splashColor=%23ffffff&successColor=%231fd25b&themeColor=%23ffffff&tileLayer=https%3A%2F%2F%7Bs%7D.tile.openstreetmap.org%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D.png&warningColor=%23fed719",
           "faURL": "/fa/6.7.2/css/all.min.css",
           "host": "http://host.example",
           "locale": "en",
@@ -424,12 +433,12 @@ describe('indexHandler', () => {
       response.headers['content-security-policy'] = csp.replace(responseNonce, nonce);
     }
 
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Content-Security-Policy: base-uri 'self'; connect-src * blob: data: https://clarity.ms https://www.clarity.ms; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example https://clarity.ms https://www.clarity.ms; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clarity.ms https://scripts.clarity.ms https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+      Content-Security-Policy: base-uri 'self'; connect-src * blob: data: https://clarity.ms https://www.clarity.ms; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example https://clarity.ms https://www.clarity.ms; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clarity.ms https://scripts.clarity.ms https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       {
         "data": {
@@ -545,7 +554,7 @@ describe('indexHandler', () => {
           },
           "appUpdated": "1970-01-01T00:00:00.000Z",
           "appUrl": "http://app.test.host.example/",
-          "bulmaURL": "/bulma/0.9.3/bulma.min.css?dangerColor=%23ff2800&fontFamily=Open+Sans&fontSource=google&infoColor=%23a7d0ff&linkColor=%230440ad&primaryColor=%235393ff&splashColor=%23ffffff&successColor=%231fd25b&themeColor=%23ffffff&tileLayer=https%3A%2F%2F%7Bs%7D.tile.openstreetmap.org%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D.png&warningColor=%23fed719",
+          "bulmaURL": "/bulma/0.9.4/bulma.min.css?dangerColor=%23ff2800&fontFamily=Open+Sans&fontSource=google&infoColor=%23a7d0ff&linkColor=%230440ad&primaryColor=%235393ff&splashColor=%23ffffff&successColor=%231fd25b&themeColor=%23ffffff&tileLayer=https%3A%2F%2F%7Bs%7D.tile.openstreetmap.org%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D.png&warningColor=%23fed719",
           "faURL": "/fa/6.7.2/css/all.min.css",
           "host": "http://host.example",
           "locale": "en",
@@ -566,17 +575,67 @@ describe('indexHandler', () => {
     `);
   });
 
+  it('should render a stricter published app CSP when contentSecurityPolicy is configured', async () => {
+    await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        contentSecurityPolicy: {
+          'connect-src': ['https://api.example.com'],
+        },
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [],
+          },
+        ],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const response = await request.get('/');
+    const csp = parseCsp(response.headers['content-security-policy'] as string);
+
+    expect(csp['connect-src']).toStrictEqual(
+      expect.arrayContaining([
+        "'self'",
+        'blob:',
+        'data:',
+        'http://host.example',
+        'https://api.example.com',
+      ]),
+    );
+    expect(csp['connect-src']).not.toContain('*');
+    expect(csp['font-src']).toStrictEqual(
+      expect.arrayContaining(["'self'", 'data:', 'https://fonts.gstatic.com']),
+    );
+    expect(csp['font-src']).not.toContain('*');
+    expect(csp['img-src']).toStrictEqual(
+      expect.arrayContaining(["'self'", 'blob:', 'data:', 'http://host.example']),
+    );
+    expect(csp['img-src']).not.toContain('*');
+    expect(csp['media-src']).toStrictEqual(
+      expect.arrayContaining(["'self'", 'blob:', 'data:', 'http://host.example']),
+    );
+    expect(csp['media-src']).not.toContain('*');
+    expect(csp['object-src']).toStrictEqual(["'none'"]);
+  });
+
   it('should render a 404 page if no app is found', async () => {
     const response = await request.get('/');
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       {
         "data": {
-          "bulmaURL": "/bulma/0.9.3/bulma.min.css",
+          "bulmaURL": "/bulma/0.9.4/bulma.min.css",
           "faURL": "/fa/6.7.2/css/all.min.css",
           "message": "The app you are looking for could not be found.",
         },
@@ -588,12 +647,12 @@ describe('indexHandler', () => {
   it('should redirect if only the organization id is given', async () => {
     requestURL = new URL('http://org.host.example');
     const response = await request.get('/');
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 302 Found
       Content-Type: text/html; charset=utf-8
       Location: http://host.example/organizations/org
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       Redirecting to http://host.example/organizations/org.
     `);
@@ -613,12 +672,12 @@ describe('indexHandler', () => {
       vapidPrivateKey: '',
     });
     const response = await request.get('/en?query=param');
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 302 Found
       Content-Type: text/html; charset=utf-8
       Location: http://custom.example/en?query=param
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       Redirecting to http://custom.example/en?query=param.
     `);
@@ -627,12 +686,12 @@ describe('indexHandler', () => {
   it('should redirect to the app root if the organization id is disallowed', async () => {
     requestURL = new URL('http://www.host.example');
     const response = await request.get('/');
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 302 Found
       Content-Type: text/html; charset=utf-8
       Location: http://host.example/
       Referrer-Policy: strict-origin-when-cross-origin
-      X-Content-Type-Options: nosniff
 
       Redirecting to http://host.example/.
     `);

@@ -209,8 +209,8 @@ assetsBackups:
   enabled: false
   schedule: '20 2 * * *'
   sourceEndpoint: null
-  sourceRegion: us-east-1
-  destinationRegion: eu-central-1
+  sourceRegion: fsn1
+  destinationRegion: fsn1
   prefix: assets/app-buckets
   verifyAfterSync: true
   maxDelete: 2000

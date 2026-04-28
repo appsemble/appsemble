@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.36.5-test.6
-appVersion: 0.36.5-test.6
+version: 0.36.7
+appVersion: 0.36.7
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,7 +23,7 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: mailpit
-    version: 0.23.1
+    version: 0.32.5
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
   - name: minio

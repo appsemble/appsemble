@@ -6,6 +6,7 @@ export * from './authorization.js';
 export * from './blockUtils.js';
 export * from './validation.js';
 export * from './findPageByName.js';
+export * from './pageUtils.js';
 export * from './iterApp.js';
 export * from './serverActions.js';
 export * from './allActions.js';

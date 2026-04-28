@@ -6,11 +6,14 @@ export function createCssHandler(
   { getAppStyles }: Options,
 ): Middleware {
   return async (ctx: Context) => {
-    const app = await getAppStyles({ context: ctx, query: { attributes: [type], raw: true } });
+    const styles = await getAppStyles({
+      context: ctx,
+      query: { attributes: [type], raw: true },
+    });
 
-    assertKoaCondition(app != null, ctx, 404, 'App not found');
+    assertKoaCondition(styles != null, ctx, 404, 'App not found');
 
-    ctx.body = app[type] ?? '';
+    ctx.body = styles[type] || '';
     ctx.type = 'css';
   };
 }

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/eslint-config",
-  "version": "0.36.5-test.6",
+  "version": "0.36.7",
   "private": true,
   "description": "Eslint configuration used internally at Appsemble.",
   "keywords": [
@@ -29,13 +29,13 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@appsemble/eslint-plugin": "0.36.5-test.6",
+    "@appsemble/eslint-plugin": "0.36.7",
     "@eslint/js": "9.39.4",
     "@eslint/markdown": "7.5.1",
     "@remcohaszing/eslint": "12.0.1",
-    "@typescript-eslint/eslint-plugin": "8.50.1",
-    "@typescript-eslint/parser": "8.50.1",
-    "@vitest/eslint-plugin": "1.6.13",
+    "@typescript-eslint/eslint-plugin": "8.59.0",
+    "@typescript-eslint/parser": "8.59.0",
+    "@vitest/eslint-plugin": "1.6.16",
     "eslint-plugin-compat": "6.2.1",
     "eslint-plugin-formatjs": "5.4.2",
     "eslint-plugin-jsdoc": "61.7.1",
@@ -43,7 +43,7 @@
     "eslint-plugin-n": "17.24.0",
     "eslint-plugin-playwright": "2.4.0",
     "eslint-plugin-react": "7.37.5",
-    "eslint-plugin-react-hooks": "7.0.1",
+    "eslint-plugin-react-hooks": "7.1.1",
     "ts-json-schema-generator": "2.4.0"
   },
   "peerDependencies": {

@@ -1350,6 +1350,9 @@ Compatible data that is received will be displayed.",
     "emptyLabel": {
       "description": "The label that’s displayed when there are no feed items available.",
     },
+    "permissionDeniedLabel": {
+      "description": "The label that’s displayed when feed data cannot be loaded due to missing permissions.",
+    },
     "replyErrorMessage": {
       "description": "The error message shown when an error occurs while submitting a reply.",
     },
@@ -3592,15 +3595,17 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "maxHeight": {
-            "description": "The maximum height of uploaded files.",
+            "description": "The optional client-side resize height limit for uploaded images.",
             "type": "number",
           },
           "maxSize": {
-            "description": "The maximum size of uploaded files.",
+            "description": "The maximum allowed size of uploaded files.
+
+This only validates the upload. It does not resize or compress the file.",
             "type": "number",
           },
           "maxWidth": {
-            "description": "The maximum width of uploaded files.",
+            "description": "The optional client-side resize width limit for uploaded images.",
             "type": "number",
           },
           "name": {
@@ -3612,7 +3617,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "quality": {
-            "description": "The quality modifier to use when uploading images, in percentages.",
+            "description": "The optional client-side image re-encode quality, in percentages.",
             "type": "number",
           },
           "readOnly": {
@@ -5439,6 +5444,11 @@ If this is set to \`true\`, the default values for the fields won't contain data
 
 By setting this to \`true\`, this won’t happen.",
         "type": "boolean",
+      },
+      "startDisabled": {
+        "default": false,
+        "description": "If this remapper yields true, the submit button will start disabled when the form is invalid instead of waiting until the user has pressed submit",
+        "format": "remapper",
       },
       "title": {
         "description": "Specify a form title",

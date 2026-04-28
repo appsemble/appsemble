@@ -1,5 +1,7 @@
 import { type BootstrapParams } from '@appsemble/sdk';
 
+import { getDataLoadError } from './utils.js';
+
 export function DataLoader({
   actions,
   data,
@@ -12,8 +14,8 @@ export function DataLoader({
     try {
       const result = await actions.onLoad({ ...pageParameters, ...d }, { data });
       events.emit.data(result);
-    } catch {
-      events.emit.data(null, 'Failed to load data');
+    } catch (error) {
+      events.emit.data(null, getDataLoadError(error));
       utils.showMessage(utils.formatMessage('loadErrorMessage'));
     }
   }

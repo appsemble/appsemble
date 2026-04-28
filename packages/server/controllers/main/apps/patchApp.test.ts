@@ -1157,6 +1157,21 @@ describe('patchApp', () => {
                     "minItems": 1,
                     "type": "array",
                   },
+                  "contentSecurityPolicy": {
+                    "additionalProperties": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                    "description": "Additional CSP source expressions for the published app page.
+
+      If specified, Appsemble applies a stricter default CSP for broad directives such as \`connect-src\`,
+      \`img-src\`, \`media-src\`, \`font-src\`, and \`object-src\`. The configured source expressions
+      are then appended per directive.
+      ",
+                    "type": "object",
+                  },
                   "controller": {
                     "$ref": "#/components/schemas/ControllerDefinition",
                   },
@@ -1315,6 +1330,21 @@ describe('patchApp', () => {
                     },
                     "minItems": 1,
                     "type": "array",
+                  },
+                  "contentSecurityPolicy": {
+                    "additionalProperties": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                    "description": "Additional CSP source expressions for the published app page.
+
+      If specified, Appsemble applies a stricter default CSP for broad directives such as \`connect-src\`,
+      \`img-src\`, \`media-src\`, \`font-src\`, and \`object-src\`. The configured source expressions
+      are then appended per directive.
+      ",
+                    "type": "object",
                   },
                   "controller": {
                     "$ref": "#/components/schemas/ControllerDefinition",
@@ -1548,6 +1578,33 @@ describe('patchApp', () => {
 
       body { color: blue; }
     `);
+  });
+
+  it('should keep rejected traversal and encoded-slash asset ids unchanged when updating an app', async () => {
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        coreStyle:
+          "a{background-image:url(asset('../admin'))}b{background-image:url(asset('a%2fb'))}",
+      }),
+    );
+
+    const coreStyle = await request.get(`/api/apps/${app.id}/style/core`);
+
+    expect(response.status).toBe(200);
+    expect(coreStyle.data).toBe(
+      "a{background-image:url(asset('../admin'))}b{background-image:url(asset('a%2fb'))}",
+    );
+    expect(coreStyle.data).not.toContain('http://localhost/api/apps/');
   });
 
   it("should create a new app member with role `cron` if doesn't exist already", async () => {
@@ -2223,7 +2280,7 @@ describe('patchApp', () => {
     });
     expect(subscription).not.toBeNull();
     subscription!.subscriptionPlan = SubscriptionPlanType.Basic;
-    subscription!.save();
+    await subscription!.save();
     await App.create(
       {
         definition: { name: 'Test App 1', defaultPage: 'Test Page' },

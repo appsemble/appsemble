@@ -14,7 +14,7 @@ exports[`should render a dropdown component 1`] = `
       tabindex="-1"
     >
       <span
-        class="icon is-justify-content-end is-align-items-end"
+        class="icon p-4 box is-align-items-center"
       >
         <i
           class="ellipsis-vertical"

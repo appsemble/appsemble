@@ -32,6 +32,7 @@ import {
   createAppScreenshots,
   handleAppValidationError,
 } from '../../../utils/app.js';
+import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
@@ -289,11 +290,19 @@ export async function patchApp(ctx: Context): Promise<void> {
     }
 
     if (coreStyle !== undefined) {
-      result.coreStyle = validateStyle(coreStyle);
+      const validatedCoreStyle = validateStyle(coreStyle);
+      result.coreStyle =
+        validatedCoreStyle == null
+          ? validatedCoreStyle
+          : replaceAssetFunctions(validatedCoreStyle, dbApp.id);
     }
 
     if (sharedStyle !== undefined) {
-      result.sharedStyle = validateStyle(sharedStyle);
+      const validatedSharedStyle = validateStyle(sharedStyle);
+      result.sharedStyle =
+        validatedSharedStyle == null
+          ? validatedSharedStyle
+          : replaceAssetFunctions(validatedSharedStyle, dbApp.id);
     }
 
     if (icon) {
@@ -406,7 +415,12 @@ export async function patchApp(ctx: Context): Promise<void> {
               let group: string[] | undefined;
               try {
                 if (enforceOrderingGroupByFields) {
-                  createDynamicIndexes(enforceOrderingGroupByFields, appId, key, appTransaction);
+                  await createDynamicIndexes(
+                    enforceOrderingGroupByFields,
+                    appId,
+                    key,
+                    appTransaction,
+                  );
                   group = enforceOrderingGroupByFields.map((field) => `data.${field}`);
                 }
                 const resourcesToUpdate = await Resource.findAll({

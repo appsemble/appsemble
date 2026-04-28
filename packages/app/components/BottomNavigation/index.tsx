@@ -1,4 +1,10 @@
-import { normalize, type PageDefinition, remap, type RemapperContext } from '@appsemble/lang-sdk';
+import {
+  getPageDisplayName,
+  getPagePathSegment,
+  type PageDefinition,
+  remap,
+  type RemapperContext,
+} from '@appsemble/lang-sdk';
 import { Button, Icon } from '@appsemble/react-components';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -43,10 +49,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
       <nav className="bottom-nav mb-0">
         <ul className={`${styles.list} is-flex`}>
           {pages.map((page) => {
-            const name = getAppMessage({
-              id: `pages.${normalize(page.name)}`,
-              defaultMessage: page.name,
-            }).format() as string;
+            const name = getPageDisplayName(page, getAppMessage);
             const remapperContext = {
               appId,
               appUrl: window.location.origin,
@@ -75,7 +78,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                     }`
                   }
                   title={navName as string}
-                  to={`${url}/${normalize(name)}`}
+                  to={`${url}/${getPagePathSegment(page)}`}
                 >
                   {page.icon ? (
                     <div>

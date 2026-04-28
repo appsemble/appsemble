@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.36.7](https://gitlab.com/appsemble/appsemble/-/releases/0.36.7)] - 2026-04-17
+
+## \[[0.36.7-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.36.7-test.0)] - 2026-04-15
+
+## \[[0.36.6](https://gitlab.com/appsemble/appsemble/-/releases/0.36.6)] - 2026-04-10
+
+### Added
+
+- Block(`form`): Added `startDisabled` parameter.
+
+## \[[0.36.6-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.36.6-test.0)] - 2026-03-30
+
+## \[[0.36.5](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5)] - 2026-03-25
+
+### Added
+
+- E2e: Add new fixture `deleteAppMember` to delete app members by emails.
+- Node-utils: Add support for creating organization members in createUser.
+- Scripts: Add validation for server binary missing commands.
+- Server: Add webhook-type action that can be invoked by clients via HTTP requests.
+
+### Fixed
+
+- E2e: Point `changeAppMemberRole` fixture to the right page.
+
 ## \[[0.36.5-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5-test.6)] - 2026-03-12
 
 ## \[[0.36.5-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5-test.5)] - 2026-03-11

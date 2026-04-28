@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.36.5-test.6",
+  "version": "0.36.7",
   "description": "Utility functions used in Appsemble internally",
   "keywords": [
     "app",
@@ -39,8 +39,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.36.5-test.6",
-    "@appsemble/types": "0.36.5-test.6",
+    "@appsemble/lang-sdk": "0.36.7",
+    "@appsemble/types": "0.36.7",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "axios": "^1.0.0",
     "langmap": "^0.0.16",
@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@types/langmap": "0.0.3",
-    "bulma": "=0.9.3",
+    "bulma": "=0.9.4",
     "koas-core": "0.7.0",
     "vitest": "2.1.9"
   },

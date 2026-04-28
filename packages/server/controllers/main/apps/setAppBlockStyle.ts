@@ -4,6 +4,7 @@ import { StyleValidationError, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, BlockVersion, getAppDB } from '../../../models/index.js';
+import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 
@@ -38,7 +39,7 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
     const { AppBlockStyle } = await getAppDB(appId);
     await (css.length
       ? AppBlockStyle.upsert({
-          style: css,
+          style: replaceAssetFunctions(css, appId),
           block: `@${block.OrganizationId}/${block.name}`,
         })
       : AppBlockStyle.destroy({

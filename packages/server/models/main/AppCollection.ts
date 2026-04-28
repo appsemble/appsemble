@@ -5,6 +5,7 @@ import {
 import {
   AllowNull,
   AutoIncrement,
+  BeforeValidate,
   BelongsTo,
   Column,
   CreatedAt,
@@ -17,11 +18,19 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
+import { Op } from 'sequelize';
 
 import { AppCollectionApp, Organization } from '../index.js';
+import { normalizeDomain } from '../../utils/domain.js';
 
 @Table({ tableName: 'AppCollection' })
 export class AppCollection extends Model {
+  @BeforeValidate
+  static beforeValidateHook(instance: AppCollection): void {
+    const normalizedDomain = normalizeDomain(instance.domain);
+    instance.setDataValue('domain', normalizedDomain);
+  }
+
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
@@ -64,14 +73,17 @@ export class AppCollection extends Model {
    * is 253, is explained on https://devblogs.microsoft.com/oldnewthing/20120412-00/?p=7873.
    */
   @Column({ type: DataType.STRING(253) })
-  @Index({ name: 'appCollectionComposite' })
+  @Index({
+    name: 'UniqueAppCollectionDomain',
+    unique: true,
+    where: { domain: { [Op.ne]: null } },
+  })
   declare domain?: string;
 
   @CreatedAt
   declare created: Date;
 
   @UpdatedAt
-  @Index({ name: 'appCollectionComposite', order: 'DESC' })
   declare updated: Date;
 
   @HasMany(() => AppCollectionApp)

@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.22-labs
+# syntax=docker/dockerfile:1.23-labs
 # Build production files
 FROM node:24-trixie-slim AS build
 WORKDIR /app
@@ -51,7 +51,7 @@ RUN rm -r package-lock.json
 
 # Setup the production docker image.
 FROM node:24-trixie-slim
-ARG version=0.36.5-test.6
+ARG version=0.36.7
 ARG date
 
 COPY --from=prod /app /app

@@ -1,10 +1,8 @@
 import { readFile } from 'node:fs/promises';
 
-import { getAppBlocks } from '@appsemble/lang-sdk';
-import { assertKoaCondition, type Options } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
-export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Options): Middleware {
+export function createServiceWorkerHandler(): Middleware {
   return async (ctx: Context) => {
     const production = process.env.NODE_ENV === 'production';
 
@@ -14,18 +12,7 @@ export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Opt
       ? readFile(new URL('../../../../../dist/app/service-worker.js', import.meta.url), 'utf8')
       : ctx.fs.promises.readFile(filename, 'utf8'));
 
-    const app = await getApp({
-      context: ctx,
-      query: { attributes: ['id', 'definition'] },
-    });
-
-    assertKoaCondition(app != null, ctx, 404, 'App does not exist.');
-
-    const identifiableBlocks = getAppBlocks(app.definition);
-    const blocksAssetsPaths = await getBlocksAssetsPaths({ identifiableBlocks, context: ctx });
-
-    // App.version is a virtual column and comes from App.AppSnapshots
-    ctx.body = `const appVersion = ${app.version};const blockAssets=${JSON.stringify(blocksAssetsPaths)};${serviceWorker}`;
+    ctx.body = serviceWorker;
     ctx.type = 'application/javascript';
   };
 }

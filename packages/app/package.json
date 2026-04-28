@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/app",
-  "version": "0.36.5-test.6",
+  "version": "0.36.7",
   "private": true,
   "description": "The base for Appsemble apps",
   "keywords": [
@@ -31,12 +31,12 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.36.5-test.6",
-    "@appsemble/sdk": "0.36.5-test.6",
-    "@appsemble/types": "0.36.5-test.6",
-    "@appsemble/lang-sdk": "0.36.5-test.6",
-    "@appsemble/utils": "0.36.5-test.6",
-    "@appsemble/web-utils": "0.36.5-test.6",
+    "@appsemble/react-components": "0.36.7",
+    "@appsemble/sdk": "0.36.7",
+    "@appsemble/types": "0.36.7",
+    "@appsemble/lang-sdk": "0.36.7",
+    "@appsemble/utils": "0.36.7",
+    "@appsemble/web-utils": "0.36.7",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",
@@ -51,7 +51,7 @@
     "@types/react-dom": "^18.0.0",
     "@types/react-router-dom": "^5.0.0",
     "@types/webpack-env": "^1.0.0",
-    "async-mutex": "^0.4.0",
+    "async-mutex": "^0.5.0",
     "axios": "^1.0.0",
     "axios-mock-adapter": "^1.0.0",
     "classnames": "^2.0.0",
@@ -72,7 +72,7 @@
   "devDependencies": {
     "@types/jsdom": "21.1.7",
     "fake-indexeddb": "5.0.2",
-    "happy-dom": "20.8.4",
+    "happy-dom": "20.9.0",
     "jsdom": "22.1.0",
     "vitest": "2.1.9",
     "react-is": "18.3.1",

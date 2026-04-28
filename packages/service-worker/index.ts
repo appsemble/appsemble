@@ -2,14 +2,32 @@ import { onFetch } from './onFetch.js';
 
 declare const self: ServiceWorkerGlobalScope;
 declare const appAssets: { url: string }[];
-declare const blockAssets: string[];
+
+interface NotificationPayload extends NotificationOptions {
+  link?: string;
+  title: string;
+}
 
 self.addEventListener('fetch', onFetch);
 self.addEventListener('push', (event: PushEvent) => {
-  if (event.data) {
-    const { title, ...options } = event.data.json() as NotificationOptions & { title: string };
-    self.registration.showNotification(title, { ...options, data: options });
+  if (!event.data) {
+    return;
   }
+
+  const notification = event.data.json() as NotificationPayload;
+  const { title, ...options } = notification;
+
+  event.waitUntil(
+    Promise.all([
+      self.registration.showNotification(title, { ...options, data: options }),
+      self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+        for (const client of clientList) {
+          // eslint-disable-next-line unicorn/require-post-message-target-origin
+          client.postMessage({ type: 'appsemble.notification', notification });
+        }
+      }),
+    ]),
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {
@@ -37,9 +55,7 @@ self.addEventListener('notificationclick', (event) => {
 
 self.addEventListener('install', (event) =>
   event.waitUntil(
-    caches
-      .open('appsemble')
-      .then((cache) => cache.addAll([...appAssets.map((entry) => entry.url), ...blockAssets])),
+    caches.open('appsemble').then((cache) => cache.addAll(appAssets.map((entry) => entry.url))),
   ),
 );
 

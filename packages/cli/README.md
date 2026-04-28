@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.36.5-test.6/config/assets/logo.svg) Appsemble CLI
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.36.7/config/assets/logo.svg) Appsemble CLI
 
 > Manage apps and blocks from the command line.
 
 [![npm](https://img.shields.io/npm/v/@appsemble/cli)](https://www.npmjs.com/package/@appsemble/cli)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.36.5-test.6/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.36.5-test.6)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.36.7/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.36.7)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -18,6 +18,7 @@
   - [Groups](#groups)
   - [Assets](#assets)
   - [Resources](#resources)
+  - [Backup restore](#backup-restore)
   - [Cronjobs](#cronjobs)
 - [License](#license)
 
@@ -305,6 +306,24 @@ And resources can also be updated when they contain an id in the JSON file.
 appsemble resource update --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/*
 ```
 
+### Backup restore
+
+The Appsemble CLI can be used to restore app and database data from a backup file created by
+`backup-production-data` (for example, `npm run appsemble -- backup-production-data`). Backup files
+use the format `<backupsFilename>_<YYYYMMDDHHmmssSSS>.sql.gz` (for example,
+`appsemble_prod_backup_20250101093045123.sql.gz`). Use the latest backup filename (for example by
+checking it with `rclone`) and your object storage credentials:
+
+```sh
+npm run appsemble -- restore-data-from-backup --restoreBackupFilename <backupsFilename_YYYYMMDDHHmmssSSS.sql.gz> --backupsHost <your-object-storage-host> --backupsAccessKey <your-backups-access-key> --backupsSecretKey <your-backups-secret-key>
+```
+
+After restoring the backup, run the re-encryption command:
+
+```sh
+npm run appsemble -- reencrypt-secrets --old-aes-secret <old-aes-secret>
+```
+
 ### Cronjobs
 
 The Appsemble CLI can be used to run app cronjobs. The following command runs all cronjobs that were
@@ -323,5 +342,5 @@ appsemble run-cronjobs --interval 30
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.36.5-test.6/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.36.7/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

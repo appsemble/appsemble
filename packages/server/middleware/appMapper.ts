@@ -8,15 +8,15 @@ import { argv } from '../utils/argv.js';
 export function appMapper(platformMiddleware: Middleware, appMiddleware: Middleware): Middleware {
   return async (ctx, next) => {
     const { hostname } = ctx;
+    const normalizedHostname = hostname.toLowerCase();
 
-    if (new URL(argv.host).hostname === hostname || isIP(hostname)) {
+    if (new URL(argv.host).hostname === normalizedHostname || isIP(hostname)) {
       return platformMiddleware(ctx, next);
     }
 
     const collection = await AppCollection.findOne({
-      where: { domain: hostname },
-      attributes: ['id', 'domain'],
-      order: [['updated', 'DESC']],
+      where: { domain: normalizedHostname },
+      attributes: ['id'],
     });
 
     if (collection) {

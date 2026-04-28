@@ -22,6 +22,7 @@ const baseArgv: Partial<Argv> = {
 
 describe('Mailer', () => {
   beforeEach(() => {
+    vi.useRealTimers();
     setArgv(baseArgv);
     mailer = new Mailer(argv);
   });
