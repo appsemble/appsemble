@@ -3,6 +3,36 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { type HTTPMethods } from './http.js';
 import { type Remapper } from './remapper.js';
 
+const supportedResourceUniqueFieldTypes = new Set(['boolean', 'integer', 'number', 'string']);
+
+export function inferResourceUniqueFieldType(
+  propertySchema: OpenAPIV3.SchemaObject | undefined,
+): string {
+  if (propertySchema?.type && supportedResourceUniqueFieldTypes.has(propertySchema.type)) {
+    return propertySchema.type;
+  }
+
+  const enumValues = propertySchema?.enum;
+  if (!Array.isArray(enumValues) || !enumValues.length) {
+    return '';
+  }
+
+  const types = new Set(enumValues.map((value) => typeof value));
+  if (types.size !== 1) {
+    return '';
+  }
+
+  if (types.has('string') || types.has('boolean')) {
+    return typeof enumValues[0];
+  }
+
+  if (types.has('number')) {
+    return enumValues.every(Number.isInteger) ? 'integer' : 'number';
+  }
+
+  return '';
+}
+
 export type ResourceViewAction = 'get' | 'query';
 
 export type OwnResourceAction = ResourceViewAction | 'delete' | 'patch' | 'update';

@@ -27,7 +27,6 @@ import {
   getResourceUniqueConstraintViolationErrorForDefinition,
   isUniqueConstraintErrorLike,
   ResourceUniqueConstraintConflictError,
-  ResourceUniqueConstraintDefinitionError,
   ResourceUniqueConstraintValueError,
 } from './resourceUniqueIndexes.js';
 import { App, AppMessages, AppReadme, AppScreenshot } from '../models/index.js';
@@ -342,10 +341,6 @@ export async function createAppReadmes(
 }
 
 export function handleAppValidationError(ctx: Context, error: Error, app: Partial<App>): never {
-  if (error instanceof ResourceUniqueConstraintDefinitionError) {
-    throwKoaError(ctx, 400, error.message);
-  }
-
   if (error instanceof ResourceUniqueConstraintConflictError) {
     throwKoaError(ctx, 409, error.message, {
       code: 'RESOURCE_UNIQUE_CONSTRAINT_CONFLICT',

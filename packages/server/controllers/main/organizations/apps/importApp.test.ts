@@ -576,7 +576,7 @@ describe('importApp', () => {
     vi.useFakeTimers();
   });
 
-  it('should report invalid unique constraint definitions on app import', async () => {
+  it('should reject invalid unique field types on app import', async () => {
     const appDefinition = {
       name: 'Test App',
       defaultPage: 'Test Page',
@@ -621,8 +621,7 @@ describe('importApp', () => {
     expect(response).toMatchObject({
       status: 400,
       data: {
-        message:
-          'Resource “person” unique constraint field “tags” must have type string, integer, number, boolean, or enum.',
+        message: 'App validation failed',
         statusCode: 400,
       },
     });

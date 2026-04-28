@@ -1571,6 +1571,27 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should report unsupported unique field types on resources', async () => {
+    const app = createTestApp();
+    app.resources!.person.schema.properties = {
+      tags: { type: 'array', items: { type: 'string' } },
+      name: { type: 'string' },
+    };
+    app.resources!.person.unique = [['tags', 'name']];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'unique field must have type string, integer, number, boolean, or enum: tags',
+        'tags',
+        undefined,
+        ['resources', 'person', 'unique', 0, 0],
+      ),
+    ]);
+  });
+
   it('should report duplicate unique constraints after normalization', async () => {
     const app = createTestApp();
     app.resources!.person.schema.properties = {

@@ -1,6 +1,11 @@
 import { createHash } from 'node:crypto';
 
-import { normalize, type AppDefinition, type ResourceDefinition } from '@appsemble/lang-sdk';
+import {
+  inferResourceUniqueFieldType,
+  normalize,
+  type AppDefinition,
+  type ResourceDefinition,
+} from '@appsemble/lang-sdk';
 import { AppsembleError, throwKoaError } from '@appsemble/node-utils';
 import { type Schema, Validator } from 'jsonschema';
 import { type Context } from 'koa';
@@ -8,21 +13,11 @@ import { UniqueConstraintError, type Transaction } from 'sequelize';
 
 import { getAppDB } from '../models/index.js';
 
-const supportedUniqueFieldTypes = new Set(['boolean', 'integer', 'number', 'string']);
 const schemaValidator = new Validator();
 type SqlLiteralValue = boolean | Date | number | string;
 
 function formatFields(fields: string[]): string {
   return fields.map((field) => `“${field}”`).join(', ');
-}
-
-export class ResourceUniqueConstraintDefinitionError extends AppsembleError {
-  constructor(resourceType: string, field: string) {
-    super(
-      `Resource “${resourceType}” unique constraint field “${field}” must have type string, integer, number, boolean, or enum.`,
-    );
-    this.name = 'ResourceUniqueConstraintDefinitionError';
-  }
 }
 
 export class ResourceUniqueConstraintConflictError extends AppsembleError {
@@ -76,32 +71,6 @@ function getUniqueConstraints(resourceDefinition?: ResourceDefinition): string[]
   );
 }
 
-function inferUniqueFieldType(propertySchema: Record<string, any> | undefined): string {
-  if (propertySchema?.type && supportedUniqueFieldTypes.has(propertySchema.type)) {
-    return propertySchema.type;
-  }
-
-  const enumValues = propertySchema?.enum;
-  if (!Array.isArray(enumValues) || !enumValues.length) {
-    return '';
-  }
-
-  const types = new Set(enumValues.map((value) => typeof value));
-  if (types.size !== 1) {
-    return '';
-  }
-
-  if (types.has('string') || types.has('boolean')) {
-    return typeof enumValues[0];
-  }
-
-  if (types.has('number')) {
-    return enumValues.every(Number.isInteger) ? 'integer' : 'number';
-  }
-
-  return '';
-}
-
 function getUniqueFieldSchema(
   resourceDefinition: ResourceDefinition,
   field: string,
@@ -109,18 +78,22 @@ function getUniqueFieldSchema(
   return resourceDefinition.schema.properties?.[field] as Schema | undefined;
 }
 
-function assertUniqueConstraintFieldType(
+function getUniqueFieldType(
   resourceType: string,
   resourceDefinition: ResourceDefinition,
   field: string,
-): void {
-  if (
-    !inferUniqueFieldType(
-      getUniqueFieldSchema(resourceDefinition, field) as Record<string, any> | undefined,
-    )
-  ) {
-    throw new ResourceUniqueConstraintDefinitionError(resourceType, field);
+): string {
+  const type = inferResourceUniqueFieldType(
+    getUniqueFieldSchema(resourceDefinition, field) as Record<string, any> | undefined,
+  );
+
+  if (!type) {
+    throw new Error(
+      `Expected resource “${resourceType}” unique constraint field “${field}” to be validated by @appsemble/lang-sdk.`,
+    );
   }
+
+  return type;
 }
 
 /**
@@ -145,8 +118,6 @@ export function assertResourceUniqueConstraintSchemaValues(
   for (const fields of getUniqueConstraints(resourceDefinition)) {
     for (const field of fields) {
       const schema = getUniqueFieldSchema(resourceDefinition, field);
-
-      assertUniqueConstraintFieldType(resourceType, resourceDefinition, field);
 
       const isRequired = requiredFields.has(field);
       const validationSchema = schema
@@ -177,13 +148,7 @@ function getFieldExpression(
   resourceDefinition: ResourceDefinition,
   field: string,
 ): string {
-  const type = inferUniqueFieldType(
-    getUniqueFieldSchema(resourceDefinition, field) as Record<string, any> | undefined,
-  );
-
-  if (!type) {
-    throw new ResourceUniqueConstraintDefinitionError(resourceType, field);
-  }
+  const type = getUniqueFieldType(resourceType, resourceDefinition, field);
 
   const extracted = `(data->>${sequelizeEscape(field)})`;
 
@@ -197,7 +162,9 @@ function getFieldExpression(
     case 'string':
       return extracted;
     default:
-      throw new ResourceUniqueConstraintDefinitionError(resourceType, field);
+      throw new Error(
+        `Expected resource “${resourceType}” unique constraint field “${field}” to be validated by @appsemble/lang-sdk.`,
+      );
   }
 }
 
@@ -208,13 +175,7 @@ function getFieldValueLiteral(
   field: string,
   value: unknown,
 ): string {
-  const type = inferUniqueFieldType(
-    getUniqueFieldSchema(resourceDefinition, field) as Record<string, any> | undefined,
-  );
-
-  if (!type) {
-    throw new ResourceUniqueConstraintDefinitionError(resourceType, field);
-  }
+  const type = getUniqueFieldType(resourceType, resourceDefinition, field);
 
   switch (type) {
     case 'boolean':
@@ -226,7 +187,9 @@ function getFieldValueLiteral(
     case 'string':
       return sequelizeEscape(String(value));
     default:
-      throw new ResourceUniqueConstraintDefinitionError(resourceType, field);
+      throw new Error(
+        `Expected resource “${resourceType}” unique constraint field “${field}” to be validated by @appsemble/lang-sdk.`,
+      );
   }
 }
 
@@ -256,7 +219,7 @@ export function getResourceUniqueIndexName(
             | Record<string, any>
             | undefined;
 
-          return `${field}:${inferUniqueFieldType(propertySchema) || 'unknown'}`;
+          return `${field}:${inferResourceUniqueFieldType(propertySchema) || 'unknown'}`;
         })
         .join('\0')}`,
     )
@@ -374,7 +337,7 @@ function getResourceUniqueConstraintValueError(
   const field =
     fields.find(
       (candidateField) =>
-        inferUniqueFieldType(
+        inferResourceUniqueFieldType(
           getUniqueFieldSchema(resourceDefinition, candidateField) as
             | Record<string, any>
             | undefined,

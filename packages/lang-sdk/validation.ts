@@ -36,6 +36,7 @@ import {
   predefinedAppRolePermissions,
   type ProjectImplementations,
   type Remapper,
+  inferResourceUniqueFieldType,
   type ResourceGetActionDefinition,
   type WebhookActionDefinition,
   type RoleDefinition,
@@ -328,6 +329,18 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
 
           if (!propertyNames.has(field)) {
             report(field, `unique field must be defined in properties: ${field}`, path);
+          }
+
+          if (
+            propertyNames.has(field) &&
+            !uniqueReservedKeywords.has(field) &&
+            !inferResourceUniqueFieldType(schema.properties?.[field] as any)
+          ) {
+            report(
+              field,
+              `unique field must have type string, integer, number, boolean, or enum: ${field}`,
+              path,
+            );
           }
         }
       }

@@ -214,7 +214,7 @@ describe('createApp', () => {
     );
   });
 
-  it('should clean up the app if unique indexes cannot be created after app creation', async () => {
+  it('should reject invalid unique field types without creating an app', async () => {
     authorizeStudio();
     const response = await request.post<AppType>(
       '/api/apps',
@@ -247,8 +247,7 @@ describe('createApp', () => {
     expect(response).toMatchObject({
       status: 400,
       data: {
-        message:
-          'Resource “testResource” unique constraint field “tags” must have type string, integer, number, boolean, or enum.',
+        message: 'App validation failed',
         statusCode: 400,
       },
     });
