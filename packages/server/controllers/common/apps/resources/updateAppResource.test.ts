@@ -386,6 +386,13 @@ describe('updateAppResource', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "data": {
+          "code": "RESOURCE_UNIQUE_CONSTRAINT_VIOLATION",
+          "fields": [
+            "foo",
+          ],
+          "resourceType": "testResource",
+        },
         "error": "Conflict",
         "message": "A resource of type “testResource” with the same values for fields “foo” already exists.",
         "statusCode": 409,

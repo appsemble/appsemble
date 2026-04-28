@@ -172,19 +172,20 @@ export async function importApp(ctx: Context): Promise<void> {
             );
           }
 
-            if (resourcesFolder.length) {
-              Object.entries(record!.definition.resources ?? {}).map(
-                ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
-                  if (positioning && enforceOrderingGroupByFields) {
-                    createDynamicIndexes(
-                    enforceOrderingGroupByFields,
-                    record!.id,
-                    resourceType,
-                    appTransaction,
-                  );
-                }
-              },
-            );
+          if (resourcesFolder.length) {
+            for (const [
+              resourceType,
+              { enforceOrderingGroupByFields, positioning },
+            ] of Object.entries(record!.definition.resources ?? {})) {
+              if (positioning && enforceOrderingGroupByFields) {
+                await createDynamicIndexes(
+                  enforceOrderingGroupByFields,
+                  record!.id,
+                  resourceType,
+                  appTransaction,
+                );
+              }
+            }
           }
 
           for (const file of resourcesFolder) {
@@ -267,34 +268,12 @@ export async function importApp(ctx: Context): Promise<void> {
               assertKoaCondition(blockVersion != null, ctx, 404, 'Block not found');
               const style = validateStyle(await block.async('text'));
               await AppBlockStyle.create(
-                { style, block: `${orgName}/${blockName}` },
+                {
+                  style: replaceAssetFunctions(style, appId),
+                  block: `${orgName}/${blockName}`,
+                },
                 { transaction: appTransaction },
               );
-            }
-
-            const organizations = theme?.filter((filename) => filename.startsWith('@')) ?? [];
-            for (const organization of organizations) {
-              const organizationFolder = theme?.folder(organization.name);
-              const blocks =
-                organizationFolder?.filter(
-                  (filename) => !organizationFolder!.file(filename)!.dir,
-                ) ?? [];
-              for (const block of blocks) {
-                const [, blockName] = block.name.split('/');
-                const orgName = organizationFolder!.name.slice(1);
-                const blockVersion = await BlockVersion.findOne({
-                  where: { name: blockName, organizationId: orgName },
-                });
-                assertKoaCondition(blockVersion != null, ctx, 404, 'Block not found');
-                const style = validateStyle(await block.async('text'));
-                await AppBlockStyle.create(
-                  {
-                    style: replaceAssetFunctions(style, appId),
-                    block: `${orgName}/${blockName}`,
-                  },
-                  { transaction: appTransaction },
-                );
-              }
             }
           }
         });

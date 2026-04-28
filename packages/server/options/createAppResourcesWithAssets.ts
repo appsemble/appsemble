@@ -41,7 +41,6 @@ export async function createAppResourcesWithAssets({
   let createdResources: Resource[] = [];
   try {
     await sequelize.transaction(async (transaction) => {
-      const resourceDefinition = getResourceDefinition(app.definition, resourceType);
       const { enforceOrderingGroupByFields, positioning } = resourceDefinition;
       createdResources = await Resource.bulkCreate(
         await Promise.all(

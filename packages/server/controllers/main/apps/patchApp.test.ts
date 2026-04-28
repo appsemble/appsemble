@@ -742,6 +742,11 @@ describe('patchApp', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "data": {
+          "code": "RESOURCE_UNIQUE_CONSTRAINT_VALUE_ERROR",
+          "field": "foo",
+          "resourceType": "testResource",
+        },
         "error": "Bad Request",
         "message": "Can’t apply unique constraint to resource “testResource” for field “foo” because some values do not comply with the field schema.",
         "statusCode": 400,

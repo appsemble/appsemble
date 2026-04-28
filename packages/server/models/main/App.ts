@@ -9,8 +9,10 @@ import {
   type ProjectImplementations,
 } from '@appsemble/types';
 import { omit } from 'lodash-es';
+import { type DestroyOptions } from 'sequelize';
 import {
   AllowNull,
+  AfterDestroy,
   AutoIncrement,
   BeforeCreate,
   BelongsTo,
@@ -406,6 +408,8 @@ export class App extends Model {
       }
 
       try {
+        await closeAppDB(instance.id);
+
         await sequelize.query(
           `SELECT pg_terminate_backend(pid)
            FROM pg_stat_activity
@@ -430,6 +434,7 @@ export class App extends Model {
 
     await dropDatabase();
   }
+
   /**
    * Normalizes an app record for consistent return values.
    *

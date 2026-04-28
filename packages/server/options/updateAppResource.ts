@@ -113,19 +113,19 @@ export async function updateAppResource({
       return reloaded.toJSON({ exclude: app.template ? ['$seed'] : undefined });
     });
   } catch (error) {
+    if (preparedAssets.length) {
+      await deleteS3Files(
+        `app-${app.id}`,
+        preparedAssets.map((asset) => asset.id),
+      );
+    }
+
     if (isUniqueConstraintErrorLike(error)) {
       throwResourceUniqueConstraintKoaErrorForResource(
         context,
         type,
         resourceDefinition,
         error as UniqueConstraintError,
-      );
-    }
-
-    if (preparedAssets.length) {
-      await deleteS3Files(
-        `app-${app.id}`,
-        preparedAssets.map((asset) => asset.id),
       );
     }
 
