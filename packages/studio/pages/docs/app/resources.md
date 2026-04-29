@@ -105,23 +105,44 @@ Composite unique constraints are also supported:
 
 ```yaml copy validate resources-snippet
 resources:
-  contact:
+  reservation:
     schema:
       type: object
       additionalProperties: false
       required:
-        - countryCode
-        - phoneNumber
+        - roomId
+        - date
+        - startTime
       properties:
-        countryCode:
+        roomId:
           type: string
-        phoneNumber:
+        date:
           type: string
-        extension:
+          format: date
+        startTime:
           type: string
     unique:
-      - [countryCode, phoneNumber]
-      - [countryCode, phoneNumber, extension]
+      - [roomId, date, startTime]
+```
+
+A composite unique constraint is satisfied if the combination of values in the specified fields is
+unique, even if the individual values in those fields are not unique on their own. In the above
+example, many reservations can use the same room, date, or start time, but only one reservation can
+exist for the same room, date, and start time.
+
+Each entry in `unique` is enforced separately. If you define multiple unique constraints, every one
+of them must be satisfied.
+
+Be careful when using optional fields in unique constraints. If a field in a unique constraint is
+missing or `null`, that resource is not considered a duplicate for that constraint. If every value
+must participate in uniqueness checks, make those fields required in the resource schema.
+
+For example, if `roomId` is required but `startTime` is optional, the following two resources would
+not be considered duplicates for `[roomId, startTime]` because `startTime` is missing:
+
+```json
+{ "roomId": "room-a" }
+{ "roomId": "room-a" }
 ```
 
 Unique constraints can only be applied to fields whose schema type is:

@@ -200,7 +200,12 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       }
     }
 
-    if (record.definition.resources) {
+    if (
+      record.definition.resources &&
+      Object.entries(record.definition.resources).some(
+        ([, definition]) => (definition.unique ?? []).length !== 0,
+      )
+    ) {
       await syncResourceUniqueIndexes(record.id, undefined, record.definition.resources);
     }
 
