@@ -247,6 +247,13 @@ seed database:
         MINIO_ROOT_PASSWORD: password
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          until pg_isready -h database -p 5432 -U admin; do
+            sleep 1
+          done
+          exec appsemble-server start
       variables:
         SECRET: secret
         AES_SECRET: secret
@@ -568,6 +575,13 @@ validate snippets:
         MINIO_ROOT_PASSWORD: password
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          until pg_isready -h database -p 5432 -U admin; do
+            sleep 1
+          done
+          exec appsemble-server start
       variables:
         SECRET: secret
         AES_SECRET: secret
@@ -625,6 +639,13 @@ e2e node:
         MINIO_ROOT_PASSWORD: password
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          until pg_isready -h database -p 5432 -U admin; do
+            sleep 1
+          done
+          exec appsemble-server start
       variables:
         SECRET: secret
         AES_SECRET: secret
