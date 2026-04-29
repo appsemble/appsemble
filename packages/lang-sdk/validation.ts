@@ -305,7 +305,7 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
       const propertyNames = new Set(Object.keys(schema.properties ?? {}));
       const seenConstraints = new Set<string>();
 
-      for (const [constraintIdx, constraint] of resource.unique.entries()) {
+      for (const [constraintId, constraint] of resource.unique.entries()) {
         const fields = ([] as string[]).concat(constraint);
         const normalizedConstraint = fields.toSorted().join('\0');
 
@@ -313,15 +313,15 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
           report(constraint, 'duplicates another unique constraint', [
             ...resourcePrefix,
             'unique',
-            constraintIdx,
+            constraintId,
           ]);
         }
         seenConstraints.add(normalizedConstraint);
 
-        for (const [fieldIdx, field] of fields.entries()) {
+        for (const [fieldId, field] of fields.entries()) {
           const path = Array.isArray(constraint)
-            ? [...resourcePrefix, 'unique', constraintIdx, fieldIdx]
-            : [...resourcePrefix, 'unique', constraintIdx];
+            ? [...resourcePrefix, 'unique', constraintId, fieldId]
+            : [...resourcePrefix, 'unique', constraintId];
 
           if (uniqueReservedKeywords.has(field)) {
             report(field, `unique field cannot be a reserved keyword: ${field}`, path);
@@ -596,8 +596,8 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
       if (page.type === 'tabs') {
         const tabsPage = page as TabsPageDefinition;
         if (tabsPage.tabs) {
-          for (const [tabIdx, tab] of tabsPage.tabs.entries()) {
-            validateSubPageLayout(tab.layout, tab.blocks, report, [...path, 'tabs', tabIdx]);
+          for (const [tabId, tab] of tabsPage.tabs.entries()) {
+            validateSubPageLayout(tab.layout, tab.blocks, report, [...path, 'tabs', tabId]);
           }
         } else if (tabsPage.definition?.foreach) {
           validateSubPageLayout(
@@ -613,8 +613,8 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
       // Flow page
       if (page.type === 'flow') {
         const flowPage = page as FlowPageDefinition;
-        for (const [stepIdx, step] of flowPage.steps.entries()) {
-          validateSubPageLayout(step.layout, step.blocks, report, [...path, 'steps', stepIdx]);
+        for (const [stepId, step] of flowPage.steps.entries()) {
+          validateSubPageLayout(step.layout, step.blocks, report, [...path, 'steps', stepId]);
         }
         return;
       }
