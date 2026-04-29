@@ -1,4 +1,4 @@
-import { createUser } from '@appsemble/node-utils';
+import { createUser, deleteUser } from '@appsemble/node-utils';
 import { test as setup } from '@playwright/test';
 
 setup('create accounts for workers', async ({}, testInfo) => {
@@ -7,6 +7,7 @@ setup('create accounts for workers', async ({}, testInfo) => {
     const email = `${id}@appsemble.com`;
     const password = id;
 
+    await deleteUser(email);
     await createUser(id, email, password);
   }
 });
