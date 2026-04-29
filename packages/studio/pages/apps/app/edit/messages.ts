@@ -10,14 +10,13 @@ export const messages = defineMessages({
     defaultMessage: 'Something went wrong trying to update the app definition',
   },
   uniqueConstraintConflict: {
-    id: 'studio.vxmZ4L',
+    id: 'studio.AxezJm',
     defaultMessage:
-      'Can’t publish yet: existing {resourceType} resources contain duplicate values for {fields}. Update or delete the conflicting resources first.',
+      'Existing {resourceType} resources contain duplicate values for {fields}. Update or delete the conflicting resources first.',
   },
   uniqueConstraintInvalidValue: {
-    id: 'studio.lSOvWw',
-    defaultMessage:
-      'Can’t publish yet: some existing {resourceType} resources contain invalid values for {field}. Fix those resource values first.',
+    id: 'studio.9MjFEA',
+    defaultMessage: 'Existing {resourceType} resources contain invalid values for {field}.',
   },
   updateSuccess: {
     id: 'studio.HcRiD4',
