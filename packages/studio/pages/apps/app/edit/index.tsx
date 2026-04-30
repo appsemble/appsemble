@@ -19,7 +19,7 @@ import { type App } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import equal from 'fast-deep-equal';
-import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { editor, MarkerSeverity } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import {
   type ReactNode,
   type SyntheticEvent,
@@ -237,7 +237,10 @@ export default function EditPage(): ReactNode {
   useEffect(() => {
     const disposable = editor.onDidChangeMarkers((resources) => {
       for (const resource of resources) {
-        const { length } = editor.getModelMarkers({ resource });
+        const markers = editor
+          .getModelMarkers({ resource })
+          .filter((marker) => marker.severity !== MarkerSeverity.Hint);
+        const { length } = markers;
         switch (String(resource)) {
           case 'file:///app.yaml':
             setAppDefinitionErrorCount(length);
