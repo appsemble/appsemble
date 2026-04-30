@@ -264,7 +264,7 @@ test.describe('App Keycloak SAML login', () => {
     app = await createApp(
       organizationId,
       `
-        name: Keycloak SAML Role Mapping App
+        name: Keycloak SAML Roles App
         defaultPage: Manager Page
         security:
           default:
