@@ -10,7 +10,9 @@ const {
 } = process.env;
 
 const appsembleBaseUrl = 'http://appsemble:9999';
+const samlAttributeNameFormat = 'attribute.nameformat';
 const samlAssertionConsumerUrlPostAttribute = 'saml_assertion_consumer_url_post';
+const samlAuthnStatementAttribute = 'saml.authnstatement';
 const samlNameIdFormatAttribute = 'saml_name_id_format';
 const userEmail = 'keycloak-saml-user@appsemble.com';
 const userPassword = 'password';
@@ -188,7 +190,7 @@ async function createSamlClient(token: string, appId: number, secretId: number):
     body: JSON.stringify({
       attributes: {
         'saml.assertion.signature': 'true',
-        'saml.authnstatement': 'true',
+        [samlAuthnStatementAttribute]: 'true',
         'saml.client.signature': 'false',
         'saml.encrypt': 'false',
         'saml.force.post.binding': 'true',
@@ -205,7 +207,7 @@ async function createSamlClient(token: string, appId: number, secretId: number):
         {
           config: {
             'attribute.name': 'email',
-            'attribute.nameformat': 'Basic',
+            [samlAttributeNameFormat]: 'Basic',
             'user.attribute': 'email',
           },
           name: 'email',
@@ -215,7 +217,7 @@ async function createSamlClient(token: string, appId: number, secretId: number):
         {
           config: {
             'attribute.name': 'emailVerified',
-            'attribute.nameformat': 'Basic',
+            [samlAttributeNameFormat]: 'Basic',
             'attribute.value': 'true',
           },
           name: 'email verified',
@@ -225,7 +227,7 @@ async function createSamlClient(token: string, appId: number, secretId: number):
         {
           config: {
             'attribute.name': 'name',
-            'attribute.nameformat': 'Basic',
+            [samlAttributeNameFormat]: 'Basic',
             'user.attribute': 'firstName',
           },
           name: 'name',
@@ -235,7 +237,7 @@ async function createSamlClient(token: string, appId: number, secretId: number):
         {
           config: {
             'attribute.name': 'memberOf',
-            'attribute.nameformat': 'Basic',
+            [samlAttributeNameFormat]: 'Basic',
             'full.path': 'true',
             single: 'true',
           },
