@@ -70,8 +70,9 @@ export const authenticatedTest = baseTest.extend<object, { workerStorageState: s
   ],
 
   async request({ baseURL, storageState }, use) {
-    const accessToken = JSON.parse(await readFile(String(storageState), 'utf8')).origins[0]
-      .localStorage[1].value;
+    const accessToken = JSON.parse(
+      await readFile(String(storageState), 'utf8'),
+    ).origins[0].localStorage.find(({ name }: { name: string }) => name === 'access_token')!.value;
     const newRequest = await request.newContext({
       baseURL,
       extraHTTPHeaders: {
