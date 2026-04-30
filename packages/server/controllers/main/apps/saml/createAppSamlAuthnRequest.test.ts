@@ -127,6 +127,33 @@ describe('createAuthnRequest', () => {
     );
   });
 
+  it('should generate SAML parameters for an anonymous app login', async () => {
+    const response = await request.post<SAMLRedirectResponse>(
+      `/api/apps/${app.id}/saml/${secret.id}/authn`,
+      {
+        redirectUri: 'https://app.example',
+        scope: 'email openid profile',
+        state: 'secret state',
+        timezone: 'Europe/Amsterdam',
+      },
+    );
+    expect(response).toMatchObject({
+      status: 201,
+    });
+
+    const { SamlLoginRequest } = await getAppDB(app.id);
+    const loginRequest = (await SamlLoginRequest.findOne())!;
+
+    expect(loginRequest).toMatchObject({
+      id: expect.any(String),
+      AppSamlSecretId: secret.id,
+      redirectUri: 'https://app.example',
+      scope: 'email openid profile',
+      state: 'secret state',
+    });
+    expect(loginRequest.AppMemberId).toBeNull();
+  });
+
   it('should throw if the app ID is invalid', async () => {
     authorizeStudio();
     const response = await request.post('/api/apps/64/saml/26/authn', {
