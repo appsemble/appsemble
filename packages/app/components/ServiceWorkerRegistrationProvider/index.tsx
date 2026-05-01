@@ -305,8 +305,8 @@ export function ServiceWorkerRegistrationProvider({
       let sub = await registration.pushManager.getSubscription();
 
       if (!sub) {
-        const options = {
-          applicationServerKey: urlB64ToUint8Array(vapidPublicKey),
+        const options: PushSubscriptionOptionsInit = {
+          applicationServerKey: urlB64ToUint8Array(vapidPublicKey) as BufferSource,
           userVisibleOnly: true,
         };
 
