@@ -22,6 +22,8 @@ let idpCertificate: string;
 let organizationId: string;
 let secret: AppSamlSecret;
 
+test.use({ timezoneId: 'Europe/Amsterdam' });
+
 async function requestKc(
   path: string,
   {
