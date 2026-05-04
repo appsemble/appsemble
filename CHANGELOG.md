@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.36.8](https://gitlab.com/appsemble/appsemble/-/releases/0.36.8)] - 2026-05-04
+
+### Fixed
+
+- Block(`form`): Fixed a bug where `EnumInput` fields received from the `fields` event listener
+  would only be applied once.
+
 ## \[[0.36.7](https://gitlab.com/appsemble/appsemble/-/releases/0.36.7)] - 2026-04-17
 
 ## \[[0.36.7-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.36.7-test.0)] - 2026-04-15

@@ -14,7 +14,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  window.location = originalLocation;
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    value: originalLocation,
+    writable: true,
+  });
 });
 
 describe('oauth2Redirect', () => {

@@ -13,7 +13,10 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  window.location = originalLocation;
+  Object.defineProperty(window, 'location', {
+    value: originalLocation,
+    writable: true,
+  });
 });
 
 it('test string with all allowed characters', () => {
