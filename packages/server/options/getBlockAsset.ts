@@ -11,16 +11,18 @@ export function getBlockAsset({
   version,
 }: GetBlockAssetParams): Promise<BlockAssetInterface> {
   const [org, blockId] = name.split('/');
+  const organizationId = org.slice(1);
 
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-  return BlockAsset.findOne({
-    attributes: ['mime', 'content'],
-    where: { filename },
-    include: [
-      {
-        model: BlockVersion,
-        where: { name: blockId, version, OrganizationId: org.slice(1) },
-      },
-    ],
-  });
+  return BlockVersion.findOne({
+    attributes: ['id'],
+    where: { name: blockId, version, OrganizationId: organizationId },
+  }).then((blockVersion) =>
+    blockVersion
+      ? BlockAsset.findOne({
+          attributes: ['mime', 'content'],
+          where: { filename, BlockVersionId: blockVersion.id },
+        })
+      : null,
+  );
 }
