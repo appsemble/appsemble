@@ -65,6 +65,6 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
     .sort(compareAppMembersByRoles)
     .map((appMember) => ({
       ...getAppMemberInfo(appId, appMember),
-      role: appMember.role ?? undefined,
+      role: appMember.roles[0],
     }));
 }
