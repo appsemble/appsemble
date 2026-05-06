@@ -1,8 +1,14 @@
 import { ActionError, remap } from '@appsemble/lang-sdk';
 import { identity } from '@appsemble/utils';
+import { addBreadcrumb, captureException } from '@sentry/browser';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { makeActions, type MakeActionsParams } from './makeActions.js';
+
+vi.mock('@sentry/browser', () => ({
+  addBreadcrumb: vi.fn(),
+  captureException: vi.fn(),
+}));
 
 describe('makeActions', () => {
   let testDefaults: Omit<MakeActionsParams, 'actions'>;
@@ -64,6 +70,7 @@ describe('makeActions', () => {
   afterEach(() => {
     // Prevent vitest from detecting pending promises.
     pageReady();
+    vi.clearAllMocks();
   });
 
   it('should create a mapping of actions', () => {
@@ -199,6 +206,97 @@ describe('makeActions', () => {
       history: ['input', 'dialog.ok rejected value'],
     });
     expect(result).toBe('dialog.error return value');
+    expect(captureException).not.toHaveBeenCalled();
+  });
+
+  it('should add contextual sentry data for unhandled action failures', async () => {
+    pageReady();
+    const error = Object.assign(new Error('Request failed'), {
+      config: { method: 'patch', url: 'https://example.com/api/apps/42/members/current' },
+      response: {
+        data: { error: 'Invalid input', password: 'secret value' },
+        status: 400,
+      },
+    });
+    const dialogOk = vi.fn().mockRejectedValue(error);
+    const actions = makeActions({
+      ...testDefaults,
+      actions: { onClick: {} },
+      context: {
+        actions: {
+          onClick: {
+            type: 'dialog.ok',
+            remapBefore: {
+              'object.from': {
+                password: { prop: 'password' },
+                value: { prop: 'value' },
+              },
+            },
+          },
+        },
+      },
+      extraCreators: { 'dialog.ok': () => [dialogOk] },
+      getAppMemberInfo: () =>
+        ({
+          role: 'Staff',
+          sub: 'member-sub',
+        }) as any,
+      getAppMemberSelectedGroup: () =>
+        ({
+          id: 123,
+          role: 'Manager',
+        }) as any,
+    });
+
+    await expect(
+      actions.onClick({ password: 'secret value', value: 'safe value' }, { history: ['before'] }),
+    ).rejects.toThrow(ActionError);
+
+    expect(captureException).toHaveBeenCalledWith(
+      error,
+      expect.objectContaining({
+        contexts: {
+          appsembleAction: expect.objectContaining({
+            contextHistoryLength: 2,
+            error: {
+              method: 'patch',
+              responseBody: { error: 'Invalid input', password: '[Filtered]' },
+              responseStatus: 400,
+              url: 'https://example.com/api/apps/42/members/current',
+            },
+            hasOnError: false,
+            hasOnSuccess: false,
+            input: { password: '[Filtered]', value: 'safe value' },
+            path: 'pages.test-page.blocks.0.actions.onClick',
+            pathIndex: 'pages.0.blocks.0.actions.onClick',
+            remappedInput: { password: '[Filtered]', value: 'safe value' },
+            type: 'dialog.ok',
+          }),
+          appsembleAppMember: {
+            id: 'member-sub',
+            role: 'Staff',
+            selectedGroupId: 123,
+            selectedGroupRole: 'Manager',
+          },
+        },
+        tags: {
+          actionPath: 'pages.test-page.blocks.0.actions.onClick',
+          actionType: 'dialog.ok',
+          appId: '42',
+        },
+      }),
+    );
+    expect(addBreadcrumb).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: 'appsemble.action',
+        data: expect.objectContaining({
+          failed: 'dialog.ok',
+          path: 'pages.test-page.blocks.0.actions.onClick',
+          pathIndex: 'pages.0.blocks.0.actions.onClick',
+        }),
+        level: 'warning',
+      }),
+    );
   });
 
   it('should remap input values', async () => {
