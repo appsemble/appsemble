@@ -14,11 +14,6 @@ import { actionCreators } from './actions/index.js';
 import { appId } from './settings.js';
 import { type MakeActionParameters } from '../types.js';
 
-const sensitivePropertyPattern = /authorization|cookie|credential|password|secret|session|token/i;
-const maxContextDepth = 4;
-const maxContextProperties = 25;
-const maxContextStringLength = 500;
-
 /**
  * Parameters to pass to `makeActions`.
  *
@@ -32,37 +27,6 @@ export type MakeActionsParams = Omit<MakeActionParameters<ActionDefinition>, 'de
 type CreateActionParams<T extends ActionDefinition['type']> = MakeActionParameters<
   Extract<ActionDefinition, { type: T }>
 >;
-
-function scrubValue(value: unknown, depth = 0): unknown {
-  if (value == null || typeof value === 'boolean' || typeof value === 'number') {
-    return value;
-  }
-  if (typeof value === 'string') {
-    return value.length > maxContextStringLength
-      ? `${value.slice(0, maxContextStringLength)}...`
-      : value;
-  }
-  if (typeof Blob !== 'undefined' && value instanceof Blob) {
-    return `[${value.constructor.name}]`;
-  }
-  if (depth >= maxContextDepth) {
-    return '[MaxDepth]';
-  }
-  if (Array.isArray(value)) {
-    return value.slice(0, maxContextProperties).map((entry) => scrubValue(entry, depth + 1));
-  }
-  if (typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>)
-        .slice(0, maxContextProperties)
-        .map(([key, entry]) => [
-          key,
-          sensitivePropertyPattern.test(key) ? '[Filtered]' : scrubValue(entry, depth + 1),
-        ]),
-    );
-  }
-  return `[${typeof value}]`;
-}
 
 function getActionSummary(
   definition: ActionDefinition | null | undefined,
@@ -93,7 +57,7 @@ function getErrorContext(error: unknown): Record<string, unknown> | undefined {
     method: axiosError.config?.method,
     url: axiosError.config?.url,
     responseStatus: axiosError.response?.status,
-    responseBody: scrubValue(axiosError.response?.data),
+    responseBody: axiosError.response?.data,
   };
 }
 
@@ -223,8 +187,8 @@ export function createAction<T extends ActionDefinition['type']>({
               ...getActionSummary(definition, type),
               path: prefix,
               pathIndex: prefixIndex,
-              input: scrubValue(args),
-              remappedInput: scrubValue(data),
+              input: args,
+              remappedInput: data,
               contextHistoryLength: updatedContext?.history?.length,
               error: getErrorContext(error),
             },
