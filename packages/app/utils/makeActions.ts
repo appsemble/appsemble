@@ -14,6 +14,8 @@ import { actionCreators } from './actions/index.js';
 import { appId } from './settings.js';
 import { type MakeActionParameters } from '../types.js';
 
+const maxContextProperties = 25;
+
 /**
  * Parameters to pass to `makeActions`.
  *
@@ -57,8 +59,25 @@ function getErrorContext(error: unknown): Record<string, unknown> | undefined {
     method: axiosError.config?.method,
     url: axiosError.config?.url,
     responseStatus: axiosError.response?.status,
-    responseBody: axiosError.response?.data,
+    hasResponseBody: axiosError.response?.data != null,
   };
+}
+
+function getValueSummary(value: unknown): Record<string, unknown> {
+  if (value == null) {
+    return { type: String(value) };
+  }
+  if (Array.isArray(value)) {
+    return { length: value.length, type: 'array' };
+  }
+  if (typeof value === 'object') {
+    return {
+      keys: Object.keys(value).slice(0, maxContextProperties),
+      type:
+        typeof Blob !== 'undefined' && value instanceof Blob ? value.constructor.name : 'object',
+    };
+  }
+  return { type: typeof value };
 }
 
 function getActionBreadcrumbData(
@@ -187,8 +206,8 @@ export function createAction<T extends ActionDefinition['type']>({
               ...getActionSummary(definition, type),
               path: prefix,
               pathIndex: prefixIndex,
-              input: args,
-              remappedInput: data,
+              input: getValueSummary(args),
+              remappedInput: getValueSummary(data),
               contextHistoryLength: updatedContext?.history?.length,
               error: getErrorContext(error),
             },

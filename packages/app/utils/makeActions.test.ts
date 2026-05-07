@@ -259,17 +259,17 @@ describe('makeActions', () => {
           appsembleAction: expect.objectContaining({
             contextHistoryLength: 2,
             error: {
+              hasResponseBody: true,
               method: 'patch',
-              responseBody: { error: 'Invalid input', password: 'secret value' },
               responseStatus: 400,
               url: 'https://example.com/api/apps/42/members/current',
             },
             hasOnError: false,
             hasOnSuccess: false,
-            input: { password: 'secret value', value: 'safe value' },
+            input: { keys: ['password', 'value'], type: 'object' },
             path: 'pages.test-page.blocks.0.actions.onClick',
             pathIndex: 'pages.0.blocks.0.actions.onClick',
-            remappedInput: { password: 'secret value', value: 'safe value' },
+            remappedInput: { keys: ['password', 'value'], type: 'object' },
             type: 'dialog.ok',
           }),
           appsembleAppMember: {
