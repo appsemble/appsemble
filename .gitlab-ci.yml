@@ -623,7 +623,9 @@ e2e node:
     DATABASE_NAME: appsemble
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
-    E2E_HOST: 'http://appsemble:9999'
+    E2E_HOST: 'https://appsemble:9999'
+    APPSEMBLE_SSL_KEY_E2E_SERVICE: $APPSEMBLE_SSL_KEY_E2E
+    APPSEMBLE_SSL_CRT_E2E_SERVICE: $APPSEMBLE_SSL_CRT_E2E
   services:
     - name: '$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG'
       alias: database
@@ -642,14 +644,21 @@ e2e node:
       entrypoint: ['sh', '-c']
       command:
         - |
+          set -eu
           until pg_isready -h database -p 5432 -U admin; do
             sleep 1
           done
-          exec appsemble-server start
+          : "${APPSEMBLE_SSL_KEY_E2E_SERVICE:?Missing APPSEMBLE_SSL_KEY_E2E}"
+          : "${APPSEMBLE_SSL_CRT_E2E_SERVICE:?Missing APPSEMBLE_SSL_CRT_E2E}"
+          printf '%s' "$APPSEMBLE_SSL_KEY_E2E_SERVICE" | base64 -d > /tmp/appsemble.key
+          printf '%s' "$APPSEMBLE_SSL_CRT_E2E_SERVICE" | base64 -d > /tmp/appsemble.crt
+          grep -q 'BEGIN .*PRIVATE KEY' /tmp/appsemble.key
+          grep -q 'BEGIN CERTIFICATE' /tmp/appsemble.crt
+          exec appsemble-server start --ssl --ssl-key /tmp/appsemble.key --ssl-cert /tmp/appsemble.crt
       variables:
         SECRET: secret
         AES_SECRET: secret
-        HOST: 'http://appsemble:9999'
+        HOST: 'https://appsemble:9999'
         REMOTE: 'https://appsemble.app'
         DATABASE_HOST: database
         DATABASE_PORT: 5432
@@ -663,8 +672,10 @@ e2e node:
         migrateTo: next
         E2E: true
   script:
+    - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d > /tmp/appsemble.crt
+    - export NODE_EXTRA_CA_CERTS=/tmp/appsemble.crt
     - npm run appsemble -- config set context e2e
-    - npm run appsemble -- config set remote 'http://appsemble:9999'
+    - npm run appsemble -- config set remote 'https://appsemble:9999'
     - npm --workspace @appsemble/types run prepack
     - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/utils run prepack
@@ -692,6 +703,8 @@ e2e SLA apps:
     variables: false
   variables:
     APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+    APPSEMBLE_SSL_KEY_E2E: '$APPSEMBLE_SSL_KEY_E2E'
+    APPSEMBLE_SSL_CRT_E2E: '$APPSEMBLE_SSL_CRT_E2E'
   parallel:
     matrix:
       - PROJECT:
@@ -731,6 +744,8 @@ e2e SLA apps(private):
         --form "token=$TRIGGER_TOKEN" \
         --form "ref=main" \
         --form "variables[APPSEMBLE_IMAGE]=$APPSEMBLE_IMAGE" \
+        --form "variables[APPSEMBLE_SSL_KEY_E2E]=$APPSEMBLE_SSL_KEY_E2E" \
+        --form "variables[APPSEMBLE_SSL_CRT_E2E]=$APPSEMBLE_SSL_CRT_E2E" \
         "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/trigger/pipeline")
       echo "Trigger response: $(echo "$RESPONSE" | jq '{id, status, web_url, message}')"
       PIPELINE_ID=$(echo "$RESPONSE" | jq -r '.id')
