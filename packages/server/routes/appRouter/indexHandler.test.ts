@@ -965,6 +965,11 @@ describe('indexHandler', () => {
   });
 
   it('should render a stricter published app CSP when contentSecurityPolicy is configured', async () => {
+    setArgv({
+      blockAssetsPublicUrl: 'https://static.appsemble.example/minio',
+      host: 'http://host.example',
+      secret: 'test',
+    });
     await App.create({
       OrganizationId: 'test',
       definition: {
@@ -1000,15 +1005,38 @@ describe('indexHandler', () => {
     );
     expect(csp['connect-src']).not.toContain('*');
     expect(csp['font-src']).toStrictEqual(
-      expect.arrayContaining(["'self'", 'data:', 'https://fonts.gstatic.com']),
+      expect.arrayContaining([
+        "'self'",
+        'data:',
+        'https://fonts.gstatic.com',
+        'https://static.appsemble.example',
+      ]),
     );
     expect(csp['font-src']).not.toContain('*');
     expect(csp['img-src']).toStrictEqual(
-      expect.arrayContaining(["'self'", 'blob:', 'data:', 'http://host.example']),
+      expect.arrayContaining([
+        "'self'",
+        'blob:',
+        'data:',
+        'http://host.example',
+        'https://static.appsemble.example',
+      ]),
     );
     expect(csp['img-src']).not.toContain('*');
+    expect(csp['script-src']).toStrictEqual(
+      expect.arrayContaining(['https://static.appsemble.example']),
+    );
+    expect(csp['style-src']).toStrictEqual(
+      expect.arrayContaining(['https://static.appsemble.example']),
+    );
     expect(csp['media-src']).toStrictEqual(
-      expect.arrayContaining(["'self'", 'blob:', 'data:', 'http://host.example']),
+      expect.arrayContaining([
+        "'self'",
+        'blob:',
+        'data:',
+        'http://host.example',
+        'https://static.appsemble.example',
+      ]),
     );
     expect(csp['media-src']).not.toContain('*');
     expect(csp['object-src']).toStrictEqual(["'none'"]);

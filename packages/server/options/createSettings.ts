@@ -14,6 +14,7 @@ import {
   pruneAppBuildSnapshots,
   resolveBlockManifests,
 } from '../utils/appBuildManifest.js';
+import { getSettingsBlockFileUrls } from '../utils/blockAssets.js';
 import { createGtagCode, createMetaPixelCode, createMSClarityCode } from '../utils/render.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
@@ -193,6 +194,8 @@ export async function createSettings({
     blockManifests = await resolveBlockManifests({ identifiableBlocks });
   }
 
+  const blockFileUrls = await getSettingsBlockFileUrls(blockManifests ?? []);
+
   const appOAuth2Secrets = await AppOAuth2Secret.findAll({ attributes: ['icon', 'id', 'name'] });
   const appSamlSecrets = await AppSamlSecret.findAll({ attributes: ['icon', 'id', 'name'] });
 
@@ -207,7 +210,10 @@ export async function createSettings({
       apiUrl: host,
       appControllerCode: persistedApp.controllerCode,
       appControllerImplementations: persistedApp.controllerImplementations,
-      blockManifests,
+      blockManifests: (blockManifests ?? []).map((blockManifest) => {
+        const fileUrls = blockFileUrls[`${blockManifest.name}@${blockManifest.version}`];
+        return fileUrls ? { ...blockManifest, fileUrls } : blockManifest;
+      }),
       id: persistedApp.id,
       languages,
       logins: [

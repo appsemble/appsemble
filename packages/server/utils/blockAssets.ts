@@ -1,12 +1,18 @@
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 
-import { deleteS3Files } from '@appsemble/node-utils';
+import { deleteS3Files, setS3BucketPolicy } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 
+import { argv } from './argv.js';
 import { BlockAsset } from '../models/index.js';
 
 const blockAssetsBucketName = 'appsemble-static-public';
+
+interface BlockAssetReference {
+  filename: string;
+  storageKey?: string | null;
+}
 
 interface BlockAssetLocation {
   blockName: string;
@@ -28,6 +34,60 @@ export function getBlockAssetStorageKey({
   version,
 }: BlockAssetLocation): string {
   return ['blocks', organizationId, blockName, version, contentHash, filename].join('/');
+}
+
+export function getBlockAssetPublicUrl(storageKey?: string | null): string | undefined {
+  if (!storageKey || !argv.blockAssetsPublicUrl) {
+    return;
+  }
+
+  const publicBase = `${argv.blockAssetsPublicUrl.replace(/\/+$/, '')}/`;
+  const encodedPath = [getBlockAssetsBucketName(), ...storageKey.split('/')]
+    .map(encodeURIComponent)
+    .join('/');
+
+  return String(new URL(encodedPath, publicBase));
+}
+
+export function getBlockAssetFileUrls(
+  blockAssets: BlockAssetReference[] | undefined,
+): Record<string, string> {
+  return Object.fromEntries(
+    (blockAssets ?? []).flatMap(({ filename, storageKey }) => {
+      const publicUrl = getBlockAssetPublicUrl(storageKey);
+
+      return publicUrl ? [[filename, publicUrl]] : [];
+    }),
+  );
+}
+
+export function getBlockAssetPublicOrigin(): string | undefined {
+  if (!argv.blockAssetsPublicUrl) {
+    return;
+  }
+
+  return new URL(argv.blockAssetsPublicUrl).origin;
+}
+
+export async function ensureBlockAssetsBucketPublicRead(): Promise<void> {
+  if (!argv.blockAssetsPublicUrl) {
+    return;
+  }
+
+  await setS3BucketPolicy(
+    getBlockAssetsBucketName(),
+    JSON.stringify({
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: '*',
+          Action: ['s3:GetObject'],
+          Resource: [`arn:aws:s3:::${getBlockAssetsBucketName()}/*`],
+        },
+      ],
+    }),
+  );
 }
 
 export function getBlockAssetContentHash(content: Buffer): string {

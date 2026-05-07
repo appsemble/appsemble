@@ -99,6 +99,33 @@ describe('createBlock', () => {
     );
   });
 
+  it('should include public S3 file URLs when configured', async () => {
+    setArgv({
+      blockAssetsPublicUrl: 'https://static.appsemble.example',
+      host: 'http://localhost',
+      secret: 'test',
+    });
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filename: encodeURIComponent('build/standing.png'),
+    });
+
+    await authorizeClientCredentials('blocks:write');
+    const { data } = await request.post('/api/blocks', formData);
+
+    const content = await readFixture('standing.png');
+    const contentHash = getBlockAssetContentHash(content);
+
+    expect(data).toMatchObject({
+      files: ['build/standing.png'],
+      fileUrls: {
+        'build/standing.png': `https://static.appsemble.example/appsemble-static-public/blocks/xkcd/standing/1.32.9/${contentHash}/build/standing.png`,
+      },
+    });
+  });
+
   it('should accept and return repositoryUrl when publishing blocks', async () => {
     const formData = new FormData();
     formData.append('name', '@xkcd/standing');

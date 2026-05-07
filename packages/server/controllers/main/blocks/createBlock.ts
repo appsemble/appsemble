@@ -31,6 +31,7 @@ import { type PublishBlockBody } from '../../../types/index.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import {
   deleteUnreferencedBlockAssetObjects,
+  ensureBlockAssetsBucketPublicRead,
   getBlockAssetFileHash,
   getBlockAssetsBucketName,
   getBlockAssetStorageKey,
@@ -138,6 +139,8 @@ export async function createBlock(ctx: Context): Promise<void> {
         );
       }
 
+      await ensureBlockAssetsBucketPublicRead();
+
       createdBlock.BlockAssets = await BlockAsset.bulkCreate(
         await Promise.all(
           files.map(async (file) => {
@@ -157,6 +160,10 @@ export async function createBlock(ctx: Context): Promise<void> {
               storageKey,
               createReadStream(file.path),
               size,
+              {
+                'Cache-Control': 'public,max-age=31536000,immutable',
+                'Content-Type': file.mime ?? 'application/octet-stream',
+              },
             );
             uploadedKeys.push(storageKey);
 
@@ -190,10 +197,10 @@ export async function createBlock(ctx: Context): Promise<void> {
         });
       }
 
-      const manifestJson = blockVersionToJson(createdBlock);
+      const manifestJson = blockVersionToJson(createdBlock, { includeFileUrls: false });
       await createdBlock.update({ manifestJson }, { transaction });
 
-      ctx.body = manifestJson;
+      ctx.body = blockVersionToJson(createdBlock);
     });
   } catch (err: unknown) {
     if (uploadedKeys.length) {

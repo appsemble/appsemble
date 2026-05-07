@@ -4,6 +4,7 @@ import { literal } from 'sequelize';
 
 import { BlockAsset, BlockMessages, BlockVersion, Organization } from '../../../../models/index.js';
 import { blockVersionToJson } from '../../../../utils/block.js';
+import { getBlockAssetFileUrls } from '../../../../utils/blockAssets.js';
 
 export async function getBlockVersion(ctx: Context): Promise<void> {
   const {
@@ -18,7 +19,15 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
   assertKoaCondition(version != null, ctx, 404, 'Block version not found');
 
   if (version.manifestJson) {
-    ctx.body = version.manifestJson;
+    const blockAssets = await BlockAsset.findAll({
+      attributes: ['filename', 'storageKey'],
+      where: { BlockVersionId: version.id },
+    });
+    const fileUrls = getBlockAssetFileUrls(blockAssets);
+
+    ctx.body = Object.keys(fileUrls).length
+      ? { ...version.manifestJson, fileUrls }
+      : version.manifestJson;
     ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
     return;
   }
@@ -39,7 +48,7 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
       [literal('"BlockVersion".icon IS NOT NULL'), 'hasIcon'],
     ],
     include: [
-      { model: BlockAsset, attributes: ['filename'] },
+      { model: BlockAsset, attributes: ['filename', 'storageKey'] },
       {
         model: Organization,
         attributes: ['id', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
@@ -54,7 +63,7 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
 
   assertKoaCondition(blockVersionRecord != null, ctx, 404, 'Block version not found');
 
-  const manifestJson = blockVersionToJson(blockVersionRecord);
+  const manifestJson = blockVersionToJson(blockVersionRecord, { includeFileUrls: false });
   await BlockVersion.update(
     { manifestJson },
     {
@@ -65,6 +74,6 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
     },
   );
 
-  ctx.body = manifestJson;
+  ctx.body = blockVersionToJson(blockVersionRecord);
   ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
 }

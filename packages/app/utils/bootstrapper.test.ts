@@ -54,6 +54,32 @@ describe('callBootstrap', () => {
     expect(bootstrapFn).toHaveBeenCalledTimes(1);
   });
 
+  it('should load the block entry file from a manifest file URL when present', async () => {
+    const bootstrapFn = vi.fn();
+    const appendSpy = registerBootstrapOnAppend(bootstrapFn);
+
+    const manifest = {
+      name: '@appsemble/list',
+      version: '0.36.4',
+      files: ['list.css', 'list.js'],
+      fileUrls: {
+        'list.js':
+          'https://static.appsemble.example/appsemble-static-public/blocks/appsemble/list/0.36.4/hash/list.js',
+      },
+    } as unknown as BlockManifest;
+
+    await callBootstrap(manifest, {
+      shadowRoot: document.createElement('div').attachShadow({ mode: 'open' }),
+    } as any);
+
+    expect(appendSpy).toHaveBeenCalledTimes(1);
+    const script = appendSpy.mock.calls[0][0] as HTMLScriptElement;
+    expect(script.src).toBe(
+      'https://static.appsemble.example/appsemble-static-public/blocks/appsemble/list/0.36.4/hash/list.js',
+    );
+    expect(bootstrapFn).toHaveBeenCalledTimes(1);
+  });
+
   it('should fall back to first JavaScript file when normalized entry is missing', async () => {
     const bootstrapFn = vi.fn();
     const appendSpy = registerBootstrapOnAppend(bootstrapFn);

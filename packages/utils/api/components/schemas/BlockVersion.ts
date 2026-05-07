@@ -157,6 +157,14 @@ English (\`en\`) messages are required.
         format: 'binary',
       },
     },
+    fileUrls: {
+      type: 'object',
+      description: 'Public URLs for file assets, keyed by filename.',
+      additionalProperties: {
+        type: 'string',
+        format: 'uri',
+      },
+    },
     examples: {
       type: 'array',
       description: 'A list of exmples how the block can be used within an app definition.',

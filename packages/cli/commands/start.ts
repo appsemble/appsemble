@@ -145,6 +145,9 @@ export function builder(yargs: Argv): Argv<any> {
     .option('s3-secret-key', {
       desc: 'The secret key of the Amazon S3 compatible object storage server',
     })
+    .option('block-assets-public-url', {
+      desc: 'The public base URL for block assets stored in S3 compatible object storage',
+    })
     .option('valkey-host', {
       desc: 'The host of the Valkey server to connect to.',
     })

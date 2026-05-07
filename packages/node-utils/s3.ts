@@ -69,15 +69,16 @@ export async function uploadS3File(
   key: string,
   content: Buffer | Readable | string,
   size?: number,
+  metadata?: Record<string, string>,
 ): Promise<void> {
   try {
     await ensureBucket(bucket);
-    await s3Client.putObject(bucket, key, content, size);
+    await s3Client.putObject(bucket, key, content, size, metadata);
   } catch (error) {
     if (isS3ErrorCode(error, 'NoSuchBucket')) {
       logger.warn(error);
       await ensureBucket(bucket);
-      await s3Client.putObject(bucket, key, content, size);
+      await s3Client.putObject(bucket, key, content, size, metadata);
       return;
     }
 
@@ -138,6 +139,16 @@ export async function getS3FileStats(bucket: string, key: string): Promise<Bucke
   }
 }
 
+export async function setS3BucketPolicy(bucket: string, policy: string): Promise<void> {
+  try {
+    await ensureBucket(bucket);
+    await s3Client.setBucketPolicy(bucket, policy);
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
+}
+
 export async function deleteS3Files(bucket: string, keys: string[]): Promise<void> {
   try {
     await s3Client.removeObjects(bucket, keys);
@@ -159,15 +170,38 @@ export async function clearAllS3Buckets(): Promise<void> {
   try {
     const buckets = await s3Client.listBuckets();
     for (const bucket of buckets) {
-      const objectsStream = s3Client.listObjectsV2(bucket.name, '', true);
+      try {
+        const objectsStream = s3Client.listObjectsV2(bucket.name, '', true);
 
-      const objects: string[] = [];
-      for await (const o of objectsStream) {
-        objects.push(o.name);
+        const objects: string[] = [];
+        for await (const o of objectsStream) {
+          objects.push(o.name);
+        }
+
+        await s3Client.removeObjects(bucket.name, objects);
+        try {
+          await s3Client.removeBucket(bucket.name);
+        } catch (error) {
+          if (isS3ErrorCode(error, 'NoSuchBucket')) {
+            continue;
+          }
+          if (!isS3ErrorCode(error, 'BucketNotEmpty')) {
+            throw error;
+          }
+
+          const remainingObjectsStream = s3Client.listObjectsV2(bucket.name, '', true);
+          const remainingObjects: string[] = [];
+          for await (const o of remainingObjectsStream) {
+            remainingObjects.push(o.name);
+          }
+          await s3Client.removeObjects(bucket.name, remainingObjects);
+          await s3Client.removeBucket(bucket.name);
+        }
+      } catch (error) {
+        if (!isS3ErrorCode(error, 'NoSuchBucket')) {
+          throw error;
+        }
       }
-
-      await s3Client.removeObjects(bucket.name, objects);
-      await s3Client.removeBucket(bucket.name);
     }
   } catch (error) {
     logger.error(error);

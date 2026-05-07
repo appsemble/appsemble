@@ -1,17 +1,15 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 
-export const key = '0.36.7';
+export const key = '0.36.10';
 
 /**
  * Summary:
  * - Allow `BlockAsset.content` to be null for S3-backed block assets.
  * - Add `storageKey` column to table `BlockAsset`.
  * - Add `size` column to table `BlockAsset`.
- *
- * @param transaction The sequelize Transaction.
- * @param db The sequelize database.
  */
+
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
@@ -54,10 +52,8 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Remove `size` column from `BlockAsset`.
  * - Remove `storageKey` column from `BlockAsset`.
  * - Disallow null values for `BlockAsset.content` again.
- *
- * @param transaction The sequelize Transaction.
- * @param db The sequelize database.
  */
+
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 

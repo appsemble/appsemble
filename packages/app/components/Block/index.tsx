@@ -5,7 +5,6 @@ import {
   type BlockDefinition,
   normalizeBlockName,
   type PageDefinition,
-  prefixBlockURL,
   type Remapper,
 } from '@appsemble/lang-sdk';
 import { Title, useMessages } from '@appsemble/react-components';
@@ -20,7 +19,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import styles from './index.module.css';
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { type ActionCreators } from '../../utils/actions/index.js';
-import { callBootstrap } from '../../utils/bootstrapper.js';
+import { callBootstrap, getBlockFileURL } from '../../utils/bootstrapper.js';
 import { createEvents } from '../../utils/events.js';
 import { injectCSS } from '../../utils/injectCSS.js';
 import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
@@ -258,7 +257,7 @@ export function Block({
             // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
             ...manifest.files
               .filter((url) => url.endsWith('.css'))
-              .map((url) => prefixBlockURL(block, url)),
+              .map((url) => getBlockFileURL(manifest!, url)),
             `/shared.css?updated=${appUpdated}`,
             // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
             `/${manifest.name}.css?updated=${appUpdated}`,

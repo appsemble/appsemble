@@ -8,13 +8,22 @@ import { Op } from 'sequelize';
 import { argv } from './argv.js';
 import {
   deleteUnreferencedBlockAssetObjects,
+  ensureBlockAssetsBucketPublicRead,
+  getBlockAssetFileUrls,
   getBlockAssetContentHash,
   getBlockAssetsBucketName,
   getBlockAssetStorageKey,
 } from './blockAssets.js';
 import { App, BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
 
-export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
+interface BlockVersionToJsonOptions {
+  includeFileUrls?: boolean;
+}
+
+export function blockVersionToJson(
+  blockVersion: BlockVersion,
+  { includeFileUrls = true }: BlockVersionToJsonOptions = {},
+): BlockManifest {
   const {
     BlockAssets,
     Organization,
@@ -41,12 +50,17 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
       updated: blockVersion.Organization?.updated.toISOString(),
     })}`;
   }
+
+  const files = BlockAssets?.map((f) => f.filename).sort(compareStrings);
+  const fileUrls = getBlockAssetFileUrls(BlockAssets);
+
   return {
     actions,
     description,
     events,
     examples,
-    files: BlockAssets?.map((f) => f.filename).sort(compareStrings),
+    files,
+    ...(includeFileUrls && Object.keys(fileUrls).length ? { fileUrls } : {}),
     iconUrl: iconUrl ?? null,
     layout,
     longDescription,
@@ -80,10 +94,14 @@ export async function syncBlock({
       return;
     }
     await transactional(async (transaction) => {
+      const blockVersion = { ...block };
+      delete blockVersion.fileUrls;
       const { id: BlockVersionId } = await BlockVersion.create(
-        { ...block, OrganizationId, name, version },
+        { ...blockVersion, OrganizationId, name, version },
         { transaction },
       );
+
+      await ensureBlockAssetsBucketPublicRead();
 
       // Use callbacks to defer firing the request and not overload the server
       const promises = block.files.map((filename) => async () => {
@@ -102,7 +120,10 @@ export async function syncBlock({
           version,
         });
 
-        await uploadS3File(getBlockAssetsBucketName(), storageKey, buffer, buffer.byteLength);
+        await uploadS3File(getBlockAssetsBucketName(), storageKey, buffer, buffer.byteLength, {
+          'Cache-Control': 'public,max-age=31536000,immutable',
+          'Content-Type': mime,
+        });
         uploadedKeys.push(storageKey);
 
         await BlockAsset.create(
@@ -165,7 +186,9 @@ export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<Blo
     attributes: { exclude: ['id'] },
     where: { [Op.or]: uniqueBlocks },
   });
-  const result: BlockManifest[] = blockVersions.map(blockVersionToJson);
+  const result: BlockManifest[] = blockVersions.map((blockVersion) =>
+    blockVersionToJson(blockVersion),
+  );
 
   if (argv.remote) {
     const knownIdentifiers = new Set(
