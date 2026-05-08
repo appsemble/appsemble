@@ -1,6 +1,6 @@
 import { type Readable } from 'node:stream';
 
-import { streamToBuffer } from 'memfs/lib/node/util.js';
+import { buffer as streamToBuffer } from 'node:stream/consumers';
 import { type BucketItemStat, Client, S3Error } from 'minio';
 
 import { logger } from './logger.js';
