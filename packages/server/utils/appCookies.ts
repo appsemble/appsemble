@@ -39,11 +39,14 @@ function getCookieOptions(path: string): {
 function setCookie(ctx: Context, name: string, value: string, options: any): void {
   const cookies = ctx.cookies as any;
   const originalSecure = cookies.secure;
-  if (options.secure) {
-    cookies.secure = true;
+  try {
+    if (options.secure) {
+      cookies.secure = true;
+    }
+    ctx.cookies.set(name, value, options);
+  } finally {
+    cookies.secure = originalSecure;
   }
-  ctx.cookies.set(name, value, options);
-  cookies.secure = originalSecure;
 }
 
 export function setAppRefreshTokenCookie(ctx: Context, appId: number, token: string): void {

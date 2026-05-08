@@ -3,12 +3,19 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { basicAuth } from '@appsemble/node-utils';
 import { type TokenResponse } from '@appsemble/types';
 import { jwtPattern } from '@appsemble/utils';
+import { type AxiosResponse } from 'axios';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, getAppDB, OAuth2ClientCredentials, type User } from '../../models/index.js';
+import {
+  App,
+  type AppMember,
+  getAppDB,
+  OAuth2ClientCredentials,
+  type User,
+} from '../../models/index.js';
 import { setArgv } from '../../utils/argv.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { createServer } from '../../utils/createServer.js';
@@ -18,6 +25,46 @@ let user: User;
 
 function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
+}
+
+function getSetCookieHeaders(response: { headers: Record<string, unknown> }): string[] {
+  const headers = response.headers as Record<string, string[] | string | undefined>;
+  const setCookie = headers['set-cookie'] ?? headers['Set-Cookie'];
+  expect(setCookie).toBeDefined();
+  return Array.isArray(setCookie) ? setCookie : [setCookie!];
+}
+
+function getCookieHeader(response: { headers: Record<string, unknown> }): string {
+  return getSetCookieHeaders(response)
+    .map((cookie) => cookie.split(';')[0])
+    .join('; ');
+}
+
+function expectAppAuthCookies(
+  response: { headers: Record<string, unknown> },
+  appId: number,
+  secure = false,
+): void {
+  const attributes = secure
+    ? '(?=.*httponly)(?=.*secure)(?=.*samesite=none)(?=.*partitioned)'
+    : '(?!.*httponly)(?!.*secure)(?=.*samesite=none)(?=.*partitioned)';
+
+  expect(getSetCookieHeaders(response)).toStrictEqual(
+    expect.arrayContaining([
+      expect.stringMatching(
+        new RegExp(
+          `^app_refresh_token=[^;]+; path=/apps/${appId}/auth/oauth2/token; ${attributes}.*$`,
+          'i',
+        ),
+      ),
+      expect.stringMatching(
+        new RegExp(
+          `^app_refresh_token\\.sig=[^;]+; path=/apps/${appId}/auth/oauth2/token; ${attributes}.*$`,
+          'i',
+        ),
+      ),
+    ]),
+  );
 }
 
 async function createStoredRefreshToken(appId: number, sub = user.id): Promise<string> {
@@ -33,6 +80,47 @@ async function createStoredRefreshToken(appId: number, sub = user.id): Promise<s
   });
 
   return token;
+}
+
+async function createAuthorizationCodeTokenResponse(
+  redirectUri = 'http://foo.bar.localhost:9999/',
+): Promise<{
+  app: App;
+  appMember: AppMember;
+  response: AxiosResponse<TokenResponse>;
+}> {
+  const organizationId = `org-${randomUUID()}`;
+  await user.$create('Organization', { id: organizationId });
+  const app = await App.create({
+    OrganizationId: organizationId,
+    definition: '',
+    vapidPrivateKey: '',
+    vapidPublicKey: '',
+  });
+  const appMember = await createTestAppMember(app.id);
+  const code = randomUUID();
+  const { OAuth2AuthorizationCode } = await getAppDB(app.id);
+  await OAuth2AuthorizationCode.create({
+    code,
+    AppMemberId: appMember.id,
+    expires: new Date('2000-01-01T00:10:00Z'),
+    redirectUri,
+    scope: 'email openid',
+  });
+
+  const response = await request.post<TokenResponse>(
+    `/apps/${app.id}/auth/oauth2/token`,
+    new URLSearchParams({
+      client_id: `app:${app.id}`,
+      code,
+      grant_type: 'authorization_code',
+      redirect_uri: redirectUri,
+      scope: 'openid',
+    }),
+    { headers: { referer: redirectUri } },
+  );
+
+  return { app, appMember, response };
 }
 
 describe('appsTokenHandler', () => {
@@ -143,6 +231,26 @@ describe('appsTokenHandler', () => {
           token_type: 'bearer',
         },
       });
+    });
+
+    it('should set secure app auth cookies if SSL is enabled', async () => {
+      setArgv({ host: 'https://localhost', secret: 'test', ssl: true });
+      try {
+        const { app, response } = await createAuthorizationCodeTokenResponse(
+          'https://foo.bar.localhost:9999/',
+        );
+
+        expect(response).toMatchObject({
+          status: 200,
+          data: {
+            access_token: expect.stringMatching(jwtPattern),
+            refresh_token: expect.stringMatching(jwtPattern),
+          },
+        });
+        expectAppAuthCookies(response, app.id, true);
+      } finally {
+        setArgv({ host: 'http://localhost', secret: 'test' });
+      }
     });
 
     it('should fail if the referer doesn’t match the redirect URI', async () => {
@@ -606,6 +714,45 @@ describe('appsTokenHandler', () => {
         data: {
           error: 'invalid_grant',
         },
+      });
+    });
+
+    it('should create a refresh token from the signed refresh token cookie', async () => {
+      const {
+        app,
+        appMember,
+        response: loginResponse,
+      } = await createAuthorizationCodeTokenResponse();
+
+      const response = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+        }),
+        { headers: { cookie: getCookieHeader(loginResponse) } },
+      );
+
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          expires_in: 3600,
+          refresh_token: expect.stringMatching(jwtPattern),
+          token_type: 'bearer',
+        },
+      });
+      expect(response.data.access_token).not.toBe(response.data.refresh_token);
+      expectAppAuthCookies(response, app.id);
+      const payload = jwt.decode(response.data.access_token);
+      expect(payload).toStrictEqual({
+        aud: `app:${app.id}`,
+        exp: 946_688_400,
+        iat: 946_684_800,
+        iss: 'http://localhost',
+        scope: 'openid',
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'access',
+        sub: appMember.id,
       });
     });
 
