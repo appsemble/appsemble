@@ -3,7 +3,7 @@ import { once } from 'node:events';
 import { pipeline } from 'node:stream/promises';
 import { createGunzip } from 'node:zlib';
 
-import { getS3File, initS3Client, logger } from '@appsemble/node-utils';
+import { getS3File, initS3Client, listS3Files, logger } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
@@ -32,6 +32,7 @@ export interface RestoreDataFromBackupOptions {
   aesSecret: string | undefined;
   backupsAccessKey: string;
   backupsBucket: string;
+  backupsFilename: string | undefined;
   backupsHost: string;
   backupsPort: number | undefined;
   backupsSecretKey: string;
@@ -52,9 +53,45 @@ export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs).option('restoreBackupFilename', {
     type: 'string',
     describe:
-      'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz',
+      'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz, or latest',
     demandOption: true,
   });
+}
+
+async function resolveRestoreBackupFilename({
+  backupsBucket,
+  backupsFilename,
+  restoreBackupFilename,
+}: Pick<
+  RestoreDataFromBackupOptions,
+  'backupsBucket' | 'backupsFilename' | 'restoreBackupFilename'
+>): Promise<string> {
+  if (restoreBackupFilename !== 'latest') {
+    return restoreBackupFilename;
+  }
+
+  if (!backupsFilename) {
+    throw new Error('The backups filename prefix must be configured to restore the latest backup');
+  }
+
+  const prefix = `sql/main/${backupsFilename}_`;
+  const backups = (await listS3Files(backupsBucket, prefix)).flatMap((backup) =>
+    backup.key && backup.lastModified && backup.key.endsWith('.sql.gz')
+      ? [{ key: backup.key, lastModified: backup.lastModified }]
+      : [],
+  );
+  const [latest] = backups.sort((a, b) => {
+    const dateDifference = b.lastModified.getTime() - a.lastModified.getTime();
+    return dateDifference || b.key.localeCompare(a.key);
+  });
+
+  if (!latest?.key) {
+    throw new Error(`No backups found in ${backupsBucket}/${prefix}`);
+  }
+
+  const filename = latest.key.slice('sql/main/'.length);
+  logger.info(`Resolved latest backup to ${filename}`);
+  return filename;
 }
 
 async function recreateDatabase(dbName: string, adminUri: string): Promise<void> {
@@ -133,6 +170,7 @@ export async function restoreDataFromBackup({
   aesSecret,
   backupsAccessKey,
   backupsBucket,
+  backupsFilename,
   backupsHost,
   backupsPort,
   backupsSecretKey,
@@ -161,6 +199,25 @@ export async function restoreDataFromBackup({
     dbName: 'postgres',
     ssl: databaseSsl,
   });
+
+  try {
+    initS3Client({
+      endPoint: backupsHost,
+      port: backupsPort,
+      useSSL: backupsSecure,
+      accessKey: backupsAccessKey,
+      secretKey: backupsSecretKey,
+    });
+  } catch (error: unknown) {
+    logger.warn(`S3Error: ${error}`);
+    logger.warn('Features related to file uploads will not work correctly!');
+  }
+
+  const resolvedRestoreBackupFilename = await resolveRestoreBackupFilename({
+    backupsBucket,
+    backupsFilename,
+    restoreBackupFilename,
+  });
   await recreateDatabase(databaseName, adminUri);
 
   try {
@@ -180,25 +237,12 @@ export async function restoreDataFromBackup({
     handleDBError(error as Error);
   }
 
-  try {
-    initS3Client({
-      endPoint: backupsHost,
-      port: backupsPort,
-      useSSL: backupsSecure,
-      accessKey: backupsAccessKey,
-      secretKey: backupsSecretKey,
-    });
-  } catch (error: unknown) {
-    logger.warn(`S3Error: ${error}`);
-    logger.warn('Features related to file uploads will not work correctly!');
-  }
-
   let failed = false;
 
-  // Backup main database
+  // Restore main database
   try {
     logger.info('Restoring main database...');
-    const key = `sql/main/${restoreBackupFilename}`;
+    const key = `sql/main/${resolvedRestoreBackupFilename}`;
     const mainDbUrl = buildPostgresUri({
       dbUser: databaseUser,
       dbPassword: databasePassword,
@@ -239,7 +283,7 @@ export async function restoreDataFromBackup({
         ssl: databaseSsl,
       });
 
-      const key = `sql/apps/${app.id}/${restoreBackupFilename}`;
+      const key = `sql/apps/${app.id}/${resolvedRestoreBackupFilename}`;
       await recreateDatabase(dbName, adminUri);
       await restoreDatabaseFromS3(appDbUrl, backupsBucket, key);
     } catch (err) {
@@ -263,10 +307,14 @@ export async function handler(): Promise<void> {
     aesSecret: argv.aesSecret,
     backupsAccessKey: argv.backupsAccessKey,
     backupsBucket: argv.backupsBucket,
+    backupsFilename: argv.backupsFilename,
     backupsHost: argv.backupsHost,
     backupsPort: argv.backupsPort,
     backupsSecretKey: argv.backupsSecretKey,
-    backupsSecure: argv.backupsSecure ?? true,
+    backupsSecure:
+      (typeof argv.backupsSecure === 'string'
+        ? argv.backupsSecure === 'true'
+        : argv.backupsSecure) ?? true,
     databaseHost: argv.databaseHost,
     databaseDirectHost: directDatabase.dbHost,
     databaseDirectPort: directDatabase.dbPort,

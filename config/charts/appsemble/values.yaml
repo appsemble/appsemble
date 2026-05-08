@@ -114,6 +114,9 @@ migrateTo: null
 
 skipCustomDomains: false
 
+cleanupExpiredDomains:
+  enabled: false
+
 migrateDefinitions:
   validate: true
   save: false
@@ -286,6 +289,10 @@ backups:
   port: 443
   secure: true
   existingSecret: backups-secret
+
+restoreDataFromBackup:
+  enabled: false
+  backupFilename: latest
 
 assetsBackups:
   enabled: false

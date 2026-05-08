@@ -147,10 +147,10 @@ export async function getS3FileStats(bucket: string, key: string): Promise<Bucke
   }
 }
 
-export async function listS3Files(bucket: string): Promise<S3FileReference[]> {
+export async function listS3Files(bucket: string, prefix = ''): Promise<S3FileReference[]> {
   const keys = await new Promise<string[]>((resolve, reject) => {
     const objects: string[] = [];
-    const stream = s3Client.listObjectsV2(bucket, '', true);
+    const stream = s3Client.listObjectsV2(bucket, prefix, true);
 
     stream.on('data', (item) => {
       if (item.name) {

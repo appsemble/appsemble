@@ -3,6 +3,10 @@ import { type Argv } from 'yargs';
 import { serverImport } from '../lib/serverImport.js';
 import { type BaseArguments } from '../types.js';
 
+interface RestoreDataFromBackupArguments extends BaseArguments {
+  restoreBackupFilename: string;
+}
+
 export const command = 'restore-data-from-backup';
 export const description =
   'Restore appsemble data from a specified backup for the main database and app databases';
@@ -45,7 +49,7 @@ export function builder(yargs: Argv): Argv<any> {
     });
 }
 
-export async function handler(argv: BaseArguments): Promise<void> {
+export async function handler(argv: RestoreDataFromBackupArguments): Promise<void> {
   const { restoreDataFromBackup, setArgv } = await serverImport('setArgv', 'restoreDataFromBackup');
   setArgv(argv);
   return restoreDataFromBackup();

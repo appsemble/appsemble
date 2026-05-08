@@ -1,0 +1,45 @@
+{{- if .Values.restoreDataFromBackup.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "appsemble.fullname" . }}-restore-data-from-backup
+  labels:
+    {{ include "appsemble.labels" . }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: '0'
+spec:
+  template:
+    metadata:
+      annotations:
+        {{ include "appsemble.gitlab" . | indent 8 }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: {{ include "appsemble.fullname" . }}-restore-data-from-backup
+          image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+          resources:
+            {{- toYaml .Values.resources.backupCronjob | nindent 12 }}
+          args:
+            - restore-data-from-backup
+            - -vv
+            - --restore-backup-filename
+            - {{ .Values.restoreDataFromBackup.backupFilename | quote }}
+          env:
+            - name: AES_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretSecret | quote }}
+                  key: aes-secret
+{{ include "appsemble.postgres" . | indent 12 }}
+{{ include "appsemble.backups" . | indent 12 }}
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
+{{ end }}

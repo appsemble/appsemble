@@ -1415,6 +1415,8 @@ staging:
       --set "backups.bucket=appsemble-backups-staging"
       --set "backups.filename=appsemble_staging_backup"
       --set "backups.enabled=false"
+      --set "restoreDataFromBackup.enabled=true"
+      --set "restoreDataFromBackup.backupFilename=latest"
       --set "assetsBackups.enabled=true"
       --set "assetsBackups.prefix=assets/app-buckets"
       --set "assetsBackups.archiveRetentionDays=2"

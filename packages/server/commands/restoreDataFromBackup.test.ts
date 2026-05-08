@@ -4,7 +4,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { spawn } from 'node:child_process';
 
-import { getS3File, initS3Client, logger } from '@appsemble/node-utils';
+import { getS3File, initS3Client, listS3Files, logger } from '@appsemble/node-utils';
 
 import { App, initDB } from '../models/index.js';
 import { type App as MainApp } from '../models/main/App.js';
@@ -29,6 +29,7 @@ vi.mock('node:zlib', () => ({
 vi.mock('@appsemble/node-utils', () => ({
   getS3File: vi.fn(() => Promise.resolve(Readable.from(['sql']))),
   initS3Client: vi.fn(),
+  listS3Files: vi.fn(() => Promise.resolve([])),
   logger: {
     error: vi.fn(),
     info: vi.fn(),
@@ -59,6 +60,7 @@ const baseOptions: RestoreDataFromBackupOptions = {
   aesSecret: 'test-aes-secret',
   backupsAccessKey: 'backup-access-key',
   backupsBucket: 'backup-bucket',
+  backupsFilename: 'appsemble_prod_backup',
   backupsHost: 's3.example.com',
   backupsPort: 443,
   backupsSecretKey: 'backup-secret-key',
@@ -177,6 +179,7 @@ describe('restoreDataFromBackup', () => {
     vi.mocked(App.findAll).mockResolvedValue([]);
     vi.mocked(getS3File).mockResolvedValue(Readable.from(['sql']));
     vi.mocked(initS3Client).mockReset();
+    vi.mocked(listS3Files).mockResolvedValue([]);
   });
 
   afterAll(() => {
@@ -267,6 +270,49 @@ describe('restoreDataFromBackup', () => {
     expect(getS3File).toHaveBeenCalledWith(
       baseOptions.backupsBucket,
       `sql/apps/1/${baseOptions.restoreBackupFilename}`,
+    );
+  });
+
+  it('should resolve latest backup before recreating the main database', async () => {
+    vi.mocked(listS3Files).mockResolvedValue([
+      {
+        etag: 'old',
+        key: 'sql/main/appsemble_prod_backup_20250101000000000.sql.gz',
+        lastModified: new Date('2025-01-01T00:00:00Z'),
+        metadata: {},
+        size: 1,
+      },
+      {
+        etag: 'new',
+        key: 'sql/main/appsemble_prod_backup_20250102000000000.sql.gz',
+        lastModified: new Date('2025-01-02T00:00:00Z'),
+        metadata: {},
+        size: 1,
+      },
+    ]);
+
+    const failed = await restoreDataFromBackup({
+      ...baseOptions,
+      restoreBackupFilename: 'latest',
+    });
+
+    expect(failed).toBe(false);
+    expect(listS3Files).toHaveBeenCalledWith('backup-bucket', 'sql/main/appsemble_prod_backup_');
+    expect(getS3File).toHaveBeenCalledWith(
+      'backup-bucket',
+      'sql/main/appsemble_prod_backup_20250102000000000.sql.gz',
+    );
+    expect(spawn).toHaveBeenNthCalledWith(
+      1,
+      'psql',
+      [
+        '--dbname=postgres://postgres',
+        '-v',
+        'ON_ERROR_STOP=1',
+        '-c',
+        'DROP DATABASE IF EXISTS "appsemble";',
+      ],
+      expect.any(Object),
     );
   });
 

@@ -351,6 +351,18 @@
       "type": "boolean",
       "description": "If specified, certificates for ingresses for custom domains of apps and app collections will not be issued"
     },
+    "cleanupExpiredDomains": {
+      "type": "object",
+      "description": "Configuration for the manually rendered cleanup-expired-domains Job.",
+      "additionalProperties": false,
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Render the cleanup-expired-domains Job. Keep disabled for normal installs and upgrades."
+        }
+      }
+    },
     "migrateDefinitions": {
       "type": "object",
       "additionalProperties": false,
@@ -718,6 +730,22 @@
         "existingSecret": {
           "type": "string",
           "description": "The name of the existing kubernetes secret to get the access key and secret key from. Must contain access-key and secret-key"
+        }
+      }
+    },
+    "restoreDataFromBackup": {
+      "type": "object",
+      "description": "Configuration for restoring Appsemble database backups during Helm install or upgrade.",
+      "additionalProperties": false,
+      "required": ["enabled", "backupFilename"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable a Helm hook job that restores database data from the configured backups bucket before migrations run."
+        },
+        "backupFilename": {
+          "type": "string",
+          "description": "The backup filename to restore. Use latest to restore the newest object matching backups.filename."
         }
       }
     },

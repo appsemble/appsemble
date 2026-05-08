@@ -240,7 +240,7 @@ Configure the environment variables for Appsemble to connect with Valkey.
 Configure the environment variables for Appsemble to enable backups.
 */}}
 {{- define "appsemble.backups" -}}
-{{- if .Values.backups.enabled }}
+{{- if or .Values.backups.enabled .Values.restoreDataFromBackup.enabled }}
 - name: BACKUPS_BUCKET
   value: {{ .Values.backups.bucket | quote }}
 - name: BACKUPS_FILENAME
