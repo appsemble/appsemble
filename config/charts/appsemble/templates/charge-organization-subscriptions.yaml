@@ -31,6 +31,7 @@ spec:
               env:
 {{ include "appsemble.postgres" . | indent 16 }}
 {{ include "appsemble.s3" . | indent 16 }}
+{{ include "appsemble.valkey" . | indent 16 }}
                 {{- with .Values.stripeApiSecretKey }}
                 - name: STRIPE_API_SECRET_KEY
                   valueFrom:

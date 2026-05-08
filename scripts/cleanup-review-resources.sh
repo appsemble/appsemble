@@ -46,8 +46,8 @@ for n in $(kubectl get namespaces --no-headers -o custom-columns=:metadata.name 
   keep "$iid" || kubectl delete namespace "$n" --ignore-not-found=true || true
 done
 
-for s in $(kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep -E '^(review-[0-9]+-mailpit-tls|stripe-webhook-secret-[0-9]+)$' || true); do
-  iid=$(printf '%s\n' "$s" | sed -nE 's/^review-([0-9]+)-mailpit-tls$/\1/p; s/^stripe-webhook-secret-([0-9]+)$/\1/p')
+for s in $(kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep -E '^(review-[0-9]+-(mailpit-tls|valkey)|stripe-webhook-secret-[0-9]+)$' || true); do
+  iid=$(printf '%s\n' "$s" | sed -nE 's/^review-([0-9]+)-(mailpit-tls|valkey)$/\1/p; s/^stripe-webhook-secret-([0-9]+)$/\1/p')
   [ -n "$iid" ] || continue
   known "$iid" || continue
   keep "$iid" && continue

@@ -8,5 +8,8 @@ dependencies:
 - name: minio
   repository: https://charts.bitnami.com/bitnami
   version: 14.10.5
-digest: sha256:d03d47922c33ec6837b102ce58cf30e5fe56ccd9c1a0253c1d6516a84c937295
-generated: "2026-04-16T04:20:27.439346545Z"
+- name: valkey
+  repository: https://valkey.io/valkey-helm
+  version: 0.9.4
+digest: sha256:bf4439435eda0c91fb6d2fa02908ed47a48d80f6fb8a2033154d3cc717352bd4
+generated: "2026-05-08T16:09:36.826380904+02:00"

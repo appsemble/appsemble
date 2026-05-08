@@ -165,6 +165,40 @@ export interface Argv {
   slowQueryThreshold: number;
 
   // //////////////////////////////////////////////////////////////////////////////////////////// //
+  // Valkey                                                                                       //
+  // //////////////////////////////////////////////////////////////////////////////////////////// //
+  /**
+   * The hostname of the Valkey server.
+   */
+  valkeyHost: string;
+
+  /**
+   * The port on which Valkey is accessed.
+   *
+   * @default 6379
+   */
+  valkeyPort: number;
+
+  /**
+   * The username used to access Valkey.
+   *
+   * @default 'default'
+   */
+  valkeyUsername: string;
+
+  /**
+   * The password used to access Valkey.
+   */
+  valkeyPassword: string;
+
+  /**
+   * Whether or not to use TLS for the Valkey connection.
+   *
+   * @default false
+   */
+  valkeyTls: boolean;
+
+  // //////////////////////////////////////////////////////////////////////////////////////////// //
   // SSL                                                                                          //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   /**
@@ -598,6 +632,13 @@ const defaults: Argv = {
   migrateTo: undefined,
   databaseBenchmark: false,
   slowQueryThreshold: 100,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  valkeyHost: undefined,
+  valkeyPort: 6379,
+  valkeyUsername: 'default',
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  valkeyPassword: undefined,
+  valkeyTls: false,
   ssl: false,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sslKey: undefined,
