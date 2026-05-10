@@ -152,6 +152,25 @@
         "publicUrl": {
           "type": "string",
           "description": "The public base URL for block assets stored in S3 compatible object storage."
+        },
+        "migration": {
+          "type": "object",
+          "description": "Configuration for migrating existing database-backed block assets to S3 compatible object storage.",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "If `true`, run the block asset S3 migration job after install and upgrade."
+            },
+            "batch": {
+              "type": "integer",
+              "description": "The number of block assets to migrate per database batch."
+            },
+            "dryRun": {
+              "type": "boolean",
+              "description": "If `true`, count block assets that would be migrated without uploading objects or updating rows."
+            }
+          }
         }
       }
     },

@@ -1,0 +1,38 @@
+{{- if .Values.blockAssets.migration.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "appsemble.fullname" . }}-migrate-block-assets-to-s3
+  labels:
+    {{ include "appsemble.labels" . }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: '3' # Must be after migrate so the BlockAsset storage columns exist
+spec:
+  template:
+    metadata:
+      annotations:
+        {{ include "appsemble.gitlab" . | indent 8 }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: {{ include "appsemble.fullname" . }}-migrate-block-assets-to-s3
+          image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+          resources:
+            {{- toYaml .Values.resources.jobs | nindent 12 }}
+          args:
+            - migrate-block-assets-to-s3
+            {{ with .Values.blockAssets.migration.batch }}
+            - "--batch={{ . }}"
+            {{ end }}
+            {{ if .Values.blockAssets.migration.dryRun }}
+            - --dry-run
+            {{ end }}
+          env:
+{{ include "appsemble.postgres" . | indent 12 }}
+{{ include "appsemble.s3" . | indent 12 }}
+{{ include "appsemble.sentry" . | indent 12 }}
+{{- end }}

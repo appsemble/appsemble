@@ -8,6 +8,7 @@ export { decrypt } from './utils/crypto.js';
 export { handler as start } from './commands/start.js';
 export { handler as migrate } from './commands/migrate.js';
 export { handler as migrateAppDefinitions } from './commands/migrateAppDefinitions.js';
+export { handler as migrateBlockAssetsToS3 } from './commands/migrateBlockAssetsToS3.js';
 export { handler as cleanupResourcesAndAssets } from './commands/cleanupResourcesAndAssets.js';
 export { handler as backupProductionData } from './commands/backupProductionData.js';
 export { handler as restoreDataFromBackup } from './commands/restoreDataFromBackup.js';
