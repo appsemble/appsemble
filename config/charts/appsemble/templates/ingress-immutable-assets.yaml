@@ -1,4 +1,6 @@
-{{- if and .Values.ingress.enabled .Values.ingress.immutableAssets.enabled -}}
+{{- $immutableAssets := default dict .Values.ingress.immutableAssets -}}
+{{- $cache := default dict $immutableAssets.cache -}}
+{{- if and .Values.ingress.enabled ($immutableAssets.enabled | default false) -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -7,19 +9,19 @@ metadata:
     {{ include "appsemble.labels" . }}
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
-    {{ if .Values.ingress.immutableAssets.cache.enabled }}
+    {{ if ($cache.enabled | default false) }}
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_cache {{ .Values.ingress.immutableAssets.cache.zone }};
-      proxy_cache_key {{ .Values.ingress.immutableAssets.cache.key | quote }};
-      proxy_cache_methods {{ .Values.ingress.immutableAssets.cache.methods }};
-      proxy_cache_valid {{ .Values.ingress.immutableAssets.cache.valid }};
+      proxy_cache {{ $cache.zone }};
+      proxy_cache_key {{ $cache.key | quote }};
+      proxy_cache_methods {{ $cache.methods }};
+      proxy_cache_valid {{ $cache.valid }};
       proxy_cache_lock on;
       proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
       proxy_ignore_headers Set-Cookie;
       proxy_hide_header Set-Cookie;
       add_header X-Appsemble-Immutable-Cache $upstream_cache_status always;
     {{ end }}
-    {{ with .Values.ingress.immutableAssets.annotations }}
+    {{ with $immutableAssets.annotations }}
     {{ toYaml . | nindent 4 }}
     {{ end }}
 
@@ -44,7 +46,7 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          {{- range .Values.ingress.immutableAssets.pathPatterns }}
+          {{- range $immutableAssets.pathPatterns }}
           - path: {{ . | quote }}
             pathType: ImplementationSpecific
             backend:
@@ -56,7 +58,7 @@ spec:
     - host: '*.{{ .Values.ingress.host }}'
       http:
         paths:
-          {{- range .Values.ingress.immutableAssets.pathPatterns }}
+          {{- range $immutableAssets.pathPatterns }}
           - path: {{ . | quote }}
             pathType: ImplementationSpecific
             backend:
