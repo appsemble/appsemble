@@ -1,6 +1,4 @@
 default:
-  tags:
-    - dcentralize
   image: node:24-trixie-slim
 
 stages:
