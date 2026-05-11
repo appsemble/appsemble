@@ -11,7 +11,7 @@ import {
   hasAppMemberRole,
   parseMemberFilterQuery,
 } from '../../../../utils/appMember.js';
-import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
+import { checkAppPermissions } from '../../../../utils/authorization.js';
 
 export async function queryAppMembers(ctx: Context): Promise<void> {
   const {
@@ -25,7 +25,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  await checkAuthSubjectAppPermissions({
+  await checkAppPermissions({
     context: ctx,
     appId,
     requiredPermissions: [AppPermission.QueryAppMembers],

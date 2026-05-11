@@ -7,7 +7,7 @@ export const key = '0.36.10-test.1';
  * Summary:
  * - Create new table `AppMemberAssignedRole`.
  * - Migrate existing `AppMember.role` values into `AppMemberAssignedRole`.
- * - Remove `AppMember.role`.
+ * - Keep `AppMember.role` as a nullable compatibility shim.
  *
  * @param transaction Sequelize transaction
  * @param db The Sequelize Database.
@@ -53,14 +53,19 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  logger.info('Dropping column `AppMember.role`');
-  await queryInterface.removeColumn('AppMember', 'role', { transaction });
+  logger.info('Making `AppMember.role` nullable for compatibility');
+  await queryInterface.changeColumn(
+    'AppMember',
+    'role',
+    { type: DataTypes.STRING, allowNull: true },
+    { transaction },
+  );
 }
 
 /**
  * Summary:
- * - Restore `AppMember.role`.
  * - Migrate one assigned role per member back into `AppMember.role`.
+ * - Restore `AppMember.role` as required.
  * - Drop `AppMemberAssignedRole`.
  *
  * @param transaction Sequelize transaction
@@ -68,14 +73,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  */
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-
-  logger.info('Restoring column `AppMember.role`');
-  await queryInterface.addColumn(
-    'AppMember',
-    'role',
-    { type: DataTypes.STRING, allowNull: false },
-    { transaction },
-  );
 
   logger.info('Migrating `AppMemberAssignedRole` data back to `AppMember.role`');
   await db.query(
@@ -89,6 +86,14 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       ) AS source
       WHERE "AppMember".id = source."AppMemberId"
     `,
+    { transaction },
+  );
+
+  logger.info('Making `AppMember.role` required');
+  await queryInterface.changeColumn(
+    'AppMember',
+    'role',
+    { type: DataTypes.STRING, allowNull: false },
     { transaction },
   );
 

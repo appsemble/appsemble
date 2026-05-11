@@ -1,3 +1,4 @@
+import { AppPermission } from '@appsemble/lang-sdk';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
@@ -594,7 +595,7 @@ describe('queryAppMembers', () => {
     );
   });
 
-  it('should respond with 401 when querying app members without authentication', async () => {
+  it('should respond with 403 when guests cannot query app members', async () => {
     const app = await App.create({
       definition: {
         name: 'Test App',
@@ -617,10 +618,55 @@ describe('queryAppMembers', () => {
 
     const response = await request.get(`/api/apps/${app.id}/members`);
     expect(response).toMatchObject({
-      status: 401,
+      status: 403,
       data: {
-        message: 'Unauthorized',
+        message: 'Guest does not have sufficient app permissions.',
       },
+    });
+  });
+
+  it('should fetch app members without authentication when guests can query app members', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          guest: {
+            permissions: [AppPermission.QueryAppMembers],
+          },
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { AppMember } = await getAppDB(app.id);
+    await AppMember.create({
+      userId: user.id,
+      name: 'Test Member',
+      email: 'member@example.com',
+      role: 'Reader',
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/members`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          email: 'member@example.com',
+          role: 'Reader',
+          roles: ['Reader'],
+        },
+      ],
     });
   });
 

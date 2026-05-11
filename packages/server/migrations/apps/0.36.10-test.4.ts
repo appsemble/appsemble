@@ -26,10 +26,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   await db.query(
     `
       UPDATE "AppInvite"
-      SET roles = CASE
-        WHEN role IS NULL THEN '[]'::jsonb
-        ELSE jsonb_build_array(role)
-      END
+      SET roles = jsonb_build_array(role)
     `,
     { transaction },
   );
