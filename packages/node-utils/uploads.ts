@@ -1,7 +1,6 @@
 import { createReadStream } from 'node:fs';
 import { unlink } from 'node:fs/promises';
-
-import { streamToBuffer } from 'memfs/lib/node/util.js';
+import { buffer as streamToBuffer } from 'node:stream/consumers';
 
 import { logger } from './logger.js';
 
