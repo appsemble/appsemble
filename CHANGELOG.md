@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.36.9](https://gitlab.com/appsemble/appsemble/-/releases/0.36.9)] - 2026-05-11
+
+### Security
+
+- Server: Apply public visibility filtering in `getOrganization` for unauthenticated requests so
+  private-only organizations are not exposed.
+
 ## \[[0.36.8](https://gitlab.com/appsemble/appsemble/-/releases/0.36.8)] - 2026-05-04
 
 ### Fixed
