@@ -177,10 +177,10 @@ Configure the environment variables for Appsemble to connect with the Minio inst
       key: secret-key
 {{- end }}
 {{- if .Values.blockAssets.publicUrl }}
-- name: BLOCK_ASSETS_PUBLIC_URL
+- name: BLOCK_ASSETS_BASE_URL
   value: {{ .Values.blockAssets.publicUrl | quote }}
 {{- else if and .Values.minio.apiIngress.enabled .Values.minio.apiIngress.hostname }}
-- name: BLOCK_ASSETS_PUBLIC_URL
+- name: BLOCK_ASSETS_BASE_URL
   value: {{ printf "https://%s" .Values.minio.apiIngress.hostname | quote }}
 {{- end }}
 {{- end -}}

@@ -29,7 +29,7 @@ ingress:
   tls: false
   tlsSecretName: ''
   tlsWildcardSecretName: ''
-  immutableAssets:
+  blockAssets:
     enabled: false
     annotations: {}
     cache:

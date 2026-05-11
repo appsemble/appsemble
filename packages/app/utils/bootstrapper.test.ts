@@ -54,7 +54,7 @@ describe('callBootstrap', () => {
     expect(bootstrapFn).toHaveBeenCalledTimes(1);
   });
 
-  it('should load the block entry file from a manifest file URL when present', async () => {
+  it('should prefer the manifest file URL for the block entry file', async () => {
     const bootstrapFn = vi.fn();
     const appendSpy = registerBootstrapOnAppend(bootstrapFn);
 

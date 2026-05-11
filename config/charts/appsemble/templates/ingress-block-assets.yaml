@@ -1,10 +1,10 @@
-{{- $immutableAssets := default dict .Values.ingress.immutableAssets -}}
-{{- $cache := default dict $immutableAssets.cache -}}
-{{- if and .Values.ingress.enabled ($immutableAssets.enabled | default false) -}}
+{{- $blockAssets := default dict .Values.ingress.blockAssets -}}
+{{- $cache := default dict $blockAssets.cache -}}
+{{- if and .Values.ingress.enabled ($blockAssets.enabled | default false) -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "appsemble.fullname" . }}-immutable-assets
+  name: {{ include "appsemble.fullname" . }}-block-assets
   labels:
     {{ include "appsemble.labels" . }}
   annotations:
@@ -21,7 +21,7 @@ metadata:
       proxy_hide_header Set-Cookie;
       add_header X-Appsemble-Immutable-Cache $upstream_cache_status always;
     {{ end }}
-    {{ with $immutableAssets.annotations }}
+    {{ with $blockAssets.annotations }}
     {{ toYaml . | nindent 4 }}
     {{ end }}
 
@@ -46,7 +46,7 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          {{- range $immutableAssets.pathPatterns }}
+          {{- range $blockAssets.pathPatterns }}
           - path: {{ . | quote }}
             pathType: ImplementationSpecific
             backend:
@@ -58,7 +58,7 @@ spec:
     - host: '*.{{ .Values.ingress.host }}'
       http:
         paths:
-          {{- range $immutableAssets.pathPatterns }}
+          {{- range $blockAssets.pathPatterns }}
           - path: {{ . | quote }}
             pathType: ImplementationSpecific
             backend:
