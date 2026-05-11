@@ -10,5 +10,9 @@ export const Health: OpenAPIV3.NonArraySchemaObject = {
       type: 'boolean',
       description: 'Whether or not the database status is healthy',
     },
+    valkey: {
+      type: 'boolean',
+      description: 'Whether or not the Valkey status is healthy',
+    },
   },
 };
