@@ -155,24 +155,33 @@ describe('verifyAppMemberTotp', () => {
       token,
     });
 
-    expect(response).toMatchInlineSnapshot(
-      {
-        data: {
-          access_token: expect.stringMatching(jwtPattern),
-          refresh_token: expect.stringMatching(jwtPattern),
-        },
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        access_token: expect.stringMatching(jwtPattern),
+        expires_in: 3600,
+        refresh_token: expect.stringMatching(jwtPattern),
+        token_type: 'bearer',
       },
-      `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
+    });
 
-      {
-        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
-        "expires_in": 3600,
-        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
-        "token_type": "bearer",
-      }
-    `,
+    const headers = response.headers as Record<string, string[] | undefined>;
+    const setCookie = headers['set-cookie'] ?? headers['Set-Cookie'];
+    expect(setCookie).toStrictEqual(
+      expect.arrayContaining([
+        expect.stringMatching(
+          new RegExp(
+            `^app_refresh_token=[^;]+; path=/apps/${app.id}/auth/oauth2/token; (?=.*samesite=none)(?=.*partitioned)(?!.*secure)(?!.*httponly).*$`,
+            'i',
+          ),
+        ),
+        expect.stringMatching(
+          new RegExp(
+            `^app_refresh_token\\.sig=[^;]+; path=/apps/${app.id}/auth/oauth2/token; (?=.*samesite=none)(?=.*partitioned)(?!.*secure)(?!.*httponly).*$`,
+            'i',
+          ),
+        ),
+      ]),
     );
   });
 });

@@ -1,18 +1,127 @@
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
+
 import { basicAuth } from '@appsemble/node-utils';
 import { type TokenResponse } from '@appsemble/types';
 import { jwtPattern } from '@appsemble/utils';
+import { type AxiosResponse } from 'axios';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, getAppDB, OAuth2ClientCredentials, type User } from '../../models/index.js';
+import {
+  App,
+  type AppMember,
+  getAppDB,
+  OAuth2ClientCredentials,
+  type User,
+} from '../../models/index.js';
 import { setArgv } from '../../utils/argv.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { createServer } from '../../utils/createServer.js';
 import { createTestAppMember, createTestUser } from '../../utils/test/authorization.js';
 
 let user: User;
+
+function hashToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
+}
+
+function getSetCookieHeaders(response: { headers: Record<string, unknown> }): string[] {
+  const headers = response.headers as Record<string, string[] | string | undefined>;
+  const setCookie = headers['set-cookie'] ?? headers['Set-Cookie'];
+  expect(setCookie).toBeDefined();
+  return Array.isArray(setCookie) ? setCookie : [setCookie!];
+}
+
+function getCookieHeader(response: { headers: Record<string, unknown> }): string {
+  return getSetCookieHeaders(response)
+    .map((cookie) => cookie.split(';')[0])
+    .join('; ');
+}
+
+function expectAppAuthCookies(
+  response: { headers: Record<string, unknown> },
+  appId: number,
+  secure = false,
+): void {
+  const attributes = secure
+    ? '(?=.*httponly)(?=.*secure)(?=.*samesite=none)(?=.*partitioned)'
+    : '(?!.*httponly)(?!.*secure)(?=.*samesite=none)(?=.*partitioned)';
+
+  expect(getSetCookieHeaders(response)).toStrictEqual(
+    expect.arrayContaining([
+      expect.stringMatching(
+        new RegExp(
+          `^app_refresh_token=[^;]+; path=/apps/${appId}/auth/oauth2/token; ${attributes}.*$`,
+          'i',
+        ),
+      ),
+      expect.stringMatching(
+        new RegExp(
+          `^app_refresh_token\\.sig=[^;]+; path=/apps/${appId}/auth/oauth2/token; ${attributes}.*$`,
+          'i',
+        ),
+      ),
+    ]),
+  );
+}
+
+async function createStoredRefreshToken(appId: number, sub = user.id): Promise<string> {
+  const token = randomBytes(72).toString('base64url');
+  const { AppMemberRefreshSession } = await getAppDB(appId);
+
+  await AppMemberRefreshSession.create({
+    aud: `app:${appId}`,
+    expires: new Date('2000-02-01T00:00:00Z'),
+    id: randomUUID(),
+    sub,
+    tokenHash: hashToken(token),
+  });
+
+  return token;
+}
+
+async function createAuthorizationCodeTokenResponse(
+  redirectUri = 'http://foo.bar.localhost:9999/',
+): Promise<{
+  app: App;
+  appMember: AppMember;
+  response: AxiosResponse<TokenResponse>;
+}> {
+  const organizationId = `org-${randomUUID()}`;
+  await user.$create('Organization', { id: organizationId });
+  const app = await App.create({
+    OrganizationId: organizationId,
+    definition: '',
+    vapidPrivateKey: '',
+    vapidPublicKey: '',
+  });
+  const appMember = await createTestAppMember(app.id);
+  const code = randomUUID();
+  const { OAuth2AuthorizationCode } = await getAppDB(app.id);
+  await OAuth2AuthorizationCode.create({
+    code,
+    AppMemberId: appMember.id,
+    expires: new Date('2000-01-01T00:10:00Z'),
+    redirectUri,
+    scope: 'email openid',
+  });
+
+  const response = await request.post<TokenResponse>(
+    `/apps/${app.id}/auth/oauth2/token`,
+    new URLSearchParams({
+      client_id: `app:${app.id}`,
+      code,
+      grant_type: 'authorization_code',
+      redirect_uri: redirectUri,
+      scope: 'openid',
+    }),
+    { headers: { referer: redirectUri } },
+  );
+
+  return { app, appMember, response };
+}
 
 describe('appsTokenHandler', () => {
   beforeAll(async () => {
@@ -81,6 +190,67 @@ describe('appsTokenHandler', () => {
           error: 'invalid_request',
         },
       });
+    });
+
+    it('should accept an origin header if the referer header is missing', async () => {
+      await user.$create('Organization', { id: 'org' });
+      const app = await App.create({
+        OrganizationId: 'org',
+        definition: '',
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+      });
+      const appMember = await createTestAppMember(app.id);
+      const { OAuth2AuthorizationCode } = await getAppDB(app.id);
+      await OAuth2AuthorizationCode.create({
+        code: 'origin-code',
+        AppMemberId: appMember.id,
+        expires: new Date('2000-01-01T00:10:00Z'),
+        redirectUri: 'http://foo.bar.localhost:9999/Callback',
+        scope: 'openid',
+      });
+
+      const response = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${app.id}`,
+          code: 'origin-code',
+          grant_type: 'authorization_code',
+          redirect_uri: 'http://foo.bar.localhost:9999/Callback',
+          scope: 'openid',
+        }),
+        { headers: { origin: 'http://foo.bar.localhost:9999' } },
+      );
+
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          expires_in: 3600,
+          refresh_token: expect.stringMatching(jwtPattern),
+          token_type: 'bearer',
+        },
+      });
+    });
+
+    it('should set secure app auth cookies if SSL is enabled', async () => {
+      setArgv({ host: 'https://localhost', secret: 'test', ssl: true });
+      try {
+        const { app, response } = await createAuthorizationCodeTokenResponse(
+          'https://foo.bar.localhost:9999/',
+        );
+
+        expect(response).toMatchObject({
+          status: 200,
+          data: {
+            access_token: expect.stringMatching(jwtPattern),
+            refresh_token: expect.stringMatching(jwtPattern),
+          },
+        });
+        expectAppAuthCookies(response, app.id, true);
+      } finally {
+        setArgv({ host: 'http://localhost', secret: 'test' });
+      }
     });
 
     it('should fail if the referer doesn’t match the redirect URI', async () => {
@@ -284,6 +454,7 @@ describe('appsTokenHandler', () => {
           token_type: 'bearer',
         },
       });
+      expect(response.data.access_token).not.toBe(response.data.refresh_token);
       await expect(authCode.reload()).rejects.toThrow(
         'Instance could not be reloaded because it does not exist anymore (find call returned null)',
       );
@@ -293,6 +464,65 @@ describe('appsTokenHandler', () => {
         exp: 946_688_400,
         iat: 946_684_800,
         iss: 'http://localhost',
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'access',
+        scope: 'openid',
+        sub: appMember.id,
+      });
+    });
+
+    it('should return an access token response for apps using a custom domain', async () => {
+      await user.$create('Organization', { id: 'org-custom-domain' });
+      const app = await App.create({
+        OrganizationId: 'org-custom-domain',
+        definition: '',
+        domain: 'custom.example.com',
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+      });
+      const appMember = await createTestAppMember(app.id);
+      const expires = new Date('2000-01-01T00:10:00Z');
+      const redirectUri = 'https://custom.example.com/callback';
+      const { OAuth2AuthorizationCode } = await getAppDB(app.id);
+      const authCode = await OAuth2AuthorizationCode.create({
+        code: 'custom-domain-code',
+        AppMemberId: appMember.id,
+        expires,
+        redirectUri,
+        scope: 'email openid',
+      });
+      const response = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${app.id}`,
+          code: 'custom-domain-code',
+          grant_type: 'authorization_code',
+          redirect_uri: redirectUri,
+          scope: 'openid',
+        }),
+        { headers: { referer: 'https://custom.example.com/login' } },
+      );
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          expires_in: 3600,
+          refresh_token: expect.stringMatching(jwtPattern),
+          token_type: 'bearer',
+        },
+      });
+      expect(response.data.access_token).not.toBe(response.data.refresh_token);
+      await expect(authCode.reload()).rejects.toThrow(
+        'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+      );
+      const payload = jwt.decode(response.data.access_token);
+      expect(payload).toStrictEqual({
+        aud: `app:${app.id}`,
+        exp: 946_688_400,
+        iat: 946_684_800,
+        iss: 'http://localhost',
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'access',
         scope: 'openid',
         sub: appMember.id,
       });
@@ -427,6 +657,8 @@ describe('appsTokenHandler', () => {
         exp: 946_688_400,
         iat: 946_684_800,
         iss: 'http://localhost',
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'access',
         scope: 'blocks:write',
         sub: user.id,
       });
@@ -434,9 +666,25 @@ describe('appsTokenHandler', () => {
   });
 
   describe('refresh_token', () => {
+    let appId: number;
+    let tokenEndpoint: string;
+
+    beforeEach(async () => {
+      const organizationId = `org-${randomUUID()}`;
+      await user.$create('Organization', { id: organizationId });
+      const app = await App.create({
+        OrganizationId: organizationId,
+        definition: '',
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+      });
+      appId = app.id;
+      tokenEndpoint = `apps/${appId}/auth/oauth2/token`;
+    });
+
     it('should verify the refresh token', async () => {
       const response = await request.post(
-        'apps/1/auth/oauth2/token',
+        tokenEndpoint,
         new URLSearchParams({
           grant_type: 'refresh_token',
           refresh_token: 'invalid.refresh.token',
@@ -451,12 +699,145 @@ describe('appsTokenHandler', () => {
       });
     });
 
-    it('should create a refresh token', async () => {
-      const response = await request.post<TokenResponse>(
-        'apps/1/auth/oauth2/token',
+    it('should reject access tokens in the refresh token grant', async () => {
+      const tokens = createJWTResponse(user.id, { aud: `app:${appId}` });
+      const response = await request.post(
+        tokenEndpoint,
         new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: createJWTResponse(user.id).refresh_token!,
+          refresh_token: tokens.access_token,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          error: 'invalid_grant',
+        },
+      });
+    });
+
+    it('should create a refresh token from the signed refresh token cookie', async () => {
+      const {
+        app,
+        appMember,
+        response: loginResponse,
+      } = await createAuthorizationCodeTokenResponse();
+
+      const response = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+        }),
+        { headers: { cookie: getCookieHeader(loginResponse) } },
+      );
+
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          expires_in: 3600,
+          refresh_token: expect.stringMatching(jwtPattern),
+          token_type: 'bearer',
+        },
+      });
+      expect(response.data.access_token).not.toBe(response.data.refresh_token);
+      expectAppAuthCookies(response, app.id);
+      const payload = jwt.decode(response.data.access_token);
+      expect(payload).toStrictEqual({
+        aud: `app:${app.id}`,
+        exp: 946_688_400,
+        iat: 946_684_800,
+        iss: 'http://localhost',
+        scope: 'openid',
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'access',
+        sub: appMember.id,
+      });
+    });
+
+    it('should invalidate a refresh token after use', async () => {
+      const token = await createStoredRefreshToken(appId);
+
+      const firstResponse = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: token,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(firstResponse).toMatchObject({
+        status: 200,
+      });
+
+      const secondResponse = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: token,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(secondResponse).toMatchObject({
+        status: 400,
+        data: {
+          error: 'invalid_grant',
+        },
+      });
+    });
+
+    it('should revoke a refresh token', async () => {
+      const token = await createStoredRefreshToken(appId);
+
+      const revokeResponse = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'revoke_token',
+          refresh_token: token,
+        }),
+      );
+      expect(revokeResponse).toMatchObject({
+        status: 200,
+        data: {},
+      });
+
+      const refreshResponse = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: token,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(refreshResponse).toMatchObject({
+        status: 400,
+        data: {
+          error: 'invalid_grant',
+        },
+      });
+    });
+
+    it('should be idempotent when revoking invalid tokens', async () => {
+      const response = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'revoke_token',
+          refresh_token: 'invalid.refresh.token',
+        }),
+      );
+      expect(response).toMatchObject({
+        status: 200,
+        data: {},
+      });
+    });
+
+    it('should create a refresh token', async () => {
+      const response = await request.post<TokenResponse>(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: await createStoredRefreshToken(appId),
           scope: 'resources:manage',
         }),
       );
@@ -469,12 +850,16 @@ describe('appsTokenHandler', () => {
           token_type: 'bearer',
         },
       });
+      expect(response.data.access_token).not.toBe(response.data.refresh_token);
       const payload = jwt.decode(response.data.access_token);
       expect(payload).toStrictEqual({
-        aud: 'http://localhost',
+        aud: `app:${appId}`,
         exp: 946_688_400,
         iat: 946_684_800,
         iss: 'http://localhost',
+        scope: 'email openid profile resources:manage groups:read groups:write',
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'access',
         sub: user.id,
       });
     });

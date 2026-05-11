@@ -8,7 +8,7 @@ import {
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { defaultLocale } from '@appsemble/utils';
+import { appOAuth2Scope, defaultLocale } from '@appsemble/utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 import { parsePhoneNumber } from 'libphonenumber-js/min';
@@ -16,6 +16,7 @@ import { parsePhoneNumber } from 'libphonenumber-js/min';
 import { App, type AppMember, AppMessages, getAppDB } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
 import { parseAppMemberProperties } from '../../../../utils/appMember.js';
+import { createAppMemberRefreshSession } from '../../../../utils/appMemberRefreshSession.js';
 import { checkAppSecurityPolicy } from '../../../../utils/auth.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 
@@ -173,5 +174,20 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       logger.error(error);
     });
 
-  ctx.body = createJWTResponse(appMember.id);
+  const aud = `app:${appId}`;
+  const refreshToken = await createAppMemberRefreshSession(ctx, {
+    appId,
+    aud,
+    scope: appOAuth2Scope,
+    sub: appMember.id,
+  });
+
+  const tokenResponse = createJWTResponse(appMember.id, {
+    aud,
+    refreshToken: false,
+    scope: appOAuth2Scope,
+  });
+  tokenResponse.refresh_token = refreshToken;
+
+  ctx.body = tokenResponse;
 }

@@ -81,6 +81,33 @@ describe('getCurrentAppMember', () => {
     );
   });
 
+  it('should authenticate app API calls using the returned app access token', async () => {
+    const tokenResponse = await request.post(
+      `/apps/${app.id}/auth/oauth2/token`,
+      new URLSearchParams({
+        client_id: `app:${app.id}`,
+        grant_type: 'password',
+        password: 'testpassword',
+        scope: 'openid',
+        username: 'test@example.com',
+      }),
+    );
+
+    const response = await request.get(`/api/apps/${app.id}/members/current`, {
+      headers: {
+        authorization: `Bearer ${tokenResponse.data.access_token}`,
+      },
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        email: 'test@example.com',
+        name: 'Test App Member',
+      },
+    });
+  });
+
   it('should throw 404 if the app doesn’t exist', async () => {
     authorizeAppMember(app);
 

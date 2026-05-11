@@ -52,7 +52,7 @@ export const authenticatedTest = baseTest.extend<object, { workerStorageState: s
         return;
       }
 
-      const page = await browser.newPage({ storageState: undefined });
+      const page = await browser.newPage({ ignoreHTTPSErrors: true, storageState: undefined });
       await page.goto(`${testInfo.project.use.baseURL}/en/login`);
 
       await page.getByTestId('email').fill(email);
@@ -78,6 +78,7 @@ export const authenticatedTest = baseTest.extend<object, { workerStorageState: s
       extraHTTPHeaders: {
         Authorization: `Bearer ${accessToken}`,
       },
+      ignoreHTTPSErrors: true,
     });
     await use(newRequest);
     await newRequest.dispose();
