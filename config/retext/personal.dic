@@ -126,6 +126,8 @@ TTL
 testid
 util/kitten
 UUID
+Valkey
+valkey
 Vimeo
 Vue
 Weblate
