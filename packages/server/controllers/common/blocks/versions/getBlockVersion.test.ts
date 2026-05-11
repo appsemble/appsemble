@@ -125,7 +125,7 @@ describe('getBlockVersion', () => {
     expect(data).toMatchObject({
       files: ['standing.png'],
       fileUrls: {
-        'standing.png': `https://static.appsemble.example/appsemble-static-public/blocks/xkcd/standing/1.32.9/${contentHash}/standing.png`,
+        'standing.png': `https://static.appsemble.example/appsemble-block-assets/xkcd/standing/1.32.9/${contentHash}/standing.png`,
       },
     });
 

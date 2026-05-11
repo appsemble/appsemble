@@ -69,7 +69,7 @@ describe('migrateBlockAssetsToS3', () => {
       filename: 'hello.js',
       mime: 'application/javascript',
       size: 1,
-      storageKey: 'blocks/xkcd/test/1.2.3/hash/hello.js',
+      storageKey: 'xkcd/test/1.2.3/hash/hello.js',
     });
 
     expect(await migrateBlockAssetsToS3({ batch: 10 })).toStrictEqual({

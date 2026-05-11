@@ -68,7 +68,7 @@ describe('deleteBlockVersion', () => {
       version: '1.2.3',
     });
     const content = Buffer.from('asset');
-    const storageKey = 'blocks/xkcd/test-delete/1.2.3/hello.js';
+    const storageKey = 'xkcd/test-delete/1.2.3/hello.js';
 
     await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength);
     await BlockAsset.create({
@@ -100,7 +100,7 @@ describe('deleteBlockVersion', () => {
       }),
     ]);
     const content = Buffer.from('shared asset');
-    const storageKey = 'blocks/xkcd/shared/1.2.3/hash/hello.js';
+    const storageKey = 'xkcd/shared/1.2.3/hash/hello.js';
 
     await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength);
     await BlockAsset.bulkCreate([

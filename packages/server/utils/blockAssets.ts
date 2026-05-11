@@ -7,7 +7,7 @@ import { Op } from 'sequelize';
 import { argv } from './argv.js';
 import { BlockAsset } from '../models/index.js';
 
-const blockAssetsBucketName = 'appsemble-static-public';
+const blockAssetsBucketName = 'appsemble-block-assets';
 
 interface BlockAssetReference {
   filename: string;
@@ -33,7 +33,7 @@ export function getBlockAssetStorageKey({
   organizationId,
   version,
 }: BlockAssetLocation): string {
-  return ['blocks', organizationId, blockName, version, contentHash, filename].join('/');
+  return [organizationId, blockName, version, contentHash, filename].join('/');
 }
 
 export function getBlockAssetPublicUrl(storageKey?: string | null): string | undefined {

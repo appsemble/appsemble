@@ -64,7 +64,7 @@ describe('callBootstrap', () => {
       files: ['list.css', 'list.js'],
       fileUrls: {
         'list.js':
-          'https://static.appsemble.example/appsemble-static-public/blocks/appsemble/list/0.36.4/hash/list.js',
+          'https://static.appsemble.example/appsemble-block-assets/appsemble/list/0.36.4/hash/list.js',
       },
     } as unknown as BlockManifest;
 
@@ -75,7 +75,7 @@ describe('callBootstrap', () => {
     expect(appendSpy).toHaveBeenCalledTimes(1);
     const script = appendSpy.mock.calls[0][0] as HTMLScriptElement;
     expect(script.src).toBe(
-      'https://static.appsemble.example/appsemble-static-public/blocks/appsemble/list/0.36.4/hash/list.js',
+      'https://static.appsemble.example/appsemble-block-assets/appsemble/list/0.36.4/hash/list.js',
     );
     expect(bootstrapFn).toHaveBeenCalledTimes(1);
   });

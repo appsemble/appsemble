@@ -61,7 +61,7 @@ describe('getBlockVersionAsset', () => {
       version: '1.2.3',
     });
     const content = Buffer.from('console.log("Hello from S3!")');
-    const storageKey = 'blocks/xkcd/test/1.2.3/hello.js';
+    const storageKey = 'xkcd/test/1.2.3/hello.js';
 
     await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength);
     await BlockAsset.create({
@@ -94,7 +94,7 @@ describe('getBlockVersionAsset', () => {
       filename: 'hello.js',
       mime: 'application/javascript',
       size: Buffer.byteLength('console.log("Hello from Postgres!")'),
-      storageKey: 'blocks/xkcd/test/1.2.3/missing/hello.js',
+      storageKey: 'xkcd/test/1.2.3/missing/hello.js',
     });
 
     const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {

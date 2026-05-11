@@ -13,7 +13,7 @@ import {
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
-import { getBlockAssetContentHash } from '../../../utils/blockAssets.js';
+import { getBlockAssetContentHash, getBlockAssetsBucketName } from '../../../utils/blockAssets.js';
 import { createServer } from '../../../utils/createServer.js';
 import { authorizeClientCredentials, createTestUser } from '../../../utils/test/authorization.js';
 
@@ -91,12 +91,12 @@ describe('createBlock', () => {
     expect(blockAsset).toMatchObject({
       content: null,
       filename: 'build/standing.png',
-      storageKey: `blocks/xkcd/standing/1.32.9/${contentHash}/build/standing.png`,
+      storageKey: `xkcd/standing/1.32.9/${contentHash}/build/standing.png`,
     });
     expect(blockAsset?.size).toBeGreaterThan(0);
-    expect(await getS3FileBuffer('appsemble-static-public', blockAsset!.storageKey!)).toStrictEqual(
-      content,
-    );
+    expect(
+      await getS3FileBuffer(getBlockAssetsBucketName(), blockAsset!.storageKey!),
+    ).toStrictEqual(content);
   });
 
   it('should include public S3 file URLs when configured', async () => {
@@ -121,7 +121,7 @@ describe('createBlock', () => {
     expect(data).toMatchObject({
       files: ['build/standing.png'],
       fileUrls: {
-        'build/standing.png': `https://static.appsemble.example/appsemble-static-public/blocks/xkcd/standing/1.32.9/${contentHash}/build/standing.png`,
+        'build/standing.png': `https://static.appsemble.example/appsemble-block-assets/xkcd/standing/1.32.9/${contentHash}/build/standing.png`,
       },
     });
   });
