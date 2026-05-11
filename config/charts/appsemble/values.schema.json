@@ -165,10 +165,6 @@
             "batch": {
               "type": "integer",
               "description": "The number of block assets to migrate per database batch."
-            },
-            "dryRun": {
-              "type": "boolean",
-              "description": "If `true`, count block assets that would be migrated without uploading objects or updating rows."
             }
           }
         }

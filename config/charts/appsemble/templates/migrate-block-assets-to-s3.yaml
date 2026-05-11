@@ -28,9 +28,6 @@ spec:
             {{ with .Values.blockAssets.migration.batch }}
             - "--batch={{ . }}"
             {{ end }}
-            {{ if .Values.blockAssets.migration.dryRun }}
-            - --dry-run
-            {{ end }}
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
 {{ include "appsemble.s3" . | indent 12 }}

@@ -50,7 +50,6 @@ describe('migrateBlockAssetsToS3', () => {
       scanned: 1,
       skipped: 0,
       uploaded: 1,
-      wouldUpload: 0,
     });
 
     await blockAsset.reload();
@@ -77,33 +76,6 @@ describe('migrateBlockAssetsToS3', () => {
       scanned: 0,
       skipped: 0,
       uploaded: 0,
-      wouldUpload: 0,
-    });
-  });
-
-  it('should not upload or update database rows during a dry run', async () => {
-    const blockVersion = await createBlockVersion();
-    const content = Buffer.from('console.log("Hello from Postgres!")');
-    const blockAsset = await BlockAsset.create({
-      BlockVersionId: blockVersion.id,
-      content,
-      filename: 'hello.js',
-      mime: 'application/javascript',
-    });
-
-    expect(await migrateBlockAssetsToS3({ batch: 10, dryRun: true })).toStrictEqual({
-      failed: 0,
-      scanned: 1,
-      skipped: 0,
-      uploaded: 0,
-      wouldUpload: 1,
-    });
-
-    await blockAsset.reload();
-    expect(blockAsset).toMatchObject({
-      content,
-      size: null,
-      storageKey: null,
     });
   });
 
@@ -125,7 +97,6 @@ describe('migrateBlockAssetsToS3', () => {
       scanned: 1,
       skipped: 0,
       uploaded: 0,
-      wouldUpload: 0,
     });
 
     await blockAsset.reload();

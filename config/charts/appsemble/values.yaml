@@ -47,7 +47,6 @@ blockAssets:
   migration:
     enabled: true
     batch: 100
-    dryRun: false
 
 # OpenShift Route configuration (alternative to Ingress)
 route:

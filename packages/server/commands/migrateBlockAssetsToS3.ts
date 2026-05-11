@@ -15,7 +15,6 @@ import { handleDBError } from '../utils/sqlUtils.js';
 
 interface AdditionalArguments {
   batch?: number;
-  dryRun?: boolean;
 }
 
 export interface MigrateBlockAssetsToS3Result {
@@ -23,42 +22,31 @@ export interface MigrateBlockAssetsToS3Result {
   scanned: number;
   skipped: number;
   uploaded: number;
-  wouldUpload: number;
 }
 
 export const command = 'migrate-block-assets-to-s3';
 export const description = 'Migrate existing block asset database BLOBs to S3 object storage.';
 
 export function builder(yargs: Argv): Argv {
-  return databaseBuilder(yargs)
-    .option('batch', {
-      desc: 'The batch size of block assets to migrate at once.',
-      type: 'number',
-      default: 100,
-    })
-    .option('dry-run', {
-      desc: 'Count block assets that would be migrated without uploading objects or updating rows.',
-      type: 'boolean',
-      default: false,
-    });
+  return databaseBuilder(yargs).option('batch', {
+    desc: 'The batch size of block assets to migrate at once.',
+    type: 'number',
+    default: 100,
+  });
 }
 
 export async function migrateBlockAssetsToS3({
   batch = 100,
-  dryRun = false,
 }: AdditionalArguments = {}): Promise<MigrateBlockAssetsToS3Result> {
   const result: MigrateBlockAssetsToS3Result = {
     failed: 0,
     scanned: 0,
     skipped: 0,
     uploaded: 0,
-    wouldUpload: 0,
   };
   let lastId = 0;
 
-  if (!dryRun) {
-    await ensureBlockAssetsBucketPublicRead();
-  }
+  await ensureBlockAssetsBucketPublicRead();
 
   for (;;) {
     const blockAssets = await BlockAsset.findAll({
@@ -101,11 +89,6 @@ export async function migrateBlockAssetsToS3({
         version: blockVersion.version,
       });
 
-      if (dryRun) {
-        result.wouldUpload += 1;
-        continue;
-      }
-
       try {
         await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength, {
           'Cache-Control': 'public,max-age=31536000,immutable',
@@ -127,7 +110,6 @@ export async function migrateBlockAssetsToS3({
 
   logger.info(`Scanned ${result.scanned} block asset(s).`);
   logger.info(`Uploaded ${result.uploaded} block asset(s) to S3.`);
-  logger.info(`Dry run would upload ${result.wouldUpload} block asset(s).`);
   logger.info(`Skipped ${result.skipped} block asset(s).`);
   logger.info(`Failed to migrate ${result.failed} block asset(s).`);
 
