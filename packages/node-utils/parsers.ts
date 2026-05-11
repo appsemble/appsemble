@@ -3,6 +3,7 @@ import { createWriteStream } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parse } from 'node:querystring';
+import { finished } from 'node:stream/promises';
 
 import busboy from 'busboy';
 import { parse as parseCSV } from 'csv-parse';
@@ -89,8 +90,9 @@ export const streamParser: Parser<Record<string, unknown>> = async (
 
   const response: Record<string, any> = {};
   const tempFiles: Record<string, TempFile | TempFile[]> = {};
+  const fileWrites: Promise<void>[] = [];
 
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     function onError(error: Error): void {
       bb.removeAllListeners();
       logger.error(error);
@@ -103,6 +105,7 @@ export const streamParser: Parser<Record<string, unknown>> = async (
 
       try {
         const fileWriteStream = createWriteStream(path);
+        fileWrites.push(finished(fileWriteStream));
         stream.pipe(fileWriteStream);
 
         stream.on('error', onError);
@@ -138,9 +141,14 @@ export const streamParser: Parser<Record<string, unknown>> = async (
           response[fieldName] = fromString(propertySchema, content);
         }
       })
-      .on('close', () => {
+      .on('close', async () => {
         bb.removeAllListeners();
-        resolve(response);
+        try {
+          await Promise.all(fileWrites);
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
       })
       .on('error', onError)
       .on('partsLimit', onError)
