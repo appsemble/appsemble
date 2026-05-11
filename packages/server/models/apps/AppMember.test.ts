@@ -60,6 +60,23 @@ describe('AppMember', () => {
     expect(member?.roles).toStrictEqual(['Admin']);
   });
 
+  it('should preserve roles for queries that omit the id attribute', async () => {
+    const { AppMember } = await getAppDB(1);
+
+    await AppMember.create({
+      email: 'test@example.com',
+      role: 'Admin',
+    });
+
+    const member = await AppMember.findOne({
+      attributes: ['role'],
+      where: { email: 'test@example.com' },
+    });
+
+    expect(member?.role).toBe('Admin');
+    expect(member?.roles).toStrictEqual(['Admin']);
+  });
+
   it('should use NL as default country code', async () => {
     const { AppMember } = await getAppDB(1);
     const member = await AppMember.create({

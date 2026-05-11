@@ -331,12 +331,18 @@ async function hydrateAppMemberRoles(
     return;
   }
 
+  const instancesWithId = instances.filter(({ id }) => id);
+
+  if (!instancesWithId.length) {
+    return;
+  }
+
   const appMemberAssignedRoleModel = sequelize.models
     .AppMemberAssignedRole as Repository<AppMemberAssignedRole>;
   const assignedRoles = await appMemberAssignedRoleModel.findAll({
     where: {
       AppMemberId: {
-        [Op.in]: instances.map(({ id }) => id),
+        [Op.in]: instancesWithId.map(({ id }) => id),
       },
     },
     order: [
@@ -347,7 +353,7 @@ async function hydrateAppMemberRoles(
   });
   const assignedRolesByMemberId = Object.groupBy(assignedRoles, ({ AppMemberId }) => AppMemberId);
 
-  for (const instance of instances) {
+  for (const instance of instancesWithId) {
     instance.AppMemberAssignedRoles = assignedRolesByMemberId[instance.id] ?? [];
     const roles = getAppMemberRoles(instance);
     instance.setDataValue('roles', roles);
