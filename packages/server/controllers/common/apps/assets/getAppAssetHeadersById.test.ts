@@ -99,6 +99,26 @@ describe('getAssetHeadersById', () => {
     });
   });
 
+  it('should serve avif headers for image assets by default.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+      filename: 'logo.png',
+    });
+
+    const response = await request.head(`/api/apps/${app.id}/assets/${asset.id}`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': 'inline; filename="logo.avif"',
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+      data: '',
+    });
+  });
+
   it('should fallback to the asset id as the filename', async () => {
     const data = Buffer.from('buffer');
     const { Asset } = await getAppDB(app.id);
