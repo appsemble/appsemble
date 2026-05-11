@@ -1,4 +1,5 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
+import { appOAuth2Scope } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { createAppMemberRefreshSession } from '../../../../utils/appMemberRefreshSession.js';
@@ -16,10 +17,15 @@ export async function loginAppMemberWithEmail(ctx: Context): Promise<void> {
   const refreshToken = await createAppMemberRefreshSession(ctx, {
     appId,
     aud,
+    scope: appOAuth2Scope,
     sub: appMember.id,
   });
 
-  const tokenResponse = createJWTResponse(appMember.id, { aud, refreshToken: false });
+  const tokenResponse = createJWTResponse(appMember.id, {
+    aud,
+    refreshToken: false,
+    scope: appOAuth2Scope,
+  });
   tokenResponse.refresh_token = refreshToken;
   ctx.body = tokenResponse;
 }

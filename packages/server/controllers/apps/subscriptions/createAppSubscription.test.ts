@@ -111,4 +111,43 @@ describe('createAppSubscription', () => {
       updated: new Date(),
     });
   });
+
+  it('should subscribe to apps using the returned app access token', async () => {
+    const app = await defaultApp(organization.id);
+    const appMember = await createTestAppMember(app.id);
+
+    const tokenResponse = await request.post(
+      `/apps/${app.id}/auth/oauth2/token`,
+      new URLSearchParams({
+        client_id: `app:${app.id}`,
+        grant_type: 'password',
+        password: 'testpassword',
+        scope: 'openid',
+        username: 'test@example.com',
+      }),
+    );
+    const response = await request.post(
+      `/api/apps/${app.id}/subscriptions`,
+      {
+        endpoint: 'https://example.com',
+        keys: { p256dh: 'abc', auth: 'def' },
+      },
+      {
+        headers: {
+          authorization: `Bearer ${tokenResponse.data.access_token}`,
+        },
+      },
+    );
+
+    const { AppSubscription } = await getAppDB(app.id);
+    const subscription = await AppSubscription.findOne({
+      where: { endpoint: 'https://example.com' },
+      raw: true,
+    });
+
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(subscription).toMatchObject({
+      AppMemberId: appMember.id,
+    });
+  });
 });

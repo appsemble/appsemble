@@ -171,13 +171,13 @@ describe('verifyAppMemberTotp', () => {
       expect.arrayContaining([
         expect.stringMatching(
           new RegExp(
-            `^app_refresh_token=[^;]+; path=/apps/${app.id}/auth/oauth2/token; .*httpOnly(?:;.*)?$`,
+            `^app_refresh_token=[^;]+; path=/apps/${app.id}/auth/oauth2/token; (?=.*samesite=none)(?=.*partitioned)(?!.*secure)(?!.*httponly).*$`,
             'i',
           ),
         ),
         expect.stringMatching(
           new RegExp(
-            `^app_refresh_token\\.sig=[^;]+; path=/apps/${app.id}/auth/oauth2/token; .*httpOnly(?:;.*)?$`,
+            `^app_refresh_token\\.sig=[^;]+; path=/apps/${app.id}/auth/oauth2/token; (?=.*samesite=none)(?=.*partitioned)(?!.*secure)(?!.*httponly).*$`,
             'i',
           ),
         ),
