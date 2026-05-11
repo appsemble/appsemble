@@ -104,7 +104,7 @@ describe('getAppAssetById', () => {
     });
   });
 
-  it('should return original image when larger size is specified.', async () => {
+  it('should return a full-size avif derivative when larger size is specified.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
       mime: 'image/png',
@@ -132,8 +132,8 @@ describe('getAppAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/png',
-        'content-disposition': `inline; filename="${asset.id}.png"`,
+        'content-type': 'image/avif',
+        'content-disposition': `inline; filename="${asset.id}.avif"`,
         'cache-control': 'max-age=31536000,immutable',
       }),
     });
@@ -144,7 +144,103 @@ describe('getAppAssetById', () => {
     expect(metadata.height).toBe(100);
   });
 
-  it('should return original image when specified size is too similar.', async () => {
+  it('should return a full-size avif derivative when no size is specified.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+    });
+    const image = await sharp({
+      create: {
+        width: 120,
+        height: 80,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+    });
+
+    const metadata = await sharp(response.data).metadata();
+
+    expect(metadata.width).toBe(120);
+    expect(metadata.height).toBe(80);
+  });
+
+  it('should cache and reuse the full-size avif derivative.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+    });
+    const image = await sharp({
+      create: {
+        width: 120,
+        height: 80,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const firstResponse = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(firstResponse).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': `inline; filename="${asset.id}.avif"`,
+      }),
+    });
+
+    const cachedAssets = await Asset.findAll({
+      where: { name: `${asset.id}-full-avif` },
+      attributes: ['id'],
+    });
+    expect(cachedAssets).toHaveLength(1);
+
+    const cachedBuffer = await getS3FileBuffer(`app-${app.id}`, cachedAssets[0].id);
+
+    const secondResponse = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(secondResponse).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': `inline; filename="${asset.id}.avif"`,
+      }),
+    });
+    expect(Buffer.from(secondResponse.data)).toStrictEqual(cachedBuffer);
+
+    const cachedAssetsAfter = await Asset.findAll({
+      where: { name: `${asset.id}-full-avif` },
+      attributes: ['id'],
+    });
+    expect(cachedAssetsAfter).toHaveLength(1);
+    expect(cachedAssetsAfter[0].id).toBe(cachedAssets[0].id);
+  });
+
+  it('should resize the image when the requested size is smaller.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
       mime: 'image/png',
@@ -172,16 +268,16 @@ describe('getAppAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/png',
-        'content-disposition': `inline; filename="${asset.id}.png"`,
+        'content-type': 'image/avif',
+        'content-disposition': `inline; filename="${asset.id}.avif"`,
         'cache-control': 'max-age=31536000,immutable',
       }),
     });
 
     const metadata = await sharp(response.data).metadata();
 
-    expect(metadata.width).toBe(300);
-    expect(metadata.height).toBe(300);
+    expect(metadata.width).toBe(150);
+    expect(metadata.height).toBe(150);
   });
 
   it('should not resize the asset when its not an image, only return original.', async () => {
@@ -408,6 +504,61 @@ describe('getAppAssetById', () => {
     expect(regeneratedCachedAsset?.deleted).toBeFalsy();
   });
 
+  it('should regenerate the full-size avif derivative when the cached image is missing from s3.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+    });
+    const staleFullAsset = await Asset.create({
+      name: `${asset.id}-full-avif`,
+      mime: 'image/avif',
+    });
+    const image = await sharp({
+      create: {
+        width: 100,
+        height: 100,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+    });
+
+    const metadata = await sharp(response.data).metadata();
+
+    expect(metadata.width).toBe(100);
+    expect(metadata.height).toBe(100);
+
+    const deletedCachedAsset = await Asset.findByPk(staleFullAsset.id, {
+      paranoid: false,
+      attributes: ['deleted'],
+    });
+    expect(deletedCachedAsset?.deleted).toBeTruthy();
+
+    const regeneratedCachedAsset = await Asset.findOne({
+      where: { name: `${asset.id}-full-avif` },
+      attributes: ['id', 'deleted'],
+    });
+    expect(regeneratedCachedAsset).toBeTruthy();
+    expect(regeneratedCachedAsset?.id).not.toBe(staleFullAsset.id);
+    expect(regeneratedCachedAsset?.deleted).toBeFalsy();
+  });
+
   it('should fallback to the asset id as the filename', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create();
@@ -501,7 +652,7 @@ describe('getAppAssetById', () => {
     const assetId = asset.id;
     const { status } = await request.get(`/api/apps/${app.id}/assets/${assetId}`);
     expect(status).toBe(200);
-    authorizeStudio();
+    authorizeStudio(user);
     const deletedAsset = await request.delete(`/api/apps/${app.id}/assets/${assetId}`);
     expect(deletedAsset.status).toBe(204);
     const response = await request.get(`/api/apps/${app.id}/assets/${assetId}`);
