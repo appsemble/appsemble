@@ -24,18 +24,19 @@ let user: User;
 function expectAppAuthCookies(response: { headers: Record<string, unknown> }, appId: number): void {
   const headers = response.headers as Record<string, string[] | undefined>;
   const setCookie = headers['set-cookie'] ?? headers['Set-Cookie'];
+  const attributes = '(?=.*httponly)(?=.*secure)(?=.*samesite=none)(?=.*partitioned)';
 
   expect(setCookie).toStrictEqual(
     expect.arrayContaining([
       expect.stringMatching(
         new RegExp(
-          `^app_refresh_token=[^;]+; path=/apps/${appId}/auth/oauth2/token; (?=.*samesite=none)(?=.*partitioned)(?!.*secure)(?!.*httponly).*$`,
+          `^app_refresh_token=[^;]+; path=/apps/${appId}/auth/oauth2/token; ${attributes}.*$`,
           'i',
         ),
       ),
       expect.stringMatching(
         new RegExp(
-          `^app_refresh_token\\.sig=[^;]+; path=/apps/${appId}/auth/oauth2/token; (?=.*samesite=none)(?=.*partitioned)(?!.*secure)(?!.*httponly).*$`,
+          `^app_refresh_token\\.sig=[^;]+; path=/apps/${appId}/auth/oauth2/token; ${attributes}.*$`,
           'i',
         ),
       ),
