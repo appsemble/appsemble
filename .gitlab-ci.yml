@@ -268,7 +268,6 @@ seed database:
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
-        BLOCK_ASSETS_BASE_URL: 'http://minio:9000'
         migrateTo: next
   script:
     - npm run scripts create-user --
@@ -610,7 +609,6 @@ validate snippets:
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
-        BLOCK_ASSETS_BASE_URL: 'http://minio:9000'
         migrateTo: next
   script:
     - npm run appsemble -- config set remote 'http://appsemble:9999'
@@ -790,7 +788,6 @@ e2e keycloak:
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
-        BLOCK_ASSETS_BASE_URL: 'http://minio:9000'
         migrateTo: next
         E2E: true
   script:
