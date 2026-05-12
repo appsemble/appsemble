@@ -1,7 +1,5 @@
 import { type Context } from 'koa';
 
-import { argv } from './argv.js';
-
 export const APP_REFRESH_TOKEN_COOKIE_NAME = 'app_refresh_token';
 
 const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30;
@@ -9,17 +7,17 @@ const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30;
 function getCookieOptions(path: string): {
   httpOnly: boolean;
   path: string;
-  sameSite: 'none';
+  sameSite: 'lax' | 'none';
   secure: boolean;
   signed: boolean;
   maxAge: number;
-  partitioned: true;
+  partitioned?: true;
 } {
   return {
-    httpOnly: argv.ssl,
+    httpOnly: true,
     path,
     sameSite: 'none',
-    secure: argv.ssl,
+    secure: true,
     signed: true,
     maxAge: REFRESH_TOKEN_TTL_SECONDS * 1000,
     partitioned: true,
@@ -59,15 +57,15 @@ export function setAppRefreshTokenCookie(ctx: Context, appId: number, token: str
 function clearCookie(ctx: Context, name: string, path: string): void {
   const options = {
     expires: new Date(0),
-    sameSite: 'none' as const,
-    secure: argv.ssl,
+    sameSite: 'none',
+    secure: true,
     signed: true,
-    partitioned: true as const,
+    partitioned: true,
   };
 
   setCookie(ctx, name, '', {
     ...options,
-    httpOnly: argv.ssl,
+    httpOnly: true,
     path,
   });
 }

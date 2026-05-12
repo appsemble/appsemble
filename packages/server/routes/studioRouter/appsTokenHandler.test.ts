@@ -40,14 +40,8 @@ function getCookieHeader(response: { headers: Record<string, unknown> }): string
     .join('; ');
 }
 
-function expectAppAuthCookies(
-  response: { headers: Record<string, unknown> },
-  appId: number,
-  secure = false,
-): void {
-  const attributes = secure
-    ? '(?=.*httponly)(?=.*secure)(?=.*samesite=none)(?=.*partitioned)'
-    : '(?!.*httponly)(?!.*secure)(?=.*samesite=none)(?=.*partitioned)';
+function expectAppAuthCookies(response: { headers: Record<string, unknown> }, appId: number): void {
+  const attributes = '(?=.*httponly)(?=.*secure)(?=.*samesite=none)(?=.*partitioned)';
 
   expect(getSetCookieHeaders(response)).toStrictEqual(
     expect.arrayContaining([
@@ -247,10 +241,45 @@ describe('appsTokenHandler', () => {
             refresh_token: expect.stringMatching(jwtPattern),
           },
         });
-        expectAppAuthCookies(response, app.id, true);
+        expectAppAuthCookies(response, app.id);
       } finally {
         setArgv({ host: 'http://localhost', secret: 'test' });
       }
+    });
+
+    it('should set secure app auth cookies if the external host is HTTPS', async () => {
+      setArgv({ host: 'https://localhost', secret: 'test' });
+      try {
+        const { app, response } = await createAuthorizationCodeTokenResponse(
+          'https://foo.bar.localhost:9999/',
+        );
+
+        expect(response).toMatchObject({
+          status: 200,
+          data: {
+            access_token: expect.stringMatching(jwtPattern),
+            refresh_token: expect.stringMatching(jwtPattern),
+          },
+        });
+        expectAppAuthCookies(response, app.id);
+      } finally {
+        setArgv({ host: 'http://localhost', secret: 'test' });
+      }
+    });
+
+    it('should set secure app auth cookies if the app request origin is HTTPS', async () => {
+      const { app, response } = await createAuthorizationCodeTokenResponse(
+        'https://foo.bar.localhost:9999/',
+      );
+
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      });
+      expectAppAuthCookies(response, app.id);
     });
 
     it('should fail if the referer doesn’t match the redirect URI', async () => {
