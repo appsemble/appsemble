@@ -18,7 +18,7 @@ export async function getBlockVersionAsset(ctx: Context): Promise<void> {
   assertKoaCondition(block != null, ctx, 404, 'Block version not found');
 
   const asset = await BlockAsset.findOne({
-    attributes: ['id', 'mime', 'storageKey'],
+    attributes: ['mime', 'storageKey'],
     where: { filename, BlockVersionId: block.id },
   });
 
@@ -26,36 +26,24 @@ export async function getBlockVersionAsset(ctx: Context): Promise<void> {
 
   ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
 
-  if (asset.storageKey) {
-    try {
-      const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
+  assertKoaCondition(asset.storageKey != null, ctx, 404, `Block has no asset named "${filename}"`);
 
-      if (stream) {
-        const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
+  try {
+    const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
 
-        ctx.set('Content-Length', String(stats.size));
-        ctx.set('ETag', stats.etag);
-        ctx.set('Last-Modified', stats.lastModified.toUTCString());
-        ctx.body = stream;
-        ctx.type = asset.mime ?? 'application/octet-stream';
-        return;
-      }
-    } catch (error) {
-      logger.warn(error);
+    if (stream) {
+      const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
+
+      ctx.set('Content-Length', String(stats.size));
+      ctx.set('ETag', stats.etag);
+      ctx.set('Last-Modified', stats.lastModified.toUTCString());
+      ctx.body = stream;
+      ctx.type = asset.mime ?? 'application/octet-stream';
+      return;
     }
+  } catch (error) {
+    logger.warn(error);
   }
 
-  const fallbackAsset = await BlockAsset.findByPk(asset.id, {
-    attributes: ['content'],
-  });
-
-  assertKoaCondition(
-    fallbackAsset?.content != null,
-    ctx,
-    404,
-    `Block has no asset named "${filename}"`,
-  );
-
-  ctx.body = fallbackAsset.content;
-  ctx.type = asset.mime ?? 'application/octet-stream';
+  assertKoaCondition(false, ctx, 404, `Block has no asset named "${filename}"`);
 }

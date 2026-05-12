@@ -70,7 +70,7 @@ describe('createBlock', () => {
     expect(status).toBe(201);
   });
 
-  it('should upload block assets to S3 and keep metadata in postgres', async () => {
+  it('should upload block assets to S3 and omit database content', async () => {
     const formData = new FormData();
     formData.append('name', '@xkcd/standing');
     formData.append('version', '1.32.9');
@@ -101,7 +101,7 @@ describe('createBlock', () => {
 
   it('should include public S3 file URLs when configured', async () => {
     setArgv({
-      blockAssetsPublicUrl: 'https://static.appsemble.example',
+      blockAssetsBaseUrl: 'https://static.appsemble.example',
       host: 'http://localhost',
       secret: 'test',
     });
@@ -124,6 +124,12 @@ describe('createBlock', () => {
         'build/standing.png': `https://static.appsemble.example/appsemble-block-assets/xkcd/standing/1.32.9/${contentHash}/build/standing.png`,
       },
     });
+
+    const blockAsset = await BlockAsset.findOne({
+      where: { filename: 'build/standing.png' },
+    });
+
+    expect(blockAsset?.content).toBeNull();
   });
 
   it('should accept and return repositoryUrl when publishing blocks', async () => {

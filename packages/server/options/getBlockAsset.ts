@@ -28,7 +28,7 @@ export async function getBlockAsset({
   }
 
   const asset = await BlockAsset.findOne({
-    attributes: ['filename', 'id', 'mime', 'size', 'storageKey'],
+    attributes: ['filename', 'mime', 'storageKey'],
     where: { filename, BlockVersionId: blockVersion.id },
   });
 
@@ -37,40 +37,32 @@ export async function getBlockAsset({
     return null;
   }
 
-  if (asset.storageKey) {
-    try {
-      const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
-
-      if (stream) {
-        const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
-
-        return {
-          etag: stats.etag,
-          filename: asset.filename,
-          lastModified: stats.lastModified,
-          mime: asset.mime ?? 'application/octet-stream',
-          size: stats.size,
-          stream,
-        };
-      }
-    } catch (error) {
-      logger.warn(error);
-    }
-  }
-
-  const fallbackAsset = await BlockAsset.findByPk(asset.id, {
-    attributes: ['content'],
-  });
-
-  if (!fallbackAsset?.content) {
+  if (!asset.storageKey) {
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return null;
   }
 
-  return {
-    content: fallbackAsset.content,
-    filename: asset.filename,
-    mime: asset.mime ?? 'application/octet-stream',
-    size: asset.size ?? fallbackAsset.content.byteLength,
-  };
+  try {
+    const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
+
+    if (!stream) {
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+      return null;
+    }
+
+    const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
+
+    return {
+      etag: stats.etag,
+      filename: asset.filename,
+      lastModified: stats.lastModified,
+      mime: asset.mime ?? 'application/octet-stream',
+      size: stats.size,
+      stream,
+    };
+  } catch (error) {
+    logger.warn(error);
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+    return null;
+  }
 }

@@ -7,6 +7,14 @@ import { logger } from './logger.js';
 
 let s3Client: Client;
 
+export interface S3FileReference {
+  etag: string;
+  key: string;
+  lastModified: Date;
+  metadata: BucketItemStat['metaData'];
+  size: number;
+}
+
 export interface InitS3ClientParams {
   endPoint: string;
   port?: number;
@@ -137,6 +145,35 @@ export async function getS3FileStats(bucket: string, key: string): Promise<Bucke
     logger.error(error);
     throw error;
   }
+}
+
+export async function listS3Files(bucket: string): Promise<S3FileReference[]> {
+  const keys = await new Promise<string[]>((resolve, reject) => {
+    const objects: string[] = [];
+    const stream = s3Client.listObjectsV2(bucket, '', true);
+
+    stream.on('data', (item) => {
+      if (item.name) {
+        objects.push(item.name);
+      }
+    });
+    stream.on('error', reject);
+    stream.on('end', () => resolve(objects));
+  });
+
+  return Promise.all(
+    keys.map(async (key) => {
+      const stats = await getS3FileStats(bucket, key);
+
+      return {
+        etag: stats.etag,
+        key,
+        lastModified: stats.lastModified,
+        metadata: stats.metaData,
+        size: stats.size,
+      };
+    }),
+  );
 }
 
 export async function setS3BucketPolicy(bucket: string, policy: string): Promise<void> {

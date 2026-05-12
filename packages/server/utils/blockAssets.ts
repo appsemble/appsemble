@@ -37,11 +37,11 @@ export function getBlockAssetStorageKey({
 }
 
 export function getBlockAssetPublicUrl(storageKey?: string | null): string | undefined {
-  if (!storageKey || !argv.blockAssetsPublicUrl) {
+  if (!storageKey || !argv.blockAssetsBaseUrl) {
     return;
   }
 
-  const publicBase = `${argv.blockAssetsPublicUrl.replace(/\/+$/, '')}/`;
+  const publicBase = `${argv.blockAssetsBaseUrl.replace(/\/+$/, '')}/`;
   const encodedPath = [getBlockAssetsBucketName(), ...storageKey.split('/')]
     .map(encodeURIComponent)
     .join('/');
@@ -62,15 +62,15 @@ export function getBlockAssetFileUrls(
 }
 
 export function getBlockAssetPublicOrigin(): string | undefined {
-  if (!argv.blockAssetsPublicUrl) {
+  if (!argv.blockAssetsBaseUrl) {
     return;
   }
 
-  return new URL(argv.blockAssetsPublicUrl).origin;
+  return new URL(argv.blockAssetsBaseUrl).origin;
 }
 
 export async function ensureBlockAssetsBucketPublicRead(): Promise<void> {
-  if (!argv.blockAssetsPublicUrl) {
+  if (!argv.blockAssetsBaseUrl) {
     return;
   }
 

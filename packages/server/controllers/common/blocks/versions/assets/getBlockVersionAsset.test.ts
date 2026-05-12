@@ -33,7 +33,7 @@ describe('getBlockVersionAsset', () => {
     await setTestApp(server);
   });
 
-  it('should serve a block asset', async () => {
+  it('should respond with 404 if the block asset is not S3-backed', async () => {
     const block = await BlockVersion.create({
       OrganizationId: 'xkcd',
       name: 'test',
@@ -42,16 +42,21 @@ describe('getBlockVersionAsset', () => {
     await BlockAsset.create({
       BlockVersionId: block.id,
       filename: 'hello.js',
-      content: 'console.log("Hello world!")',
       mime: 'application/javascript',
     });
 
     const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {
       params: { filename: 'hello.js' },
     });
-    expect(response.headers['content-type']).toBe('application/javascript; charset=utf-8');
     expect(response.headers['cache-control']).toBe('public,max-age=31536000,immutable');
-    expect(response.data).toBe('console.log("Hello world!")');
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block has no asset named "hello.js"',
+        statusCode: 404,
+      },
+    });
   });
 
   it('should serve an S3-backed block asset', async () => {
@@ -82,7 +87,7 @@ describe('getBlockVersionAsset', () => {
     expect(response.data).toBe('console.log("Hello from S3!")');
   });
 
-  it('should fall back to database content if an S3-backed asset is missing in S3', async () => {
+  it('should respond with 404 if an S3-backed asset is missing in S3', async () => {
     const block = await BlockVersion.create({
       OrganizationId: 'xkcd',
       name: 'test',
@@ -90,10 +95,8 @@ describe('getBlockVersionAsset', () => {
     });
     await BlockAsset.create({
       BlockVersionId: block.id,
-      content: 'console.log("Hello from Postgres!")',
       filename: 'hello.js',
       mime: 'application/javascript',
-      size: Buffer.byteLength('console.log("Hello from Postgres!")'),
       storageKey: 'xkcd/test/1.2.3/missing/hello.js',
     });
 
@@ -102,7 +105,14 @@ describe('getBlockVersionAsset', () => {
     });
 
     expect(response.headers['cache-control']).toBe('public,max-age=31536000,immutable');
-    expect(response.data).toBe('console.log("Hello from Postgres!")');
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block has no asset named "hello.js"',
+        statusCode: 404,
+      },
+    });
   });
 
   it('should respond with 404 the version mismatches', async () => {
@@ -114,7 +124,6 @@ describe('getBlockVersionAsset', () => {
     await BlockAsset.create({
       BlockVersionId: block.id,
       filename: 'hello.js',
-      content: 'console.log("Hello world!")',
       mime: 'application/javascript',
     });
 
@@ -140,7 +149,6 @@ describe('getBlockVersionAsset', () => {
     await BlockAsset.create({
       BlockVersionId: block.id,
       filename: 'hello.js',
-      content: 'console.log("Hello world!")',
       mime: 'application/javascript',
     });
 
@@ -166,7 +174,6 @@ describe('getBlockVersionAsset', () => {
     await BlockAsset.create({
       BlockVersionId: block.id,
       filename: 'hello.js',
-      content: 'console.log("Hello world!")',
       mime: 'application/javascript',
     });
 
@@ -192,7 +199,6 @@ describe('getBlockVersionAsset', () => {
     await BlockAsset.create({
       BlockVersionId: block.id,
       filename: 'hello.js',
-      content: 'console.log("Hello world!")',
       mime: 'application/javascript',
     });
 

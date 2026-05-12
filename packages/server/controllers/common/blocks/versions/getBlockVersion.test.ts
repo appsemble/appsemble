@@ -98,7 +98,7 @@ describe('getBlockVersion', () => {
 
   it('should add public file URLs to cached manifestJson without rebuilding it', async () => {
     setArgv({
-      blockAssetsPublicUrl: 'https://static.appsemble.example',
+      blockAssetsBaseUrl: 'https://static.appsemble.example',
       host: 'http://localhost',
       secret: 'test',
     });

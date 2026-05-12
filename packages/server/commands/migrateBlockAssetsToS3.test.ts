@@ -79,7 +79,7 @@ describe('migrateBlockAssetsToS3', () => {
     });
   });
 
-  it('should keep database content when uploading to S3 fails', async () => {
+  it('should leave unmigrated content retryable when uploading to S3 fails', async () => {
     const uploadS3FileSpy = vi
       .spyOn(await import('@appsemble/node-utils'), 'uploadS3File')
       .mockRejectedValueOnce(new Error('S3 unavailable'));
