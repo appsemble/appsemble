@@ -33,6 +33,52 @@ function selectedGroupIdRemapper(
   };
 }
 
+function getOptimisticRetries(optimistic: { retries?: number } | undefined): number {
+  return Math.max(0, optimistic?.retries ?? 0);
+}
+
+function isPreconditionFailed(error: unknown): boolean {
+  if (error && typeof error === 'object') {
+    const { response, status } = error as { response?: { status?: number }; status?: number };
+    return status === 412 || response?.status === 412;
+  }
+  return false;
+}
+
+function withResourceContext(
+  context: Record<string, any> | undefined,
+  resource: unknown,
+): Record<string, any> {
+  return {
+    ...context,
+    resource,
+  };
+}
+
+/**
+ * Inject the latest resource's `$etag` into the caller's `data` so that the
+ * implicit `If-Match` precondition in `request.ts` picks it up.
+ *
+ * @param data The original write payload.
+ * @param latest The latest resource fetched before the write.
+ * @returns The payload with the latest `$etag`, or the original payload when
+ *   either side is not an object.
+ */
+function mergeImplicitEtag(data: unknown, latest: unknown): unknown {
+  if (
+    data &&
+    typeof data === 'object' &&
+    !Array.isArray(data) &&
+    latest &&
+    typeof latest === 'object' &&
+    !Array.isArray(latest) &&
+    typeof (latest as Record<string, unknown>).$etag === 'string'
+  ) {
+    return { ...(data as Record<string, unknown>), $etag: (latest as Record<string, unknown>).$etag };
+  }
+  return data;
+}
+
 export const historyGet: ActionCreator<'resource.history.get'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
   const resource = appDefinition.resources?.[definition.resource];
@@ -268,23 +314,58 @@ export const update: ActionCreator<'resource.update'> = (args) => {
     });
   }
 
-  return request({
+  const writeDefinition = {
+    ...definition,
+    query: queryRemapper.length ? queryRemapper : undefined,
+    method,
+    proxy: false,
+    type: 'request',
+    url: {
+      'string.format': {
+        template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+        values: { id: { prop: id as string } },
+      },
+    },
+    schema: resource?.schema,
+  } as const;
+
+  const [writeResource, writeProperties] = request({
+    ...args,
+    definition: writeDefinition,
+  });
+
+  if (!definition.optimistic) {
+    return [writeResource, writeProperties];
+  }
+
+  const [getResource] = get({
     ...args,
     definition: {
-      ...definition,
-      query: queryRemapper.length ? queryRemapper : undefined,
-      method,
-      proxy: false,
-      type: 'request',
-      url: {
-        'string.format': {
-          template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
-          values: { id: { prop: id as string } },
-        },
-      },
-      schema: resource?.schema,
+      type: 'resource.get',
+      query: definition.query,
+      resource: definition.resource,
     },
   });
+  const retries = getOptimisticRetries(definition.optimistic);
+
+  return [
+    async (data, context) => {
+      for (let attempt = 0; ; attempt += 1) {
+        const latest = await getResource(data, context);
+        try {
+          return await writeResource(
+            mergeImplicitEtag(data, latest),
+            withResourceContext(context, latest),
+          );
+        } catch (error) {
+          if (!isPreconditionFailed(error) || attempt >= retries) {
+            throw error;
+          }
+        }
+      }
+    },
+    writeProperties,
+  ];
 };
 
 export const updateGroup: ActionCreator<'resource.update.group'> = (args) => {
@@ -398,23 +479,59 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
     });
   }
 
-  return request({
+  const writeDefinition = {
+    ...definition,
+    query: queryRemapper.length ? queryRemapper : undefined,
+    method,
+    proxy: false,
+    type: 'request',
+    url: {
+      'string.format': {
+        template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+        values: { id: definition.id ?? { prop: id as string } },
+      },
+    },
+    schema: resource?.schema,
+  } as const;
+
+  const [writeResource, writeProperties] = request({
+    ...args,
+    definition: writeDefinition,
+  });
+
+  if (!definition.optimistic) {
+    return [writeResource, writeProperties];
+  }
+
+  const [getResource] = get({
     ...args,
     definition: {
-      ...definition,
-      query: queryRemapper.length ? queryRemapper : undefined,
-      method,
-      proxy: false,
-      type: 'request',
-      url: {
-        'string.format': {
-          template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
-          values: { id: definition.id ?? { prop: id as string } },
-        },
-      },
-      schema: resource?.schema,
+      id: definition.id,
+      query: definition.query,
+      resource: definition.resource,
+      type: 'resource.get',
     },
   });
+  const retries = getOptimisticRetries(definition.optimistic);
+
+  return [
+    async (data, context) => {
+      for (let attempt = 0; ; attempt += 1) {
+        const latest = await getResource(data, context);
+        try {
+          return await writeResource(
+            mergeImplicitEtag(data, latest),
+            withResourceContext(context, latest),
+          );
+        } catch (error) {
+          if (!isPreconditionFailed(error) || attempt >= retries) {
+            throw error;
+          }
+        }
+      }
+    },
+    writeProperties,
+  ];
 };
 
 export const remove: ActionCreator<'resource.delete'> = (args) => {

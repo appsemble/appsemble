@@ -460,6 +460,37 @@ describe('resource.update', () => {
     await action({ id: 84, type: 'fish' });
     expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBeUndefined();
   });
+
+  it('should update using the latest resource as optimistic context', async () => {
+    const requests: AxiosRequestConfig[] = [];
+    mock.onGet(`${apiUrl}/api/apps/42/resources/pet/84`).reply((req) => {
+      requests.push(req);
+      return [200, { id: 84, age: 7, name: 'Fluffy' }, { etag: '"etag-1"' }];
+    });
+    mock.onPut(`${apiUrl}/api/apps/42/resources/pet/84`).reply((req) => {
+      requests.push(req);
+      return [200, JSON.parse(req.data), { etag: '"etag-2"' }];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: {
+        type: 'resource.update',
+        resource: 'pet',
+        optimistic: {},
+        body: {
+          'object.assign': {
+            age: [{ context: 'resource' }, { prop: 'age' }],
+            name: { prop: 'name' },
+          },
+        },
+      },
+    });
+    const result = await action({ id: 84, name: 'Mittens' });
+    expect(requests).toHaveLength(2);
+    expect(requests[1].headers?.['If-Match'] ?? requests[1].headers?.['if-match']).toBe('"etag-1"');
+    expect(JSON.parse(requests[1].data)).toStrictEqual({ id: 84, name: 'Mittens', age: 7 });
+    expect(result).toStrictEqual({ $etag: '"etag-2"', id: 84, age: 7, name: 'Mittens' });
+  });
 });
 
 describe('resource.patch', () => {
@@ -522,6 +553,95 @@ describe('resource.patch', () => {
     });
     await action({ type: 'fish' });
     expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBeUndefined();
+  });
+
+  it('should retry optimistic patches using the latest resource', async () => {
+    const requests: AxiosRequestConfig[] = [];
+    let patchAttempts = 0;
+    mock.onGet(`${apiUrl}/api/apps/42/resources/pet/84`).reply((req) => {
+      requests.push(req);
+      return patchAttempts === 0
+        ? [
+            200,
+            {
+              id: 84,
+              tasks: [
+                { completed: false, title: 'Task 1' },
+                { completed: false, title: 'Task 2' },
+              ],
+            },
+            { etag: '"etag-1"' },
+          ]
+        : [
+            200,
+            {
+              id: 84,
+              tasks: [
+                { completed: true, title: 'Task 1' },
+                { completed: false, title: 'Task 2' },
+              ],
+            },
+            { etag: '"etag-2"' },
+          ];
+    });
+    mock.onPatch(`${apiUrl}/api/apps/42/resources/pet/84`).reply((req) => {
+      requests.push(req);
+      patchAttempts += 1;
+      return patchAttempts === 1
+        ? [412, { code: 'RESOURCE_PRECONDITION_FAILED' }, {}]
+        : [200, JSON.parse(req.data), { etag: '"etag-3"' }];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: {
+        type: 'resource.patch',
+        resource: 'pet',
+        id: 84,
+        optimistic: { retries: 1 },
+        body: {
+          'object.from': {
+            tasks: [
+              { context: 'resource' },
+              { prop: 'tasks' },
+              {
+                'array.map': {
+                  if: {
+                    condition: {
+                      equals: [{ array: 'index' }, [{ root: null }, { prop: 'taskIndex' }]],
+                    },
+                    then: {
+                      'object.assign': {
+                        completed: true,
+                      },
+                    },
+                    else: {
+                      'object.from': {
+                        completed: { prop: 'completed' },
+                        title: { prop: 'title' },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    });
+    const result = await action({ taskIndex: 1 });
+    expect(requests).toHaveLength(4);
+    expect(requests[1].headers?.['If-Match'] ?? requests[1].headers?.['if-match']).toBe('"etag-1"');
+    expect(requests[3].headers?.['If-Match'] ?? requests[3].headers?.['if-match']).toBe('"etag-2"');
+    expect(requests[3].data).toBe(
+      '{"tasks":[{"completed":true,"title":"Task 1"},{"completed":true,"title":"Task 2"}]}',
+    );
+    expect(result).toStrictEqual({
+      $etag: '"etag-3"',
+      tasks: [
+        { completed: true, title: 'Task 1' },
+        { completed: true, title: 'Task 2' },
+      ],
+    });
   });
 });
 

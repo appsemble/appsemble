@@ -263,6 +263,10 @@ in the meantime, the request fails with `412 Precondition Failed`; fetch the lat
 the user review before retrying. Input that does not carry `$etag` — for example data loaded via a
 view, or hand-rolled objects — is sent without `If-Match` and is not protected against lost updates.
 
+For idempotent changes that can be merged automatically, use `optimistic`. This fetches the latest
+resource before writing, exposes it as `{ context: resource }`, sends its `$etag` as `If-Match`, and
+retries if another write wins first.
+
 ```yaml validate blocks-snippet
 blocks:
   - type: form
@@ -318,6 +322,10 @@ input data (typically from a prior `resource.get`) is sent as `If-Match`, and a 
 concurrent write returns `412 Precondition Failed`. Input without `$etag` — including view results —
 runs unprotected.
 
+For idempotent changes that can be merged automatically, use `optimistic`. This fetches the latest
+resource before writing, exposes it as `{ context: resource }`, sends its `$etag` as `If-Match`, and
+retries if another write wins first.
+
 ```yaml validate blocks-snippet
 blocks:
   - type: form
@@ -346,6 +354,37 @@ blocks:
               body: This person was updated elsewhere. Review the latest version and try again.
           else:
             type: throw
+```
+
+```yaml
+actions:
+  completeTask:
+    type: resource.patch
+    resource: checklistInstance
+    id: { prop: checklistInstanceId }
+    optimistic:
+      retries: 2
+    body:
+      object.from:
+        tasks:
+          - context: resource
+          - prop: tasks
+          - array.map:
+              if:
+                condition:
+                  equals:
+                    - { array: index }
+                    - [{ root: null }, { prop: taskIndex }]
+                then:
+                  object.from:
+                    title: { prop: title }
+                    completed: true
+                    completedBy: { app.member: email }
+                else:
+                  object.from:
+                    title: { prop: title }
+                    completed: { prop: completed }
+                    completedBy: { prop: completedBy }
 ```
 
 ### resource.delete<Side name="resource.delete" />
