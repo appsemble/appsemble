@@ -92,7 +92,8 @@ helm repo update
 helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.auth.existingSecret=postgresql-secret' --set 'ingress.host=my-appsemble.example.com'
 ```
 
-Make sure `ingress.host` resolves to the ingress controller with both `A` and `AAAA` records. Point `*.ingress.host` to the same place, preferably with a wildcard `CNAME` to the apex host.
+Make sure `ingress.host` resolves to the ingress controller with both `A` and `AAAA` records. Point
+`*.ingress.host` to the same place, preferably with a wildcard `CNAME` to the apex host.
 
 ## Migrations
 
@@ -275,6 +276,12 @@ Recommended backup object layout within each environment backup bucket:
   - `assets/app-buckets/current/app-<id>/...`
   - `assets/app-buckets/archive/<run-id>/app-<id>/...`
   - `assets/app-buckets/snapshots/<yyyy-mm-01>/app-<id>/...`
+
+To restore MinIO app asset backups, run `sh scripts/s3-assets-restore.sh` with `BACKUP_S3_*`
+pointing at the backup object storage and `RESTORE_S3_*` pointing at the MinIO/S3 target. The script
+restores `current` by default. Set `RESTORE_SOURCE=snapshot` and `SNAPSHOT_ID=<yyyy-mm-01>` to
+restore a monthly full snapshot. By default it copies objects without deleting extra objects in the
+target; set `DELETE_EXTRA=true` to make the target exactly match the backup source.
 
 > Note: `helm.sh/resource-policy=keep` reduces Helm-driven deletion risk but does not replace
 > backups.
