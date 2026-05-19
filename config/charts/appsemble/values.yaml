@@ -197,6 +197,34 @@ minio:
     tls: true
     ingressClassName: nginx
 
+valkey:
+  enabled: true
+  fullnameOverride: appsemble-valkey
+  service:
+    port: 6379
+  auth:
+    enabled: true
+    usersExistingSecret: valkey
+    aclUsers:
+      default:
+        permissions: '~* &* +@all'
+        passwordKey: password
+  resources:
+    limits:
+      memory: 256Mi
+      cpu: 500m
+    requests:
+      memory: 64Mi
+      cpu: 50m
+
+externalValkey:
+  host: null
+  port: 6379
+  username: default
+  tls: false
+  existingSecret: null
+  passwordKey: password
+
 backups:
   enabled: true
   bucket: appsemble-backups-exampleenv

@@ -23,6 +23,13 @@ kubectl create secret generic postgresql-secret \
 
 > **Caution**: Make sure not to lose the PostgreSQL passwords!
 
+Appsemble requires Valkey for runtime caching and rate limiting. Create a Valkey password secret:
+
+```sh
+kubectl create secret generic valkey \
+  --from-literal "password=$(openssl rand -base64 30)"
+```
+
 Next, an SMTP and IMAP secret are needed for sending emails.
 
 ```sh
@@ -219,6 +226,16 @@ This enables encryption in transit between Appsemble and PostgreSQL.
 | `postgresql.fullnameOverride`             | `appsemble-postgresql`        | The name used for the PostgreSQL database.                                                                                                |
 | `postgresql.enabled`                      | `true`                        | Set this to false explicitly to not include a PostgreSQL installation. This is useful if the database is managed by another service.      |
 | `postgresql.persistence.enabled`          | `false`                       | Enable to create a persistent volume for the data.                                                                                        |
+| `valkey`                                  |                               | Values passed into the bundled Valkey dependency chart.                                                                                   |
+| `valkey.enabled`                          | `true`                        | Set this to false explicitly to use `externalValkey` instead of bundled Valkey.                                                           |
+| `valkey.fullnameOverride`                 | `appsemble-valkey`            | The name used for the bundled Valkey service.                                                                                             |
+| `valkey.auth.usersExistingSecret`         | `valkey`                      | The secret from which to read the bundled Valkey password.                                                                                |
+| `externalValkey.host`                     | `null`                        | The external Valkey host. Required when `valkey.enabled=false`.                                                                           |
+| `externalValkey.port`                     | `6379`                        | The external Valkey port.                                                                                                                 |
+| `externalValkey.username`                 | `default`                     | The external Valkey ACL username.                                                                                                         |
+| `externalValkey.tls`                      | `false`                       | Whether to use TLS for the external Valkey connection.                                                                                    |
+| `externalValkey.existingSecret`           | `null`                        | The secret from which to read the external Valkey password. Required when `valkey.enabled=false`.                                         |
+| `externalValkey.passwordKey`              | `password`                    | The key in `externalValkey.existingSecret` containing the Valkey password.                                                                |
 | `remote`                                  | `null`                        | A remote Appsemble server to connect to in order to synchronize blocks.                                                                   |
 | `securityEmail`                           | `security@appsemble.com`      | The default security contact email for reporting security vulnerabilities.                                                                |
 | `postgresSSL`                             | `true`                        | If `true`, connect establish the PostgreSQL connection over SSL.                                                                          |
@@ -241,6 +258,9 @@ For production environments with significant asset storage in MinIO:
 - keep `backup-production-data` enabled for database backups.
 - enable `assetsBackups.enabled=true` for MinIO app-asset backups (incremental daily + monthly full
   snapshots).
+
+Valkey persistence is disabled by default because Appsemble uses it for disposable runtime data.
+Only enable Valkey persistence when it is used for durable queues or state.
 
 Example:
 

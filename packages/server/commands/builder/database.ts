@@ -64,5 +64,25 @@ export function databaseBuilder(yargs: Argv): Argv {
     })
     .option('s3-secret-key', {
       desc: 'The secret key of the Amazon S3 compatible object storage server',
+    })
+    .option('valkey-host', {
+      desc: 'The host of the Valkey server to connect to.',
+    })
+    .option('valkey-port', {
+      desc: 'The port of the Valkey server to connect to.',
+      type: 'number',
+      default: 6379,
+    })
+    .option('valkey-username', {
+      desc: 'The username to use to login to the Valkey server.',
+      default: 'default',
+    })
+    .option('valkey-password', {
+      desc: 'The password to use to login to the Valkey server.',
+    })
+    .option('valkey-tls', {
+      desc: 'Use TLS when connecting to the Valkey server.',
+      type: 'boolean',
+      default: false,
     });
 }

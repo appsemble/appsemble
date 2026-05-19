@@ -30,6 +30,10 @@ dependencies:
     version: 14.10.5
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
+  - name: valkey
+    version: 0.9.4
+    repository: https://valkey.io/valkey-helm
+    condition: valkey.enabled
 annotations:
   artifacthub.io/changes: |
     []

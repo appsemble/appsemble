@@ -49,6 +49,11 @@ passed as a command line parameter instead, if desired.
 | `DATABASE_URL`                  |              | A connection string for the database to connect to. This is an alternative to the separate database related variables. |
 | `DATABASE_BENCHMARK`            | `false`      | Enable query timing. Logs execution time for each SQL query and warns for slow queries.                                |
 | `SLOW_QUERY_THRESHOLD`          | `100`        | Threshold in milliseconds. Queries slower than this are logged as warnings when benchmark mode is enabled.             |
+| `VALKEY_HOST`                   |              | The host of the Valkey server to connect to.                                                                           |
+| `VALKEY_PORT`                   | `6379`       | The port of the Valkey server to connect to.                                                                           |
+| `VALKEY_USERNAME`               | `default`    | The username to use to login to the Valkey server.                                                                     |
+| `VALKEY_PASSWORD`               |              | The password to use to login to the Valkey server.                                                                     |
+| `VALKEY_TLS`                    | `false`      | Use TLS when connecting to the Valkey server.                                                                          |
 | `SENTRY_DSN`                    |              | The Sentry DSN to use for error reporting. See [Sentry](https://sentry.io) for details.                                |
 | `SENTRY_ENVIRONMENT`            |              | The Sentry environment to send with captured events.                                                                   |
 | `SENTRY_TRACES_SAMPLE_RATE`     | `0.2`        | The Sentry trace sampling rate between 0 and 1.                                                                        |

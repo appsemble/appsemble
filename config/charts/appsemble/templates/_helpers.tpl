@@ -152,6 +152,57 @@ Configure the environment variables for Appsemble to connect with the Minio inst
 {{- end }}
 {{- end -}}
 
+{{/*
+Get the Valkey host for bundled or explicitly configured external Valkey.
+*/}}
+{{- define "appsemble.valkey.host" -}}
+{{- if .Values.valkey.enabled -}}
+{{- default (printf "%s-valkey" .Release.Name) .Values.valkey.fullnameOverride -}}
+{{- else -}}
+{{- required "externalValkey.host is required when valkey.enabled is false" .Values.externalValkey.host -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the Valkey credential secret for bundled or external Valkey.
+*/}}
+{{- define "appsemble.valkey.secret" -}}
+{{- if .Values.valkey.enabled -}}
+{{- required "valkey.auth.usersExistingSecret is required when valkey.enabled is true" .Values.valkey.auth.usersExistingSecret -}}
+{{- else -}}
+{{- required "externalValkey.existingSecret is required when valkey.enabled is false" .Values.externalValkey.existingSecret -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the Valkey credential secret key for bundled or external Valkey.
+*/}}
+{{- define "appsemble.valkey.passwordKey" -}}
+{{- if .Values.valkey.enabled -}}
+{{- required "valkey.auth.aclUsers.default.passwordKey is required when valkey.enabled is true" .Values.valkey.auth.aclUsers.default.passwordKey -}}
+{{- else -}}
+{{- required "externalValkey.passwordKey is required when valkey.enabled is false" .Values.externalValkey.passwordKey -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Configure the environment variables for Appsemble to connect with Valkey.
+*/}}
+{{- define "appsemble.valkey" -}}
+- name: VALKEY_HOST
+  value: {{ include "appsemble.valkey.host" . | quote }}
+- name: VALKEY_PORT
+  value: {{ ternary .Values.valkey.service.port .Values.externalValkey.port .Values.valkey.enabled | quote }}
+- name: VALKEY_USERNAME
+  value: {{ ternary "default" .Values.externalValkey.username .Values.valkey.enabled | quote }}
+- name: VALKEY_TLS
+  value: {{ ternary false .Values.externalValkey.tls .Values.valkey.enabled | quote }}
+- name: VALKEY_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "appsemble.valkey.secret" . | quote }}
+      key: {{ include "appsemble.valkey.passwordKey" . | quote }}
+{{- end -}}
 
 {{/*
 Configure the environment variables for Appsemble to enable backups.
