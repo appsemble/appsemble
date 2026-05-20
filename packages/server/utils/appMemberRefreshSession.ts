@@ -188,3 +188,16 @@ export async function revokeAppMemberRefreshSession(
 
   clearAppCookies(ctx, appId);
 }
+
+export async function revokeAppMemberRefreshSessionsForMember(
+  appId: number,
+  sub: string,
+): Promise<void> {
+  const { AppMemberRefreshSession } = await getAppDB(appId);
+  await AppMemberRefreshSession.destroy({
+    where: {
+      aud: `app:${appId}`,
+      sub,
+    },
+  });
+}

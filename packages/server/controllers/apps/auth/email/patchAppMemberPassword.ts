@@ -3,6 +3,8 @@ import { compare, hash } from 'bcrypt';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../models/index.js';
+import { clearAppCookies } from '../../../../utils/appCookies.js';
+import { revokeAppMemberRefreshSessionsForMember } from '../../../../utils/appMemberRefreshSession.js';
 
 export async function patchAppMemberPassword(ctx: Context): Promise<void> {
   const {
@@ -26,4 +28,7 @@ export async function patchAppMemberPassword(ctx: Context): Promise<void> {
 
   const hashedNewPassword = await hash(newPassword, 10);
   await appMember!.update({ password: hashedNewPassword });
+
+  await revokeAppMemberRefreshSessionsForMember(appId, appMember!.id);
+  clearAppCookies(ctx, appId);
 }
