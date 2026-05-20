@@ -13,7 +13,7 @@ import {
   setAppRefreshTokenCookie,
 } from './appCookies.js';
 
-const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30;
+const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 14;
 
 interface SessionRecord {
   aud: string;
