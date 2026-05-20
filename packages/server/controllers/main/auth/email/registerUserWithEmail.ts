@@ -8,9 +8,23 @@ import { DatabaseError, UniqueConstraintError } from 'sequelize';
 import { EmailAuthorization, transactional, User } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
+import { assertSlidingWindowRateLimit } from '../../../../utils/ratelimit/assertSlidingWindowRateLimit.js';
+
+const MAX_REGISTRATION_ATTEMPTS = 5;
+// 1 hour
+const MAX_REGISTRATION_ATTEMPTS_WINDOW = 60 * 60 * 1000;
+const RATE_LIMIT_KEY = 'registerUserWithEmail';
 
 export async function registerUserWithEmail(ctx: Context): Promise<void> {
   assertKoaCondition(!argv.disableRegistration, ctx, 403, 'Registration is disabled');
+
+  await assertSlidingWindowRateLimit(
+    ctx,
+    RATE_LIMIT_KEY,
+    MAX_REGISTRATION_ATTEMPTS,
+    MAX_REGISTRATION_ATTEMPTS_WINDOW,
+  );
+
   const {
     mailer,
     request: {

@@ -286,7 +286,7 @@ describe('registerAppMemberWithEmail', () => {
 
       {
         "error": "Conflict",
-        "message": "App member with this email address already exists.",
+        "message": "Unable to register with the provided information.",
         "statusCode": 409,
       }
     `);
@@ -380,7 +380,7 @@ describe('registerAppMemberWithEmail', () => {
 
       {
         "error": "Conflict",
-        "message": "App member with this phone number already exists.",
+        "message": "Unable to register with the provided information.",
         "statusCode": 409,
       }
     `);
