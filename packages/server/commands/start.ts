@@ -17,6 +17,7 @@ import { configureDNS } from '../utils/dns/index.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 import { syncTrainings } from '../utils/syncTrainings.js';
+import { initValkeyClient } from '../utils/valkey.js';
 
 interface AdditionalArguments {
   webpackConfigs?: Configuration[];
@@ -141,6 +142,26 @@ export function builder(yargs: Argv): Argv {
     .option('security-email', {
       desc: 'The default security contact email for reporting security vulnerabilities.',
       default: 'security@appsemble.com',
+    })
+    .option('valkey-host', {
+      desc: 'The host of the Valkey server. If not specified, Valkey features will be disabled.',
+    })
+    .option('valkey-port', {
+      desc: 'The port of the Valkey server.',
+      type: 'number',
+      default: 6379,
+    })
+    .option('valkey-username', {
+      desc: 'The username to use when connecting to the Valkey server.',
+      default: 'default',
+    })
+    .option('valkey-password', {
+      desc: 'The password to use when connecting to the Valkey server.',
+    })
+    .option('valkey-tls', {
+      desc: 'Whether to use TLS when connecting to the Valkey server.',
+      type: 'boolean',
+      default: false,
     });
 }
 
@@ -170,6 +191,20 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
   } catch (error: unknown) {
     logger.warn(`S3Error: ${error}`);
     logger.warn('Features related to file uploads will not work correctly!');
+  }
+
+  const opts = {
+    host: argv.valkeyHost,
+    port: argv.valkeyPort,
+    username: argv.valkeyUsername,
+    password: argv.valkeyPassword,
+    tls: argv.valkeyTls,
+  };
+  try {
+    await initValkeyClient(opts);
+  } catch (error: unknown) {
+    logger.warn(`ValkeyError: ${error}`);
+    logger.warn('Valkey-related features will not work correctly!');
   }
 
   if (argv.migrateTo) {
