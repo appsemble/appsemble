@@ -61,12 +61,28 @@ describe('patchAppMemberPassword', () => {
       currentPassword: 'testpassword',
     });
 
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: text/plain; charset=utf-8
+    expect(response.status).toBe(200);
+    expect(response.data).toBe('OK');
 
-      OK
-    `);
+    const headers = response.headers as Record<string, string[] | undefined>;
+    const setCookie = headers['set-cookie'] ?? headers['Set-Cookie'];
+
+    expect(setCookie).toStrictEqual(
+      expect.arrayContaining([
+        expect.stringMatching(
+          new RegExp(
+            `^app_refresh_token=; path=/apps/${app.id}/auth/oauth2/token; expires=Thu, 01 Jan 1970 00:00:00 GMT;.*$`,
+            'i',
+          ),
+        ),
+        expect.stringMatching(
+          new RegExp(
+            `^app_refresh_token\\.sig=[^;]+; path=/apps/${app.id}/auth/oauth2/token; expires=Thu, 01 Jan 1970 00:00:00 GMT;.*$`,
+            'i',
+          ),
+        ),
+      ]),
+    );
   });
 
   it('should revoke existing refresh sessions when the password is changed', async () => {
