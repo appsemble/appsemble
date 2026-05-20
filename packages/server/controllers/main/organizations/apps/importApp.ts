@@ -7,7 +7,6 @@ import { pipeline } from 'node:stream/promises';
 
 import { AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
-  AppsembleError,
   assertKoaCondition,
   getSupportedLanguages,
   handleValidatorResult,
@@ -42,6 +41,10 @@ import { checkUserOrganizationPermissions } from '../../../../utils/authorizatio
 import { getBlockVersions } from '../../../../utils/block.js';
 import { createDynamicIndexes } from '../../../../utils/dynamicIndexes.js';
 import { processHooks, processReferenceHooks } from '../../../../utils/resource.js';
+import {
+  assertResourceUniqueConstraintSchemaValues,
+  syncResourceUniqueIndexes,
+} from '../../../../utils/resourceUniqueIndexes.js';
 
 export async function importApp(ctx: Context): Promise<void> {
   const {
@@ -111,8 +114,8 @@ export async function importApp(ctx: Context): Promise<void> {
     }
 
     let rec: App;
+    let record: App | undefined;
     try {
-      let record: App | undefined;
       await transactional(async (transaction) => {
         record = await App.create(result);
 
@@ -157,114 +160,121 @@ export async function importApp(ctx: Context): Promise<void> {
         const appId = record.id;
 
         await appDB.transaction(async (appTransaction) => {
-          try {
-            const resourcesFolder =
-              zip.folder('resources')?.filter((filename) => filename.endsWith('json')) ?? [];
-            if (resourcesFolder.length) {
-              for (const [
-                resourceType,
-                { enforceOrderingGroupByFields, positioning },
-              ] of Object.entries(record!.definition.resources ?? {})) {
-                if (positioning && enforceOrderingGroupByFields) {
-                  await createDynamicIndexes(
-                    enforceOrderingGroupByFields,
-                    record!.id,
-                    resourceType,
-                    appTransaction,
-                  );
-                }
+          const resourcesFolder =
+            zip.folder('resources')?.filter((filename) => filename.endsWith('json')) ?? [];
+
+          if (record!.definition.resources) {
+            await syncResourceUniqueIndexes(
+              record!.id,
+              undefined,
+              record!.definition.resources,
+              appTransaction,
+            );
+          }
+
+          if (resourcesFolder.length) {
+            for (const [
+              resourceType,
+              { enforceOrderingGroupByFields, positioning },
+            ] of Object.entries(record!.definition.resources ?? {})) {
+              if (positioning && enforceOrderingGroupByFields) {
+                await createDynamicIndexes(
+                  enforceOrderingGroupByFields,
+                  record!.id,
+                  resourceType,
+                  appTransaction,
+                );
               }
             }
+          }
 
-            for (const file of resourcesFolder) {
-              const [, resourceJsonName] = file.name.split('/');
-              const [resourceType] = resourceJsonName.split('.');
-              const resourcesText = await file.async('text');
-              const resources = JSON.parse(resourcesText);
+          for (const file of resourcesFolder) {
+            const [, resourceJsonName] = file.name.split('/');
+            const [resourceType] = resourceJsonName.split('.');
+            const resourcesText = await file.async('text');
+            const resources = JSON.parse(resourcesText);
+            const resourceDefinition = record!.definition.resources?.[resourceType];
 
-              const createdResources = await Resource.bulkCreate(
-                resources.map(
-                  ({
-                    $clonable,
-                    $ephemeral,
-                    $seed,
-                    ...data
-                  }: {
-                    data: Record<string, any>;
-                    $seed: boolean;
-                    $ephemeral: boolean;
-                    $clonable: boolean;
-                  }) => ({
-                    type: resourceType,
-                    seed: $seed,
-                    ephemeral: $ephemeral,
-                    clonable: $clonable,
-                    data,
-                  }),
-                ),
-                { logging: false, transaction: appTransaction },
+            if (resourceDefinition) {
+              assertResourceUniqueConstraintSchemaValues(
+                resourceType,
+                resourceDefinition,
+                resources,
+              );
+            }
+
+            const createdResources = await Resource.bulkCreate(
+              resources.map(
+                ({
+                  $clonable,
+                  $ephemeral,
+                  $seed,
+                  ...data
+                }: {
+                  data: Record<string, any>;
+                  $seed: boolean;
+                  $ephemeral: boolean;
+                  $clonable: boolean;
+                }) => ({
+                  type: resourceType,
+                  seed: $seed,
+                  ephemeral: $ephemeral,
+                  clonable: $clonable,
+                  data,
+                }),
+              ),
+              { logging: false, transaction: appTransaction },
+            );
+
+            processReferenceHooks(record!, createdResources[0], 'create', options, ctx);
+            processHooks(record!, createdResources[0], 'create', options, ctx);
+          }
+
+          for (const jsZipObject of zip
+            .folder('assets')
+            ?.filter((filename) => !['.DS_Store'].includes(filename)) ?? []) {
+            if (!jsZipObject.dir) {
+              const { name } = jsZipObject;
+
+              const tempPath = join(tmpdir(), `${Date.now()}-${randomUUID()}`);
+              const fileWriteStream = createWriteStream(tempPath);
+              await pipeline(jsZipObject.nodeStream(), fileWriteStream);
+              const stats = await stat(tempPath);
+
+              const asset = await Asset.create(
+                {
+                  filename: name,
+                  mime: lookup(name),
+                },
+                { transaction: appTransaction },
               );
 
-              processReferenceHooks(record!, createdResources[0], 'create', options, ctx);
-              processHooks(record!, createdResources[0], 'create', options, ctx);
+              await uploadS3File(`app-${appId}`, asset.id, createReadStream(tempPath), stats.size);
             }
+          }
 
-            for (const jsZipObject of zip
-              .folder('assets')
-              ?.filter((filename) => !['.DS_Store'].includes(filename)) ?? []) {
-              if (!jsZipObject.dir) {
-                const { name } = jsZipObject;
-
-                const tempPath = join(tmpdir(), `${Date.now()}-${randomUUID()}`);
-                const fileWriteStream = createWriteStream(tempPath);
-                await pipeline(jsZipObject.nodeStream(), fileWriteStream);
-                const stats = await stat(tempPath);
-
-                const asset = await Asset.create(
-                  {
-                    filename: name,
-                    mime: lookup(name),
-                  },
-                  { transaction: appTransaction },
-                );
-
-                await uploadS3File(
-                  `app-${appId}`,
-                  asset.id,
-                  createReadStream(tempPath),
-                  stats.size,
-                );
-              }
+          const organizations = theme?.filter((filename) => filename.startsWith('@')) ?? [];
+          for (const organization of organizations) {
+            const organizationFolder = theme?.folder(organization.name);
+            const blocks =
+              organizationFolder?.filter((filename) => !organizationFolder!.file(filename)!.dir) ??
+              [];
+            for (const block of blocks) {
+              const [, blockName] = block.name.split('/');
+              const orgName = organizationFolder!.name.slice(1);
+              const blockVersion = await BlockVersion.findOne({
+                where: { name: blockName, organizationId: orgName },
+              });
+              assertKoaCondition(blockVersion != null, ctx, 404, 'Block not found');
+              const style = validateStyle(await block.async('text'));
+              await AppBlockStyle.create(
+                {
+                  style: replaceAssetFunctions(style, appId),
+                  block: `${orgName}/${blockName}`,
+                },
+                { transaction: appTransaction },
+              );
             }
-
-            const organizations = theme?.filter((filename) => filename.startsWith('@')) ?? [];
-            for (const organization of organizations) {
-              const organizationFolder = theme?.folder(organization.name);
-              const blocks =
-                organizationFolder?.filter(
-                  (filename) => !organizationFolder!.file(filename)!.dir,
-                ) ?? [];
-              for (const block of blocks) {
-                const [, blockName] = block.name.split('/');
-                const orgName = organizationFolder!.name.slice(1);
-                const blockVersion = await BlockVersion.findOne({
-                  where: { name: blockName, organizationId: orgName },
-                });
-                assertKoaCondition(blockVersion != null, ctx, 404, 'Block not found');
-                const style = validateStyle(await block.async('text'));
-                await AppBlockStyle.create(
-                  {
-                    style: replaceAssetFunctions(style, appId),
-                    block: `${orgName}/${blockName}`,
-                  },
-                  { transaction: appTransaction },
-                );
-              }
-            }
-          } catch {
-            await appTransaction.rollback();
-            await transaction.rollback();
-            await record!.destroy({ force: true });
           }
         });
 
@@ -333,12 +343,11 @@ export async function importApp(ctx: Context): Promise<void> {
       });
       rec = record!;
     } catch (error: unknown) {
-      if (error instanceof AppsembleError) {
-        ctx.status = 204;
-        return;
+      if (record) {
+        await App.destroy({ where: { id: record.id }, force: true, individualHooks: true });
       }
-      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
-      ctx.throw(error);
+
+      throw error;
     }
     ctx.body = rec.toJSON();
     ctx.status = 201;

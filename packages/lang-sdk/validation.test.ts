@@ -1,6 +1,7 @@
 import { ValidationError } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
+import { AppValidator } from './BasicValidator.js';
 import {
   type AppDefinition,
   type BasicPageDefinition,
@@ -1485,6 +1486,182 @@ describe('validateAppDefinition', () => {
     };
     const result = await validateAppDefinition(app, () => []);
     expect(result.valid).toBe(true);
+  });
+
+  it('should allow valid unique constraints on resources', async () => {
+    const app = createTestApp();
+    app.resources!.person.schema.properties = {
+      email: { type: 'string' },
+      organizationId: { type: 'integer' },
+      name: { type: 'string' },
+    };
+    app.resources!.person.unique = ['email', ['organizationId', 'name']];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(true);
+  });
+
+  it('should report unknown unique fields on resources', async () => {
+    const app = createTestApp();
+    app.resources!.person.unique = ['email'];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('unique field must be defined in properties: email', 'email', undefined, [
+        'resources',
+        'person',
+        'unique',
+        0,
+      ]),
+    ]);
+  });
+
+  it('should report reserved keywords in unique constraints', async () => {
+    const app = createTestApp();
+    app.resources!.person.schema.properties = {
+      created: { type: 'string' },
+      name: { type: 'string' },
+    };
+    app.resources!.person.unique = [['created', 'name']];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'unique field cannot be a reserved keyword: created',
+        'created',
+        undefined,
+        ['resources', 'person', 'unique', 0, 0],
+      ),
+    ]);
+  });
+
+  it('should report reserved metadata fields in unique constraints', async () => {
+    const app = createTestApp();
+    app.resources!.person.schema.properties = {
+      $created: { type: 'string', format: 'date-time' },
+      $updated: { type: 'string', format: 'date-time' },
+      name: { type: 'string' },
+    };
+    app.resources!.person.unique = [
+      ['$created', 'name'],
+      ['$updated', 'name'],
+    ];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'unique field cannot be a reserved keyword: $created',
+        '$created',
+        undefined,
+        ['resources', 'person', 'unique', 0, 0],
+      ),
+      new ValidationError(
+        'unique field cannot be a reserved keyword: $updated',
+        '$updated',
+        undefined,
+        ['resources', 'person', 'unique', 1, 0],
+      ),
+    ]);
+  });
+
+  it('should report unsupported unique field types on resources', async () => {
+    const app = createTestApp();
+    app.resources!.person.schema.properties = {
+      tags: { type: 'array', items: { type: 'string' } },
+      name: { type: 'string' },
+    };
+    app.resources!.person.unique = [['tags', 'name']];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'unique field must have type string, integer, number, boolean, or enum: tags',
+        'tags',
+        undefined,
+        ['resources', 'person', 'unique', 0, 0],
+      ),
+    ]);
+  });
+
+  it('should report duplicate unique constraints after normalization', async () => {
+    const app = createTestApp();
+    app.resources!.person.schema.properties = {
+      organizationId: { type: 'integer' },
+      name: { type: 'string' },
+    };
+    app.resources!.person.unique = [
+      ['organizationId', 'name'],
+      ['name', 'organizationId'],
+    ];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'duplicates another unique constraint',
+        ['name', 'organizationId'],
+        undefined,
+        ['resources', 'person', 'unique', 1],
+      ),
+    ]);
+  });
+
+  it('should reject empty unique constraint lists in schema validation', () => {
+    const app = createTestApp();
+    app.resources!.person.unique = [];
+
+    const result = new AppValidator().validateApp(app);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        path: ['resources', 'person', 'unique'],
+      }),
+    );
+  });
+
+  it('should reject one-field composite unique constraints in schema validation', () => {
+    const app = createTestApp();
+    app.resources!.person.schema.properties = {
+      email: { type: 'string' },
+    };
+    (app.resources!.person as any).unique = [['email']];
+
+    const result = new AppValidator().validateApp(app);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        path: ['resources', 'person', 'unique', 0],
+      }),
+    );
+  });
+
+  it('should reject exact duplicate unique constraints in schema validation', () => {
+    const app = createTestApp();
+    app.resources!.person.schema.properties = {
+      email: { type: 'string' },
+    };
+    app.resources!.person.unique = ['email', 'email'];
+
+    const result = new AppValidator().validateApp(app);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        path: ['resources', 'person', 'unique'],
+      }),
+    );
   });
 
   it('should not crash if not resources exist', async () => {

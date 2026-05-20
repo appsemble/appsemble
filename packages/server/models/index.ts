@@ -438,6 +438,17 @@ export async function getAppDB(
   return appDBs[appId]!;
 }
 
+export async function closeAppDB(appId: number): Promise<void> {
+  const appDB = appDBs[appId];
+
+  if (!appDB) {
+    return;
+  }
+
+  delete appDBs[appId];
+  await appDB.sequelize.close();
+}
+
 export async function dropAndCloseAllAppDBs(): Promise<void> {
   await Promise.all(
     Object.entries(appDBs).map(async ([appId, appDB]) => {

@@ -18,11 +18,17 @@ import {
   type IncludeOptions,
   Op,
   type Transaction,
-  UniqueConstraintError,
+  type UniqueConstraintError,
 } from 'sequelize';
 import sharp from 'sharp';
 
 import { argv } from './argv.js';
+import {
+  getResourceUniqueConstraintViolationErrorForDefinition,
+  isUniqueConstraintErrorLike,
+  ResourceUniqueConstraintConflictError,
+  ResourceUniqueConstraintValueError,
+} from './resourceUniqueIndexes.js';
 import { App, AppMessages, AppReadme, AppScreenshot } from '../models/index.js';
 
 interface GetAppValue {
@@ -335,7 +341,34 @@ export async function createAppReadmes(
 }
 
 export function handleAppValidationError(ctx: Context, error: Error, app: Partial<App>): never {
-  if (error instanceof UniqueConstraintError) {
+  if (error instanceof ResourceUniqueConstraintConflictError) {
+    throwKoaError(ctx, 409, error.message, {
+      code: 'RESOURCE_UNIQUE_CONSTRAINT_CONFLICT',
+      fields: error.fields,
+      resourceType: error.resourceType,
+    });
+  }
+
+  if (error instanceof ResourceUniqueConstraintValueError) {
+    throwKoaError(ctx, 400, error.message, {
+      code: 'RESOURCE_UNIQUE_CONSTRAINT_VALUE_ERROR',
+      field: error.field,
+      resourceType: error.resourceType,
+    });
+  }
+
+  if (isUniqueConstraintErrorLike(error)) {
+    if (app.definition) {
+      const violationError = getResourceUniqueConstraintViolationErrorForDefinition(
+        app.definition,
+        error as UniqueConstraintError,
+      );
+
+      if (violationError) {
+        throwKoaError(ctx, 409, violationError.message);
+      }
+    }
+
     throwKoaError(
       ctx,
       409,

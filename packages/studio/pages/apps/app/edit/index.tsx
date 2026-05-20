@@ -44,6 +44,10 @@ import { MonacoEditor } from '../../../../components/MonacoEditor/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { InputList } from '../GuiEditor/Components/InputList/index.js';
 import { useApp } from '../index.js';
+import {
+  formatResourceUniqueConstraintAppError,
+  type ResourceUniqueConstraintErrorData,
+} from '../uniqueConstraintErrors.js';
 
 export default function EditPage(): ReactNode {
   useMeta(messages.title);
@@ -188,7 +192,20 @@ export default function EditPage(): ReactNode {
       // Update App State
       setApp(data);
       setPristine(true);
-    } catch {
+    } catch (error) {
+      const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintErrorData }>(error)
+        ? error.response?.data?.data
+        : undefined;
+      const uniqueConstraintError = formatResourceUniqueConstraintAppError(formatMessage, data);
+
+      if (uniqueConstraintError) {
+        push({
+          body: uniqueConstraintError,
+          color: 'danger',
+        });
+        return;
+      }
+
       push(formatMessage(messages.errorUpdate));
     }
   }, [appDefinition, coreStyle, formatMessage, id, push, setApp, sharedStyle]);
