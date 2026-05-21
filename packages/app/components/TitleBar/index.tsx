@@ -2,7 +2,7 @@ import { normalize, remap, type RemapperContext } from '@appsemble/lang-sdk';
 import { Portal, SideMenuButton } from '@appsemble/react-components';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -35,6 +35,7 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { page } = usePage();
   const { getAppMessage, getMessage } = useAppMessages();
   const { lang: locale } = useParams();
+  const { pathname } = useLocation();
   const remapperContext = useMemo(
     () =>
       ({
@@ -67,7 +68,7 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
     <Portal element={document.getElementsByClassName('navbar')[0]}>
       <div className="is-flex is-justify-content-space-between is-flex-grow-1">
         {navigation === 'left-menu' &&
-        shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup) ? (
+        shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup, pathname) ? (
           <div className="navbar-brand">
             <span>
               <SideMenuButton />

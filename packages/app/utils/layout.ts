@@ -34,11 +34,36 @@ function shouldShowPage(
   return true;
 }
 
+const builtInPages = new Set([
+  'Settings',
+  'debug',
+  'Login',
+  'Register',
+  'Group-Invite',
+  'App-Invite',
+  'Reset-Password',
+  'Edit-Password',
+  'Verify',
+  'Callback',
+  'Feedback',
+]);
+
+function isBuiltInPage(pathname: string): boolean {
+  const segments = pathname.split('/').filter(Boolean);
+  const lastSegment = segments.at(-1)!;
+  return builtInPages.has(lastSegment);
+}
+
 export function shouldShowMenu(
   appDefinition: AppDefinition,
   appMemberRole: AppRole,
   appMemberSelectedGroup: AppMemberGroup,
+  pathname?: string,
 ): boolean {
+  if (pathname && isBuiltInPage(pathname)) {
+    return true;
+  }
+
   let visiblePagesCount = 0;
 
   for (const pageDefinition of appDefinition.pages) {
@@ -54,6 +79,8 @@ export function shouldShowMenu(
     visiblePagesCount > 1 ||
     appDefinition.layout?.feedback === 'navigation' ||
     appDefinition.layout?.login === 'navigation' ||
-    appDefinition.layout?.settings === 'navigation'
+    appDefinition.layout?.settings === 'navigation' ||
+    appDefinition.layout?.install === 'navigation' ||
+    appDefinition.layout?.debug === 'navigation'
   );
 }
