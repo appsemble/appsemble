@@ -59,6 +59,22 @@ services:
     volumes:
       - minio-test:/data
 
+  # A persistent Valkey instance for local development.
+  valkey-dev:
+    image: valkey/valkey:9.0.2
+    restart: always
+    command: valkey-server --requirepass password
+    ports:
+      - '6379:6379'
+
+  # A Valkey instance for faster test runs.
+  valkey-test:
+    image: valkey/valkey:9.0.2
+    restart: always
+    command: valkey-server --requirepass password
+    ports:
+      - '63791:6379'
+
 volumes:
   minio:
   minio-test:

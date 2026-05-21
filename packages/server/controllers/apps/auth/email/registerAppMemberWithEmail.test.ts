@@ -286,7 +286,7 @@ describe('registerAppMemberWithEmail', () => {
 
       {
         "error": "Conflict",
-        "message": "App member with this email address already exists.",
+        "message": "Unable to register with the provided information.",
         "statusCode": 409,
       }
     `);
@@ -380,8 +380,52 @@ describe('registerAppMemberWithEmail', () => {
 
       {
         "error": "Conflict",
-        "message": "App member with this phone number already exists.",
+        "message": "Unable to register with the provided information.",
         "statusCode": 409,
+      }
+    `);
+  });
+
+  it('should rate limit repeated duplicate registration attempts', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+
+    const { AppMember } = await getAppDB(app.id);
+    await AppMember.create({
+      userId: user.id,
+      role: 'User',
+      email: 'test@example.com',
+    });
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const response = await request.post(
+        `/api/apps/${app.id}/auth/email/register`,
+        createFormData({
+          email: 'test@example.com',
+          password: 'password',
+          timezone: 'Europe/Amsterdam',
+        }),
+      );
+
+      expect(response.status).toBe(409);
+    }
+
+    const response = await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 429 Too Many Requests
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Too Many Requests",
+        "message": "Too many requests, please try again later.",
+        "statusCode": 429,
       }
     `);
   });
