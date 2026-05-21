@@ -1,6 +1,7 @@
 // eslint-disable-next-line unicorn/import-style
 import crypto from 'node:crypto';
 
+import { type AppDefinition } from '@appsemble/lang-sdk';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -17,6 +18,14 @@ function parseCsp(csp: string): Record<string, string[]> {
       return [name, values];
     }),
   );
+}
+
+function parseSettingsScript(settings: string): {
+  definition: AppDefinition & Record<string, unknown>;
+} {
+  return JSON.parse(settings.slice('<script>window.settings='.length, -'</script>'.length)) as {
+    definition: AppDefinition & Record<string, unknown>;
+  };
 }
 
 describe('indexHandler', () => {
@@ -364,6 +373,282 @@ describe('indexHandler', () => {
         "filename": "app/index.html",
       }
     `);
+  });
+
+  it('should omit security permission mappings from bootstrapped settings if showAppDefinition is false', async () => {
+    await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Home',
+        pages: [],
+        security: {
+          guest: {
+            permissions: ['$resource:example:query'],
+          },
+          cron: {
+            permissions: ['$resource:example:create'],
+          },
+          default: {
+            role: 'User',
+          },
+          roles: {
+            User: {
+              defaultPage: 'Home',
+              permissions: ['$resource:example:query'],
+            },
+            Manager: {
+              defaultPage: 'Admin',
+              description: 'Manager',
+              inherits: ['User'],
+              permissions: ['$resource:example:create'],
+            },
+          },
+        },
+      },
+      showAppDefinition: false,
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const response = await request.get('/');
+    const settings = parseSettingsScript(response.data.data.settings);
+
+    expect(settings.definition.security).toStrictEqual({
+      guest: {},
+      cron: {},
+      default: {
+        role: 'User',
+      },
+      roles: {
+        User: {
+          defaultPage: 'Home',
+        },
+        Manager: {
+          defaultPage: 'Admin',
+          description: 'Manager',
+          inherits: ['User'],
+        },
+      },
+    });
+  });
+
+  it('should keep security permission mappings in bootstrapped settings if showAppDefinition is true', async () => {
+    await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Home',
+        pages: [],
+        security: {
+          guest: {
+            permissions: ['$resource:example:query'],
+          },
+          cron: {
+            permissions: ['$resource:example:create'],
+          },
+          default: {
+            role: 'User',
+          },
+          roles: {
+            User: {
+              defaultPage: 'Home',
+              permissions: ['$resource:example:query'],
+            },
+          },
+        },
+      },
+      showAppDefinition: true,
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const response = await request.get('/');
+    const settings = parseSettingsScript(response.data.data.settings);
+
+    expect(settings.definition.security).toStrictEqual({
+      guest: {
+        permissions: ['$resource:example:query'],
+      },
+      cron: {
+        permissions: ['$resource:example:create'],
+      },
+      default: {
+        role: 'User',
+      },
+      roles: {
+        User: {
+          defaultPage: 'Home',
+          permissions: ['$resource:example:query'],
+        },
+      },
+    });
+  });
+
+  it('should omit non-bootstrapped app definition fields from bootstrapped settings', async () => {
+    await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        description: 'Private description',
+        defaultLanguage: 'nl',
+        defaultPage: 'Home',
+        layout: {
+          login: 'navbar',
+          settings: 'navigation',
+          feedback: 'navigation',
+          install: 'hidden',
+          debug: 'navigation',
+          enabledSettings: ['name', 'email', 'phoneNumber'],
+          navigation: 'left-menu',
+          logo: {
+            position: 'navbar',
+            asset: 'logo',
+          },
+          headerTag: {
+            text: 'Beta',
+            hide: false,
+          },
+          titleBarText: 'appName',
+          hideTitleBar: true,
+        },
+        notifications: 'login',
+        pages: [
+          {
+            name: 'Home',
+            blocks: [],
+          },
+        ],
+        members: {
+          phoneNumber: {
+            enable: true,
+            required: true,
+          },
+          properties: {
+            privateField: {
+              schema: {
+                type: 'string',
+              },
+            },
+          },
+        },
+        resources: {
+          example: {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        security: {
+          guest: {
+            permissions: ['$resource:example:query'],
+          },
+        },
+        theme: {
+          themeColor: '#111111',
+        },
+        contentSecurityPolicy: {
+          'connect-src': ['https://internal.example'],
+        },
+        anchors: [{ private: true }],
+        cron: {
+          sync: {
+            schedule: '* * * * *',
+            action: { type: 'noop' },
+          },
+        },
+        webhooks: {
+          ingest: {
+            schema: {
+              type: 'object',
+            },
+            action: { type: 'noop' },
+          },
+        },
+        containers: [
+          {
+            name: 'api',
+            image: 'private.example/api',
+            port: 8080,
+            env: [
+              {
+                name: 'TOKEN',
+                value: 'secret',
+              },
+            ],
+          },
+        ],
+        registry: 'private.example',
+      },
+      showAppDefinition: true,
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const response = await request.get('/');
+    const settings = parseSettingsScript(response.data.data.settings);
+
+    expect(settings.definition).toStrictEqual({
+      defaultLanguage: 'nl',
+      defaultPage: 'Home',
+      layout: {
+        debug: 'navigation',
+        enabledSettings: ['name', 'email', 'phoneNumber'],
+        feedback: 'navigation',
+        headerTag: {
+          text: 'Beta',
+          hide: false,
+        },
+        hideTitleBar: true,
+        install: 'hidden',
+        login: 'navbar',
+        logo: {
+          position: 'navbar',
+          asset: 'logo',
+        },
+        navigation: 'left-menu',
+        settings: 'navigation',
+        titleBarText: 'appName',
+      },
+      members: {
+        phoneNumber: {
+          enable: true,
+          required: true,
+        },
+      },
+      name: 'Test App',
+      notifications: 'login',
+      pages: [
+        {
+          name: 'Home',
+          blocks: [],
+        },
+      ],
+      resources: {
+        example: {
+          schema: {
+            type: 'object',
+          },
+        },
+      },
+      security: {
+        guest: {
+          permissions: ['$resource:example:query'],
+        },
+      },
+      theme: {
+        themeColor: '#111111',
+      },
+    });
   });
 
   it('should render the index page with dynamic scripts', async () => {

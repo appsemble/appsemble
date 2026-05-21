@@ -7,7 +7,7 @@ import {
 } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { parse } from 'yaml';
+import { parse, stringify } from 'yaml';
 
 import {
   App,
@@ -20,6 +20,7 @@ import {
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
+import { getResourceUniqueIndexName } from '../../../utils/resourceUniqueIndexes.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
 
 let templates: App[];
@@ -243,6 +244,185 @@ describe('createAppFromTemplate', () => {
     const resources = await Resource.findAll({ where: { type: 'test' } });
 
     expect(resources.map((r) => r.data)).toStrictEqual([{ name: 'foo' }]);
+  });
+
+  it('should create unique indexes before cloning clonable resources', async () => {
+    const template = await App.create({
+      path: 'unique-template',
+      template: true,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+      definition: {
+        defaultPage: 'People',
+        name: 'Unique Template',
+        pages: [{ name: 'People', blocks: [] }],
+        resources: {
+          person: {
+            unique: ['email'],
+            schema: {
+              additionalProperties: false,
+              properties: {
+                email: { format: 'email', type: 'string' },
+              },
+              required: ['email'],
+              type: 'object',
+            },
+          },
+        },
+      },
+    });
+    await AppSnapshot.create({ AppId: template.id, yaml: stringify(template.definition) });
+
+    const { Resource } = await getAppDB(template.id);
+    await Resource.create({ clonable: true, data: { email: 'alice@example.com' }, type: 'person' });
+
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.post<AppType>('/api/app-templates', {
+      templateId: template.id,
+      name: 'Unique Template Clone',
+      description: 'Clone with unique people',
+      organizationId: 'testorganization',
+      resources: true,
+    });
+
+    expect(response.status).toBe(201);
+
+    const { Resource: ClonedResource, sequelize } = await getAppDB(response.data.id!);
+    const resources = await ClonedResource.findAll({ where: { type: 'person' } });
+    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+      name: string;
+    }[];
+
+    expect(resources.map((resource) => resource.data)).toStrictEqual([
+      { email: 'alice@example.com' },
+    ]);
+    expect(indexes.map(({ name }) => name)).toContain(
+      getResourceUniqueIndexName('person', ['email'], response.data.definition.resources!.person),
+    );
+  });
+
+  it('should report resource unique conflicts when clonable template resources violate a unique constraint', async () => {
+    // Intentionally bypass the normal controller flow here: App.create() does not sync
+    // per-app unique indexes, so we can seed a template DB with duplicate resources and
+    // verify how clone-time DB constraint failures are reported.
+    const template = await App.create({
+      path: 'unique-template',
+      template: true,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+      definition: {
+        defaultPage: 'People',
+        name: 'Unique Template',
+        pages: [{ name: 'People', blocks: [] }],
+        resources: {
+          person: {
+            unique: ['email'],
+            schema: {
+              additionalProperties: false,
+              properties: {
+                email: { format: 'email', type: 'string' },
+              },
+              required: ['email'],
+              type: 'object',
+            },
+          },
+        },
+      },
+    });
+
+    const { Resource } = await getAppDB(template.id);
+    await Resource.bulkCreate([
+      { clonable: true, data: { email: 'alice@example.com' }, type: 'person' },
+      { clonable: true, data: { email: 'alice@example.com' }, type: 'person' },
+    ]);
+
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.post('/api/app-templates', {
+      templateId: template.id,
+      name: 'Unique Template Clone',
+      description: 'Clone with duplicate people',
+      organizationId: 'testorganization',
+      resources: true,
+    });
+
+    expect(response).toMatchObject({
+      status: 409,
+      data: {
+        message:
+          'A resource of type “person” with the same values for fields “email” already exists.',
+        statusCode: 409,
+      },
+    });
+
+    const clonedApp = await App.findOne({
+      where: { path: 'unique-template-clone' },
+      paranoid: false,
+    });
+
+    expect(clonedApp).toBeNull();
+  });
+
+  it('should report invalid resource values when cloning resources for a typed unique constraint', async () => {
+    const template = await App.create({
+      path: 'invalid-unique-value-template',
+      template: true,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+      definition: {
+        defaultPage: 'People',
+        name: 'Invalid Unique Value Template',
+        pages: [{ name: 'People', blocks: [] }],
+        resources: {
+          person: {
+            unique: ['age'],
+            schema: {
+              additionalProperties: false,
+              properties: {
+                age: { type: 'integer' },
+              },
+              type: 'object',
+            },
+          },
+        },
+      },
+    });
+    await AppSnapshot.create({ AppId: template.id, yaml: stringify(template.definition) });
+
+    const { Resource } = await getAppDB(template.id);
+    await Resource.create({ clonable: true, data: { age: 'abc' }, type: 'person' });
+    const cloneName = `Invalid Age ${template.id}`;
+    const clonePath = `invalid-age-${template.id}`;
+
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.post('/api/app-templates', {
+      templateId: template.id,
+      name: cloneName,
+      description: 'Clone with invalid unique values',
+      organizationId: 'testorganization',
+      resources: true,
+    });
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message:
+          'Can’t apply unique constraint to resource “person” for field “age” because some values do not comply with the field schema.',
+        statusCode: 400,
+      },
+    });
+
+    const clonedApp = await App.findOne({
+      where: { path: clonePath },
+      paranoid: false,
+    });
+
+    expect(clonedApp).toBeNull();
   });
 
   it('should create a new app with example assets', async () => {

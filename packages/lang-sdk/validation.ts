@@ -9,11 +9,13 @@ import {
   getAppPossiblePermissions,
   getAppRolePermissions,
 } from './authorization.js';
+import { BlockParamInstanceValidator } from './BasicValidator.js';
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
+import { partialNormalized } from './constants/index.js';
 import { findPageByName } from './findPageByName.js';
-import { BlockParamInstanceValidator, normalize, partialNormalized } from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
+import { normalize } from './normalize.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
 import {
   type AppDefinition,
@@ -34,6 +36,7 @@ import {
   predefinedAppRolePermissions,
   type ProjectImplementations,
   type Remapper,
+  inferResourceUniqueFieldType,
   type ResourceGetActionDefinition,
   type WebhookActionDefinition,
   type RoleDefinition,
@@ -192,6 +195,7 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
     }
 
     const { enforceOrderingGroupByFields, positioning, schema } = resource;
+    const resourcePrefix = ['resources', resourceName];
     const prefix = ['resources', resourceName, 'schema'];
 
     if (!positioning && enforceOrderingGroupByFields?.length) {
@@ -220,6 +224,7 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
       'expires',
       // XXX: is position reserved?
     ]);
+    const uniqueReservedKeywords = new Set([...reservedKeywords, 'id', '$created', '$updated']);
 
     if (reservedKeywords.has(resourceName)) {
       report(schema, 'is a reserved keyword', ['resources', resourceName]);
@@ -292,6 +297,51 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
           }
         } else if (propertyName.startsWith('$')) {
           report(propertySchema, 'may not start with $', [...prefix, 'properties', propertyName]);
+        }
+      }
+    }
+
+    if ('unique' in resource && resource.unique !== undefined) {
+      const propertyNames = new Set(Object.keys(schema.properties ?? {}));
+      const seenConstraints = new Set<string>();
+
+      for (const [constraintId, constraint] of resource.unique.entries()) {
+        const fields = ([] as string[]).concat(constraint);
+        const normalizedConstraint = fields.toSorted().join('\0');
+
+        if (seenConstraints.has(normalizedConstraint)) {
+          report(constraint, 'duplicates another unique constraint', [
+            ...resourcePrefix,
+            'unique',
+            constraintId,
+          ]);
+        }
+        seenConstraints.add(normalizedConstraint);
+
+        for (const [fieldId, field] of fields.entries()) {
+          const path = Array.isArray(constraint)
+            ? [...resourcePrefix, 'unique', constraintId, fieldId]
+            : [...resourcePrefix, 'unique', constraintId];
+
+          if (uniqueReservedKeywords.has(field)) {
+            report(field, `unique field cannot be a reserved keyword: ${field}`, path);
+          }
+
+          if (!propertyNames.has(field)) {
+            report(field, `unique field must be defined in properties: ${field}`, path);
+          }
+
+          if (
+            propertyNames.has(field) &&
+            !uniqueReservedKeywords.has(field) &&
+            !inferResourceUniqueFieldType(schema.properties?.[field] as any)
+          ) {
+            report(
+              field,
+              `unique field must have type string, integer, number, boolean, or enum: ${field}`,
+              path,
+            );
+          }
         }
       }
     }
@@ -546,8 +596,8 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
       if (page.type === 'tabs') {
         const tabsPage = page as TabsPageDefinition;
         if (tabsPage.tabs) {
-          for (const [tabIdx, tab] of tabsPage.tabs.entries()) {
-            validateSubPageLayout(tab.layout, tab.blocks, report, [...path, 'tabs', tabIdx]);
+          for (const [tabId, tab] of tabsPage.tabs.entries()) {
+            validateSubPageLayout(tab.layout, tab.blocks, report, [...path, 'tabs', tabId]);
           }
         } else if (tabsPage.definition?.foreach) {
           validateSubPageLayout(
@@ -563,8 +613,8 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
       // Flow page
       if (page.type === 'flow') {
         const flowPage = page as FlowPageDefinition;
-        for (const [stepIdx, step] of flowPage.steps.entries()) {
-          validateSubPageLayout(step.layout, step.blocks, report, [...path, 'steps', stepIdx]);
+        for (const [stepId, step] of flowPage.steps.entries()) {
+          validateSubPageLayout(step.layout, step.blocks, report, [...path, 'steps', stepId]);
         }
         return;
       }

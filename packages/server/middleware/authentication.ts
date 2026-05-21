@@ -15,6 +15,45 @@ import {
 import { argv } from '../utils/argv.js';
 import { decrypt } from '../utils/crypto.js';
 
+async function authenticateAppAccessToken(
+  accessToken: string,
+  secret: string,
+): Promise<[AuthSubject, { scope: string; app: AppType }] | null> {
+  let payload: JwtPayload;
+  try {
+    payload = jwt.verify(accessToken, secret) as JwtPayload;
+  } catch {
+    return null;
+  }
+
+  if (payload.token_use !== 'access') {
+    return null;
+  }
+  const { aud, scope, sub } = payload;
+  const [prefix, id] = (aud as string).split(':');
+
+  if (prefix !== 'app') {
+    return null;
+  }
+
+  const persistedApp = await App.findByPk(id);
+  if (!persistedApp) {
+    return null;
+  }
+  const app = persistedApp.toJSON();
+
+  const { AppMember } = await getAppDB(app.id!);
+  const appMember = await AppMember.findByPk(sub, {
+    attributes: ['id'],
+  });
+
+  if (!appMember) {
+    return null;
+  }
+
+  return [appMember, { scope, app }];
+}
+
 export function authentication(): SecurityOptions {
   const { host, secret } = argv;
 
@@ -41,37 +80,21 @@ export function authentication(): SecurityOptions {
     },
 
     // @ts-expect-error Messed up
-    async app(accessToken: string) {
-      const { aud, scope, sub } = jwt.verify(accessToken, secret) as JwtPayload;
-      // XXX use origin check when default app domains are implemented.
-      const [prefix, id] = (aud as string).split(':');
-
-      if (prefix !== 'app') {
-        return;
+    app(accessToken: string) {
+      if (!accessToken) {
+        return null;
       }
 
-      // @ts-expect-error Messed up
-      const app = (await App.findByPk(id)).toJSON();
-      if (!app) {
-        return;
-      }
-
-      const { AppMember } = await getAppDB(app.id!);
-      const appMember = await AppMember.findByPk(sub, {
-        attributes: ['id'],
-      });
-
-      if (!appMember) {
-        return;
-      }
-
-      const result: [AuthSubject, { scope: string; app: AppType }] = [appMember, { scope, app }];
-      return result;
+      return authenticateAppAccessToken(accessToken, secret);
     },
 
     // @ts-expect-error Messed up
     async cli(accessToken: string) {
-      const { aud, scope, sub } = jwt.verify(accessToken, secret) as JwtPayload;
+      const payload = jwt.verify(accessToken, secret) as JwtPayload;
+      if (payload.token_use !== 'access') {
+        return;
+      }
+      const { aud, scope, sub } = payload;
       const credentials = await OAuth2ClientCredentials.count({
         where: {
           id: aud,
@@ -120,10 +143,17 @@ export function authentication(): SecurityOptions {
 
     // @ts-expect-error Messed up
     studio(accessToken: string) {
-      const { sub } = jwt.verify(accessToken, secret, { audience: host }) as JwtPayload;
-      return User.findByPk(sub, {
-        attributes: ['id'],
-      });
+      try {
+        const payload = jwt.verify(accessToken, secret, { audience: host }) as JwtPayload;
+        if (payload.token_use !== 'access') {
+          return null;
+        }
+        return User.findByPk(payload.sub, {
+          attributes: ['id'],
+        });
+      } catch {
+        return null;
+      }
     },
 
     // @ts-expect-error Messed up

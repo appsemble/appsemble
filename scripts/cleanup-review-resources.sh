@@ -17,9 +17,24 @@ if [ -n "${CI_API_V4_URL:-}" ] && [ -n "${CI_PROJECT_ID:-}" ]; then
     TOKEN=''
   fi
 
+  # Fetch every page. per_page only sets the page size; it does not disable
+  # pagination, and this project has thousands of (mostly stopped) review
+  # environments, so a single page misses almost all of them.
+  gitlab_get_all() {
+    page=1
+    while [ "$page" -le 500 ]; do
+      resp=$(curl -sS --header "$HEADER: $TOKEN" "$1&per_page=100&page=$page" || true)
+      [ -z "$resp" ] && break
+      n=$(printf '%s' "$resp" | jq 'if type == "array" then length else 0 end' 2>/dev/null || echo 0)
+      [ "$n" -eq 0 ] && break
+      printf '%s\n' "$resp"
+      page=$((page + 1))
+    done
+  }
+
   if [ -n "$HEADER" ]; then
-    ACTIVE="$ACTIVE $(curl -sS --header "$HEADER: $TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests?state=opened&per_page=100" | jq -r '.[].iid')"
-    KNOWN="$KNOWN $(curl -sS --header "$HEADER: $TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/environments?search=review/&per_page=100" | jq -r '.[] | .name | capture("^review/(?<id>[0-9]+)$")?.id')"
+    ACTIVE="$ACTIVE $(gitlab_get_all "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests?state=opened" | jq -r '.[].iid')"
+    KNOWN="$KNOWN $(gitlab_get_all "$CI_API_V4_URL/projects/$CI_PROJECT_ID/environments?search=review/" | jq -r '.[] | .name | capture("^review/(?<id>[0-9]+)$")?.id')"
   fi
 fi
 
@@ -29,15 +44,33 @@ KNOWN=$(printf '%s\n' "$KNOWN" 2>/dev/null | tr -s '[:space:]' '\n' | awk '/^[0-
 keep() { echo " $ACTIVE " | grep -q " $1 "; }
 known() { echo " $KNOWN " | grep -q " $1 "; }
 
-for r in $(helm list -a --short | grep '^review-[0-9][0-9]*$' || true); do
+purge_release() {
+  rel="$1"
+  id="$2"
+  echo "[review-cleanup] deleting $rel ($3)"
+  helm delete "$rel" --no-hooks --ignore-not-found || true
+  kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=$rel" --ignore-not-found=true || true
+  kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=$rel" --ignore-not-found=true || true
+  # Drops the helm release record, which is what clears releases wedged in
+  # "uninstalling" so they stop counting against the capacity limit.
+  kubectl delete secret -l "owner=helm,name=$rel" --ignore-not-found=true || true
+  kubectl delete namespace "companion-containers-$rel" --ignore-not-found=true || true
+  kubectl delete secret "$rel-mailpit-tls" "$rel-valkey" "stripe-webhook-secret-$id" --ignore-not-found=true || true
+}
+
+helm list -a -o json | jq -r '.[] | select(.name | test("^review-[0-9][0-9]*$")) | "\(.name) \(.status)"' | while read -r r status; do
   iid=${r#review-}
-  known "$iid" || continue
   keep "$iid" && continue
-  echo "[review-cleanup] deleting $r"
-  helm delete "$r" --no-hooks --ignore-not-found || true
-  kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=$r" --ignore-not-found=true || true
-  kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=$r" --ignore-not-found=true || true
-  kubectl delete secret -l "owner=helm,name=$r" --ignore-not-found=true || true
+  case "$status" in
+  uninstalling | failed)
+    # Stuck mid-teardown or broken: never a live environment, and orphans like
+    # these have no matching GitLab environment, so reap regardless of scoping.
+    ;;
+  *)
+    known "$iid" || continue
+    ;;
+  esac
+  purge_release "$r" "$iid" "$status"
 done
 
 for n in $(kubectl get namespaces --no-headers -o custom-columns=:metadata.name | grep '^companion-containers-review-[0-9][0-9]*$' || true); do
@@ -46,8 +79,8 @@ for n in $(kubectl get namespaces --no-headers -o custom-columns=:metadata.name 
   keep "$iid" || kubectl delete namespace "$n" --ignore-not-found=true || true
 done
 
-for s in $(kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep -E '^(review-[0-9]+-mailpit-tls|stripe-webhook-secret-[0-9]+)$' || true); do
-  iid=$(printf '%s\n' "$s" | sed -nE 's/^review-([0-9]+)-mailpit-tls$/\1/p; s/^stripe-webhook-secret-([0-9]+)$/\1/p')
+for s in $(kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep -E '^(review-[0-9]+-(mailpit-tls|valkey)|stripe-webhook-secret-[0-9]+)$' || true); do
+  iid=$(printf '%s\n' "$s" | sed -nE 's/^review-([0-9]+)-(mailpit-tls|valkey)$/\1/p; s/^stripe-webhook-secret-([0-9]+)$/\1/p')
   [ -n "$iid" ] || continue
   known "$iid" || continue
   keep "$iid" && continue

@@ -343,6 +343,43 @@
     "postgresql": {
       "type": "object"
     },
+    "valkey": {
+      "type": "object",
+      "description": "Values passed into the bundled Valkey dependency chart."
+    },
+    "externalValkey": {
+      "type": "object",
+      "description": "Explicit connection settings for an external Valkey service. Used only when valkey.enabled is false.",
+      "additionalProperties": false,
+      "properties": {
+        "host": {
+          "type": ["string", "null"],
+          "description": "The external Valkey host. Required when valkey.enabled is false."
+        },
+        "port": {
+          "type": "integer",
+          "description": "The external Valkey port.",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "username": {
+          "type": "string",
+          "description": "The external Valkey ACL username."
+        },
+        "tls": {
+          "type": "boolean",
+          "description": "Whether to use TLS for the external Valkey connection."
+        },
+        "existingSecret": {
+          "type": ["string", "null"],
+          "description": "The Kubernetes secret containing the external Valkey password. Required when valkey.enabled is false."
+        },
+        "passwordKey": {
+          "type": "string",
+          "description": "The key in externalValkey.existingSecret containing the Valkey password."
+        }
+      }
+    },
     "postgresSSL": {
       "type": "boolean",
       "description": "If `true`, connect establish the PostgreSQL connection over SSL."

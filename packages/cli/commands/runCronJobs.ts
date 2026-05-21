@@ -40,6 +40,26 @@ export function builder(yargs: Argv): Argv<any> {
     .option('database-url', {
       desc: 'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: ['database-host', 'database-name', 'database-user', 'database-password'],
+    })
+    .option('valkey-host', {
+      desc: 'The host of the Valkey server to connect to.',
+    })
+    .option('valkey-port', {
+      desc: 'The port of the Valkey server to connect to.',
+      type: 'number',
+      default: 6379,
+    })
+    .option('valkey-username', {
+      desc: 'The username to use to login to the Valkey server.',
+      default: 'default',
+    })
+    .option('valkey-password', {
+      desc: 'The password to use to login to the Valkey server.',
+    })
+    .option('valkey-tls', {
+      desc: 'Use TLS when connecting to the Valkey server.',
+      type: 'boolean',
+      default: false,
     });
 }
 

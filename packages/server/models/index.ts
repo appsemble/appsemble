@@ -52,6 +52,10 @@ import {
 import { type AssetGlobal as Asset, createAssetModel } from './apps/Asset.js';
 import { createGroupModel, type GroupGlobal as Group } from './apps/Group.js';
 import {
+  createAppMemberRefreshSessionModel,
+  type AppMemberRefreshSessionGlobal as AppMemberRefreshSession,
+} from './apps/AppMemberRefreshSession.js';
+import {
   createGroupInviteModel,
   type GroupInviteGlobal as GroupInvite,
 } from './apps/GroupInvite.js';
@@ -284,6 +288,7 @@ export function transactional<T>(callback: (transaction: Transaction) => Promise
 
 export interface AppModels {
   AppBlockStyle: Repository<AppBlockStyle>;
+  AppMemberRefreshSession: Repository<AppMemberRefreshSession>;
   AppInvite: Repository<AppInvite>;
   AppMember: Repository<AppMember>;
   AppMemberAssignedRole: Repository<AppMemberAssignedRole>;
@@ -381,6 +386,7 @@ export async function initAppDB(
 
     const models: AppModels = {
       AppBlockStyle: createAppBlockStyleModel(appDB),
+      AppMemberRefreshSession: createAppMemberRefreshSessionModel(appDB),
       AppInvite: createAppInviteModel(appDB),
       AppMember: createAppMemberModel(appDB),
       AppMemberAssignedRole: createAppMemberAssignedRoleModel(appDB),
@@ -437,6 +443,17 @@ export async function getAppDB(
   }
 
   return appDBs[appId]!;
+}
+
+export async function closeAppDB(appId: number): Promise<void> {
+  const appDB = appDBs[appId];
+
+  if (!appDB) {
+    return;
+  }
+
+  delete appDBs[appId];
+  await appDB.sequelize.close();
 }
 
 export async function dropAndCloseAllAppDBs(): Promise<void> {

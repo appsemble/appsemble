@@ -14,6 +14,56 @@ export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs);
 }
 
+export async function cleanupDemoAppMembers(): Promise<void> {
+  logger.info('Cleaning up all demo users');
+
+  const apps = await App.findAll({ attributes: ['id'] });
+  await Promise.all(
+    apps.map(async (app) => {
+      let appDB: Awaited<ReturnType<typeof getAppDB>>;
+
+      try {
+        appDB = await getAppDB(app.id);
+      } catch (error) {
+        logger.warn(`Failed to connect to database for app ${app.id}, skipping cleanup.`);
+        logger.error(error);
+        return;
+      }
+
+      const { AppMember, GroupMember, Resource, sequelize } = appDB;
+      try {
+        await sequelize.transaction(async (transaction) => {
+          const appMemberIdsToDelete = await AppMember.findAll({
+            attributes: ['id', 'demo'],
+            where: { demo: true },
+          }).then((appMembers) => appMembers.map((appMember) => appMember.id));
+
+          const groupMembersDestroyed = await GroupMember.destroy({
+            where: { AppMemberId: { [Op.in]: appMemberIdsToDelete } },
+            transaction,
+          });
+          logger.info(`Removed ${groupMembersDestroyed} demo group members from app ${app.id}.`);
+
+          const resourcesDestroyed = await Resource.destroy({
+            where: { AuthorId: { [Op.in]: appMemberIdsToDelete } },
+            force: true,
+            transaction,
+          });
+          logger.info(`Removed ${resourcesDestroyed} demo resources from app ${app.id}.`);
+
+          const appMembersDestroyed = await AppMember.destroy({
+            where: { demo: true },
+            transaction,
+          });
+          logger.info(`Removed ${appMembersDestroyed} demo app members from app ${app.id}.`);
+        });
+      } finally {
+        await sequelize.close();
+      }
+    }),
+  );
+}
+
 export async function handler(): Promise<void> {
   let db;
 
@@ -31,40 +81,7 @@ export async function handler(): Promise<void> {
     handleDBError(error as Error);
   }
 
-  logger.info('Cleaning up all demo users');
-
-  const apps = await App.findAll({ attributes: ['id'] });
-  await Promise.all(
-    apps.map(async (app) => {
-      const { AppMember, GroupMember, Resource, sequelize } = await getAppDB(app.id);
-      await sequelize.transaction(async (transaction) => {
-        const appMemberIdsToDelete = await AppMember.findAll({
-          attributes: ['id', 'demo'],
-          where: { demo: true },
-        }).then((appMembers) => appMembers.map((appMember) => appMember.id));
-
-        const groupMembersDestroyed = await GroupMember.destroy({
-          where: { AppMemberId: { [Op.in]: appMemberIdsToDelete } },
-          transaction,
-        });
-        logger.info(`Removed ${groupMembersDestroyed} demo group members from app ${app.id}.`);
-
-        const resourcesDestroyed = await Resource.destroy({
-          where: { AuthorId: { [Op.in]: appMemberIdsToDelete } },
-          force: true,
-          transaction,
-        });
-        logger.info(`Removed ${resourcesDestroyed} demo resources from app ${app.id}.`);
-
-        const appMembersDestroyed = await AppMember.destroy({
-          where: { demo: true },
-          transaction,
-        });
-        logger.info(`Removed ${appMembersDestroyed} demo app members from app ${app.id}.`);
-      });
-      await sequelize.close();
-    }),
-  );
+  await cleanupDemoAppMembers();
 
   await db.close();
   process.exit();

@@ -6,10 +6,15 @@ import {
   uploadAssets,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
+import { type UniqueConstraintError } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { App, getAppDB } from '../models/index.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
+import {
+  isUniqueConstraintErrorLike,
+  throwResourceUniqueConstraintKoaErrorForResource,
+} from '../utils/resourceUniqueIndexes.js';
 
 export async function updateAppResource({
   app,
@@ -20,6 +25,7 @@ export async function updateAppResource({
   preparedAssets,
   resource,
   resourceDefinition,
+  type,
 }: UpdateAppResourceParams): Promise<ResourceInterface | null> {
   const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(app.id!);
   const member = await getCurrentAppMember({ context, app });
@@ -48,7 +54,6 @@ export async function updateAppResource({
 
       const oldData = oldResource.data;
       const previousEditorId = oldResource.EditorId;
-
       const newResource = await oldResource.update(
         {
           data,
@@ -114,6 +119,16 @@ export async function updateAppResource({
         preparedAssets.map((asset) => asset.id),
       );
     }
+
+    if (isUniqueConstraintErrorLike(error)) {
+      throwResourceUniqueConstraintKoaErrorForResource(
+        context,
+        type,
+        resourceDefinition,
+        error as UniqueConstraintError,
+      );
+    }
+
     throw error;
   }
 }

@@ -17,12 +17,14 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId, development } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+
+axios.defaults.withCredentials = true;
 
 interface JwtPayload {
   exp: number;
@@ -73,7 +75,7 @@ interface AppMemberContext extends LoginState {
   demoLogin: (props: DemoLoginParams) => Promise<void>;
   totpLogin: (token: string) => Promise<void>;
   cancelTotpLogin: () => void;
-  logout: () => any;
+  logout: () => Promise<void>;
   appMemberInfo: AppMemberInfo;
   appMemberInfoRef: MutableRefObject<AppMemberInfo>;
   setAppMemberInfo: Dispatch<AppMemberInfo>;
@@ -96,9 +98,9 @@ interface TokenResponse {
   access_token: string;
 
   /**
-   * The refresh token.
+   * A refresh token for renewing the current app member session.
    */
-  refresh_token: string;
+  refresh_token?: string;
 }
 
 /**
@@ -110,8 +112,6 @@ interface TotpRequiredResponse {
   memberId: string;
 }
 
-const REFRESH_TOKEN = 'refresh_token';
-
 // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
 const Context = createContext<AppMemberContext>(null);
 
@@ -121,6 +121,8 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   const [isLoading, setIsLoading] = useState(Boolean(definition.security));
   const [state, setState] = useState(initialState);
 
+  const { pathname } = useLocation();
+  const isOAuth2Callback = /(^|\/)Callback$/.test(pathname);
   const navigate = useNavigate();
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
@@ -133,77 +135,192 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   );
 
   const [exp, setExp] = useState(null);
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  const [authorization, setAuthorization] = useState<string>(null);
+  const [authorization, setAuthorization] = useState<string | null>(null);
 
   const appMemberInfoRef = useRef(appMemberInfo);
+  const authRequestRef = useRef(0);
+  const refreshTokenRef = useRef<string | undefined>(undefined);
   appMemberInfoRef.current = appMemberInfo;
+
+  const invalidateAuthRequests = useCallback(() => {
+    authRequestRef.current += 1;
+    return authRequestRef.current;
+  }, []);
+
+  const isLatestAuthRequest = useCallback(
+    (requestId: number) => authRequestRef.current === requestId,
+    [],
+  );
 
   /**
    * Reset everything to its initial state for a logged out user.
    */
-  const logout = useCallback(() => {
+  const resetSessionState = useCallback(() => {
     setSentryUser(null);
-    localStorage.removeItem(REFRESH_TOKEN);
     setExp(null);
+    setAuthorization(null);
+    refreshTokenRef.current = undefined;
     setState(initialState);
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     setAppMemberInfo(null);
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
-    setAuthorization(null);
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
     setAppMemberSelectedGroup(null);
   }, []);
+
+  /**
+   * Clear the current app member session from both client state and server cookies.
+   */
+  const logout = useCallback(async () => {
+    const refreshToken = refreshTokenRef.current;
+    invalidateAuthRequests();
+    resetSessionState();
+
+    if (development) {
+      return;
+    }
+
+    try {
+      await axios.post(
+        `${apiUrl}/apps/${appId}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${appId}`,
+          grant_type: 'revoke_token',
+          ...(refreshToken ? { refresh_token: refreshToken } : {}),
+        }),
+      );
+    } catch {
+      // Do nothing
+    }
+  }, [invalidateAuthRequests, resetSessionState]);
+
+  const applyTokenExpiration = useCallback(
+    (accessToken: string, requestId: number) => {
+      if (!isLatestAuthRequest(requestId)) {
+        return;
+      }
+
+      const payload = jwtDecode<JwtPayload>(accessToken);
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
+      setExp(payload.exp);
+    },
+    [isLatestAuthRequest],
+  );
+
+  const hydrateAuthenticatedState = useCallback(
+    async (requestId: number, auth: string, redirect?: string) => {
+      const config = { headers: { authorization: auth } };
+      const linking = loadAccountLinkingState();
+      if (linking) {
+        await axios.post(
+          `${apiUrl}/api/apps/${appId}/members/current/link`,
+          {
+            externalId: linking.externalId,
+            secret: linking.secret,
+            email: linking.email,
+          },
+          config,
+        );
+      }
+
+      if (!isLatestAuthRequest(requestId)) {
+        return;
+      }
+
+      const { data: appMember } = await axios.get<AppMemberInfo>(
+        `${apiUrl}/api/apps/${appId}/members/current`,
+        config,
+      );
+
+      if (!isLatestAuthRequest(requestId)) {
+        return;
+      }
+
+      let appMemberGroups: AppMemberGroup[] = [];
+      try {
+        const { data } = await axios.get<AppMemberGroup[]>(
+          `${apiUrl}/api/apps/${appId}/members/current/groups`,
+          config,
+        );
+        appMemberGroups = data;
+      } catch {
+        // Do nothing
+      }
+
+      if (!isLatestAuthRequest(requestId)) {
+        return;
+      }
+
+      setSentryUser({ id: appMember.sub });
+      setAppMemberInfo(appMember);
+      setState({
+        isLoggedIn: true,
+        appMemberRoles: appMember.roles ?? [],
+        appMemberGroups,
+        totpPending: null,
+      });
+      clearAccountLinkingState();
+
+      if (redirect) {
+        navigate(redirect);
+      }
+    },
+    [isLatestAuthRequest, navigate],
+  );
 
   /**
    * Conveniently fetch an access token.
    *
    * @param grantType The grant type to authenticate with
    * @param params Additional parameters, which depend on the grant type.
-   * @returns A tuple of [authorization header, jwt payload] or null if TOTP is required
+   * @returns The authorization header for the session, or null if TOTP is required.
    */
-  const fetchToken = useCallback(async (grantType: string, params: Record<string, string>) => {
-    if (development) {
-      return ['', { sub: '1' }] as const;
-    }
+  const fetchToken = useCallback(
+    async (grantType: string, params: Record<string, string>, requestId: number) => {
+      if (development) {
+        return isLatestAuthRequest(requestId) ? '' : false;
+      }
 
-    const { data } = await axios.post<TokenResponse | TotpRequiredResponse>(
-      `${apiUrl}/apps/${appId}/auth/oauth2/token`,
-      new URLSearchParams({
-        client_id: `app:${appId}`,
-        grant_type: grantType,
-        scope: oauth2Scope,
-        ...params,
-      }),
-    );
+      const { data } = await axios.post<TokenResponse | TotpRequiredResponse>(
+        `${apiUrl}/apps/${appId}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${appId}`,
+          grant_type: grantType,
+          scope: oauth2Scope,
+          ...params,
+        }),
+      );
 
-    // Check if TOTP verification is required
-    if ('totpRequired' in data && data.totpRequired) {
-      setState((prev) => ({
-        ...prev,
-        totpPending: {
-          memberId: data.memberId,
-          redirect: params.redirect,
-          totpEnabled: data.totpEnabled ?? false,
-        },
-      }));
-      return null;
-    }
+      if (!isLatestAuthRequest(requestId)) {
+        return false;
+      }
 
-    const { access_token: accessToken, refresh_token: rt } = data as TokenResponse;
-    const payload = jwtDecode<JwtPayload>(accessToken);
-    localStorage.setItem(REFRESH_TOKEN, rt);
-    const auth = `Bearer ${accessToken}`;
-    setAuthorization(auth);
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
-    setExp(payload.exp);
-    return [auth, payload] as const;
-  }, []);
+      // Check if TOTP verification is required
+      if ('totpRequired' in data && data.totpRequired) {
+        setState((prev) => ({
+          ...prev,
+          totpPending: {
+            memberId: data.memberId,
+            redirect: params.redirect,
+            totpEnabled: data.totpEnabled ?? false,
+          },
+        }));
+        return null;
+      }
+
+      const { access_token: accessToken, refresh_token: refreshToken } = data as TokenResponse;
+      const auth = `Bearer ${accessToken}`;
+      setAuthorization(auth);
+      if (refreshToken) {
+        refreshTokenRef.current = refreshToken;
+      }
+      applyTokenExpiration(accessToken, requestId);
+      return auth;
+    },
+    [applyTokenExpiration, isLatestAuthRequest],
+  );
 
   /**
    * Fetch an access token and the app member info or log out if any step fails.
@@ -214,65 +331,29 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   const login = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     async <P extends {}>(grantType: string, params: P) => {
-      try {
-        const result = await fetchToken(grantType, params as Record<string, string>);
+      const requestId = invalidateAuthRequests();
 
-        // If result is null, TOTP verification is required - don't proceed with login
-        if (result == null) {
+      try {
+        const auth = await fetchToken(grantType, params as Record<string, string>, requestId);
+
+        // If the session is not ready yet, TOTP verification is required.
+        if (auth == null || auth === false) {
           return;
         }
 
-        const [auth] = result;
-        const config = { headers: { authorization: auth } };
-        const linking = loadAccountLinkingState();
-        if (linking) {
-          await axios.post(
-            `${apiUrl}/api/apps/${appId}/members/current/link`,
-            {
-              externalId: linking.externalId,
-              secret: linking.secret,
-              email: linking.email,
-            },
-            config,
-          );
-        }
-
-        const { data: appMember } = await axios.get<AppMemberInfo>(
-          `${apiUrl}/api/apps/${appId}/members/current`,
-          config,
+        await hydrateAuthenticatedState(
+          requestId,
+          auth,
+          (params as unknown as PasswordLoginParams).redirect,
         );
-
-        let appMemberGroups: AppMemberGroup[] = [];
-        try {
-          const { data } = await axios.get<AppMemberGroup[]>(
-            `${apiUrl}/api/apps/${appId}/members/current/groups`,
-            config,
-          );
-          appMemberGroups = data;
-        } catch {
-          // Do nothing
-        }
-
-        setSentryUser({ id: appMember.sub });
-        setAppMemberInfo(appMember);
-        setState({
-          isLoggedIn: true,
-          appMemberRoles: appMember.roles ?? [],
-          appMemberGroups,
-          totpPending: null,
-        });
-        clearAccountLinkingState();
-
-        if ((params as unknown as PasswordLoginParams).redirect) {
-          // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
-          navigate((params as unknown as PasswordLoginParams).redirect);
-        }
       } catch (error: unknown) {
-        logout();
+        if (isLatestAuthRequest(requestId)) {
+          await logout();
+        }
         throw error;
       }
     },
-    [fetchToken, logout, navigate],
+    [fetchToken, hydrateAuthenticatedState, invalidateAuthRequests, isLatestAuthRequest, logout],
   );
 
   /**
@@ -308,13 +389,11 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
    * @param appMemberId The app member to log in as.
    */
   const demoLogin = useCallback(
-    ({ appMemberId, appRole }: DemoLoginParams) => {
-      logout();
-      const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+    async ({ appMemberId, appRole }: DemoLoginParams) => {
+      await logout();
       return login('urn:ietf:params:oauth:grant-type:demo-login', {
         appMemberId,
         appRole,
-        ...(refreshToken ? { refresh_token: refreshToken } : {}),
       });
     },
     [login, logout],
@@ -340,62 +419,15 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         },
       );
 
-      const { access_token: accessToken, refresh_token: rt } = data;
-      const payload = jwtDecode<JwtPayload>(accessToken);
-      localStorage.setItem(REFRESH_TOKEN, rt);
-      const auth = `Bearer ${accessToken}`;
+      const requestId = invalidateAuthRequests();
+      refreshTokenRef.current = data.refresh_token;
+      const auth = `Bearer ${data.access_token}`;
       setAuthorization(auth);
-      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-      // (strictNullChecks)
-      setExp(payload.exp);
-
-      const config = { headers: { authorization: auth } };
-      const linking = loadAccountLinkingState();
-      if (linking) {
-        await axios.post(
-          `${apiUrl}/api/apps/${appId}/members/current/link`,
-          {
-            externalId: linking.externalId,
-            secret: linking.secret,
-            email: linking.email,
-          },
-          config,
-        );
-      }
-
-      const { data: appMember } = await axios.get<AppMemberInfo>(
-        `${apiUrl}/api/apps/${appId}/members/current`,
-        config,
-      );
-
-      let appMemberGroups: AppMemberGroup[] = [];
-      try {
-        const { data: groups } = await axios.get<AppMemberGroup[]>(
-          `${apiUrl}/api/apps/${appId}/members/current/groups`,
-          config,
-        );
-        appMemberGroups = groups;
-      } catch {
-        // Do nothing
-      }
-
+      applyTokenExpiration(data.access_token, requestId);
       const { redirect } = state.totpPending;
-
-      setSentryUser({ id: appMember.sub });
-      setAppMemberInfo(appMember);
-      setState({
-        isLoggedIn: true,
-        appMemberRoles: appMember.roles ?? [],
-        appMemberGroups,
-        totpPending: null,
-      });
-      clearAccountLinkingState();
-
-      if (redirect) {
-        navigate(redirect);
-      }
+      await hydrateAuthenticatedState(requestId, auth, redirect);
     },
-    [state.totpPending, navigate],
+    [applyTokenExpiration, hydrateAuthenticatedState, invalidateAuthRequests, state.totpPending],
   );
 
   /**
@@ -432,19 +464,27 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
 
     if (!appMemberInfo) {
       if (development) {
-        developmentLogin();
+        developmentLogin()
+          .finally(() => setIsLoading(false))
+          .catch(() => {
+            // This can fail if the server is not reachable, but in development this is fine.
+          });
+        return;
       }
-      const rt = localStorage.getItem(REFRESH_TOKEN);
-      if (rt) {
-        // If a refresh token is known, start a new session.
-        login('refresh_token', { refresh_token: rt }).finally(() => setIsLoading(false));
-      } else {
-        // Otherwise make sure the state is fully reset.
-        logout();
+
+      if (isOAuth2Callback) {
         setIsLoading(false);
+        return;
       }
+
+      // Try to resume the session from the refresh token cookie.
+      login('refresh_token', {})
+        .catch(() => {
+          // Do nothing. `login` already resets the local session state on failure.
+        })
+        .finally(() => setIsLoading(false));
     }
-  }, [appMemberInfo, definition, developmentLogin, login, logout]);
+  }, [appMemberInfo, definition, developmentLogin, isOAuth2Callback, login, logout]);
 
   // Handle refreshing access tokens
   useEffect(() => {
@@ -462,15 +502,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     const timeout = (exp - 300) * 1000 - Date.now();
 
     const timeoutId = setTimeout(async () => {
-      const rt = localStorage.getItem(REFRESH_TOKEN);
-      // If the refresh token was somehow removed from local storage, log out.
-      if (!rt) {
-        logout();
-      }
+      const requestId = invalidateAuthRequests();
       try {
-        // Fetch a new access token, but do keep the original role and user info.
-        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-        await fetchToken('refresh_token', { refresh_token: rt });
+        // Refresh the current session using the in-memory token if the browser rejected the cookie.
+        await fetchToken(
+          'refresh_token',
+          refreshTokenRef.current ? { refresh_token: refreshTokenRef.current } : {},
+          requestId,
+        );
       } catch {
         // If refreshing the session fails for any reason, log out the user.
         logout();
@@ -480,7 +519,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       // If a new timeout is registered, clear the old one.
       clearTimeout(timeoutId);
     };
-  }, [exp, fetchToken, logout]);
+  }, [exp, fetchToken, invalidateAuthRequests, logout]);
 
   useEffect(() => {
     if (!authorization) {
@@ -489,7 +528,8 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
 
     const interceptor = axios.interceptors.request.use((config) => {
       // Only assign the authorization header to requests made to the Appsemble API.
-      if (new URL(axios.getUri(config)).origin === apiUrl) {
+      const url = new URL(axios.getUri(config));
+      if (url.origin === new URL(apiUrl).origin) {
         Object.assign(config.headers, { authorization });
       }
       return config;

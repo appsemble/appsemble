@@ -105,7 +105,8 @@ describe('unpinAppFromAppCollection', () => {
   });
 
   it('should unpin an app from an app collection', async () => {
-    const app1 = (await AppCollectionApp.findByPk(apps[0].id))!;
+    const collectionApp = { AppCollectionId: collections[0].id, AppId: apps[0].id };
+    const app1 = (await AppCollectionApp.findOne({ where: collectionApp }))!;
     await app1.update({ pinnedAt: new Date() });
 
     authorizeStudio(user);
@@ -114,7 +115,7 @@ describe('unpinAppFromAppCollection', () => {
     );
     expect(response.status).toBe(204);
 
-    const app2 = (await AppCollectionApp.findByPk(apps[0].id))!;
+    const app2 = (await AppCollectionApp.findOne({ where: collectionApp }))!;
     expect(app2.pinnedAt).toBeNull();
   });
 

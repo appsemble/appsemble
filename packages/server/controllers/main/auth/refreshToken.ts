@@ -9,14 +9,20 @@ export function refreshToken(ctx: Context): void {
   const {
     request: { body },
   } = ctx;
+
   try {
-    const { sub } = jwt.verify(body.refresh_token, argv.secret, {
+    const payload = jwt.verify(body.refresh_token, argv.secret, {
       audience: argv.host,
     }) as JwtPayload;
-    if (!sub) {
-      throwKoaError(ctx, 401, 'Invalid refresh token');
+
+    if (payload.token_use !== 'refresh' || typeof payload.sub !== 'string') {
+      throw new Error('Invalid refresh token');
     }
-    ctx.body = createJWTResponse(sub);
+
+    ctx.body = createJWTResponse(payload.sub, {
+      aud: argv.host,
+      scope: payload.scope as string | undefined,
+    });
   } catch {
     throwKoaError(ctx, 401, 'Invalid refresh token');
   }

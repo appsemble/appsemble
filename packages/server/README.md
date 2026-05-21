@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.36.8/config/assets/logo.svg) Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.36.10-test.3/config/assets/logo.svg) Appsemble Server
 
 > The official Appsemble Docker image
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.36.8/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.36.8)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.36.10-test.3/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10-test.3)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -49,6 +49,11 @@ passed as a command line parameter instead, if desired.
 | `DATABASE_URL`                  |              | A connection string for the database to connect to. This is an alternative to the separate database related variables. |
 | `DATABASE_BENCHMARK`            | `false`      | Enable query timing. Logs execution time for each SQL query and warns for slow queries.                                |
 | `SLOW_QUERY_THRESHOLD`          | `100`        | Threshold in milliseconds. Queries slower than this are logged as warnings when benchmark mode is enabled.             |
+| `VALKEY_HOST`                   |              | The host of the Valkey server to connect to.                                                                           |
+| `VALKEY_PORT`                   | `6379`       | The port of the Valkey server to connect to.                                                                           |
+| `VALKEY_USERNAME`               | `default`    | The username to use to login to the Valkey server.                                                                     |
+| `VALKEY_PASSWORD`               |              | The password to use to login to the Valkey server.                                                                     |
+| `VALKEY_TLS`                    | `false`      | Use TLS when connecting to the Valkey server.                                                                          |
 | `SENTRY_DSN`                    |              | The Sentry DSN to use for error reporting. See [Sentry](https://sentry.io) for details.                                |
 | `SENTRY_ENVIRONMENT`            |              | The Sentry environment to send with captured events.                                                                   |
 | `SENTRY_TRACES_SAMPLE_RATE`     | `0.2`        | The Sentry trace sampling rate between 0 and 1.                                                                        |
@@ -196,5 +201,5 @@ With the Stripe CLI you can expose an endpoint on your machine that will receive
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.36.8/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.36.10-test.3/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

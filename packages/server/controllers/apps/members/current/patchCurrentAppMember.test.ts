@@ -93,6 +93,39 @@ describe('patchCurrentAppMember', () => {
     expect(appMember.email).toBe('test@example.com');
   });
 
+  it('should authenticate app API calls using the returned app access token', async () => {
+    const tokenResponse = await request.post(
+      `/apps/${app.id}/auth/oauth2/token`,
+      new URLSearchParams({
+        client_id: `app:${app.id}`,
+        grant_type: 'password',
+        password: 'testpassword',
+        scope: 'email groups:read groups:write openid profile resources:manage',
+        username: 'test@example.com',
+      }),
+    );
+
+    const response = await request.patch(
+      `/api/apps/${app.id}/members/current`,
+      createFormData({ name: 'Cookie Authenticated' }),
+      {
+        headers: {
+          authorization: `Bearer ${tokenResponse.data.access_token}`,
+        },
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        email: 'test@example.com',
+        name: 'Cookie Authenticated',
+      },
+    });
+    await appMember.reload();
+    expect(appMember.name).toBe('Cookie Authenticated');
+  });
+
   it('should not over write the app member properties', async () => {
     await appMember.update({
       properties: {
