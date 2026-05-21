@@ -628,6 +628,10 @@ e2e node:
     DATABASE_NAME: appsemble
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
+    VALKEY_HOST: valkey
+    VALKEY_PORT: 6379
+    VALKEY_USERNAME: default
+    VALKEY_PASSWORD: password
     E2E_HOST: 'https://appsemble:9999'
     APPSEMBLE_SSL_KEY_E2E_SERVICE: $APPSEMBLE_SSL_KEY_E2E
     APPSEMBLE_SSL_CRT_E2E_SERVICE: $APPSEMBLE_SSL_CRT_E2E
@@ -644,6 +648,9 @@ e2e node:
       variables:
         MINIO_ROOT_USER: admin
         MINIO_ROOT_PASSWORD: password
+    - name: valkey/valkey:9.0.2
+      alias: valkey
+      command: ['valkey-server', '--requirepass', 'password']
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
       entrypoint: ['sh', '-c']
