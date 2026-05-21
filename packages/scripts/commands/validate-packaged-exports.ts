@@ -35,6 +35,33 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
     console.log(`Extracted ${file}\nImporting ${outDir}/index.js`);
 
     const packageJson = JSON.parse(await readFile(join(outDir, 'package.json'), 'utf8'));
+
+    // Every file referenced by an export condition must be shipped in the package. This guards
+    // against conditions like `ts-source` (pointing at TypeScript source that isn't published)
+    // leaking into a published package and breaking consumers that resolve them.
+    const exportTargets = new Set<string>();
+    const collectTargets = (value: unknown): void => {
+      if (typeof value === 'string') {
+        if (value.startsWith('./')) {
+          exportTargets.add(value);
+        }
+      } else if (value && typeof value === 'object') {
+        for (const nested of Object.values(value)) {
+          collectTargets(nested);
+        }
+      }
+    };
+    collectTargets(packageJson.exports);
+    for (const target of exportTargets) {
+      const exists = await access(join(outDir, target))
+        .then(() => true)
+        .catch(() => false);
+      if (!exists) {
+        console.error(`Export target ${target} is missing from ${file}`);
+        process.exit(1);
+      }
+    }
+
     const nodeModulesPath = join(process.cwd(), packageJson.repository.directory, 'node_modules');
     const outDirNodeModulesPath = join(outDir, 'node_modules');
     if (

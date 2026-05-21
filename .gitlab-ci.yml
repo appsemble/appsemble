@@ -327,6 +327,9 @@ pack:
   stage: build
   script:
     - mkdir build/
+    # Published packages ship compiled output, so drop the monorepo-only `ts-source` export
+    # condition before packing (see strip-ts-source-exports).
+    - npm run scripts -- strip-ts-source-exports 'packages/*/package.json'
     - npm --pack-destination build --workspace @appsemble/types pack
     - npm --pack-destination build --workspace @appsemble/sdk pack
     - npm --pack-destination build --workspace @appsemble/lang-sdk pack
