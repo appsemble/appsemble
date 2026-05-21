@@ -68,12 +68,20 @@ to_mi() {
   *Mi) echo "${v%Mi}" ;;
   *Gi) echo $((${v%Gi} * 1024)) ;;
   *Ti) echo $((${v%Ti} * 1024 * 1024)) ;;
-  *) echo 0 ;;
+  *Pi) echo $((${v%Pi} * 1024 * 1024 * 1024)) ;;
+  *k) echo $((${v%k} * 1000 / 1048576)) ;;
+  *M) echo $((${v%M} * 1000000 / 1048576)) ;;
+  *G) echo $((${v%G} * 1000000000 / 1048576)) ;;
+  *T) echo $((${v%T} * 1000000000000 / 1048576)) ;;
+  '' | *[!0-9]*) echo 0 ;;
+  *) echo $((v / 1048576)) ;;
   esac
 }
 
 active_releases=$(helm list -a -o json | jq '[.[] | select(.name | test("^review-[0-9][0-9]*$")) | {name, status}]')
-active_count=$(printf '%s\n' "$active_releases" | jq 'length')
+# Only live or in-progress releases occupy a review slot. Releases stuck in
+# uninstalling/failed do not, and must not block new deploys against the cap.
+active_count=$(printf '%s\n' "$active_releases" | jq '[.[] | select(.status == "deployed" or .status == "pending-install" or .status == "pending-upgrade")] | length')
 current_release_exists='false'
 if [ -n "$CURRENT_RELEASE" ] && printf '%s\n' "$active_releases" | jq -e --arg current "$CURRENT_RELEASE" 'any(.[]; .name == $current)' >/dev/null; then
   current_release_exists='true'
@@ -91,7 +99,10 @@ for memory in $(kubectl get nodes -o json | jq -r '.items[].status.allocatable.m
 done
 
 req=0
-for memory in $(kubectl get pods -A -o json | jq -r '.items[] | select(.status.phase == "Pending" or .status.phase == "Running") | .spec.containers[]?.resources.requests.memory // empty'); do
+# Only pods bound to a node hold node memory. Unschedulable Pending pods (no
+# nodeName) consume nothing, and counting them lets a stuck or mid-teardown pod
+# inflate the total far past cluster capacity and falsely block deploys.
+for memory in $(kubectl get pods -A -o json | jq -r '.items[] | select((.status.phase == "Pending" or .status.phase == "Running") and (.spec.nodeName // "") != "") | .spec.containers[]?.resources.requests.memory // empty'); do
   req=$((req + $(to_mi "$memory")))
 done
 
