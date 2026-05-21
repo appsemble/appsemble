@@ -434,6 +434,9 @@ test node:
   services:
     - name: postgres:17
       alias: postgres
+    - name: valkey/valkey:9.0.2
+      alias: valkey
+      command: ['valkey-server', '--requirepass', 'password']
     - name: minio/minio:latest
       alias: minio
       command: ['server', '/data']
@@ -451,6 +454,10 @@ test node:
     DATABASE_PASSWORD: password
     S3_HOST: 'minio'
     S3_PORT: 9000
+    VALKEY_HOST: 'valkey'
+    VALKEY_PORT: 6379
+    VALKEY_USERNAME: default
+    VALKEY_PASSWORD: password
   stage: test
   script:
     - npm test -- --no-file-parallelism --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
