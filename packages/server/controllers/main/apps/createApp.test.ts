@@ -18,6 +18,7 @@ import {
   BlockAsset,
   BlockMessages,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   OrganizationSubscription,
