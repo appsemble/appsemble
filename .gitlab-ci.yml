@@ -1086,7 +1086,7 @@ update dependencies:
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --debug
       --atomic
-      --timeout 10m0s
+      --timeout 30m0s
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
