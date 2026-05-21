@@ -105,19 +105,18 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     'This app has no default role',
   );
 
-  const appMemberExists = await AppMember.count({ where: { email } });
-
-  assertKoaCondition(!appMemberExists, ctx, 409, DUPLICATE_APP_MEMBER_REGISTRATION_MESSAGE);
+  const appMemberExists = (await AppMember.count({ where: { email } })) > 0;
+  let phoneNumberExists = false;
 
   if (phoneNumber) {
     const enabled = app.definition?.members?.phoneNumber?.enable === true;
     assertKoaCondition(enabled, ctx, 400, 'App does not allow registering phone numbers');
-    const phoneNumberExists = await AppMember.count({
-      where: {
-        phoneNumber: parsePhoneNumber(phoneNumber, 'NL').format('INTERNATIONAL'),
-      },
-    });
-    assertKoaCondition(!phoneNumberExists, ctx, 409, DUPLICATE_APP_MEMBER_REGISTRATION_MESSAGE);
+    phoneNumberExists =
+      (await AppMember.count({
+        where: {
+          phoneNumber: parsePhoneNumber(phoneNumber, 'NL').format('INTERNATIONAL'),
+        },
+      })) > 0;
   } else {
     const isRequired = app.definition?.members?.phoneNumber?.required === true;
     assertKoaCondition(
@@ -127,6 +126,14 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       'Phone number is required for registering with this app',
     );
   }
+
+  // This assert is done with both conditions together, in here, to avoid a potential side channel attack where an attacker could check if an email is registered by the response time of the request. By checking both conditions together, we can ensure that the response time is consistent regardless of whether the email or phone number is already registered.
+  assertKoaCondition(
+    !appMemberExists && !phoneNumberExists,
+    ctx,
+    409,
+    DUPLICATE_APP_MEMBER_REGISTRATION_MESSAGE,
+  );
 
   let appMember = { id: '' } as AppMember;
   try {
