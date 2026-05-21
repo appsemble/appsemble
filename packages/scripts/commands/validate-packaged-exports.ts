@@ -10,6 +10,24 @@ import { type Argv } from 'yargs';
 export const command = 'validate-packaged-exports <paths...>';
 export const description = 'Checks for missing files exported by a package.';
 
+/**
+ * Recursively collect the relative file targets referenced by a package.json `exports` value.
+ *
+ * @param value An `exports` entry, which may be a string target or a nested conditions object.
+ * @param targets The set to collect relative (`./…`) targets into.
+ */
+function collectExportTargets(value: unknown, targets: Set<string>): void {
+  if (typeof value === 'string') {
+    if (value.startsWith('./')) {
+      targets.add(value);
+    }
+  } else if (value && typeof value === 'object') {
+    for (const nested of Object.values(value)) {
+      collectExportTargets(nested, targets);
+    }
+  }
+}
+
 export function builder(yargs: Argv): Argv<any> {
   return yargs.positional('paths', {
     describe: 'The path to the package(s) to validate.',
@@ -40,18 +58,7 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
     // against conditions like `ts-source` (pointing at TypeScript source that isn't published)
     // leaking into a published package and breaking consumers that resolve them.
     const exportTargets = new Set<string>();
-    const collectTargets = (value: unknown): void => {
-      if (typeof value === 'string') {
-        if (value.startsWith('./')) {
-          exportTargets.add(value);
-        }
-      } else if (value && typeof value === 'object') {
-        for (const nested of Object.values(value)) {
-          collectTargets(nested);
-        }
-      }
-    };
-    collectTargets(packageJson.exports);
+    collectExportTargets(packageJson.exports, exportTargets);
     for (const target of exportTargets) {
       const exists = await access(join(outDir, target))
         .then(() => true)
