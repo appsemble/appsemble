@@ -17,6 +17,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from 'vitest';
 
 import { dropAndCloseAllAppDBs } from './models/index.js';
 import { getRootDB, setupTestDatabase } from './utils/test/testSchema.js';
+import { getValkeyClient, initValkeyClient } from './utils/valkey.js';
 
 // Allow private IP addresses in proxy tests (e.g., localhost test servers).
 // This env var is checked by the SSRF protection in @appsemble/node-utils.
@@ -51,6 +52,13 @@ beforeAll(async () => {
     port: Number(process.env.S3_PORT) || 9009,
     useSSL: false,
   });
+  await initValkeyClient({
+    host: process.env.VALKEY_HOST || 'localhost',
+    port: Number(process.env.VALKEY_PORT) || 63_791,
+    username: process.env.VALKEY_USERNAME || 'default',
+    password: process.env.VALKEY_PASSWORD || 'password',
+    tls: process.env.VALKEY_TLS === 'true',
+  });
 });
 
 beforeEach(async () => {
@@ -58,6 +66,7 @@ beforeEach(async () => {
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
   vi.useRealTimers();
   await clearAllS3Buckets();
+  await getValkeyClient()?.flushdb();
 });
 
 afterEach(async () => {

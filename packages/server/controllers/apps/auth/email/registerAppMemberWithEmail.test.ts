@@ -386,6 +386,50 @@ describe('registerAppMemberWithEmail', () => {
     `);
   });
 
+  it('should rate limit repeated duplicate registration attempts', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+
+    const { AppMember } = await getAppDB(app.id);
+    await AppMember.create({
+      userId: user.id,
+      role: 'User',
+      email: 'test@example.com',
+    });
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const response = await request.post(
+        `/api/apps/${app.id}/auth/email/register`,
+        createFormData({
+          email: 'test@example.com',
+          password: 'password',
+          timezone: 'Europe/Amsterdam',
+        }),
+      );
+
+      expect(response.status).toBe(409);
+    }
+
+    const response = await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 429 Too Many Requests
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Too Many Requests",
+        "message": "Too many requests, please try again later.",
+        "statusCode": 429,
+      }
+    `);
+  });
+
   it('should create an app member with a phone number', async () => {
     const app = await createDefaultAppWithSecurity(organization);
     await app.update({
