@@ -633,9 +633,9 @@ export interface AppMemberInviteAction extends BaseActionDefinition<'app.member.
   email: Remapper;
 
   /**
-   * The role to invite the app member with.
+   * The roles to invite the app member with.
    */
-  role: Remapper;
+  roles: Remapper;
 }
 
 export interface AppMemberQueryAction extends BaseActionDefinition<'app.member.query'> {
@@ -658,9 +658,16 @@ export interface AppMemberRoleUpdateAction extends BaseActionDefinition<'app.mem
   sub: Remapper;
 
   /**
-   * The role of the updated app member
+   * The roles of the updated app member.
    */
-  role: Remapper;
+  roles?: Remapper;
+
+  /**
+   * The role of the updated app member.
+   *
+   * @deprecated Use `roles` instead.
+   */
+  role?: Remapper;
 }
 
 export interface AppMemberPropertiesPatchAction extends BaseActionDefinition<'app.member.properties.patch'> {

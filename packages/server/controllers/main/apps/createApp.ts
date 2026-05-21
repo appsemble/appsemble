@@ -265,7 +265,7 @@ export async function createApp(ctx: Context): Promise<void> {
           const identifier = Math.random().toString(36).slice(2);
           const cronEmail = `cron-${identifier}@example.com`;
           await AppMember.create(
-            { role: 'cron', email: cronEmail },
+            { roles: ['cron'], email: cronEmail },
             { transaction: appTransaction },
           );
         }

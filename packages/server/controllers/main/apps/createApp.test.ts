@@ -25,6 +25,7 @@ import {
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
+import { findAppMemberByRole } from '../../../utils/appMember.js';
 import { createServer } from '../../../utils/createServer.js';
 import { decrypt } from '../../../utils/crypto.js';
 import { getResourceUniqueIndexName } from '../../../utils/resourceUniqueIndexes.js';
@@ -310,13 +311,10 @@ describe('createApp', () => {
       }),
     );
     expect(response.status).toBe(201);
-    const { AppMember } = await getAppDB(response.data.id!);
-    const foundMember = (await AppMember.findOne({
-      where: { role: 'cron' },
-    }))!;
+    const foundMember = (await findAppMemberByRole(response.data.id!, 'cron'))!;
     expect(foundMember.dataValues).toMatchObject({
       email: expect.stringMatching('cron.*example'),
-      role: 'cron',
+      roles: ['cron'],
     });
   });
 

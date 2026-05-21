@@ -35,6 +35,7 @@ import {
 import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import { findAppMemberByRole } from '../../../utils/appMember.js';
 import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
@@ -170,12 +171,12 @@ export async function patchApp(ctx: Context): Promise<void> {
 
       result.definition = definition;
       if (definition.cron && definition.security?.cron) {
-        const appMember = await AppMember.findOne({ where: { role: 'cron' } });
+        const appMember = await findAppMemberByRole(dbApp.id, 'cron');
 
         if (!appMember) {
           const identifier = Math.random().toString(36).slice(2);
           const cronEmail = `cron-${identifier}@example.com`;
-          await AppMember.create({ email: cronEmail, role: 'cron' });
+          await AppMember.create({ email: cronEmail, roles: ['cron'] });
         }
       }
       // Make the actual update

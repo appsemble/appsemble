@@ -3,7 +3,7 @@ import { mkdir, readdir, readFile, rm, stat } from 'node:fs/promises';
 import { basename, dirname, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
 
-import { type AppDefinition, normalizeBlockName } from '@appsemble/lang-sdk';
+import { type AppDefinition, type AppRole, normalizeBlockName } from '@appsemble/lang-sdk';
 import {
   applyAppVariant,
   AppsembleError,
@@ -60,11 +60,11 @@ export async function traverseAppDirectory(
   context: string,
   formData: FormData,
 ): Promise<[AppsembleContext, AppsembleRC, string, App]> {
-  let rc: AppsembleRC;
-  let discoveredContext: AppsembleContext;
-  let yaml: string;
-  let iconPath: string;
-  let maskableIconPath: string;
+  let rc!: AppsembleRC;
+  let discoveredContext: AppsembleContext = {};
+  let yaml: string | undefined;
+  let iconPath: string | undefined;
+  let maskableIconPath: string | undefined;
   let controllerPath: string;
   let controllerBuildConfig: ProjectBuildConfig;
   let controllerBuildResult: BuildResult;
@@ -210,19 +210,16 @@ export async function traverseAppDirectory(
     }
   });
 
-  // @ts-expect-error 2454 Variable used before it was assigned
   if (yaml === undefined) {
     throw new AppsembleError('No app definition found');
   }
-  discoveredContext ||= {};
-  // @ts-expect-error 2454 Variable used before it was assigned
-  // eslint-disable-next-line prettier/prettier
-  discoveredContext.icon = discoveredContext.icon ? resolve(path, discoveredContext.icon) : iconPath;
-  // @ts-expect-error 2454 Variable used before it was assigned
-  // eslint-disable-next-line prettier/prettier
-  discoveredContext.maskableIcon = discoveredContext.maskableIcon ? resolve(path, discoveredContext.maskableIcon) : maskableIconPath;
+  discoveredContext.icon = discoveredContext.icon
+    ? resolve(path, discoveredContext.icon)
+    : iconPath;
+  discoveredContext.maskableIcon = discoveredContext.maskableIcon
+    ? resolve(path, discoveredContext.maskableIcon)
+    : maskableIconPath;
 
-  // @ts-expect-error 2454 Variable used before it was assigned
   return [discoveredContext, rc, yaml, gatheredData as App];
 }
 
@@ -236,9 +233,9 @@ function extractFilenameFromContentDisposition(contentDisposition: string): stri
 
 async function retrieveContext(path: string, context: string): Promise<AppsembleContext> {
   let rc: AppsembleRC;
-  let discoveredContext: AppsembleContext;
-  let iconPath: string;
-  let maskableIconPath: string;
+  let discoveredContext: AppsembleContext = {};
+  let iconPath: string | undefined;
+  let maskableIconPath: string | undefined;
   await opendirSafe(path, async (filepath, filestat) => {
     switch (filestat.name.toLowerCase()) {
       case '.appsemblerc.yaml':
@@ -261,13 +258,12 @@ async function retrieveContext(path: string, context: string): Promise<Appsemble
         break;
     }
   });
-  discoveredContext ||= {};
-  // @ts-expect-error 2454 Variable used before it was assigned
-  // eslint-disable-next-line prettier/prettier
-  discoveredContext.icon = discoveredContext.icon ? resolve(path, discoveredContext.icon) : iconPath;
-  // @ts-expect-error 2454 Variable used before it was assigned
-  // eslint-disable-next-line prettier/prettier
-  discoveredContext.maskableIcon = discoveredContext.maskableIcon ? resolve(path, discoveredContext.maskableIcon) : maskableIconPath;
+  discoveredContext.icon = discoveredContext.icon
+    ? resolve(path, discoveredContext.icon)
+    : iconPath;
+  discoveredContext.maskableIcon = discoveredContext.maskableIcon
+    ? resolve(path, discoveredContext.maskableIcon)
+    : maskableIconPath;
 
   return discoveredContext;
 }
@@ -442,6 +438,34 @@ export async function publishSeedResources(path: string, app: App, remote: strin
   }
 }
 
+interface SeedAppMember {
+  role?: AppRole;
+  roles?: AppRole | AppRole[] | null;
+  [key: string]: unknown;
+}
+
+function normalizeSeedAppMemberRoles(
+  roles: AppRole | AppRole[] | null | undefined,
+  role?: AppRole,
+): AppRole[] {
+  return Array.from(
+    new Set(
+      (Array.isArray(roles) ? roles : roles ? [roles] : role ? [role] : []).filter(
+        Boolean,
+      ) as AppRole[],
+    ),
+  );
+}
+
+function normalizeSeedAppMembers(
+  members: SeedAppMember[],
+): (Omit<SeedAppMember, 'role'> & { roles: AppRole[] })[] {
+  return members.map(({ role, roles, ...member }) => ({
+    ...member,
+    roles: normalizeSeedAppMemberRoles(roles, role),
+  }));
+}
+
 export async function publishSeedAppMembers(path: string, app: App, remote: string): Promise<void> {
   const membersPath = join(path, 'members', 'index.json');
   logger.info(`Publishing seed app members from ${membersPath}`);
@@ -454,7 +478,7 @@ export async function publishSeedAppMembers(path: string, app: App, remote: stri
         baseURL: remote,
       });
       const membersContent = await readFile(membersPath, 'utf8');
-      const members = JSON.parse(membersContent);
+      const members = normalizeSeedAppMembers(JSON.parse(membersContent));
       await axios({
         url: `/api/apps/${app.id}/demo-members`,
         baseURL: remote,
@@ -464,7 +488,10 @@ export async function publishSeedAppMembers(path: string, app: App, remote: stri
       logger.info(`Seeded ${members.length} members successfully`);
     } catch (error) {
       logger.error(error);
+      throw error;
     }
+  } else {
+    logger.warn(`Missing members directory in ${path}. Skipping...`);
   }
 }
 

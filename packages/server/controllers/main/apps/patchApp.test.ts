@@ -21,6 +21,7 @@ import {
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { decrypt, encrypt } from '../../../utils/crypto.js';
+import { findAppMemberByRole } from '../../../utils/appMember.js';
 import {
   getResourceUniqueIndexName,
   syncResourceUniqueIndexes,
@@ -1955,8 +1956,7 @@ describe('patchApp', () => {
       { raw: true },
     );
     authorizeStudio();
-    const { AppMember } = await getAppDB(app.id);
-    const member = await AppMember.findOne({ where: { role: 'cron' } });
+    const member = await findAppMemberByRole(app.id, 'cron');
     expect(member).toBeNull();
     const response = await request.patch(
       `/api/apps/${app.id}`,
@@ -1981,9 +1981,9 @@ describe('patchApp', () => {
       }),
     );
     expect(response.status).toBe(200);
-    const foundMember = (await AppMember.findOne({ where: { role: 'cron' } }))!;
+    const foundMember = (await findAppMemberByRole(app.id, 'cron'))!;
     expect(foundMember.dataValues).toMatchObject({
-      role: 'cron',
+      roles: ['cron'],
       email: expect.stringMatching('cron.*example'),
     });
   });

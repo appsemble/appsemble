@@ -317,7 +317,7 @@ describe('checkAppRolePermissions', () => {
         },
       },
     };
-    const isMatch = checkAppRoleAppPermissions(security, 'User', ['$resource:all:history:get']);
+    const isMatch = checkAppRoleAppPermissions(security, ['User'], ['$resource:all:history:get']);
     expect(isMatch).toBe(true);
   });
 
@@ -332,7 +332,7 @@ describe('checkAppRolePermissions', () => {
         },
       },
     };
-    const isMatch = checkAppRoleAppPermissions(security, 'User', ['$resource:all:get']);
+    const isMatch = checkAppRoleAppPermissions(security, ['User'], ['$resource:all:get']);
     expect(isMatch).toBe(false);
   });
 
@@ -346,7 +346,27 @@ describe('checkAppRolePermissions', () => {
         },
       },
     };
-    const isMatch = checkAppRoleAppPermissions(security, 'User', ['$resource:all:get']);
+    const isMatch = checkAppRoleAppPermissions(security, ['User'], ['$resource:all:get']);
+    expect(isMatch).toBe(true);
+  });
+
+  it('should union permissions across multiple roles', () => {
+    const security: Security = {
+      default: { role: 'Reporter' },
+      roles: {
+        Reporter: {
+          permissions: ['$resource:test:query'],
+        },
+        Editor: {
+          permissions: ['$resource:test:patch'],
+        },
+      },
+    };
+    const isMatch = checkAppRoleAppPermissions(
+      security,
+      ['Reporter', 'Editor'],
+      ['$resource:test:query', '$resource:test:patch'],
+    );
     expect(isMatch).toBe(true);
   });
 
@@ -359,7 +379,7 @@ describe('checkAppRolePermissions', () => {
         },
       },
     };
-    const isMatch = checkAppRoleAppPermissions(security, 'User', ['$resource:test:history:get']);
+    const isMatch = checkAppRoleAppPermissions(security, ['User'], ['$resource:test:history:get']);
     expect(isMatch).toBe(true);
   });
 });

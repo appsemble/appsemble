@@ -52,7 +52,7 @@ export function Page(): ReactNode {
     addAppMemberGroup,
     appMemberGroups,
     appMemberInfoRef,
-    appMemberRole,
+    appMemberRoles,
     appMemberSelectedGroup,
     isLoggedIn,
     logout,
@@ -297,8 +297,8 @@ export function Page(): ReactNode {
 
   const checkPagePermissionsCallback = useCallback(
     (pd: PageDefinition): boolean =>
-      checkPagePermissions(pd, appDefinition, appMemberRole, appMemberSelectedGroup),
-    [appDefinition, appMemberRole, appMemberSelectedGroup],
+      checkPagePermissions(pd, appDefinition, appMemberRoles, appMemberSelectedGroup),
+    [appDefinition, appMemberRoles, appMemberSelectedGroup],
   );
 
   useEffect(() => {
@@ -464,7 +464,7 @@ export function Page(): ReactNode {
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
   // page.
-  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, appDefinition);
+  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, appDefinition);
   const defaultPage = appDefinition.pages.find((p) => p.name === defaultPageName);
 
   if (defaultPage && checkPagePermissionsCallback(defaultPage)) {

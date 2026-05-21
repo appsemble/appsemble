@@ -73,7 +73,7 @@ export function BlockList({
     addAppMemberGroup,
     appMemberGroups,
     appMemberInfoRef,
-    appMemberRole,
+    appMemberRoles,
     appMemberSelectedGroup,
     isLoggedIn,
     logout,
@@ -96,9 +96,9 @@ export function BlockList({
       blocks.map<[BlockDefinition, number, boolean]>((block, index) => [
         block,
         index,
-        checkBlockPermissions(block, appDefinition, appMemberRole, appMemberSelectedGroup),
+        checkBlockPermissions(block, appDefinition, appMemberRoles, appMemberSelectedGroup),
       ]),
-    [blocks, appDefinition, appMemberRole, appMemberSelectedGroup],
+    [blocks, appDefinition, appMemberRoles, appMemberSelectedGroup],
   );
 
   const visibleBlocks = useMemo(() => blockList.filter(([, , visible]) => visible), [blockList]);

@@ -2,7 +2,7 @@
   {
     "name": "Alice",
     "timezone": "Asia/Calcutta",
-    "role": "User"
+    "roles": ["User", "Staff"]
   },
   {
     "name": "Bob",

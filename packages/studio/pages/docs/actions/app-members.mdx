@@ -82,7 +82,7 @@ blocks:
 
 <ActionRef action={referenceSchemas.appMemberActions['app.member.invite']} />
 
-The `role` property must exist in the roles property of the app's security definition or in the
+The `roles` property must only contain roles from the app's security definition or from the
 predefined app roles in the system - `Member`, `MembersManager`, `GroupMembersManager`,
 `GroupsManager`, `ResourcesManager` and `Owner`. This action requires the `$member:invite` app
 permission. For more information check out [security](../app/security.md#permissions).
@@ -98,15 +98,15 @@ blocks:
           type: string
           format: email
           requirements: [required: true]
-        - name: email
-          label: { translate: role }
+        - name: roles
+          label: { translate: roles }
           type: string
           requirements: [required: true]
     actions:
       onSubmit:
         type: app.member.invite
         email: { prop: email }
-        role: { prop: role }
+        roles: { prop: roles }
         onSuccess:
           type: log
 ```
@@ -216,7 +216,8 @@ blocks:
 <ActionRef action={referenceSchemas.appMemberActions['app.member.role.update']} />
 
 This action requires the `$member:role:update` app permission. For more information check out
-[security](../app/security.md#permissions). Here is an example of this action in use.
+[security](../app/security.md#permissions). Here is an example of this action in use to update
+multiple roles for an app member.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -227,14 +228,14 @@ blocks:
         - name: sub
           label: { translate: sub }
           type: string
-        - name: role
-          label: { translate: role }
+        - name: roles
+          label: { translate: roles }
           type: string
     actions:
       onSubmit:
         type: app.member.role.update
         sub: { prop: sub }
-        role: { prop: role }
+        roles: { prop: roles }
 ```
 
 ### app.member.properties.patch<Side name="app.member.properties.patch" />

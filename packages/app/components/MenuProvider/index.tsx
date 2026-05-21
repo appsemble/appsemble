@@ -52,7 +52,7 @@ export function usePage(): MenuProviderContext {
 
 export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const { definition: appDefinition } = useAppDefinition();
-  const { appMemberRole, appMemberSelectedGroup } = useAppMember();
+  const { appMemberRoles, appMemberSelectedGroup } = useAppMember();
   const [page, setPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
   const { pathname } = useLocation();
@@ -84,11 +84,11 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
       !(
         pageDefinition.navigation === 'hidden' || pageDefinition.navigation === 'profileDropdown'
       ) &&
-      checkPagePermissions(pageDefinition, appDefinition, appMemberRole, appMemberSelectedGroup),
+      checkPagePermissions(pageDefinition, appDefinition, appMemberRoles, appMemberSelectedGroup),
   );
 
   let navigationElement: ReactNode;
-  const showMenu = shouldShowMenu(appDefinition, appMemberRole, appMemberSelectedGroup, pathname);
+  const showMenu = shouldShowMenu(appDefinition, appMemberRoles, appMemberSelectedGroup, pathname);
 
   if (showMenu) {
     const navigation = page?.navigation || appDefinition.layout?.navigation;

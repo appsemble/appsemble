@@ -35,8 +35,7 @@ interface JwtPayload {
 
 const initialState: LoginState = {
   isLoggedIn: false,
-  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-  appMemberRole: null,
+  appMemberRoles: [],
   appMemberGroups: [],
   totpPending: null,
 };
@@ -65,7 +64,7 @@ interface TotpPendingState {
 
 interface LoginState {
   isLoggedIn: boolean;
-  appMemberRole: AppRole;
+  appMemberRoles: AppRole[];
   appMemberGroups: AppMemberGroup[];
   totpPending: TotpPendingState | null;
 }
@@ -258,7 +257,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       setAppMemberInfo(appMember);
       setState({
         isLoggedIn: true,
-        appMemberRole: appMember.role,
+        appMemberRoles: appMember.roles ?? [],
         appMemberGroups,
         totpPending: null,
       });

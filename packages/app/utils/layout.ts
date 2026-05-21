@@ -6,7 +6,7 @@ import { checkPagePermissions } from './authorization.js';
 function shouldShowPage(
   appDefinition: AppDefinition,
   pageDefinition: PageDefinition,
-  appMemberRole: AppRole,
+  appMemberRoles: AppRole[],
   appMemberSelectedGroup: AppMemberGroup,
 ): boolean {
   if (pageDefinition.hideNavTitle) {
@@ -18,13 +18,15 @@ function shouldShowPage(
   if (pageDefinition.navigation === 'hidden' || pageDefinition.navigation === 'profileDropdown') {
     return false;
   }
-  if (!checkPagePermissions(pageDefinition, appDefinition, appMemberRole, appMemberSelectedGroup)) {
+  if (
+    !checkPagePermissions(pageDefinition, appDefinition, appMemberRoles, appMemberSelectedGroup)
+  ) {
     return false;
   }
 
   if (pageDefinition.type === 'container' && pageDefinition.pages) {
     for (const nestedPage of pageDefinition.pages) {
-      if (shouldShowPage(appDefinition, nestedPage, appMemberRole, appMemberSelectedGroup)) {
+      if (shouldShowPage(appDefinition, nestedPage, appMemberRoles, appMemberSelectedGroup)) {
         return true;
       }
     }
@@ -56,7 +58,7 @@ function isBuiltInPage(pathname: string): boolean {
 
 export function shouldShowMenu(
   appDefinition: AppDefinition,
-  appMemberRole: AppRole,
+  appMemberRoles: AppRole[],
   appMemberSelectedGroup: AppMemberGroup,
   pathname?: string,
 ): boolean {
@@ -67,7 +69,7 @@ export function shouldShowMenu(
   let visiblePagesCount = 0;
 
   for (const pageDefinition of appDefinition.pages) {
-    if (shouldShowPage(appDefinition, pageDefinition, appMemberRole, appMemberSelectedGroup)) {
+    if (shouldShowPage(appDefinition, pageDefinition, appMemberRoles, appMemberSelectedGroup)) {
       visiblePagesCount += 1;
     }
     if (visiblePagesCount > 1) {

@@ -18,7 +18,7 @@ export class AppInviteGlobal extends Model {
 
   declare key: string;
 
-  declare role: AppRole;
+  declare roles: AppRole[];
 
   declare userId?: string;
 
@@ -39,10 +39,10 @@ export function createAppInviteModel(sequelize: Sequelize): typeof AppInviteGlob
     @Column(DataType.STRING)
     declare key: string;
 
-    @Default('Member')
+    @Default([])
     @AllowNull(false)
-    @Column(DataType.STRING)
-    declare role: AppRole;
+    @Column(DataType.JSON)
+    declare roles: AppRole[];
 
     @Column(DataType.UUID)
     @Index({ name: 'AppInvite_UserId_key', unique: true })

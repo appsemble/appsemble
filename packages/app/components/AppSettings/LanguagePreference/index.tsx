@@ -18,7 +18,8 @@ export function LanguagePreference(): ReactNode {
   const { formatMessage } = useIntl();
 
   const onLanguageChange = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>, language: string) => {
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      const language = event.currentTarget.value;
       // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       navigate(url.replace(preferredLanguage, language), { replace: true });
       setPreferredLanguage(language);

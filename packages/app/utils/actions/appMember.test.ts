@@ -60,7 +60,7 @@ describe('app.member.register', () => {
         email: 'test@example.com',
         email_verified: true,
         name: 'name',
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -88,7 +88,7 @@ describe('app.member.invite', () => {
       definition: {
         type: 'app.member.invite',
         email: { prop: 'email' },
-        role: { prop: 'role' },
+        roles: { prop: 'roles' },
       },
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
@@ -98,15 +98,21 @@ describe('app.member.invite', () => {
         email: 'test@example.com',
         email_verified: true,
         name: 'name',
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: false,
         $seed: false,
         $ephemeral: false,
       }),
     });
 
-    const result = await action({ email: 'test@example.com', role: PredefinedAppRole.Member });
-    expect(result).toStrictEqual({ email: 'test@example.com', role: PredefinedAppRole.Member });
+    const result = await action({ email: 'test@example.com', roles: [PredefinedAppRole.Member] });
+    expect(result).toStrictEqual({
+      email: 'test@example.com',
+      roles: [PredefinedAppRole.Member],
+    });
+    expect(mock.history.post[0]?.data).toBe(
+      JSON.stringify([{ email: 'test@example.com', roles: [PredefinedAppRole.Member] }]),
+    );
   });
 
   it('should do nothing and return data if app member is not logged in', async () => {
@@ -115,7 +121,7 @@ describe('app.member.invite', () => {
       definition: {
         type: 'app.member.invite',
         email: { prop: 'email' },
-        role: { prop: 'role' },
+        roles: { prop: 'roles' },
       },
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
@@ -124,8 +130,12 @@ describe('app.member.invite', () => {
       getAppMemberInfo: () => null,
     });
 
-    const result = await action({ email: 'test@example.com', role: PredefinedAppRole.Member });
-    expect(result).toStrictEqual({ email: 'test@example.com', role: PredefinedAppRole.Member });
+    const result = await action({ email: 'test@example.com', roles: [PredefinedAppRole.Member] });
+    expect(result).toStrictEqual({
+      email: 'test@example.com',
+      roles: [PredefinedAppRole.Member],
+    });
+    expect(mock.history.post).toHaveLength(0);
   });
 });
 
@@ -171,7 +181,7 @@ describe('app.member.login', () => {
         email: 'test@example.com',
         email_verified: true,
         name: 'name',
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -243,7 +253,7 @@ describe('app.member.query', () => {
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -330,7 +340,7 @@ describe('app.member.query', () => {
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -412,7 +422,7 @@ describe('app.member.query', () => {
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: true,
         $seed: false,
         $ephemeral: false,
@@ -505,6 +515,7 @@ describe('app.member.current.patch', () => {
         emailVerified: false,
         name: 'name',
         picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
+        roles: [PredefinedAppRole.Member],
         properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
     ]);
@@ -521,7 +532,7 @@ describe('app.member.current.patch', () => {
         email_verified: true,
         picture: 'https://example.com/old-avatar.jpg',
         properties: { test: [1, 2, 3], property: 'Property', bool: true },
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -537,6 +548,7 @@ describe('app.member.current.patch', () => {
       email: 'email@example.com',
       emailVerified: false,
       picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
+      roles: [PredefinedAppRole.Member],
       properties: {
         bool: 'true',
         property: 'Property',
@@ -549,6 +561,7 @@ describe('app.member.current.patch', () => {
       emailVerified: false,
       name: 'name',
       picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
+      roles: [PredefinedAppRole.Member],
       properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
     });
     expect(refetchDemoAppMembers).toHaveBeenCalledWith();
@@ -597,7 +610,7 @@ describe('app.member.current.patch', () => {
         email_verified: true,
         picture: 'https://example.com/old-avatar.jpg',
         properties: {},
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -643,7 +656,61 @@ describe('app.member.role.update', () => {
         email: 'email@example.com',
         emailVerified: false,
         name: 'name',
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
+        picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
+        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
+      },
+    ]);
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.role.update',
+        sub: 'some-user-id',
+        roles: { prop: 'roles' },
+      },
+      getAppMemberInfo: () => ({
+        sub: 'manager-id',
+        name: 'old name',
+        email: 'email@example.com',
+        email_verified: true,
+        picture: 'https://example.com/old-avatar.jpg',
+        properties: { test: [1, 2, 3], property: 'Property', bool: true },
+        roles: [PredefinedAppRole.MembersManager],
+        demo: false,
+        $seed: false,
+        $ephemeral: false,
+      }),
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
+      refetchDemoAppMembers,
+    });
+
+    const result = await action({ roles: [PredefinedAppRole.Member] });
+    expect(result).toStrictEqual({
+      id: 'some-user-id',
+      name: 'name',
+      email: 'email@example.com',
+      emailVerified: false,
+      picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
+      roles: [PredefinedAppRole.Member],
+      properties: {
+        bool: 'true',
+        property: 'Property',
+        test: '[1,2,3]',
+      },
+    });
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
+  });
+
+  it('should support the legacy role property', async () => {
+    mock.onPut(`${apiUrl}/api/apps/${appId}/app-members/some-user-id/role`).reply(() => [
+      201,
+      {
+        id: 'some-user-id',
+        email: 'email@example.com',
+        emailVerified: false,
+        name: 'name',
+        roles: [PredefinedAppRole.Member],
         picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
         properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
@@ -661,7 +728,7 @@ describe('app.member.role.update', () => {
         email_verified: true,
         picture: 'https://example.com/old-avatar.jpg',
         properties: { test: [1, 2, 3], property: 'Property', bool: true },
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -679,7 +746,7 @@ describe('app.member.role.update', () => {
       email: 'email@example.com',
       emailVerified: false,
       picture: `${apiUrl}/api/apps/${appId}/app-members/some-user-id/picture`,
-      role: PredefinedAppRole.Member,
+      roles: [PredefinedAppRole.Member],
       properties: {
         bool: 'true',
         property: 'Property',
@@ -694,7 +761,7 @@ describe('app.member.role.update', () => {
       definition: {
         type: 'app.member.role.update',
         sub: 'some-user-id',
-        role: PredefinedAppRole.ResourcesManager,
+        roles: { static: [PredefinedAppRole.ResourcesManager] },
       },
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
@@ -742,7 +809,7 @@ describe('app.member.properties.patch', () => {
         email_verified: true,
         picture: 'https://example.com/old-avatar.jpg',
         properties: { test: [1, 2, 3], property: 'Property', bool: true },
-        role: PredefinedAppRole.Member,
+        roles: [PredefinedAppRole.Member],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -819,7 +886,7 @@ describe('app.member.delete', () => {
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
-        role: PredefinedAppRole.MembersManager,
+        roles: [PredefinedAppRole.MembersManager],
         demo: false,
         $seed: false,
         $ephemeral: false,
