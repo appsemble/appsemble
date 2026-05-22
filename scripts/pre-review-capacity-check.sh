@@ -4,6 +4,11 @@ set -eu
 
 MIN_FREE_MI=${REVIEW_MIN_FREE_MEMORY_MI:-2048}
 HARD_MAX_ACTIVE=${REVIEW_HARD_MAX_ACTIVE:-8}
+# Hetzner Cloud attaches at most 16 volumes per server; each review needs two
+# (postgresql + minio). Detached volumes do not count, so this guards the real
+# per-node limit that memory checks miss.
+MAX_VOLUMES_PER_NODE=${REVIEW_MAX_VOLUMES_PER_NODE:-16}
+NEW_REVIEW_VOLUMES=${REVIEW_NEW_VOLUMES:-2}
 CURRENT_IID=${CI_MERGE_REQUEST_IID:-}
 CURRENT_RELEASE=''
 
@@ -121,6 +126,24 @@ if [ -n "$pressure" ] || [ "$free" -lt "$MIN_FREE_MI" ]; then
   fi
 
   fail_capacity "$reason"
+fi
+
+# Volume-attach capacity. A new review's postgresql and minio PVCs can only be
+# created if the worker nodes still have free volume-attach slots; otherwise the
+# pods hang in ContainerCreating and the deploy times out with no clear cause.
+attachments=$(kubectl get volumeattachments -o json)
+vol_free=0
+for node in $(kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels["node-role.kubernetes.io/control-plane"] == null) | .metadata.name'); do
+  attached=$(printf '%s' "$attachments" | jq --arg n "$node" '[.items[] | select(.spec.nodeName == $n and .status.attached == true)] | length')
+  node_free=$((MAX_VOLUMES_PER_NODE - attached))
+  [ "$node_free" -lt 0 ] && node_free=0
+  vol_free=$((vol_free + node_free))
+done
+
+echo "[review-capacity] volume-attach free=${vol_free} need=${NEW_REVIEW_VOLUMES} max-per-node=${MAX_VOLUMES_PER_NODE}"
+
+if [ "$current_release_exists" != 'true' ] && [ "$vol_free" -lt "$NEW_REVIEW_VOLUMES" ]; then
+  fail_capacity "[review-capacity] Not enough Hetzner volume-attach slots for a new review deploy (free=${vol_free}, need=${NEW_REVIEW_VOLUMES})."
 fi
 
 echo '[review-capacity] Capacity check passed.'
