@@ -74,7 +74,10 @@ function mergeImplicitEtag(data: unknown, latest: unknown): unknown {
     !Array.isArray(latest) &&
     typeof (latest as Record<string, unknown>).$etag === 'string'
   ) {
-    return { ...(data as Record<string, unknown>), $etag: (latest as Record<string, unknown>).$etag };
+    return {
+      ...(data as Record<string, unknown>),
+      $etag: (latest as Record<string, unknown>).$etag,
+    };
   }
   return data;
 }

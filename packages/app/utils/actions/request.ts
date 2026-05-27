@@ -19,6 +19,9 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           }
         : formatRequestAction(definition, data, remap, context);
 
+      const isResourceBodyWrite =
+        'resource' in definition && (method === 'PUT' || method === 'PATCH');
+
       if (
         'resource' in definition &&
         (method === 'PUT' || method === 'PATCH' || method === 'DELETE') &&
@@ -33,8 +36,26 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         };
       }
 
+      // $etag is transport metadata, not part of the resource. Strip it before
+      // the body is built so it does not end up persisted as resource.data.
+      const stripEtag = (value: unknown): unknown => {
+        if (
+          value &&
+          typeof value === 'object' &&
+          !Array.isArray(value) &&
+          !(value instanceof Blob) &&
+          !(value instanceof Date) &&
+          '$etag' in (value as Record<string, unknown>)
+        ) {
+          const { $etag, ...rest } = value as Record<string, unknown>;
+          return rest;
+        }
+        return value;
+      };
+
       if (method === 'PUT' || method === 'POST' || method === 'PATCH') {
-        const requestData = body ? remap(body, data, context) : data;
+        const remappedBody = body ? remap(body, data, context) : data;
+        const requestData = isResourceBodyWrite ? stripEtag(remappedBody) : remappedBody;
         if (requestData instanceof Blob) {
           req.headers = {
             ...req.headers,
@@ -51,7 +72,7 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
               'Content-Type': contentType,
             };
           }
-          req.data = serializeResource(body ? remap(body, data, context) : data);
+          req.data = serializeResource(requestData);
         }
       } else if (method === 'DELETE' && body) {
         req.data = remap(body, data, context);

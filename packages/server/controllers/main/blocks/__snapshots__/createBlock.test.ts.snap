@@ -2790,7 +2790,7 @@ If not specified, the raw input data is used.
                     "onSuccess": {},
                     "optimistic": {
                       "additionalProperties": false,
-                      "description": "Fetch the latest resource before writing, expose it as `{ context: resource }`, and retry on precondition conflicts.",
+                      "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
                       "properties": {
                         "retries": {
                           "default": 0,
@@ -3137,7 +3137,7 @@ If not specified, the raw input data is used.
                     "onSuccess": {},
                     "optimistic": {
                       "additionalProperties": false,
-                      "description": "Fetch the latest resource before writing, expose it as `{ context: resource }`, and retry on precondition conflicts.",
+                      "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
                       "properties": {
                         "retries": {
                           "default": 0,
@@ -8658,7 +8658,7 @@ If not specified, the raw input data is used.
             "onSuccess": {},
             "optimistic": {
               "additionalProperties": false,
-              "description": "Fetch the latest resource before writing, expose it as `{ context: resource }`, and retry on precondition conflicts.",
+              "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
               "properties": {
                 "retries": {
                   "default": 0,
@@ -9005,7 +9005,7 @@ If not specified, the raw input data is used.
             "onSuccess": {},
             "optimistic": {
               "additionalProperties": false,
-              "description": "Fetch the latest resource before writing, expose it as `{ context: resource }`, and retry on precondition conflicts.",
+              "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
               "properties": {
                 "retries": {
                   "default": 0,
