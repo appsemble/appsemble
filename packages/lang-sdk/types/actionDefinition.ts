@@ -813,13 +813,6 @@ interface ResourceOrderQueryDefinition {
   order?: 'asc' | 'desc';
 }
 
-interface ConditionalResourceWriteActionDefinition {
-  /**
-   * The resource version to match before applying the write.
-   */
-  ifMatch?: Remapper;
-}
-
 export interface ControllerActionDefinition extends BaseActionDefinition<'controller'> {
   handler: string;
 }
@@ -838,8 +831,7 @@ export type ResourceQueryActionDefinition = OwnResourceDefinition &
   ViewResourceDefinition;
 export type ResourceCountActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.count'>;
-export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'> &
-  ConditionalResourceWriteActionDefinition;
+export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 export type ResourceUpdateGroupActionDefinition =
   ResourceActionDefinition<'resource.update.group'> &
     ResourceActionWithIdDefinition & {
@@ -850,8 +842,7 @@ export type ResourceUpdatePositionsActionDefinition =
     ResourceActionWithIdDefinition &
     ResourceOrderQueryDefinition;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'> &
-  ResourceActionWithIdDefinition &
-  ConditionalResourceWriteActionDefinition;
+  ResourceActionWithIdDefinition;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
 
 export interface BaseResourceSubscribeActionDefinition<

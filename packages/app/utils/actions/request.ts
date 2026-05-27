@@ -1,4 +1,4 @@
-import { type HTTPMethods, type Remapper } from '@appsemble/lang-sdk';
+import { type HTTPMethods } from '@appsemble/lang-sdk';
 import { formatRequestAction, serializeResource } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 
@@ -19,15 +19,17 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           }
         : formatRequestAction(definition, data, remap, context);
 
-      const ifMatchDefinition = definition as typeof definition & { ifMatch?: Remapper };
-      const ifMatch =
-        ifMatchDefinition.ifMatch == null
-          ? undefined
-          : remap(ifMatchDefinition.ifMatch, data, context);
-      if (ifMatch != null) {
+      if (
+        'resource' in definition &&
+        (method === 'PUT' || method === 'PATCH') &&
+        data &&
+        typeof data === 'object' &&
+        !Array.isArray(data) &&
+        typeof (data as Record<string, unknown>).$etag === 'string'
+      ) {
         req.headers = {
           ...req.headers,
-          'If-Match': String(ifMatch),
+          'If-Match': (data as Record<string, unknown>).$etag as string,
         };
       }
 

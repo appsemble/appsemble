@@ -1,5 +1,4 @@
 import { type ActionDefinition } from '@appsemble/lang-sdk';
-import { ResourcePreconditionFailedError } from '@appsemble/node-utils';
 import { uuid4Pattern } from '@appsemble/utils';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -11,6 +10,29 @@ import { argv, setArgv } from '../argv.js';
 import { Mailer } from '../email/Mailer.js';
 
 let mailer: Mailer;
+
+/**
+ * Minimal Koa-context stub so the locked-resource helper can route 404/412 via
+ * `throwKoaError` from inside `handleAction(...)` without booting a real HTTP
+ * server. The thrown error mirrors the body shape `throwKoaError` would write
+ * to a real ctx, so existing property assertions keep working.
+ */
+function makeKoaCtxStub(): any {
+  return {
+    response: { status: 200, body: undefined as any },
+    get: () => '',
+    throw() {
+      const body = (this.response.body ?? {}) as any;
+      const err: any = new Error(body.message ?? `Status ${this.response.status}`);
+      err.status = this.response.status;
+      err.statusCode = this.response.status;
+      err.error = body.error;
+      err.data = body.data;
+      err.expose = true;
+      throw err;
+    },
+  };
+}
 
 const exampleApp = (orgId: string, action: ActionDefinition, path = 'test-app'): Promise<App> =>
   App.create({
@@ -768,12 +790,8 @@ describe('resource', () => {
       });
     });
 
-    it('should support If-Match for updates', async () => {
-      const action: ActionDefinition = {
-        type: 'resource.update',
-        resource: 'person',
-        ifMatch: { prop: '$etag' },
-      };
+    it('should send implicit If-Match from data.$etag for updates', async () => {
+      const action: ActionDefinition = { type: 'resource.update', resource: 'person' };
 
       const app = await exampleApp('testorg', action);
 
@@ -819,12 +837,8 @@ describe('resource', () => {
       });
     });
 
-    it('should reject stale If-Match for updates', async () => {
-      const action: ActionDefinition = {
-        type: 'resource.update',
-        resource: 'person',
-        ifMatch: { prop: '$etag' },
-      };
+    it('should reject stale implicit If-Match for updates', async () => {
+      const action: ActionDefinition = { type: 'resource.update', resource: 'person' };
 
       const app = await exampleApp('testorg', action);
 
@@ -848,7 +862,7 @@ describe('resource', () => {
 
       await handleAction(update as any, {
         app,
-        action: { type: 'resource.update', resource: 'person' },
+        action,
         mailer,
         data: {
           id: 1,
@@ -870,10 +884,9 @@ describe('resource', () => {
           lastName: 'Tentacles',
         },
         options,
-        context: {} as any,
+        context: makeKoaCtxStub(),
       });
 
-      await expect(staleUpdate).rejects.toBeInstanceOf(ResourcePreconditionFailedError);
       await expect(staleUpdate).rejects.toMatchObject({
         data: {
           code: 'RESOURCE_PRECONDITION_FAILED',
@@ -1561,12 +1574,8 @@ describe('resource', () => {
       });
     });
 
-    it('should support If-Match for patches', async () => {
-      const action: ActionDefinition = {
-        type: 'resource.patch',
-        resource: 'person',
-        ifMatch: { prop: '$etag' },
-      };
+    it('should send implicit If-Match from data.$etag for patches', async () => {
+      const action: ActionDefinition = { type: 'resource.patch', resource: 'person' };
 
       const app = await exampleApp('testorg', action);
 
@@ -1611,12 +1620,8 @@ describe('resource', () => {
       });
     });
 
-    it('should reject stale If-Match for patches', async () => {
-      const action: ActionDefinition = {
-        type: 'resource.patch',
-        resource: 'person',
-        ifMatch: { prop: '$etag' },
-      };
+    it('should reject stale implicit If-Match for patches', async () => {
+      const action: ActionDefinition = { type: 'resource.patch', resource: 'person' };
 
       const app = await exampleApp('testorg', action);
 
@@ -1640,7 +1645,7 @@ describe('resource', () => {
 
       await handleAction(patch as any, {
         app,
-        action: { type: 'resource.patch', resource: 'person' },
+        action,
         mailer,
         data: {
           id: 1,
@@ -1660,10 +1665,9 @@ describe('resource', () => {
           firstName: 'Squidward',
         },
         options,
-        context: {} as any,
+        context: makeKoaCtxStub(),
       });
 
-      await expect(stalePatch).rejects.toBeInstanceOf(ResourcePreconditionFailedError);
       await expect(stalePatch).rejects.toMatchObject({
         data: {
           code: 'RESOURCE_PRECONDITION_FAILED',

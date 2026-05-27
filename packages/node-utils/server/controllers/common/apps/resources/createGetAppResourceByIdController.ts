@@ -67,7 +67,10 @@ export function createGetAppResourceByIdController(options: Options): Middleware
 
       const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx, view);
 
-      setResourceEtagHeader(ctx, resource);
+      // No ETag for view responses: the response body is a remapped projection
+      // that does not uniquely identify the raw resource representation, so a
+      // shared ETag across views would violate RFC 7232's representation-
+      // identity requirement and confuse conditional GETs/caches.
       ctx.body = remap(resourceDefinition.views?.[view].remap ?? null, resource, context);
       return;
     }

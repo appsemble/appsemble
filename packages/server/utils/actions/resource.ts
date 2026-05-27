@@ -12,14 +12,11 @@ import {
 } from '@appsemble/lang-sdk';
 import {
   addResourceEtag,
-  createResourceEtag,
-  createResourcePreconditionFailedError,
   deleteS3Files,
   getCompressedFileMeta,
   getRemapperContext,
   getResourceDefinition,
   logger,
-  matchesResourceIfMatch,
   processResourceBody,
   type QueryParams,
   uploadAssets,
@@ -29,6 +26,7 @@ import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { getAppDB } from '../../models/index.js';
+import { lockResourceWithIfMatch } from '../optimisticResourceLock.js';
 import {
   parseQuery,
   processHooks,
@@ -46,18 +44,14 @@ export const resourceCleanup = {
   },
 };
 
-function addEtagToSingleResourceResult<T>(
-  result: T,
-  etag: string,
-): T extends Record<string, unknown> ? T & { $etag: string } : T {
-  if (result && typeof result === 'object' && !Array.isArray(result)) {
-    return {
-      ...(result as Record<string, unknown>),
-      $etag: etag,
-    } as T extends Record<string, unknown> ? T & { $etag: string } : T;
+function resolveImplicitIfMatch(actionData: unknown): string | undefined {
+  if (actionData && typeof actionData === 'object' && !Array.isArray(actionData)) {
+    const etag = (actionData as Record<string, unknown>).$etag;
+    if (typeof etag === 'string') {
+      return etag;
+    }
   }
-
-  return result as T extends Record<string, unknown> ? T & { $etag: string } : T;
+  return undefined;
 }
 
 export async function get({
@@ -103,10 +97,8 @@ export async function get({
     throw new Error('Resource not found');
   }
 
-  const parsedResource = addResourceEtag(resource.toJSON());
-
   if (!view) {
-    return parsedResource;
+    return addResourceEtag(resource.toJSON());
   }
 
   const remapperContext = await getRemapperContext(
@@ -120,10 +112,10 @@ export async function get({
     history: internalContext?.history ?? [],
   });
 
-  return addEtagToSingleResourceResult(
-    remap(resourceDefinition.views?.[view].remap ?? null, parsedResource, remapperContext),
-    parsedResource.$etag,
-  );
+  // View responses do not carry an $etag: the projection is not the raw
+  // resource representation, so an ETag here would either share with the raw
+  // resource (RFC 7232 violation) or be meaningless for If-Match round-trips.
+  return remap(resourceDefinition.views?.[view].remap ?? null, resource.toJSON(), remapperContext);
 }
 
 export async function query({
@@ -258,14 +250,7 @@ export async function update({
   }
   body.id = resourceId;
 
-  const ifMatchInput = action.ifMatch
-    ? remap(action.ifMatch, actionData, internalContext!)
-    : undefined;
-  const ifMatch = Array.isArray(ifMatchInput)
-    ? ifMatchInput.map(String)
-    : ifMatchInput == null
-      ? undefined
-      : String(ifMatchInput);
+  const ifMatch = resolveImplicitIfMatch(actionData);
 
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
@@ -301,26 +286,24 @@ export async function update({
     ...data
   } = updatedResource as Record<string, unknown>;
 
-  if (preparedAssets.length) {
-    await uploadAssets(app.id, preparedAssets);
-  }
-
   const shouldDeleteDereferencedAssets = !definition.history && deletedAssetIds.length > 0;
+  let uploadedAssetIds: string[] = [];
 
   try {
     await sequelize.transaction(async (transaction) => {
-      const lockedResource = await Resource.findOne({
-        where: { id: resourceId, type: action.resource },
-        lock: transaction.LOCK.UPDATE,
+      const lockedResource = await lockResourceWithIfMatch({
+        context,
         transaction,
+        Resource,
+        where: { id: resourceId, type: action.resource },
+        ifMatch,
+        resourceType: action.resource,
+        resourceId,
       });
 
-      if (!lockedResource) {
-        throw new Error('Resource not found');
-      }
-
-      if (!matchesResourceIfMatch(ifMatch, createResourceEtag(lockedResource.toJSON()))) {
-        throw createResourcePreconditionFailedError(action.resource, resourceId);
+      if (preparedAssets.length) {
+        await uploadAssets(app.id, preparedAssets);
+        uploadedAssetIds = preparedAssets.map((asset) => asset.id);
       }
 
       const oldData = lockedResource.data;
@@ -360,11 +343,8 @@ export async function update({
       return Promise.all(promises);
     });
   } catch (error) {
-    if (preparedAssets.length) {
-      await deleteS3Files(
-        `app-${app.id}`,
-        preparedAssets.map((asset) => asset.id),
-      );
+    if (uploadedAssetIds.length) {
+      await deleteS3Files(`app-${app.id}`, uploadedAssetIds);
     }
     throw error;
   }
@@ -418,14 +398,7 @@ export async function patch({
   // Ensure id is available in body for downstream processing
   body.id = resourceId;
 
-  const ifMatchInput = action.ifMatch
-    ? remap(action.ifMatch, actionData, internalContext!)
-    : undefined;
-  const ifMatch = Array.isArray(ifMatchInput)
-    ? ifMatchInput.map(String)
-    : ifMatchInput == null
-      ? undefined
-      : String(ifMatchInput);
+  const ifMatch = resolveImplicitIfMatch(actionData);
 
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
@@ -459,26 +432,24 @@ export async function patch({
     ...data
   } = patchedResource as Record<string, unknown>;
 
-  if (preparedAssets.length) {
-    await uploadAssets(app.id, preparedAssets);
-  }
-
   const shouldDeleteDereferencedAssets = !definition.history && deletedAssetIds.length > 0;
+  let uploadedAssetIds: string[] = [];
 
   try {
     await sequelize.transaction(async (transaction) => {
-      const lockedResource = await Resource.findOne({
-        where: { id: resourceId, type: action.resource },
-        lock: transaction.LOCK.UPDATE,
+      const lockedResource = await lockResourceWithIfMatch({
+        context,
         transaction,
+        Resource,
+        where: { id: resourceId, type: action.resource },
+        ifMatch,
+        resourceType: action.resource,
+        resourceId,
       });
 
-      if (!lockedResource) {
-        throw new Error('Resource not found');
-      }
-
-      if (!matchesResourceIfMatch(ifMatch, createResourceEtag(lockedResource.toJSON()))) {
-        throw createResourcePreconditionFailedError(action.resource, resourceId);
+      if (preparedAssets.length) {
+        await uploadAssets(app.id, preparedAssets);
+        uploadedAssetIds = preparedAssets.map((asset) => asset.id);
       }
 
       const oldData = lockedResource.data;
@@ -519,11 +490,8 @@ export async function patch({
       return Promise.all(promises);
     });
   } catch (error) {
-    if (preparedAssets.length) {
-      await deleteS3Files(
-        `app-${app.id}`,
-        preparedAssets.map((asset) => asset.id),
-      );
+    if (uploadedAssetIds.length) {
+      await deleteS3Files(`app-${app.id}`, uploadedAssetIds);
     }
     throw error;
   }

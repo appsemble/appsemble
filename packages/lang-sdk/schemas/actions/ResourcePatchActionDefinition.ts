@@ -21,10 +21,6 @@ export const ResourcePatchActionDefinition = extendJSONSchema(
         description:
           'The ID of the group to scope the request to. Defaults to the currently selected group.',
       },
-      ifMatch: {
-        $ref: '#/components/schemas/RemapperDefinition',
-        description: 'The ETag that must match before updating the resource.',
-      },
       id: {
         $ref: '#/components/schemas/RemapperDefinition',
       },

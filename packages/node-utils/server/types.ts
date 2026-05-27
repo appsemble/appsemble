@@ -370,6 +370,15 @@ export interface UpdateAppResourceParams extends GetAppSubEntityParams {
   deletedAssetIds: string[];
   type: string;
   options: Options;
+  /**
+   * The same where clause used by the controller's pre-lock fetch. Re-applied
+   * inside the SELECT FOR UPDATE so the lock cannot widen the row set (e.g.
+   * picking up an expired row or one whose GroupId or seed flag changed
+   * between the unlocked read and the lock).
+   */
+  lockWhere: WhereOptions;
+  /** The `If-Match` header value parsed out of the request, if any. */
+  ifMatch?: string;
 }
 
 export interface DeleteAppResourceParams extends GetAppSubEntityParams {

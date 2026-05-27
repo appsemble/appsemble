@@ -2316,7 +2316,7 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should allow optimistic resource writes', async () => {
+  it('should reject the removed explicit ifMatch field on resource writes', async () => {
     const app = createTestApp();
     app.security!.roles!.User = { permissions: ['$resource:person:update'] };
     (app.pages[0] as BasicPageDefinition).blocks.push({
@@ -2326,8 +2326,9 @@ describe('validateAppDefinition', () => {
         onWhatever: {
           type: 'resource.update',
           resource: 'person',
+          // Schema no longer accepts ifMatch; OCC is implicit via data.$etag.
           ifMatch: { prop: '$etag' },
-        },
+        } as any,
       },
     });
 
@@ -2342,8 +2343,7 @@ describe('validateAppDefinition', () => {
         },
       },
     ]);
-    expect(result.valid).toBe(true);
-    expect(result.errors).toStrictEqual([]);
+    expect(result.valid).toBe(false);
   });
 
   it('should report an error if a resource action on a block refers to a non-existent resource', async () => {
