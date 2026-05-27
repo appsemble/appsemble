@@ -105,6 +105,69 @@ describe('deleteAppResource', () => {
     `);
   });
 
+  it('should reject stale deletes with If-Match', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const initial = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+    const staleEtag = initial.headers.etag;
+
+    await request.put(`/api/apps/${app.id}/resources/testResource/${resource.id}`, {
+      foo: 'I am not Foo.',
+    });
+
+    const staleResponse = await request.delete(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { headers: { 'If-Match': staleEtag } },
+    );
+
+    expect(staleResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 412 Precondition Failed
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "code": "RESOURCE_PRECONDITION_FAILED",
+          "resourceId": 1,
+          "resourceType": "testResource",
+        },
+        "error": "Precondition Failed",
+        "message": "This resource has changed since it was loaded. Fetch the latest version and try again.",
+        "statusCode": 412,
+      }
+    `);
+
+    const stillThere = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+    );
+    expect(stillThere.data.foo).toBe('I am not Foo.');
+  });
+
+  it('should accept a matching If-Match on delete', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const fetched = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+    const currentEtag = fetched.headers.etag;
+
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { headers: { 'If-Match': currentEtag } },
+    );
+    expect(response.status).toBe(204);
+
+    const gone = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+    expect(gone.status).toBe(404);
+  });
+
   it('should soft-delete a resource', async () => {
     const { Resource } = await getAppDB(app.id);
     const { id } = await Resource.create({

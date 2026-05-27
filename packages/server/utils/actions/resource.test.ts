@@ -16,6 +16,8 @@ let mailer: Mailer;
  * `throwKoaError` from inside `handleAction(...)` without booting a real HTTP
  * server. The thrown error mirrors the body shape `throwKoaError` would write
  * to a real ctx, so existing property assertions keep working.
+ *
+ * @returns A Koa-context-shaped object accepted by `handleAction`.
  */
 function makeKoaCtxStub(): any {
   return {
@@ -182,17 +184,55 @@ describe('resource', () => {
       expect(result).toStrictEqual([
         {
           $created: '1970-01-01T00:00:00.000Z',
+          $etag: expect.any(String),
           $updated: '1970-01-01T00:00:00.000Z',
           id: 1,
           name: 'Spongebob',
         },
         {
           $created: '1970-01-01T00:00:00.000Z',
+          $etag: expect.any(String),
           $updated: '1970-01-01T00:00:00.000Z',
           id: 2,
           name: 'Patrick',
         },
       ]);
+    });
+
+    it('should expose $etag on each non-view query result, matching the get etag', async () => {
+      const queryAction: ActionDefinition = { type: 'resource.query', resource: 'person' };
+      const getAction: ActionDefinition = { type: 'resource.get', resource: 'person' };
+      const app = await exampleApp('testorg', queryAction);
+
+      const { Resource } = await getAppDB(app.id);
+      const created = await Resource.create({
+        type: 'person',
+        data: { name: 'Spongebob' },
+      });
+
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      const queryResult = await handleAction(query, {
+        app,
+        action: queryAction,
+        mailer,
+        data: {},
+        options,
+        context: {} as any,
+      });
+
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      const getResult = await handleAction(get, {
+        app,
+        action: getAction,
+        mailer,
+        data: { id: created.id },
+        options,
+        context: {} as any,
+      });
+
+      expect((queryResult as { $etag: string }[])[0].$etag).toBe(
+        (getResult as { $etag: string }).$etag,
+      );
     });
 
     it('should support views', async () => {

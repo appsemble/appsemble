@@ -50,6 +50,8 @@ export async function updateAppResource({
         ifMatch,
         resourceType: type,
         resourceId: id,
+        serializeForEtag: (model) =>
+          model.toJSON({ exclude: app.template ? ['$seed'] : undefined }),
       });
 
       if (preparedAssets.length) {

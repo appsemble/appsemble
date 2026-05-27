@@ -1,5 +1,35 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+const resourceContent: Record<string, OpenAPIV3.MediaTypeObject> = {
+  'application/json': {
+    schema: { $ref: '#/components/schemas/Resource' },
+  },
+  'text/csv': {
+    schema: { type: 'string' },
+  },
+};
+
+const etagResponseHeader: Record<string, OpenAPIV3.HeaderObject> = {
+  ETag: {
+    description: 'Strong validator for the current version of the resource.',
+    schema: { type: 'string' },
+  },
+};
+
+const ifMatchParameter: OpenAPIV3.ParameterObject = {
+  name: 'If-Match',
+  in: 'header',
+  required: false,
+  description:
+    'Strong ETag from a prior response. The request only proceeds if the resource still matches; otherwise the server responds with 412 Precondition Failed.',
+  schema: { type: 'string' },
+};
+
+const preconditionFailedResponse: OpenAPIV3.ResponseObject = {
+  description:
+    'The `If-Match` header did not match the current ETag of the resource. The caller should fetch the latest version and retry.',
+};
+
 export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [
     { $ref: '#/components/parameters/appId' },
@@ -22,15 +52,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     operationId: 'getAppResourceById',
     responses: {
       200: {
-        description: 'The resource that matches the given id.',
-        $ref: '#/components/responses/resource',
-        headers: {
-          ETag: {
-            description:
-              'The strong validator identifying the current version of the resource. Echo it back via `If-Match` on PUT/PATCH to perform a conditional write. Omitted on view responses.',
-            schema: { type: 'string' },
-          },
-        },
+        description:
+          'The resource that matches the given id. Omits the `ETag` header on view responses.',
+        content: resourceContent,
+        headers: etagResponseHeader,
       },
     },
     security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:read'] }, {}],
@@ -39,16 +64,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'resource'],
     description: 'Update an existing app resource.',
     operationId: 'updateAppResource',
-    parameters: [
-      {
-        name: 'If-Match',
-        in: 'header',
-        required: false,
-        description:
-          'Strong ETag from a prior response. The write only proceeds if the resource still matches; otherwise the server responds with 412 Precondition Failed.',
-        schema: { type: 'string' },
-      },
-    ],
+    parameters: [ifMatchParameter],
     requestBody: {
       required: true,
       $ref: '#/components/requestBodies/resource',
@@ -56,18 +72,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     responses: {
       200: {
         description: 'The updated resource.',
-        $ref: '#/components/responses/resource',
-        headers: {
-          ETag: {
-            description: 'The strong validator for the new version of the resource.',
-            schema: { type: 'string' },
-          },
-        },
+        content: resourceContent,
+        headers: etagResponseHeader,
       },
-      412: {
-        description:
-          'The `If-Match` header did not match the current ETag of the resource. The caller should fetch the latest version and retry.',
-      },
+      412: preconditionFailedResponse,
     },
     security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
   },
@@ -75,16 +83,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'resource'],
     description: 'Patch an existing app resource.',
     operationId: 'patchAppResource',
-    parameters: [
-      {
-        name: 'If-Match',
-        in: 'header',
-        required: false,
-        description:
-          'Strong ETag from a prior response. The patch only proceeds if the resource still matches; otherwise the server responds with 412 Precondition Failed.',
-        schema: { type: 'string' },
-      },
-    ],
+    parameters: [ifMatchParameter],
     requestBody: {
       required: true,
       $ref: '#/components/requestBodies/resource',
@@ -92,18 +91,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     responses: {
       200: {
         description: 'The patched resource.',
-        $ref: '#/components/responses/resource',
-        headers: {
-          ETag: {
-            description: 'The strong validator for the new version of the resource.',
-            schema: { type: 'string' },
-          },
-        },
+        content: resourceContent,
+        headers: etagResponseHeader,
       },
-      412: {
-        description:
-          'The `If-Match` header did not match the current ETag of the resource. The caller should fetch the latest version and retry.',
-      },
+      412: preconditionFailedResponse,
     },
     security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
   },
@@ -111,11 +102,12 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'resource'],
     description: 'Delete an existing app resource.',
     operationId: 'deleteAppResource',
+    parameters: [ifMatchParameter],
     responses: {
       204: {
         description: 'The app resource has been deleted successfully.',
-        $ref: '#/components/responses/resource',
       },
+      412: preconditionFailedResponse,
     },
     security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
   },

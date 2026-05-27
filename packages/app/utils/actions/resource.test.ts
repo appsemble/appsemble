@@ -510,6 +510,19 @@ describe('resource.patch', () => {
     expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBe('"etag-2"');
     expect(result).toStrictEqual({ $etag: '"etag-3"', id: 84, type: 'fish' });
   });
+
+  it('should omit If-Match when patch data has no $etag', async () => {
+    mock.onPatch(/.*/).reply((req) => {
+      request = req;
+      return [200, { ...JSON.parse(req.data), id: 84 }, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.patch', resource: 'pet', id: 84 },
+    });
+    await action({ type: 'fish' });
+    expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBeUndefined();
+  });
 });
 
 describe('resource.delete', () => {

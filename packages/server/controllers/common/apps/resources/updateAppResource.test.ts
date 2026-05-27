@@ -159,6 +159,57 @@ describe('updateAppResource', () => {
     expect(latest.data.foo).toBe('I am not Foo.');
   });
 
+  it('should accept a matching If-Match across consecutive PUTs on a template app', async () => {
+    await app.update({ template: true });
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+
+    const first = await request.put(`/api/apps/${app.id}/resources/testResource/${resource.id}`, {
+      foo: 'I am edited once.',
+    });
+    expect(first.status).toBe(200);
+    const firstEtag = first.headers.etag;
+    expect(firstEtag).toStrictEqual(expect.any(String));
+
+    const second = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am edited twice.', $clonable: true },
+      { headers: { 'If-Match': firstEtag } },
+    );
+
+    expect(second.status).toBe(200);
+    expect(second.headers.etag).toStrictEqual(expect.any(String));
+    expect(second.data.foo).toBe('I am edited twice.');
+    expect(second.data.$clonable).toBe(true);
+  });
+
+  it('should ignore $etag in the request body and not persist it', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.', $etag: '"forged"' },
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data.$etag).toBeUndefined();
+
+    const fetched = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+    expect(fetched.data).not.toHaveProperty('$etag');
+    expect(fetched.data.foo).toBe('I am not Foo.');
+  });
+
   it('should not be able to update an existing resource from another group if not part of the group', async () => {
     const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
     const group = await Group.create({ name: 'Test Group', AppId: app.id });

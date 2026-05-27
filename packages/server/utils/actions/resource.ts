@@ -26,6 +26,7 @@ import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { getAppDB } from '../../models/index.js';
+import { type ResourceGlobal } from '../../models/apps/Resource.js';
 import { lockResourceWithIfMatch } from '../optimisticResourceLock.js';
 import {
   parseQuery,
@@ -159,7 +160,7 @@ export async function query({
   const mappedResources = resources.map((resource) => resource.toJSON({ include }));
 
   if (!view) {
-    return mappedResources;
+    return mappedResources.map((resource) => addResourceEtag(resource));
   }
 
   const remapperContext = await getRemapperContext(
@@ -172,6 +173,7 @@ export async function query({
     history: internalContext?.history ?? [],
   });
 
+  // View responses omit `$etag`; see the same reasoning in `get`.
   return mappedResources.map((resource) =>
     remap(resourceDefinition.views?.[view].remap ?? null, resource, remapperContext),
   );
@@ -289,8 +291,9 @@ export async function update({
   const shouldDeleteDereferencedAssets = !definition.history && deletedAssetIds.length > 0;
   let uploadedAssetIds: string[] = [];
 
+  let updatedResourceModel: ResourceGlobal | undefined;
   try {
-    await sequelize.transaction(async (transaction) => {
+    updatedResourceModel = await sequelize.transaction(async (transaction) => {
       const lockedResource = await lockResourceWithIfMatch({
         context,
         transaction,
@@ -340,7 +343,9 @@ export async function update({
         promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
       }
 
-      return Promise.all(promises);
+      await Promise.all(promises);
+
+      return lockedResource.reload({ include: [{ association: 'Editor' }], transaction });
     });
   } catch (error) {
     if (uploadedAssetIds.length) {
@@ -353,12 +358,10 @@ export async function update({
     await resourceCleanup.deleteDereferencedS3Assets(app.id, deletedAssetIds);
   }
 
-  await resource.reload({ include: [{ association: 'Editor' }] });
+  processReferenceHooks(app, updatedResourceModel!, 'update', options, context);
+  processHooks(app, updatedResourceModel!, 'update', options, context);
 
-  processReferenceHooks(app, resource, 'update', options, context);
-  processHooks(app, resource, 'update', options, context);
-
-  return addResourceEtag(resource.toJSON());
+  return addResourceEtag(updatedResourceModel!.toJSON());
 }
 
 export async function patch({
@@ -435,8 +438,9 @@ export async function patch({
   const shouldDeleteDereferencedAssets = !definition.history && deletedAssetIds.length > 0;
   let uploadedAssetIds: string[] = [];
 
+  let patchedResourceModel: ResourceGlobal | undefined;
   try {
-    await sequelize.transaction(async (transaction) => {
+    patchedResourceModel = await sequelize.transaction(async (transaction) => {
       const lockedResource = await lockResourceWithIfMatch({
         context,
         transaction,
@@ -487,7 +491,9 @@ export async function patch({
         promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
       }
 
-      return Promise.all(promises);
+      await Promise.all(promises);
+
+      return lockedResource.reload({ include: [{ association: 'Editor' }], transaction });
     });
   } catch (error) {
     if (uploadedAssetIds.length) {
@@ -500,9 +506,7 @@ export async function patch({
     await resourceCleanup.deleteDereferencedS3Assets(app.id, deletedAssetIds);
   }
 
-  await resource.reload({ include: [{ association: 'Editor' }] });
-
-  return addResourceEtag(resource.toJSON());
+  return addResourceEtag(patchedResourceModel!.toJSON());
 }
 
 export async function remove({
