@@ -542,6 +542,33 @@ describe('resource.delete', () => {
     expect(request.data).toBeUndefined();
     expect(result).toBeNull();
   });
+
+  it('should send If-Match from data.$etag for deletes', async () => {
+    mock.onDelete(/.*/).reply((req) => {
+      request = req;
+      return [204, null, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.delete', resource: 'pet' },
+    });
+    await action({ id: 63, $etag: '"etag-1"' });
+    expect(request.method).toBe('delete');
+    expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBe('"etag-1"');
+  });
+
+  it('should omit If-Match when delete data has no $etag', async () => {
+    mock.onDelete(/.*/).reply((req) => {
+      request = req;
+      return [204, null, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.delete', resource: 'pet' },
+    });
+    await action({ id: 63 });
+    expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBeUndefined();
+  });
 });
 
 describe('resource.delete.all', () => {

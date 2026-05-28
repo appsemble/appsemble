@@ -517,7 +517,7 @@ export async function remove({
   internalContext,
   options,
 }: ServerActionParameters<ResourceDeleteActionDefinition>): Promise<unknown> {
-  const { Asset, Resource } = await getAppDB(app.id);
+  const { Resource, sequelize } = await getAppDB(app.id);
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const body = (remap(action.body ?? null, data, internalContext) ?? data) as Record<
@@ -537,23 +537,30 @@ export async function remove({
 
   const resource = await Resource.findOne({
     where: { id: resourceId, type: action.resource },
-    include: [
-      {
-        model: Asset,
-        required: false,
-        where: { id: null },
-      },
-    ],
   });
 
   if (!resource) {
     throw new Error('Resource not found');
   }
 
-  await resource.destroy();
+  const ifMatch = resolveImplicitIfMatch(data);
 
-  processReferenceHooks(app, resource, 'delete', options, context);
-  processHooks(app, resource, 'delete', options, context);
+  await sequelize.transaction(async (transaction) => {
+    const locked = await lockResourceWithIfMatch({
+      context,
+      transaction,
+      Resource,
+      where: { id: resourceId, type: action.resource },
+      ifMatch,
+      resourceType: action.resource,
+      resourceId,
+    });
+
+    processReferenceHooks(app, locked, 'delete', options, context);
+    processHooks(app, locked, 'delete', options, context);
+
+    await locked.destroy({ transaction });
+  });
 
   // Returning empty string just like in the client-side resource.delete action.
   return '';

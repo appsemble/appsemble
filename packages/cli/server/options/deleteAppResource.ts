@@ -18,7 +18,7 @@ export function deleteAppResource({
     if (ifMatch) {
       const existing = await Resource.findById(id, type);
       if (
-        existing &&
+        !existing ||
         !matchesResourceIfMatch(ifMatch, createResourceEtag(existing as Record<string, unknown>))
       ) {
         throwResourcePreconditionFailedKoaError(context, type, id);

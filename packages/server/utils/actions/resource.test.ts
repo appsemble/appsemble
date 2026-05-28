@@ -2436,6 +2436,92 @@ describe('resource', () => {
   });
 
   describe('resource.delete', () => {
+    it('should reject stale implicit If-Match for deletes', async () => {
+      const action: ActionDefinition = { type: 'resource.delete', resource: 'person' };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: { firstName: 'Spongebob', lastName: 'Squarepants' },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      await handleAction(update as any, {
+        app,
+        action: { type: 'resource.update', resource: 'person' },
+        mailer,
+        data: { id: 1, firstName: 'Patrick', lastName: 'Star' },
+        options,
+        context: {} as any,
+      });
+
+      const staleDelete = handleAction(remove as any, {
+        app,
+        action,
+        mailer,
+        data: { id: 1, $etag: current.$etag },
+        options,
+        context: makeKoaCtxStub(),
+      });
+
+      await expect(staleDelete).rejects.toMatchObject({
+        data: {
+          code: 'RESOURCE_PRECONDITION_FAILED',
+          resourceId: 1,
+          resourceType: 'person',
+        },
+        error: 'Precondition Failed',
+        statusCode: 412,
+      });
+
+      const remaining = await Resource.findAll();
+      expect(remaining).toHaveLength(1);
+    });
+
+    it('should accept matching implicit If-Match for deletes', async () => {
+      const action: ActionDefinition = { type: 'resource.delete', resource: 'person' };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: { firstName: 'Spongebob', lastName: 'Squarepants' },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      const result = await handleAction(remove as any, {
+        app,
+        action,
+        mailer,
+        data: { id: 1, $etag: current.$etag },
+        options,
+        context: makeKoaCtxStub(),
+      });
+
+      expect(result).toBe('');
+      const remaining = await Resource.findAll();
+      expect(remaining).toHaveLength(0);
+    });
+
     it('should delete a resource', async () => {
       const action: ActionDefinition = {
         type: 'resource.delete',

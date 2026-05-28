@@ -21,7 +21,7 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
 
       if (
         'resource' in definition &&
-        (method === 'PUT' || method === 'PATCH') &&
+        (method === 'PUT' || method === 'PATCH' || method === 'DELETE') &&
         data &&
         typeof data === 'object' &&
         !Array.isArray(data) &&
