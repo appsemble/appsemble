@@ -749,9 +749,19 @@ describe('patchAppResource', () => {
       data: { file: 'old-asset' },
     });
 
-    const transactionSpy = vi
-      .spyOn(sequelize, 'transaction')
-      .mockRejectedValueOnce(new Error('transaction failed'));
+    // Asset upload happens inside the transaction, so failing transaction
+    // outright would leave nothing to clean up. Run the callback first so
+    // uploadAssets executes, then make the transaction reject afterwards.
+    const realTransaction = sequelize.transaction.bind(sequelize);
+    const transactionSpy = vi.spyOn(sequelize, 'transaction').mockImplementationOnce((...args) => {
+      const cb = args.find((arg): arg is (t: unknown) => Promise<unknown> => typeof arg === 'function');
+      return realTransaction(async (t) => {
+        if (cb) {
+          await cb(t);
+        }
+        throw new Error('transaction failed');
+      });
+    });
     const deleteSpy = vi.spyOn(nodeUtils, 'deleteS3Files').mockResolvedValue();
 
     authorizeStudio();

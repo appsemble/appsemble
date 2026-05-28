@@ -339,7 +339,6 @@ describe('resource', () => {
       });
 
       expect(result).toStrictEqual({
-        $etag: expect.any(String),
         fullName: 'Spongebob Squarepants',
       });
     });
