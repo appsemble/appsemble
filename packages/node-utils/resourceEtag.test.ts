@@ -10,7 +10,7 @@ import {
 describe('createResourceEtag', () => {
   it('produces a quoted base64url string', () => {
     const etag = createResourceEtag({ id: 1, foo: 'bar' });
-    expect(etag).toMatch(/^"[A-Za-z0-9_-]+"$/);
+    expect(etag).toMatch(/^"[\w-]+"$/);
   });
 
   it('ignores server-managed metadata at the top level only', () => {
@@ -57,7 +57,7 @@ describe('createResourceEtag', () => {
 describe('addResourceEtag', () => {
   it('attaches $etag and is idempotent', () => {
     const first = addResourceEtag({ id: 1, foo: 'x' });
-    expect(first.$etag).toMatch(/^"[A-Za-z0-9_-]+"$/);
+    expect(first.$etag).toMatch(/^"[\w-]+"$/);
     const second = addResourceEtag(first);
     expect(second.$etag).toBe(first.$etag);
   });
@@ -102,7 +102,10 @@ describe('matchesResourceIfMatch', () => {
 });
 
 describe('setResourceEtagHeader', () => {
-  function makeCtx(): { headers: Record<string, string>; set(name: string, value: string): void } {
+  function makeCtx(): {
+    headers: Record<string, string>;
+    set: (name: string, value: string) => void;
+  } {
     const headers: Record<string, string> = {};
     return {
       headers,
@@ -121,11 +124,11 @@ describe('setResourceEtagHeader', () => {
   it('computes a fresh etag when $etag is missing or not a string', () => {
     const ctx = makeCtx();
     setResourceEtagHeader(ctx as any, { id: 1, foo: 'x' });
-    expect(ctx.headers.ETag).toMatch(/^"[A-Za-z0-9_-]+"$/);
+    expect(ctx.headers.ETag).toMatch(/^"[\w-]+"$/);
 
     const ctx2 = makeCtx();
     setResourceEtagHeader(ctx2 as any, { id: 1, foo: 'x', $etag: undefined } as any);
-    expect(ctx2.headers.ETag).toMatch(/^"[A-Za-z0-9_-]+"$/);
+    expect(ctx2.headers.ETag).toMatch(/^"[\w-]+"$/);
     expect(ctx2.headers.ETag).not.toBe('undefined');
   });
 
