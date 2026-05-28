@@ -14,16 +14,11 @@ export function mapKeysRecursively(obj: any): any {
     return obj.map((value) => mapKeysRecursively(value));
   }
 
-  let result = obj as Record<string, any>;
+  const result: Record<string | symbol, any> = {};
 
-  for (const entry of Object.entries(obj)) {
-    const [key, value] = entry;
+  for (const [key, value] of Object.entries(obj)) {
     const newKey = Op[key as keyof typeof Op] || key;
-    delete result[key];
-    result = {
-      ...result,
-      [newKey]: mapKeysRecursively(value),
-    };
+    result[newKey as PropertyKey] = mapKeysRecursively(value);
   }
 
   return result;
