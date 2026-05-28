@@ -911,7 +911,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
-        Etag: "lLHMCOgf33cgr9CuSUyDdvsO94t5kcU-wa2aIf2ZEbQ"
+        Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -1054,7 +1054,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
-        Etag: "g6BZ5zhFzCm88eBF0p54zjbHyhs1kR1590XVOtDLMPA"
+        Etag: "5PQbHLNnzGyNnHiR7FlWnCLC8Mru4rVIb6kyjVFW340"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
