@@ -530,7 +530,7 @@ export async function remove({
   // Support action.id remapper (like client-side) or fallback to body.id
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   const resourceId = action.id ? remap(action.id, data, internalContext) : body?.id;
-  if (!resourceId) {
+  if (typeof resourceId !== 'string' && typeof resourceId !== 'number') {
     throw new Error('Missing id');
   }
   body.id = resourceId;
