@@ -9,7 +9,7 @@ import { throwKoaError } from './koa.js';
 // Server-managed metadata keys that are echoed in resource responses but are not
 // part of the resource's identity for ETag purposes. Stripped only at the top
 // level; nested user data may legitimately contain keys with the same names.
-const ignoredEtagFields = new Set(['$author', '$editor', '$etag', '$group', '$seed']);
+const ignoredEtagFields = new Set(['$author', '$editor', '$etag', '$group', '$seed', '$ephemeral']);
 
 function canonicalize(value: unknown): unknown {
   if (value instanceof Date) {
@@ -67,7 +67,10 @@ function parseIfMatchValue(ifMatch: string): string[] {
   const tokens: string[] = [];
   let i = 0;
   while (i < ifMatch.length) {
-    while (i < ifMatch.length && (ifMatch[i] === ' ' || ifMatch[i] === ',' || ifMatch[i] === '\t')) {
+    while (
+      i < ifMatch.length &&
+      (ifMatch[i] === ' ' || ifMatch[i] === ',' || ifMatch[i] === '\t')
+    ) {
       i += 1;
     }
     if (i >= ifMatch.length) {
@@ -122,8 +125,7 @@ export function setResourceEtagHeader(
   if (!resource) {
     return;
   }
-  const etag =
-    typeof resource.$etag === 'string' ? resource.$etag : createResourceEtag(resource);
+  const etag = typeof resource.$etag === 'string' ? resource.$etag : createResourceEtag(resource);
   ctx.set('ETag', etag);
 }
 

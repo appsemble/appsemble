@@ -20,6 +20,7 @@ describe('createResourceEtag', () => {
       $editor: { id: 'b' },
       $group: { id: 'g' },
       $seed: false,
+      $ephemeral: false,
       foo: 'x',
     });
     const b = createResourceEtag({
@@ -28,6 +29,7 @@ describe('createResourceEtag', () => {
       $editor: { id: 'q' },
       $group: { id: 'h' },
       $seed: true,
+      $ephemeral: true,
       foo: 'x',
     });
     expect(a).toBe(b);
