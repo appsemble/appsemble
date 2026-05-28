@@ -81,17 +81,17 @@ describe('updateAppResource', () => {
 
     expect(response).toMatchInlineSnapshot(
       `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-      Etag: "mCptHCjfiFuR4OwnRAcEbjV38GlcAGdnrUbPLnhRM18"
+        HTTP/1.1 200 OK
+        Content-Type: application/json; charset=utf-8
+        Etag: "mCptHCjfiFuR4OwnRAcEbjV38GlcAGdnrUbPLnhRM18"
 
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:20.000Z",
-        "foo": "I am not Foo.",
-        "id": 1,
-      }
-    `,
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "foo": "I am not Foo.",
+          "id": 1,
+        }
+      `,
     );
 
     const responseB = await request.get(
@@ -100,17 +100,17 @@ describe('updateAppResource', () => {
 
     expect(responseB).toMatchInlineSnapshot(
       `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-      Etag: "mCptHCjfiFuR4OwnRAcEbjV38GlcAGdnrUbPLnhRM18"
+        HTTP/1.1 200 OK
+        Content-Type: application/json; charset=utf-8
+        Etag: "mCptHCjfiFuR4OwnRAcEbjV38GlcAGdnrUbPLnhRM18"
 
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:20.000Z",
-        "foo": "I am not Foo.",
-        "id": 1,
-      }
-    `,
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "foo": "I am not Foo.",
+          "id": 1,
+        }
+      `,
     );
     expect(response.headers.etag).toBeDefined();
     expect(responseB.headers.etag).toBe(response.headers.etag);
@@ -546,18 +546,18 @@ describe('updateAppResource', () => {
 
     expect(response1).toMatchInlineSnapshot(
       `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-      Etag: "Do7wbabaG2_3Q7OLo3yUVMxXI3YpyZgcyBDui4UAznQ"
+        HTTP/1.1 200 OK
+        Content-Type: application/json; charset=utf-8
+        Etag: "Do7wbabaG2_3Q7OLo3yUVMxXI3YpyZgcyBDui4UAznQ"
 
-      {
-        "$clonable": false,
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "I am not Foo.",
-        "id": 1,
-      }
-    `,
+        {
+          "$clonable": false,
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am not Foo.",
+          "id": 1,
+        }
+      `,
     );
 
     const response2 = await request.put(
@@ -567,18 +567,18 @@ describe('updateAppResource', () => {
 
     expect(response2).toMatchInlineSnapshot(
       `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-      Etag: "uA2A3ET5p83eBpXOlC45pUBXhR5hshmjFTQpE4GiBeo"
+        HTTP/1.1 200 OK
+        Content-Type: application/json; charset=utf-8
+        Etag: "uA2A3ET5p83eBpXOlC45pUBXhR5hshmjFTQpE4GiBeo"
 
-      {
-        "$clonable": true,
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "I am not Foo.",
-        "id": 1,
-      }
-    `,
+        {
+          "$clonable": true,
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am not Foo.",
+          "id": 1,
+        }
+      `,
     );
   });
 
@@ -919,7 +919,7 @@ describe('updateAppResource', () => {
       }),
     );
 
-    await expect(() => asset.reload()).rejects.toThrow(
+    await expect(() => asset.reload()).rejects.toThrowError(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
   });

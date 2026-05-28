@@ -724,7 +724,7 @@ describe('patchAppResource', () => {
         id: 1,
       }),
     );
-    await expect(() => asset.reload()).rejects.toThrow(
+    await expect(() => asset.reload()).rejects.toThrowError(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
   });
@@ -749,19 +749,23 @@ describe('patchAppResource', () => {
       data: { file: 'old-asset' },
     });
 
-    // Asset upload happens inside the transaction, so failing transaction
+    // Asset upload happens inside the transaction, so failing the transaction
     // outright would leave nothing to clean up. Run the callback first so
     // uploadAssets executes, then make the transaction reject afterwards.
     const realTransaction = sequelize.transaction.bind(sequelize);
-    const transactionSpy = vi.spyOn(sequelize, 'transaction').mockImplementationOnce((...args) => {
-      const cb = args.find((arg): arg is (t: unknown) => Promise<unknown> => typeof arg === 'function');
-      return realTransaction(async (t) => {
-        if (cb) {
-          await cb(t);
-        }
-        throw new Error('transaction failed');
+    const transactionSpy = vi
+      .spyOn(sequelize, 'transaction')
+      .mockImplementationOnce((...args: unknown[]) => {
+        const cb = args.find((arg) => typeof arg === 'function') as
+          | ((t: unknown) => Promise<unknown>)
+          | undefined;
+        return realTransaction(async (t: any) => {
+          // Deliberately run the callback so uploadAssets executes, then reject.
+          // eslint-disable-next-line n/callback-return
+          await cb?.(t);
+          throw new Error('transaction failed');
+        }) as any;
       });
-    });
     const deleteSpy = vi.spyOn(nodeUtils, 'deleteS3Files').mockResolvedValue();
 
     authorizeStudio();
