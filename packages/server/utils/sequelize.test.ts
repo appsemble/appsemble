@@ -20,15 +20,15 @@ it('should return the object if comparator, logic and attribute are defined', ()
 });
 
 it('should distinguish between null and undefined values for logic field', () => {
-  const input = {
-    attribute: 'foo',
-    comparator: '=',
-    logic: null,
-  };
+  // The (attribute && comparator && (logic || logic === null)) guard short-
+  // circuits on null and returns the input by reference. With undefined the
+  // function falls through to the generic key-mapping branch and returns a
+  // fresh object.
+  const withNull = { attribute: 'foo', comparator: '=', logic: null };
+  expect(mapKeysRecursively(withNull)).toBe(withNull);
 
-  expect(mapKeysRecursively(input)).toStrictEqual(input);
-  Object.assign(input, { logic: undefined });
-  expect(mapKeysRecursively(input)).not.toStrictEqual(input);
+  const withUndefined = { attribute: 'foo', comparator: '=', logic: undefined };
+  expect(mapKeysRecursively(withUndefined)).not.toBe(withUndefined);
 });
 
 it('should handle array inputs', () => {

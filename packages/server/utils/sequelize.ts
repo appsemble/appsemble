@@ -21,5 +21,12 @@ export function mapKeysRecursively(obj: any): any {
     result[newKey as PropertyKey] = mapKeysRecursively(value);
   }
 
+  // Sequelize operator objects built upstream (e.g. by the OData parser) use
+  // `Op.*` Symbol keys which Object.entries skips. Preserve them verbatim —
+  // they are already in the form Sequelize expects.
+  for (const sym of Object.getOwnPropertySymbols(obj)) {
+    result[sym] = mapKeysRecursively((obj as any)[sym]);
+  }
+
   return result;
 }
