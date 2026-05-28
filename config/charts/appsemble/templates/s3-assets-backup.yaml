@@ -25,6 +25,8 @@ metadata:
 data:
   s3-assets-backup-incremental.sh: |
 {{ .Files.Get "scripts/s3-assets-backup-incremental.sh" | indent 4 }}
+  s3-assets-restore.sh: |
+{{ .Files.Get "scripts/s3-assets-restore.sh" | indent 4 }}
 ---
 apiVersion: batch/v1
 kind: CronJob
