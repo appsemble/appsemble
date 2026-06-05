@@ -14,6 +14,7 @@ import {
 import {
   AppsembleError,
   type ExtendedGroup,
+  getBlockAssetDownloadUrl,
   logger,
   opendirSafe,
   readData,
@@ -201,12 +202,15 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
     const cacheExists = existsSync(cachedBlockManifest);
     if (!cacheExists || (cacheExists && argv['overwrite-block-cache'])) {
-      const blockUrl = `/api/blocks/@${organization}/${blockName}/versions/${identifiableBlock.version}`;
+      const blockUrl = String(
+        new URL(
+          `/api/blocks/@${organization}/${blockName}/versions/${identifiableBlock.version}`,
+          argv.remote,
+        ),
+      );
 
       try {
-        const { data: blockManifest }: { data: BlockManifest } = await axios.get(
-          String(new URL(blockUrl, argv.remote)),
-        );
+        const { data: blockManifest }: { data: BlockManifest } = await axios.get(blockUrl);
 
         await writeData(cachedBlockManifest, blockManifest);
 
@@ -219,7 +223,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
           const writer = createWriteStream(join(assetsDir, filename));
 
           const { data: content } = await axios.get(
-            String(new URL(`${blockUrl}/asset?filename=${filename}`, argv.remote)),
+            getBlockAssetDownloadUrl(blockUrl, blockManifest.fileUrls, filename),
             {
               responseType: 'stream',
             },

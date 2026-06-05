@@ -1,5 +1,5 @@
 import { getAppBlocks, type IdentifiableBlock, parseBlockName } from '@appsemble/lang-sdk';
-import { logger, uploadS3File } from '@appsemble/node-utils';
+import { getBlockAssetDownloadUrl, logger, uploadS3File } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
@@ -105,10 +105,12 @@ export async function syncBlock({
 
       // Use callbacks to defer firing the request and not overload the server
       const promises = block.files.map((filename) => async () => {
-        const { data: content, headers } = await axios.get(`${blockUrl}/asset`, {
-          params: { filename },
-          responseType: 'arraybuffer',
-        });
+        const { data: content, headers } = await axios.get(
+          getBlockAssetDownloadUrl(blockUrl, block.fileUrls, filename),
+          {
+            responseType: 'arraybuffer',
+          },
+        );
         const [mime] = headers['content-type'].split(';');
         const buffer = Buffer.from(content);
         const contentHash = getBlockAssetContentHash(buffer);
