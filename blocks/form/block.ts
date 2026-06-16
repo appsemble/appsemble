@@ -790,9 +790,12 @@ export interface DateField extends AbstractField, InlineField {
   decorations?: DateDecorationsAction | { remap: Remapper };
 
   /**
-   * Dates to disable in the picker (ISO date strings).
+   * Dates to disable in the picker.
+   *
+   * A remapper that should resolve to an array of ISO date strings (`yyyy-MM-dd`). The resolved
+   * dates cannot be selected in the picker.
    */
-  disabledDates?: string[];
+  disabledDates?: Remapper;
 
   /**
    * Disable the operating system's native date picker on mobile devices and
