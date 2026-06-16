@@ -12,6 +12,14 @@ describe('replaceAssetFunctions', () => {
     expect(result).toBe("a{background:url('http://localhost/api/apps/42/assets/hero-bg')}");
   });
 
+  it('should resolve standalone asset utility functions', () => {
+    setArgv({ host: 'http://localhost' });
+
+    const result = replaceAssetFunctions("a{background:asset('hero-bg')}", 42);
+
+    expect(result).toBe("a{background:url('http://localhost/api/apps/42/assets/hero-bg')}");
+  });
+
   it('should not rewrite app asset paths that contain ..', () => {
     setArgv({ host: 'http://localhost' });
 

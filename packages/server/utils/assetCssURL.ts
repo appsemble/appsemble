@@ -1,6 +1,7 @@
 import { argv } from './argv.js';
 
 const assetUrlMatcher = /url\(\s*asset\(\s*(?:("|')(.*?)\1|([^\s"'()][^)]*))\s*\)\s*\)/g;
+const standaloneAssetMatcher = /asset\(\s*(?:("|')(.*?)\1|([^\s"'()][^)]*))\s*\)/g;
 const urlMatcher = /url\(\s*(?:("|')(.*?)\1|([^\s"'()][^)]*))\s*\)/g;
 const appAssetPathMatcher = /^\/api\/apps\/\d+\/assets\/(.+)$/;
 
@@ -116,7 +117,7 @@ export function replaceAssetFunctions(css: string, appId: number | undefined): s
     return css;
   }
 
-  const cssWithResolvedAssetFunctionURLs = css.replaceAll(assetUrlMatcher, (match, ...args) => {
+  const replaceAssetFunction = (match: string, ...args: unknown[]): string => {
     const quotedAssetId = args[1] as string | undefined;
     const unquotedAssetId = args[2] as string | undefined;
     const assetId = (quotedAssetId || unquotedAssetId)?.trim();
@@ -132,7 +133,11 @@ export function replaceAssetFunctions(css: string, appId: number | undefined): s
     }
 
     return `url('${resolvedAssetUrl}')`;
-  });
+  };
+
+  const cssWithResolvedAssetFunctionURLs = css
+    .replaceAll(assetUrlMatcher, replaceAssetFunction)
+    .replaceAll(standaloneAssetMatcher, replaceAssetFunction);
 
   return cssWithResolvedAssetFunctionURLs.replaceAll(urlMatcher, (match, ...args) => {
     const quotedUrl = args[1] as string | undefined;
