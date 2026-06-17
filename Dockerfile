@@ -72,15 +72,15 @@ ENTRYPOINT ["appsemble-server"]
 CMD ["start"]
 HEALTHCHECK CMD ["appsemble-server", "health"]
 EXPOSE 9999
-LABEL io.artifacthub.package.alternative-locations registry.gitlab.com/appsemble/appsemble:${version}
-LABEL io.artifacthub.package.keywords app,apps,appsemble,framework,low-code,lowcode
-LABEL io.artifacthub.package.license LGPL-3.0-only
-LABEL io.artifacthub.package.logo-url https://charts.appsemble.com/icon.svg
-LABEL io.artifacthub.package.readme-url https://gitlab.com/appsemble/appsemble/-/raw/${version}/packages/server/README.md
-LABEL org.opencontainers.image.created ${date}
-LABEL org.opencontainers.image.description The open source low-code app building platform
-LABEL org.opencontainers.image.documentation https://appsemble.app/docs
-LABEL org.opencontainers.image.source https://gitlab.com/appsemble/appsemble/-/tree/${version}
-LABEL org.opencontainers.image.title Appsemble
-LABEL org.opencontainers.image.vendor Appsemble
-LABEL org.opencontainers.image.version ${version}
+LABEL io.artifacthub.package.alternative-locations="registry.gitlab.com/appsemble/appsemble:${version}"
+LABEL io.artifacthub.package.keywords="app,apps,appsemble,framework,low-code,lowcode"
+LABEL io.artifacthub.package.license="LGPL-3.0-only"
+LABEL io.artifacthub.package.logo-url="https://charts.appsemble.com/icon.svg"
+LABEL io.artifacthub.package.readme-url="https://gitlab.com/appsemble/appsemble/-/raw/${version}/packages/server/README.md"
+LABEL org.opencontainers.image.created="${date}"
+LABEL org.opencontainers.image.description="The open source low-code app building platform"
+LABEL org.opencontainers.image.documentation="https://appsemble.app/docs"
+LABEL org.opencontainers.image.source="https://gitlab.com/appsemble/appsemble/-/tree/${version}"
+LABEL org.opencontainers.image.title="Appsemble"
+LABEL org.opencontainers.image.vendor="Appsemble"
+LABEL org.opencontainers.image.version="${version}"
