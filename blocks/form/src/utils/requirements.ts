@@ -136,6 +136,10 @@ const weekdays = [
   'saturday',
 ] as const;
 
+/**
+ * @param field Date field to check
+ * @returns An array of predicate functions that return `true` when a given date should be disabled.
+ */
 export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => boolean)[] {
   if (!field.requirements) {
     return [];

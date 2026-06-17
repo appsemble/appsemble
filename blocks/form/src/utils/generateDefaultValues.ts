@@ -1,4 +1,4 @@
-import { getMin, getMinLength } from './requirements.js';
+import { getDisabledDays, getMin, getMinLength } from './requirements.js';
 import { type Field, type Values } from '../../block.js';
 
 function generateDefaultValue(field: Field): unknown {
@@ -9,8 +9,16 @@ function generateDefaultValue(field: Field): unknown {
   switch (field.type) {
     case 'boolean':
       return false;
-    case 'date':
-      return new Date().toISOString();
+    case 'date': {
+      const [isDisabled] = getDisabledDays(field);
+      const todayDate = new Date();
+
+      if (isDisabled?.(todayDate)) {
+        return;
+      }
+
+      return todayDate.toISOString();
+    }
     case 'number':
       return field.display === 'slider' ? getMin(field) : undefined;
     case 'string':
