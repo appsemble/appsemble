@@ -1083,9 +1083,12 @@ update dependencies:
         --api-key "$STRIPE_API_SECRET_KEY" | jq -r '.secret')
     - kubectl create secret generic stripe-webhook-secret-$CI_MERGE_REQUEST_IID --from-literal=stripe-webhook-secret="$STRIPE_WEBHOOK_SECRET"
     # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
+    # --wait (not --atomic): on failure leave the release for the next deploy to
+    # clean up, instead of triggering an uninstall whose pre-delete cleanup hook
+    # hangs against the un-migrated database and turns failures into ~60m jobs.
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --debug
-      --atomic
+      --wait
       --timeout 30m0s
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
