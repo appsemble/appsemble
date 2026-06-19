@@ -13,6 +13,7 @@ import {
   handleKubernetesError,
   isWhitelisted,
   validateContainerResources,
+  withKubernetesRetry,
 } from './helpers.js';
 import { generateDeploymentAndServiceSpecs } from './specs.js';
 
@@ -52,7 +53,9 @@ export async function updateNamespacedSecret(
 
   let existing: V1Secret | undefined;
   try {
-    existing = await coreApi.readNamespacedSecret({ name: formattedName, namespace });
+    existing = await withKubernetesRetry(`read secret ${formattedName}`, () =>
+      coreApi.readNamespacedSecret({ name: formattedName, namespace }),
+    );
   } catch (error: unknown) {
     handleKubernetesError(error);
   }
@@ -66,11 +69,13 @@ export async function updateNamespacedSecret(
     existing.data[secretName] = Buffer.from(value).toString('base64');
 
     try {
-      const updatedSecret = await coreApi.replaceNamespacedSecret({
-        name: formattedName,
-        namespace,
-        body: existing,
-      });
+      const updatedSecret = await withKubernetesRetry(`replace secret ${formattedName}`, () =>
+        coreApi.replaceNamespacedSecret({
+          name: formattedName,
+          namespace,
+          body: existing,
+        }),
+      );
       logger.info(`Secret ${updatedSecret.metadata?.name} updated successfully`);
     } catch (error: unknown) {
       handleKubernetesError(error);
@@ -80,7 +85,9 @@ export async function updateNamespacedSecret(
 
   try {
     logger.verbose(`Creating secret ${secretSpec.metadata?.name} ...`);
-    const secret = await coreApi.createNamespacedSecret({ namespace, body: secretSpec });
+    const secret = await withKubernetesRetry(`create secret ${formattedName}`, () =>
+      coreApi.createNamespacedSecret({ namespace, body: secretSpec }),
+    );
 
     logger.info(`Secret ${secret.metadata?.name} created successfully`);
   } catch (error: unknown) {
@@ -98,7 +105,9 @@ export async function deleteSecret(appName: string, appId: string, key?: string)
 
   if (key) {
     try {
-      const secret = await coreApi.readNamespacedSecret({ name: secretName, namespace });
+      const secret = await withKubernetesRetry(`read secret ${secretName}`, () =>
+        coreApi.readNamespacedSecret({ name: secretName, namespace }),
+      );
 
       logger.verbose(
         `Deleteing key ${key} of secret ${secretName} from namespace ${namespace} ...`,
@@ -110,7 +119,9 @@ export async function deleteSecret(appName: string, appId: string, key?: string)
       }
       delete secret.data[key];
 
-      await coreApi.replaceNamespacedSecret({ name: secretName, namespace, body: secret });
+      await withKubernetesRetry(`replace secret ${secretName}`, () =>
+        coreApi.replaceNamespacedSecret({ name: secretName, namespace, body: secret }),
+      );
       logger.verbose(`Deleted key ${key} of secret ${secretName} from namespace ${namespace}.`);
     } catch (error: unknown) {
       logger.error(`Error deleting ${key ? `key ${key} from` : ''} secret ${secretName}`);
@@ -151,7 +162,9 @@ export async function updateCompanionContainers(
   logger.silly(`Listing services in namespace ${namespace} ...`);
 
   try {
-    services = await coreApi.listNamespacedService({ namespace });
+    services = await withKubernetesRetry(`list services in namespace ${namespace}`, () =>
+      coreApi.listNamespacedService({ namespace }),
+    );
   } catch (error: unknown) {
     logger.error(`Error listing services in namespace ${namespace}`);
     handleKubernetesError(error);
@@ -195,11 +208,15 @@ export async function updateCompanionContainers(
 
       // Update service
       try {
-        const updatedService = await coreApi.patchNamespacedService({
-          name: existingServiceName,
-          namespace,
-          body: servicePatch,
-        });
+        const updatedService = await withKubernetesRetry(
+          `patch service ${existingServiceName}`,
+          () =>
+            coreApi.patchNamespacedService({
+              name: existingServiceName,
+              namespace,
+              body: servicePatch,
+            }),
+        );
 
         logger.info(`Service ${updatedService?.metadata?.name} updated`);
       } catch (error: unknown) {
@@ -239,11 +256,15 @@ export async function updateCompanionContainers(
         },
       ];
       try {
-        const updatedDeployment = await appsApi.patchNamespacedDeployment({
-          name: existingServiceName,
-          namespace,
-          body: deploymentPatch,
-        });
+        const updatedDeployment = await withKubernetesRetry(
+          `patch deployment ${existingServiceName}`,
+          () =>
+            appsApi.patchNamespacedDeployment({
+              name: existingServiceName,
+              namespace,
+              body: deploymentPatch,
+            }),
+        );
 
         logger.info(`Deployment ${updatedDeployment?.metadata?.name} updated`);
       } catch (error: unknown) {
@@ -253,10 +274,12 @@ export async function updateCompanionContainers(
 
       // Update pod
       try {
-        const podList = await coreApi.listNamespacedPod({
-          namespace,
-          labelSelector: `appId=${appId}`,
-        });
+        const podList = await withKubernetesRetry(`list pods for app ${appId}`, () =>
+          coreApi.listNamespacedPod({
+            namespace,
+            labelSelector: `appId=${appId}`,
+          }),
+        );
         if (podList.items.length === 0) {
           logger.silly(`Deployment ${serviceName} has 0 pods, skipping ...`);
           continue;
@@ -271,6 +294,7 @@ export async function updateCompanionContainers(
           );
           continue;
         }
+        const podName = pod.metadata.name;
 
         // Set base labels, such as selector, pod name, pod hash
         const props = {
@@ -281,7 +305,7 @@ export async function updateCompanionContainers(
             'pod-template-hash': pod?.metadata?.labels?.['pod-template-hash'],
             appId,
           },
-          name: pod.metadata.name,
+          name: podName,
         };
         const podPatch = [
           {
@@ -290,11 +314,13 @@ export async function updateCompanionContainers(
             value: props,
           },
         ];
-        const updatedPod = await coreApi.patchNamespacedPod({
-          name: pod.metadata.name,
-          namespace,
-          body: podPatch,
-        });
+        const updatedPod = await withKubernetesRetry(`patch pod ${podName}`, () =>
+          coreApi.patchNamespacedPod({
+            name: podName,
+            namespace,
+            body: podPatch,
+          }),
+        );
         logger.verbose(`Pod updated: ${updatedPod?.metadata?.name}`);
       } catch (error: unknown) {
         handleKubernetesError(error);
@@ -316,17 +342,21 @@ export async function updateCompanionContainers(
         logger.verbose(`Creating resources in namespace ${namespace} ...`);
 
         try {
-          const deploymentObj = await appsApi.createNamespacedDeployment({
-            namespace,
-            body: deployment,
-          });
+          const deploymentObj = await withKubernetesRetry(`create deployment ${serviceName}`, () =>
+            appsApi.createNamespacedDeployment({
+              namespace,
+              body: deployment,
+            }),
+          );
           logger.info(`Deployment created: ${deploymentObj.metadata?.name}`);
         } catch (error: unknown) {
           handleKubernetesError(error);
           return;
         }
         try {
-          const serviceObj = await coreApi.createNamespacedService({ namespace, body: service });
+          const serviceObj = await withKubernetesRetry(`create service ${serviceName}`, () =>
+            coreApi.createNamespacedService({ namespace, body: service }),
+          );
           logger.info(`Service created: ${serviceObj.metadata?.name}`);
         } catch (error: unknown) {
           handleKubernetesError(error);

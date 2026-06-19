@@ -1041,14 +1041,7 @@ update dependencies:
     - apk add --no-cache curl jq tar openssl
     - ./scripts/cleanup-review-resources.sh
     - ./scripts/pre-review-capacity-check.sh
-    # This is the only way to make sure the review environment can be overwritten
-    - helm delete "review-$CI_MERGE_REQUEST_IID" --no-hooks --ignore-not-found || true
-    - kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete secret -l "owner=helm,name=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete secret review-$CI_MERGE_REQUEST_IID-mailpit-tls --ignore-not-found=true || true
-    - kubectl delete secret review-$CI_MERGE_REQUEST_IID-valkey --ignore-not-found=true || true
+    - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
@@ -1166,16 +1159,11 @@ stop review:
     name: review/$CI_MERGE_REQUEST_IID
     action: stop
   variables:
-    GIT_STRATEGY: none
+    GIT_STRATEGY: fetch
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:review"
-    - helm delete "review-$CI_MERGE_REQUEST_IID" --no-hooks --ignore-not-found || true
-    - kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete secret -l "owner=helm,name=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
-    - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep "^review-$CI_MERGE_REQUEST_IID" | xargs -I{} kubectl delete secret {} || true
-    - kubectl delete secret "stripe-webhook-secret-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
+    - apk add --no-cache jq
+    - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
 
 # Deploy the Docker image for main to the staging environment.
 staging:

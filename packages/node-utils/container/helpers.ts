@@ -59,6 +59,49 @@ export function handleKubernetesError(error: unknown): void {
 
   logger.error(error);
 }
+
+function sleep(timeout: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+}
+
+function isTransientKubernetesError(error: unknown): boolean {
+  if (!(error instanceof ApiException)) {
+    return true;
+  }
+
+  return (
+    typeof error.code === 'number' &&
+    (error.code === 408 || error.code === 429 || error.code >= 500)
+  );
+}
+
+export async function withKubernetesRetry<T>(
+  description: string,
+  operation: () => Promise<T>,
+): Promise<T> {
+  const attempts = Number(process.env.KUBERNETES_REQUEST_RETRIES ?? 3);
+  const delay = Number(process.env.KUBERNETES_RETRY_DELAY_MS ?? 1000);
+
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (attempt >= attempts || !isTransientKubernetesError(error)) {
+        throw error;
+      }
+
+      logger.warn(
+        `Kubernetes request failed while trying to ${description}. Retrying ${attempt}/${attempts}`,
+      );
+      if (delay > 0) {
+        await sleep(delay * attempt);
+      }
+    }
+  }
+}
+
 export async function deleteResource(
   type: 'deployment' | 'secret' | 'service',
   namespace: string,
@@ -73,17 +116,23 @@ export async function deleteResource(
     logger.silly(`Deleting ${type} '${name}' from namespace ${namespace} ... `);
     switch (type) {
       case 'deployment':
-        await appsApi.deleteNamespacedDeployment({
-          name,
-          namespace,
-          propagationPolicy: 'Background',
-        });
+        await withKubernetesRetry(`delete deployment ${name}`, () =>
+          appsApi.deleteNamespacedDeployment({
+            name,
+            namespace,
+            propagationPolicy: 'Background',
+          }),
+        );
         break;
       case 'service':
-        await coreApi.deleteNamespacedService({ name, namespace });
+        await withKubernetesRetry(`delete service ${name}`, () =>
+          coreApi.deleteNamespacedService({ name, namespace }),
+        );
         break;
       default:
-        await coreApi.deleteNamespacedSecret({ name, namespace });
+        await withKubernetesRetry(`delete secret ${name}`, () =>
+          coreApi.deleteNamespacedSecret({ name, namespace }),
+        );
     }
     logger.verbose(`Deleted ${type} '${name}' from namespace ${namespace}`);
   } catch (error: unknown) {
