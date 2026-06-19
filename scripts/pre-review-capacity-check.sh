@@ -4,11 +4,11 @@ set -eu
 
 MIN_FREE_MI=${REVIEW_MIN_FREE_MEMORY_MI:-2048}
 HARD_MAX_ACTIVE=${REVIEW_HARD_MAX_ACTIVE:-8}
-# Hetzner Cloud attaches at most 16 volumes per server; each review needs two
-# (postgresql + minio). Detached volumes do not count, so this guards the real
-# per-node limit that memory checks miss.
+# Review environments use ephemeral storage by default, so they do not need
+# Hetzner volumes. Keep this configurable in case a review deploy temporarily
+# opts into persistent services.
 MAX_VOLUMES_PER_NODE=${REVIEW_MAX_VOLUMES_PER_NODE:-16}
-NEW_REVIEW_VOLUMES=${REVIEW_NEW_VOLUMES:-2}
+NEW_REVIEW_VOLUMES=${REVIEW_NEW_VOLUMES:-0}
 CURRENT_IID=${CI_MERGE_REQUEST_IID:-}
 CURRENT_RELEASE=''
 
@@ -128,9 +128,9 @@ if [ -n "$pressure" ] || [ "$free" -lt "$MIN_FREE_MI" ]; then
   fail_capacity "$reason"
 fi
 
-# Volume-attach capacity. A new review's postgresql and minio PVCs can only be
-# created if the worker nodes still have free volume-attach slots; otherwise the
-# pods hang in ContainerCreating and the deploy times out with no clear cause.
+# Volume-attach capacity for review deploys that explicitly opt into persistent
+# services. Without this guard, pods can hang in ContainerCreating until the
+# deploy times out.
 attachments=$(kubectl get volumeattachments -o json)
 vol_free=0
 for node in $(kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels["node-role.kubernetes.io/control-plane"] == null) | .metadata.name'); do
