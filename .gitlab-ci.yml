@@ -1399,7 +1399,19 @@ provision review:
     - npm run appsemble -- config set context review
     - |
       REVIEW_HOST="$CI_MERGE_REQUEST_IID.$APPSEMBLE_REVIEW_DOMAIN"
-      REVIEW_IP=$(node -e 'const host = process.argv[1]; fetch(`https://dns.google/resolve?name=${host}&type=A`).then((response) => response.json()).then((data) => { const answer = (data.Answer || []).find((entry) => entry.type === 1); if (!answer) { process.stderr.write(`No A record found for ${host}\n`); process.exit(1); } process.stdout.write(answer.data); }).catch((error) => { console.error(error); process.exit(1); });' "$REVIEW_HOST")
+      REVIEW_IP=
+      for attempt in $(seq 1 60); do
+        REVIEW_IP=$(node -e 'const host = process.argv[1]; fetch(`https://dns.google/resolve?name=${host}&type=A`).then((response) => response.json()).then((data) => { const answer = (data.Answer || []).find((entry) => entry.type === 1); if (answer) { process.stdout.write(answer.data); } }).catch((error) => { console.error(error); process.exit(1); });' "$REVIEW_HOST")
+        if [ -n "$REVIEW_IP" ]; then
+          break
+        fi
+        echo "Waiting for A record for $REVIEW_HOST ($attempt/60)"
+        sleep 10
+      done
+      if [ -z "$REVIEW_IP" ]; then
+        echo "No A record found for $REVIEW_HOST" >&2
+        exit 1
+      fi
       echo "$REVIEW_IP $REVIEW_HOST" >> /etc/hosts
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
