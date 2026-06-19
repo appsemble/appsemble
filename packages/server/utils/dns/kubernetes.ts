@@ -196,6 +196,48 @@ function readK8sSecret(filename: string): Promise<string> {
   return readFile(join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf8');
 }
 
+function sleep(timeout: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+}
+
+function isTransientKubernetesError(error: unknown): boolean {
+  if (!axios.isAxiosError(error)) {
+    return false;
+  }
+
+  if (!error.response) {
+    return true;
+  }
+
+  return (
+    error.response.status === 408 || error.response.status === 429 || error.response.status >= 500
+  );
+}
+
+async function requestKubernetes<T>(description: string, request: () => Promise<T>): Promise<T> {
+  const attempts = Number(process.env.KUBERNETES_REQUEST_RETRIES ?? 3);
+  const delay = Number(process.env.KUBERNETES_RETRY_DELAY_MS ?? 1000);
+
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await request();
+    } catch (error) {
+      if (attempt >= attempts || !isTransientKubernetesError(error)) {
+        throw error;
+      }
+
+      logger.warn(
+        `Kubernetes request failed while trying to ${description}. Retrying ${attempt}/${attempts}`,
+      );
+      if (delay > 0) {
+        await sleep(delay * attempt);
+      }
+    }
+  }
+}
+
 /**
  * Get common Axios request configuration based on the command line arguments.
  *
@@ -209,6 +251,7 @@ async function getAxiosConfig(): Promise<RawAxiosRequestConfig> {
     headers: { authorization: `Bearer ${token}` },
     httpsAgent: new Agent({ ca }),
     baseURL: K8S_HOST,
+    timeout: Number(process.env.KUBERNETES_REQUEST_TIMEOUT_MS ?? 10_000),
   };
 }
 
@@ -263,47 +306,49 @@ async function createIngressFunction(): Promise<
 
     logger.info(`Registering ingress ${name} for ${domain}`);
     try {
-      await axios.post(
-        url,
-        {
-          metadata: {
-            annotations,
-            // https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/#labels
-            labels: {
-              'app.kubernetes.io/component': 'domain',
-              'app.kubernetes.io/instance': name.slice(0, 63),
-              'app.kubernetes.io/managed-by': serviceName,
-              'app.kubernetes.io/name': 'appsemble',
-              'app.kubernetes.io/part-of': serviceName,
-              'app.kubernetes.io/version': version,
+      await requestKubernetes(`create ingress ${name}`, () =>
+        axios.post(
+          url,
+          {
+            metadata: {
+              annotations,
+              // https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/#labels
+              labels: {
+                'app.kubernetes.io/component': 'domain',
+                'app.kubernetes.io/instance': name.slice(0, 63),
+                'app.kubernetes.io/managed-by': serviceName,
+                'app.kubernetes.io/name': 'appsemble',
+                'app.kubernetes.io/part-of': serviceName,
+                'app.kubernetes.io/version': version,
+              },
+              name,
             },
-            name,
-          },
-          spec: {
-            ingressClassName,
-            rules: [
-              {
-                host: domain,
-                http: {
-                  paths: [
-                    {
-                      path: '/',
-                      pathType: 'Prefix',
-                      backend: { service: { name: serviceName, port: { name: servicePort } } },
-                    },
-                  ],
+            spec: {
+              ingressClassName,
+              rules: [
+                {
+                  host: domain,
+                  http: {
+                    paths: [
+                      {
+                        path: '/',
+                        pathType: 'Prefix',
+                        backend: { service: { name: serviceName, port: { name: servicePort } } },
+                      },
+                    ],
+                  },
                 },
-              },
-            ],
-            tls: [
-              {
-                hosts: [domain],
-                secretName,
-              },
-            ],
-          },
-        } as Ingress,
-        config,
+              ],
+              tls: [
+                {
+                  hosts: [domain],
+                  secretName,
+                },
+              ],
+            },
+          } as Ingress,
+          config,
+        ),
       );
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status !== 409) {
@@ -314,22 +359,24 @@ async function createIngressFunction(): Promise<
         logger.info(`Patching ingress ${name} instead`);
         const path = `/metadata/annotations/${escapeJsonPointer(issuerAnnotationKey)}`;
         try {
-          await axios.patch(
-            // Not SSRF: baseURL is from server config (argv), namespace from K8s service account, name is normalized domain
-            // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
-            `${url}/${name}`,
-            [
-              customSSL
-                ? { op: 'remove', path }
-                : { op: 'add', path, value: issuerAnnotationValue },
-            ],
-            {
-              ...config,
-              headers: {
-                ...(config.headers as Record<string, string>),
-                'content-type': 'application/json-patch+json',
+          await requestKubernetes(`patch ingress ${name}`, () =>
+            axios.patch(
+              // Not SSRF: baseURL is from server config (argv), namespace from K8s service account, name is normalized domain
+              // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
+              `${url}/${name}`,
+              [
+                customSSL
+                  ? { op: 'remove', path }
+                  : { op: 'add', path, value: issuerAnnotationValue },
+              ],
+              {
+                ...config,
+                headers: {
+                  ...(config.headers as Record<string, string>),
+                  'content-type': 'application/json-patch+json',
+                },
               },
-            },
+            ),
           );
         } catch (err) {
           if (axios.isAxiosError(err) && err.response?.status !== 422) {
@@ -377,7 +424,7 @@ async function createSSLSecretFunction(): Promise<
 
     logger.info(`Creating TLS secret ${name}`);
     try {
-      await axios.post(url, secret, config);
+      await requestKubernetes(`create TLS secret ${name}`, () => axios.post(url, secret, config));
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status !== 409) {
         throw error;
@@ -386,7 +433,9 @@ async function createSSLSecretFunction(): Promise<
       logger.info(`Updating TLS secret ${name}`);
       // Not SSRF: baseURL is from server config (argv), namespace from K8s service account, name is normalized domain
       // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
-      await axios.put(`${url}/${name}`, secret, config);
+      await requestKubernetes(`update TLS secret ${name}`, () =>
+        axios.put(`${url}/${name}`, secret, config),
+      );
     }
     logger.info(`Successfully registered ingress ${name} for ${domain}`);
   };
@@ -396,9 +445,8 @@ async function deleteIngress(domain: string): Promise<void> {
   const name = normalize(domain);
   const config = await getAxiosConfig();
   const namespace = await readK8sSecret('namespace');
-  await axios.delete(
-    `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses/${name}`,
-    config,
+  await requestKubernetes(`delete ingress ${name}`, () =>
+    axios.delete(`/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses/${name}`, config),
   );
 }
 
@@ -498,35 +546,41 @@ export async function cleanupDNS(): Promise<void> {
   const config = await getAxiosConfig();
   const namespace = await readK8sSecret('namespace');
   logger.warn(`Deleting all ingresses for ${serviceName}`);
-  await axios.delete(`/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`, {
-    ...config,
-    params: {
-      labelSelector: `app.kubernetes.io/managed-by=${serviceName}`,
-    },
-  });
+  await requestKubernetes(`delete ingresses for ${serviceName}`, () =>
+    axios.delete(`/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`, {
+      ...config,
+      params: {
+        labelSelector: `app.kubernetes.io/managed-by=${serviceName}`,
+      },
+    }),
+  );
   logger.info(`Successfully deleted all ingresses for ${serviceName}`);
 
   logger.warn(`Deleting all secrets for ${serviceName}`);
-  await axios.delete(`/api/v1/namespaces/${namespace}/secrets`, {
-    ...config,
-    params: {
-      labelSelector: `app.kubernetes.io/managed-by=${serviceName}`,
-    },
-  });
+  await requestKubernetes(`delete secrets for ${serviceName}`, () =>
+    axios.delete(`/api/v1/namespaces/${namespace}/secrets`, {
+      ...config,
+      params: {
+        labelSelector: `app.kubernetes.io/managed-by=${serviceName}`,
+      },
+    }),
+  );
   logger.info(`Successfully deleted all secrets for ${serviceName}`);
 }
 
 async function getIngressHosts(): Promise<{ hosts: string[]; name: string }[]> {
   const config = await getAxiosConfig();
   const namespace = await readK8sSecret('namespace');
-  const { data } = await axios.get<KubernetesListResult<Ingress>>(
-    `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`,
-    {
-      ...config,
-      params: {
-        labelSelector: `app.kubernetes.io/managed-by=${argv.serviceName}`,
+  const { data } = await requestKubernetes('list ingresses', () =>
+    axios.get<KubernetesListResult<Ingress>>(
+      `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`,
+      {
+        ...config,
+        params: {
+          labelSelector: `app.kubernetes.io/managed-by=${argv.serviceName}`,
+        },
       },
-    },
+    ),
   );
   const names = data.items.flatMap(({ metadata, spec }) => ({
     hosts: spec.rules.map((rule) => rule.host),
@@ -625,9 +679,11 @@ export async function getSSLStatus(domains: string[]): Promise<SSLStatusMap> {
   const pending = new Set(domains);
   const config = await getAxiosConfig();
   const namespace = await readK8sSecret('namespace');
-  const { data } = await axios.get<KubernetesListResult<Certificate>>(
-    `/apis/cert-manager.io/v1/namespaces/${namespace}/certificates`,
-    config,
+  const { data } = await requestKubernetes('list certificates', () =>
+    axios.get<KubernetesListResult<Certificate>>(
+      `/apis/cert-manager.io/v1/namespaces/${namespace}/certificates`,
+      config,
+    ),
   );
   const statuses: SSLStatusMap = {};
   if (argv.forceProtocolHttps) {

@@ -37,6 +37,9 @@ describe('kubernetes', () => {
     Organization.removeHook('afterDestroy', 'dns');
     AppCollection.removeHook('afterSave', 'dns');
     AppCollection.removeHook('afterDestroy', 'dns');
+    delete process.env.KUBERNETES_REQUEST_RETRIES;
+    delete process.env.KUBERNETES_RETRY_DELAY_MS;
+    delete process.env.KUBERNETES_REQUEST_TIMEOUT_MS;
   });
 
   describe('configureDNS', () => {
@@ -94,6 +97,31 @@ describe('kubernetes', () => {
           ],
         },
       });
+    });
+
+    it('should retry transient Kubernetes API errors when creating an ingress', async () => {
+      mock.reset();
+      process.env.KUBERNETES_REQUEST_RETRIES = '2';
+      process.env.KUBERNETES_RETRY_DELAY_MS = '0';
+
+      const configs: AxiosRequestConfig[] = [];
+      mock.onPost(/.*/).replyOnce((request) => {
+        configs.push(request);
+        return [503];
+      });
+      mock.onPost(/.*/).reply((request) => {
+        configs.push(request);
+        return [201, request.data];
+      });
+
+      setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+      await kubernetes.configureDNS();
+      await Organization.create({ id: 'testorg' });
+
+      expect(configs).toHaveLength(2);
+      expect(configs[0].url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+      expect(configs[1].url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+      expect(JSON.parse(configs[1].data).spec.rules[0].host).toBe('*.testorg.host.example');
     });
 
     it('should create an ingress when an app with a domain is created', async () => {
