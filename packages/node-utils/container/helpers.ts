@@ -20,20 +20,6 @@ export const maxMemoryGi = (process.env.MAX_CONTAINER_MEMORY as unknown as numbe
 export const appIdLabel = 'appId';
 export const resourceDefaults: ContainerResourceProps = { memory: '128Mi', cpu: '0.1' };
 
-export function getKubeConfig(): {
-  appsApi: AppsV1Api;
-  coreApi: CoreV1Api;
-  kubeconfig: KubeConfig;
-} {
-  const kubeconfig = new KubeConfig();
-  kubeconfig.loadFromDefault();
-
-  const appsApi = kubeconfig.makeApiClient(AppsV1Api);
-  const coreApi = kubeconfig.makeApiClient(CoreV1Api);
-
-  return { appsApi, coreApi, kubeconfig };
-}
-
 export function getContainerNamespace(): string {
   return `companion-containers-${process.env.SERVICE_NAME ?? 'appsemble'}`;
 }
@@ -77,9 +63,9 @@ function isTransientKubernetesError(error: unknown): boolean {
   );
 }
 
-export async function withKubernetesRetry<T>(
+async function withKubernetesRetry<T>(
   description: string,
-  operation: () => Promise<T>,
+  operation: () => Promise<T> | T,
 ): Promise<T> {
   const attempts = Number(process.env.KUBERNETES_REQUEST_RETRIES ?? 3);
   const delay = Number(process.env.KUBERNETES_RETRY_DELAY_MS ?? 1000);
@@ -102,6 +88,35 @@ export async function withKubernetesRetry<T>(
   }
 }
 
+function withKubernetesRetries<T extends object>(description: string, client: T): T {
+  return new Proxy(client, {
+    get(target, property) {
+      const value = Reflect.get(target, property, target);
+
+      if (typeof value !== 'function') {
+        return value;
+      }
+
+      return (...args: unknown[]) =>
+        withKubernetesRetry(`${description}.${String(property)}`, () => value.apply(target, args));
+    },
+  });
+}
+
+export function getKubeConfig(): {
+  appsApi: AppsV1Api;
+  coreApi: CoreV1Api;
+  kubeconfig: KubeConfig;
+} {
+  const kubeconfig = new KubeConfig();
+  kubeconfig.loadFromDefault();
+
+  const appsApi = withKubernetesRetries('AppsV1Api', kubeconfig.makeApiClient(AppsV1Api));
+  const coreApi = withKubernetesRetries('CoreV1Api', kubeconfig.makeApiClient(CoreV1Api));
+
+  return { appsApi, coreApi, kubeconfig };
+}
+
 export async function deleteResource(
   type: 'deployment' | 'secret' | 'service',
   namespace: string,
@@ -116,23 +131,17 @@ export async function deleteResource(
     logger.silly(`Deleting ${type} '${name}' from namespace ${namespace} ... `);
     switch (type) {
       case 'deployment':
-        await withKubernetesRetry(`delete deployment ${name}`, () =>
-          appsApi.deleteNamespacedDeployment({
-            name,
-            namespace,
-            propagationPolicy: 'Background',
-          }),
-        );
+        await appsApi.deleteNamespacedDeployment({
+          name,
+          namespace,
+          propagationPolicy: 'Background',
+        });
         break;
       case 'service':
-        await withKubernetesRetry(`delete service ${name}`, () =>
-          coreApi.deleteNamespacedService({ name, namespace }),
-        );
+        await coreApi.deleteNamespacedService({ name, namespace });
         break;
       default:
-        await withKubernetesRetry(`delete secret ${name}`, () =>
-          coreApi.deleteNamespacedSecret({ name, namespace }),
-        );
+        await coreApi.deleteNamespacedSecret({ name, namespace });
     }
     logger.verbose(`Deleted ${type} '${name}' from namespace ${namespace}`);
   } catch (error: unknown) {
