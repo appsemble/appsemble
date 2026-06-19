@@ -22,7 +22,7 @@ export async function checkHealth(ctx: Context): Promise<void> {
     try {
       const client = getValkeyClient();
       const message = `Valkey health check at ${new Date().toISOString()}`;
-      const response = await client?.ping({ message });
+      const response = await client?.ping(message);
       logger.silly(`Valkey responded to health check with: ${JSON.stringify(response)}`);
       if (!response) {
         throw new Error('Valkey did not respond to health check');
