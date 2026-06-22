@@ -120,22 +120,21 @@ export async function getS3FileStats(bucket: string, key: string): Promise<Bucke
   }
 }
 
-export async function deleteS3File(bucket: string, key: string): Promise<void> {
+export async function deleteS3Files(bucket: string, keys: string[]): Promise<void> {
   try {
-    await s3Client.removeObject(bucket, key);
+    await s3Client.removeObjects(bucket, keys);
   } catch (error) {
+    if (error instanceof S3Error && error.code === 'NoSuchBucket') {
+      logger.warn(`S3 bucket "${bucket}" does not exist; skipping deletion`);
+      return;
+    }
     logger.error(error);
     throw error;
   }
 }
 
-export async function deleteS3Files(bucket: string, keys: string[]): Promise<void> {
-  try {
-    await s3Client.removeObjects(bucket, keys);
-  } catch (error) {
-    logger.error(error);
-    throw error;
-  }
+export async function deleteS3File(bucket: string, key: string): Promise<void> {
+  await deleteS3Files(bucket, [key]);
 }
 
 export async function clearAllS3Buckets(): Promise<void> {
