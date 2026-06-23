@@ -38,10 +38,21 @@ test.describe('Person', () => {
     const email = `Email${date}@example.com`;
     const description = `Description ${date}`;
 
-    await page.fill('[placeholder="First name"]', firstName);
-    await page.fill('[placeholder="Last name"]', lastName);
-    await page.fill('[placeholder="Email"]', email);
-    await page.fill('[placeholder="Description"]', description);
+    // The form block resets field values while it finishes initializing (the
+    // file field briefly holds the form in a loading state), dropping values
+    // typed too early. Re-fill until the earliest fields keep their values.
+    await expect(async () => {
+      await page.fill('[placeholder="First name"]', firstName);
+      await page.fill('[placeholder="Last name"]', lastName);
+      await page.fill('[placeholder="Email"]', email);
+      await page.fill('[placeholder="Description"]', description);
+      await expect(page.locator('[placeholder="First name"]')).toHaveValue(firstName, {
+        timeout: 1000,
+      });
+      await expect(page.locator('[placeholder="Last name"]')).toHaveValue(lastName, {
+        timeout: 1000,
+      });
+    }).toPass();
 
     await page.click('button[type="submit"]');
 
