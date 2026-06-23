@@ -92,6 +92,12 @@ stripeApiSecretKey: stripe-api-secret-key
 stripeWebhookSecret: stripe-webhook-secret
 
 cronjob:
+  # Deploy the app cron runner and generic maintenance CronJobs. Every install needs these,
+  # so this is independent of how the app is exposed (ingress or route).
+  enabled: true
+  platform:
+    # Deploy the SaaS-only CronJobs (subscription billing, production backup, container scaling).
+    enabled: true
   jobsHistoryLimit: 3
 
 gitlab:

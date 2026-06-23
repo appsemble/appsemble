@@ -1,4 +1,4 @@
-{{- if and .Values.ingress.enabled .Values.assetsBackups.enabled -}}
+{{- if and .Values.cronjob.platform.enabled .Values.assetsBackups.enabled -}}
 {{- $sourceEndpoint := .Values.assetsBackups.sourceEndpoint -}}
 {{- if not $sourceEndpoint -}}
 {{- if .Values.minio.apiIngress.enabled -}}
