@@ -285,6 +285,20 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Deploy the app cron runner and generic maintenance CronJobs (independent of ingress/route)."
+        },
+        "platform": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Deploy the SaaS-only CronJobs (subscription billing, production backup, container scaling)."
+            }
+          }
+        },
         "jobsHistoryLimit": {
           "type": "integer",
           "description": "How long to keep logs for cronjobs in days."
