@@ -40,7 +40,7 @@ test.describe('Person', () => {
 
     // The form block resets field values while it finishes initializing (the
     // file field briefly holds the form in a loading state), dropping values
-    // typed too early. Re-fill until the earliest fields keep their values.
+    // typed too early. Re-fill until every field keeps its value.
     await expect(async () => {
       await page.fill('[placeholder="First name"]', firstName);
       await page.fill('[placeholder="Last name"]', lastName);
@@ -50,6 +50,12 @@ test.describe('Person', () => {
         timeout: 1000,
       });
       await expect(page.locator('[placeholder="Last name"]')).toHaveValue(lastName, {
+        timeout: 1000,
+      });
+      await expect(page.locator('[placeholder="Email"]')).toHaveValue(email, {
+        timeout: 1000,
+      });
+      await expect(page.locator('[placeholder="Description"]')).toHaveValue(description, {
         timeout: 1000,
       });
     }).toPass();
