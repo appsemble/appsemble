@@ -612,7 +612,7 @@ validate snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.58.1-noble
+  image: mcr.microsoft.com/playwright:v1.58.2-noble
   interruptible: true
   needs:
     - build docker image
