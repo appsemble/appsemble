@@ -29,7 +29,7 @@ const getPluralRules = memoize(
 const aliasReferencePattern = /^\*(?!$)[^\s,[\]{}]+$/u;
 
 function expandPatchParentCollections(doc: Document, path: (number | string)[]): void {
-  for (let index = 1; index < path.length; index += 1) {
+  for (let index = 0; index < path.length; index += 1) {
     const node = doc.getIn(path.slice(0, index), true);
 
     if (isCollection(node)) {
