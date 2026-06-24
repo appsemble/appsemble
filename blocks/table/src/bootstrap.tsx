@@ -13,7 +13,7 @@ interface Item {
 
 export function Table({
   events,
-  parameters: { borders, caption, fields, scrollable },
+  parameters: { borders, caption, fields, scrollable = true },
   ready,
   utils,
 }: BlockProps): VNode {
