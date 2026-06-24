@@ -12,7 +12,7 @@ import { IntlMessageFormat } from 'intl-messageformat';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 import lodash from 'lodash';
 import { format, resolveConfig } from 'prettier';
-import { parseDocument } from 'yaml';
+import { Alias, type Document, isCollection, parseDocument } from 'yaml';
 
 import { opendirSafe, readData, writeData } from './fs.js';
 import { logger } from './logger.js';
@@ -25,6 +25,47 @@ const getNumberFormat = memoize(
 const getPluralRules = memoize(
   (locale: string, opts: Intl.PluralRulesOptions) => new Intl.PluralRules(locale, opts),
 );
+
+const aliasReferencePattern = /^\*(?!$)[^\s,[\]{}]+$/u;
+
+function expandPatchParentCollections(doc: Document, path: (number | string)[]): void {
+  for (let index = 1; index < path.length; index += 1) {
+    const node = doc.getIn(path.slice(0, index), true);
+
+    if (isCollection(node)) {
+      node.flow = false;
+    }
+  }
+}
+
+function createPatchValue(doc: Document, value: unknown): unknown {
+  if (typeof value === 'string' && aliasReferencePattern.test(value)) {
+    return new Alias(value.slice(1));
+  }
+
+  if (Array.isArray(value)) {
+    return doc.createNode(
+      value.map((item) => createPatchValue(doc, item)),
+      {
+        aliasDuplicateObjects: false,
+      },
+    );
+  }
+
+  if (value && typeof value === 'object' && Object.getPrototypeOf(value) === Object.prototype) {
+    return doc.createNode(
+      Object.fromEntries(
+        Object.entries(value).map(([entryKey, entryValue]) => [
+          entryKey,
+          createPatchValue(doc, entryValue),
+        ]),
+      ),
+      { aliasDuplicateObjects: false },
+    );
+  }
+
+  return value;
+}
 
 /**
  * Get a context for remappers based on an app definition.
@@ -152,7 +193,8 @@ export async function patchDefinition(
       if (value === undefined) {
         doc.deleteIn(key);
       } else {
-        doc.setIn(key, value);
+        expandPatchParentCollections(doc, key);
+        doc.setIn(key, createPatchValue(doc, value));
       }
     }
     const prettierOptions = (await resolveConfig(path, { editorconfig: true }))!;
