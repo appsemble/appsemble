@@ -59,7 +59,7 @@ test.describe('Person', () => {
       await expect(page.getByPlaceholder("Description")).toHaveValue(description, {
         timeout: 1000,
       });
-    }).toPass();
+    }).toPass({ timeout: 10000 });
 
     await page.click('button[type="submit"]');
 
