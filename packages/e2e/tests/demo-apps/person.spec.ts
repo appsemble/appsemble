@@ -42,20 +42,21 @@ test.describe('Person', () => {
     // file field briefly holds the form in a loading state), dropping values
     // typed too early. Re-fill until every field keeps its value.
     await expect(async () => {
-      await page.fill('[placeholder="First name"]', firstName);
-      await page.fill('[placeholder="Last name"]', lastName);
-      await page.fill('[placeholder="Email"]', email);
-      await page.fill('[placeholder="Description"]', description);
-      await expect(page.locator('[placeholder="First name"]')).toHaveValue(firstName, {
+      await page.getByPlaceholder("First name").fill(firstName);
+      await page.getByPlaceholder("Last name").fill(lastName);
+      await page.getByPlaceholder("Email").fill(email);
+      await page.getByPlaceholder("Description").fill(description);
+
+      await expect(page.getByPlaceholder("First name")).toHaveValue(firstName, {
         timeout: 1000,
       });
-      await expect(page.locator('[placeholder="Last name"]')).toHaveValue(lastName, {
+      await expect(page.getByPlaceholder("Last name")).toHaveValue(lastName, {
         timeout: 1000,
       });
-      await expect(page.locator('[placeholder="Email"]')).toHaveValue(email, {
+      await expect(page.getByPlaceholder("Email")).toHaveValue(email, {
         timeout: 1000,
       });
-      await expect(page.locator('[placeholder="Description"]')).toHaveValue(description, {
+      await expect(page.getByPlaceholder("Description")).toHaveValue(description, {
         timeout: 1000,
       });
     }).toPass();
