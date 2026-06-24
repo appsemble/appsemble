@@ -816,6 +816,84 @@ describe('appsTokenHandler', () => {
       });
     });
 
+    it('should issue refresh tokens with a 7 day inactivity lifetime', async () => {
+      const response = await request.post<TokenResponse>(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: await createStoredRefreshToken(appId),
+          scope: 'resources:manage',
+        }),
+      );
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      });
+      const payload = jwt.decode(response.data.refresh_token as string) as {
+        exp: number;
+        iat: number;
+      };
+      expect(payload.exp - payload.iat).toBe(60 * 60 * 24 * 7);
+    });
+
+    it('should reject a refresh token past the 30 day absolute session cap', async () => {
+      const token = await createStoredRefreshToken(appId);
+      const { AppMemberRefreshSession } = await getAppDB(appId);
+      await AppMemberRefreshSession.update(
+        {
+          created: new Date(Date.now() - 31 * 24 * 60 * 60 * 1000),
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        },
+        { where: { tokenHash: hashToken(token) }, silent: true },
+      );
+
+      const response = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: token,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          error: 'invalid_grant',
+        },
+      });
+    });
+
+    it('should accept a refresh token within the 30 day absolute session cap', async () => {
+      const token = await createStoredRefreshToken(appId);
+      const { AppMemberRefreshSession } = await getAppDB(appId);
+      await AppMemberRefreshSession.update(
+        {
+          created: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000),
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        },
+        { where: { tokenHash: hashToken(token) }, silent: true },
+      );
+
+      const response = await request.post<TokenResponse>(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: token,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+          token_type: 'bearer',
+        },
+      });
+    });
+
     it('should revoke a refresh token', async () => {
       const token = await createStoredRefreshToken(appId);
 
