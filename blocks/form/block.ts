@@ -673,6 +673,13 @@ interface BaseDateDecoration {
    * Accessibility label for the decoration (used for tooltips and screen readers).
    */
   label?: string;
+
+  /**
+   * Whether the date this decoration is applied to is disabled, making it unselectable.
+   *
+   * @default false
+   */
+  disabled?: boolean;
 }
 
 /**
