@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.36.7",
+  "version": "0.36.10-test.3",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -31,11 +31,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.36.7",
-    "@appsemble/node-utils": "0.36.7",
-    "@appsemble/types": "0.36.7",
-    "@appsemble/utils": "0.36.7",
-    "@appsemble/webpack-core": "0.36.7",
+    "@appsemble/lang-sdk": "0.36.10-test.3",
+    "@appsemble/node-utils": "0.36.10-test.3",
+    "@appsemble/types": "0.36.10-test.3",
+    "@appsemble/utils": "0.36.10-test.3",
+    "@appsemble/webpack-core": "0.36.10-test.3",
     "@formatjs/cli-lib": "^6.0.0",
     "axios": "^1.0.0",
     "date-fns": "^2.0.0",
@@ -53,7 +53,6 @@
     "semver": "^7.0.0",
     "sort-keys": "^5.0.0",
     "tar": "^6.0.0",
-    "twitter-api-v2": "^1.0.0",
     "type-fest": "^4.0.0",
     "typescript": "^5.0.0",
     "unified": "^11.0.0",

@@ -72,13 +72,42 @@ describe('getCurrentAppMember', () => {
         "phoneNumber": null,
         "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
         "properties": {},
-        "role": "Member",
+        "roles": [
+          "Member",
+        ],
         "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "totpEnabled": false,
         "zoneinfo": "Europe/Amsterdam",
       }
     `,
     );
+  });
+
+  it('should authenticate app API calls using the returned app access token', async () => {
+    const tokenResponse = await request.post(
+      `/apps/${app.id}/auth/oauth2/token`,
+      new URLSearchParams({
+        client_id: `app:${app.id}`,
+        grant_type: 'password',
+        password: 'testpassword',
+        scope: 'openid',
+        username: 'test@example.com',
+      }),
+    );
+
+    const response = await request.get(`/api/apps/${app.id}/members/current`, {
+      headers: {
+        authorization: `Bearer ${tokenResponse.data.access_token}`,
+      },
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        email: 'test@example.com',
+        name: 'Test App Member',
+      },
+    });
   });
 
   it('should throw 404 if the app doesn’t exist', async () => {

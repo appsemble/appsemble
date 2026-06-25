@@ -32,7 +32,7 @@ describe('groupMemberInvite', () => {
       getAppMemberInfo: () => ({
         sub: 'random-id',
         name: 'Test Member',
-        role: 'Member',
+        roles: ['Member'],
         email: 'test2@example.com',
         demo: false,
         email_verified: true,
@@ -66,7 +66,7 @@ describe('groupMemberInvite', () => {
       getAppMemberInfo: () => ({
         sub: undefined,
         name: '',
-        role: '',
+        roles: [],
         email: '',
         demo: false,
         email_verified: false,
@@ -98,7 +98,7 @@ describe('groupMemberQuery', () => {
       getAppMemberInfo: () => ({
         sub: 'random-id',
         name: 'Test Member',
-        role: 'Member',
+        roles: ['Member'],
         email: 'test2@example.com',
         demo: false,
         email_verified: true,
@@ -132,7 +132,7 @@ describe('groupMemberQuery', () => {
       getAppMemberInfo: () => ({
         sub: undefined,
         name: '',
-        role: '',
+        roles: [],
         email: '',
         demo: false,
         email_verified: false,
@@ -159,7 +159,7 @@ describe('GroupMemberDelete', () => {
       getAppMemberInfo: () => ({
         sub: undefined,
         name: '',
-        role: '',
+        roles: [],
         email: '',
         demo: false,
         email_verified: false,
@@ -196,7 +196,7 @@ describe('GroupMemberRoleUpdate', () => {
       getAppMemberInfo: () => ({
         sub: 'random-id',
         name: 'Test Member',
-        role: 'Member',
+        roles: ['Member'],
         email: 'test2@example.com',
         demo: false,
         email_verified: true,

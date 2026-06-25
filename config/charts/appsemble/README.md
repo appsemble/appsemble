@@ -23,6 +23,13 @@ kubectl create secret generic postgresql-secret \
 
 > **Caution**: Make sure not to lose the PostgreSQL passwords!
 
+Appsemble requires Valkey for runtime caching and rate limiting. Create a Valkey password secret:
+
+```sh
+kubectl create secret generic valkey \
+  --from-literal "password=$(openssl rand -base64 30)"
+```
+
 Next, an SMTP and IMAP secret are needed for sending emails.
 
 ```sh
@@ -92,7 +99,8 @@ helm repo update
 helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.auth.existingSecret=postgresql-secret' --set 'ingress.host=my-appsemble.example.com'
 ```
 
-Make sure `ingress.host` resolves to the ingress controller with both `A` and `AAAA` records. Point `*.ingress.host` to the same place, preferably with a wildcard `CNAME` to the apex host.
+Make sure `ingress.host` resolves to the ingress controller with both `A` and `AAAA` records. Point
+`*.ingress.host` to the same place, preferably with a wildcard `CNAME` to the apex host.
 
 ## Migrations
 
@@ -209,6 +217,8 @@ This enables encryption in transit between Appsemble and PostgreSQL.
 | `sentry.environment`                      | `nil`                         | The environment to send with Sentry error reports.                                                                                        |
 | `secretSecret`                            | `appsemble`                   | The Kubernetes secret which holds the `SECRET` environment variable.                                                                      |
 | `cronjob.jobsHistoryLimit`                | 3                             | How long to keep logs for cronjobs in days.                                                                                               |
+| `cronjob.enabled`                         | true                          | Deploy the app cron runner and generic maintenance CronJobs (independent of ingress/route).                                               |
+| `cronjob.platform.enabled`                | true                          | Deploy the SaaS-only CronJobs: subscription billing, production backup, container scaling.                                                |
 | `migrateTo`                               | `nil`                         | If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`.                   |
 | `proxy`                                   | `false`                       | If `true`, The proxy is trusted for logging purposes.                                                                                     |
 | `global`                                  |                               | Any `global` variables are shared between the Appsemble chart and its `postgresql` dependency chart.                                      |
@@ -219,6 +229,16 @@ This enables encryption in transit between Appsemble and PostgreSQL.
 | `postgresql.fullnameOverride`             | `appsemble-postgresql`        | The name used for the PostgreSQL database.                                                                                                |
 | `postgresql.enabled`                      | `true`                        | Set this to false explicitly to not include a PostgreSQL installation. This is useful if the database is managed by another service.      |
 | `postgresql.persistence.enabled`          | `false`                       | Enable to create a persistent volume for the data.                                                                                        |
+| `valkey`                                  |                               | Values passed into the bundled Valkey dependency chart.                                                                                   |
+| `valkey.enabled`                          | `true`                        | Set this to false explicitly to use `externalValkey` instead of bundled Valkey.                                                           |
+| `valkey.fullnameOverride`                 | `appsemble-valkey`            | The name used for the bundled Valkey service.                                                                                             |
+| `valkey.auth.usersExistingSecret`         | `valkey`                      | The secret from which to read the bundled Valkey password.                                                                                |
+| `externalValkey.host`                     | `null`                        | The external Valkey host. Required when `valkey.enabled=false`.                                                                           |
+| `externalValkey.port`                     | `6379`                        | The external Valkey port.                                                                                                                 |
+| `externalValkey.username`                 | `default`                     | The external Valkey ACL username.                                                                                                         |
+| `externalValkey.tls`                      | `false`                       | Whether to use TLS for the external Valkey connection.                                                                                    |
+| `externalValkey.existingSecret`           | `null`                        | The secret from which to read the external Valkey password. Required when `valkey.enabled=false`.                                         |
+| `externalValkey.passwordKey`              | `password`                    | The key in `externalValkey.existingSecret` containing the Valkey password.                                                                |
 | `remote`                                  | `null`                        | A remote Appsemble server to connect to in order to synchronize blocks.                                                                   |
 | `securityEmail`                           | `security@appsemble.com`      | The default security contact email for reporting security vulnerabilities.                                                                |
 | `postgresSSL`                             | `true`                        | If `true`, connect establish the PostgreSQL connection over SSL.                                                                          |
@@ -241,6 +261,9 @@ For production environments with significant asset storage in MinIO:
 - keep `backup-production-data` enabled for database backups.
 - enable `assetsBackups.enabled=true` for MinIO app-asset backups (incremental daily + monthly full
   snapshots).
+
+Valkey persistence is disabled by default because Appsemble uses it for disposable runtime data.
+Only enable Valkey persistence when it is used for durable queues or state.
 
 Example:
 
@@ -275,6 +298,12 @@ Recommended backup object layout within each environment backup bucket:
   - `assets/app-buckets/current/app-<id>/...`
   - `assets/app-buckets/archive/<run-id>/app-<id>/...`
   - `assets/app-buckets/snapshots/<yyyy-mm-01>/app-<id>/...`
+
+To restore MinIO app asset backups, run `sh scripts/s3-assets-restore.sh` with `BACKUP_S3_*`
+pointing at the backup object storage and `RESTORE_S3_*` pointing at the MinIO/S3 target. The script
+restores `current` by default. Set `RESTORE_SOURCE=snapshot` and `SNAPSHOT_ID=<yyyy-mm-01>` to
+restore a monthly full snapshot. By default it copies objects without deleting extra objects in the
+target; set `DELETE_EXTRA=true` to make the target exactly match the backup source.
 
 > Note: `helm.sh/resource-policy=keep` reduces Helm-driven deletion risk but does not replace
 > backups.

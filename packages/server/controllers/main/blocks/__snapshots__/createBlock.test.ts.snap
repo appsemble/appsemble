@@ -4626,12 +4626,12 @@ Does nothing if the app member is already logged in.",
                     "onSuccess": {},
                     "remapAfter": {},
                     "remapBefore": {},
-                    "role": {
+                    "roles": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The role of the invited app member.",
+                      "description": "The roles of the invited app member.",
                     },
                     "type": {
-                      "description": "Allows the app member to invite another app member using an email address and a role.
+                      "description": "Allows the app member to invite another app member using an email address and one or more roles.
 
 Does nothing if the app member is not logged in.",
                       "enum": [
@@ -4642,18 +4642,18 @@ Does nothing if the app member is not logged in.",
                   "required": [
                     "type",
                     "email",
-                    "role",
+                    "roles",
                   ],
                   "type": "object",
                 },
                 "stack": "instance.actions.onSubmit requires property "email"",
               },
               {
-                "argument": "role",
+                "argument": "roles",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property "role"",
+                "message": "requires property "roles"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -4671,12 +4671,12 @@ Does nothing if the app member is not logged in.",
                     "onSuccess": {},
                     "remapAfter": {},
                     "remapBefore": {},
-                    "role": {
+                    "roles": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The role of the invited app member.",
+                      "description": "The roles of the invited app member.",
                     },
                     "type": {
-                      "description": "Allows the app member to invite another app member using an email address and a role.
+                      "description": "Allows the app member to invite another app member using an email address and one or more roles.
 
 Does nothing if the app member is not logged in.",
                       "enum": [
@@ -4687,11 +4687,11 @@ Does nothing if the app member is not logged in.",
                   "required": [
                     "type",
                     "email",
-                    "role",
+                    "roles",
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property "role"",
+                "stack": "instance.actions.onSubmit requires property "roles"",
               },
               {
                 "argument": [
@@ -4707,7 +4707,7 @@ Does nothing if the app member is not logged in.",
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Allows the app member to invite another app member using an email address and a role.
+                  "description": "Allows the app member to invite another app member using an email address and one or more roles.
 
 Does nothing if the app member is not logged in.",
                   "enum": [
@@ -4739,15 +4739,20 @@ Does nothing if the app member is not logged in.",
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The updated role of the app member.
 
-The role must exist in the roles property of the app's security definition or in the predefined app roles in the system -
-\`Member\`, \`MembersManager\`, \`GroupMembersManager\`, \`GroupsManager\`, \`ResourcesManager\` and \`Owner\`",
+Deprecated: use roles instead.",
+                    },
+                    "roles": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The updated roles of the app member.
+
+Every role must exist in the roles property of the app's security definition.",
                     },
                     "sub": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The id of the app member.",
                     },
                     "type": {
-                      "description": "Allows the app member to update the role of another app member account.
+                      "description": "Allows the app member to update the roles of another app member account.
 
 Does nothing if the app member isn’t logged in.",
                       "enum": [
@@ -4777,7 +4782,7 @@ Does nothing if the app member isn’t logged in.",
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Allows the app member to update the role of another app member account.
+                  "description": "Allows the app member to update the roles of another app member account.
 
 Does nothing if the app member isn’t logged in.",
                   "enum": [
@@ -10407,12 +10412,12 @@ Does nothing if the app member is already logged in.",
             "onSuccess": {},
             "remapAfter": {},
             "remapBefore": {},
-            "role": {
+            "roles": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The role of the invited app member.",
+              "description": "The roles of the invited app member.",
             },
             "type": {
-              "description": "Allows the app member to invite another app member using an email address and a role.
+              "description": "Allows the app member to invite another app member using an email address and one or more roles.
 
 Does nothing if the app member is not logged in.",
               "enum": [
@@ -10423,18 +10428,18 @@ Does nothing if the app member is not logged in.",
           "required": [
             "type",
             "email",
-            "role",
+            "roles",
           ],
           "type": "object",
         },
         "stack": "instance.actions.onSubmit requires property "email"",
       },
       {
-        "argument": "role",
+        "argument": "roles",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property "role"",
+        "message": "requires property "roles"",
         "name": "required",
         "path": [
           "actions",
@@ -10452,12 +10457,12 @@ Does nothing if the app member is not logged in.",
             "onSuccess": {},
             "remapAfter": {},
             "remapBefore": {},
-            "role": {
+            "roles": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The role of the invited app member.",
+              "description": "The roles of the invited app member.",
             },
             "type": {
-              "description": "Allows the app member to invite another app member using an email address and a role.
+              "description": "Allows the app member to invite another app member using an email address and one or more roles.
 
 Does nothing if the app member is not logged in.",
               "enum": [
@@ -10468,11 +10473,11 @@ Does nothing if the app member is not logged in.",
           "required": [
             "type",
             "email",
-            "role",
+            "roles",
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property "role"",
+        "stack": "instance.actions.onSubmit requires property "roles"",
       },
       {
         "argument": [
@@ -10488,7 +10493,7 @@ Does nothing if the app member is not logged in.",
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Allows the app member to invite another app member using an email address and a role.
+          "description": "Allows the app member to invite another app member using an email address and one or more roles.
 
 Does nothing if the app member is not logged in.",
           "enum": [
@@ -10520,15 +10525,20 @@ Does nothing if the app member is not logged in.",
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The updated role of the app member.
 
-The role must exist in the roles property of the app's security definition or in the predefined app roles in the system -
-\`Member\`, \`MembersManager\`, \`GroupMembersManager\`, \`GroupsManager\`, \`ResourcesManager\` and \`Owner\`",
+Deprecated: use roles instead.",
+            },
+            "roles": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The updated roles of the app member.
+
+Every role must exist in the roles property of the app's security definition.",
             },
             "sub": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The id of the app member.",
             },
             "type": {
-              "description": "Allows the app member to update the role of another app member account.
+              "description": "Allows the app member to update the roles of another app member account.
 
 Does nothing if the app member isn’t logged in.",
               "enum": [
@@ -10558,7 +10568,7 @@ Does nothing if the app member isn’t logged in.",
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Allows the app member to update the role of another app member account.
+          "description": "Allows the app member to update the roles of another app member account.
 
 Does nothing if the app member isn’t logged in.",
           "enum": [

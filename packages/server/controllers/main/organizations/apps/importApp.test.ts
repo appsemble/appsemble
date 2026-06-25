@@ -18,6 +18,7 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
+import { getResourceUniqueIndexName } from '../../../../utils/resourceUniqueIndexes.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
@@ -115,6 +116,7 @@ describe('importApp', () => {
       },
       resources: {
         testResource: {
+          unique: ['foo'],
           schema: {
             type: 'object',
             additionalProperties: false,
@@ -156,7 +158,10 @@ describe('importApp', () => {
       },
     );
 
-    const { Asset, Resource } = await getAppDB(1);
+    const { Asset, Resource, sequelize } = await getAppDB(1);
+    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+      name: string;
+    }[];
     const resources = await Resource.findAll();
 
     for (const resource of resources) {
@@ -182,6 +187,13 @@ describe('importApp', () => {
 
     expect(await getS3FileBuffer(`app-${1}`, asset.id)).toStrictEqual(
       await readFixture('10x50.png'),
+    );
+    expect(indexes.map(({ name }) => name)).toContain(
+      getResourceUniqueIndexName(
+        'testResource',
+        ['foo'],
+        response.data.definition.resources.testResource,
+      ),
     );
 
     const defaultScreenshot = await AppScreenshot.findOne({
@@ -312,6 +324,9 @@ describe('importApp', () => {
                 ],
                 "type": "object",
               },
+              "unique": [
+                "foo",
+              ],
             },
           },
           "security": {
@@ -363,6 +378,8 @@ describe('importApp', () => {
             - $resource:testResource:create
       resources:
         testResource:
+          unique:
+            - foo
           schema:
             type: object
             additionalProperties: false
@@ -491,6 +508,189 @@ describe('importApp', () => {
     `,
     );
     // The faker time is needed for the rest of the tests to pass after using useRealTimers.
+    vi.useFakeTimers();
+  });
+
+  it('should report resource unique conflicts on app import when imported resources contain duplicates', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      resources: {
+        person: {
+          unique: ['email'],
+          schema: {
+            additionalProperties: false,
+            properties: {
+              email: { format: 'email', type: 'string' },
+            },
+            required: ['email'],
+            type: 'object',
+          },
+        },
+      },
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    zip.file('icon.png', await readFixture('nodejs-logo.png'));
+    zip.file(
+      'resources/person.json',
+      Buffer.from(
+        JSON.stringify([
+          { email: 'alice@example.com', $clonable: false, $ephemeral: false, $seed: false },
+          { email: 'alice@example.com', $clonable: false, $ephemeral: false, $seed: false },
+        ]),
+      ),
+    );
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Maintainer },
+      { where: { UserId: user.id } },
+    );
+    authorizeStudio();
+
+    const response = await request.post(
+      `/api/organizations/${organization.id}/apps/import`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'application/zip',
+        },
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 409,
+      data: {
+        message:
+          'A resource of type “person” with the same values for fields “email” already exists.',
+        statusCode: 409,
+      },
+    });
+
+    const importedApp = await App.findOne({ where: { path: 'test-app' }, paranoid: false });
+
+    expect(importedApp).toBeNull();
+
+    vi.useFakeTimers();
+  });
+
+  it('should reject invalid unique field types on app import', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      resources: {
+        person: {
+          unique: ['tags'],
+          schema: {
+            additionalProperties: false,
+            properties: {
+              tags: {
+                items: { type: 'string' },
+                type: 'array',
+              },
+            },
+            type: 'object',
+          },
+        },
+      },
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    zip.file('icon.png', await readFixture('nodejs-logo.png'));
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Maintainer },
+      { where: { UserId: user.id } },
+    );
+    authorizeStudio();
+
+    const response = await request.post(
+      `/api/organizations/${organization.id}/apps/import`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'application/zip',
+        },
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message: 'App validation failed',
+        statusCode: 400,
+      },
+    });
+
+    const importedApp = await App.findOne({ where: { path: 'test-app' }, paranoid: false });
+
+    expect(importedApp).toBeNull();
+
+    vi.useFakeTimers();
+  });
+
+  it('should report invalid resource values on app import for typed unique constraints', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      resources: {
+        person: {
+          unique: ['age'],
+          schema: {
+            additionalProperties: false,
+            properties: {
+              age: { type: 'integer' },
+            },
+            type: 'object',
+          },
+        },
+      },
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    zip.file('icon.png', await readFixture('nodejs-logo.png'));
+    zip.file(
+      'resources/person.json',
+      Buffer.from(
+        JSON.stringify([{ age: 'abc', $clonable: false, $ephemeral: false, $seed: false }]),
+      ),
+    );
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Maintainer },
+      { where: { UserId: user.id } },
+    );
+    authorizeStudio();
+
+    const response = await request.post(
+      `/api/organizations/${organization.id}/apps/import`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'application/zip',
+        },
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message:
+          'Can’t apply unique constraint to resource “person” for field “age” because some values do not comply with the field schema.',
+        statusCode: 400,
+      },
+    });
+
+    const importedApp = await App.findOne({ where: { path: 'test-app' }, paranoid: false });
+
+    expect(importedApp).toBeNull();
+
     vi.useFakeTimers();
   });
 });

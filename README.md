@@ -80,8 +80,8 @@ We use playwright to create the mermaid diagram, you can install it with
 npx playwright install
 ```
 
-The project requires a PostgreSQL database. This project contains a Docker Compose configuration to
-spin up a pre-configured database with ease.
+The project requires a PostgreSQL database and a Valkey instance. This project contains a Docker
+Compose configuration to spin up these pre-configured services with ease.
 
 ```sh
 docker compose up -d

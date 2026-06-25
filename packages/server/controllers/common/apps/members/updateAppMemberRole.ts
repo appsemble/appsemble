@@ -3,7 +3,7 @@ import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../models/index.js';
-import { getAppMemberInfo } from '../../../../utils/appMember.js';
+import { getAppMemberInfo, normalizeAppMemberRoles } from '../../../../utils/appMember.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
 export async function updateAppMemberRole(ctx: Context): Promise<void> {
@@ -11,7 +11,7 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
     pathParams: { appId, appMemberId },
     queryParams: { selectedGroupId },
     request: {
-      body: { role },
+      body: { roles },
     },
     user: authSubject,
   } = ctx;
@@ -33,8 +33,12 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
     'Cannot use this endpoint to update your own role',
   );
 
+  assertKoaCondition(Array.isArray(roles), ctx, 400, 'Roles must be an array');
+
+  const normalizedRoles = normalizeAppMemberRoles(roles);
+
   assertKoaCondition(
-    getAppRoles(app.definition.security).includes(role),
+    normalizedRoles.every((role) => getAppRoles(app.definition.security).includes(role)),
     ctx,
     401,
     'Role not allowed',
@@ -47,7 +51,7 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
     groupId: selectedGroupId,
   });
 
-  const updatedAppMember = await appMember.update({ role });
+  const updatedAppMember = await appMember.update({ roles: normalizedRoles });
 
   ctx.body = getAppMemberInfo(appId, updatedAppMember);
 }

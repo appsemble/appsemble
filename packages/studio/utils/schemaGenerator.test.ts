@@ -15,7 +15,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  window.location = originalLocation;
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    value: originalLocation,
+    writable: true,
+  });
 });
 
 it('should not crash when schema is null', () => {

@@ -12,7 +12,10 @@ interface AsyncSelectProps extends ComponentPropsWithoutRef<typeof Select> {
   /**
    * The asynchronous action to perform when the value has changed.
    */
-  readonly onChange: (event: ChangeEvent<HTMLSelectElement>, value: string) => Promise<void>;
+  readonly onChange: (
+    event: ChangeEvent<HTMLSelectElement>,
+    value: string | string[],
+  ) => Promise<void>;
 }
 
 /**
@@ -23,7 +26,7 @@ export function AsyncSelect({ disabled, onChange, ...props }: AsyncSelectProps):
   const [isBusy, setIsBusy] = useState(false);
 
   const handleChange = useCallback(
-    async (event: ChangeEvent<HTMLSelectElement>, value: string) => {
+    async (event: ChangeEvent<HTMLSelectElement>, value: string | string[]) => {
       setIsBusy(true);
       try {
         await onChange(event, value);

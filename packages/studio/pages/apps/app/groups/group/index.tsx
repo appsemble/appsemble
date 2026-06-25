@@ -14,7 +14,6 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import {
-  type AppInvite,
   type Group,
   type GroupInvite,
   type GroupMember,
@@ -67,15 +66,17 @@ export function GroupPage(): ReactNode {
   const addMembersModal = useToggle();
 
   const onMemberInvited = useCallback(
-    (newInvites: AppInvite[]) => {
+    async (newInvites: GroupInvite[]) => {
       if (app.skipGroupInvites) {
-        setMembers([...members, ...(newInvites as GroupMember[])]);
+        const { data } = await axios.get<GroupMember[]>(
+          `/api/apps/${app.id}/groups/${groupId}/members`,
+        );
+        setMembers(data);
       } else {
-        setInvites([...invites, ...newInvites]);
+        setInvites((prevInvites) => [...prevInvites, ...newInvites]);
       }
-      addMembersModal.disable();
     },
-    [addMembersModal, app.skipGroupInvites, invites, members, setInvites, setMembers],
+    [app.id, app.skipGroupInvites, groupId, setInvites, setMembers],
   );
 
   const onEditMember = useCallback(

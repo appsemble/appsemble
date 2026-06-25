@@ -4,7 +4,13 @@ import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { Organization, OrganizationMember, type User } from '../../../models/index.js';
+import {
+  App,
+  BlockVersion,
+  Organization,
+  OrganizationMember,
+  type User,
+} from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
@@ -38,8 +44,9 @@ describe('getOrganization', () => {
     });
   });
 
-  it('should fetch an organization', async () => {
+  it('should fetch an organization if the user is logged in', async () => {
     authorizeStudio();
+
     const response = await request.get('/api/organizations/testorganization');
 
     expect(response).toMatchObject({
@@ -49,6 +56,64 @@ describe('getOrganization', () => {
         name: 'Test Organization',
         iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
       },
+    });
+  });
+
+  it('should fetch an organization for anonymous users with public apps', async () => {
+    await App.create({
+      path: 'test-app-public',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+      visibility: 'public',
+    });
+
+    const response = await request.get('/api/organizations/testorganization');
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: 'testorganization',
+        name: 'Test Organization',
+        iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
+      },
+    });
+  });
+
+  it('should fetch an organization for anonymous users with public blocks', async () => {
+    await BlockVersion.create({
+      name: 'test',
+      version: '0.0.0',
+      OrganizationId: 'testorganization',
+      parameters: {
+        properties: {
+          type: 'object',
+          foo: {
+            type: 'number',
+          },
+        },
+      },
+    });
+
+    const response = await request.get('/api/organizations/testorganization');
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: 'testorganization',
+        name: 'Test Organization',
+        iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
+      },
+    });
+  });
+
+  it('should not fetch an organization without public apps or public blocks if the user is not logged in', async () => {
+    const response = await request.get('/api/organizations/testorganization');
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: { error: 'Not Found', statusCode: 404, message: 'Organization not found.' },
     });
   });
 

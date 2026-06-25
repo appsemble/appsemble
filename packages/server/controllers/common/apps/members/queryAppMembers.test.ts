@@ -1,3 +1,4 @@
+import { AppPermission } from '@appsemble/lang-sdk';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
@@ -119,12 +120,59 @@ describe('queryAppMembers', () => {
           "picture": Any<String>,
           "properties": {},
           "role": "Admin",
+          "roles": [
+            "Admin",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
         },
       ]
     `,
+    );
+  });
+
+  it('should fetch legacy app members by roles', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Staff',
+            policy: 'everyone',
+          },
+          roles: {
+            User: {},
+            Staff: {},
+            Manager: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { sequelize } = await getAppDB(app.id);
+    await sequelize.query(
+      `
+        INSERT INTO "AppMember" (id, email, role, created, updated)
+        VALUES ('00000000-0000-4000-8000-000000000011', 'legacy-staff@example.com', 'Staff', NOW(), NOW())
+      `,
+    );
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/members?roles=Staff`);
+
+    expect(response.status).toBe(200);
+    expect(response.data).toContainEqual(
+      expect.objectContaining({
+        email: 'legacy-staff@example.com',
+        role: 'Staff',
+        roles: ['Staff'],
+      }),
     );
   });
 
@@ -220,6 +268,9 @@ describe('queryAppMembers', () => {
           "picture": Any<String>,
           "properties": {},
           "role": "Manager",
+          "roles": [
+            "Manager",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
@@ -236,6 +287,9 @@ describe('queryAppMembers', () => {
           "picture": Any<String>,
           "properties": {},
           "role": "Staff",
+          "roles": [
+            "Staff",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
@@ -318,6 +372,7 @@ describe('queryAppMembers', () => {
         zoneinfo: null,
         properties: {},
         role: 'Manager',
+        roles: ['Manager'],
         demo: false,
         totpEnabled: false,
         $seed: false,
@@ -334,6 +389,7 @@ describe('queryAppMembers', () => {
         zoneinfo: null,
         properties: {},
         role: 'Staff',
+        roles: ['Staff'],
         demo: false,
         totpEnabled: false,
         $seed: false,
@@ -417,6 +473,9 @@ describe('queryAppMembers', () => {
           "picture": Any<String>,
           "properties": {},
           "role": "Staff",
+          "roles": [
+            "Staff",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
@@ -505,6 +564,9 @@ describe('queryAppMembers', () => {
           "picture": Any<String>,
           "properties": {},
           "role": "Manager",
+          "roles": [
+            "Manager",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
@@ -521,6 +583,9 @@ describe('queryAppMembers', () => {
           "picture": Any<String>,
           "properties": {},
           "role": "Staff",
+          "roles": [
+            "Staff",
+          ],
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "totpEnabled": false,
           "zoneinfo": null,
@@ -528,6 +593,81 @@ describe('queryAppMembers', () => {
       ]
     `,
     );
+  });
+
+  it('should respond with 403 when guests cannot query app members', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/members`);
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        message: 'Guest does not have sufficient app permissions.',
+      },
+    });
+  });
+
+  it('should fetch app members without authentication when guests can query app members', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          guest: {
+            permissions: [AppPermission.QueryAppMembers],
+          },
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { AppMember } = await getAppDB(app.id);
+    await AppMember.create({
+      userId: user.id,
+      name: 'Test Member',
+      email: 'member@example.com',
+      role: 'Reader',
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/members`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          email: 'member@example.com',
+          role: 'Reader',
+          roles: ['Reader'],
+        },
+      ],
+    });
   });
 
   it('should only return invited members if policy is set to invite', async () => {

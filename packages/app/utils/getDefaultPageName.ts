@@ -1,8 +1,12 @@
 import { type AppDefinition, type AppRole, getAppInheritedRoles } from '@appsemble/lang-sdk';
 
+function normalizeAppMemberRoles(appMemberRoles: AppRole[]): AppRole[] {
+  return Array.from(new Set(appMemberRoles.filter(Boolean)));
+}
+
 export function getDefaultPageName(
   isLoggedIn: boolean,
-  appMemberRole: AppRole,
+  appMemberRoles: AppRole[],
   appDefinition: Pick<AppDefinition, 'defaultPage' | 'security'>,
 ): string {
   if (!isLoggedIn) {
@@ -10,10 +14,27 @@ export function getDefaultPageName(
   }
 
   if (appDefinition.security) {
-    for (const role of getAppInheritedRoles(appDefinition.security, [appMemberRole])) {
+    const directRoles = normalizeAppMemberRoles(appMemberRoles);
+
+    for (const role of directRoles) {
       const roleDefinition = appDefinition.security.roles?.[role];
-      if (roleDefinition && roleDefinition.defaultPage) {
+
+      if (roleDefinition?.defaultPage) {
         return roleDefinition.defaultPage;
+      }
+    }
+
+    for (const role of directRoles) {
+      for (const inheritedRole of getAppInheritedRoles(appDefinition.security, [role])) {
+        if (inheritedRole === role) {
+          continue;
+        }
+
+        const roleDefinition = appDefinition.security.roles?.[inheritedRole];
+
+        if (roleDefinition?.defaultPage) {
+          return roleDefinition.defaultPage;
+        }
       }
     }
   }

@@ -48,8 +48,9 @@ const parsedAppMembers = [
     demo: true,
     email: expect.any(String),
     id: expect.any(String),
-    name: 'Alice User',
-    role: 'User',
+    name: 'Alice User, Staff',
+    role: 'Staff',
+    roles: ['Staff', 'User'],
     seed: true,
     timezone: 'Asia/Calcutta',
   },
@@ -59,6 +60,7 @@ const parsedAppMembers = [
     id: expect.any(String),
     name: 'Bob Manager',
     role: 'Manager',
+    roles: ['Manager'],
     seed: true,
     timezone: 'Europe/Amsterdam',
   },
@@ -68,6 +70,7 @@ const parsedAppMembers = [
     id: expect.any(String),
     name: 'Charlie Staff',
     role: 'Staff',
+    roles: ['Staff'],
     seed: true,
     timezone: 'Europe/London',
   },
@@ -77,6 +80,7 @@ const parsedAppMembers = [
     id: expect.any(String),
     name: 'David User',
     role: 'User',
+    roles: ['User'],
     seed: true,
     timezone: 'Australia/Sydney',
   },
@@ -86,6 +90,7 @@ const parsedAppMembers = [
     id: expect.any(String),
     name: 'Eva Staff',
     role: 'Staff',
+    roles: ['Staff'],
     seed: true,
     timezone: 'Asia/Tokyo',
   },
@@ -95,6 +100,7 @@ const parsedAppMembers = [
     id: expect.any(String),
     name: 'Frank User',
     role: 'User',
+    roles: ['User'],
     seed: true,
     timezone: 'America/Los_Angeles',
   },
@@ -104,6 +110,7 @@ const parsedAppMembers = [
     id: expect.any(String),
     name: 'Grace Manager',
     role: 'Manager',
+    roles: ['Manager'],
     seed: true,
     timezone: 'Europe/Berlin',
   },
@@ -113,6 +120,7 @@ const parsedAppMembers = [
     id: expect.any(String),
     name: 'Hannah User',
     role: 'User',
+    roles: ['User'],
     seed: true,
     timezone: 'Africa/Johannesburg',
   },
@@ -122,6 +130,7 @@ const parsedAppMembers = [
     id: expect.any(String),
     name: 'Ian Staff',
     role: 'Staff',
+    roles: ['Staff'],
     seed: true,
     timezone: 'America/Toronto',
   },
@@ -131,6 +140,7 @@ const parsedAppMembers = [
     id: expect.any(String),
     name: 'Jasmine Manager',
     role: 'Manager',
+    roles: ['Manager'],
     seed: true,
     timezone: 'Europe/Amsterdam',
   },
@@ -342,7 +352,7 @@ describe('app', () => {
       expect(app).not.toBeNull();
       const { AppMember } = await getAppDB(app!.id);
       const members = await AppMember.findAll({
-        attributes: ['id', 'name', 'email', 'role', 'timezone', 'seed', 'demo'],
+        attributes: ['id', 'name', 'email', 'roles', 'timezone', 'seed', 'demo'],
         where: { demo: true, seed: true },
       });
       expect(members.map((member) => member.dataValues)).toStrictEqual(parsedAppMembers);
@@ -1262,7 +1272,7 @@ describe('app', () => {
       await app.reload({ attributes: ['id'] });
       const { AppMember } = await getAppDB(app!.id);
       const appMembers = await AppMember.findAll({
-        attributes: ['id', 'name', 'email', 'role', 'timezone', 'seed', 'demo'],
+        attributes: ['id', 'name', 'email', 'roles', 'timezone', 'seed', 'demo'],
         where: { demo: true, seed: true },
       });
       expect(appMembers.map((member) => member.dataValues)).toStrictEqual(parsedAppMembers);

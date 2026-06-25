@@ -21,6 +21,29 @@ import { createDefaultAppWithSecurity } from '../../../../utils/test/defaultAppS
 let organization: Organization;
 let user: User;
 
+function expectAppAuthCookies(response: { headers: Record<string, unknown> }, appId: number): void {
+  const headers = response.headers as Record<string, string[] | undefined>;
+  const setCookie = headers['set-cookie'] ?? headers['Set-Cookie'];
+  const attributes = '(?=.*httponly)(?=.*secure)(?=.*samesite=none)(?=.*partitioned)';
+
+  expect(setCookie).toStrictEqual(
+    expect.arrayContaining([
+      expect.stringMatching(
+        new RegExp(
+          `^app_refresh_token=[^;]+; path=/apps/${appId}/auth/oauth2/token; ${attributes}.*$`,
+          'i',
+        ),
+      ),
+      expect.stringMatching(
+        new RegExp(
+          `^app_refresh_token\\.sig=[^;]+; path=/apps/${appId}/auth/oauth2/token; ${attributes}.*$`,
+          'i',
+        ),
+      ),
+    ]),
+  );
+}
+
 describe('registerAppMemberWithEmail', () => {
   beforeAll(async () => {
     vi.useFakeTimers();
@@ -107,25 +130,16 @@ describe('registerAppMemberWithEmail', () => {
       }),
     );
 
-    expect(response).toMatchInlineSnapshot(
-      {
-        data: {
-          access_token: expect.stringMatching(jwtPattern),
-          refresh_token: expect.stringMatching(jwtPattern),
-        },
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        access_token: expect.stringMatching(jwtPattern),
+        expires_in: 3600,
+        refresh_token: expect.stringMatching(jwtPattern),
+        token_type: 'bearer',
       },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
-        "expires_in": 3600,
-        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
-        "token_type": "bearer",
-      }
-    `,
-    );
+    });
+    expectAppAuthCookies(response, app.id);
 
     const { AppMember } = await getAppDB(app.id);
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
@@ -147,25 +161,16 @@ describe('registerAppMemberWithEmail', () => {
       }),
     );
 
-    expect(response).toMatchInlineSnapshot(
-      {
-        data: {
-          access_token: expect.stringMatching(jwtPattern),
-          refresh_token: expect.stringMatching(jwtPattern),
-        },
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        access_token: expect.stringMatching(jwtPattern),
+        expires_in: 3600,
+        refresh_token: expect.stringMatching(jwtPattern),
+        token_type: 'bearer',
       },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
-        "expires_in": 3600,
-        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
-        "token_type": "bearer",
-      }
-    `,
-    );
+    });
+    expectAppAuthCookies(response, app.id);
 
     const { AppMember } = await getAppDB(app.id);
     const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
@@ -192,25 +197,16 @@ describe('registerAppMemberWithEmail', () => {
     const responseB = await request.get(`/api/apps/${app.id}/app-members/${m.id}/picture`, {
       responseType: 'arraybuffer',
     });
-    expect(response).toMatchInlineSnapshot(
-      {
-        data: {
-          access_token: expect.stringMatching(jwtPattern),
-          refresh_token: expect.stringMatching(jwtPattern),
-        },
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        access_token: expect.stringMatching(jwtPattern),
+        expires_in: 3600,
+        refresh_token: expect.stringMatching(jwtPattern),
+        token_type: 'bearer',
       },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
-        "expires_in": 3600,
-        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
-        "token_type": "bearer",
-      }
-    `,
-    );
+    });
+    expectAppAuthCookies(response, app.id);
     expect(m.picture).toStrictEqual(await readFixture('tux.png'));
     expect(responseB.data).toStrictEqual(await readFixture('tux.png'));
   });
@@ -290,7 +286,7 @@ describe('registerAppMemberWithEmail', () => {
 
       {
         "error": "Conflict",
-        "message": "App member with this email address already exists.",
+        "message": "Unable to register with the provided information.",
         "statusCode": 409,
       }
     `);
@@ -384,8 +380,52 @@ describe('registerAppMemberWithEmail', () => {
 
       {
         "error": "Conflict",
-        "message": "App member with this phone number already exists.",
+        "message": "Unable to register with the provided information.",
         "statusCode": 409,
+      }
+    `);
+  });
+
+  it('should rate limit repeated duplicate registration attempts', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+
+    const { AppMember } = await getAppDB(app.id);
+    await AppMember.create({
+      userId: user.id,
+      role: 'User',
+      email: 'test@example.com',
+    });
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const response = await request.post(
+        `/api/apps/${app.id}/auth/email/register`,
+        createFormData({
+          email: 'test@example.com',
+          password: 'password',
+          timezone: 'Europe/Amsterdam',
+        }),
+      );
+
+      expect(response.status).toBe(409);
+    }
+
+    const response = await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 429 Too Many Requests
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Too Many Requests",
+        "message": "Too many requests, please try again later.",
+        "statusCode": 429,
       }
     `);
   });

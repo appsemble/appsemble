@@ -8,16 +8,27 @@ import {
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { defaultLocale } from '@appsemble/utils';
+import { appOAuth2Scope, defaultLocale } from '@appsemble/utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 import { parsePhoneNumber } from 'libphonenumber-js/min';
+import { UniqueConstraintError } from 'sequelize';
 
 import { App, type AppMember, AppMessages, getAppDB } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
 import { parseAppMemberProperties } from '../../../../utils/appMember.js';
+import { createAppMemberRefreshSession } from '../../../../utils/appMemberRefreshSession.js';
 import { checkAppSecurityPolicy } from '../../../../utils/auth.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
+import { assertSlidingWindowRateLimit } from '../../../../utils/ratelimit/assertSlidingWindowRateLimit.js';
+
+const MAX_REGISTRATION_ATTEMPTS = 5;
+// 1 hour
+const MAX_REGISTRATION_ATTEMPTS_WINDOW = 60 * 60 * 1000;
+const RATE_LIMIT_KEY = 'registerAppMemberWithEmail';
+
+const DUPLICATE_APP_MEMBER_REGISTRATION_MESSAGE =
+  'Unable to register with the provided information.';
 
 export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
   const {
@@ -34,6 +45,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: [
+      'id',
       'definition',
       'domain',
       'OrganizationId',
@@ -64,6 +76,13 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     'Self registration is disabled for this app.',
   );
 
+  await assertSlidingWindowRateLimit(
+    ctx,
+    `${RATE_LIMIT_KEY}:${appId}`,
+    MAX_REGISTRATION_ATTEMPTS,
+    MAX_REGISTRATION_ATTEMPTS_WINDOW,
+  );
+
   assertKoaCondition(
     app.definition?.security != null,
     ctx,
@@ -86,29 +105,18 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     'This app has no default role',
   );
 
-  const appMemberExists = await AppMember.count({ where: { email } });
-
-  assertKoaCondition(
-    !appMemberExists,
-    ctx,
-    409,
-    'App member with this email address already exists.',
-  );
+  const appMemberExists = (await AppMember.count({ where: { email } })) > 0;
+  let phoneNumberExists = false;
 
   if (phoneNumber) {
     const enabled = app.definition?.members?.phoneNumber?.enable === true;
     assertKoaCondition(enabled, ctx, 400, 'App does not allow registering phone numbers');
-    const phoneNumberExists = await AppMember.count({
-      where: {
-        phoneNumber: parsePhoneNumber(phoneNumber, 'NL').format('INTERNATIONAL'),
-      },
-    });
-    assertKoaCondition(
-      !phoneNumberExists,
-      ctx,
-      409,
-      'App member with this phone number already exists.',
-    );
+    phoneNumberExists =
+      (await AppMember.count({
+        where: {
+          phoneNumber: parsePhoneNumber(phoneNumber, 'NL').format('INTERNATIONAL'),
+        },
+      })) > 0;
   } else {
     const isRequired = app.definition?.members?.phoneNumber?.required === true;
     assertKoaCondition(
@@ -118,6 +126,14 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       'Phone number is required for registering with this app',
     );
   }
+
+  // This assert is done with both conditions together, in here, to avoid a potential side channel attack where an attacker could check if an email is registered by the response time of the request. By checking both conditions together, we can ensure that the response time is consistent regardless of whether the email or phone number is already registered.
+  assertKoaCondition(
+    !appMemberExists && !phoneNumberExists,
+    ctx,
+    409,
+    DUPLICATE_APP_MEMBER_REGISTRATION_MESSAGE,
+  );
 
   let appMember = { id: '' } as AppMember;
   try {
@@ -144,6 +160,15 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     }
     if (error instanceof PhoneNumberValidationError) {
       throwKoaError(ctx, 400, error.message);
+    }
+    if (
+      error instanceof UniqueConstraintError &&
+      'constraint' in error.parent &&
+      ['UniqueAppMemberEmailIndex', 'UniqueAppMemberPhoneNumberIndex'].includes(
+        String(error.parent.constraint),
+      )
+    ) {
+      throwKoaError(ctx, 409, DUPLICATE_APP_MEMBER_REGISTRATION_MESSAGE);
     }
 
     throw error;
@@ -173,5 +198,20 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       logger.error(error);
     });
 
-  ctx.body = createJWTResponse(appMember.id);
+  const aud = `app:${appId}`;
+  const refreshToken = await createAppMemberRefreshSession(ctx, {
+    appId,
+    aud,
+    scope: appOAuth2Scope,
+    sub: appMember.id,
+  });
+
+  const tokenResponse = createJWTResponse(appMember.id, {
+    aud,
+    refreshToken: false,
+    scope: appOAuth2Scope,
+  });
+  tokenResponse.refresh_token = refreshToken;
+
+  ctx.body = tokenResponse;
 }

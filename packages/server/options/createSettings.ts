@@ -1,4 +1,4 @@
-import { parseBlockName } from '@appsemble/lang-sdk';
+import { parseBlockName, type AppDefinition } from '@appsemble/lang-sdk';
 import {
   type CreateSettingsParams,
   createSettings as createUtilsSettings,
@@ -9,6 +9,79 @@ import { Op } from 'sequelize';
 import { App, AppSnapshot, BlockAsset, BlockVersion, getAppDB } from '../models/index.js';
 import { createGtagCode, createMetaPixelCode, createMSClarityCode } from '../utils/render.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
+
+function sanitizeAppDefinitionForPublicSettings(
+  definition: AppDefinition,
+  showAppDefinition: boolean,
+): AppDefinition {
+  const security =
+    showAppDefinition || !definition.security
+      ? definition.security
+      : {
+          ...definition.security,
+          ...(definition.security.guest
+            ? {
+                guest: {
+                  ...definition.security.guest,
+                  permissions: undefined,
+                },
+              }
+            : {}),
+          ...(definition.security.cron
+            ? {
+                cron: {
+                  ...definition.security.cron,
+                  permissions: undefined,
+                },
+              }
+            : {}),
+          ...(definition.security.roles
+            ? {
+                roles: Object.fromEntries(
+                  Object.entries(definition.security.roles).map(([name, role]) => [
+                    name,
+                    {
+                      ...role,
+                      permissions: undefined,
+                    },
+                  ]),
+                ),
+              }
+            : {}),
+        };
+
+  return {
+    controller: definition.controller,
+    defaultLanguage: definition.defaultLanguage,
+    defaultPage: definition.defaultPage,
+    layout: definition.layout
+      ? {
+          debug: definition.layout.debug,
+          enabledSettings: definition.layout.enabledSettings,
+          feedback: definition.layout.feedback,
+          headerTag: definition.layout.headerTag,
+          hideTitleBar: definition.layout.hideTitleBar,
+          install: definition.layout.install,
+          login: definition.layout.login,
+          logo: definition.layout.logo,
+          navigation: definition.layout.navigation,
+          settings: definition.layout.settings,
+          titleBarText: definition.layout.titleBarText,
+        }
+      : undefined,
+    members: definition.members
+      ? {
+          phoneNumber: definition.members.phoneNumber,
+        }
+      : undefined,
+    name: definition.name,
+    notifications: definition.notifications,
+    pages: definition.pages,
+    resources: definition.resources,
+    security,
+    theme: definition.theme,
+  };
+}
 
 export async function createSettings({
   app,
@@ -42,6 +115,7 @@ export async function createSettings({
 
   const persistedApp = (await App.findOne({
     attributes: [
+      'definition',
       'id',
       'icon',
       'updated',
@@ -49,7 +123,6 @@ export async function createSettings({
       'sentryDsn',
       'sentryEnvironment',
       'vapidPublicKey',
-      'definition',
       'showAppsembleLogin',
       'showAppsembleOAuth2Login',
       'enableSelfRegistration',
@@ -116,7 +189,10 @@ export async function createSettings({
         })),
       ],
       vapidPublicKey: persistedApp.vapidPublicKey,
-      definition: persistedApp.definition,
+      definition: sanitizeAppDefinitionForPublicSettings(
+        persistedApp.definition,
+        app.showAppDefinition,
+      ),
       snapshotId: persistedApp.AppSnapshots?.[0]?.id,
       demoMode: persistedApp.demoMode,
       showAppsembleLogin: persistedApp.showAppsembleLogin ?? false,
@@ -131,7 +207,7 @@ export async function createSettings({
       appUpdated: persistedApp.updated.toISOString(),
       e2e: process.env.E2E,
       supportedLanguages: persistedApp.supportedLanguages ?? [
-        persistedApp.definition.defaultLanguage ?? defaultLocale,
+        app.definition.defaultLanguage ?? defaultLocale,
       ],
     },
     Boolean(app.metaPixelID) || Boolean(app.msClarityID) ? nonce : undefined,

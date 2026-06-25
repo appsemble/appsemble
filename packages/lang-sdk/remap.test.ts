@@ -2074,6 +2074,22 @@ describe('translate', () => {
 
 describe('user', () => {
   runTests({
+    'insert legacy user role': {
+      input: null,
+      mappers: { 'app.member': 'role' },
+      expected: 'Member',
+      appMemberInfo: {
+        sub: '1',
+        name: 'Me',
+        email: 'me@example.com',
+        email_verified: true,
+        picture: '',
+        roles: ['Member'],
+        demo: false,
+        $seed: false,
+        $ephemeral: false,
+      },
+    },
     'insert user info': {
       input: null,
       mappers: { 'app.member': 'name' },
@@ -2084,7 +2100,7 @@ describe('user', () => {
         email: 'me@example.com',
         email_verified: true,
         picture: '',
-        role: 'Member',
+        roles: ['Member'],
         demo: false,
         $seed: false,
         $ephemeral: false,

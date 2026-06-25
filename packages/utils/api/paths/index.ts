@@ -6,6 +6,7 @@ import { pathItems as appCollectionsAppCollectionIdHeaderImage } from './app-col
 import { pathItems as appCollectionsAppCollectionId } from './app-collections/appCollectionId.js';
 import { pathItems as appCollections } from './appCollections.js';
 import { pathItems as appsAppIdActionsPath } from './apps/appId/actions/path.js';
+import { pathItems as appsAppIdAssetsAssetIdDownload } from './apps/appId/assets/assetId/download.js';
 import { pathItems as appsAppIdAssetsAssetId } from './apps/appId/assets/assetId.js';
 import { pathItems as appsAppIdAssets$Count } from './apps/appId/assets/count.js';
 import { pathItems as appsAppIdAssets } from './apps/appId/assets.js';
@@ -190,6 +191,7 @@ export const paths = {
   // XXX: Temporary workaround until this is fixed in Koas
   // See https://gitlab.com/remcohaszing/koas/-/issues/2
   '/api/apps/{appId}/assets/\\$count': appsAppIdAssets$Count,
+  '/api/apps/{appId}/assets/{assetId}/download': appsAppIdAssetsAssetIdDownload,
   '/api/apps/{appId}/assets/{assetId}': appsAppIdAssetsAssetId,
   '/api/apps/{appId}/assets': appsAppIdAssets,
   '/api/apps/{appId}/broadcast': appsAppIdBroadcast,

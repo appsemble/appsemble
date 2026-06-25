@@ -19,7 +19,7 @@ import { type App } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import equal from 'fast-deep-equal';
-import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { editor, MarkerSeverity } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import {
   type ReactNode,
   type SyntheticEvent,
@@ -44,6 +44,10 @@ import { MonacoEditor } from '../../../../components/MonacoEditor/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { InputList } from '../GuiEditor/Components/InputList/index.js';
 import { useApp } from '../index.js';
+import {
+  formatResourceUniqueConstraintAppError,
+  type ResourceUniqueConstraintErrorData,
+} from '../uniqueConstraintErrors.js';
 
 export default function EditPage(): ReactNode {
   useMeta(messages.title);
@@ -188,7 +192,20 @@ export default function EditPage(): ReactNode {
       // Update App State
       setApp(data);
       setPristine(true);
-    } catch {
+    } catch (error) {
+      const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintErrorData }>(error)
+        ? error.response?.data?.data
+        : undefined;
+      const uniqueConstraintError = formatResourceUniqueConstraintAppError(formatMessage, data);
+
+      if (uniqueConstraintError) {
+        push({
+          body: uniqueConstraintError,
+          color: 'danger',
+        });
+        return;
+      }
+
       push(formatMessage(messages.errorUpdate));
     }
   }, [appDefinition, coreStyle, formatMessage, id, push, setApp, sharedStyle]);
@@ -237,7 +254,10 @@ export default function EditPage(): ReactNode {
   useEffect(() => {
     const disposable = editor.onDidChangeMarkers((resources) => {
       for (const resource of resources) {
-        const { length } = editor.getModelMarkers({ resource });
+        const markers = editor
+          .getModelMarkers({ resource })
+          .filter((marker) => marker.severity !== MarkerSeverity.Hint);
+        const { length } = markers;
         switch (String(resource)) {
           case 'file:///app.yaml':
             setAppDefinitionErrorCount(length);

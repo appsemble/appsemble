@@ -1157,7 +1157,8 @@ const mapperImplementations: MapperImplementations = {
 
   group: (property, input, context) => context.group?.[property],
 
-  'app.member': (property, input, context) => context.appMemberInfo?.[property],
+  'app.member': (property, input, context) =>
+    property === 'role' ? context.appMemberInfo?.roles?.[0] : context.appMemberInfo?.[property],
 
   container(property, input, context) {
     // This value is replaced when the request is made

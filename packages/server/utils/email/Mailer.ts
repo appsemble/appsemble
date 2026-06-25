@@ -19,7 +19,7 @@ import {
   type Transporter,
 } from 'nodemailer';
 import MailComposer from 'nodemailer/lib/mail-composer/index.js';
-import { type Options } from 'nodemailer/lib/smtp-transport';
+import { type Options } from 'nodemailer/lib/smtp-transport/index.js';
 import { Op } from 'sequelize';
 
 import { renderEmail } from './renderEmail.js';

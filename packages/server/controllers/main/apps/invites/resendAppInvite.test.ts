@@ -64,7 +64,7 @@ describe('resendAppInvite', () => {
     await AppInvite.create({
       email: 'test@example.com',
       key: 'test-key',
-      role: 'User',
+      roles: ['User'],
     });
 
     authorizeStudio();
@@ -103,7 +103,7 @@ describe('resendAppInvite', () => {
     await AppInvite.create({
       email: 'test@example.com',
       key: 'test-key',
-      role: 'User',
+      roles: ['User'],
     });
 
     authorizeStudio();
@@ -148,7 +148,7 @@ describe('resendAppInvite', () => {
     await AppInvite.create({
       email: newUser.primaryEmail,
       key: 'test-key',
-      role: 'User',
+      roles: ['User'],
       userId: newUser.id,
     });
 
@@ -197,7 +197,7 @@ describe('resendAppInvite', () => {
     await AppInvite.create({
       email: newUser.primaryEmail,
       key: 'test-key',
-      role: 'User',
+      roles: ['User'],
       userId: newUser.id,
     });
 
@@ -242,7 +242,7 @@ describe('resendAppInvite', () => {
     await AppInvite.create({
       email: 'test@example.com',
       key: 'test-key',
-      role: 'User',
+      roles: ['User'],
     });
 
     authorizeStudio();

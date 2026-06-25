@@ -7,6 +7,7 @@ users of the app.
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Image delivery](#image-delivery)
 - [Resources](#resources)
 - [Studio](#studio)
 - [CLI](#cli)
@@ -24,6 +25,13 @@ Assets can typically be used for 2 use cases:
 
 - To link binary data to a [resource](resources.md).
 - To store static app assets that can be referenced in the app definition or custom CSS.
+
+## Image delivery
+
+Uploaded asset binaries remain unchanged in storage. Public image requests return cached AVIF
+derivatives: a resized AVIF when a smaller width and height are requested, otherwise a full-size
+AVIF. The original upload stays available for Studio downloads, export and future reprocessing when
+that is needed.
 
 ## Resources
 

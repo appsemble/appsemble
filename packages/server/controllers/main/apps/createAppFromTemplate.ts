@@ -2,14 +2,12 @@ import {
   assertKoaCondition,
   getS3File,
   getS3FileStats,
-  throwKoaError,
   updateCompanionContainers,
   uploadS3File,
 } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import { type Context } from 'koa';
-import { UniqueConstraintError } from 'sequelize';
 import webpush from 'web-push';
 import { parseDocument } from 'yaml';
 
@@ -21,11 +19,15 @@ import {
   AppSnapshot,
   getAppDB,
 } from '../../../models/index.js';
-import { setAppPath } from '../../../utils/app.js';
+import { handleAppValidationError, setAppPath } from '../../../utils/app.js';
 import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
+import {
+  assertResourceUniqueConstraintSchemaValues,
+  syncResourceUniqueIndexes,
+} from '../../../utils/resourceUniqueIndexes.js';
 
 export async function createAppFromTemplate(ctx: Context): Promise<void> {
   const {
@@ -100,9 +102,11 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
   }
 
   const path = name ? normalize(name) : normalize(template.definition.name);
+  let createdApp: App | undefined;
+  let result: Partial<App> | undefined;
   try {
     const keys = webpush.generateVAPIDKeys();
-    const result: Partial<App> = {
+    result = {
       definition: {
         ...template.definition,
         description,
@@ -130,6 +134,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     }
     await checkAppLimit(ctx, result);
     const record = await App.create(result, { include: [AppMessages, AppScreenshot, AppReadme] });
+    createdApp = record;
 
     const appStyleUpdates: Partial<App> = {};
 
@@ -195,8 +200,30 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       }
     }
 
+    if (
+      record.definition.resources &&
+      Object.entries(record.definition.resources).some(
+        ([, definition]) => (definition.unique ?? []).length !== 0,
+      )
+    ) {
+      await syncResourceUniqueIndexes(record.id, undefined, record.definition.resources);
+    }
+
     if (resources) {
       const templateResources = await TemplateResource.findAll({ where: { clonable: true } });
+
+      for (const [resourceType, resourceDefinition] of Object.entries(
+        template.definition.resources ?? {},
+      )) {
+        assertResourceUniqueConstraintSchemaValues(
+          resourceType,
+          resourceDefinition,
+          templateResources
+            .filter((resource) => resource.type === resourceType)
+            .map(({ data }) => data),
+        );
+      }
+
       await RecordResource.bulkCreate(
         templateResources.map(({ data, seed, type }) => ({
           type,
@@ -321,9 +348,14 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     ctx.body = record.toJSON();
     ctx.status = 201;
   } catch (error: unknown) {
-    if (error instanceof UniqueConstraintError) {
-      throwKoaError(ctx, 409, `Another app with path “${path}” already exists`);
+    if (createdApp) {
+      await App.destroy({ where: { id: createdApp.id }, force: true, individualHooks: true });
     }
+
+    if (result) {
+      handleAppValidationError(ctx, error as Error, result);
+    }
+
     throw error;
   }
 }

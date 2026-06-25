@@ -50,7 +50,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
   const defaultInvite = useMemo(
     () => ({
       email: '',
-      role: appRoles[0],
+      roles: appRoles.length ? [appRoles[0]] : [],
     }),
     [appRoles],
   );
@@ -80,34 +80,50 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
     setInvites([defaultInvite]);
   }, [app?.id, defaultInvite, formatMessage, invites, onInvited, push, state]);
 
-  const onChange = useCallback(
-    (
-      { currentTarget: { id } }: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-      value: string,
-    ) => {
-      const [field, i] = id.split('-');
-      const index = Number(i);
-
-      const copy = [...invites];
-      copy[index] = { ...invites[index], [field]: value };
-      if (index === invites.length - 1) {
-        copy.push(defaultInvite);
-      }
-      setInvites(copy);
+  const updateInvite = useCallback(
+    (index: number, field: 'email' | 'roles', value: string | string[]) => {
+      setInvites((prevInvites) => {
+        const copy = [...prevInvites];
+        copy[index] = {
+          ...copy[index],
+          [field]:
+            field === 'roles' ? (Array.isArray(value) ? value : value ? [value] : []) : value,
+        };
+        if (field === 'email' && index === prevInvites.length - 1 && value) {
+          copy.push(defaultInvite);
+        }
+        return copy;
+      });
     },
-    [defaultInvite, invites],
+    [defaultInvite],
+  );
+
+  const onEmailChange = useCallback(
+    ({ currentTarget: { id } }: ChangeEvent<HTMLInputElement>, value: number | string) => {
+      const [, i] = id.split('-');
+      updateInvite(Number(i), 'email', String(value));
+    },
+    [updateInvite],
+  );
+
+  const onRolesChange = useCallback(
+    ({ currentTarget: { id } }: ChangeEvent<HTMLSelectElement>, value: string | string[]) => {
+      const [, i] = id.split('-');
+      updateInvite(Number(i), 'roles', value);
+    },
+    [updateInvite],
   );
 
   const onBlur = useCallback(
     ({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
-      const [field, i] = currentTarget.id.split('-');
+      const [, i] = currentTarget.id.split('-');
       const index = Number(i);
       if (index + 1 === invites.length || invites.length === 1) {
         return;
       }
 
-      const member = { ...invites[index], [field]: currentTarget.value };
-      if (Object.values(member).every((value) => !value)) {
+      const member = { ...invites[index], email: currentTarget.value };
+      if (!member.email) {
         setInvites([...invites.slice(0, index), ...invites.slice(index + 1)]);
       }
     },
@@ -141,13 +157,13 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
       setInvites([
         ...invites.slice(0, index),
         ...lines.map((line) => {
-          const [email, name] = line.split('\t');
-          return { email, name, role: 'Member' };
+          const [email] = line.split('\t');
+          return { email, roles: appRoles.length ? [appRoles[0]] : [] };
         }),
         ...invites.slice(index),
       ]);
     },
-    [invites],
+    [appRoles, invites],
   );
 
   return (
@@ -186,7 +202,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
               id={`email-${index}`}
               name="email"
               onBlur={onBlur}
-              onChange={onChange}
+              onChange={onEmailChange}
               onPaste={onPaste}
               pattern={emailPattern}
               required
@@ -195,10 +211,12 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
             />
             <Select
               disabled={submitting}
-              id={`role-${index}`}
-              name="role"
-              onChange={onChange}
-              value={member.role}
+              id={`roles-${index}`}
+              multiple
+              name="roles"
+              onChange={onRolesChange}
+              size={Math.min(Math.max(appRoles.length, 2), 6)}
+              value={member.roles}
             >
               {appRoles.map((r: AppRole) => (
                 <option key={r} value={r}>
