@@ -42,12 +42,12 @@ export const messages = defineMessages({
     defaultMessage: 'Delete account',
   },
   roleLabel: {
-    id: 'studio.1ZgrhW',
-    defaultMessage: 'Role',
+    id: 'studio.c35gM5',
+    defaultMessage: 'Roles',
   },
   roleHelp: {
-    id: 'studio.L7kwlX',
-    defaultMessage: 'The app doesn’t provide a description for this role',
+    id: 'studio.fakWI1',
+    defaultMessage: 'The app doesn’t provide descriptions for these roles',
   },
   nameLabel: {
     id: 'studio.dOQCL8',

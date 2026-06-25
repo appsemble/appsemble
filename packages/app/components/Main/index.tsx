@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { type ComponentPropsWithoutRef, type ReactNode, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { shouldShowMenu } from '../../utils/layout.js';
@@ -10,13 +11,14 @@ type MainProps = ComponentPropsWithoutRef<'main'>;
 
 export function Main({ className, ...props }: MainProps): ReactNode {
   const { definition } = useAppDefinition();
-  const { appMemberRole, appMemberSelectedGroup } = useAppMember();
+  const { appMemberRoles, appMemberSelectedGroup } = useAppMember();
+  const { pathname } = useLocation();
 
   const hasBottomNav = useMemo(
     () =>
       definition?.layout?.navigation === 'bottom' &&
-      shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup),
-    [definition, appMemberRole, appMemberSelectedGroup],
+      shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname),
+    [definition, appMemberRoles, appMemberSelectedGroup, pathname],
   );
 
   return (

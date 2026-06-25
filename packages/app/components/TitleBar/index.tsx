@@ -2,7 +2,7 @@ import { normalize, remap, type RemapperContext } from '@appsemble/lang-sdk';
 import { Portal, SideMenuButton } from '@appsemble/react-components';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -29,12 +29,13 @@ interface AppBarProps {
  */
 export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { definition, demoMode } = useAppDefinition();
-  const { appMemberGroups, appMemberInfo, appMemberRole, appMemberSelectedGroup, isLoggedIn } =
+  const { appMemberGroups, appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn } =
     useAppMember();
   const { getVariable } = useAppVariables();
   const { page } = usePage();
   const { getAppMessage, getMessage } = useAppMessages();
   const { lang: locale } = useParams();
+  const { pathname } = useLocation();
   const remapperContext = useMemo(
     () =>
       ({
@@ -60,14 +61,14 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const navigation = (page?.navigation || definition?.layout?.navigation) ?? 'left-menu';
   const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;
 
-  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, definition);
+  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
   const displayAppName = (definition?.layout?.titleBarText || 'pageName') === 'appName';
 
   return definition.layout?.hideTitleBar ? null : (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
       <div className="is-flex is-justify-content-space-between is-flex-grow-1">
         {navigation === 'left-menu' &&
-        shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup) ? (
+        shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname) ? (
           <div className="navbar-brand">
             <span>
               <SideMenuButton />

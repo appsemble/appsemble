@@ -15,6 +15,14 @@ services:
     ports:
       - '5433:5432'
 
+  valkey:
+    container_name: valkey
+    image: valkey/valkey:9.0.2
+    networks: [pipeline]
+    command: valkey-server --requirepass password
+    ports:
+      - '6379:6379'
+
   helm:
     container_name: helm
     image: dtzar/helm-kubectl:3

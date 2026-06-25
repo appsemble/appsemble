@@ -90,6 +90,17 @@ name of the resource and how it should behave.
         },
       },
     },
+    unique: {
+      type: 'array',
+      minItems: 1,
+      uniqueItems: true,
+      items: {
+        oneOf: [
+          { type: 'string' },
+          { type: 'array', items: { type: 'string' }, minItems: 2, uniqueItems: true },
+        ],
+      },
+    },
     positioning: {
       type: 'boolean',
       default: false,

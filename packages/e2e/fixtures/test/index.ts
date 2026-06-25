@@ -52,7 +52,7 @@ export const authenticatedTest = baseTest.extend<object, { workerStorageState: s
         return;
       }
 
-      const page = await browser.newPage({ storageState: undefined });
+      const page = await browser.newPage({ ignoreHTTPSErrors: true, storageState: undefined });
       await page.goto(`${testInfo.project.use.baseURL}/en/login`);
 
       await page.getByTestId('email').fill(email);
@@ -70,13 +70,15 @@ export const authenticatedTest = baseTest.extend<object, { workerStorageState: s
   ],
 
   async request({ baseURL, storageState }, use) {
-    const accessToken = JSON.parse(await readFile(String(storageState), 'utf8')).origins[0]
-      .localStorage[1].value;
+    const accessToken = JSON.parse(
+      await readFile(String(storageState), 'utf8'),
+    ).origins[0].localStorage.find(({ name }: { name: string }) => name === 'access_token')!.value;
     const newRequest = await request.newContext({
       baseURL,
       extraHTTPHeaders: {
         Authorization: `Bearer ${accessToken}`,
       },
+      ignoreHTTPSErrors: true,
     });
     await use(newRequest);
     await newRequest.dispose();

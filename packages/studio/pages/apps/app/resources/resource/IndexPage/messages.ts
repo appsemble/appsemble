@@ -41,6 +41,11 @@ export const messages = defineMessages({
     id: 'studio.5lOKUP',
     defaultMessage: 'Something went wrong when creating a new resource.',
   },
+  uniqueConstraintViolation: {
+    id: 'studio.fqFLYK',
+    defaultMessage:
+      'Can’t create this {resourceType} yet: another resource already has the same values for {fields}.',
+  },
   importSuccess: {
     id: 'studio.RN522K',
     defaultMessage: 'Successfully imported resources {ids}',

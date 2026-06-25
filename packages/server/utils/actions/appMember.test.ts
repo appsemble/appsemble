@@ -27,7 +27,6 @@ beforeEach(() => {
 
 describe('appMemberQuery', () => {
   it('should allow filtering using oData filters', async () => {
-    // Somehow doesn't work when put in beforeEach
     setArgv({ host: 'https://example.com' });
     mailer = new Mailer(argv);
     const organization = await Organization.create({
@@ -109,7 +108,7 @@ describe('appMemberQuery', () => {
         locale: null,
         zoneinfo: null,
         properties: { foo: 'Bar 2' },
-        role: 'Staff',
+        roles: ['Staff'],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -126,7 +125,7 @@ describe('appMemberQuery', () => {
         locale: null,
         zoneinfo: null,
         properties: { foo: 'Bar 2' },
-        role: 'Manager',
+        roles: ['Manager'],
         demo: false,
         $seed: false,
         $ephemeral: false,
@@ -137,7 +136,6 @@ describe('appMemberQuery', () => {
   });
 
   it('should apply correct filters when no roles are defined.', async () => {
-    // Somehow doesn't work when put in beforeEach
     setArgv({ host: 'https://example.com' });
     mailer = new Mailer(argv);
     const organization = await Organization.create({
@@ -220,7 +218,7 @@ describe('appMemberQuery', () => {
           locale: null,
           zoneinfo: null,
           properties: { foo: 'Bar 2' },
-          role: 'Staff',
+          roles: ['Staff'],
           demo: false,
           totpEnabled: false,
           $seed: false,
@@ -236,7 +234,7 @@ describe('appMemberQuery', () => {
           locale: null,
           zoneinfo: null,
           properties: { foo: 'Bar 2' },
-          role: 'Manager',
+          roles: ['Manager'],
           demo: false,
           totpEnabled: false,
           $seed: false,

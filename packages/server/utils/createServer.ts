@@ -116,7 +116,10 @@ export async function createServer({
             ctx.path.startsWith('/api') ||
             ctx.path === '/auth/oauth2/token' ||
             /\/apps\/\d+\/auth\/oauth2\/token/.test(ctx.path),
-          cors(),
+          cors({
+            credentials: true,
+            origin: (ctx) => ctx.get('origin') || '',
+          }),
         ),
         conditional((ctx) => ctx.path === '/api/payments/accept-payment', stripeMiddleware()),
         conditional((ctx) => /\/apps\/\d+\/accept-payment$/.test(ctx.path), stripeMiddleware()),

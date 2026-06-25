@@ -20,8 +20,11 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                     type: 'string',
                     format: 'email',
                   },
-                  role: {
-                    type: 'string',
+                  roles: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                    },
                   },
                 },
               },
@@ -46,16 +49,19 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             type: 'array',
             items: {
               type: 'object',
-              required: ['email', 'role'],
+              required: ['email', 'roles'],
               properties: {
                 email: {
                   type: 'string',
                   format: 'email',
                   description: 'The email address of the user to invite.',
                 },
-                role: {
-                  type: 'string',
-                  description: 'The role to invite the user as.',
+                roles: {
+                  type: 'array',
+                  description: 'The direct roles to invite the user as.',
+                  items: {
+                    type: 'string',
+                  },
                 },
               },
             },
@@ -69,7 +75,22 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/AppMember',
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  email: {
+                    type: 'string',
+                    format: 'email',
+                  },
+                  roles: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                    },
+                  },
+                },
+              },
             },
           },
         },

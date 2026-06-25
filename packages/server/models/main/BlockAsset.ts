@@ -35,12 +35,14 @@ export class BlockAsset extends Model {
   @AllowNull(false)
   @Column(DataType.STRING)
   @Index({ name: 'blockAssetFilenameIndex' })
+  @Index('blockAssetBlockVersionFilenameIndex')
   declare filename: string;
 
   @Column(DataType.STRING)
   declare mime?: string;
 
   @Index('BlockAssetBlockVersionId')
+  @Index('blockAssetBlockVersionFilenameIndex')
   @ForeignKey(() => BlockVersion)
   @AllowNull(false)
   @Column(DataType.UUID)

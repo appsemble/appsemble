@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { App, getAppDB, Organization } from '../index.js';
@@ -23,6 +25,7 @@ describe('AppMember', () => {
           },
         },
       },
+      dbName: `app-member-test-${randomUUID()}`,
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
@@ -39,6 +42,39 @@ describe('AppMember', () => {
         phoneNumber: '+31 6 1234 567',
       }),
     ).rejects.toThrow('Invalid Phone Number');
+  });
+
+  it('should expose legacy role inserts through roles', async () => {
+    const { AppMember, sequelize } = await getAppDB(1);
+
+    await sequelize.query(
+      `
+        INSERT INTO "AppMember" (id, email, "emailVerified", role, created, updated)
+        VALUES ('00000000-0000-4000-8000-000000000001', 'legacy@example.com', true, 'Admin', NOW(), NOW())
+      `,
+    );
+
+    const member = await AppMember.findByPk('00000000-0000-4000-8000-000000000001');
+
+    expect(member?.role).toBe('Admin');
+    expect(member?.roles).toStrictEqual(['Admin']);
+  });
+
+  it('should preserve roles for queries that omit the id attribute', async () => {
+    const { AppMember } = await getAppDB(1);
+
+    await AppMember.create({
+      email: 'test@example.com',
+      role: 'Admin',
+    });
+
+    const member = await AppMember.findOne({
+      attributes: ['role'],
+      where: { email: 'test@example.com' },
+    });
+
+    expect(member?.role).toBe('Admin');
+    expect(member?.roles).toStrictEqual(['Admin']);
   });
 
   it('should use NL as default country code', async () => {

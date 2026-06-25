@@ -110,17 +110,20 @@ export async function handler(argv: ServeArguments): Promise<void> {
   }
 
   const appSecurity = appsembleApp.definition.security;
+  const appMemberRole = passedUserRole || appSecurity?.default?.role;
 
   const appMemberInfo: AppMemberInfo = {
     sub: '1',
     name: 'dev',
     email: 'dev@example.com',
     email_verified: true,
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-    role: passedUserRole || appSecurity?.default?.role,
+    ...(appMemberRole ? { role: appMemberRole } : {}),
+    roles: appMemberRole ? [appMemberRole] : [],
     demo: false,
     zoneinfo: '',
     properties: {},
+    $seed: false,
+    $ephemeral: false,
   };
 
   const appMembers: AppMemberInfo[] = [appMemberInfo];

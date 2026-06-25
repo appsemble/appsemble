@@ -1,6 +1,4 @@
 default:
-  tags:
-    - dcentralize
   image: node:24-trixie-slim
 
 stages:
@@ -247,6 +245,13 @@ seed database:
         MINIO_ROOT_PASSWORD: password
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          until pg_isready -h database -p 5432 -U admin; do
+            sleep 1
+          done
+          exec appsemble-server start
       variables:
         SECRET: secret
         AES_SECRET: secret
@@ -429,6 +434,9 @@ test node:
   services:
     - name: postgres:17
       alias: postgres
+    - name: valkey/valkey:9.0.2
+      alias: valkey
+      command: ['valkey-server', '--requirepass', 'password']
     - name: minio/minio:latest
       alias: minio
       command: ['server', '/data']
@@ -446,6 +454,10 @@ test node:
     DATABASE_PASSWORD: password
     S3_HOST: 'minio'
     S3_PORT: 9000
+    VALKEY_HOST: 'valkey'
+    VALKEY_PORT: 6379
+    VALKEY_USERNAME: default
+    VALKEY_PASSWORD: password
   stage: test
   script:
     - npm test -- --no-file-parallelism --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
@@ -568,6 +580,13 @@ validate snippets:
         MINIO_ROOT_PASSWORD: password
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          until pg_isready -h database -p 5432 -U admin; do
+            sleep 1
+          done
+          exec appsemble-server start
       variables:
         SECRET: secret
         AES_SECRET: secret
@@ -593,7 +612,7 @@ validate snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.58.1-noble
+  image: mcr.microsoft.com/playwright:v1.58.2-noble
   interruptible: true
   needs:
     - build docker image
@@ -609,7 +628,13 @@ e2e node:
     DATABASE_NAME: appsemble
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
-    E2E_HOST: 'http://appsemble:9999'
+    VALKEY_HOST: valkey
+    VALKEY_PORT: 6379
+    VALKEY_USERNAME: default
+    VALKEY_PASSWORD: password
+    E2E_HOST: 'https://appsemble:9999'
+    APPSEMBLE_SSL_KEY_E2E_SERVICE: $APPSEMBLE_SSL_KEY_E2E
+    APPSEMBLE_SSL_CRT_E2E_SERVICE: $APPSEMBLE_SSL_CRT_E2E
   services:
     - name: '$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG'
       alias: database
@@ -623,12 +648,29 @@ e2e node:
       variables:
         MINIO_ROOT_USER: admin
         MINIO_ROOT_PASSWORD: password
+    - name: valkey/valkey:9.0.2
+      alias: valkey
+      command: ['valkey-server', '--requirepass', 'password']
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          set -eu
+          until pg_isready -h database -p 5432 -U admin; do
+            sleep 1
+          done
+          : "${APPSEMBLE_SSL_KEY_E2E_SERVICE:?Missing APPSEMBLE_SSL_KEY_E2E}"
+          : "${APPSEMBLE_SSL_CRT_E2E_SERVICE:?Missing APPSEMBLE_SSL_CRT_E2E}"
+          printf '%s' "$APPSEMBLE_SSL_KEY_E2E_SERVICE" | base64 -d > /tmp/appsemble.key
+          printf '%s' "$APPSEMBLE_SSL_CRT_E2E_SERVICE" | base64 -d > /tmp/appsemble.crt
+          grep -q 'BEGIN .*PRIVATE KEY' /tmp/appsemble.key
+          grep -q 'BEGIN CERTIFICATE' /tmp/appsemble.crt
+          exec appsemble-server start --ssl --ssl-key /tmp/appsemble.key --ssl-cert /tmp/appsemble.crt
       variables:
         SECRET: secret
         AES_SECRET: secret
-        HOST: 'http://appsemble:9999'
+        HOST: 'https://appsemble:9999'
         REMOTE: 'https://appsemble.app'
         DATABASE_HOST: database
         DATABASE_PORT: 5432
@@ -642,8 +684,10 @@ e2e node:
         migrateTo: next
         E2E: true
   script:
+    - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d > /tmp/appsemble.crt
+    - export NODE_EXTRA_CA_CERTS=/tmp/appsemble.crt
     - npm run appsemble -- config set context e2e
-    - npm run appsemble -- config set remote 'http://appsemble:9999'
+    - npm run appsemble -- config set remote 'https://appsemble:9999'
     - npm --workspace @appsemble/types run prepack
     - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/utils run prepack
@@ -671,6 +715,8 @@ e2e SLA apps:
     variables: false
   variables:
     APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+    APPSEMBLE_SSL_KEY_E2E: '$APPSEMBLE_SSL_KEY_E2E'
+    APPSEMBLE_SSL_CRT_E2E: '$APPSEMBLE_SSL_CRT_E2E'
   parallel:
     matrix:
       - PROJECT:
@@ -710,6 +756,8 @@ e2e SLA apps(private):
         --form "token=$TRIGGER_TOKEN" \
         --form "ref=main" \
         --form "variables[APPSEMBLE_IMAGE]=$APPSEMBLE_IMAGE" \
+        --form "variables[APPSEMBLE_SSL_KEY_E2E]=$APPSEMBLE_SSL_KEY_E2E" \
+        --form "variables[APPSEMBLE_SSL_CRT_E2E]=$APPSEMBLE_SSL_CRT_E2E" \
         "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/trigger/pipeline")
       echo "Trigger response: $(echo "$RESPONSE" | jq '{id, status, web_url, message}')"
       PIPELINE_ID=$(echo "$RESPONSE" | jq -r '.id')
@@ -761,17 +809,6 @@ e2e SLA apps(private):
 ###################################################################################################
 #  Publish Stage                                                                                  #
 ###################################################################################################
-
-twitter:
-  extends: .npm
-  stage: publish
-  # This is new and mainly used to update nice-to-have metadata.
-  # Allow failure to prevent blocking of important jobs.
-  allow_failure: true
-  rules:
-    - if: $CI_COMMIT_TAG
-  script:
-    - npm run scripts -- twitter
 
 # Update metadata on Docker Hub
 docker metadata:
@@ -915,7 +952,7 @@ sentry release:
   script:
     - sentry-cli releases new --finalize "$CI_COMMIT_TAG"
     - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
-    - sentry-cli releases files upload-sourcemaps dist/
+    - sentry-cli releases files "$CI_COMMIT_TAG" upload-sourcemaps dist/
 
 # Create a test pre-release
 release test:
@@ -1004,16 +1041,11 @@ update dependencies:
     - apk add --no-cache curl jq tar openssl
     - ./scripts/cleanup-review-resources.sh
     - ./scripts/pre-review-capacity-check.sh
-    # This is the only way to make sure the review environment can be overwritten
-    - helm delete "review-$CI_MERGE_REQUEST_IID" --no-hooks --ignore-not-found || true
-    - kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete secret -l "owner=helm,name=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete secret review-$CI_MERGE_REQUEST_IID-mailpit-tls --ignore-not-found=true || true
+    - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
+    - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-valkey --from-literal "password=$(openssl rand -base64 30)"
     # Stripe webhook setup
     - |
       STRIPE_RELEASE_URL=$(curl -fsSL -H 'User-Agent: appsemble-ci' \
@@ -1044,10 +1076,13 @@ update dependencies:
         --api-key "$STRIPE_API_SECRET_KEY" | jq -r '.secret')
     - kubectl create secret generic stripe-webhook-secret-$CI_MERGE_REQUEST_IID --from-literal=stripe-webhook-secret="$STRIPE_WEBHOOK_SECRET"
     # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
+    # --wait (not --atomic): on failure leave the release for the next deploy to
+    # clean up, instead of triggering an uninstall whose pre-delete cleanup hook
+    # hangs against the un-migrated database and turns failures into ~60m jobs.
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --debug
-      --atomic
-      --timeout 10m0s
+      --wait
+      --timeout 30m0s
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
@@ -1062,7 +1097,7 @@ update dependencies:
       --set "ingress.tlsWildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
       --set "migrateTo=next"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
-      --set "postgresql.primary.persistence.size=1Gi"
+      --set "postgresql.primary.persistence.enabled=false"
       --set "postgresql.primary.resources.requests.memory=256Mi"
       --set "postgresql.primary.resources.limits.memory=512Mi"
       --set "provision.organization.id=appsemble"
@@ -1080,13 +1115,19 @@ update dependencies:
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
-      --set "minio.persistence.size=1Gi"
+      --set "minio.persistence.enabled=false"
       --set "minio.fullnameOverride=review-$CI_MERGE_REQUEST_IID-minio"
       --set "minio.ingress.hostname=console.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-review"
       --set "minio.apiIngress.hostname=api.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-review"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "valkey.fullnameOverride=review-$CI_MERGE_REQUEST_IID-valkey"
+      --set "valkey.auth.usersExistingSecret=review-$CI_MERGE_REQUEST_IID-valkey"
+      --set "valkey.resources.requests.cpu=25m"
+      --set "valkey.resources.requests.memory=32Mi"
+      --set "valkey.resources.limits.cpu=250m"
+      --set "valkey.resources.limits.memory=128Mi"
       --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
       --set "backups.enabled=false"
 
@@ -1118,16 +1159,11 @@ stop review:
     name: review/$CI_MERGE_REQUEST_IID
     action: stop
   variables:
-    GIT_STRATEGY: none
+    GIT_STRATEGY: fetch
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:review"
-    - helm delete "review-$CI_MERGE_REQUEST_IID" --no-hooks --ignore-not-found || true
-    - kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete secret -l "owner=helm,name=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
-    - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep "^review-$CI_MERGE_REQUEST_IID" | xargs -I{} kubectl delete secret {} || true
-    - kubectl delete secret "stripe-webhook-secret-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
+    - apk add --no-cache jq
+    - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
 
 # Deploy the Docker image for main to the staging environment.
 staging:
@@ -1157,6 +1193,7 @@ staging:
     - rm mailpit.key mailpit.crt
     - '[ -n "$STAGING_BACKUPS_HOST" ] || { echo "Please set STAGING_BACKUPS_HOST for staging backup destination" >&2; exit 1; }'
     - kubectl get secret backups-secret >/dev/null
+    - kubectl get secret valkey >/dev/null
     - helm install staging ./public/appsemble-*.tgz
       --atomic
       --timeout 30m0s
@@ -1212,6 +1249,12 @@ staging:
       --set "minio.apiIngress.hostname=api.minio.appsemble.eu"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "valkey.fullnameOverride=staging-valkey"
+      --set "valkey.auth.usersExistingSecret=valkey"
+      --set "valkey.resources.requests.cpu=50m"
+      --set "valkey.resources.requests.memory=64Mi"
+      --set "valkey.resources.limits.cpu=500m"
+      --set "valkey.resources.limits.memory=256Mi"
       --set "backups.host=$STAGING_BACKUPS_HOST"
       --set "backups.bucket=appsemble-backups-staging"
       --set "backups.filename=appsemble_staging_backup"
@@ -1268,6 +1311,7 @@ production:
     - kubectl create secret tls appsemble-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - kubectl get secret backups-secret >/dev/null
+    - kubectl get secret valkey >/dev/null
     - kubectl rollout restart deployment appsemble-mailpit || true
     - helm upgrade appsemble appsemble/appsemble
       --debug
@@ -1313,6 +1357,12 @@ production:
       --set "minio.apiIngress.hostname=api.minio.appsemble.app"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "valkey.fullnameOverride=appsemble-valkey"
+      --set "valkey.auth.usersExistingSecret=valkey"
+      --set "valkey.resources.requests.cpu=100m"
+      --set "valkey.resources.requests.memory=128Mi"
+      --set "valkey.resources.limits.cpu=1"
+      --set "valkey.resources.limits.memory=512Mi"
       --set "backups.host=$BACKUPS_HOST"
       --set "backups.bucket=appsemble-backups-production"
       --set "backups.filename=appsemble_prod_backup"
@@ -1349,7 +1399,19 @@ provision review:
     - npm run appsemble -- config set context review
     - |
       REVIEW_HOST="$CI_MERGE_REQUEST_IID.$APPSEMBLE_REVIEW_DOMAIN"
-      REVIEW_IP=$(node -e 'const host = process.argv[1]; fetch(`https://dns.google/resolve?name=${host}&type=A`).then((response) => response.json()).then((data) => { const answer = (data.Answer || []).find((entry) => entry.type === 1); if (!answer) { process.stderr.write(`No A record found for ${host}\n`); process.exit(1); } process.stdout.write(answer.data); }).catch((error) => { console.error(error); process.exit(1); });' "$REVIEW_HOST")
+      REVIEW_IP=
+      for attempt in $(seq 1 60); do
+        REVIEW_IP=$(node -e 'const host = process.argv[1]; fetch(`https://dns.google/resolve?name=${host}&type=A`).then((response) => response.json()).then((data) => { const answer = (data.Answer || []).find((entry) => entry.type === 1); if (answer) { process.stdout.write(answer.data); } }).catch((error) => { console.error(error); process.exit(1); });' "$REVIEW_HOST")
+        if [ -n "$REVIEW_IP" ]; then
+          break
+        fi
+        echo "Waiting for A record for $REVIEW_HOST ($attempt/60)"
+        sleep 10
+      done
+      if [ -z "$REVIEW_IP" ]; then
+        echo "No A record found for $REVIEW_HOST" >&2
+        exit 1
+      fi
       echo "$REVIEW_IP $REVIEW_HOST" >> /etc/hosts
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api

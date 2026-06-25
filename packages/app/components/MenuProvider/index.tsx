@@ -12,9 +12,11 @@ import {
   useState,
 } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { useLocation } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
+import { shouldShowMenu } from '../../utils/layout.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -50,9 +52,10 @@ export function usePage(): MenuProviderContext {
 
 export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const { definition: appDefinition } = useAppDefinition();
-  const { appMemberRole, appMemberSelectedGroup } = useAppMember();
+  const { appMemberRoles, appMemberSelectedGroup } = useAppMember();
   const [page, setPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
+  const { pathname } = useLocation();
   const value = useMemo<MenuProviderContext>(
     () => ({
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
@@ -81,50 +84,51 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
       !(
         pageDefinition.navigation === 'hidden' || pageDefinition.navigation === 'profileDropdown'
       ) &&
-      checkPagePermissions(pageDefinition, appDefinition, appMemberRole, appMemberSelectedGroup),
+      checkPagePermissions(pageDefinition, appDefinition, appMemberRoles, appMemberSelectedGroup),
   );
 
-  if (!pages.length) {
-    // Don’t display anything if there are no pages to display.
-    return children;
-  }
-
   let navigationElement: ReactNode;
-  const navigation = page?.navigation || appDefinition.layout?.navigation;
+  const showMenu = shouldShowMenu(appDefinition, appMemberRoles, appMemberSelectedGroup, pathname);
 
-  switch (navigation) {
-    case 'bottom':
-      navigationElement = (
-        <>
-          {children}
-          <BottomNavigation pages={pages} />
-        </>
-      );
-      break;
-    case 'hidden':
-    case 'profileDropdown':
-      navigationElement = children;
-      break;
-    default:
-      navigationElement = (
-        <SideMenuProvider
-          base={<SideNavigation blockMenus={blockMenus} pages={pages} />}
-          bottom={
-            <div className="py-2 is-flex is-justify-content-center">
-              <a
-                className="has-text-grey"
-                href={`${apiUrl}/apps/${appId}`}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <FormattedMessage {...messages.storeLink} />
-              </a>
-            </div>
-          }
-        >
-          {children}
-        </SideMenuProvider>
-      );
+  if (showMenu) {
+    const navigation = page?.navigation || appDefinition.layout?.navigation;
+
+    switch (navigation) {
+      case 'bottom':
+        navigationElement = (
+          <>
+            {children}
+            <BottomNavigation pages={pages} />
+          </>
+        );
+        break;
+      case 'hidden':
+      case 'profileDropdown':
+        navigationElement = children;
+        break;
+      default:
+        navigationElement = (
+          <SideMenuProvider
+            base={<SideNavigation blockMenus={blockMenus} pages={pages} />}
+            bottom={
+              <div className="py-2 is-flex is-justify-content-center">
+                <a
+                  className="has-text-grey"
+                  href={`${apiUrl}/apps/${appId}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <FormattedMessage {...messages.storeLink} />
+                </a>
+              </div>
+            }
+          >
+            {children}
+          </SideMenuProvider>
+        );
+    }
+  } else {
+    navigationElement = children;
   }
 
   return <Context.Provider value={value}>{navigationElement}</Context.Provider>;

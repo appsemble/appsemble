@@ -36,7 +36,7 @@ describe('proxyDelete', () => {
     proxiedRequest = await createInstance(proxiedApp);
     const { baseURL } = proxiedRequest.defaults;
     await Organization.create({ id: 'org' });
-    App.create({
+    await App.create({
       vapidPublicKey: '',
       vapidPrivateKey: '',
       OrganizationId: 'org',

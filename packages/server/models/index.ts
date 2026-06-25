@@ -7,6 +7,10 @@ import {
   createAppBlockStyleModel,
 } from './apps/AppBlockStyle.js';
 import { type AppInviteGlobal as AppInvite, createAppInviteModel } from './apps/AppInvite.js';
+import {
+  type AppMemberAssignedRoleGlobal as AppMemberAssignedRole,
+  createAppMemberAssignedRoleModel,
+} from './apps/AppMemberAssignedRole.js';
 import { type AppMemberGlobal as AppMember, createAppMemberModel } from './apps/AppMember.js';
 import {
   type AppMemberEmailAuthorizationGlobal as AppMemberEmailAuthorization,
@@ -47,6 +51,10 @@ import {
 } from './apps/AppWebhookSecret.js';
 import { type AssetGlobal as Asset, createAssetModel } from './apps/Asset.js';
 import { createGroupModel, type GroupGlobal as Group } from './apps/Group.js';
+import {
+  createAppMemberRefreshSessionModel,
+  type AppMemberRefreshSessionGlobal as AppMemberRefreshSession,
+} from './apps/AppMemberRefreshSession.js';
 import {
   createGroupInviteModel,
   type GroupInviteGlobal as GroupInvite,
@@ -123,6 +131,7 @@ export interface InitDBParams {
 export {
   App,
   type AppMember,
+  type AppMemberAssignedRole,
   type AppServiceSecret,
   type AppBlockStyle,
   AppCollection,
@@ -279,8 +288,10 @@ export function transactional<T>(callback: (transaction: Transaction) => Promise
 
 export interface AppModels {
   AppBlockStyle: Repository<AppBlockStyle>;
+  AppMemberRefreshSession: Repository<AppMemberRefreshSession>;
   AppInvite: Repository<AppInvite>;
   AppMember: Repository<AppMember>;
+  AppMemberAssignedRole: Repository<AppMemberAssignedRole>;
   AppMemberEmailAuthorization: Repository<AppMemberEmailAuthorization>;
   AppOAuth2Authorization: Repository<AppOAuth2Authorization>;
   AppOAuth2Secret: Repository<AppOAuth2Secret>;
@@ -375,8 +386,10 @@ export async function initAppDB(
 
     const models: AppModels = {
       AppBlockStyle: createAppBlockStyleModel(appDB),
+      AppMemberRefreshSession: createAppMemberRefreshSessionModel(appDB),
       AppInvite: createAppInviteModel(appDB),
       AppMember: createAppMemberModel(appDB),
+      AppMemberAssignedRole: createAppMemberAssignedRoleModel(appDB),
       AppMemberEmailAuthorization: createAppMemberEmailAuthorizationModel(appDB),
       Meta: createAppMetaModel(appDB),
       AppOAuth2Authorization: createAppOAuth2AuthorizationModel(appDB),
@@ -430,6 +443,17 @@ export async function getAppDB(
   }
 
   return appDBs[appId]!;
+}
+
+export async function closeAppDB(appId: number): Promise<void> {
+  const appDB = appDBs[appId];
+
+  if (!appDB) {
+    return;
+  }
+
+  delete appDBs[appId];
+  await appDB.sequelize.close();
 }
 
 export async function dropAndCloseAllAppDBs(): Promise<void> {

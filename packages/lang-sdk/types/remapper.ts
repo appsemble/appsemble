@@ -10,6 +10,7 @@ type AppMemberInfoKey =
   | 'picture'
   | 'properties'
   | 'role'
+  | 'roles'
   | 'sub'
   | 'zoneinfo';
 
@@ -121,7 +122,8 @@ export interface Remappers {
    * - `picture`: Get the picture of the app member.
    * - `locale`: Get the locale of the app member.
    * - `zoneinfo`: Get the zoneinfo of the app member.
-   * - `role`: Get the role of the app member.
+   * - `role`: Get the first direct role of the app member.
+   * - `roles`: Get the direct roles of the app member.
    * - `properties`: Get the custom properties of the app member.
    */
   'app.member': AppMemberInfoKey;

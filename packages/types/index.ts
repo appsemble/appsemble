@@ -667,9 +667,9 @@ export interface AppInvite {
   email: string;
 
   /**
-   * The role the app member should get when accepting the invite.
+   * The direct roles the app member should get when accepting the invite.
    */
-  role: string;
+  roles: AppRole[];
 }
 
 /**

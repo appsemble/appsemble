@@ -126,11 +126,11 @@ export async function serveIcon(
     if (background) {
       img.flatten({ background });
     }
+  }
 
-    // Cache app icons for 1 week.
-    if (cache) {
-      ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7},immutable`);
-    }
+  // Cache app icons for 1 week.
+  if (cache) {
+    ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7},immutable`);
   }
 
   ctx.body = await img.toFormat('png').toBuffer();

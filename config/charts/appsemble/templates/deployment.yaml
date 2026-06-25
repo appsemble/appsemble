@@ -38,10 +38,23 @@ spec:
             - name: http
               containerPort: 9999
               protocol: TCP
+          # /api/health reports unhealthy until the database and Valkey are
+          # reachable. The startup probe gives those dependencies time to come
+          # up before the liveness probe can restart the container, and the
+          # liveness probe tolerates brief dependency blips rather than killing
+          # the pod after the default 30s.
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 60
           livenessProbe:
             httpGet:
               path: /api/health
               port: http
+            periodSeconds: 10
+            failureThreshold: 6
           readinessProbe:
             httpGet:
               path: /api/health
@@ -51,6 +64,7 @@ spec:
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
 {{ include "appsemble.s3" . | indent 12 }}
+{{ include "appsemble.valkey" . | indent 12 }}
 {{ include "appsemble.sentry" . | indent 12 }}
 {{ include "appsemble.stripeWebhookSecret" . | indent 12 }}
             - name: HOST

@@ -59,11 +59,11 @@ export async function createAppMessages(ctx: Context): Promise<void> {
       }
       validateMessageBodies(ctx, app.definition, message.messages);
     });
-    ctx.request.body.map((message) => {
-      (async () => {
-        await validateAndCreateMessages(message.language, appId, message.messages);
-      })();
-    });
+    await Promise.all(
+      ctx.request.body.map((message) =>
+        validateAndCreateMessages(message.language, appId, message.messages),
+      ),
+    );
   } else {
     if (!tags.check(ctx.request.body.language)) {
       throwKoaError(ctx, 400, `Language “${ctx.request.body.language}” is invalid`);

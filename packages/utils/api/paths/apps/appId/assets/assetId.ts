@@ -9,7 +9,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   ],
   get: {
     tags: ['common', 'app', 'asset'],
-    description: 'Get a single asset',
+    description: 'Get a single asset. Public image delivery uses AVIF derivatives by default.',
     operationId: 'getAppAssetById',
     responses: {
       200: {
@@ -19,7 +19,8 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   },
   head: {
     tags: ['common', 'app', 'asset'],
-    description: 'Get the headers for a single asset',
+    description:
+      'Get the headers for a single asset. Public image delivery headers describe AVIF derivatives by default.',
     operationId: 'getAppAssetHeadersById',
     responses: {
       200: {

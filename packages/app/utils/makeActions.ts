@@ -6,13 +6,15 @@ import {
   remap,
 } from '@appsemble/lang-sdk';
 import { defaultLocale, has } from '@appsemble/utils';
-import { addBreadcrumb } from '@sentry/browser';
+import { addBreadcrumb, captureException } from '@sentry/browser';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { type SetRequired } from 'type-fest';
 
 import { actionCreators } from './actions/index.js';
 import { appId } from './settings.js';
 import { type MakeActionParameters } from '../types.js';
+
+const maxContextProperties = 25;
 
 /**
  * Parameters to pass to `makeActions`.
@@ -27,6 +29,64 @@ export type MakeActionsParams = Omit<MakeActionParameters<ActionDefinition>, 'de
 type CreateActionParams<T extends ActionDefinition['type']> = MakeActionParameters<
   Extract<ActionDefinition, { type: T }>
 >;
+
+function getActionSummary(
+  definition: ActionDefinition | null | undefined,
+  type: ActionDefinition['type'],
+): Record<string, unknown> {
+  return {
+    type,
+    resource: definition && 'resource' in definition ? definition.resource : undefined,
+    hasRemapBefore: has(definition, 'remapBefore'),
+    hasRemapAfter: has(definition, 'remapAfter'),
+    hasOnSuccess: Boolean(definition?.onSuccess),
+    hasOnError: Boolean(definition?.onError),
+  };
+}
+
+function getErrorContext(error: unknown): Record<string, unknown> | undefined {
+  if (typeof error !== 'object' || error == null) {
+    return;
+  }
+  const axiosError = error as {
+    config?: { method?: string; url?: string };
+    response?: { data?: unknown; status?: number };
+  };
+  if (!axiosError.config && !axiosError.response) {
+    return;
+  }
+  return {
+    method: axiosError.config?.method,
+    url: axiosError.config?.url,
+    responseStatus: axiosError.response?.status,
+    hasResponseBody: axiosError.response?.data != null,
+  };
+}
+
+function getValueSummary(value: unknown): Record<string, unknown> {
+  if (value == null) {
+    return { type: String(value) };
+  }
+  if (Array.isArray(value)) {
+    return { length: value.length, type: 'array' };
+  }
+  if (typeof value === 'object') {
+    return {
+      keys: Object.keys(value).slice(0, maxContextProperties),
+      type:
+        typeof Blob !== 'undefined' && value instanceof Blob ? value.constructor.name : 'object',
+    };
+  }
+  return { type: typeof value };
+}
+
+function getActionBreadcrumbData(
+  type: ActionDefinition['type'],
+  prefix: string,
+  prefixIndex: string,
+): Record<string, string> {
+  return { path: prefix, pathIndex: prefixIndex, type };
+}
 
 /**
  * Create a callable action for an action definition and context.
@@ -43,6 +103,7 @@ export function createAction<T extends ActionDefinition['type']>({
   remap: localRemap,
   ...params
 }: CreateActionParams<T>): Extract<Action, { type: T }> {
+  const { getAppMemberInfo, getAppMemberSelectedGroup } = params;
   const type = (definition?.type ?? 'noop') as T;
   const actionCreator = has(actionCreators, type)
     ? actionCreators[type]!
@@ -88,11 +149,17 @@ export function createAction<T extends ActionDefinition['type']>({
   const action = (async (args?: any, context?: Record<string, any>) => {
     await pageReady;
     let result;
-    let updatedContext;
+    let updatedContext: Record<string, any> | undefined;
+    let data: unknown;
+
+    addBreadcrumb({
+      category: 'appsemble.action',
+      data: { ...getActionBreadcrumbData(type, prefix, prefixIndex), status: 'started' },
+    });
 
     try {
       try {
-        const data = has(definition, 'remapBefore')
+        data = has(definition, 'remapBefore')
           ? localRemap(definition.remapBefore ?? null, args, context)
           : has(definition, 'remap')
             ? localRemap(definition.remap ?? null, args, context)
@@ -110,12 +177,12 @@ export function createAction<T extends ActionDefinition['type']>({
         }
         addBreadcrumb({
           category: 'appsemble.action',
-          data: { success: type },
+          data: { ...getActionBreadcrumbData(type, prefix, prefixIndex), success: type },
         });
       } catch (error: unknown) {
         addBreadcrumb({
           category: 'appsemble.action',
-          data: { failed: type },
+          data: { ...getActionBreadcrumbData(type, prefix, prefixIndex), failed: type },
           level: 'warning',
         });
         if (onError) {
@@ -129,6 +196,35 @@ export function createAction<T extends ActionDefinition['type']>({
       }
       return result;
     } catch (error) {
+      if (!(error instanceof ActionError)) {
+        const appMemberInfo = getAppMemberInfo?.();
+        const selectedGroup = getAppMemberSelectedGroup?.();
+
+        captureException(error, {
+          contexts: {
+            appsembleAction: {
+              ...getActionSummary(definition, type),
+              path: prefix,
+              pathIndex: prefixIndex,
+              input: getValueSummary(args),
+              remappedInput: getValueSummary(data),
+              contextHistoryLength: updatedContext?.history?.length,
+              error: getErrorContext(error),
+            },
+            appsembleAppMember: {
+              id: appMemberInfo?.sub,
+              role: appMemberInfo?.role,
+              selectedGroupId: selectedGroup?.id,
+              selectedGroupRole: selectedGroup?.role,
+            },
+          },
+          tags: {
+            actionPath: prefix,
+            actionType: type,
+            appId: String(appId),
+          },
+        });
+      }
       throw new ActionError({ cause: error, data: args, definition });
     }
   }) as Omit<Action, string> as Extract<Action, { type: T }>;

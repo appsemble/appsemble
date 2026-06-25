@@ -22,9 +22,13 @@ export const pathItems: OpenAPIV3.PathItemObject = {
           schema: {
             type: 'object',
             additionalProperties: false,
+            required: ['roles'],
             properties: {
-              role: {
-                type: 'string',
+              roles: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
               },
             },
           },

@@ -1,4 +1,4 @@
-import { type AppMemberPropertyDefinition } from '@appsemble/lang-sdk';
+import { type AppMemberPropertyDefinition, type AppRole } from '@appsemble/lang-sdk';
 import {
   AppMemberPropertiesError,
   AppsembleError,
@@ -10,8 +10,14 @@ import { isValidPhoneNumber } from 'libphonenumber-js';
 import { parsePhoneNumber } from 'libphonenumber-js/min';
 import { has } from 'lodash-es';
 import { type OpenAPIV3 } from 'openapi-types';
+import { Op, type Transaction } from 'sequelize';
 import {
   AllowNull,
+  AfterBulkCreate,
+  AfterCreate,
+  AfterFind,
+  AfterUpdate,
+  BeforeBulkCreate,
   BeforeCreate,
   BeforeUpdate,
   Column,
@@ -31,6 +37,7 @@ import {
 import { type ResourceGlobal } from './Resource.js';
 import {
   type AppMemberEmailAuthorization,
+  type AppMemberAssignedRole,
   type AppModels,
   type AppOAuth2Authorization,
   type AppSamlAuthorization,
@@ -41,7 +48,9 @@ import {
 export class AppMemberGlobal extends Model {
   declare id: string;
 
-  declare role: string;
+  declare role: AppRole | null;
+
+  declare roles: AppRole[];
 
   declare email: string;
 
@@ -97,11 +106,34 @@ export class AppMemberGlobal extends Model {
 
   declare AppMemberEmailAuthorizations: AppMemberEmailAuthorization[];
 
+  declare AppMemberAssignedRoles: AppMemberAssignedRole[];
+
   get hasPicture(): boolean {
     return this.get('hasPicture');
   }
 }
 
+function normalizeAppMemberRoles(roles: AppRole[]): AppRole[] {
+  return Array.from(new Set((roles ?? []).filter(Boolean)));
+}
+
+function getAppMemberRoles(instance: AppMemberGlobal): AppRole[] {
+  const roles = instance.getDataValue('roles');
+
+  if (roles) {
+    return normalizeAppMemberRoles(roles);
+  }
+
+  const assignedRoles = instance.AppMemberAssignedRoles?.map((assignedRole) => assignedRole.role);
+
+  if (assignedRoles?.length) {
+    return normalizeAppMemberRoles(assignedRoles);
+  }
+
+  const role = instance.getDataValue('role');
+
+  return normalizeAppMemberRoles(role ? [role] : []);
+}
 function getDefaultValue(
   propertyDefinition: AppMemberPropertyDefinition | OpenAPIV3.SchemaObject,
 ): Record<string, any> | boolean | number | [] | null {
@@ -276,6 +308,98 @@ async function validateAppMemberProperties(
   instance.properties = parsedProperties;
 }
 
+function markAppMemberRolesDirty(instance: AppMemberGlobal, dirty: boolean): void {
+  Object.assign(instance as AppMemberGlobal & { appMemberRolesDirty?: boolean }, {
+    appMemberRolesDirty: dirty,
+  });
+}
+
+function areAppMemberRolesDirty(instance: AppMemberGlobal): boolean {
+  return Boolean(
+    (instance as AppMemberGlobal & { appMemberRolesDirty?: boolean }).appMemberRolesDirty,
+  );
+}
+
+async function hydrateAppMemberRoles(
+  sequelize: Sequelize,
+  result: AppMemberGlobal | AppMemberGlobal[] | null,
+  transaction?: Transaction,
+): Promise<void> {
+  const instances = Array.isArray(result) ? result : result ? [result] : [];
+
+  if (!instances.length) {
+    return;
+  }
+
+  const instancesWithId = instances.filter(({ id }) => id);
+
+  if (!instancesWithId.length) {
+    return;
+  }
+
+  const appMemberAssignedRoleModel = sequelize.models
+    .AppMemberAssignedRole as Repository<AppMemberAssignedRole>;
+  const assignedRoles = await appMemberAssignedRoleModel.findAll({
+    where: {
+      AppMemberId: {
+        [Op.in]: instancesWithId.map(({ id }) => id),
+      },
+    },
+    order: [
+      ['created', 'ASC'],
+      ['role', 'ASC'],
+    ],
+    transaction,
+  });
+  const assignedRolesByMemberId = Object.groupBy(assignedRoles, ({ AppMemberId }) => AppMemberId);
+
+  for (const instance of instancesWithId) {
+    instance.AppMemberAssignedRoles = assignedRolesByMemberId[instance.id] ?? [];
+    const roles = getAppMemberRoles(instance);
+    instance.setDataValue('roles', roles);
+    instance.setDataValue('role', roles[0] ?? null);
+    markAppMemberRolesDirty(instance, false);
+  }
+}
+
+async function syncAppMemberAssignedRoles(
+  sequelize: Sequelize,
+  result: AppMemberGlobal | AppMemberGlobal[],
+  transaction?: Transaction,
+): Promise<void> {
+  const instances = Array.isArray(result) ? result : [result];
+  const dirtyInstances = instances.filter(areAppMemberRolesDirty);
+
+  if (!dirtyInstances.length) {
+    return;
+  }
+
+  const appMemberAssignedRoleModel = sequelize.models
+    .AppMemberAssignedRole as Repository<AppMemberAssignedRole>;
+  await appMemberAssignedRoleModel.destroy({
+    where: {
+      AppMemberId: {
+        [Op.in]: dirtyInstances.map(({ id }) => id),
+      },
+    },
+    transaction,
+  });
+
+  const rows = dirtyInstances.flatMap(({ id, roles }) =>
+    normalizeAppMemberRoles(roles).map((role) => ({
+      AppMemberId: id,
+      role,
+      source: 'manual',
+    })),
+  );
+
+  if (rows.length) {
+    await appMemberAssignedRoleModel.bulkCreate(rows, { transaction });
+  }
+
+  await hydrateAppMemberRoles(sequelize, dirtyInstances, transaction);
+}
+
 export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlobal {
   @Table({ tableName: 'AppMember' })
   class AppMember extends AppMemberGlobal {
@@ -285,9 +409,34 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
     @Column(DataType.UUID)
     declare id: string;
 
-    @AllowNull(false)
-    @Column(DataType.STRING)
-    declare role: string;
+    @AllowNull(true)
+    @Column({
+      type: DataType.STRING,
+      get(this: AppMember): AppRole | null {
+        return this.getDataValue('role') ?? getAppMemberRoles(this)[0] ?? null;
+      },
+      set(this: AppMember, value: AppRole | null): void {
+        this.setDataValue('role', value);
+        this.setDataValue('roles', normalizeAppMemberRoles(value ? [value] : []));
+        markAppMemberRolesDirty(this, true);
+      },
+    })
+    declare role: AppRole | null;
+
+    @Column({
+      type: DataType.VIRTUAL,
+      get(this: AppMember): AppRole[] {
+        return getAppMemberRoles(this);
+      },
+      set(this: AppMember, value: AppRole[] | AppRole | null): void {
+        this.setDataValue(
+          'roles',
+          normalizeAppMemberRoles(Array.isArray(value) ? value : value ? [value] : []),
+        );
+        markAppMemberRolesDirty(this, true);
+      },
+    })
+    declare roles: AppRole[];
 
     @AllowNull(false)
     @Index({ name: 'UniqueAppMemberEmailIndex', unique: true })
@@ -374,6 +523,11 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
     declare updated: Date;
 
     static associate(models: AppModels): void {
+      AppMember.hasMany(models.AppMemberAssignedRole, {
+        foreignKey: 'AppMemberId',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
       AppMember.hasMany(models.GroupMember);
       AppMember.hasMany(models.AppOAuth2Authorization);
       AppMember.hasMany(models.AppMemberEmailAuthorization);
@@ -393,14 +547,73 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
       );
     }
 
-    @BeforeCreate
-    static async validateCronJobMember(instance: AppMember): Promise<void> {
-      if (instance.role !== 'cron') {
+    @AfterFind
+    static async loadAssignedRoles(instance: AppMember | AppMember[] | null): Promise<void> {
+      if (!sequelize.models.AppMemberAssignedRole) {
         return;
       }
-      const memberCount = await AppMember.count({ where: { role: 'cron' } });
+
+      await hydrateAppMemberRoles(sequelize, instance);
+    }
+
+    @AfterCreate
+    @AfterUpdate
+    static async updateAssignedRoles(
+      instance: AppMember,
+      options: { transaction?: Transaction },
+    ): Promise<void> {
+      await syncAppMemberAssignedRoles(sequelize, instance, options.transaction);
+    }
+
+    @AfterBulkCreate
+    static async updateBulkAssignedRoles(
+      instances: AppMember[],
+      options: { transaction?: Transaction },
+    ): Promise<void> {
+      await syncAppMemberAssignedRoles(sequelize, instances, options.transaction);
+    }
+
+    @BeforeCreate
+    @BeforeUpdate
+    static async validateCronJobMember(instance: AppMember): Promise<void> {
+      const roles = getAppMemberRoles(instance);
+
+      if (!roles.includes('cron')) {
+        return;
+      }
+
+      if (roles.length !== 1) {
+        throw new AppsembleError('App member with role `cron` cannot have additional roles');
+      }
+
+      const appMemberAssignedRoleModel = sequelize.models
+        .AppMemberAssignedRole as Repository<AppMemberAssignedRole>;
+      const memberCount = await appMemberAssignedRoleModel.count({
+        where: {
+          AppMemberId: {
+            [Op.ne]: instance.id,
+          },
+          role: 'cron',
+        },
+      });
+
       if (memberCount > 0) {
         throw new AppsembleError('App member with role `cron` already exists for this app');
+      }
+    }
+
+    @BeforeCreate
+    @BeforeUpdate
+    static normalizeRoles(instance: AppMember): void {
+      const roles = getAppMemberRoles(instance);
+      instance.setDataValue('roles', roles);
+      instance.setDataValue('role', roles[0] ?? null);
+    }
+
+    @BeforeBulkCreate
+    static normalizeBulkRoles(instances: AppMember[]): void {
+      for (const instance of instances) {
+        AppMember.normalizeRoles(instance);
       }
     }
 

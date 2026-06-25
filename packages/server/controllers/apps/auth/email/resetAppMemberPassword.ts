@@ -3,6 +3,7 @@ import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../models/index.js';
+import { revokeAppMemberRefreshSessionsForMember } from '../../../../utils/appMemberRefreshSession.js';
 
 export async function resetAppMemberPassword(ctx: Context): Promise<void> {
   const {
@@ -29,4 +30,6 @@ export async function resetAppMemberPassword(ctx: Context): Promise<void> {
     password,
     resetKey: null,
   });
+
+  await revokeAppMemberRefreshSessionsForMember(appId, appMember.id);
 }

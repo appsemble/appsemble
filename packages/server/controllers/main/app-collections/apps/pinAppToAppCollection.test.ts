@@ -105,7 +105,8 @@ describe('pinAppToAppCollection', () => {
   });
 
   it('should pin an app to an app collection', async () => {
-    const app1 = (await AppCollectionApp.findByPk(apps[0].id))!;
+    const collectionApp = { AppCollectionId: collections[0].id, AppId: apps[0].id };
+    const app1 = (await AppCollectionApp.findOne({ where: collectionApp }))!;
     expect(app1.pinnedAt).toBeNull();
     authorizeStudio(user);
     const response = await request.post(
@@ -116,7 +117,7 @@ describe('pinAppToAppCollection', () => {
       pinnedAt: '1970-01-01T00:00:00.000Z',
     });
 
-    const app2 = (await AppCollectionApp.findByPk(apps[0].id))!;
+    const app2 = (await AppCollectionApp.findOne({ where: collectionApp }))!;
     expect(app2.pinnedAt).not.toBeNull();
   });
 

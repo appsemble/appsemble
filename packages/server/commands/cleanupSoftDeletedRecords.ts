@@ -26,6 +26,7 @@ export async function cleanupSoftDeletedRecords(): Promise<void> {
         [Op.lt]: deletedAt,
       },
     },
+    cascade: true,
     force: true,
   };
 

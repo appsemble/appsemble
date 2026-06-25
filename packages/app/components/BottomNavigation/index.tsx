@@ -8,7 +8,7 @@ import {
 import { Button, Icon } from '@appsemble/react-components';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { usePWAInstall } from 'react-use-pwa-install';
 
 import './index.css';
@@ -31,7 +31,8 @@ interface BottomNavigationProps {
 export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
-  const { appMemberInfo, appMemberRole, appMemberSelectedGroup, isLoggedIn, logout } =
+  const { pathname } = useLocation();
+  const { appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn, logout } =
     useAppMember();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
@@ -40,8 +41,8 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const install = usePWAInstall();
 
   const showMenu = useMemo(
-    () => shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup),
-    [definition, appMemberRole, appMemberSelectedGroup],
+    () => shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname),
+    [definition, appMemberRoles, appMemberSelectedGroup, pathname],
   );
 
   return (

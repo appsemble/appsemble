@@ -33,6 +33,7 @@ import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
+import { syncResourceUniqueIndexes } from '../../../utils/resourceUniqueIndexes.js';
 import { isValidSentryDsn } from '../../../utils/sentry.js';
 
 export async function createApp(ctx: Context): Promise<void> {
@@ -238,6 +239,13 @@ export async function createApp(ctx: Context): Promise<void> {
     try {
       await appDB.transaction(async (appTransaction) => {
         if (createdApp.definition.resources) {
+          await syncResourceUniqueIndexes(
+            createdApp.id,
+            undefined,
+            createdApp.definition.resources,
+            appTransaction,
+          );
+
           for (const [
             resourceType,
             { enforceOrderingGroupByFields, positioning },
@@ -257,7 +265,7 @@ export async function createApp(ctx: Context): Promise<void> {
           const identifier = Math.random().toString(36).slice(2);
           const cronEmail = `cron-${identifier}@example.com`;
           await AppMember.create(
-            { role: 'cron', email: cronEmail },
+            { roles: ['cron'], email: cronEmail },
             { transaction: appTransaction },
           );
         }
@@ -267,9 +275,9 @@ export async function createApp(ctx: Context): Promise<void> {
         }
       });
     } catch (error) {
-      // AppsembleError is only thrown when dryRun is set, meaning it’s only used to test
-      if (error instanceof AppsembleError) {
-        await App.destroy({ where: { id: createdApp.id }, force: true, individualHooks: true });
+      await App.destroy({ where: { id: createdApp.id }, force: true, individualHooks: true });
+
+      if (error instanceof AppsembleError && error.message === 'Dry run') {
         ctx.status = 204;
         return;
       }

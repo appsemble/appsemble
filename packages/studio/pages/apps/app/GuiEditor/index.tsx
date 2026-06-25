@@ -42,6 +42,10 @@ import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appV
 import '../../../../components/MonacoEditor/custom.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
+import {
+  formatResourceUniqueConstraintAppError,
+  type ResourceUniqueConstraintErrorData,
+} from '../uniqueConstraintErrors.js';
 
 type TabTypes = 'general' | 'pages' | 'resources' | 'security' | 'style' | 'theme';
 export interface GuiEditorTabs {
@@ -491,6 +495,13 @@ export default function EditPage(): ReactNode {
       }
       if (definition.errors.length > 0) {
         return formatMessage(messages.yamlError);
+      }
+      const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintErrorData }>(error)
+        ? error.response?.data?.data
+        : undefined;
+      const uniqueConstraintError = formatResourceUniqueConstraintAppError(formatMessage, data);
+      if (uniqueConstraintError) {
+        return uniqueConstraintError;
       }
       if (error) {
         return `${formatMessage(messages.errorIn)} ${unsaved.join('')}`;

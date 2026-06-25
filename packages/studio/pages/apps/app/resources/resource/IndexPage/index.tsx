@@ -44,6 +44,12 @@ import { useApp } from '../../../index.js';
 
 const defaultHiddenProperties = new Set(['$created', '$updated', '$editor']);
 
+interface ResourceUniqueConstraintViolationData {
+  code?: string;
+  fields?: string[];
+  resourceType?: string;
+}
+
 export function IndexPage({
   isInGui,
   providedResourceName,
@@ -312,19 +318,46 @@ export function IndexPage({
 
   const submitCreate = useCallback(
     async (values: Record<string, Resource>) => {
-      const { data } = await axios.post<Resource>(
-        resourceURL,
-        serializeResource(values[resourceName]),
-      );
+      try {
+        const { data } = await axios.post<Resource>(
+          resourceURL,
+          serializeResource(values[resourceName]),
+        );
 
-      setResources((resources) => [...resources, data]);
-      updatePagination(count + 1);
+        setResources((resources) => [...resources, data]);
+        updatePagination(count + 1);
 
-      createModal.disable();
-      push({
-        body: formatMessage(messages.createSuccess, { id: data.id }),
-        color: 'primary',
-      });
+        createModal.disable();
+        push({
+          body: formatMessage(messages.createSuccess, { id: data.id }),
+          color: 'primary',
+        });
+      } catch (error) {
+        const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintViolationData }>(error)
+          ? error.response?.data?.data
+          : undefined;
+
+        if (
+          data?.code === 'RESOURCE_UNIQUE_CONSTRAINT_VIOLATION' &&
+          data.resourceType &&
+          Array.isArray(data.fields) &&
+          data.fields.length
+        ) {
+          push({
+            body: formatMessage(messages.uniqueConstraintViolation, {
+              fields: data.fields.map((field) => `“${field}”`).join(', '),
+              resourceType: `“${data.resourceType}”`,
+            }),
+            color: 'danger',
+          });
+          return;
+        }
+
+        push({
+          body: formatMessage(messages.createError),
+          color: 'danger',
+        });
+      }
     },
     [
       count,
