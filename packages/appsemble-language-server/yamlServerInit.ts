@@ -150,7 +150,6 @@ export class YAMLServerInit {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async setupLocalizationBundle(params: InitializeParams): Promise<void> {
     const filename = fileURLToPath(import.meta.url);
     const dir = dirname(filename);
@@ -201,29 +200,28 @@ export class YAMLServerInit {
 
     this.yamlSettings.hierarchicalDocumentSymbolSupport = Boolean(
       this.yamlSettings.capabilities.textDocument &&
-        this.yamlSettings.capabilities.textDocument.documentSymbol &&
-        this.yamlSettings.capabilities.textDocument.documentSymbol
-          .hierarchicalDocumentSymbolSupport,
+      this.yamlSettings.capabilities.textDocument.documentSymbol &&
+      this.yamlSettings.capabilities.textDocument.documentSymbol.hierarchicalDocumentSymbolSupport,
     );
     this.yamlSettings.clientDynamicRegisterSupport = Boolean(
       this.yamlSettings.capabilities.textDocument &&
-        this.yamlSettings.capabilities.textDocument.formatting &&
-        this.yamlSettings.capabilities.textDocument.formatting.dynamicRegistration,
+      this.yamlSettings.capabilities.textDocument.formatting &&
+      this.yamlSettings.capabilities.textDocument.formatting.dynamicRegistration,
     );
     this.yamlSettings.hasWorkspaceFolderCapability = Boolean(
       this.yamlSettings.capabilities.workspace &&
-        Boolean(this.yamlSettings.capabilities.workspace.workspaceFolders),
+      Boolean(this.yamlSettings.capabilities.workspace.workspaceFolders),
     );
 
     this.yamlSettings.hasConfigurationCapability = Boolean(
       this.yamlSettings.capabilities.workspace &&
-        Boolean(this.yamlSettings.capabilities.workspace.configuration),
+      Boolean(this.yamlSettings.capabilities.workspace.configuration),
     );
 
     this.yamlSettings.hasWsChangeWatchedFileDynamicRegistration = Boolean(
       this.yamlSettings.capabilities.workspace &&
-        this.yamlSettings.capabilities.workspace.didChangeWatchedFiles &&
-        this.yamlSettings.capabilities.workspace.didChangeWatchedFiles.dynamicRegistration,
+      this.yamlSettings.capabilities.workspace.didChangeWatchedFiles &&
+      this.yamlSettings.capabilities.workspace.didChangeWatchedFiles.dynamicRegistration,
     );
     this.registerHandlers();
     registerCommands(
@@ -306,6 +304,7 @@ export class YAMLServerInit {
     this.blockRegistryHandler = new BlockRegistryHandlers(
       this.yamlSettings,
       this.yamlCacher,
+      this.blockManifestCacher,
       this.blockSchemaRequestHandler,
       this.languageService,
       this.logger,

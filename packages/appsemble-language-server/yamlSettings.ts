@@ -8,7 +8,10 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { type URI } from 'vscode-uri';
 import { type JSONSchema } from 'yaml-language-server/lib/esm/languageservice/jsonSchema.js';
 import { type YamlVersion } from 'yaml-language-server/lib/esm/languageservice/parser/yamlParser07.js';
-import { JSON_SCHEMASTORE_URL } from 'yaml-language-server/lib/esm/languageservice/utils/schemaUrls.js';
+import {
+  CRD_CATALOG_URL,
+  JSON_SCHEMASTORE_URL,
+} from 'yaml-language-server/lib/esm/languageservice/utils/schemaUrls.js';
 import {
   type CustomFormatterOptions,
   type SchemaConfiguration,
@@ -97,6 +100,8 @@ export class SettingsState {
 
   yamlShouldHover = true;
 
+  yamlShouldHoverAnchor = true;
+
   yamlShouldCompletion = true;
 
   schemaStoreSettings: SchemasSettings[] = [];
@@ -106,6 +111,10 @@ export class SettingsState {
   schemaStoreEnabled = true;
 
   schemaStoreUrl = JSON_SCHEMASTORE_URL;
+
+  kubernetesCRDStoreEnabled = true;
+
+  kubernetesCRDStoreUrl = CRD_CATALOG_URL;
 
   indentation: string | undefined = undefined;
 

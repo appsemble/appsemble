@@ -65,6 +65,7 @@ export class DefaultSchemaRequestWrapper implements SchemaRequestWrapper {
       this.yamlSettings.workspaceRoot!,
       this.yamlSettings.useVSCodeContentRequest,
       this.fileSystem,
+      false,
     );
   }
 }
