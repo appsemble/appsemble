@@ -12,43 +12,37 @@ export async function queryApps(ctx: Context): Promise<void> {
   } = parseLanguage(ctx, ctx.query?.language ?? []);
 
   const apps = await App.findAll({
-    attributes: {
-      exclude: [
-        'icon',
-        'coreStyle',
-        'sharedStyle',
-        'controllerCode',
-        'controllerImplementations',
-        'sentryDsn',
-        'sentryEnvironment',
-        'domain',
-        'displayAppMemberName',
-        'displayInstallationPrompt',
-        'enableSelfRegistration',
-        'enableUnsecuredServiceSecrets',
-        'emailName',
-        'showAppDefinition',
-        'showAppsembleLogin',
-        'showAppsembleOAuth2Login',
-        'screenshotUrls',
-      ],
-      include: [
-        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
-        [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
-      ],
-    },
+    attributes: [
+      'id',
+      'created',
+      'updated',
+      'definition',
+      'path',
+      'visibility',
+      'template',
+      'locked',
+      'totp',
+      'iconBackground',
+      'OrganizationId',
+      'googleAnalyticsID',
+      'metaPixelID',
+      'msClarityID',
+      'demoMode',
+      'skipGroupInvites',
+      'supportedLanguages',
+      [literal('"App"."icon" IS NOT NULL'), 'hasIcon'],
+      [literal('"App"."maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
+    ],
     where: { visibility: 'public' },
     include: [
       {
         model: Organization,
-        attributes: {
-          include: [
-            'id',
-            'name',
-            'updated',
-            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
-          ],
-        },
+        attributes: [
+          'id',
+          'name',
+          'updated',
+          [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+        ],
       },
       ...languageQuery,
     ],
@@ -63,11 +57,11 @@ export async function queryApps(ctx: Context): Promise<void> {
     where: { AppId: apps.map((app) => app.id) },
     group: ['AppId'],
   });
+  const ratingsByAppId = new Map(ratings.map((rating) => [rating.AppId, rating]));
 
   ctx.body = apps
     .map((app) => {
-      const rating = ratings.find((r) => r.AppId === app.id);
-
+      const rating = ratingsByAppId.get(app.id);
       if (rating) {
         Object.assign(app, {
           RatingAverage: Number(rating.get('RatingAverage')),
