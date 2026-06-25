@@ -20,6 +20,7 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
     | 'altFormat'
     | 'altInput'
     | 'disable'
+    | 'disableMobile'
     | 'enableTime'
     | 'locale'
     | 'maxDate'
@@ -103,6 +104,7 @@ export function DateTimeField({
   allowInput,
   altFormat,
   disable,
+  disableMobile = true,
   disabled,
   confirm,
   confirmLabel = 'Confirm',
@@ -183,6 +185,8 @@ export function DateTimeField({
       allowInput,
       altFormat,
       static: true,
+      // The native mobile picker can't render decorations or disabled dates.
+      disableMobile,
       positionElement: positionElement.current,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       time_24hr: true,
@@ -276,6 +280,7 @@ export function DateTimeField({
     altInput,
     confirmLabel,
     disable,
+    disableMobile,
     disabled,
     enableTime,
     locale,

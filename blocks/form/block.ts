@@ -625,6 +625,20 @@ export interface DateTimeField extends AbstractField {
    * @default false
    */
   altInput?: boolean;
+
+  /**
+   * Disable the operating system's native date picker on mobile devices and
+   * always render the Appsemble date picker instead.
+   *
+   * On mobile browsers the field falls back to the native date picker by
+   * default. That picker cannot render decorations or disabled dates, and it
+   * ignores the configured date format and the minimum and maximum date
+   * requirements, so the field can behave differently on mobile than on
+   * desktop. Set this to `false` to use the native mobile picker.
+   *
+   * @default true
+   */
+  disableNativePicker?: boolean;
 }
 
 /**
@@ -779,6 +793,20 @@ export interface DateField extends AbstractField, InlineField {
    * Dates to disable in the picker (ISO date strings).
    */
   disabledDates?: string[];
+
+  /**
+   * Disable the operating system's native date picker on mobile devices and
+   * always render the Appsemble date picker instead.
+   *
+   * On mobile browsers the field falls back to the native date picker by
+   * default. That picker cannot render decorations or disabled dates, and it
+   * ignores the configured date format and the minimum and maximum date
+   * requirements, so the field can behave differently on mobile than on
+   * desktop. Set this to `false` to use the native mobile picker.
+   *
+   * @default true
+   */
+  disableNativePicker?: boolean;
 }
 
 /**
