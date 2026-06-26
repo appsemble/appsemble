@@ -66,7 +66,7 @@ export class NotificationHandlers {
   ): void {
     this.yamlSettings.schemaAssociations = associations;
     this.yamlSettings.specificValidatorPaths = [];
-    this.settingsHandler.pullConfiguration().catch((error) => console.log(error));
+    this.settingsHandler.pullConfiguration().catch((error) => this.connection.console.error(error));
   }
 
   /**

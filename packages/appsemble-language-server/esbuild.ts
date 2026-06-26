@@ -1,17 +1,19 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { build } from 'esbuild';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import esbuildShimPlugin from 'esbuild-shim-plugin';
+
+const packageDir = dirname(fileURLToPath(import.meta.url));
 
 console.log('Building appsemble-language-server webworker bundle ...');
 await build({
-  entryPoints: ['webworker/yamlServerMain.ts'],
+  entryPoints: [join(packageDir, 'webworker/yamlServerMain.ts')],
   bundle: true,
   platform: 'browser',
   format: 'esm',
-  outfile: './build/worker.js',
+  outfile: join(packageDir, 'build/worker.js'),
   sourcemap: true,
   plugins: [nodeModulesPolyfillPlugin()],
   alias: {
@@ -22,11 +24,11 @@ console.log('Built appsemble-language-server webworker bundle.');
 
 console.log('Building appsemble-language-server node bundle ...');
 await build({
-  entryPoints: ['server.ts'],
+  entryPoints: [join(packageDir, 'server.ts')],
   bundle: true,
   platform: 'node',
   format: 'esm',
-  outfile: './build/server.js',
+  outfile: join(packageDir, 'build/server.js'),
   sourcemap: true,
   alias: {
     'vscode-json-languageservice/lib/umd': 'vscode-json-languageservice/lib/esm/',
