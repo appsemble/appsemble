@@ -6,6 +6,7 @@
 import { basename } from 'node:path';
 
 import { type Connection } from 'vscode-languageserver';
+import { type TextDocument } from 'vscode-languageserver-textdocument';
 import {
   type CodeActionParams,
   type CodeLensParams,
@@ -90,20 +91,17 @@ export class LanguageHandlers {
     this.yamlSettings.documents.onDidChangeContent((change) =>
       this.cancelLimitExceededWarnings(change.document.uri),
     );
-    // Remove
-    // this.yamlSettings.documents.onDidChangeContent(() => this.updateBlockSchemas());
     this.yamlSettings.documents.onDidClose((event) =>
       this.cancelLimitExceededWarnings(event.document.uri),
     );
   }
 
   documentLinkHandler(params: DocumentLinkParams): Promise<DocumentLink[]> {
-    const document = this.yamlSettings.documents.get(params.textDocument.uri);
-    if (!document) {
-      return Promise.resolve([]);
-    }
-
-    return this.languageService.findLinks(document);
+    return (
+      this.withDocument(params.textDocument.uri, (document) =>
+        this.languageService.findLinks(document),
+      ) ?? Promise.resolve([])
+    );
   }
 
   /**
@@ -116,24 +114,20 @@ export class LanguageHandlers {
   documentSymbolHandler(
     documentSymbolParams: DocumentSymbolParams,
   ): DocumentSymbol[] | SymbolInformation[] | undefined {
-    const document = this.yamlSettings.documents.get(documentSymbolParams.textDocument.uri);
+    return this.withDocument(documentSymbolParams.textDocument.uri, (document) => {
+      const onResultLimitExceeded = this.onResultLimitExceeded(
+        document.uri,
+        this.yamlSettings.maxItemsComputed,
+        'document symbols',
+      );
 
-    if (!document) {
-      return;
-    }
+      const context = { resultLimit: this.yamlSettings.maxItemsComputed, onResultLimitExceeded };
 
-    const onResultLimitExceeded = this.onResultLimitExceeded(
-      document.uri,
-      this.yamlSettings.maxItemsComputed,
-      'document symbols',
-    );
-
-    const context = { resultLimit: this.yamlSettings.maxItemsComputed, onResultLimitExceeded };
-
-    if (this.yamlSettings.hierarchicalDocumentSymbolSupport) {
-      return this.languageService.findDocumentSymbols2(document, context);
-    }
-    return this.languageService.findDocumentSymbols(document, context);
+      if (this.yamlSettings.hierarchicalDocumentSymbolSupport) {
+        return this.languageService.findDocumentSymbols2(document, context);
+      }
+      return this.languageService.findDocumentSymbols(document, context);
+    });
   }
 
   /**
@@ -144,30 +138,24 @@ export class LanguageHandlers {
    * @returns Promise<TextEdit[] | undefined>
    */
   formatterHandler(formatParams: DocumentFormattingParams): Promise<TextEdit[] | undefined> {
-    const document = this.yamlSettings.documents.get(formatParams.textDocument.uri);
+    return (
+      this.withDocument(formatParams.textDocument.uri, (document) => {
+        const customFormatterSettings = {
+          tabWidth: formatParams.options.tabSize,
+          ...this.yamlSettings.yamlFormatterSettings,
+        };
 
-    if (!document) {
-      // eslint-disable-next-line unicorn/no-useless-undefined
-      return Promise.resolve(undefined);
-    }
-
-    const customFormatterSettings = {
-      tabWidth: formatParams.options.tabSize,
-      ...this.yamlSettings.yamlFormatterSettings,
-    };
-
-    return this.languageService.doFormat(document, customFormatterSettings);
+        return this.languageService.doFormat(document, customFormatterSettings);
+      }) ?? Promise.resolve([])
+    );
   }
 
   formatOnTypeHandler(
     params: DocumentOnTypeFormattingParams,
   ): Promise<TextEdit[] | undefined> | TextEdit[] | undefined {
-    const document = this.yamlSettings.documents.get(params.textDocument.uri);
-
-    if (!document) {
-      return;
-    }
-    return this.languageService.doDocumentOnTypeFormatting(document, params);
+    return this.withDocument(params.textDocument.uri, (document) =>
+      this.languageService.doDocumentOnTypeFormatting(document, params),
+    );
   }
 
   /**
@@ -180,13 +168,9 @@ export class LanguageHandlers {
   async hoverHandler(
     textDocumentPositionParams: TextDocumentPositionParams,
   ): Promise<Hover | undefined> {
-    const document = this.yamlSettings.documents.get(textDocumentPositionParams.textDocument.uri);
-
-    if (!document) {
-      return undefined;
-    }
-
-    const hover = await this.languageService.doHover(document, textDocumentPositionParams.position);
+    const hover = await this.withDocument(textDocumentPositionParams.textDocument.uri, (document) =>
+      this.languageService.doHover(document, textDocumentPositionParams.position),
+    );
     return hover || undefined;
   }
 
@@ -198,20 +182,19 @@ export class LanguageHandlers {
    * @returns Promise<CompletionList>
    */
   completionHandler(textDocumentPosition: TextDocumentPositionParams): Promise<CompletionList> {
-    const textDocument = this.yamlSettings.documents.get(textDocumentPosition.textDocument.uri);
-
     const result: CompletionList = {
       items: [],
       isIncomplete: false,
     };
 
-    if (!textDocument) {
-      return Promise.resolve(result);
-    }
-    return this.languageService.doComplete(
-      textDocument,
-      textDocumentPosition.position,
-      isKubernetesAssociatedDocument(textDocument, this.yamlSettings.specificValidatorPaths),
+    return (
+      this.withDocument(textDocumentPosition.textDocument.uri, (document) =>
+        this.languageService.doComplete(
+          document,
+          textDocumentPosition.position,
+          isKubernetesAssociatedDocument(document, this.yamlSettings.specificValidatorPaths),
+        ),
+      ) ?? Promise.resolve(result)
     );
   }
 
@@ -240,55 +223,44 @@ export class LanguageHandlers {
   foldingRangeHandler(
     params: FoldingRangeParams,
   ): FoldingRange[] | Promise<FoldingRange[] | undefined> | undefined {
-    const textDocument = this.yamlSettings.documents.get(params.textDocument.uri);
-    if (!textDocument) {
-      return;
-    }
+    return this.withDocument(params.textDocument.uri, (document) => {
+      const capabilities = this.yamlSettings.capabilities.textDocument?.foldingRange;
+      const rangeLimit = capabilities?.rangeLimit || this.yamlSettings.maxItemsComputed;
+      const onRangeLimitExceeded = this.onResultLimitExceeded(
+        document.uri,
+        rangeLimit,
+        'folding ranges',
+      );
 
-    const capabilities = this.yamlSettings.capabilities.textDocument?.foldingRange;
-    const rangeLimit = capabilities?.rangeLimit || this.yamlSettings.maxItemsComputed;
-    const onRangeLimitExceeded = this.onResultLimitExceeded(
-      textDocument.uri,
-      rangeLimit,
-      'folding ranges',
-    );
+      const context = {
+        rangeLimit,
+        onRangeLimitExceeded,
+        lineFoldingOnly: capabilities?.lineFoldingOnly,
+      };
 
-    const context = {
-      rangeLimit,
-      onRangeLimitExceeded,
-      lineFoldingOnly: capabilities?.lineFoldingOnly,
-    };
-
-    const ranges = this.languageService.getFoldingRanges(textDocument, context);
-    return ranges ?? undefined;
+      const ranges = this.languageService.getFoldingRanges(document, context);
+      return ranges ?? undefined;
+    });
   }
 
   selectionRangeHandler(params: SelectionRangeParams): SelectionRange[] | undefined {
-    const textDocument = this.yamlSettings.documents.get(params.textDocument.uri);
-    if (!textDocument) {
-      return;
-    }
-
-    return this.languageService.getSelectionRanges(textDocument, params.positions);
+    return this.withDocument(params.textDocument.uri, (document) =>
+      this.languageService.getSelectionRanges(document, params.positions),
+    );
   }
 
   codeActionHandler(params: CodeActionParams): CodeAction[] | undefined {
-    const textDocument = this.yamlSettings.documents.get(params.textDocument.uri);
-    if (!textDocument) {
-      return;
-    }
-
-    return this.languageService.getCodeAction(textDocument, params);
+    return this.withDocument(params.textDocument.uri, (document) =>
+      this.languageService.getCodeAction(document, params),
+    );
   }
 
   codeLensHandler(
     params: CodeLensParams,
   ): CodeLens[] | PromiseLike<CodeLens[] | undefined> | undefined {
-    const textDocument = this.yamlSettings.documents.get(params.textDocument.uri);
-    if (!textDocument) {
-      return;
-    }
-    return this.languageService.getCodeLens(textDocument);
+    return this.withDocument(params.textDocument.uri, (document) =>
+      this.languageService.getCodeLens(document),
+    );
   }
 
   codeLensResolveHandler(param: CodeLens): CodeLens | PromiseLike<CodeLens> {
@@ -296,12 +268,14 @@ export class LanguageHandlers {
   }
 
   definitionHandler(params: DefinitionParams): DefinitionLink[] | undefined {
-    const textDocument = this.yamlSettings.documents.get(params.textDocument.uri);
-    if (!textDocument) {
-      return;
-    }
+    return this.withDocument(params.textDocument.uri, (document) =>
+      this.languageService.doDefinition(document, params),
+    );
+  }
 
-    return this.languageService.doDefinition(textDocument, params);
+  private withDocument<T>(uri: string, callback: (document: TextDocument) => T): T | undefined {
+    const document = this.yamlSettings.documents.get(uri);
+    return document ? callback(document) : undefined;
   }
 
   // Adapted from:

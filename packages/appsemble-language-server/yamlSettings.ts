@@ -28,45 +28,6 @@ export interface Settings {
      */
     blockRegistryBaseUrl?: string;
   };
-  yaml: {
-    format: CustomFormatterOptions;
-    schemas: JSONSchemaSettings[];
-    validate: boolean;
-    hover: boolean;
-    completion: boolean;
-    customTags: string[];
-    schemaStore: {
-      url: string;
-      enable: boolean;
-    };
-    disableDefaultProperties: boolean;
-    disableAdditionalProperties: boolean;
-    suggest: {
-      parentSkeletonSelectedFirst: boolean;
-    };
-    style: {
-      flowMapping: 'allow' | 'forbid';
-      flowSequence: 'allow' | 'forbid';
-    };
-    keyOrdering: boolean;
-    maxItemsComputed: number;
-    yamlVersion: YamlVersion;
-  };
-  http: {
-    proxy: string;
-    proxyStrictSSL: boolean;
-  };
-  yamlEditor: {
-    'editor.tabSize': number;
-    'editor.insertSpaces': boolean;
-    'editor.formatOnType': boolean;
-  };
-  vscodeEditor: {
-    detectIndentation: boolean;
-  };
-  files: {
-    associations: Map<string, string>;
-  };
 }
 
 export interface JSONSchemaSettings {

@@ -2,7 +2,6 @@
  *  Copyright (c) Red Hat, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *-------------------------------------------------------------------------------------------- */
-import requestLight from 'request-light';
 import {
   type Connection,
   DidChangeConfigurationNotification,
@@ -71,127 +70,17 @@ export class SettingsHandler {
     this.connection.onDidChangeConfiguration(() => this.pullConfiguration());
   }
 
-  /**
-   * The server pull the 'yaml', 'http.proxy', 'http.proxyStrictSSL', '[yaml]' settings sections
-   */
   async pullConfiguration(): Promise<void> {
-    const config = await this.connection.workspace.getConfiguration([
-      { section: 'yaml' },
-      { section: 'http' },
-      { section: '[yaml]' },
-      { section: 'editor' },
-      { section: 'files' },
-      { section: 'appsemble' },
-    ]);
+    const appsemble = await this.connection.workspace.getConfiguration({ section: 'appsemble' });
     const settings: Readonly<Settings> = {
-      appsemble: config[5] ?? {},
-      yaml: config[0],
-      http: {
-        proxy: config[1]?.proxy ?? '',
-        proxyStrictSSL: config[1]?.proxyStrictSSL ?? false,
-      },
-      yamlEditor: config[2],
-      vscodeEditor: config[3],
-      files: config[4],
+      appsemble: appsemble ?? {},
     };
     await this.setConfiguration(settings);
   }
 
   // eslint-disable-next-line require-await
-  private async setConfiguration(
-    settings: Settings & { yaml: { format: { trailingComma?: boolean } } },
-  ): Promise<void> {
-    requestLight.configure(
-      settings.http && settings.http.proxy,
-      settings.http && settings.http.proxyStrictSSL,
-    );
-
+  private async setConfiguration(settings: Settings): Promise<void> {
     this.yamlSettings.specificValidatorPaths = [];
-    if (settings.yaml) {
-      if (Object.prototype.hasOwnProperty.call(settings.yaml, 'schemas')) {
-        this.yamlSettings.yamlConfigurationSettings = settings.yaml.schemas;
-      }
-      if (Object.prototype.hasOwnProperty.call(settings.yaml, 'validate')) {
-        this.yamlSettings.yamlShouldValidate = settings.yaml.validate;
-      }
-      if (Object.prototype.hasOwnProperty.call(settings.yaml, 'hover')) {
-        this.yamlSettings.yamlShouldHover = settings.yaml.hover;
-      }
-      if (Object.prototype.hasOwnProperty.call(settings.yaml, 'completion')) {
-        this.yamlSettings.yamlShouldCompletion = settings.yaml.completion;
-      }
-      this.yamlSettings.customTags = settings.yaml.customTags ?? [];
-
-      this.yamlSettings.maxItemsComputed =
-        Math.trunc(Math.max(0, Number(settings.yaml.maxItemsComputed))) || 5000;
-
-      if (settings.yaml.schemaStore) {
-        this.yamlSettings.schemaStoreEnabled = settings.yaml.schemaStore.enable;
-        if (settings.yaml.schemaStore.url?.length !== 0) {
-          this.yamlSettings.schemaStoreUrl = settings.yaml.schemaStore.url;
-        }
-      }
-      if (settings.files?.associations) {
-        for (const [ext, languageId] of Object.entries(settings.files.associations)) {
-          if (languageId === 'yaml') {
-            this.yamlSettings.fileExtensions.push(ext);
-          }
-        }
-      }
-      this.yamlSettings.yamlVersion = settings.yaml.yamlVersion ?? '1.2';
-
-      if (settings.yaml.format) {
-        this.yamlSettings.yamlFormatterSettings = {
-          proseWrap: settings.yaml.format.proseWrap || 'preserve',
-          printWidth: settings.yaml.format.printWidth || 80,
-        };
-
-        if (settings.yaml.format.singleQuote !== undefined) {
-          this.yamlSettings.yamlFormatterSettings.singleQuote = settings.yaml.format.singleQuote;
-        }
-
-        if (settings.yaml.format.bracketSpacing !== undefined) {
-          this.yamlSettings.yamlFormatterSettings.bracketSpacing =
-            settings.yaml.format.bracketSpacing;
-        }
-
-        if (settings.yaml.format.trailingComma !== undefined) {
-          this.yamlSettings.yamlFormatterSettings.trailingComma =
-            settings.yaml.format.trailingComma;
-        }
-
-        if (settings.yaml.format.enable !== undefined) {
-          this.yamlSettings.yamlFormatterSettings.enable = settings.yaml.format.enable;
-        }
-      }
-      this.yamlSettings.disableAdditionalProperties = settings.yaml.disableAdditionalProperties;
-      this.yamlSettings.disableDefaultProperties = settings.yaml.disableDefaultProperties;
-
-      if (settings.yaml.suggest) {
-        this.yamlSettings.suggest.parentSkeletonSelectedFirst =
-          settings.yaml.suggest.parentSkeletonSelectedFirst;
-      }
-      this.yamlSettings.style = {
-        flowMapping: settings.yaml.style?.flowMapping ?? 'allow',
-        flowSequence: settings.yaml.style?.flowSequence ?? 'allow',
-      };
-      this.yamlSettings.keyOrdering = settings.yaml.keyOrdering ?? false;
-    }
-
-    // TODO: get rid of
-    // this.yamlSettings.schemaConfigurationSettings = [];
-
-    let tabSize = 2;
-    if (settings.vscodeEditor) {
-      tabSize =
-        !settings.vscodeEditor.detectIndentation && settings.yamlEditor
-          ? settings.yamlEditor['editor.tabSize']
-          : tabSize;
-    }
-
-    if (settings.yamlEditor && settings.yamlEditor['editor.tabSize']) {
-      this.yamlSettings.indentation = ' '.repeat(tabSize);
-    }
 
     if (settings.appsemble.blockRegistryBaseUrl) {
       this.yamlSettings.blockRegistryBaseUrl = settings.appsemble.blockRegistryBaseUrl;
@@ -202,8 +91,7 @@ export class SettingsHandler {
 
     // Dynamically enable & disable the formatter
     if (this.yamlSettings.clientDynamicRegisterSupport) {
-      const enableFormatter =
-        settings && settings.yaml && settings.yaml.format && settings.yaml.format.enable;
+      const enableFormatter = this.yamlSettings.yamlFormatterSettings.enable;
 
       if (enableFormatter) {
         if (!this.yamlSettings.formatterRegistration) {
