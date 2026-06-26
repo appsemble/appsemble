@@ -1,12 +1,14 @@
 import { getAppBlocks, type IdentifiableBlock, parseBlockName, semver } from '@appsemble/lang-sdk';
 import { isEqual as deepEquals } from 'lodash-es';
 import { type LanguageService } from 'yaml-language-server';
+import { MODIFICATION_ACTIONS } from 'yaml-language-server/lib/esm/languageservice/services/yamlSchemaService.js';
 
 import { type BlockSchemaRequestHandler } from '../../BlockSchemaRequestHandler.js';
 import { type Logger } from '../../Logger.js';
 import { type SettingsState } from '../../yamlSettings.js';
 import { type BlockManifestCacher } from '../utils/BlockManifestCacher.js';
 import { type YamlCacher } from '../utils/YamlCacher.js';
+import { type ValidationHandler } from './validationHandlers.js';
 
 export class BlockRegistryHandlers {
   private yamlSettings: SettingsState;
@@ -21,9 +23,13 @@ export class BlockRegistryHandlers {
 
   private readonly logger: Logger;
 
+  private readonly validationHandler: ValidationHandler;
+
   private lastOneOf: unknown = null;
 
   private updateCounter = 0;
+
+  private updateTimeout: NodeJS.Timeout | undefined;
 
   private isCompleteBlock(block: IdentifiableBlock): boolean {
     return Boolean(parseBlockName(block.type) && semver.test(String(block.version)));
@@ -35,6 +41,7 @@ export class BlockRegistryHandlers {
     blockManifestCacher: BlockManifestCacher,
     blockSchemaRequestHandler: BlockSchemaRequestHandler,
     languageService: LanguageService,
+    validationHandler: ValidationHandler,
     logger: Logger,
   ) {
     this.yamlSettings = yamlSettings;
@@ -42,14 +49,18 @@ export class BlockRegistryHandlers {
     this.blockManifestCacher = blockManifestCacher;
     this.blockSchemaRequestHandler = blockSchemaRequestHandler;
     this.languageService = languageService;
+    this.validationHandler = validationHandler;
     this.logger = logger;
   }
 
   registerHandlers(): void {
     this.yamlSettings.documents.onDidChangeContent(() => {
-      this.updateBlockSchemas().catch((error: unknown) => {
-        this.logger.error(`Error updating block schemas: ${error}`);
-      });
+      clearTimeout(this.updateTimeout);
+      this.updateTimeout = setTimeout(() => {
+        this.updateBlockSchemas().catch((error: unknown) => {
+          this.logger.error(`Error updating block schemas: ${error}`);
+        });
+      }, this.yamlSettings.validationDelayMs);
     });
   }
 
@@ -108,11 +119,21 @@ export class BlockRegistryHandlers {
     this.lastOneOf = oneOf;
     try {
       this.blockSchemaRequestHandler.availableBlockRefs = { oneOf };
+      await Promise.resolve(
+        this.languageService.modifySchemaContent({
+          action: MODIFICATION_ACTIONS.add,
+          schema: 'appsemble://schema.json',
+          path: 'definitions/BlockDefinition/allOf',
+          key: '0',
+          content: { oneOf },
+        }),
+      );
     } catch (error: unknown) {
       this.logger.error(`Error updating blockSchemaRequestHandler: ${error}`);
     }
     this.logger.log('Updated blockSchemaRequestHandler');
-    this.logger.log('Resetting schema: appsemble://availBlocksRef.json');
-    this.languageService.resetSchema('appsemble://availBlocksRef.json');
+    for (const document of this.yamlSettings.documents.all()) {
+      this.validationHandler.validate(document);
+    }
   }
 }

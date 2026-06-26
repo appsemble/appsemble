@@ -307,6 +307,7 @@ export class YAMLServerInit {
       this.blockManifestCacher,
       this.blockSchemaRequestHandler,
       this.languageService,
+      this.validationHandler,
       this.logger,
     );
     this.blockRegistryHandler.registerHandlers();

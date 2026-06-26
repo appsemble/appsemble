@@ -133,6 +133,9 @@ export class ValidationHandler {
       diagnostics.push(diagnosticItem);
     }
     const removeDuplicatesDiagnostics = removeDuplicatesObj(diagnostics);
+    if (this.yamlSettings.documents.get(textDocument.uri)?.version !== textDocument.version) {
+      return removeDuplicatesDiagnostics;
+    }
     this.connection.sendDiagnostics({
       uri: textDocument.uri,
       diagnostics: removeDuplicatesDiagnostics,

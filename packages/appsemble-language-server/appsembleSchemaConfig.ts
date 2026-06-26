@@ -57,7 +57,7 @@ export function createAppsembleSchemaConfig({
   referenceUri,
 }: CreateAppsembleSchemaConfigOptions = {}): SchemaConfiguration[] {
   const clonedSchemas = cloneDeep(schemas);
-  set(clonedSchemas, 'BlockDefinition.allOf', [{ $ref: 'appsemble://availBlocksRef.json' }]);
+  set(clonedSchemas, 'BlockDefinition.allOf', [{ oneOf: [] }]);
   const jsonSchemas = mapValues(clonedSchemas, (schema) =>
     addMarkdownDescriptions(rewriteOpenApiSchemaReferences(schema)),
   );
