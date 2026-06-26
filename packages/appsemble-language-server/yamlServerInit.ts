@@ -176,9 +176,6 @@ export class YAMLServerInit {
   // eslint-disable-next-line require-await
   async connectionInitialized(params: InitializeParams): Promise<InitializeResult> {
     this.yamlSettings.capabilities = params.capabilities;
-    this.connection.console.info(
-      `[DEBUG] schemaRequestWrapper is ${this.schemaRequestWrapper.constructor.name}`,
-    );
     this.languageService = getCustomLanguageService({
       schemaRequestService: this.schemaRequestWrapper.handle.bind(this.schemaRequestWrapper),
       workspaceContext: this.workspaceContext,
@@ -285,7 +282,6 @@ export class YAMLServerInit {
       this.telemetry,
       this.logger,
     );
-    this.settingsHandler.registerHandlers();
     this.languageHandler = new LanguageHandlers(
       this.connection,
       this.languageService,

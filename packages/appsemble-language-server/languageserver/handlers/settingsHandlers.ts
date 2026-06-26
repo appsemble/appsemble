@@ -75,11 +75,10 @@ export class SettingsHandler {
     const settings: Readonly<Settings> = {
       appsemble: appsemble ?? {},
     };
-    await this.setConfiguration(settings);
+    this.setConfiguration(settings);
   }
 
-  // eslint-disable-next-line require-await
-  private async setConfiguration(settings: Settings): Promise<void> {
+  private setConfiguration(settings: Settings): void {
     this.yamlSettings.specificValidatorPaths = [];
 
     if (settings.appsemble.blockRegistryBaseUrl) {
