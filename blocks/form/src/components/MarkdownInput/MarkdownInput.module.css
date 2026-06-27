@@ -1,7 +1,6 @@
 /* Necessary to avoid webpack tree-shaking from causing bugs */
 
-/* Import only the Crepe styles for features enabled in MarkdownInput. */
-/* No idea why imports only work sometimes in blocks */
+/* Keep these Crepe theme imports in this CSS module so they are included in the block bundle. */
 @import url(@milkdown/crepe/theme/common/prosemirror.css);
 @import url(@milkdown/crepe/theme/common/reset.css);
 @import url(@milkdown/crepe/theme/common/cursor.css);
