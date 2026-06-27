@@ -5,10 +5,9 @@ import {
   type RequestLikeActionDefinition,
   type ResourceQueryActionDefinition,
 } from '@appsemble/lang-sdk';
-import { getRemapperContext, logger } from '@appsemble/node-utils';
+import { getRemapperContext, getSSRFProtectedAgents, logger } from '@appsemble/node-utils';
 import { formatRequestAction } from '@appsemble/utils';
 import axios from 'axios';
-import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-filtering-agent';
 
 import { type ServerActionParameters } from './index.js';
 import { applyAppServiceSecrets } from '../../options/applyAppServiceSecrets.js';
@@ -83,25 +82,23 @@ export async function request({
   // Apply SSRF protection
   // This blocks requests to private IPs, localhost, link-local addresses,
   // and hostnames that resolve to private IPs (prevents DNS rebinding attacks)
-  //
-  // VITEST_CONF_ALLOW_PRIVATE_IP_PROXY: Test-only env var set in vitest.setup.ts
-  // to allow proxy tests to use localhost servers. SSRF tests explicitly unset this.
-  // This env var should NEVER be set in production.
-  const allowPrivateIPAddress = process.env.VITEST_CONF_ALLOW_PRIVATE_IP_PROXY === '1';
-
-  // Preserve any existing agent options (e.g., client certs from applyAppServiceSecrets)
-  // while still applying SSRF protection
-  const existingHttpsOptions = newAxiosConfig.httpsAgent?.options ?? {};
-  const existingHttpOptions = newAxiosConfig.httpAgent?.options ?? {};
-
-  newAxiosConfig.httpAgent = new RequestFilteringHttpAgent({
-    ...existingHttpOptions,
-    allowPrivateIPAddress,
+  let hostname: string | undefined;
+  try {
+    hostname = newAxiosConfig.url
+      ? new URL(newAxiosConfig.url, newAxiosConfig.baseURL ?? undefined).hostname
+      : undefined;
+  } catch {
+    // Leave hostname undefined on a missing/relative/malformed URL; the agent still applies SSRF
+    // protection and axios surfaces the invalid URL below.
+    hostname = undefined;
+  }
+  const { httpAgent, httpsAgent } = await getSSRFProtectedAgents({
+    hostname,
+    httpAgent: newAxiosConfig.httpAgent,
+    httpsAgent: newAxiosConfig.httpsAgent,
   });
-  newAxiosConfig.httpsAgent = new RequestFilteringHttpsAgent({
-    ...existingHttpsOptions,
-    allowPrivateIPAddress,
-  });
+  newAxiosConfig.httpAgent = httpAgent;
+  newAxiosConfig.httpsAgent = httpsAgent;
 
   let response;
   try {

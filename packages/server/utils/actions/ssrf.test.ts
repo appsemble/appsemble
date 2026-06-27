@@ -121,6 +121,18 @@ describe('request action SSRF protection', () => {
       expect(response.status).toBe(403);
       expect(response.data.message).toMatch(/private|blocked|not allowed/i);
     });
+
+    it('should block NAT64 synthesized private IPv4 addresses (64:ff9b::127.0.0.1)', async () => {
+      // 127.0.0.1 in hex is 7f00:0001
+      await createAppWithAction('ssrfNAT64Private', 'http://[64:ff9b::7f00:0001]:8080/');
+
+      const response = await request.get(
+        '/api/apps/1/actions/pages.0.blocks.0.actions.ssrfNAT64Private?data={}',
+      );
+
+      expect(response.status).toBe(403);
+      expect(response.data.message).toMatch(/private|blocked|not allowed/i);
+    });
   });
 
   describe('IPv6 Bypass Attempts', () => {

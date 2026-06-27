@@ -203,6 +203,7 @@
     "reencrypted",
     "datname",
     "securitytxt",
-    "httponly"
+    "httponly",
+    "synthesised"
   ]
 }
