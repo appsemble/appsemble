@@ -111,8 +111,6 @@ export function MarkdownInput({
         defaultValue: initValue,
         features: {
           'block-edit': false,
-          'code-mirror': false,
-          latex: false,
           toolbar: false,
           'image-block': false,
         },
