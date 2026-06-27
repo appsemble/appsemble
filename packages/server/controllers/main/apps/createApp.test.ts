@@ -2466,17 +2466,15 @@ describe('createApp', () => {
           version: '1.2.3',
         });
       mock
-        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3/asset')
-        .reply(({ params: { filename } }) => {
-          switch (filename) {
-            case 'a.js':
-              return [200, aContent, { 'content-type': 'application/javascript' }];
-            case 'b.css':
-              return [200, bContent, { 'content-type': 'text/css' }];
-            default:
-              return [404];
-          }
-        });
+        .onGet(
+          'https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3/asset?filename=a.js',
+        )
+        .reply(200, aContent, { 'content-type': 'application/javascript' });
+      mock
+        .onGet(
+          'https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3/asset?filename=b.css',
+        )
+        .reply(200, bContent, { 'content-type': 'text/css' });
       mock
         .onGet(
           'https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3/messages/en',
