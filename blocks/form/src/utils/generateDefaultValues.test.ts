@@ -36,4 +36,26 @@ describe('generateDefaultValues', () => {
       },
     });
   });
+
+  it('should show undefined if default value for date field falls on a disabled day', () => {
+    const fields: Field[] = [
+      {
+        type: 'date',
+        name: 'dateField',
+        requirements: [
+          { monday: false },
+          { tuesday: false },
+          { wednesday: false },
+          { thursday: false },
+          { friday: false },
+          { saturday: false },
+          { sunday: false },
+        ],
+      },
+    ];
+
+    const generatedValues = generateDefaultValues(fields);
+
+    expect(generatedValues).toMatchObject({ dateField: undefined });
+  });
 });
