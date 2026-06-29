@@ -247,7 +247,7 @@ export function DateTimeField({
           decorationsRef.current?.filter((decoration) => {
             // Decorations may arrive without a (valid) date while their data is still loading.
             // `parseISO` of a non-string throws, which would crash the whole calendar on redraw.
-            if (typeof decoration?.date !== 'string') {
+            if (decoration?.date === undefined) {
               return false;
             }
             const decorationDate = parseISO(decoration.date);
@@ -322,7 +322,7 @@ export function DateTimeField({
   // emitting a change event, so these never trigger the re-entrant init that recreating the picker
   // did. `disable` is keyed by content because it gets a fresh array reference on every render.
   const disableKey = JSON.stringify(
-    (disable ?? []).map((entry) => (typeof entry === 'string' ? entry : 'fn')),
+    (disable ?? []).map((entry) => (typeof entry === 'function' ? 'fn' : entry)),
   );
   useEffect(() => {
     pickerRef.current?.set('disable', disableRef.current ?? []);
