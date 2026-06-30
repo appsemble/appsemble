@@ -162,6 +162,32 @@ export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => 
 }
 
 /**
+ * Resolve the explicit dates that should be disabled in a date picker.
+ *
+ * @param field The field to check.
+ * @param utils The Appsemble SDK utils.
+ * @param values The values of all form fields.
+ * @returns The ISO date strings that should not be selectable.
+ */
+export function getDisabledDates(
+  field: FieldWithRequirements,
+  utils?: BlockUtils,
+  values?: Values,
+): string[] {
+  const { disabledDates } = field as FieldWithRequirements & { disabledDates?: unknown };
+  if (disabledDates == null) {
+    return [];
+  }
+
+  const remapped = utils?.remap(disabledDates as any, values);
+  if (!Array.isArray(remapped)) {
+    return [];
+  }
+
+  return remapped.filter((date): date is string => typeof date === 'string');
+}
+
+/**
  * Get the absolute minimum length of a field.
  *
  * @param field The field to check.

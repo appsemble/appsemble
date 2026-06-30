@@ -2831,11 +2831,10 @@ On mobile browsers the field falls back to the native date picker by default. Th
             "format": "remapper",
           },
           "disabledDates": {
-            "description": "Dates to disable in the picker (ISO date strings).",
-            "items": {
-              "type": "string",
-            },
-            "type": "array",
+            "description": "Dates to disable in the picker.
+
+A remapper that should resolve to an array of ISO date strings (\`yyyy-MM-dd\`). The resolved dates cannot be selected in the picker.",
+            "format": "remapper",
           },
           "help": {
             "description": "A description for the text field. For adding more information about the field.",

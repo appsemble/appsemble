@@ -2,7 +2,7 @@
 import { type Remapper } from '@appsemble/lang-sdk';
 import { useBlock } from '@appsemble/preact';
 import classNames from 'classnames';
-import { isSameDay, parseISO } from 'date-fns';
+import { isSameDay, isValid, parseISO } from 'date-fns';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
@@ -140,8 +140,26 @@ export function DateTimeField({
   const internal = useRef<HTMLDivElement>();
   const positionElement = useRef<HTMLDivElement>();
   const [picker, setPicker] = useState<flatpickr.Instance | null>(null);
+  // Mirrors the live flatpickr instance. The `picker` state lags one render behind the actual
+  // instance lifecycle, so effects that run in the same commit as a destroy/recreate would
+  // otherwise operate on an already-destroyed instance (reading `self.config` after `destroy()`).
+  const pickerRef = useRef<flatpickr.Instance | null>(null);
   const decorationsRef = useRef(decorations);
   decorationsRef.current = decorations;
+  // Dynamic options are pushed into the live picker via `set()` rather than recreating it. The
+  // refs let the create effect seed the initial instance with the current values without listing
+  // them as dependencies, so a changing `disable`/`minDate`/`maxDate` no longer tears the picker
+  // down and back up (which made flatpickr re-emit a change event during init).
+  const disableRef = useRef(disable);
+  disableRef.current = disable;
+  const minDateRef = useRef(minDate);
+  minDateRef.current = minDate;
+  const maxDateRef = useRef(maxDate);
+  maxDateRef.current = maxDate;
+  const minTimeRef = useRef(minTime);
+  minTimeRef.current = minTime;
+  const maxTimeRef = useRef(maxTime);
+  maxTimeRef.current = maxTime;
   const {
     utils: { remap },
   } = useBlock();
@@ -191,11 +209,11 @@ export function DateTimeField({
       // eslint-disable-next-line @typescript-eslint/naming-convention
       time_24hr: true,
       wrap: true,
-      ...(disable?.length && { disable }),
-      minDate,
-      maxDate,
-      minTime,
-      maxTime,
+      ...(disableRef.current?.length && { disable: disableRef.current }),
+      minDate: minDateRef.current,
+      maxDate: maxDateRef.current,
+      minTime: minTimeRef.current,
+      maxTime: maxTimeRef.current,
       plugins: confirm ? [confirmDatePlugin({ confirmText: confirmLabel })] : [],
       minuteIncrement,
       formatDate: (date) =>
@@ -226,9 +244,15 @@ export function DateTimeField({
       ) {
         const { dateObj } = dayElem;
         const matchingDecorations =
-          decorationsRef.current?.filter((decoration) =>
-            isSameDay(dateObj, parseISO(decoration.date)),
-          ) ?? [];
+          decorationsRef.current?.filter((decoration) => {
+            // Decorations may arrive without a (valid) date while their data is still loading.
+            // `parseISO` of a non-string throws, which would crash the whole calendar on redraw.
+            if (decoration?.date === undefined) {
+              return false;
+            }
+            const decorationDate = parseISO(decoration.date);
+            return isValid(decorationDate) && isSameDay(dateObj, decorationDate);
+          }) ?? [];
 
         // One decoration per type
         let hasDot = false;
@@ -266,10 +290,12 @@ export function DateTimeField({
       },
     });
 
+    pickerRef.current = p;
     setPicker(p);
 
     return () => {
       p.destroy();
+      pickerRef.current = null;
       setPicker(null);
     };
   }, [
@@ -284,10 +310,6 @@ export function DateTimeField({
     disabled,
     enableTime,
     locale,
-    maxDate,
-    maxTime,
-    minDate,
-    minTime,
     minuteIncrement,
     mode,
     noCalendar,
@@ -296,17 +318,43 @@ export function DateTimeField({
     onYearChange,
   ]);
 
+  // Apply dynamic constraints to the live picker. `set()` updates the config and redraws without
+  // emitting a change event, so these never trigger the re-entrant init that recreating the picker
+  // did. `disable` is keyed by content because it gets a fresh array reference on every render.
+  const disableKey = JSON.stringify(
+    (disable ?? []).map((entry) => (typeof entry === 'function' ? 'fn' : entry)),
+  );
+  useEffect(() => {
+    pickerRef.current?.set('disable', disableRef.current ?? []);
+  }, [picker, disableKey]);
+
+  useEffect(() => {
+    pickerRef.current?.set('minDate', minDate ?? null);
+  }, [picker, minDate]);
+
+  useEffect(() => {
+    pickerRef.current?.set('maxDate', maxDate ?? null);
+  }, [picker, maxDate]);
+
+  useEffect(() => {
+    pickerRef.current?.set('minTime', minTime);
+  }, [picker, minTime]);
+
+  useEffect(() => {
+    pickerRef.current?.set('maxTime', maxTime);
+  }, [picker, maxTime]);
+
   // Redraw calendar when decorations change (without destroying the picker)
   useEffect(() => {
-    if (picker && decorations) {
+    if (pickerRef.current && decorations) {
       // Trigger a redraw by calling redraw - this will re-invoke onDayCreate for visible days
-      picker.redraw();
+      pickerRef.current.redraw();
     }
   }, [picker, decorations]);
 
   useEffect(() => {
     if (value) {
-      picker?.setDate(new Date(value));
+      pickerRef.current?.setDate(new Date(value));
     }
   }, [picker, value]);
 
