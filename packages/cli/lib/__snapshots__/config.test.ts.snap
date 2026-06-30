@@ -2818,6 +2818,13 @@ The date value can be accessed using the \`root\` remapper.",
             "description": "The default value of the field.",
             "type": "string",
           },
+          "disableNativePicker": {
+            "default": true,
+            "description": "Disable the operating system's native date picker on mobile devices and always render the Appsemble date picker instead.
+
+On mobile browsers the field falls back to the native date picker by default. That picker cannot render decorations or disabled dates, and it ignores the configured date format and the minimum and maximum date requirements, so the field can behave differently on mobile than on desktop. Set this to \`false\` to use the native mobile picker.",
+            "type": "boolean",
+          },
           "disabled": {
             "default": false,
             "description": "Whether the field should always be be disabled.",
@@ -2943,6 +2950,13 @@ The date value can be accessed using the \`root\` remapper.",
           "defaultValue": {
             "description": "The default value of the field.",
             "type": "string",
+          },
+          "disableNativePicker": {
+            "default": true,
+            "description": "Disable the operating system's native date picker on mobile devices and always render the Appsemble date picker instead.
+
+On mobile browsers the field falls back to the native date picker by default. That picker cannot render decorations or disabled dates, and it ignores the configured date format and the minimum and maximum date requirements, so the field can behave differently on mobile than on desktop. Set this to \`false\` to use the native mobile picker.",
+            "type": "boolean",
           },
           "disabled": {
             "default": false,

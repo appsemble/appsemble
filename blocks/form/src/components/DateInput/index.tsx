@@ -106,6 +106,7 @@ export function DateInput({
       decorations={decorations}
       disable={disable}
       disabled={disabled}
+      disableMobile={field.disableNativePicker ?? true}
       error={dirty ? error : null}
       errorLinkRef={errorLinkRef}
       help={utils.remap(help, value) as string}
