@@ -10,10 +10,11 @@ import { argv } from './argv.js';
 import {
   APP_REFRESH_TOKEN_COOKIE_NAME,
   clearAppCookies,
+  REFRESH_TOKEN_TTL_SECONDS,
   setAppRefreshTokenCookie,
 } from './appCookies.js';
 
-const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 14;
+const ABSOLUTE_SESSION_TTL_SECONDS = 60 * 60 * 24 * 30;
 
 interface SessionRecord {
   aud: string;
@@ -124,7 +125,7 @@ export async function rotateAppMemberRefreshSession(
 
   const { AppMemberRefreshSession } = await getAppDB(appId);
   const session = await AppMemberRefreshSession.findOne({
-    attributes: ['id', 'aud', 'scope', 'sub'],
+    attributes: ['id', 'aud', 'scope', 'sub', 'created'],
     where: {
       aud: `app:${appId}`,
       expires: {
@@ -135,6 +136,10 @@ export async function rotateAppMemberRefreshSession(
   });
 
   if (!session) {
+    throw new Error('Invalid refresh token');
+  }
+
+  if (Date.now() - session.created.getTime() > ABSOLUTE_SESSION_TTL_SECONDS * 1000) {
     throw new Error('Invalid refresh token');
   }
 
