@@ -83,7 +83,7 @@
     "lodash": "^4.0.0",
     "lodash-es": "^4.0.0",
     "logform": "^2.0.0",
-    "memfs": "4.57.2",
+    "memfs": "4.57.8",
     "mime-types": "^2.0.0",
     "minio": "^8.0.3",
     "mustache": "^4.0.0",
