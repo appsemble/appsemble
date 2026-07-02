@@ -79,6 +79,7 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
       type?: 'border' | 'dot' | 'overlay';
       color?: string;
       label?: string;
+      disabled?: boolean;
       borderStyle?: 'dashed' | 'dotted' | 'double' | 'solid';
     }[];
 
@@ -285,6 +286,9 @@ export function DateTimeField({
             span.style.setProperty('--date-border-style', decoration.borderStyle);
           }
 
+          if (decoration.disabled) {
+            dayElem.classList.add('flatpickr-disabled');
+          }
           dayElem.append(span);
         }
       },
