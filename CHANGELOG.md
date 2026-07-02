@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.36.10-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10-test.4)] - 2026-07-02
+
+### Added
+
+- Block(`form`): Add `disableNativePicker` option to date fields to keep the Appsemble picker on
+  mobile.
+- Block(`form`): Add `disabled` property to date picker decorations to make their date unselectable.
+
+### Fixed
+
+- Block(`form`): Fix a `self.config is undefined` crash when a date field's constraints change, by
+  updating the flatpickr instance in place instead of recreating it.
+- Block(`form`): In date fields, set the default value to undefined if today falls under one of the
+  disabled days.
+- Preact-components: Render the date picker with flatpickr instead of the native mobile picker by
+  default.
+
 ## \[[0.36.10-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10-test.3)] - 2026-05-21
 
 ## \[[0.36.10-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10-test.2)] - 2026-05-20

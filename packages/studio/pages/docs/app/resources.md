@@ -226,7 +226,7 @@ return all entries from the `answers` resource:
 
 ```yaml validate block-snippet
 - type: data-loader
-  version: 0.36.10-test.3
+  version: 0.36.10-test.4
   actions:
     onLoad:
       type: resource.query
