@@ -1,6 +1,6 @@
 import { type Schema, Validator } from 'jsonschema';
 
-export class MetaSchemaRegistry {
+export class SchemaRegistry {
   readonly schemas: Record<string, Schema>;
 
   constructor(schemas: Record<string, Schema>) {

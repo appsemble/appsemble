@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest';
 
 import { getAppPossiblePermissions } from '../authorization.js';
-import { cursorAt, defineMetaObject, metaSchemas } from './index.js';
+import { cursorAt, defineLanguageComponent, componentSchemas } from './index.js';
 import { type AppDefinition } from '../types/index.js';
 
 /*
- * End-to-end demo of the meta-object binding system: a real binding on the permissions
+ * End-to-end demo of the language component binding system: a real binding on the permissions
  * array. `validate` and `complete` are ~3 lines each because they reuse lang-sdk's
  * getAppPossiblePermissions (static enum + per-resource/view/webhook permissions), and
  * reach the enclosing app through cursor.nearest('AppDefinition') — the context a flat
  * schema enum cannot provide.
  */
-const AppPermissions = defineMetaObject(
+const AppPermissions = defineLanguageComponent(
   'AppPermissions',
   { type: 'array', items: { type: 'string' } },
   {
@@ -32,7 +32,7 @@ const AppPermissions = defineMetaObject(
 
 const defs = [
   AppPermissions,
-  defineMetaObject(
+  defineLanguageComponent(
     'AppDefinition',
     {
       type: 'object',
@@ -44,7 +44,7 @@ const defs = [
     },
     {},
   ),
-  defineMetaObject(
+  defineLanguageComponent(
     'SecurityDefinition',
     {
       type: 'object',
@@ -57,7 +57,7 @@ const defs = [
     },
     {},
   ),
-  defineMetaObject(
+  defineLanguageComponent(
     'RoleDefinition',
     {
       type: 'object',
@@ -66,7 +66,7 @@ const defs = [
     {},
   ),
 ];
-const schemas = metaSchemas(defs);
+const schemas = componentSchemas(defs);
 
 const app = {
   resources: { note: { views: { public: {} } } },
@@ -83,7 +83,7 @@ function permissionsCursor(): ReturnType<typeof cursorAt> {
   return cursor;
 }
 
-describe('meta-object binding: app permissions', () => {
+describe('language component binding: app permissions', () => {
   it('should navigate to the permissions node and resolve its identity', () => {
     const cursor = permissionsCursor();
     expect(cursor.identity?.name).toBe('AppPermissions');

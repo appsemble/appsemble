@@ -1,11 +1,11 @@
 import { type Schema } from 'jsonschema';
 
-import { defineMetaObject } from '../meta-object/index.js';
+import { defineLanguageComponent } from '../language-component/index.js';
 
-// The obj/combinator builders delegate tagging to defineMetaObject rather than inlining an
-// `appsembleMetaObject` literal, so there is a single tagging path. The mode is inferred from
+// The obj/combinator builders delegate tagging to defineLanguageComponent rather than inlining an
+// `appsembleLanguageComponent` literal, so there is a single tagging path. The mode is inferred from
 // the shape each builder constructs (object vs a single oneOf/anyOf/allOf), which is
-// unambiguous; defineMetaObject's inference is covered directly in meta-object/binding.test.ts.
+// unambiguous; defineLanguageComponent's inference is covered directly in language-component/binding.test.ts.
 
 function ref(name: string): Schema {
   return { $ref: `#/components/schemas/${name}` };
@@ -15,7 +15,7 @@ function refs(...names: string[]): Schema[] {
   return names.map(ref);
 }
 
-// A tagged object meta-object: `obj(name, required, properties, extra?)`. `extra` carries
+// A tagged object language component: `obj(name, required, properties, extra?)`. `extra` carries
 // the occasional `additionalProperties: false`.
 function obj(
   name: string,
@@ -23,12 +23,13 @@ function obj(
   properties: Record<string, Schema>,
   extra: Partial<Schema> = {},
 ): Schema {
-  return defineMetaObject(name, { type: 'object', ...extra, required, properties }, {}).schema;
+  return defineLanguageComponent(name, { type: 'object', ...extra, required, properties }, {})
+    .schema;
 }
 
-// A tagged combinator meta-object: `combinator(name, 'oneOf' | 'anyOf' | 'allOf', members)`.
+// A tagged combinator language component: `combinator(name, 'oneOf' | 'anyOf' | 'allOf', members)`.
 function combinator(name: string, mode: 'oneOf' | 'anyOf' | 'allOf', members: Schema[]): Schema {
-  return defineMetaObject(name, { [mode]: members }, {}).schema;
+  return defineLanguageComponent(name, { [mode]: members }, {}).schema;
 }
 
 export const TextWidget = obj('TextWidget', ['text'], { text: { type: 'string' } });
@@ -150,7 +151,7 @@ export const Container = obj('Container', ['inner', 'label'], {
   label: { type: 'string' },
 });
 
-// AnyOf short-circuit: a meta-object that only the SECOND branch introduces.
+// AnyOf short-circuit: a language component that only the SECOND branch introduces.
 export const Badge = obj('Badge', ['label'], { label: { type: 'string' } });
 
 export const BadgeHolder = obj('BadgeHolder', ['text', 'badge'], {
@@ -162,18 +163,18 @@ export const BadgeHolder = obj('BadgeHolder', ['text', 'badge'], {
 // Badge inside it) is never evaluated during hit collection.
 export const Host = combinator('Host', 'anyOf', refs('TextWidget', 'BadgeHolder'));
 
-// Array descent: a tagged array whose items are meta-objects. Exercises the walk
+// Array descent: a tagged array whose items are language components. Exercises the walk
 // descending numeric keys via `items`, and the ref-cutoff's items strip.
 export const Gallery = {
-  appsembleMetaObject: { name: 'Gallery', mode: 'object' },
+  appsembleLanguageComponent: { name: 'Gallery', mode: 'single' },
   type: 'array',
   items: ref('Badge'),
 } satisfies Schema;
 
-// Map descent: an open object whose values are meta-objects. Exercises the walk
+// Map descent: an open object whose values are language components. Exercises the walk
 // descending arbitrary keys via `additionalProperties`, and its ref-cutoff strip.
 export const Registry = {
-  appsembleMetaObject: { name: 'Registry', mode: 'object' },
+  appsembleLanguageComponent: { name: 'Registry', mode: 'single' },
   type: 'object',
   additionalProperties: ref('Badge'),
 } satisfies Schema;
@@ -216,11 +217,11 @@ export const Root = {
     container: ref('Container'),
     // AnyOf short-circuit divergence between hits and walk.
     host: ref('Host'),
-    // Array and map descent: meta-objects mounted at indices / arbitrary keys.
+    // Array and map descent: language components mounted at indices / arbitrary keys.
     gallery: ref('Gallery'),
     registry: ref('Registry'),
     // Inline array of holders: an array index (numeric) is the boundary, and each
-    // holder owns an optional nested meta-object that an edit can add or drop.
+    // holder owns an optional nested language component that an edit can add or drop.
     holders: { type: 'array', items: ref('BadgeHolder') },
     // Conditional-applicator placement the structural walk cannot reach.
     condHost: ref('ConditionalHost'),

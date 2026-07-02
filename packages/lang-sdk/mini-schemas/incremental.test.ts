@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { describeObject, describeObjects } from './harness.js';
+import { describeIdentity, describeIdentities } from './harness.js';
 import { miniSchemas, Root } from './schemas.js';
-import { MetaAnalyzer, type MetaTree } from '../meta-object/index.js';
+import { Scanner, type MountTree } from '../language-component/index.js';
 
 /*
  * Incremental re-analysis: given a prior tree and the paths that changed, buildTree
@@ -11,11 +11,11 @@ import { MetaAnalyzer, type MetaTree } from '../meta-object/index.js';
  * must be identical to a full analysis of the new document. The reuse assertions prove
  * work was actually skipped (untouched interpretations are the same object reference).
  */
-const analyzer = new MetaAnalyzer(miniSchemas);
+const analyzer = new Scanner(miniSchemas);
 
-const objects = describeObjects;
+const objects = describeIdentities;
 
-function byPath(tree: MetaTree): MetaTree['interpretations'] {
+function byPath(tree: MountTree): MountTree['interpretations'] {
   return tree.interpretations;
 }
 
@@ -45,7 +45,7 @@ describe('incremental re-analysis', () => {
   it('should capture an identity change inside the re-walked boundary', () => {
     const v1 = { environment: 'development', widget: { icon: 'save' } };
     const treeV1 = analyzer.buildTree(v1, Root);
-    expect(describeObject(treeV1.interpretations.get('/widget')!.identity)).toBe(
+    expect(describeIdentity(treeV1.interpretations.get('/widget')!.identity)).toBe(
       'Widget:oneOf(IconWidget)',
     );
 
@@ -53,7 +53,7 @@ describe('incremental re-analysis', () => {
     const incremental = analyzer.buildTree(v2, Root, { previous: treeV1, changed: [['widget']] });
 
     expect(objects(incremental)).toStrictEqual(objects(analyzer.buildTree(v2, Root)));
-    expect(describeObject(incremental.interpretations.get('/widget')!.identity)).toBe(
+    expect(describeIdentity(incremental.interpretations.get('/widget')!.identity)).toBe(
       'Widget:oneOf(TextWidget)',
     );
   });
@@ -126,9 +126,9 @@ describe('incremental re-analysis', () => {
   });
 
   // Regression: array indices arrive as numbers from a caller's diff but strings from
-  // the walk; a removed nested meta-object under a numeric-index boundary must still be
+  // the walk; a removed nested language component under a numeric-index boundary must still be
   // dropped (path containment compares by value, not JS type).
-  it('should drop a nested meta-object removed under an array-index boundary', () => {
+  it('should drop a nested language component removed under an array-index boundary', () => {
     const v1 = { environment: 'development', holders: [{ text: 'a', badge: { label: 'x' } }] };
     const treeV1 = analyzer.buildTree(v1, Root);
     expect(treeV1.interpretations.has('/holders/0/badge')).toBe(true);
@@ -144,8 +144,8 @@ describe('incremental re-analysis', () => {
   });
 
   // Regression: a changed path pointing at a removed array element must not re-emit a
-  // phantom meta-object; the boundary stops at the enclosing array.
-  it('should not re-emit a phantom meta-object for a removed array element', () => {
+  // phantom language component; the boundary stops at the enclosing array.
+  it('should not re-emit a phantom language component for a removed array element', () => {
     const v1 = { environment: 'development', gallery: [{ label: 'a' }, { label: 'b' }] };
     const treeV1 = analyzer.buildTree(v1, Root);
 
@@ -161,11 +161,11 @@ describe('incremental re-analysis', () => {
 
   it('should match a full analyze() through the combined result too', () => {
     const v1 = { environment: 'development', widget: { icon: 'save' } };
-    const full1 = analyzer.analyze(v1, Root);
+    const full1 = analyzer.scan(v1, Root);
 
     const v2 = { environment: 'development', widget: { text: 'hi' } };
-    const incremental = analyzer.analyze(v2, Root, { previous: full1, changed: [['widget']] });
-    const full2 = analyzer.analyze(v2, Root);
+    const incremental = analyzer.scan(v2, Root, { previous: full1, changed: [['widget']] });
+    const full2 = analyzer.scan(v2, Root);
 
     expect(objects(incremental)).toStrictEqual(objects(full2));
     expect(incremental.documentValid).toBe(full2.documentValid);

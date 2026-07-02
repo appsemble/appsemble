@@ -6,9 +6,9 @@ import {
   resolve,
   type ResolveContext,
   type Resolution,
-} from './analyze.js';
-import { MetaSchemaRegistry } from './schemaRegistry.js';
-import { META_KEY, type MetaIdentity, type MetaObjectPath } from './types.js';
+} from './scanner.js';
+import { SchemaRegistry } from './schemaRegistry.js';
+import { COMPONENT_KEY, type Identity, type NodePath } from './types.js';
 
 /**
  * A zipper over (value, schema) pairs. Each focus derives its identity by resolving the
@@ -26,7 +26,7 @@ export class Cursor {
 
   readonly value: unknown;
 
-  readonly path: MetaObjectPath;
+  readonly path: NodePath;
 
   private readonly parentCursor: Cursor | null;
 
@@ -34,7 +34,7 @@ export class Cursor {
     ctx: ResolveContext,
     schema: Schema,
     value: unknown,
-    path: MetaObjectPath,
+    path: NodePath,
     parentCursor: Cursor | null,
   ) {
     this.ctx = ctx;
@@ -49,8 +49,8 @@ export class Cursor {
     return this.cachedResolution;
   }
 
-  // The meta-object identity at this focus, or null when the schema is untagged.
-  get identity(): MetaIdentity | null {
+  // The language component identity at this focus, or null when the schema is untagged.
+  get identity(): Identity | null {
     return this.resolution().identity;
   }
 
@@ -100,21 +100,21 @@ export class Cursor {
  * @param schemas The registry of named schemas.
  * @param rootSchema The schema at the root of the document.
  * @param data The document to navigate.
- * @param metaKey The keyword identities are read from (defaults to META_KEY).
+ * @param componentKey The keyword identities are read from (defaults to COMPONENT_KEY).
  * @returns A cursor focused on the document root.
  */
 export function cursorAt(
   schemas: Record<string, Schema>,
   rootSchema: Schema,
   data: unknown,
-  metaKey: string = META_KEY,
+  componentKey: string = COMPONENT_KEY,
 ): Cursor {
-  const registry = new MetaSchemaRegistry(schemas);
+  const registry = new SchemaRegistry(schemas);
   const ctx: ResolveContext = {
     resolveRef: (ref) => registry.resolveRef(ref),
     validator: registry.createValidator(),
     shallow: createShallow(),
-    metaKey,
+    componentKey,
   };
   return new Cursor(ctx, rootSchema, data, [], null);
 }

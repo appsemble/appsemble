@@ -2,24 +2,18 @@ import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
 import {
-  analyzeMetaObjects,
+  scanComponents,
   cursorAt,
-  defineMetaObject,
+  defineLanguageComponent,
   getPath,
-  MetaAnalyzer,
-  metaSchemas,
-} from '../meta-object/index.js';
-import {
-  analyze,
-  describeObject,
-  describeObjects,
-  formatPath,
-  interpretationAt,
-} from './harness.js';
+  Scanner,
+  componentSchemas,
+} from '../language-component/index.js';
+import { analyze, describeIdentity, describeIdentities, formatPath, mountAt } from './harness.js';
 import { miniSchemas, Root } from './schemas.js';
 import { scenarios } from './scenarios.js';
 
-const treeObjects = describeObjects;
+const treeIdentities = describeIdentities;
 
 describe('engine edge cases', () => {
   it('keeps local validation possible when a nested oneOf contains refs', () => {
@@ -35,13 +29,13 @@ describe('engine edge cases', () => {
         properties: { kind: { const: 'b' } },
       },
       RefCutPart: {
-        appsembleMetaObject: { name: 'RefCutPart', mode: 'object' },
+        appsembleLanguageComponent: { name: 'RefCutPart', mode: 'single' },
         type: 'object',
         required: ['choice'],
         properties: { choice: { type: 'object' } },
       },
       RefCutContainer: {
-        appsembleMetaObject: { name: 'RefCutContainer', mode: 'allOf' },
+        appsembleLanguageComponent: { name: 'RefCutContainer', mode: 'allOf' },
         allOf: [
           {
             type: 'object',
@@ -60,21 +54,18 @@ describe('engine edge cases', () => {
       },
     } satisfies Record<string, Schema>;
 
-    const tree = new MetaAnalyzer(schemas).buildTree(
-      { choice: { kind: 'a' } },
-      schemas.RefCutContainer,
-    );
+    const tree = new Scanner(schemas).buildTree({ choice: { kind: 'a' } }, schemas.RefCutContainer);
     const mounted = tree.interpretations.get('/');
 
     expect(mounted).toBeDefined();
-    expect(describeObject(mounted!.identity)).toBe('RefCutContainer:allOf(RefCutPart)');
+    expect(describeIdentity(mounted!.identity)).toBe('RefCutContainer:allOf(RefCutPart)');
     expect(mounted!.localValid).toBe(true);
   });
 
   it('enforces an inline anyOf property during local validation', () => {
     const schemas = {
       AnyOfHost: {
-        appsembleMetaObject: { name: 'AnyOfHost', mode: 'object' },
+        appsembleLanguageComponent: { name: 'AnyOfHost', mode: 'single' },
         type: 'object',
         required: ['choice'],
         properties: {
@@ -85,15 +76,15 @@ describe('engine edge cases', () => {
       },
     } satisfies Record<string, Schema>;
 
-    const valid = new MetaAnalyzer(schemas).buildTree({ choice: 'a' }, schemas.AnyOfHost);
-    const invalid = new MetaAnalyzer(schemas).buildTree({ choice: 'c' }, schemas.AnyOfHost);
+    const valid = new Scanner(schemas).buildTree({ choice: 'a' }, schemas.AnyOfHost);
+    const invalid = new Scanner(schemas).buildTree({ choice: 'c' }, schemas.AnyOfHost);
 
     expect(valid.interpretations.get('/')!.localValid).toBe(true);
     expect(invalid.interpretations.get('/')!.localValid).toBe(false);
   });
 
   // The no-match counterpart to the scenario-driven 'composes every wrapper under an
-  // untagged combinator' in 'meta-object gaps'. It stays here because the null-identity
+  // untagged combinator' in 'language component gaps'. It stays here because the null-identity
   // branch needs untagged members with no annotated parts, which the shared fixtures
   // cannot express (their members are tagged, so failure yields unresolved, not null).
   it('yields no identity for an untagged allOf whose members do not all match', () => {
@@ -105,13 +96,13 @@ describe('engine edge cases', () => {
     } satisfies Schema;
 
     // Untagged combinator + no annotated parts + a member that fails -> nothing mounts.
-    const tree = new MetaAnalyzer({}).buildTree({}, schema);
+    const tree = new Scanner({}).buildTree({}, schema);
 
     expect(tree.interpretations.size).toBe(0);
   });
 
   it('stops the incremental boundary when a value along the changed path became null', () => {
-    const analyzer = new MetaAnalyzer(miniSchemas);
+    const analyzer = new Scanner(miniSchemas);
     const v1 = { environment: 'development', holders: [{ text: 'a', badge: { label: 'x' } }] };
     const treeV1 = analyzer.buildTree(v1, Root);
 
@@ -121,7 +112,7 @@ describe('engine edge cases', () => {
       changed: [['holders', 0, 'badge']],
     });
 
-    expect(treeObjects(incremental)).toStrictEqual(treeObjects(analyzer.buildTree(v2, Root)));
+    expect(treeIdentities(incremental)).toStrictEqual(treeIdentities(analyzer.buildTree(v2, Root)));
   });
 
   it('mounts nothing for an untagged oneOf with no matching annotated branch', () => {
@@ -129,13 +120,13 @@ describe('engine edge cases', () => {
       UntaggedChoice: {
         oneOf: [
           {
-            appsembleMetaObject: { name: 'Alpha', mode: 'object' },
+            appsembleLanguageComponent: { name: 'Alpha', mode: 'single' },
             type: 'object',
             required: ['kind'],
             properties: { kind: { const: 'a' } },
           },
           {
-            appsembleMetaObject: { name: 'Beta', mode: 'object' },
+            appsembleLanguageComponent: { name: 'Beta', mode: 'single' },
             type: 'object',
             required: ['kind'],
             properties: { kind: { const: 'b' } },
@@ -144,13 +135,13 @@ describe('engine edge cases', () => {
       },
     } satisfies Record<string, Schema>;
 
-    const tree = new MetaAnalyzer(schemas).buildTree({ kind: 'c' }, schemas.UntaggedChoice);
+    const tree = new Scanner(schemas).buildTree({ kind: 'c' }, schemas.UntaggedChoice);
 
     expect(tree.interpretations.size).toBe(0);
   });
 
   it('matches a full rebuild when a changed path is below an unowned schema key', () => {
-    const analyzer = new MetaAnalyzer(miniSchemas);
+    const analyzer = new Scanner(miniSchemas);
     const before = {
       environment: 'development',
       gallery: [{ label: 'gold' }],
@@ -168,7 +159,9 @@ describe('engine edge cases', () => {
       changed: [['metadata', 'note']],
     });
 
-    expect(treeObjects(incremental)).toStrictEqual(treeObjects(analyzer.buildTree(after, Root)));
+    expect(treeIdentities(incremental)).toStrictEqual(
+      treeIdentities(analyzer.buildTree(after, Root)),
+    );
   });
 
   it('reports an unknown schema ref when analysis resolves a missing ref', () => {
@@ -177,7 +170,7 @@ describe('engine edge cases', () => {
       properties: { item: { $ref: '#/components/schemas/Missing' } },
     };
 
-    expect(() => analyzeMetaObjects({ item: {} }, root, {})).toThrow(/Unknown schema ref/);
+    expect(() => scanComponents({ item: {} }, root, {})).toThrow(/Unknown schema ref/);
   });
 
   it('returns undefined when getPath traverses through null or a scalar', () => {
@@ -186,7 +179,7 @@ describe('engine edge cases', () => {
   });
 
   it('navigates into a child key whose parent value is null', () => {
-    const Nested = defineMetaObject(
+    const Nested = defineLanguageComponent(
       'NullParent',
       {
         type: 'object',
@@ -194,7 +187,7 @@ describe('engine edge cases', () => {
       },
       {},
     );
-    const schemas = metaSchemas([Nested]);
+    const schemas = componentSchemas([Nested]);
     const root = cursorAt(schemas, schemas.NullParent, { a: null });
 
     const grandchild = root.child('a')?.child('b');
@@ -203,24 +196,24 @@ describe('engine edge cases', () => {
   });
 
   it('returns null from nearest when no ancestor carries the requested identity name', () => {
-    const Solo = defineMetaObject(
+    const Solo = defineLanguageComponent(
       'SoloRoot',
       { type: 'object', properties: { a: { type: 'string' } } },
       {},
     );
-    const schemas = metaSchemas([Solo]);
+    const schemas = componentSchemas([Solo]);
     const root = cursorAt(schemas, schemas.SoloRoot, { a: 'x' });
 
     expect(root.nearest('Nonexistent')).toBeNull();
   });
 
   it('reports cursor local validity for the focused tagged object', () => {
-    const TaggedFocus = defineMetaObject(
+    const TaggedFocus = defineLanguageComponent(
       'TaggedFocus',
       { type: 'object', required: ['name'], properties: { name: { type: 'string' } } },
       {},
     );
-    const schemas = metaSchemas([TaggedFocus]);
+    const schemas = componentSchemas([TaggedFocus]);
 
     const valid = cursorAt(schemas, schemas.TaggedFocus, { name: 'ok' });
     const invalid = cursorAt(schemas, schemas.TaggedFocus, {});
@@ -232,12 +225,12 @@ describe('engine edge cases', () => {
   });
 
   it('returns null for a child key not owned by the winning oneOf branch', () => {
-    const Plain = defineMetaObject(
+    const Plain = defineLanguageComponent(
       'PlainBranchLocal',
       { type: 'object', required: ['type'], properties: { type: { const: 'plain' } } },
       {},
     );
-    const Fancy = defineMetaObject(
+    const Fancy = defineLanguageComponent(
       'FancyBranchLocal',
       {
         type: 'object',
@@ -246,7 +239,7 @@ describe('engine edge cases', () => {
       },
       {},
     );
-    const Host = defineMetaObject(
+    const Host = defineLanguageComponent(
       'BranchHostLocal',
       {
         oneOf: [
@@ -256,7 +249,7 @@ describe('engine edge cases', () => {
       },
       {},
     );
-    const schemas = metaSchemas([Plain, Fancy, Host]);
+    const schemas = componentSchemas([Plain, Fancy, Host]);
     const cursor = cursorAt(schemas, schemas.BranchHostLocal, { type: 'plain', action: {} });
 
     expect(cursor.child('type')).not.toBeNull();
@@ -264,7 +257,7 @@ describe('engine edge cases', () => {
   });
 
   it('enumerates owned object children and no children for non-objects', () => {
-    const OwnedObject = defineMetaObject(
+    const OwnedObject = defineLanguageComponent(
       'OwnedObject',
       {
         type: 'object',
@@ -272,7 +265,7 @@ describe('engine edge cases', () => {
       },
       {},
     );
-    const schemas = metaSchemas([OwnedObject]);
+    const schemas = componentSchemas([OwnedObject]);
     const cursor = cursorAt(schemas, schemas.OwnedObject, {
       count: 2,
       ignored: true,
@@ -295,7 +288,7 @@ describe('hits collection (public surface)', () => {
       expect.arrayContaining(['Widget', 'ButtonWidget', 'TextWidget', 'IconWidget']),
     );
     // ...while only the winning branch is mounted as an interpretation.
-    expect(describeObjects(result)['/widget']).toBe('Widget:oneOf(IconWidget)');
+    expect(describeIdentities(result)['/widget']).toBe('Widget:oneOf(IconWidget)');
   });
 });
 
@@ -315,12 +308,12 @@ describe('hits collection (public surface)', () => {
  * - Not a gap but easy to regress: the hit-collecting validator carries a side effect;
  *   the walk uses a separate clean validator so re-validation never records extra hits.
  */
-describe('meta-object gaps', () => {
+describe('language component gaps', () => {
   it('composes every wrapper under an untagged combinator', () => {
     const result = analyze(scenarios.untaggedComposite);
 
     expect(result.documentValid).toBe(true);
-    expect(describeObjects(result)).toStrictEqual({
+    expect(describeIdentities(result)).toStrictEqual({
       '/untaggedComposite':
         'allOf(StrictButtonOrText:oneOf(StrictButton), StrictIconOrTrackable:anyOf(IconWidget, Trackable))',
     });
@@ -329,7 +322,7 @@ describe('meta-object gaps', () => {
   it('does not attach ancestor errors to a locally valid descendant', () => {
     const result = analyze(scenarios.ancestorError);
 
-    const inner = interpretationAt(result, ['container', 'inner']);
+    const inner = mountAt(result, ['container', 'inner']);
     expect(inner).toBeDefined();
     expect(inner!.localValid).toBe(true);
     expect(inner!.errors).toStrictEqual([]);
@@ -338,7 +331,7 @@ describe('meta-object gaps', () => {
   it('keeps a tagged object identity when it fails its own constraints', () => {
     const result = analyze(scenarios.ancestorError);
 
-    const container = interpretationAt(result, ['container']);
+    const container = mountAt(result, ['container']);
     expect(container).toBeDefined();
     expect(container!.identity.kind).toBe('single');
     expect(container!.identity.name).toBe('Container');

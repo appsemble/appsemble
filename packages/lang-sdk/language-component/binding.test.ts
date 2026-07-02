@@ -1,23 +1,25 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { defineMetaObject, metaBindings, metaSchemas } from './index.js';
+import { defineLanguageComponent, componentBindings, componentSchemas } from './index.js';
 
-describe('defineMetaObject', () => {
-  // The mini-schema fixtures build every tag through defineMetaObject (obj/combinator delegate
+describe('defineLanguageComponent', () => {
+  // The mini-schema fixtures build every tag through defineLanguageComponent (obj/combinator delegate
   // to it), so these cases guard the tag-writing they rely on: mode inference from shape and
   // the object fallback.
   it('infers the tag mode from the schema shape', () => {
     const cases: [Schema, string][] = [
-      [{ type: 'object' }, 'object'],
-      [{ properties: {} }, 'object'],
+      [{ type: 'object' }, 'single'],
+      [{ properties: {} }, 'single'],
       [{ oneOf: [] }, 'oneOf'],
       [{ anyOf: [] }, 'anyOf'],
       [{ allOf: [] }, 'allOf'],
     ];
 
     for (const [schema, mode] of cases) {
-      expect(defineMetaObject('Tagged', schema, {}).schema.appsembleMetaObject).toStrictEqual({
+      expect(
+        defineLanguageComponent('Tagged', schema, {}).schema.appsembleLanguageComponent,
+      ).toStrictEqual({
         name: 'Tagged',
         mode,
       });
@@ -26,40 +28,40 @@ describe('defineMetaObject', () => {
 
   it('falls back to object mode for a shape it cannot classify', () => {
     expect(
-      defineMetaObject('Scalar', { type: 'string' }, {}).schema.appsembleMetaObject,
-    ).toStrictEqual({ name: 'Scalar', mode: 'object' });
+      defineLanguageComponent('Scalar', { type: 'string' }, {}).schema.appsembleLanguageComponent,
+    ).toStrictEqual({ name: 'Scalar', mode: 'single' });
   });
 
   it('preserves an existing tag and writes new tags under a custom meta key', () => {
     const tagged = {
       type: 'object',
-      metaObject: { name: 'AlreadyTagged', mode: 'object' },
+      metaObject: { name: 'AlreadyTagged', mode: 'single' },
     } as Schema & Record<string, unknown>;
 
-    const preserved = defineMetaObject('Ignored', tagged, {}, 'metaObject');
-    const custom = defineMetaObject('CustomTagged', { type: 'object' }, {}, 'metaObject');
+    const preserved = defineLanguageComponent('Ignored', tagged, {}, 'metaObject');
+    const custom = defineLanguageComponent('CustomTagged', { type: 'object' }, {}, 'metaObject');
 
     expect(preserved.schema).toBe(tagged);
     expect((preserved.schema as Record<string, unknown>).metaObject).toStrictEqual({
       name: 'AlreadyTagged',
-      mode: 'object',
+      mode: 'single',
     });
     expect((custom.schema as Record<string, unknown>).metaObject).toStrictEqual({
       name: 'CustomTagged',
-      mode: 'object',
+      mode: 'single',
     });
-    expect(custom.schema.appsembleMetaObject).toBeUndefined();
+    expect(custom.schema.appsembleLanguageComponent).toBeUndefined();
   });
 });
 
-describe('metaSchemas / metaBindings', () => {
+describe('componentSchemas / componentBindings', () => {
   it('builds a name-keyed schema registry from defs', () => {
     const defs = [
-      defineMetaObject('Alpha', { type: 'object' }, {}),
-      defineMetaObject('Beta', { oneOf: [] }, {}),
+      defineLanguageComponent('Alpha', { type: 'object' }, {}),
+      defineLanguageComponent('Beta', { oneOf: [] }, {}),
     ];
 
-    const schemas = metaSchemas(defs);
+    const schemas = componentSchemas(defs);
 
     expect(Object.keys(schemas)).toStrictEqual(['Alpha', 'Beta']);
     expect(schemas.Alpha).toBe(defs[0].schema);
@@ -69,11 +71,11 @@ describe('metaSchemas / metaBindings', () => {
     const first = { describe: () => 'first' };
     const second = { complete: () => ['second'] };
     const defs = [
-      defineMetaObject('FirstBinding', { type: 'object' }, first),
-      defineMetaObject('SecondBinding', { type: 'object' }, second),
+      defineLanguageComponent('FirstBinding', { type: 'object' }, first),
+      defineLanguageComponent('SecondBinding', { type: 'object' }, second),
     ];
 
-    const bindings = metaBindings(defs);
+    const bindings = componentBindings(defs);
 
     expect(bindings.get('FirstBinding')).toBe(first);
     expect(bindings.get('SecondBinding')).toBe(second);

@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { analyze, describeObjects } from './harness.js';
+import { analyze, describeIdentities } from './harness.js';
 import { scenarios } from './scenarios.js';
 
-describe('mini schema meta-object analysis', () => {
-  it('should resolve valid oneOf, anyOf, and allOf meta-objects', () => {
+describe('mini schema language component analysis', () => {
+  it('should resolve valid oneOf, anyOf, and allOf language components', () => {
     const result = analyze(scenarios.normal);
 
     expect(result.documentValid).toBe(true);
-    expect(describeObjects(result)).toStrictEqual({
+    expect(describeIdentities(result)).toStrictEqual({
       '/composed': 'StoredText:allOf(Identified, Timestamped, TextWidget)',
       '/flexible': 'FlexibleThing:anyOf(TextWidget, IconWidget)',
       '/scaryWidget': 'ScaryWidget:oneOf(ExperimentalButton)',
@@ -20,7 +20,7 @@ describe('mini schema meta-object analysis', () => {
     const result = analyze(scenarios.scaryProduction);
 
     expect(result.documentValid).toBe(false);
-    expect(describeObjects(result)).toStrictEqual({
+    expect(describeIdentities(result)).toStrictEqual({
       '/scaryWidget': 'ScaryWidget:oneOf(ExperimentalButton)',
     });
     const interpretations = [...result.interpretations.values()];
@@ -43,26 +43,26 @@ describe('mini schema meta-object analysis', () => {
     const result = analyze(scenarios.scaryProductionFixed);
 
     expect(result.documentValid).toBe(true);
-    expect(describeObjects(result)).toStrictEqual({
+    expect(describeIdentities(result)).toStrictEqual({
       '/scaryWidget': 'ScaryWidget:oneOf(StandardButton)',
     });
   });
 
-  it('should leave ambiguous oneOf meta-objects unresolved', () => {
+  it('should leave ambiguous oneOf language components unresolved', () => {
     const result = analyze(scenarios.cursedA);
 
     expect(result.documentValid).toBe(false);
-    expect(describeObjects(result)).toStrictEqual({
+    expect(describeIdentities(result)).toStrictEqual({
       '/cursedA':
         'unresolved(oneOf expected exactly one match, got 2) [ButtonWidget, TextAndIcon:allOf(TextWidget, IconWidget)]',
     });
   });
 
-  it('should leave allOf meta-objects unresolved when one part is ambiguous', () => {
+  it('should leave allOf language components unresolved when one part is ambiguous', () => {
     const result = analyze(scenarios.cursedB);
 
     expect(result.documentValid).toBe(false);
-    expect(describeObjects(result)).toStrictEqual({
+    expect(describeIdentities(result)).toStrictEqual({
       '/cursedB':
         'unresolved(allOf did not fully match) [unresolved(oneOf expected exactly one match, got 2) [ButtonWidget, TextWidget], IconOrTrackable:anyOf(IconWidget, Trackable)]',
     });
@@ -72,7 +72,7 @@ describe('mini schema meta-object analysis', () => {
     const result = analyze(scenarios.cursedValid);
 
     expect(result.documentValid).toBe(true);
-    expect(describeObjects(result)).toStrictEqual({
+    expect(describeIdentities(result)).toStrictEqual({
       '/cursedValid':
         'CursedValid:allOf(StrictButtonOrText:oneOf(StrictButton), StrictIconOrTrackable:anyOf(IconWidget, Trackable))',
     });
@@ -82,7 +82,7 @@ describe('mini schema meta-object analysis', () => {
     const result = analyze(scenarios.ghost);
 
     expect(result.documentValid).toBe(false);
-    expect(describeObjects(result)).toStrictEqual({
+    expect(describeIdentities(result)).toStrictEqual({
       '/ghostWidget':
         'unresolved(oneOf expected exactly one match, got 2) [StandardGhostButton, ExperimentalGhostButton]',
     });
@@ -92,7 +92,7 @@ describe('mini schema meta-object analysis', () => {
     const result = analyze(scenarios.invalidLocal);
 
     expect(result.documentValid).toBe(false);
-    expect(describeObjects(result)).toStrictEqual({
+    expect(describeIdentities(result)).toStrictEqual({
       '/widget': 'unresolved(oneOf expected exactly one match, got 0) []',
     });
   });

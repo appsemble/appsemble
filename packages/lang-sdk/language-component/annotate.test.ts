@@ -1,7 +1,7 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { annotateSchema, annotateSchemas, META_KEY, MetaAnalyzer } from './index.js';
+import { annotateSchema, annotateSchemas, COMPONENT_KEY, Scanner } from './index.js';
 
 describe('annotateSchema', () => {
   it('should tag an object schema with the given name and object mode', () => {
@@ -9,33 +9,33 @@ describe('annotateSchema', () => {
       { type: 'object', properties: { x: { type: 'string' } } },
       'Thing',
     );
-    expect(result.appsembleMetaObject).toStrictEqual({ name: 'Thing', mode: 'object' });
+    expect(result.appsembleLanguageComponent).toStrictEqual({ name: 'Thing', mode: 'single' });
   });
 
   it('should derive the combinator mode', () => {
-    expect(annotateSchema({ oneOf: [] }, 'A').appsembleMetaObject).toStrictEqual({
+    expect(annotateSchema({ oneOf: [] }, 'A').appsembleLanguageComponent).toStrictEqual({
       name: 'A',
       mode: 'oneOf',
     });
-    expect(annotateSchema({ anyOf: [] }, 'A').appsembleMetaObject).toStrictEqual({
+    expect(annotateSchema({ anyOf: [] }, 'A').appsembleLanguageComponent).toStrictEqual({
       name: 'A',
       mode: 'anyOf',
     });
-    expect(annotateSchema({ allOf: [] }, 'A').appsembleMetaObject).toStrictEqual({
+    expect(annotateSchema({ allOf: [] }, 'A').appsembleLanguageComponent).toStrictEqual({
       name: 'A',
       mode: 'allOf',
     });
   });
 
   it('should leave scalar and already-tagged schemas untouched', () => {
-    expect(annotateSchema({ type: 'string' }, 'S').appsembleMetaObject).toBeUndefined();
+    expect(annotateSchema({ type: 'string' }, 'S').appsembleLanguageComponent).toBeUndefined();
     const tagged: Schema = {
       type: 'object',
-      appsembleMetaObject: { name: 'Kept', mode: 'object' },
+      appsembleLanguageComponent: { name: 'Kept', mode: 'single' },
     };
-    expect(annotateSchema(tagged, 'Ignored').appsembleMetaObject).toStrictEqual({
+    expect(annotateSchema(tagged, 'Ignored').appsembleLanguageComponent).toStrictEqual({
       name: 'Kept',
-      mode: 'object',
+      mode: 'single',
     });
   });
 
@@ -44,8 +44,8 @@ describe('annotateSchema', () => {
       string,
       unknown
     >;
-    expect(result.metaObject).toStrictEqual({ name: 'Thing', mode: 'object' });
-    expect(result.appsembleMetaObject).toBeUndefined();
+    expect(result.metaObject).toStrictEqual({ name: 'Thing', mode: 'single' });
+    expect(result.appsembleLanguageComponent).toBeUndefined();
   });
 });
 
@@ -56,9 +56,12 @@ describe('annotateSchemas', () => {
       Widget: { oneOf: [] },
       note: { type: 'string' },
     });
-    expect(result.Page.appsembleMetaObject).toStrictEqual({ name: 'Page', mode: 'object' });
-    expect(result.Widget.appsembleMetaObject).toStrictEqual({ name: 'Widget', mode: 'oneOf' });
-    expect(result.note.appsembleMetaObject).toBeUndefined();
+    expect(result.Page.appsembleLanguageComponent).toStrictEqual({ name: 'Page', mode: 'single' });
+    expect(result.Widget.appsembleLanguageComponent).toStrictEqual({
+      name: 'Widget',
+      mode: 'oneOf',
+    });
+    expect(result.note.appsembleLanguageComponent).toBeUndefined();
   });
 
   it('should make an otherwise-untagged schema graph analyzable', () => {
@@ -66,7 +69,7 @@ describe('annotateSchemas', () => {
       Root: { type: 'object', properties: { page: { $ref: '#/components/schemas/Page' } } },
       Page: { type: 'object', properties: { name: { type: 'string' } } },
     });
-    const result = new MetaAnalyzer(schemas).analyze({ page: { name: 'Home' } }, schemas.Root);
+    const result = new Scanner(schemas).scan({ page: { name: 'Home' } }, schemas.Root);
     expect(result.interpretations.get('/')?.identity.name).toBe('Root');
     expect(result.interpretations.get('/page')?.identity.name).toBe('Page');
   });
@@ -78,14 +81,14 @@ describe('annotateSchemas', () => {
     };
     const schemas = annotateSchemas(raw, 'metaObject');
     // The analyzer reading the same custom key mounts identities.
-    const matched = new MetaAnalyzer(schemas, 'metaObject').analyze({ page: {} }, schemas.Root);
+    const matched = new Scanner(schemas, 'metaObject').scan({ page: {} }, schemas.Root);
     expect(matched.interpretations.get('/page')?.identity.name).toBe('Page');
     // The default key sees nothing, proving the key is actually threaded through.
-    const missed = new MetaAnalyzer(schemas).analyze({ page: {} }, schemas.Root);
+    const missed = new Scanner(schemas).scan({ page: {} }, schemas.Root);
     expect(missed.interpretations.size).toBe(0);
   });
 
-  it('should expose the default key as META_KEY', () => {
-    expect(META_KEY).toBe('appsembleMetaObject');
+  it('should expose the default key as COMPONENT_KEY', () => {
+    expect(COMPONENT_KEY).toBe('appsembleLanguageComponent');
   });
 });

@@ -1,36 +1,36 @@
 import { type Schema, type ValidationError, type Validator } from 'jsonschema';
 
 import { formatPath, getPath } from './path.js';
-import { MetaSchemaRegistry } from './schemaRegistry.js';
+import { SchemaRegistry } from './schemaRegistry.js';
 import {
-  META_KEY,
-  type MetaHit,
-  type MetaIdentity,
-  type MetaInterpretation,
-  type MetaObjectPath,
-  type MetaTag,
-  metaTag,
+  COMPONENT_KEY,
+  type ScanHit,
+  type Identity,
+  type Mount,
+  type NodePath,
+  type SchemaTag,
+  schemaTag,
 } from './types.js';
 
 /**
- * Meta-object analyzer: one structural walk builds the whole tree. `resolve` is the
+ * Language component analyzer: one structural walk builds the whole tree. `resolve` is the
  * single place a oneOf/anyOf/allOf is decided, returning the identity and the
  * concrete winner schema(s); `governingChild` then does pure structural lookup on
  * those winners to descend, so the walk only ever follows winning branches.
  *
  * The walk reaches everything Appsemble's OpenAPI 3.0 schemas can express. It cannot
- * reach meta-objects placed behind conditional/pattern applicators (`if`/`then`,
+ * reach language components placed behind conditional/pattern applicators (`if`/`then`,
  * `patternProperties`), which those schemas do not support; if they ever appear, a
  * walk-driven local probe would cover them (see PERFORMANCE.md).
  *
- * `MetaAnalyzer` splits tree building (`buildTree`, the walk) from document validation
- * (`validate`, `collectHits` -> `documentValid` + `errors`); `analyze` runs both.
+ * `Scanner` splits tree building (`buildTree`, the walk) from document validation
+ * (`validate`, `collectHits` -> `documentValid` + `errors`); `scan` runs both.
  * `buildTree` reuses a prior tree, re-walking only the subtrees enclosing the changed
  * paths (see `boundaryFor`), so a per-edit re-analysis is near-free (see PERFORMANCE.md).
  */
 
 export interface Resolution {
-  identity: MetaIdentity | null;
+  identity: Identity | null;
   winners: Schema[];
   matched: boolean;
 }
@@ -41,51 +41,51 @@ export interface ResolveContext {
   resolveRef: (ref: string) => Schema;
   validator: Validator;
   shallow: (schema: Schema) => Schema;
-  metaKey: string;
+  componentKey: string;
 }
 
 interface WalkContext extends ResolveContext {
-  emit: (path: MetaObjectPath, object: MetaIdentity, localValid: boolean) => void;
+  emit: (path: NodePath, object: Identity, localValid: boolean) => void;
 }
 
-export interface MetaAnalysisResult {
+export interface ScanResult {
   documentValid: boolean;
-  hits: MetaHit[];
-  interpretations: Map<string, MetaInterpretation>;
+  hits: ScanHit[];
+  interpretations: Map<string, Mount>;
 }
 
 // The identity tree alone: interpretations carry `localValid` but no document errors
 // (those come from `validate`). Keyed by JSON Pointer; the identity is `.identity`. This
 // is what `buildTree` produces and reuses.
-export interface MetaTree {
-  interpretations: Map<string, MetaInterpretation>;
+export interface MountTree {
+  interpretations: Map<string, Mount>;
 }
 
 // Whole-document validation, separate from tree building.
-export interface MetaValidation {
+export interface ScanValidation {
   documentValid: boolean;
   errors: ValidationError[];
-  hits: MetaHit[];
+  hits: ScanHit[];
 }
 
 export interface IncrementalOptions {
-  previous?: MetaTree;
-  changed?: MetaObjectPath[];
+  previous?: MountTree;
+  changed?: NodePath[];
 }
 
-function single(name: string): MetaIdentity {
+function single(name: string): Identity {
   return { kind: 'single', name, parts: [] };
 }
 
-function unresolved(reason: string, parts: MetaIdentity[] = []): MetaIdentity {
-  return { kind: 'unresolved', name: 'UnresolvedMetaObject', parts, reason };
+function unresolved(reason: string, parts: Identity[] = []): Identity {
+  return { kind: 'unresolved', name: 'UnresolvedLanguageComponent', parts, reason };
 }
 
 function composite(
   mode: 'allOf' | 'anyOf' | 'oneOf',
-  tag: MetaTag | undefined,
-  parts: MetaIdentity[],
-): MetaIdentity {
+  tag: SchemaTag | undefined,
+  parts: Identity[],
+): Identity {
   return { kind: 'composite', mode, name: tag?.name ?? mode, parts };
 }
 
@@ -141,6 +141,7 @@ function stripRefs(schema: Schema): Schema {
   return copy;
 }
 
+// TODO: what does this do?
 export function createShallow(): (schema: Schema) => Schema {
   const cache = new Map<Schema, Schema>();
   return (schema) => {
@@ -153,13 +154,11 @@ export function createShallow(): (schema: Schema) => Schema {
   };
 }
 
-function metaParts(parts: Resolution[]): MetaIdentity[] {
-  return parts
-    .map((part) => part.identity)
-    .filter((object): object is MetaIdentity => object != null);
+function identityParts(parts: Resolution[]): Identity[] {
+  return parts.map((part) => part.identity).filter((object): object is Identity => object != null);
 }
 
-function pathContains(parent: MetaObjectPath, child: MetaObjectPath): boolean {
+function pathContains(parent: NodePath, child: NodePath): boolean {
   // Compare by string value: a path segment means the same key whether it arrives as a
   // number (array index from a caller's diff) or a string (the walk's Object.keys).
   return (
@@ -192,17 +191,17 @@ export function governingChild(
 
 export function resolve(schema: Schema, value: unknown, ctx: ResolveContext): Resolution {
   const s = deref(schema, ctx.resolveRef);
-  const tag = metaTag(s, ctx.metaKey);
+  const tag = schemaTag(s, ctx.componentKey);
 
   if (s.oneOf) {
     const parts = s.oneOf.map((branch) => resolve(branch, value, ctx));
     const matched = parts.filter((part) => part.matched);
     if (matched.length === 1) {
       const [winner] = matched;
-      const identity = tag ? composite('oneOf', tag, metaParts([winner])) : winner.identity;
+      const identity = tag ? composite('oneOf', tag, identityParts([winner])) : winner.identity;
       return { identity, matched: true, winners: winner.winners };
     }
-    const found = metaParts(matched);
+    const found = identityParts(matched);
     const identity =
       tag || found.length
         ? unresolved(`oneOf expected exactly one match, got ${matched.length}`, found)
@@ -214,7 +213,7 @@ export function resolve(schema: Schema, value: unknown, ctx: ResolveContext): Re
     const parts = s.anyOf.map((branch) => resolve(branch, value, ctx));
     const matched = parts.filter((part) => part.matched);
     if (matched.length) {
-      const found = metaParts(matched);
+      const found = identityParts(matched);
       const identity = tag || found.length ? composite('anyOf', tag, found) : null;
       return { identity, matched: true, winners: matched.flatMap((part) => part.winners) };
     }
@@ -227,7 +226,7 @@ export function resolve(schema: Schema, value: unknown, ctx: ResolveContext): Re
 
   if (s.allOf) {
     const parts = s.allOf.map((branch) => resolve(branch, value, ctx));
-    const found = metaParts(parts);
+    const found = identityParts(parts);
     if (parts.every((part) => part.matched)) {
       const identity = tag || found.length ? composite('allOf', tag, found) : null;
       return { identity, matched: true, winners: parts.flatMap((part) => part.winners) };
@@ -246,7 +245,7 @@ export function resolve(schema: Schema, value: unknown, ctx: ResolveContext): Re
   return { identity, matched, winners: [s] };
 }
 
-function walk(schema: Schema, value: unknown, path: MetaObjectPath, ctx: WalkContext): void {
+function walk(schema: Schema, value: unknown, path: NodePath, ctx: WalkContext): void {
   const { identity, winners, matched } = resolve(schema, value, ctx);
   if (identity) {
     ctx.emit(path, identity, matched);
@@ -265,12 +264,12 @@ function collectHits(
   validator: Validator,
   data: unknown,
   rootSchema: Schema,
-  metaKey: string,
-): { hits: MetaHit[]; documentValid: boolean; errors: ValidationError[] } {
-  const hits: MetaHit[] = [];
+  componentKey: string,
+): { hits: ScanHit[]; documentValid: boolean; errors: ValidationError[] } {
+  const hits: ScanHit[] = [];
   // eslint-disable-next-line no-param-reassign
-  validator.attributes[metaKey] = (instance, currentSchema, options, context) => {
-    const tag = metaTag(currentSchema, metaKey);
+  validator.attributes[componentKey] = (instance, currentSchema, options, context) => {
+    const tag = schemaTag(currentSchema, componentKey);
     if (instance !== undefined && tag) {
       hits.push({ path: context.path, schema: currentSchema, tag });
     }
@@ -280,7 +279,7 @@ function collectHits(
   return { documentValid: result.valid, errors: result.errors, hits };
 }
 
-function treeFrom(byPath: Map<string, MetaInterpretation>): MetaTree {
+function treeFrom(byPath: Map<string, Mount>): MountTree {
   return { interpretations: byPath };
 }
 
@@ -288,8 +287,8 @@ function treeFrom(byPath: Map<string, MetaInterpretation>): MetaTree {
  * A schema set compiled once and reused across analyses: the registry, resolve
  * validator, and ref-cutoff cache are keyed on the fixed schema set.
  */
-export class MetaAnalyzer {
-  private readonly registry: MetaSchemaRegistry;
+export class Scanner {
+  private readonly registry: SchemaRegistry;
 
   // Clean validator for the walk's local checks; never carries the hit side effect.
   private readonly resolveValidator: Validator;
@@ -297,14 +296,14 @@ export class MetaAnalyzer {
   // Persistent ref-cutoff cache, keyed on schema identity (stable across calls).
   private readonly shallow: (schema: Schema) => Schema;
 
-  // The schema keyword identities are read from (defaults to META_KEY).
-  private readonly metaKey: string;
+  // The schema keyword identities are read from (defaults to COMPONENT_KEY).
+  private readonly componentKey: string;
 
-  constructor(schemas: Record<string, Schema>, metaKey: string = META_KEY) {
-    this.registry = new MetaSchemaRegistry(schemas);
+  constructor(schemas: Record<string, Schema>, componentKey: string = COMPONENT_KEY) {
+    this.registry = new SchemaRegistry(schemas);
     this.resolveValidator = this.registry.createValidator();
     this.shallow = createShallow();
-    this.metaKey = metaKey;
+    this.componentKey = componentKey;
   }
 
   /**
@@ -316,11 +315,11 @@ export class MetaAnalyzer {
    * @param options Optional prior tree plus changed paths, for incremental reuse.
    * @returns The identity tree: the per-path `interpretations` map.
    */
-  buildTree(data: unknown, rootSchema: Schema, options?: IncrementalOptions): MetaTree {
+  buildTree(data: unknown, rootSchema: Schema, options?: IncrementalOptions): MountTree {
     if (options?.previous && options.changed?.length) {
       return this.incremental(data, rootSchema, options.previous, options.changed);
     }
-    const byPath = new Map<string, MetaInterpretation>();
+    const byPath = new Map<string, Mount>();
     walk(rootSchema, data, [], this.emitInto(byPath, data));
     return treeFrom(byPath);
   }
@@ -333,12 +332,12 @@ export class MetaAnalyzer {
    * @param rootSchema The root schema to validate against.
    * @returns Whole-document validity, the validation errors, and collected hits.
    */
-  validate(data: unknown, rootSchema: Schema): MetaValidation {
+  validate(data: unknown, rootSchema: Schema): ScanValidation {
     const { documentValid, errors, hits } = collectHits(
       this.registry.createValidator(),
       data,
       rootSchema,
-      this.metaKey,
+      this.componentKey,
     );
     return { documentValid, errors, hits };
   }
@@ -352,7 +351,7 @@ export class MetaAnalyzer {
    * @param options Optional prior tree plus changed paths, for incremental reuse.
    * @returns The identity tree plus document validity, in the combined shape.
    */
-  analyze(data: unknown, rootSchema: Schema, options?: IncrementalOptions): MetaAnalysisResult {
+  scan(data: unknown, rootSchema: Schema, options?: IncrementalOptions): ScanResult {
     const tree = this.buildTree(data, rootSchema, options);
     const { documentValid, errors, hits } = this.validate(data, rootSchema);
     const interpretations = new Map(
@@ -367,7 +366,7 @@ export class MetaAnalyzer {
     return { documentValid, hits, interpretations };
   }
 
-  private emitInto(byPath: Map<string, MetaInterpretation>, data: unknown): WalkContext {
+  private emitInto(byPath: Map<string, Mount>, data: unknown): WalkContext {
     return {
       emit(path, object, localValid) {
         byPath.set(formatPath(path), {
@@ -380,7 +379,7 @@ export class MetaAnalyzer {
       },
       resolveRef: (ref) => this.registry.resolveRef(ref),
       shallow: this.shallow,
-      metaKey: this.metaKey,
+      componentKey: this.componentKey,
       validator: this.resolveValidator,
     };
   }
@@ -388,11 +387,11 @@ export class MetaAnalyzer {
   private incremental(
     data: unknown,
     rootSchema: Schema,
-    previous: MetaTree,
-    changed: MetaObjectPath[],
-  ): MetaTree {
+    previous: MountTree,
+    changed: NodePath[],
+  ): MountTree {
     const boundaries = this.boundaries(rootSchema, data, changed);
-    const byPath = new Map<string, MetaInterpretation>();
+    const byPath = new Map<string, Mount>();
     // Reuse every prior interpretation not inside a re-walked boundary.
     for (const interpretation of previous.interpretations.values()) {
       if (!boundaries.some((boundary) => pathContains(boundary.path, interpretation.path))) {
@@ -426,8 +425,8 @@ export class MetaAnalyzer {
   private boundaries(
     rootSchema: Schema,
     data: unknown,
-    changed: MetaObjectPath[],
-  ): { path: MetaObjectPath; schema: Schema }[] {
+    changed: NodePath[],
+  ): { path: NodePath; schema: Schema }[] {
     const unique = new Map(
       changed.map((path) => {
         const boundary = this.boundaryFor(rootSchema, data, path);
@@ -454,13 +453,13 @@ export class MetaAnalyzer {
   private boundaryFor(
     rootSchema: Schema,
     data: unknown,
-    target: MetaObjectPath,
-  ): { path: MetaObjectPath; schema: Schema } {
+    target: NodePath,
+  ): { path: NodePath; schema: Schema } {
     const ctx = this.emitInto(new Map(), data);
     let schema = rootSchema;
     let value: unknown = data;
-    let path: MetaObjectPath = [];
-    let boundary: { path: MetaObjectPath; schema: Schema } = { path: [], schema: rootSchema };
+    let path: NodePath = [];
+    let boundary: { path: NodePath; schema: Schema } = { path: [], schema: rootSchema };
     for (const key of target) {
       const { winners } = resolve(schema, value, ctx);
       const child = governingChild(winners, String(key), ctx.resolveRef);
@@ -484,11 +483,11 @@ export class MetaAnalyzer {
   }
 }
 
-export function analyzeMetaObjects(
+export function scanComponents(
   data: unknown,
   rootSchema: Schema,
   schemas: Record<string, Schema>,
-  metaKey: string = META_KEY,
-): MetaAnalysisResult {
-  return new MetaAnalyzer(schemas, metaKey).analyze(data, rootSchema);
+  componentKey: string = COMPONENT_KEY,
+): ScanResult {
+  return new Scanner(schemas, componentKey).scan(data, rootSchema);
 }
