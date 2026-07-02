@@ -35,7 +35,14 @@ export class BlockManifestCacher {
           .then((data) => {
             this.logger.log(`Fetched block URL: ${url}`);
             this.logger.log(data ? 'Block has data' : 'Block has no data');
+            if (data == null) {
+              this.blockMap.delete(url);
+            }
             return data;
+          })
+          .catch((error) => {
+            this.blockMap.delete(url);
+            throw error;
           });
         return this.blockMap.set(url, response).get(url);
       }),

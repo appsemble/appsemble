@@ -46,7 +46,7 @@ yamlSettings.schemaStoreEnabled = true;
 const fileSystem = {
   async readFile(fsPath: string, encoding?: string) {
     const b = await readFile(fsPath, encoding as BufferEncoding);
-    return String(b.toString);
+    return b.toString();
   },
 };
 
