@@ -93,9 +93,7 @@ export class BlockRegistryHandlers {
       this.logger.log('Skipping stale block schema update');
       return;
     }
-    this.logger.log(
-      `Updating block schemas for ${allBlocks.size} blocks: ${[...allBlocks.keys()].join(', ')}`,
-    );
+    this.logger.log(`Updating block schemas for ${allBlocks.size} blocks`);
     const oneOf = [...allBlocks.values()].map((block) => ({
       title: `${block.type} v${block.version}`,
       properties: {

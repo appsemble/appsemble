@@ -102,10 +102,8 @@ export class BlockManifestCacher {
     ).href;
     const cached = this.blockMap.get(url);
     if (cached) {
-      this.logger.log(`Getting block from cache: ${url}`);
       return cached;
     }
-    this.logger.log(`Fetching block URL: ${url}`);
     const request = this.fetchManifest(url).then((manifest) => {
       // Only successful manifests stay cached. Anything else is evicted so it is retried on the
       // next update once the registry recovers.

@@ -106,9 +106,6 @@ export class ValidationHandler {
       undefined,
       validatorResult,
     );
-    this.connection.console.debug(
-      `Blocks are: ${JSON.stringify(this.blockManifestCacher.blocks.entries())}`,
-    );
     const errors: Diagnostic[] = validationResult.errors
       .map((error) => {
         const node = doc.getIn(error.path, true);
