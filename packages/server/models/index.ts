@@ -81,6 +81,7 @@ import {
   type SamlLoginRequestGlobal as SamlLoginRequest,
 } from './apps/SamlLoginRequest.js';
 import { App } from './main/App.js';
+import { AppBuildSnapshot } from './main/AppBuildSnapshot.js';
 import { AppCollection } from './main/AppCollection.js';
 import { AppCollectionApp } from './main/AppCollectionApp.js';
 import { AppEmailQuotaLog } from './main/AppEmailQuotaLog.js';
@@ -134,6 +135,7 @@ export {
   type AppMemberAssignedRole,
   type AppServiceSecret,
   type AppBlockStyle,
+  AppBuildSnapshot,
   AppCollection,
   AppCollectionApp,
   AppEmailQuotaLog,
@@ -212,6 +214,7 @@ export function initDB({
       AppReadme,
       AppScreenshot,
       AppSnapshot,
+      AppBuildSnapshot,
       AppMessages,
       BlockAsset,
       BlockMessages,

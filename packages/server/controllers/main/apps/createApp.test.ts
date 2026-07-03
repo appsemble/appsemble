@@ -14,7 +14,9 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import {
   App,
+  AppBuildSnapshot,
   AppScreenshot,
+  AppSnapshot,
   BlockAsset,
   BlockMessages,
   BlockVersion,
@@ -61,7 +63,7 @@ describe('createApp', () => {
     });
     await Organization.create({ id: 'appsemble', name: 'Appsemble' });
 
-    await BlockVersion.create({
+    const blockVersion = await BlockVersion.create({
       name: 'test',
       OrganizationId: 'appsemble',
       version: '0.0.0',
@@ -74,6 +76,21 @@ describe('createApp', () => {
         },
       },
     });
+
+    await BlockAsset.bulkCreate([
+      {
+        BlockVersionId: blockVersion.id,
+        OrganizationId: 'appsemble',
+        filename: 'test.css',
+        content: Buffer.from(''),
+      },
+      {
+        BlockVersionId: blockVersion.id,
+        OrganizationId: 'appsemble',
+        filename: 'test.js',
+        content: Buffer.from(''),
+      },
+    ]);
   });
 
   afterAll(() => {
@@ -169,6 +186,26 @@ describe('createApp', () => {
     `);
     const { data: retrieved } = await request.get(`/api/apps/${createdResponse.data.id}`);
     expect(retrieved).toStrictEqual(createdResponse.data);
+
+    const latestSnapshot = await AppSnapshot.findOne({
+      include: [{ model: AppBuildSnapshot }],
+      order: [['created', 'DESC']],
+      where: { AppId: createdResponse.data.id },
+    });
+
+    expect(latestSnapshot?.AppBuildSnapshot?.buildManifestJson).toStrictEqual({
+      version: 1,
+      blockManifests: [
+        {
+          actions: null,
+          events: null,
+          files: ['test.css', 'test.js'],
+          layout: null,
+          name: '@appsemble/test',
+          version: '0.0.0',
+        },
+      ],
+    });
   });
 
   it('should create unique indexes for resources on app creation', async () => {

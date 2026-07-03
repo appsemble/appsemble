@@ -11,6 +11,7 @@ import { parse, stringify } from 'yaml';
 
 import {
   App,
+  AppBuildSnapshot,
   AppMessages,
   AppSnapshot,
   getAppDB,
@@ -225,6 +226,17 @@ describe('createAppFromTemplate', () => {
         yaml: "'name': Test app\n'description': This is a test app\n\n# comment\n\npages: []\n",
       }),
     );
+
+    const latestSnapshot = await AppSnapshot.findOne({
+      include: [{ model: AppBuildSnapshot }],
+      order: [['created', 'DESC']],
+      where: { AppId: response.data.id },
+    });
+
+    expect(latestSnapshot?.AppBuildSnapshot?.buildManifestJson).toStrictEqual({
+      version: 1,
+      blockManifests: [],
+    });
   });
 
   it('should create a new app with example resources', async () => {

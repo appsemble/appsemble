@@ -20,6 +20,7 @@ import { parse } from 'yaml';
 
 import {
   App,
+  AppBuildSnapshot,
   AppReadme,
   AppScreenshot,
   AppSnapshot,
@@ -42,6 +43,7 @@ import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 import { syncResourceUniqueIndexes } from '../../../utils/resourceUniqueIndexes.js';
+import { createAppBuildManifest, pruneAppBuildSnapshots } from '../../../utils/appBuildManifest.js';
 import { isValidSentryDsn } from '../../../utils/sentry.js';
 
 export async function patchApp(ctx: Context): Promise<void> {
@@ -394,10 +396,19 @@ export async function patchApp(ctx: Context): Promise<void> {
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
       if (yaml) {
+        const buildManifestJson = await createAppBuildManifest(
+          result.definition as AppDefinition,
+          transaction,
+        );
         const snapshot = await AppSnapshot.create(
           { AppId: dbApp.id, UserId: user!.id, yaml },
           { transaction },
         );
+        await AppBuildSnapshot.create(
+          { AppSnapshotId: snapshot.id, buildManifestJson },
+          { transaction },
+        );
+        await pruneAppBuildSnapshots({ AppSnapshotId: snapshot.id, appId: dbApp.id, transaction });
         dbApp.AppSnapshots = [snapshot];
       }
 
