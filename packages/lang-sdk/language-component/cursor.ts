@@ -30,7 +30,9 @@ export class Cursor {
 
   private readonly parentCursor: Cursor | null;
 
-  constructor(
+  // Private: a cursor is only ever rooted via `cursorAt` / `Cursor.at` (which build the internal
+  // ResolveContext) or descended via `child`, never constructed directly by a consumer.
+  private constructor(
     ctx: ResolveContext,
     schema: Schema,
     value: unknown,
@@ -42,6 +44,31 @@ export class Cursor {
     this.value = value;
     this.path = path;
     this.parentCursor = parentCursor;
+  }
+
+  /**
+   * Root a cursor at `rootSchema` over `data`, compiling a schema registry for this cursor tree.
+   *
+   * @param schemas The registry of named schemas.
+   * @param rootSchema The schema at the root of the document.
+   * @param data The document to navigate.
+   * @param componentKey The keyword identities are read from (defaults to COMPONENT_KEY).
+   * @returns A cursor focused on the document root.
+   */
+  static at(
+    schemas: Record<string, Schema>,
+    rootSchema: Schema,
+    data: unknown,
+    componentKey: string = COMPONENT_KEY,
+  ): Cursor {
+    const registry = new SchemaRegistry(schemas);
+    const ctx: ResolveContext = {
+      resolveRef: (ref) => registry.resolveRef(ref),
+      validator: registry.createValidator(),
+      shallow: createShallow(),
+      componentKey,
+    };
+    return new Cursor(ctx, rootSchema, data, [], null);
   }
 
   private resolution(): Resolution {
@@ -109,12 +136,5 @@ export function cursorAt(
   data: unknown,
   componentKey: string = COMPONENT_KEY,
 ): Cursor {
-  const registry = new SchemaRegistry(schemas);
-  const ctx: ResolveContext = {
-    resolveRef: (ref) => registry.resolveRef(ref),
-    validator: registry.createValidator(),
-    shallow: createShallow(),
-    componentKey,
-  };
-  return new Cursor(ctx, rootSchema, data, [], null);
+  return Cursor.at(schemas, rootSchema, data, componentKey);
 }

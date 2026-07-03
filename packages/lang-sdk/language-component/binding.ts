@@ -5,13 +5,23 @@ import { type Cursor } from './cursor.js';
 import { COMPONENT_KEY, schemaTag } from './types.js';
 
 /**
- * Behaviors attached to a language component identity. Every hook receives a cursor focused on
- * an instance of the language component, so it can read the value, the schema, and — via
+ * Post-choice behaviors attached to a resolved language component identity. They run only after
+ * the walk has decided a node's identity; a binding never takes part in that discrimination and
+ * cannot change which identity a node gets (the schema alone drives resolution). Each hook receives
+ * a cursor focused on an already-resolved instance, so it reads the value, the schema, and — via
  * `cursor.nearest(...)` — its surrounding context. All hooks are optional.
+ *
+ * This is the semantic layer, distinct from schema validation: the walk's local-shape check
+ * (`Mount.localValid`) and the whole-document `jsonschema` pass already cover structural conformance.
+ * `validate` reports what a schema cannot express — reference validity, context-dependent rules —
+ * as diagnostics, given that the node is known to be this component.
  */
 export interface LanguageComponentBinding {
+  // Post-choice semantic checks for a resolved node; returns one diagnostic message per problem.
   validate?: (cursor: Cursor) => string[];
+  // Context-aware completion values offered at this node.
   complete?: (cursor: Cursor) => string[];
+  // A human-readable label for this node (hover / describe).
   describe?: (cursor: Cursor) => string;
 }
 
@@ -27,7 +37,7 @@ export interface LanguageComponent {
  * `componentSchemas` / `componentBindings` to build an analyzer's schema set and binding registry.
  *
  * Unlike the bulk `annotateSchemas` heuristic, this always tags the schema (an explicit
- * declaration is an opt-in whatever the shape), falling back to `object` mode; an
+ * declaration is an opt-in whatever the shape), falling back to `single` mode; an
  * existing annotation is kept.
  *
  * @param name The identity name.

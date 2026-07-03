@@ -35,18 +35,18 @@ describe('defineLanguageComponent', () => {
   it('preserves an existing tag and writes new tags under a custom meta key', () => {
     const tagged = {
       type: 'object',
-      metaObject: { name: 'AlreadyTagged', mode: 'single' },
+      customKey: { name: 'AlreadyTagged', mode: 'single' },
     } as Schema & Record<string, unknown>;
 
-    const preserved = defineLanguageComponent('Ignored', tagged, {}, 'metaObject');
-    const custom = defineLanguageComponent('CustomTagged', { type: 'object' }, {}, 'metaObject');
+    const preserved = defineLanguageComponent('Ignored', tagged, {}, 'customKey');
+    const custom = defineLanguageComponent('CustomTagged', { type: 'object' }, {}, 'customKey');
 
     expect(preserved.schema).toBe(tagged);
-    expect((preserved.schema as Record<string, unknown>).metaObject).toStrictEqual({
+    expect((preserved.schema as Record<string, unknown>).customKey).toStrictEqual({
       name: 'AlreadyTagged',
       mode: 'single',
     });
-    expect((custom.schema as Record<string, unknown>).metaObject).toStrictEqual({
+    expect((custom.schema as Record<string, unknown>).customKey).toStrictEqual({
       name: 'CustomTagged',
       mode: 'single',
     });

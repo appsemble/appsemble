@@ -40,11 +40,11 @@ describe('annotateSchema', () => {
   });
 
   it('should write the tag under a custom key', () => {
-    const result = annotateSchema({ type: 'object' }, 'Thing', 'metaObject') as Record<
+    const result = annotateSchema({ type: 'object' }, 'Thing', 'customKey') as Record<
       string,
       unknown
     >;
-    expect(result.metaObject).toStrictEqual({ name: 'Thing', mode: 'single' });
+    expect(result.customKey).toStrictEqual({ name: 'Thing', mode: 'single' });
     expect(result.appsembleLanguageComponent).toBeUndefined();
   });
 });
@@ -79,9 +79,9 @@ describe('annotateSchemas', () => {
       Root: { type: 'object', properties: { page: { $ref: '#/components/schemas/Page' } } },
       Page: { type: 'object', properties: {} },
     };
-    const schemas = annotateSchemas(raw, 'metaObject');
+    const schemas = annotateSchemas(raw, 'customKey');
     // The analyzer reading the same custom key mounts identities.
-    const matched = new Scanner(schemas, 'metaObject').scan({ page: {} }, schemas.Root);
+    const matched = new Scanner(schemas, 'customKey').scan({ page: {} }, schemas.Root);
     expect(matched.interpretations.get('/page')?.identity.name).toBe('Page');
     // The default key sees nothing, proving the key is actually threaded through.
     const missed = new Scanner(schemas).scan({ page: {} }, schemas.Root);

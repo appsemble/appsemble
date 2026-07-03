@@ -1,11 +1,11 @@
-# Meta-objects for blocks (design)
+# Language components for blocks (design)
 
 **Status: design + prototype only. Not implemented in the engine.**
 
 Block parameters are not in the static schema: each block type/version ships its own parameters JSON
 Schema (from its manifest), and the base `BlockDefinition` leaves `parameters` open — so the
 analyzer mounts `BlockDefinition` but nothing under it (confirmed on reservations: 100
-`BlockDefinition`s, zero block-param meta-objects).
+`BlockDefinition`s, zero block-param language components).
 
 ## How the LSP (685-lsp) solves it
 
@@ -15,7 +15,7 @@ available block —
 — discriminated by `type`+`version`, the `appsemble://` refs resolved on demand by an async schema
 request service.
 
-## Fit with the meta-object walk
+## Fit with the language component walk
 
 A **discriminated `oneOf` (not `if`/`then`)** is exactly what the walk resolves: `type`+`version`
 make one branch match and the walk descends into its `parameters`. Two adjustments:
@@ -26,21 +26,39 @@ make one branch match and the walk descends into its `parameters`. Two adjustmen
    incremental API:
 
    ```ts
-   const a0 = new MetaAnalyzer(baseSchemas);
+   const a0 = new Scanner(baseSchemas);
    // Blocks mount; params unresolved.
    let tree = a0.buildTree(app, root);
-   const blocks = tree.interpretations.filter((i) => i.identity.name === 'BlockDefinition');
+   const blocks = [...tree.interpretations.values()].filter(
+     (i) => i.identity.name === 'BlockDefinition',
+   );
    // Async fetch lives in the consumer.
    const blockSchemas = await fetchBlockSchemas(blocks.map((i) => i.value));
-   const a1 = new MetaAnalyzer({ ...baseSchemas, BlockDefinition: wiredBlockDef });
+   const a1 = new Scanner({ ...baseSchemas, BlockDefinition: wiredBlockDef });
    tree = a1.buildTree(app, root, { previous: tree, changed: blocks.map((i) => i.path) });
    ```
 
    `previous` is plain data, so the second analyzer reuses every non-block interpretation. Fetching
-   cannot happen _inside_ a sync walk — hence two walks with the async fetch between them.
+   cannot happen _inside_ a sync walk — hence two walks with the async fetch between them:
+
+   ```mermaid
+   sequenceDiagram
+     participant C as Consumer
+     participant A0 as Scanner a0
+     participant F as fetchBlockSchemas
+     participant A1 as Scanner a1
+     C->>A0: buildTree(app, root)
+     A0-->>C: tree, BlockDefinition mounted, parameters unresolved
+     C->>C: filter interpretations for BlockDefinition
+     C->>F: await fetch(block values)
+     Note over C,F: async, cannot run inside a sync walk
+     F-->>C: per-block parameter schemas
+     C->>A1: buildTree(app, root, previous tree + changed block paths)
+     A1-->>C: parameters mount as FormParams, non-block nodes reused
+   ```
 
 2. **Annotation.** Run manifest param schemas through `annotateSchemas` (namespaced, e.g.
-   `@org/name@version/parameters`) so their structure mounts as meta-objects.
+   `@org/name@version/parameters`) so their structure mounts as language components.
 
 ## Two approaches
 
@@ -67,11 +85,15 @@ pre-patching, and it hands back the schema _object_ so it sidesteps ref keying. 
 
 Bare last-segment lookup only reaches a schema if a `$ref` ends in its key — fine for uniquely-named
 components, wrong for blocks (every `appsemble://…/parameters.json` collapses to the same segment).
-`resolveRef` keys by full id/URL with exact match, falling back to last segment for base schemas:
+`resolveRef` keys by full id/URL with exact match, falling back to the `#/components/schemas/{name}`
+prefix for base components (a deeper pointer is not a named component, so it errors rather than
+resolving to an unrelated same-named schema):
 
 ```text
 resolveRef(ref) {
-  return this.schemas[ref] ?? this.schemas[ref.split('/').pop()!];
+  const prefix = '#/components/schemas/';
+  const name = ref.startsWith(prefix) ? ref.slice(prefix.length) : ref;
+  return this.schemas[ref] ?? this.schemas[name];
 }
 ```
 

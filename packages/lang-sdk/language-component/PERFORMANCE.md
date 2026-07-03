@@ -1,14 +1,14 @@
-# Meta-object analyzer performance notes
+# Language component analyzer performance notes
 
-Profiled on a real ~3,300-line app (sittard-geleen reservations, ~2,300 meta-objects,
+Profiled on a real ~3,300-line app (sittard-geleen reservations, ~2,300 language components,
 remapper-heavy).
 
 ## Where the time goes
 
-A single `analyzeMetaObjects` run was ~8.2 s, split roughly in half:
+A single `scanComponents` run was ~8.2 s, split roughly in half:
 
 - **~4.1 s walk + fallback** — per-node identity resolution. The ref-cutoff (`stripRefs` in
-  `analyze.ts`) already cuts this ~2–4x, and ~98–100% of it is redundant across consecutive editor
+  `scanner.ts`) already cuts this ~2–4x, and ~98–100% of it is redundant across consecutive editor
   edits, so incremental re-analysis skips nearly all of it.
 - **~4.2 s `collectHits`** — one full-ref `jsonschema` validation for `documentValid` + `errors` +
   `hits`. This is the painful half, and it is **not needed to build the tree** — the walk already
@@ -22,7 +22,7 @@ revisits reuse the cached copy. A node's resolution then depends on its value on
 boundary reproduces the subtree independent of anything above it. (A per-run `(value, schema)`
 validation memo was tried and dropped — the costly validations are all distinct, so nothing hit.)
 
-## Incremental re-analysis (shipped: `MetaAnalyzer.buildTree`)
+## Incremental re-analysis (shipped: `Scanner.buildTree`)
 
 The caller passes the changed paths (an LSP has them from edit ranges); the engine re-walks only the
 subtree enclosing each, from the nearest `$ref` boundary (`boundaryFor`), and reuses the rest of the
@@ -35,7 +35,7 @@ Checked against a full analysis every time (identical `interpretations` througho
 
 ## Commit-sequence replay (measured)
 
-From-scratch cost per revision, `mini-schemas/commit-sequence-spike.ts`, ~1,400 real revisions:
+From-scratch cost per revision, replaying ~1,400 real revisions:
 
 | app          | revs | total replay | median/rev | tracks        |
 | ------------ | ---: | -----------: | ---------: | ------------- |

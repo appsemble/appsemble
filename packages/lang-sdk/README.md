@@ -25,6 +25,10 @@ This package provides utilities and tools for working with the language DSL used
 It also includes helpers for working with app page definitions, translated page labels, and
 canonical page path segments.
 
+The [language component engine](./language-component/README.md) is a schema-directed identity,
+cursor, and binding layer over app definitions, with a
+[mini-schema stress suite](./mini-schemas/README.md).
+
 ## Exports
 
 ### 1. **Validators**

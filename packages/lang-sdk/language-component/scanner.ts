@@ -45,7 +45,7 @@ export interface ResolveContext {
 }
 
 interface WalkContext extends ResolveContext {
-  emit: (path: NodePath, object: Identity, localValid: boolean) => void;
+  emit: (path: NodePath, identity: Identity, localValid: boolean) => void;
 }
 
 export interface ScanResult {
@@ -87,6 +87,24 @@ function composite(
   parts: Identity[],
 ): Identity {
   return { kind: 'composite', mode, name: tag?.name ?? mode, parts };
+}
+
+// A combinator yields an identity only when it is itself tagged or resolved some tagged parts;
+// an anonymous combinator over untagged branches is transparent and contributes nothing.
+function compositeOrNull(
+  mode: 'allOf' | 'anyOf' | 'oneOf',
+  tag: SchemaTag | undefined,
+  parts: Identity[],
+): Identity | null {
+  return tag || parts.length ? composite(mode, tag, parts) : null;
+}
+
+function unresolvedOrNull(
+  reason: string,
+  tag: SchemaTag | undefined,
+  parts: Identity[],
+): Identity | null {
+  return tag || parts.length ? unresolved(reason, parts) : null;
 }
 
 function deref(schema: Schema, resolveRef: (ref: string) => Schema): Schema {
@@ -141,7 +159,9 @@ function stripRefs(schema: Schema): Schema {
   return copy;
 }
 
-// TODO: what does this do?
+// Memoize the ref-cutoff: return a function that builds each schema's local-shape copy
+// (stripRefs) once and caches it by schema identity, so repeated resolves against the same
+// schema reuse the copy instead of rebuilding it. The cache is stable across a scan.
 export function createShallow(): (schema: Schema) => Schema {
   const cache = new Map<Schema, Schema>();
   return (schema) => {
@@ -155,7 +175,9 @@ export function createShallow(): (schema: Schema) => Schema {
 }
 
 function identityParts(parts: Resolution[]): Identity[] {
-  return parts.map((part) => part.identity).filter((object): object is Identity => object != null);
+  return parts
+    .map((part) => part.identity)
+    .filter((identity): identity is Identity => identity != null);
 }
 
 function pathContains(parent: NodePath, child: NodePath): boolean {
@@ -179,8 +201,12 @@ export function governingChild(
       owned.push(schema.properties[key]);
     } else if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
       owned.push(schema.additionalProperties);
-    } else if (schema.items && typeof schema.items === 'object' && !Array.isArray(schema.items)) {
-      owned.push(schema.items);
+    } else if (schema.items && typeof schema.items === 'object') {
+      // Single-schema `items` governs every element; tuple-form `items` governs by position.
+      const item = Array.isArray(schema.items) ? schema.items[Number(key)] : schema.items;
+      if (item && typeof item === 'object') {
+        owned.push(item);
+      }
     }
   }
   if (owned.length === 0) {
@@ -189,50 +215,72 @@ export function governingChild(
   return owned.length === 1 ? owned[0] : { allOf: owned };
 }
 
-export function resolve(schema: Schema, value: unknown, ctx: ResolveContext): Resolution {
+export function resolve(
+  schema: Schema,
+  value: unknown,
+  ctx: ResolveContext,
+  seen: ReadonlySet<Schema> = new Set(),
+): Resolution {
   const s = deref(schema, ctx.resolveRef);
   const tag = schemaTag(s, ctx.componentKey);
 
+  // Cycle guard: a combinator branch that $refs an enclosing combinator expands `s` forever,
+  // unbounded by the value (the walk is bounded by data; resolve expands combinators
+  // structurally). `seen` is the ancestor path of schemas currently being resolved; re-entering
+  // one is a cycle, so stop with the enclosing schema still governing descent (`winners: [s]`).
+  if (seen.has(s)) {
+    return {
+      identity: tag ? unresolved('cyclic schema reference') : null,
+      matched: false,
+      winners: [s],
+    };
+  }
+  const nested = new Set(seen).add(s);
+
+  // The enclosing schema always governs its own children: a schema may carry a combinator
+  // *and* its own `properties`/`items` (e.g. `allOf: [Base]` plus own fields), so `s` is a
+  // winner alongside any matched branch winners. Mirrors the leaf path (`winners: [s]`),
+  // which descends into own properties regardless of local validity.
   if (s.oneOf) {
-    const parts = s.oneOf.map((branch) => resolve(branch, value, ctx));
+    const parts = s.oneOf.map((branch) => resolve(branch, value, ctx, nested));
     const matched = parts.filter((part) => part.matched);
     if (matched.length === 1) {
       const [winner] = matched;
       const identity = tag ? composite('oneOf', tag, identityParts([winner])) : winner.identity;
-      return { identity, matched: true, winners: winner.winners };
+      return { identity, matched: true, winners: [s, ...winner.winners] };
     }
     const found = identityParts(matched);
-    const identity =
-      tag || found.length
-        ? unresolved(`oneOf expected exactly one match, got ${matched.length}`, found)
-        : null;
-    return { identity, matched: false, winners: [] };
+    const identity = unresolvedOrNull(
+      `oneOf expected exactly one match, got ${matched.length}`,
+      tag,
+      found,
+    );
+    return { identity, matched: false, winners: [s] };
   }
 
   if (s.anyOf) {
-    const parts = s.anyOf.map((branch) => resolve(branch, value, ctx));
+    const parts = s.anyOf.map((branch) => resolve(branch, value, ctx, nested));
     const matched = parts.filter((part) => part.matched);
     if (matched.length) {
-      const found = identityParts(matched);
-      const identity = tag || found.length ? composite('anyOf', tag, found) : null;
-      return { identity, matched: true, winners: matched.flatMap((part) => part.winners) };
+      const identity = compositeOrNull('anyOf', tag, identityParts(matched));
+      return { identity, matched: true, winners: [s, ...matched.flatMap((part) => part.winners)] };
     }
     return {
-      identity: tag ? unresolved('anyOf matched nothing') : null,
+      identity: unresolvedOrNull('anyOf matched nothing', tag, []),
       matched: false,
-      winners: [],
+      winners: [s],
     };
   }
 
   if (s.allOf) {
-    const parts = s.allOf.map((branch) => resolve(branch, value, ctx));
+    const parts = s.allOf.map((branch) => resolve(branch, value, ctx, nested));
     const found = identityParts(parts);
     if (parts.every((part) => part.matched)) {
-      const identity = tag || found.length ? composite('allOf', tag, found) : null;
-      return { identity, matched: true, winners: parts.flatMap((part) => part.winners) };
+      const identity = compositeOrNull('allOf', tag, found);
+      return { identity, matched: true, winners: [s, ...parts.flatMap((part) => part.winners)] };
     }
-    const identity = tag || found.length ? unresolved('allOf did not fully match', found) : null;
-    return { identity, matched: false, winners: [] };
+    const identity = unresolvedOrNull('allOf did not fully match', tag, found);
+    return { identity, matched: false, winners: [s] };
   }
 
   // Leaf/object schema: its own properties govern children regardless of validity.
@@ -368,11 +416,11 @@ export class Scanner {
 
   private emitInto(byPath: Map<string, Mount>, data: unknown): WalkContext {
     return {
-      emit(path, object, localValid) {
+      emit(path, identity, localValid) {
         byPath.set(formatPath(path), {
           errors: [],
           localValid,
-          identity: object,
+          identity,
           path,
           value: getPath(data, path),
         });

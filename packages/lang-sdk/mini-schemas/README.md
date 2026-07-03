@@ -1,15 +1,15 @@
 # Mini Schemas
 
-This folder is a stress-test suite for the `../meta-object` engine.
+This folder is a stress-test suite for the `../language-component` engine.
 
 It defines a tiny annotated JSON Schema DSL plus sample data that exercise normal objects,
 `oneOf`/`anyOf`/`allOf`, nested same-path algebra, invalid local matches, local-vs-document
 validity, losing-branch ghosts, and conditional placement the walk cannot navigate.
 
-Run the human-readable report with:
+Run the suite with:
 
 ```sh
-npx tsx packages/lang-sdk/mini-schemas/report.ts
+npx vitest run packages/lang-sdk/mini-schemas
 ```
 
 ## What it proves
@@ -19,44 +19,123 @@ npx tsx packages/lang-sdk/mini-schemas/report.ts
 - ambiguous or unmatched algebra stays `unresolved` instead of guessing
 - local object identity is kept separate from whole-document validity
 - a child of a losing combinator branch is not mounted (no ghosts)
-- a meta-object behind an applicator the walk cannot navigate (`if`/`then`) is not mounted
+- a language component behind an applicator the walk cannot navigate (`if`/`then`) is not mounted
 
 ## Test files
 
 - `mini-schemas.test.ts`: the baseline scenarios below.
-- `gaps.test.ts`: the four design gaps (#1 ghost, #2 untagged combinator, #3 hit order, #4 ancestor
-  errors), each now fixed, plus a catalog of latent ones.
+- `edge-cases.test.ts`: the design gaps (ghost, untagged combinator, hit order, ancestor errors) and
+  a catalog of latent ones.
+- `incremental.test.ts`: incremental re-analysis fidelity — an incremental `buildTree` matches a
+  full build after each change.
 - `capabilities.test.ts`: walk behavior for `anyOf` short-circuit children and `if`/`then`
   placement.
 
 ## Baseline scenarios
 
-```text
-normal               /widget      -> Widget:oneOf(IconWidget)
-                     /flexible    -> FlexibleThing:anyOf(TextWidget, IconWidget)
-                     /composed    -> StoredText:allOf(Identified, Timestamped, TextWidget)
-                     /scaryWidget -> ScaryWidget:oneOf(ExperimentalButton)
-scaryProduction      /scaryWidget -> ScaryWidget:oneOf(ExperimentalButton)   (documentValid: false)
-scaryProductionFixed /scaryWidget -> ScaryWidget:oneOf(StandardButton)
-cursedA              /cursedA     -> unresolved(oneOf ... got 2) [ButtonWidget, TextAndIcon:allOf(...)]
-cursedB              /cursedB     -> unresolved(allOf did not fully match) [...]
-cursedValid          /cursedValid -> CursedValid:allOf(StrictButtonOrText:oneOf(StrictButton),
-                                                       StrictIconOrTrackable:anyOf(IconWidget, Trackable))
-ghost                /ghostWidget -> unresolved(oneOf ... got 2)   (indistinguishable branches)
-invalidLocal         /widget      -> unresolved(oneOf ... got 0)
+Each scenario is analyzed as its own document, so `---` separates independently analyzed inputs. A
+mounted node's comment is `# <JSON Pointer> -> <identity>`; the top-level `environment` scalar never
+mounts.
+
+```yaml
+# normal — one document, every algebra kind
+environment: development
+widget: # /widget -> Widget:oneOf(IconWidget)
+  icon: save
+flexible: # /flexible -> FlexibleThing:anyOf(TextWidget, IconWidget)
+  text: hello
+  icon: star
+composed: # /composed -> StoredText:allOf(Identified, Timestamped, TextWidget)
+  id: abc
+  createdAt: 2026-06-26
+  text: hello
+scaryWidget: # /scaryWidget -> ScaryWidget:oneOf(ExperimentalButton)
+  type: button
+  experimental: true
+---
+# scaryProduction — documentValid: false; local identity is kept, the document is invalid
+environment: production
+scaryWidget: # /scaryWidget -> ScaryWidget:oneOf(ExperimentalButton)
+  type: button
+  experimental: true # error: does not exactly match expected constant: false
+---
+# scaryProductionFixed — documentValid: true
+environment: production
+scaryWidget: # /scaryWidget -> ScaryWidget:oneOf(StandardButton)
+  type: button
+  experimental: false
+---
+# cursedA — two oneOf branches match, so it stays unresolved rather than guessing
+cursedA: # /cursedA -> unresolved(oneOf ... got 2) [ButtonWidget, TextAndIcon:allOf(TextWidget, IconWidget)]
+  type: button
+  text: hello
+  icon: star
+---
+# cursedB — an allOf part is itself ambiguous
+cursedB: # /cursedB -> unresolved(allOf did not fully match) [unresolved(oneOf ... got 2) [ButtonWidget, TextWidget], IconOrTrackable:anyOf(IconWidget, Trackable)]
+  type: button
+  text: hello
+  icon: star
+  analytics: true
+---
+# ghost — indistinguishable branches
+ghostWidget: # /ghostWidget -> unresolved(oneOf ... got 2) [StandardGhostButton, ExperimentalGhostButton]
+  type: button
+---
+# invalidLocal — no branch matches
+widget: # /widget -> unresolved(oneOf ... got 0) []
+  type: button
+---
+# cursedValid — nested same-path algebra resolves when inner branches are distinguishable
+cursedValid: # /cursedValid -> CursedValid:allOf(StrictButtonOrText:oneOf(StrictButton), StrictIconOrTrackable:anyOf(IconWidget, Trackable))
+  kind: button
+  text: hello
+  icon: star
+  analytics: true
 ```
 
-`scaryProduction` is the local/document split: `/scaryWidget` keeps its local identity
-(`ExperimentalButton`) while the document is invalid, and the node carries the error at
-`/scaryWidget/experimental`. `cursedValid` shows nested same-path algebra resolving when the inner
-branches are distinguishable; `ghost` shows it staying `unresolved` when they are not.
+A single value at `/cursedValid` resolves to one nested composite identity — the algebra of the
+`allOf` / `oneOf` / `anyOf` at that path, not a tree of separately mounted nodes:
+
+```mermaid
+graph TD
+  CV["CursedValid : allOf"] --> SBT["StrictButtonOrText : oneOf"]
+  CV --> SIT["StrictIconOrTrackable : anyOf"]
+  SBT --> SB["StrictButton"]
+  SIT --> IW["IconWidget"]
+  SIT --> TR["Trackable"]
+```
 
 ## Gap and capability cases
 
-```text
-ghostChild        /ghostHost   -> GhostHost:oneOf(PlainBranch)      (FancyBranch.action pruned)
-untaggedComposite /untaggedComposite -> allOf(StrictButtonOrText:oneOf(StrictButton), ...)
-ancestorError     /container/inner carries no error; /container holds the missing-label error
-host              /host/badge  -> Badge        (mounted despite anyOf short-circuit)
-condHost          /condHost/trinket not mounted (if/then is outside walk coverage)
+```yaml
+# ghostChild — a losing oneOf branch leaves no ghost
+ghostHost: # /ghostHost -> GhostHost:oneOf(PlainBranch)
+  type: plain
+  action: # not mounted — FancyBranch lost, so its `action` child never mounts
+    kind: noop
+---
+# untaggedComposite — an untagged allOf is transparent, surfacing its tagged parts
+untaggedComposite: # /untaggedComposite -> allOf(StrictButtonOrText:oneOf(StrictButton), ...)
+  kind: button
+  text: hello
+  icon: star
+  analytics: true
+---
+# ancestorError — the ancestor holds the error, the valid child does not
+container: # /container carries the missing-`label` error
+  inner: # /container/inner carries no error
+    ok: true
+---
+# host — the walk mounts a child under a non-first anyOf branch the validator short-circuits past
+host:
+  badge: # /host/badge -> Badge
+    label: gold
+  text: hi
+---
+# condHost — a component only behind if/then is not mounted (the walk cannot navigate it)
+condHost:
+  mode: fancy
+  trinket: # /condHost/trinket -> not mounted (if/then is outside walk coverage)
+    gem: ruby
 ```
