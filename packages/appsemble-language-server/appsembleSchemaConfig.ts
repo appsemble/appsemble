@@ -56,7 +56,9 @@ interface CreateAppsembleSchemaConfigOptions {
 export function createAppsembleSchemaConfig({
   referenceUri,
 }: CreateAppsembleSchemaConfigOptions = {}): SchemaConfiguration[] {
-  const clonedSchemas = cloneDeep(schemas);
+  // `schemas` is an ES module namespace object, which lodash `cloneDeep` cannot clone. Spread it
+  // into a plain object first so every app schema ends up in the cloned definitions.
+  const clonedSchemas = cloneDeep({ ...schemas });
   set(clonedSchemas, 'BlockDefinition.allOf', [{ oneOf: [] }]);
   const jsonSchemas = mapValues(clonedSchemas, (schema) =>
     addMarkdownDescriptions(rewriteOpenApiSchemaReferences(schema)),
