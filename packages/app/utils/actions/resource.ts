@@ -288,8 +288,12 @@ export const updatePositions: ActionCreator<'resource.update.positions'> = (args
       ...definition,
       body: {
         'object.from': {
-          prevResourcePosition: { prop: 'prevResourcePosition' },
-          nextResourcePosition: { prop: 'nextResourcePosition' },
+          prevResourcePosition: {
+            prop: definition.order === 'desc' ? 'nextResourcePosition' : 'prevResourcePosition',
+          },
+          nextResourcePosition: {
+            prop: definition.order === 'desc' ? 'prevResourcePosition' : 'nextResourcePosition',
+          },
         },
       },
       method,
