@@ -2967,6 +2967,14 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "order": {
+                      "default": "asc",
+                      "enum": [
+                        "asc",
+                        "desc",
+                      ],
+                      "type": "string",
+                    },
                     "proxy": {
                       "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -8753,6 +8761,14 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "order": {
+              "default": "asc",
+              "enum": [
+                "asc",
+                "desc",
+              ],
+              "type": "string",
+            },
             "proxy": {
               "default": true,
               "description": "By default requests will be proxied through the Appsemble API.

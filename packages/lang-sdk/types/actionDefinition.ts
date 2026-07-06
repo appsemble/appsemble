@@ -802,7 +802,7 @@ interface ResourceOrderQueryDefinition {
   /**
    * Whether the resources loaded are in descending order.
    */
-  order: 'asc' | 'desc';
+  order?: 'asc' | 'desc';
 }
 
 export interface ControllerActionDefinition extends BaseActionDefinition<'controller'> {

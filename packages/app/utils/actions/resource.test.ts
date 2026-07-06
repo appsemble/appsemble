@@ -193,7 +193,7 @@ describe('resource.update.positions', () => {
     expect(request.data).toBe('{"prevResourcePosition":44.55,"nextResourcePosition":45.66}');
   });
 
-  it('should swap the neighbouring positions for descending order', async () => {
+  it('should swap the neighboring positions for descending order', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;
       return [200, { id: 84 }, {}];
