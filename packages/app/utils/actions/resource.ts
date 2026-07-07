@@ -13,20 +13,24 @@ import { apiUrl, appId } from '../settings.js';
  * The value defined on the action takes precedence. Otherwise it is inferred from the
  * `selectedGroupId` input property, falling back to the app member's currently selected group.
  *
- * @param selectedGroup The app member's currently selected group.
+ * @param selectedGroup The app member's currently selected group, if any.
  * @param override The `selectedGroupId` remapper defined on the action, if any.
  * @returns A remapper resolving to the effective selected group id.
  */
-function selectedGroupIdRemapper(selectedGroup: AppMemberGroup, override?: Remapper): Remapper {
-  return (
-    override ?? {
-      if: {
-        condition: { defined: { prop: 'selectedGroupId' } },
-        then: { prop: 'selectedGroupId' },
-        else: selectedGroup.id,
-      },
-    }
-  );
+function selectedGroupIdRemapper(
+  selectedGroup: AppMemberGroup | undefined,
+  override: Remapper | undefined,
+): Remapper {
+  if (override != null) {
+    return override;
+  }
+  return {
+    if: {
+      condition: { defined: { prop: 'selectedGroupId' } },
+      then: { prop: 'selectedGroupId' },
+      else: selectedGroup?.id ?? null,
+    },
+  };
 }
 
 export const historyGet: ActionCreator<'resource.history.get'> = (args) => {
@@ -40,13 +44,17 @@ export const historyGet: ActionCreator<'resource.history.get'> = (args) => {
     ...args,
     definition: {
       ...definition,
-      query: selectedGroupId
-        ? {
-            'object.assign': {
-              selectedGroupId: selectedGroupIdRemapper(selectedGroupId, definition.selectedGroupId),
-            },
-          }
-        : undefined,
+      query:
+        selectedGroupId || definition.selectedGroupId
+          ? {
+              'object.assign': {
+                selectedGroupId: selectedGroupIdRemapper(
+                  selectedGroupId,
+                  definition.selectedGroupId,
+                ),
+              },
+            }
+          : undefined,
       method: 'GET',
       proxy: false,
       type: 'request',
@@ -82,7 +90,7 @@ export const get: ActionCreator<'resource.get'> = (args) => {
   }
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
+  if (selectedGroup || definition.selectedGroupId) {
     query.push({
       'object.assign': {
         selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
@@ -136,7 +144,7 @@ export const query: ActionCreator<'resource.query'> = (args) => {
   }
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
+  if (selectedGroup || definition.selectedGroupId) {
     queryRemapper.push({
       'object.assign': {
         selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
@@ -177,7 +185,7 @@ export const count: ActionCreator<'resource.count'> = (args) => {
   }
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
+  if (selectedGroup || definition.selectedGroupId) {
     queryRemapper.push({
       'object.assign': {
         selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
@@ -213,7 +221,7 @@ export const create: ActionCreator<'resource.create'> = (args) => {
     .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
+  if (selectedGroup || definition.selectedGroupId) {
     queryRemapper.push({
       'object.assign': {
         selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
@@ -252,7 +260,7 @@ export const update: ActionCreator<'resource.update'> = (args) => {
     .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
+  if (selectedGroup || definition.selectedGroupId) {
     queryRemapper.push({
       'object.assign': {
         selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
@@ -284,7 +292,7 @@ export const updateGroup: ActionCreator<'resource.update.group'> = (args) => {
   const { query: actionQuery, resource: resourceType } = definition;
   const queryRemapper = ([] as any[]).concat(actionQuery).filter(Boolean);
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
+  if (selectedGroup || definition.selectedGroupId) {
     queryRemapper.push({
       'object.assign': {
         selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
@@ -325,7 +333,7 @@ export const updatePositions: ActionCreator<'resource.update.positions'> = (args
   const { query: actionQuery, resource: resourceType } = definition;
   const queryRemapper = ([] as any[]).concat(actionQuery).filter(Boolean);
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
+  if (selectedGroup || definition.selectedGroupId) {
     queryRemapper.push({
       'object.assign': {
         selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
@@ -382,7 +390,7 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
     .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
+  if (selectedGroup || definition.selectedGroupId) {
     queryRemapper.push({
       'object.assign': {
         selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
@@ -425,7 +433,7 @@ export const remove: ActionCreator<'resource.delete'> = (args) => {
     .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
+  if (selectedGroup || definition.selectedGroupId) {
     queryRemapper.push({
       'object.assign': {
         selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
@@ -465,7 +473,7 @@ export const removeAll: ActionCreator<'resource.delete.all'> = (args) => {
 
   const queryRemapper: Remapper = [];
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
+  if (selectedGroup || definition.selectedGroupId) {
     queryRemapper.push({
       'object.assign': {
         selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
@@ -517,7 +525,7 @@ export const removeBulk: ActionCreator<'resource.delete.bulk'> = (args) => {
 
   const queryRemapper: Remapper = [];
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
+  if (selectedGroup || definition.selectedGroupId) {
     queryRemapper.push({
       'object.assign': {
         selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),

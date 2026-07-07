@@ -319,7 +319,20 @@ describe('resource selectedGroupId', () => {
     expect(request.params).toStrictEqual({ selectedGroupId: 7 });
   });
 
-  it('omits the selectedGroupId when no group is selected', async () => {
+  it('sends the action-defined selectedGroupId even when no group is selected', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, [], {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.query', resource: 'pet', selectedGroupId: 7 },
+    });
+    await action();
+    expect(request.params).toStrictEqual({ selectedGroupId: 7 });
+  });
+
+  it('omits the selectedGroupId when no group is selected and none is defined', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;
       return [200, [], {}];
