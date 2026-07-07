@@ -35,7 +35,7 @@
     "@remcohaszing/eslint": "12.0.1",
     "@typescript-eslint/eslint-plugin": "8.59.3",
     "@typescript-eslint/parser": "8.59.3",
-    "@vitest/eslint-plugin": "1.6.17",
+    "@vitest/eslint-plugin": "1.6.21",
     "eslint-plugin-compat": "6.2.1",
     "eslint-plugin-formatjs": "5.4.2",
     "eslint-plugin-jsdoc": "61.7.1",
