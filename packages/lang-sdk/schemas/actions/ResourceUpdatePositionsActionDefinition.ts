@@ -19,6 +19,11 @@ export const ResourceUpdatePositionsActionDefinition = extendJSONSchema(
       id: {
         $ref: '#/components/schemas/RemapperDefinition',
       },
+      order: {
+        type: 'string',
+        enum: ['asc', 'desc'],
+        default: 'asc',
+      },
     },
   },
   ['url', 'method'],

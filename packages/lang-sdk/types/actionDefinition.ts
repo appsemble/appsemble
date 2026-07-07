@@ -798,6 +798,13 @@ interface ResourceActionWithIdDefinition {
   id?: Remapper;
 }
 
+interface ResourceOrderQueryDefinition {
+  /**
+   * Whether the resources loaded are in descending order.
+   */
+  order?: 'asc' | 'desc';
+}
+
 export interface ControllerActionDefinition extends BaseActionDefinition<'controller'> {
   handler: string;
 }
@@ -823,7 +830,9 @@ export type ResourceUpdateGroupActionDefinition =
       groupId?: Remapper;
     };
 export type ResourceUpdatePositionsActionDefinition =
-  ResourceActionDefinition<'resource.update.positions'> & ResourceActionWithIdDefinition;
+  ResourceActionDefinition<'resource.update.positions'> &
+    ResourceActionWithIdDefinition &
+    ResourceOrderQueryDefinition;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'> &
   ResourceActionWithIdDefinition;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;

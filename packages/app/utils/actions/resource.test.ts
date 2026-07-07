@@ -175,6 +175,40 @@ describe('resource.update.positions', () => {
     expect(request.data).toBe('{"prevResourcePosition":44.55,"nextResourcePosition":45.66}');
     expect(result).toStrictEqual({ id: 84, Position: (44.55 + 45.66) / 2 });
   });
+
+  it('should keep positions unchanged for ascending order', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { id: 84 }, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.update.positions', resource: 'pet', order: 'asc' },
+    });
+    await action({
+      id: 84,
+      prevResourcePosition: 44.55,
+      nextResourcePosition: 45.66,
+    });
+    expect(request.data).toBe('{"prevResourcePosition":44.55,"nextResourcePosition":45.66}');
+  });
+
+  it('should swap the neighboring positions for descending order', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { id: 84 }, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.update.positions', resource: 'pet', order: 'desc' },
+    });
+    await action({
+      id: 84,
+      prevResourcePosition: 44.55,
+      nextResourcePosition: 45.66,
+    });
+    expect(request.data).toBe('{"prevResourcePosition":45.66,"nextResourcePosition":44.55}');
+  });
 });
 
 describe('resource.query', () => {
