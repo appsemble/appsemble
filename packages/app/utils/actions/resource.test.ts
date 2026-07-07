@@ -274,6 +274,78 @@ describe('resource.query', () => {
   });
 });
 
+describe('resource selectedGroupId', () => {
+  const selectedGroup = { id: 5, name: 'Group A', role: 'Member' };
+
+  it('defaults the selectedGroupId to the currently selected group', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, [], {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.query', resource: 'pet' },
+      getAppMemberSelectedGroup: () => selectedGroup,
+    });
+    await action();
+    expect(request.params).toStrictEqual({ selectedGroupId: 5 });
+  });
+
+  it('infers the selectedGroupId from the input data', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, [], {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.query', resource: 'pet' },
+      getAppMemberSelectedGroup: () => selectedGroup,
+    });
+    await action({ selectedGroupId: 9 });
+    expect(request.params).toStrictEqual({ selectedGroupId: 9 });
+  });
+
+  it('prefers the selectedGroupId defined on the action', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, [], {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.query', resource: 'pet', selectedGroupId: 7 },
+      getAppMemberSelectedGroup: () => selectedGroup,
+    });
+    await action({ selectedGroupId: 9 });
+    expect(request.params).toStrictEqual({ selectedGroupId: 7 });
+  });
+
+  it('sends the action-defined selectedGroupId even when no group is selected', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, [], {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.query', resource: 'pet', selectedGroupId: 7 },
+    });
+    await action();
+    expect(request.params).toStrictEqual({ selectedGroupId: 7 });
+  });
+
+  it('omits the selectedGroupId when no group is selected and none is defined', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, [], {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.query', resource: 'pet' },
+    });
+    await action();
+    expect(request.params).toBeNull();
+  });
+});
+
 describe('resource.count', () => {
   it('should make a GET request', async () => {
     mock.onAny(/.*/).reply((req) => {

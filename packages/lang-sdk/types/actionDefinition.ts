@@ -775,6 +775,14 @@ export interface ResourceActionDefinition<
    * The name of the resource.
    */
   resource: string;
+
+  /**
+   * The ID of the group to scope the request to.
+   *
+   * Defaults to the `selectedGroupId` input property, or the app member's currently selected
+   * group when the property is not present.
+   */
+  selectedGroupId?: Remapper;
 }
 
 interface ViewResourceDefinition {
