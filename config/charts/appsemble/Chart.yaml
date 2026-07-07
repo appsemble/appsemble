@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.36.10-test.4
-appVersion: 0.36.10-test.4
+version: 0.36.10
+appVersion: 0.36.10
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -35,23 +35,8 @@ dependencies:
     repository: https://valkey.io/valkey-helm
     condition: valkey.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Block(form): Add disableNativePicker option to date fields to keep
-        the Appsemble picker on mobile."
-    - kind: added
-      description: "Block(form): Add disabled property to date picker decorations to
-        make their date unselectable."
-    - kind: fixed
-      description: "Block(form): Fix a self.config is undefined crash when a date
-        field's constraints change, by updating the flatpickr instance in place
-        instead of recreating it."
-    - kind: fixed
-      description: "Block(form): In date fields, set the default value to undefined if
-        today falls under one of the disabled days."
-    - kind: fixed
-      description: "Preact-components: Render the date picker with flatpickr instead
-        of the native mobile picker by default."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
