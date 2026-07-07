@@ -16,6 +16,7 @@
 
 :global(#root-crepe .milkdown .editor) {
   padding: 0;
+  min-height: calc(var(--markdown-min-rows, 0) * 1.5em);
 }
 
 :global(#root-crepe .milkdown .editor p) {

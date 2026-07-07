@@ -1410,6 +1410,16 @@ export interface MarkdownField extends AbstractField {
   defaultValue?: string;
 
   /**
+   * The minimum number of text lines the editor is tall.
+   *
+   * The markdown field renders a rich text editor rather than a plain text area, so this sets a
+   * minimum height rather than a fixed row count. The editor still grows as more content is added.
+   *
+   * @minimum 1
+   */
+  rows?: number;
+
+  /**
    * The type of the field.
    */
   type: 'markdown';
