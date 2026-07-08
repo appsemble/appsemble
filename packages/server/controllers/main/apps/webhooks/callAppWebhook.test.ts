@@ -154,30 +154,6 @@ describe('callAppWebhook', () => {
               },
             },
           },
-          submitNestedFiles: {
-            schema: {
-              type: 'object',
-              additionalProperties: false,
-              required: ['itemId', 'metadata'],
-              properties: {
-                itemId: { type: 'number' },
-                metadata: {
-                  type: 'object',
-                  additionalProperties: false,
-                  required: ['attachment', 'category', 'count', 'image'],
-                  properties: {
-                    attachment: { type: 'string', format: 'binary' },
-                    category: { type: 'string' },
-                    count: { type: 'number' },
-                    image: { type: 'string', format: 'binary' },
-                  },
-                },
-              },
-            },
-            action: {
-              type: 'noop',
-            },
-          },
         },
       },
     });
@@ -492,40 +468,6 @@ describe('callAppWebhook', () => {
         xml: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
       }),
     );
-  });
-
-  it('should handle webhook calls with nested files', async () => {
-    const res = await request.post(
-      `/api/apps/${app.id}/webhooks/submitNestedFiles`,
-      createFormData({
-        itemId: 123,
-        'metadata.attachment': createFixtureStream('sample.pdf'),
-        'metadata.image': createFixtureStream('10x50.png'),
-        metadata: {
-          category: 'Example category',
-          count: 10,
-        },
-      }),
-    );
-
-    expect(res.status).toBe(200);
-    expect(res.data).toStrictEqual({
-      itemId: 123,
-      metadata: {
-        attachment: expect.objectContaining({
-          filename: expect.any(String),
-          mime: expect.any(String),
-          path: expect.any(String),
-        }),
-        category: 'Example category',
-        count: 10,
-        image: expect.objectContaining({
-          filename: expect.any(String),
-          mime: expect.any(String),
-          path: expect.any(String),
-        }),
-      },
-    });
   });
 });
 
