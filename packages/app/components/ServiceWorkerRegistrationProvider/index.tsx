@@ -84,10 +84,15 @@ export function ServiceWorkerRegistrationProvider({
     // the initial clients.claim() fires controllerchange with nothing new to
     // load, so reloading there is pointless and discards input typed while the
     // worker was activating.
-    const hadController = Boolean(navigator.serviceWorker?.controller);
+    const startedUncontrolled = !navigator.serviceWorker?.controller;
+    let sawInitialClaim = false;
 
     const onControllerChange = (): void => {
-      if (!hadController || hasReloadedForControllerChange.current) {
+      if (startedUncontrolled && !sawInitialClaim) {
+        sawInitialClaim = true;
+        return;
+      }
+      if (hasReloadedForControllerChange.current) {
         return;
       }
       hasReloadedForControllerChange.current = true;

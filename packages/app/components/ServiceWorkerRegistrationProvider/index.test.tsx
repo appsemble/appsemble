@@ -73,6 +73,13 @@ function createRegistration({
   } as unknown as ServiceWorkerRegistration;
 }
 
+function setServiceWorkerController(controller: ServiceWorker | null): void {
+  Object.defineProperty(navigator.serviceWorker, 'controller', {
+    configurable: true,
+    value: controller,
+  });
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   latestContext = undefined;
@@ -316,7 +323,7 @@ describe('ServiceWorkerRegistrationProvider', () => {
     // A first visit starts without a controller: the worker installs and claims
     // the open page, which fires controllerchange even though no updated assets
     // exist to reload for.
-    navigator.serviceWorker.controller = null;
+    setServiceWorkerController(null);
     const registration = createRegistration();
     const reloadSpy = vi
       .spyOn(ServiceWorkerRegistrationProviderModule.pageReloader, 'reload')
@@ -332,10 +339,28 @@ describe('ServiceWorkerRegistrationProvider', () => {
     expect(reloadSpy).not.toHaveBeenCalled();
   });
 
+  it('should reload on a later controllerchange after the initial first-visit claim', async () => {
+    setServiceWorkerController(null);
+    const registration = createRegistration();
+    const reloadSpy = vi
+      .spyOn(ServiceWorkerRegistrationProviderModule.pageReloader, 'reload')
+      .mockImplementation(vi.fn());
+
+    renderProvider(registration);
+    await waitFor(() => expect(serviceWorkerListeners.controllerchange).toBeTruthy());
+
+    await act(() => {
+      serviceWorkerListeners.controllerchange?.(new Event('controllerchange'));
+      serviceWorkerListeners.controllerchange?.(new Event('controllerchange'));
+    });
+
+    expect(reloadSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('should reload once when an updated worker takes over an already controlled page', async () => {
     // A returning visit is already controlled: a controllerchange now means an
     // updated worker took over, so the page reloads to pick up its new assets.
-    navigator.serviceWorker.controller = {} as ServiceWorker;
+    setServiceWorkerController({} as ServiceWorker);
     const registration = createRegistration();
     const reloadSpy = vi
       .spyOn(ServiceWorkerRegistrationProviderModule.pageReloader, 'reload')
