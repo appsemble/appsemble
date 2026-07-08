@@ -1,3 +1,4 @@
+import { json, Op, where } from 'sequelize';
 import { expect, it } from 'vitest';
 
 import { mapKeysRecursively } from './sequelize.js';
@@ -29,6 +30,17 @@ it('should distinguish between null and undefined values for logic field', () =>
 
   const withUndefined = { attribute: 'foo', comparator: '=', logic: undefined };
   expect(mapKeysRecursively(withUndefined)).not.toBe(withUndefined);
+});
+
+it('should preserve sequelize query helper instances', () => {
+  // The OData parser compares JSON paths using where(json(...), ...). These
+  // helpers are class instances the Sequelize query generator consumes
+  // directly; flattening them into plain objects makes it reject them as
+  // unescapable values. An empty string logic must not break the guard.
+  const condition = where(json('data.addition'), '=', '');
+  const result = mapKeysRecursively({ [Op.and]: [condition] });
+
+  expect(result[Op.and as unknown as string][0]).toBe(condition);
 });
 
 it('should handle array inputs', () => {

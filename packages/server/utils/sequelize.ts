@@ -1,7 +1,15 @@
-import { Op } from 'sequelize';
+import { Op, Utils } from 'sequelize';
 
 export function mapKeysRecursively(obj: any): any {
   if (typeof obj !== 'object' || obj == null) {
+    return obj;
+  }
+
+  // Sequelize query helpers such as where(), json(), col(), fn(), and
+  // literal() are class instances the query generator consumes directly.
+  // Flattening them into plain objects makes Sequelize reject them as
+  // unescapable values, so they pass through verbatim.
+  if (obj instanceof Utils.SequelizeMethod) {
     return obj;
   }
 

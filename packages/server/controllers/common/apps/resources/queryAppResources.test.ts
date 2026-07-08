@@ -1024,6 +1024,34 @@ describe('queryAppResources', () => {
     `);
   });
 
+  it('should be able to filter fields by an empty string when fetching resources', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({
+      type: 'testResource',
+      data: { foo: '' },
+    });
+    await Resource.create({ type: 'testResource', data: { foo: 'bar' } });
+    authorizeStudio();
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$filter=foo eq ''`,
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "",
+          "id": 1,
+        },
+      ]
+    `);
+  });
+
   it('should be able to filter fields with special characters when fetching resources', async () => {
     const { Resource } = await getAppDB(app.id);
     await Resource.create({
