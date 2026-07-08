@@ -146,6 +146,12 @@ export function Page(): ReactNode {
   const prefix = internalPageName ? `pages.${internalPageName}` : null;
   const prefixIndex = index === -1 ? null : `pages.${index}`;
 
+  // Aborted when the user navigates to another page, so in-flight action chains of the previous
+  // page stop instead of causing side effects on the newly shown page.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const abortController = useMemo(() => new AbortController(), [pageDefinition]);
+  useEffect(() => () => abortController.abort(), [abortController]);
+
   const remapWithContext = useCallback(
     (mappers: Remapper, input: any, { history = [], ...context }: Record<string, any> = {}) =>
       remap(mappers, input, {
@@ -215,6 +221,7 @@ export function Page(): ReactNode {
         showShareDialog,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         ee: ee.current,
+        signal: abortController.signal,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         pageReady: null,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
@@ -243,6 +250,7 @@ export function Page(): ReactNode {
         refetchDemoAppMembers,
       }),
     [
+      abortController,
       appStorage,
       getAppMessage,
       getVariable,

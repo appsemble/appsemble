@@ -114,6 +114,10 @@ export function Block({
 
   const ref = useRef<HTMLDivElement>();
   const cleanups = useRef<(() => void)[]>([]);
+  const abortController = useRef<AbortController>();
+  if (!abortController.current) {
+    abortController.current = new AbortController();
+  }
   const [initialized, setInitialized] = useState(false);
   const pushNotifications = useServiceWorkerRegistration();
 
@@ -134,6 +138,7 @@ export function Block({
 
   useEffect(
     () => () => {
+      abortController.current?.abort();
       for (const fn of cleanups.current) {
         fn();
       }
@@ -161,6 +166,7 @@ export function Block({
       getAppMessage,
       getAppVariable: getVariable,
       appStorage,
+      signal: abortController.current?.signal,
       // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       actions: manifest.actions,
       appDefinition,
