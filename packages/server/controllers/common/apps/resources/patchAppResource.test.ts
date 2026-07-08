@@ -244,6 +244,7 @@ describe('patchAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "ILVSw2Vgk6ruVlBL55e_FgQSnNkJvTeC177sF_xffyo"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
