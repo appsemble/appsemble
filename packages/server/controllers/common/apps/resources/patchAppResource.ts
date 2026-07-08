@@ -87,6 +87,8 @@ export async function patchAppResource(ctx: Context): Promise<void> {
   const {
     $clonable: clonable,
     $expires: expires,
+    // Exclude id from body
+    id,
     ...patchData
   } = updatedResource as Record<string, unknown>;
 

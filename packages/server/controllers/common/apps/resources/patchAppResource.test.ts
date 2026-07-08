@@ -168,6 +168,24 @@ describe('patchAppResource', () => {
     expect(latest.data.bar).toBe('I am Bar.');
   });
 
+  it('should not store the id echoed in the request body in the resource data', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { id: resource.id, foo: 'I am not Foo.' },
+    );
+    expect(response.status).toBe(200);
+
+    await resource.reload();
+    expect(resource.data).toStrictEqual({ foo: 'I am not Foo.' });
+  });
+
   it('should be able to patch an existing resource from another group', async () => {
     const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
     const group = await Group.create({ name: 'Test Group' });
