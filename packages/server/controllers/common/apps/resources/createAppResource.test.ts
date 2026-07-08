@@ -297,6 +297,7 @@ describe('createAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
       Content-Type: application/json; charset=utf-8
+      Etag: "ju3nRRge1s5fWZMieCqSBgnVUk-PIQbXGtWXlgZRFVk"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -373,6 +374,7 @@ describe('createAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
       Content-Type: application/json; charset=utf-8
+      Etag: "zeuDh2ObGiE67ChG4dTnKbpNk3sXTSfschV84osOcfQ"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
