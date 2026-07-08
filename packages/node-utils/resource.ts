@@ -320,9 +320,11 @@ export async function processResourceBody(
     return num >= 0 && num < assets.length;
   };
 
+  const isPatchRequest = ctx.request?.method === 'PATCH' || isPatch;
+
   const patchedSchema = {
     ...definition.schema,
-    required: ctx.request?.method === 'PATCH' || isPatch ? [] : definition.schema.required,
+    required: isPatchRequest ? [] : definition.schema.required,
     properties: {
       ...definition.schema.properties,
       id: { type: 'integer' },
@@ -359,7 +361,8 @@ export async function processResourceBody(
       base: '#',
       preValidateProperty,
       nestedErrors: true,
-      rewrite(value, { format, oneOf }, options, { path }) {
+      rewrite(value, propertySchema, options, { path }) {
+        const { format, oneOf } = propertySchema;
         let propertyName;
         if (Array.isArray(resource) && path.length === 2 && typeof path[0] === 'number') {
           propertyName = path[1];
@@ -402,6 +405,14 @@ export async function processResourceBody(
         if (value === undefined) {
           if (propertyName === '$clonable') {
             return definition.clonable;
+          }
+          // Materialize schema property defaults for missing values. Patch requests skip this,
+          // because a missing property there means the stored value is kept.
+          const defaultValue = (propertySchema as { default?: unknown }).default;
+          if (!isPatchRequest && defaultValue !== undefined) {
+            return typeof defaultValue === 'object' && defaultValue != null
+              ? structuredClone(defaultValue)
+              : defaultValue;
           }
           return;
         }

@@ -90,6 +90,52 @@ describe('createAppResource', () => {
     expect(response.headers.etag).toBeDefined();
   });
 
+  it('should apply schema property defaults for properties missing from the request', async () => {
+    const definition = {
+      ...app.definition,
+      resources: {
+        ...app.definition.resources,
+        testResource: {
+          ...app.definition.resources!.testResource,
+          schema: {
+            ...app.definition.resources!.testResource.schema,
+            properties: {
+              ...app.definition.resources!.testResource.schema.properties,
+              pinned: { type: 'boolean', default: false },
+            },
+          },
+        },
+      },
+    };
+    await app.update({ definition });
+
+    authorizeStudio();
+    const response = await request.post<ResourceType>(
+      `/api/apps/${app.id}/resources/testResource`,
+      {
+        foo: 'bar',
+      },
+    );
+
+    expect(response.status).toBe(201);
+    expect(response.data).toStrictEqual(expect.objectContaining({ foo: 'bar', pinned: false }));
+
+    const getResponse = await request.get<ResourceType>(
+      `/api/apps/${app.id}/resources/testResource/${response.data.id}`,
+    );
+
+    expect(getResponse.status).toBe(200);
+    expect(getResponse.data).toStrictEqual(expect.objectContaining({ foo: 'bar', pinned: false }));
+
+    const explicitResponse = await request.post<ResourceType>(
+      `/api/apps/${app.id}/resources/testResource`,
+      { foo: 'bar', pinned: true },
+    );
+
+    expect(explicitResponse.status).toBe(201);
+    expect(explicitResponse.data).toStrictEqual(expect.objectContaining({ pinned: true }));
+  });
+
   it('should validate resources', async () => {
     const resource = {};
     authorizeStudio();
