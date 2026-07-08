@@ -61,7 +61,21 @@ export function createEvents(
   }
 
   let destroyed = false;
-  const registered: [string, (...args: any[]) => void][] = [];
+  const registered: {
+    callback: (...args: any[]) => void;
+    listener: (...args: any[]) => void;
+    name: string;
+  }[] = [];
+
+  function findRegisteredIndex(name: string, callback: (...args: any[]) => void): number {
+    for (let index = registered.length - 1; index >= 0; index -= 1) {
+      const registration = registered[index];
+      if (registration.name === name && registration.callback === callback) {
+        return index;
+      }
+    }
+    return -1;
+  }
 
   const emit = createProxy<'emit', 'emit'>('emit', (implemented, key) =>
     implemented
@@ -93,12 +107,15 @@ export function createEvents(
             return false;
           }
           const name = definition?.listen?.[key];
+          const listener = (...args: any[]): void => {
+            (callback as (...listenerArgs: any[]) => void)(...args);
+          };
           // @ts-expect-error 2345 argument of type is not assignable to parameter of type
           // (strictNullChecks)
-          ee.on(name, callback);
+          ee.on(name, listener);
           // @ts-expect-error 2345 argument of type is not assignable to parameter of type
           // (strictNullChecks)
-          registered.push([name, callback]);
+          registered.push({ callback, listener, name });
           return true;
         }
       : () => false,
@@ -108,15 +125,10 @@ export function createEvents(
     implemented
       ? (callback) => {
           const name = definition?.listen?.[key];
-          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-          // (strictNullChecks)
-          ee.off(name, callback);
-          const index = registered.findIndex(
-            ([registeredName, registeredCallback]) =>
-              registeredName === name && registeredCallback === callback,
-          );
+          const index = findRegisteredIndex(name!, callback);
           if (index !== -1) {
-            registered.splice(index, 1);
+            const [registration] = registered.splice(index, 1);
+            ee.off(registration.name, registration.listener);
           }
           return true;
         }
@@ -125,8 +137,8 @@ export function createEvents(
 
   const destroy = (): void => {
     destroyed = true;
-    for (const [name, callback] of registered) {
-      ee.off(name, callback);
+    for (const { listener, name } of registered) {
+      ee.off(name, listener);
     }
     registered.length = 0;
   };

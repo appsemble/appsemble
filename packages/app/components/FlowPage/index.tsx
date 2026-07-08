@@ -22,7 +22,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
-import { makeActions } from '../../utils/makeActions.js';
+import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
 import { appId } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -223,9 +223,16 @@ export function FlowPage({
 
   useEffect(() => {
     if (actions.onLoad.type !== 'noop') {
-      actions.onLoad().then((results) => {
-        setData(results);
-      });
+      actions
+        .onLoad()
+        .then((results) => {
+          setData(results);
+        })
+        .catch((caughtError: unknown) => {
+          if (!isActionOwnerAbortError(caughtError)) {
+            throw caughtError;
+          }
+        });
     }
     // @ts-expect-error 2454 Variable 'actions' is used before being assigned (strictNullChecks)
   }, [setData, actions]);
@@ -364,8 +371,10 @@ export function FlowPage({
           setLoopData(results);
           setStepsData([]);
         })
-        .catch(() => {
-          setError(true);
+        .catch((caughtError: unknown) => {
+          if (!isActionOwnerAbortError(caughtError)) {
+            setError(true);
+          }
         });
     }
   }, [actions, pageDefinition, setData, stepRef, steps]);

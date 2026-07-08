@@ -16,6 +16,21 @@ import { type MakeActionParameters } from '../types.js';
 
 const maxContextProperties = 25;
 
+export class ActionOwnerAbortError extends Error {
+  constructor() {
+    super('Action owner was aborted');
+    this.name = 'ActionOwnerAbortError';
+  }
+}
+
+export function isActionOwnerAbortError(error: unknown): error is ActionOwnerAbortError {
+  return error instanceof ActionOwnerAbortError;
+}
+
+function isOwnerAbortReason(error: unknown, signal: AbortSignal | undefined): boolean {
+  return Boolean(signal?.aborted && error === signal.reason);
+}
+
 /**
  * Parameters to pass to `makeActions`.
  *
@@ -180,11 +195,10 @@ export function createAction<T extends ActionDefinition['type']>({
           data: { ...getActionBreadcrumbData(type, prefix, prefixIndex), success: type },
         });
       } catch (error: unknown) {
-        // A chain that fails because its owner was unmounted (e.g. the event action rejecting an
-        // aborted waitFor) stops quietly: the work it was waiting for can no longer arrive and
-        // there is no view left to handle the error.
-        if (params.signal?.aborted) {
-          return;
+        // A chain that fails because its owner was unmounted stops without running success or
+        // error handlers, because the work it was waiting for can no longer arrive.
+        if (isOwnerAbortReason(error, params.signal)) {
+          throw new ActionOwnerAbortError();
         }
         addBreadcrumb({
           category: 'appsemble.action',
@@ -202,6 +216,9 @@ export function createAction<T extends ActionDefinition['type']>({
       }
       return result;
     } catch (error) {
+      if (isActionOwnerAbortError(error)) {
+        throw error;
+      }
       if (!(error instanceof ActionError)) {
         const appMemberInfo = getAppMemberInfo?.();
         const selectedGroup = getAppMemberSelectedGroup?.();

@@ -29,7 +29,7 @@ import { ShareDialog, type ShareDialogState } from './ShareDialog/index.js';
 import { type ShowDialogParams, type ShowShareDialog } from '../../types.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
-import { makeActions } from '../../utils/makeActions.js';
+import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -297,9 +297,16 @@ export function Page(): ReactNode {
 
   useEffect(() => {
     if (actions.onLoad.type !== 'noop') {
-      actions.onLoad().then((results) => {
-        setData(results);
-      });
+      actions
+        .onLoad()
+        .then((results) => {
+          setData(results);
+        })
+        .catch((error: unknown) => {
+          if (!isActionOwnerAbortError(error)) {
+            throw error;
+          }
+        });
     }
   }, [setData, actions]);
 

@@ -201,6 +201,17 @@ describe('createEvents', () => {
       expect(external).toHaveBeenCalledWith('data');
     });
 
+    it('should not remove a later external listener that uses the same callback', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
+      const listener = vi.fn();
+      events.on.foo(listener);
+      ee.on('bar', listener);
+      events.destroy();
+      ee.emit('bar', 'data');
+      expect(listener).toHaveBeenCalledOnce();
+      expect(listener).toHaveBeenCalledWith('data');
+    });
+
     it('should not track listeners that were unregistered before destroy', () => {
       const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
       const listener = vi.fn();
@@ -208,6 +219,16 @@ describe('createEvents', () => {
       events.off.foo(listener);
       events.destroy();
       expect(ee.listenerCount('bar')).toBe(0);
+    });
+
+    it('should unregister one owned duplicate listener at a time', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
+      const listener = vi.fn();
+      events.on.foo(listener);
+      events.on.foo(listener);
+      events.off.foo(listener);
+      ee.emit('bar', 'data');
+      expect(listener).toHaveBeenCalledOnce();
     });
 
     it('should not register new listeners after destroy', () => {
