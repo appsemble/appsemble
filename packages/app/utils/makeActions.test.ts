@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import { ActionError, remap } from '@appsemble/lang-sdk';
 import { identity } from '@appsemble/utils';
 import { addBreadcrumb, captureException } from '@sentry/browser';
+import { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ActionOwnerAbortError, makeActions, type MakeActionsParams } from './makeActions.js';
@@ -299,6 +300,54 @@ describe('makeActions', () => {
         level: 'warning',
       }),
     );
+  });
+
+  it('should not report unhandled network action failures to Sentry', async () => {
+    pageReady();
+    const error = new AxiosError(
+      'Network Error',
+      AxiosError.ERR_NETWORK,
+      {
+        headers: {},
+        method: 'get',
+        url: 'https://appsemble.app/api/apps/42/members?roles=Staff,Manager',
+      } as InternalAxiosRequestConfig,
+      {},
+    );
+    const dialogOk = vi.fn().mockRejectedValue(error);
+    const actions = makeActions({
+      ...testDefaults,
+      actions: { onClick: {} },
+      context: { actions: { onClick: { type: 'dialog.ok' } } },
+      extraCreators: { 'dialog.ok': () => [dialogOk] },
+    });
+
+    await expect(actions.onClick('input')).rejects.toThrow(ActionError);
+    expect(captureException).not.toHaveBeenCalled();
+  });
+
+  it('should not report unhandled cancelled action failures to Sentry', async () => {
+    pageReady();
+    const error = new AxiosError(
+      'canceled',
+      AxiosError.ERR_CANCELED,
+      {
+        headers: {},
+        method: 'get',
+        url: 'https://appsemble.app/api/apps/42/resources/course/3772',
+      } as InternalAxiosRequestConfig,
+      {},
+    );
+    const dialogOk = vi.fn().mockRejectedValue(error);
+    const actions = makeActions({
+      ...testDefaults,
+      actions: { onClick: {} },
+      context: { actions: { onClick: { type: 'dialog.ok' } } },
+      extraCreators: { 'dialog.ok': () => [dialogOk] },
+    });
+
+    await expect(actions.onClick('input')).rejects.toThrow(ActionError);
+    expect(captureException).not.toHaveBeenCalled();
   });
 
   it('should remap input values', async () => {
