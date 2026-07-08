@@ -62,6 +62,45 @@ const allWebhookPermissionPattern = /^\$webhook:all:invoke$/;
 
 const webhookPermissionPattern = /^\$webhook:[^:]+:invoke$/;
 
+function hasResourcePermission(
+  permissions: readonly CustomAppPermission[],
+  resourceName: string,
+  resourceAction: string,
+  view: string | undefined,
+): boolean {
+  return permissions.some((permission) => {
+    if (resourcePermissionPattern.test(permission)) {
+      const [, permissionResourceName, permissionResourceAction] = permission.split(':');
+      return (
+        ['all', resourceName].includes(permissionResourceName) &&
+        (permissionResourceAction === resourceAction ||
+          (resourceAction === 'count' && permissionResourceAction === 'query'))
+      );
+    }
+
+    if (ownResourcePermissionPattern.test(permission)) {
+      const [, permissionResourceName, , permissionResourceAction] = permission.split(':');
+      return (
+        ['all', resourceName].includes(permissionResourceName) &&
+        (permissionResourceAction === resourceAction ||
+          (resourceAction === 'count' && permissionResourceAction === 'query'))
+      );
+    }
+
+    if (view && resourceViewPermissionPattern.test(permission)) {
+      const [, permissionResourceName, permissionResourceAction, permissionResourceView] =
+        permission.split(':');
+      return (
+        ['all', resourceName].includes(permissionResourceName) &&
+        permissionResourceAction === resourceAction &&
+        (!permissionResourceView || permissionResourceView === view)
+      );
+    }
+
+    return false;
+  });
+}
+
 /**
  * Check whether or not the given link represents a link related to the Appsemble core.
  *
@@ -1576,45 +1615,24 @@ function validateActions(definition: AppDefinition, report: Report): void {
             allPermissions.push(...allRolePermissions);
           }
 
-          // TODO: repeats way too much, code not self-explanatory at all
-          if (
-            !allPermissions.some((permission) => {
-              if (resourcePermissionPattern.test(permission)) {
-                const [, permissionResourceName, permissionResourceAction] = permission.split(':');
-                return (
-                  ['all', resourceName].includes(permissionResourceName) &&
-                  (permissionResourceAction === resourceAction ||
-                    (resourceAction === 'count' && permissionResourceAction === 'query'))
-                );
-              }
-
-              if (ownResourcePermissionPattern.test(permission)) {
-                const [, permissionResourceName, , permissionResourceAction] =
-                  permission.split(':');
-                return (
-                  ['all', resourceName].includes(permissionResourceName) &&
-                  (permissionResourceAction === resourceAction ||
-                    (resourceAction === 'count' && permissionResourceAction === 'query'))
-                );
-              }
-
-              if (view && resourceViewPermissionPattern.test(permission)) {
-                const [, permissionResourceName, permissionResourceAction, permissionResourceView] =
-                  permission.split(':');
-                return (
-                  ['all', resourceName].includes(permissionResourceName) &&
-                  permissionResourceAction === resourceAction &&
-                  (!permissionResourceView || permissionResourceView === view)
-                );
-              }
-
-              return false;
-            })
-          ) {
+          if (!hasResourcePermission(allPermissions, resourceName, resourceAction, view)) {
             report(
               action.type,
               'there is no one in the app who has permissions to use this action',
               [...path, 'resource'],
+            );
+            return;
+          }
+
+          if (
+            ['update', 'patch'].includes(resourceAction) &&
+            'optimistic' in action &&
+            !hasResourcePermission(allPermissions, resourceName, 'get', view)
+          ) {
+            report(
+              action.type,
+              'there is no one in the app who has permissions to fetch this resource for optimistic writes',
+              [...path, 'optimistic'],
             );
             return;
           }
