@@ -153,6 +153,9 @@ export function Block({
 
     // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     const events = createEvents(ee, pageReady, manifest.events, block.events);
+    // Stop the block from receiving or emitting events on the shared page event emitter once it is
+    // unmounted, e.g. when switching tabs on a tabs page.
+    cleanups.current.push(() => events.destroy());
 
     const actions = makeActions({
       getAppMessage,
