@@ -13,11 +13,12 @@ import { BlockParamInstanceValidator } from './BasicValidator.js';
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { partialNormalized } from './constants/index.js';
 import { findPageByName } from './findPageByName.js';
-import { iterApp, type Prefix } from './iterApp.js';
+import { iterAction, iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { normalize } from './normalize.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
 import {
+  type ActionDefinition,
   type AppDefinition,
   type AppMemberCurrentPatchAction,
   type AppMemberPropertiesPatchAction,
@@ -1513,6 +1514,25 @@ function validateCronJobs({ cron }: AppDefinition, report: Report): void {
 function validateActions(definition: AppDefinition, report: Report): void {
   const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 
+  const validateUnsupportedServerOptimisticResourceWrite = (
+    action: ActionDefinition,
+    path: Prefix,
+  ): boolean => {
+    if (
+      (path[0] === 'cron' || path[0] === 'webhooks') &&
+      (action.type === 'resource.update' || action.type === 'resource.patch') &&
+      'optimistic' in action
+    ) {
+      report(action.type, 'optimistic resource writes are not supported for server-side actions', [
+        ...path,
+        'optimistic',
+      ]);
+      return true;
+    }
+
+    return false;
+  };
+
   iterApp(definition, {
     onAction(action, path) {
       // XXX: could we validate server-side actions differently
@@ -1521,8 +1541,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         return;
       }
 
-      if (path[0] === 'webhooks' && !serverActions.has(action.type as ServerActionName)) {
-        report(action.type, 'action type is not supported for webhooks', [...path, 'type']);
+      if (validateUnsupportedServerOptimisticResourceWrite(action, path)) {
         return;
       }
 
@@ -1590,19 +1609,6 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
         if (!resource) {
           report(action.type, 'refers to a resource that doesn’t exist', [...path, 'resource']);
-          return;
-        }
-
-        if (
-          (path[0] === 'cron' || path[0] === 'webhooks') &&
-          ['update', 'patch'].includes(resourceAction) &&
-          'optimistic' in action
-        ) {
-          report(
-            action.type,
-            'optimistic resource writes are not supported for server-side actions',
-            [...path, 'optimistic'],
-          );
           return;
         }
 
@@ -1809,6 +1815,23 @@ function validateActions(definition: AppDefinition, report: Report): void {
       }
     },
   });
+
+  for (const [name, webhook] of Object.entries(definition.webhooks ?? {})) {
+    if (
+      webhook.action &&
+      iterAction(
+        webhook.action,
+        {
+          onAction(action, path) {
+            return validateUnsupportedServerOptimisticResourceWrite(action, path);
+          },
+        },
+        ['webhooks', name, 'action'],
+      )
+    ) {
+      return;
+    }
+  }
 }
 
 function validateEvents(
