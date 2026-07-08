@@ -813,6 +813,20 @@ interface ResourceOrderQueryDefinition {
   order?: 'asc' | 'desc';
 }
 
+interface OptimisticResourceWriteActionDefinition {
+  /**
+   * Fetch the latest resource before writing, merge its `$etag` into the request data so the
+   * implicit `If-Match` precondition holds, and retry on precondition conflicts. The fetched
+   * resource is also exposed to remappers as `{ context: resource }`.
+   */
+  optimistic?: {
+    /**
+     * The number of precondition conflicts to retry after fetching the latest resource again.
+     */
+    retries?: number;
+  };
+}
+
 export interface ControllerActionDefinition extends BaseActionDefinition<'controller'> {
   handler: string;
 }
@@ -831,7 +845,8 @@ export type ResourceQueryActionDefinition = OwnResourceDefinition &
   ViewResourceDefinition;
 export type ResourceCountActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.count'>;
-export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
+export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'> &
+  OptimisticResourceWriteActionDefinition;
 export type ResourceUpdateGroupActionDefinition =
   ResourceActionDefinition<'resource.update.group'> &
     ResourceActionWithIdDefinition & {
@@ -842,7 +857,8 @@ export type ResourceUpdatePositionsActionDefinition =
     ResourceActionWithIdDefinition &
     ResourceOrderQueryDefinition;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'> &
-  ResourceActionWithIdDefinition;
+  ResourceActionWithIdDefinition &
+  OptimisticResourceWriteActionDefinition;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
 
 export interface BaseResourceSubscribeActionDefinition<

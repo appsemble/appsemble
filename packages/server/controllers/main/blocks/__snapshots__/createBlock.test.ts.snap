@@ -2788,6 +2788,19 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "optimistic": {
+                      "additionalProperties": false,
+                      "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
+                      "properties": {
+                        "retries": {
+                          "default": 0,
+                          "description": "The number of precondition conflicts to retry after fetching the latest resource again.",
+                          "minimum": 0,
+                          "type": "integer",
+                        },
+                      },
+                      "type": "object",
+                    },
                     "proxy": {
                       "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -3122,6 +3135,19 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "optimistic": {
+                      "additionalProperties": false,
+                      "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
+                      "properties": {
+                        "retries": {
+                          "default": 0,
+                          "description": "The number of precondition conflicts to retry after fetching the latest resource again.",
+                          "minimum": 0,
+                          "type": "integer",
+                        },
+                      },
+                      "type": "object",
+                    },
                     "proxy": {
                       "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -8630,6 +8656,19 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "optimistic": {
+              "additionalProperties": false,
+              "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
+              "properties": {
+                "retries": {
+                  "default": 0,
+                  "description": "The number of precondition conflicts to retry after fetching the latest resource again.",
+                  "minimum": 0,
+                  "type": "integer",
+                },
+              },
+              "type": "object",
+            },
             "proxy": {
               "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
@@ -8964,6 +9003,19 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "optimistic": {
+              "additionalProperties": false,
+              "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
+              "properties": {
+                "retries": {
+                  "default": 0,
+                  "description": "The number of precondition conflicts to retry after fetching the latest resource again.",
+                  "minimum": 0,
+                  "type": "integer",
+                },
+              },
+              "type": "object",
+            },
             "proxy": {
               "default": true,
               "description": "By default requests will be proxied through the Appsemble API.

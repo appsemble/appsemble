@@ -21,6 +21,21 @@ export const ResourcePatchActionDefinition = extendJSONSchema(
         description:
           'The ID of the group to scope the request to. Defaults to the currently selected group.',
       },
+      optimistic: {
+        type: 'object',
+        additionalProperties: false,
+        description:
+          'Fetch the latest resource before writing, merge its `$etag` into the request data so the implicit `If-Match` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as `{ context: resource }`.',
+        properties: {
+          retries: {
+            type: 'integer',
+            minimum: 0,
+            default: 0,
+            description:
+              'The number of precondition conflicts to retry after fetching the latest resource again.',
+          },
+        },
+      },
       id: {
         $ref: '#/components/schemas/RemapperDefinition',
       },
