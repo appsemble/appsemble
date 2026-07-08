@@ -358,6 +358,161 @@ describe('updateResourcePosition', () => {
     expect(resources.data.map(({ foo }) => foo)).toStrictEqual(['first', 'moved', 'other', 'last']);
   });
 
+  it('should place the moved resource between its neighbors when the positions are reset', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.destroy({ where: { type: 'testResource' }, force: true });
+    await Resource.bulkCreate([
+      { type: 'testResource', data: { foo: 'first' }, Position: 1 },
+      // 1 and 1 + Number.EPSILON are adjacent doubles, so their midpoint rounds back to 1 and the
+      // resource can only be inserted between them by resetting the positions.
+      { type: 'testResource', data: { foo: 'last' }, Position: 1 + Number.EPSILON },
+      { type: 'testResource', data: { foo: 'moved' }, Position: 9 },
+    ]);
+    const moved = await Resource.findOne({ where: { type: 'testResource', Position: 9 } });
+
+    authorizeAppMember(app, appMember);
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${moved!.id}/positions`,
+      { prevResourcePosition: 1, nextResourcePosition: 1 + Number.EPSILON },
+    );
+    expect(response.status).toBe(200);
+
+    const resources = await request.get<{ foo: string }[]>(
+      `/api/apps/${app.id}/resources/testResource?$orderby=${encodeURIComponent('Position asc')}`,
+    );
+    expect(resources.data.map(({ foo }) => foo)).toStrictEqual(['first', 'moved', 'last']);
+  });
+
+  it('should reset the positions of the resources of the moved resource ordering group only', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await enforceOrderingGroupByBar();
+    await Resource.destroy({ where: { type: 'testResource' }, force: true });
+    await Resource.bulkCreate([
+      { type: 'testResource', data: { foo: 'first', bar: 'a' }, Position: 1 },
+      { type: 'testResource', data: { foo: 'last', bar: 'a' }, Position: 1 + Number.EPSILON },
+      { type: 'testResource', data: { foo: 'moved', bar: 'a' }, Position: 9 },
+      { type: 'testResource', data: { foo: 'other first', bar: 'b' }, Position: 2 },
+      { type: 'testResource', data: { foo: 'other last', bar: 'b' }, Position: 3 },
+    ]);
+    const moved = await Resource.findOne({ where: { type: 'testResource', Position: 9 } });
+
+    authorizeAppMember(app, appMember);
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${moved!.id}/positions`,
+      { prevResourcePosition: 1, nextResourcePosition: 1 + Number.EPSILON },
+    );
+    expect(response.status).toBe(200);
+
+    const otherOrderingGroup = await request.get<{ foo: string; Position: string }[]>(
+      `/api/apps/${app.id}/resources/testResource?$filter=${encodeURIComponent(
+        "bar eq 'b'",
+      )}&$orderby=${encodeURIComponent('Position asc')}`,
+    );
+    expect(
+      otherOrderingGroup.data.map(({ Position, foo }) => [foo, Number(Position)]),
+    ).toStrictEqual([
+      ['other first', 2],
+      ['other last', 3],
+    ]);
+
+    const orderingGroup = await request.get<{ foo: string }[]>(
+      `/api/apps/${app.id}/resources/testResource?$filter=${encodeURIComponent(
+        "bar eq 'a'",
+      )}&$orderby=${encodeURIComponent('Position asc')}`,
+    );
+    expect(orderingGroup.data.map(({ foo }) => foo)).toStrictEqual(['first', 'moved', 'last']);
+  });
+
+  it('should reset the positions of the resources of the selected group only', async () => {
+    const { Group, GroupMember, Resource } = await getAppDB(app.id);
+    const { id: groupId } = await Group.create({ name: 'testGroup' });
+    await GroupMember.create({
+      GroupId: groupId,
+      AppMemberId: appMember.id,
+      role: PredefinedAppRole.Owner,
+    });
+    await Resource.destroy({ where: { type: 'testResource' }, force: true });
+    await Resource.bulkCreate([
+      { type: 'testResource', data: { foo: 'first' }, Position: 1, GroupId: groupId },
+      {
+        type: 'testResource',
+        data: { foo: 'last' },
+        Position: 1 + Number.EPSILON,
+        GroupId: groupId,
+      },
+      { type: 'testResource', data: { foo: 'moved' }, Position: 9, GroupId: groupId },
+      { type: 'testResource', data: { foo: 'ungrouped first' }, Position: 2 },
+      { type: 'testResource', data: { foo: 'ungrouped last' }, Position: 3 },
+    ]);
+    const moved = await Resource.findOne({
+      where: { type: 'testResource', GroupId: groupId, Position: 9 },
+    });
+
+    authorizeAppMember(app, appMember);
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${moved!.id}/positions?selectedGroupId=${groupId}`,
+      { prevResourcePosition: 1, nextResourcePosition: 1 + Number.EPSILON },
+    );
+    expect(response.status).toBe(200);
+
+    const ungrouped = await request.get<{ foo: string; Position: string }[]>(
+      `/api/apps/${app.id}/resources/testResource?$orderby=${encodeURIComponent('Position asc')}`,
+    );
+    expect(ungrouped.data.map(({ Position, foo }) => [foo, Number(Position)])).toStrictEqual([
+      ['ungrouped first', 2],
+      ['ungrouped last', 3],
+    ]);
+
+    const grouped = await request.get<{ foo: string }[]>(
+      `/api/apps/${app.id}/resources/testResource?selectedGroupId=${groupId}&$orderby=${encodeURIComponent(
+        'Position asc',
+      )}`,
+    );
+    expect(grouped.data.map(({ foo }) => foo)).toStrictEqual(['first', 'moved', 'last']);
+  });
+
+  it('should not reset the positions of seed resources in demo apps', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await app.update({ demoMode: true });
+    await Resource.destroy({ where: { type: 'testResource' }, force: true });
+    await Resource.bulkCreate([
+      { type: 'testResource', data: { foo: 'first' }, Position: 1, ephemeral: true },
+      {
+        type: 'testResource',
+        data: { foo: 'last' },
+        Position: 1 + Number.EPSILON,
+        ephemeral: true,
+      },
+      { type: 'testResource', data: { foo: 'moved' }, Position: 9, ephemeral: true },
+      { type: 'testResource', data: { foo: 'seed first' }, Position: 2, seed: true },
+      { type: 'testResource', data: { foo: 'seed last' }, Position: 3, seed: true },
+    ]);
+    const moved = await Resource.findOne({
+      where: { type: 'testResource', ephemeral: true, Position: 9 },
+    });
+
+    authorizeAppMember(app, appMember);
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${moved!.id}/positions`,
+      { prevResourcePosition: 1, nextResourcePosition: 1 + Number.EPSILON },
+    );
+    expect(response.status).toBe(200);
+
+    const seedResources = await Resource.findAll({
+      where: { type: 'testResource', seed: true },
+      order: [['Position', 'ASC']],
+    });
+    expect(seedResources.map(({ Position, data }) => [data.foo, Number(Position)])).toStrictEqual([
+      ['seed first', 2],
+      ['seed last', 3],
+    ]);
+
+    const ephemeralResources = await request.get<{ foo: string }[]>(
+      `/api/apps/${app.id}/resources/testResource?$orderby=${encodeURIComponent('Position asc')}`,
+    );
+    expect(ephemeralResources.data.map(({ foo }) => foo)).toStrictEqual(['first', 'moved', 'last']);
+  });
+
   it('should update the position of the resource', async () => {
     authorizeAppMember(app, appMember);
     const response = await request.put(
