@@ -1593,6 +1593,19 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
+        if (
+          (path[0] === 'cron' || path[0] === 'webhooks') &&
+          ['update', 'patch'].includes(resourceAction) &&
+          'optimistic' in action
+        ) {
+          report(
+            action.type,
+            'optimistic resource writes are not supported for server-side actions',
+            [...path, 'optimistic'],
+          );
+          return;
+        }
+
         if (!action.type.startsWith('resource.subscription.')) {
           if (!definition.security) {
             report(action.type, 'missing security definition', [...path, 'resource']);

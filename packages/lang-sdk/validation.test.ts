@@ -2415,6 +2415,62 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should reject optimistic resource writes in cron actions', async () => {
+    const app = createTestApp();
+    app.security!.roles!.User = {
+      permissions: ['$resource:person:get', '$resource:person:update'],
+    };
+    app.cron = {
+      updatePerson: {
+        schedule: '* * * * *',
+        action: {
+          type: 'resource.update',
+          resource: 'person',
+          optimistic: {},
+        },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'optimistic resource writes are not supported for server-side actions',
+        'resource.update',
+        undefined,
+        ['cron', 'updatePerson', 'action', 'optimistic'],
+      ),
+    ]);
+  });
+
+  it('should reject optimistic resource writes in webhook actions', async () => {
+    const app = createTestApp();
+    app.security!.roles!.User = {
+      permissions: ['$resource:person:get', '$resource:person:patch'],
+    };
+    app.webhooks = {
+      patchPerson: {
+        schema: { type: 'object' },
+        action: {
+          type: 'resource.patch',
+          resource: 'person',
+          optimistic: {},
+        },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'optimistic resource writes are not supported for server-side actions',
+        'resource.patch',
+        undefined,
+        ['webhooks', 'patchPerson', 'action', 'optimistic'],
+      ),
+    ]);
+  });
+
   it('should report an error if a resource action on a block refers to a non-existent resource', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({

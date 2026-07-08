@@ -233,5 +233,12 @@ export function iterApp(app: AppDefinition, callbacks: IterCallbacks): boolean {
       }
     }
   }
+  if (app.webhooks) {
+    for (const [name, webhook] of Object.entries(app.webhooks)) {
+      if (webhook?.action && iterAction(webhook.action, callbacks, ['webhooks', name, 'action'])) {
+        return true;
+      }
+    }
+  }
   return false;
 }

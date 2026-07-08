@@ -491,6 +491,40 @@ describe('resource.update', () => {
     expect(JSON.parse(requests[1].data)).toStrictEqual({ id: 84, name: 'Mittens', age: 7 });
     expect(result).toStrictEqual({ $etag: '"etag-2"', id: 84, age: 7, name: 'Mittens' });
   });
+
+  it('should use the write query and selected group for optimistic prefetches', async () => {
+    const requests: AxiosRequestConfig[] = [];
+    mock.onGet(`${apiUrl}/api/apps/42/resources/pet/84`).reply((req) => {
+      requests.push(req);
+      return [200, { id: 84, name: 'Fluffy' }, { etag: '"etag-1"' }];
+    });
+    mock.onPut(`${apiUrl}/api/apps/42/resources/pet/84`).reply((req) => {
+      requests.push(req);
+      return [200, JSON.parse(req.data), { etag: '"etag-2"' }];
+    });
+    const action = createTestAction({
+      appDefinition: {
+        ...appDefinition,
+        resources: {
+          pet: {
+            schema: { type: 'object' },
+            update: { query: { static: { audit: 'write' } } },
+          },
+        },
+      },
+      definition: {
+        type: 'resource.update',
+        resource: 'pet',
+        selectedGroupId: 7,
+        optimistic: {},
+      },
+    });
+    await action({ id: 84, selectedGroupId: 9, name: 'Mittens' });
+    expect(requests).toHaveLength(2);
+    expect(requests[0].params).toStrictEqual({ audit: 'write', selectedGroupId: 7 });
+    expect(requests[1].params).toStrictEqual({ audit: 'write', selectedGroupId: 7 });
+    expect(requests[1].headers?.['If-Match'] ?? requests[1].headers?.['if-match']).toBe('"etag-1"');
+  });
 });
 
 describe('resource.patch', () => {

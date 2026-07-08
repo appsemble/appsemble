@@ -307,6 +307,9 @@ export const update: ActionCreator<'resource.update'> = (args) => {
   const queryRemapper: Remapper = ([] as any[])
     .concat(definition?.query ?? resource?.update?.query ?? null)
     .filter(Boolean);
+  const optimisticQueryRemapper: Remapper = ([] as any[])
+    .concat(definition?.query ?? resource?.update?.query ?? null)
+    .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
   if (selectedGroup || definition.selectedGroupId) {
@@ -345,8 +348,9 @@ export const update: ActionCreator<'resource.update'> = (args) => {
     ...args,
     definition: {
       type: 'resource.get',
-      query: definition.query,
+      query: optimisticQueryRemapper.length ? optimisticQueryRemapper : undefined,
       resource: definition.resource,
+      selectedGroupId: definition.selectedGroupId,
     },
   });
   const retries = getOptimisticRetries(definition.optimistic);
@@ -472,6 +476,9 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
   const queryRemapper: Remapper = ([] as any[])
     .concat(definition?.query ?? resource?.patch?.query ?? null)
     .filter(Boolean);
+  const optimisticQueryRemapper: Remapper = ([] as any[])
+    .concat(definition?.query ?? resource?.patch?.query ?? null)
+    .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
   if (selectedGroup || definition.selectedGroupId) {
@@ -510,8 +517,9 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
     ...args,
     definition: {
       id: definition.id,
-      query: definition.query,
+      query: optimisticQueryRemapper.length ? optimisticQueryRemapper : undefined,
       resource: definition.resource,
+      selectedGroupId: definition.selectedGroupId,
       type: 'resource.get',
     },
   });
