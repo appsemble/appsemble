@@ -294,6 +294,7 @@ describe('updateAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "MkIoKgCpXmnu2h8snVTtAa0oX_D50YFYxvZs7tI14u8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
