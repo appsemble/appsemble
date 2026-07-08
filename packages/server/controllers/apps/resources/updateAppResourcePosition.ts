@@ -20,8 +20,27 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   assertKoaCondition(app != null, ctx, 404, 'App not found');
   const resourceDefinition = getResourceDefinition(app.definition, resourceType);
   const { query } = parseQuery({ $filter, resourceDefinition, tableName: 'Resource' });
+
+  const oldResource = await Resource.findOne({
+    where: { id: resourceId, type: resourceType, GroupId: selectedGroupId ?? null },
+    include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
+    attributes: ['Position', 'id', 'created', 'updated', 'data'],
+  });
+
+  assertKoaCondition(oldResource != null, ctx, 404, 'Resource not found');
+
+  // Positions restart for every ordering group, so resources are only ordered against the
+  // resources sharing their ordering group field values.
+  const orderingGroup = Object.fromEntries(
+    (resourceDefinition.enforceOrderingGroupByFields ?? []).map((field) => [
+      `data.${field}`,
+      oldResource.data[field] ?? null,
+    ]),
+  );
+
   const commonFindOptions = {
     ...(query ? { query } : {}),
+    ...orderingGroup,
     type: resourceType,
     GroupId: selectedGroupId ?? null,
     ...(app.demoMode ? { ephemeral: true, seed: false } : {}),
@@ -92,13 +111,6 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     );
   }
 
-  const oldResource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType, GroupId: selectedGroupId ?? null },
-    include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
-    attributes: ['Position', 'id', 'created', 'updated'],
-  });
-
-  assertKoaCondition(oldResource != null, ctx, 404, 'Resource not found');
   await checkAppPermissions({
     context: ctx,
     appId,
