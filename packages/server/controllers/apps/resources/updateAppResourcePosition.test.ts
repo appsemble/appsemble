@@ -52,7 +52,6 @@ describe('updateResourcePosition', () => {
         name: 'Test App',
         defaultPage: 'Test Page',
         security: {},
-        enforceOrderingGroupByFields: ['bar'],
         resources: {
           testResource: {
             positioning: true,
@@ -64,7 +63,7 @@ describe('updateResourcePosition', () => {
                   type: 'string',
                 },
                 bar: {
-                  type: 'number',
+                  type: 'string',
                 },
               },
             },
@@ -289,6 +288,45 @@ describe('updateResourcePosition', () => {
         id: 7,
       },
     });
+  });
+
+  it('should order a resource among the resources of its own ordering group', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await app.update({
+      definition: {
+        ...app.definition,
+        resources: {
+          testResource: {
+            ...app.definition.resources!.testResource,
+            enforceOrderingGroupByFields: ['bar'],
+          },
+        },
+      },
+    });
+    await Resource.destroy({ where: { type: 'testResource' }, force: true });
+    await Resource.bulkCreate([
+      { type: 'testResource', data: { foo: 'first', bar: 'a' }, Position: 10 },
+      { type: 'testResource', data: { foo: 'last', bar: 'a' }, Position: 20 },
+      { type: 'testResource', data: { foo: 'moved', bar: 'a' }, Position: 30 },
+      // Positions restart for every ordering group, so this resource shares the
+      // position range of the resources above without being ordered against them.
+      { type: 'testResource', data: { foo: 'other', bar: 'b' }, Position: 15 },
+    ]);
+    const moved = await Resource.findOne({ where: { type: 'testResource', Position: 30 } });
+
+    authorizeAppMember(app, appMember);
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${moved!.id}/positions`,
+      { prevResourcePosition: 10, nextResourcePosition: 20 },
+    );
+    expect(response.status).toBe(200);
+
+    const orderingGroup = await request.get<{ foo: string }[]>(
+      `/api/apps/${app.id}/resources/testResource?$filter=${encodeURIComponent(
+        "bar eq 'a'",
+      )}&$orderby=${encodeURIComponent('Position asc')}`,
+    );
+    expect(orderingGroup.data.map(({ foo }) => foo)).toStrictEqual(['first', 'moved', 'last']);
   });
 
   it('should update the position of the resource', async () => {
