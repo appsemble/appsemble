@@ -499,6 +499,9 @@ export async function validateResourceReferences(
   for (const [propertyName, reference] of references) {
     for (const resource of resources) {
       for (const value of [resource[propertyName]].flat()) {
+        if (value == null || value === '') {
+          continue;
+        }
         const id = typeof value === 'string' ? Number(value) : value;
         if (typeof id === 'number' && Number.isInteger(id)) {
           if (!referencedIds.has(reference.resource)) {
@@ -535,7 +538,7 @@ export async function validateResourceReferences(
   for (const [propertyName, reference] of references) {
     for (const [index, resource] of resources.entries()) {
       for (const value of [resource[propertyName]].flat()) {
-        if (value == null) {
+        if (value == null || value === '') {
           continue;
         }
         const id = typeof value === 'string' ? Number(value) : value;

@@ -347,6 +347,43 @@ describe('createAppResource', () => {
     `);
   });
 
+  it('should not treat an empty string reference as a broken reference', async () => {
+    const definition = {
+      ...app.definition,
+      resources: {
+        ...app.definition.resources,
+        testResourceB: {
+          ...app.definition.resources!.testResourceB,
+          schema: {
+            type: 'object',
+            required: ['bar'],
+            properties: { bar: { type: 'string' }, testResourceId: { type: 'string' } },
+          },
+        },
+      },
+    };
+    await app.update({ definition });
+
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceB`, {
+      bar: 'test',
+      testResourceId: '',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "bar": "test",
+        "id": 1,
+        "testResourceId": "",
+      }
+    `);
+  });
+
   it('should reject duplicate resources for unique constraints', async () => {
     const definition = {
       ...app.definition,
