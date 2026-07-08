@@ -409,7 +409,7 @@ export async function processResourceBody(
           // because a missing property there means the stored value is kept.
           const defaultValue = (propertySchema as { default?: unknown }).default;
           if (!isPatchRequest && defaultValue !== undefined) {
-            return typeof defaultValue === 'object' && defaultValue !== null
+            return typeof defaultValue === 'object' && defaultValue != null
               ? structuredClone(defaultValue)
               : defaultValue;
           }
