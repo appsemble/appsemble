@@ -79,7 +79,19 @@ export function ServiceWorkerRegistrationProvider({
   const versionCheckPromiseRef = useRef<Promise<string | null> | null>(null);
 
   useEffect(() => {
+    // Only reload when an updated worker takes over a page a previous worker
+    // already controlled. On the first visit the page starts uncontrolled and
+    // the initial clients.claim() fires controllerchange with nothing new to
+    // load, so reloading there is pointless and discards input typed while the
+    // worker was activating.
+    const startedUncontrolled = !navigator.serviceWorker?.controller;
+    let sawInitialClaim = false;
+
     const onControllerChange = (): void => {
+      if (startedUncontrolled && !sawInitialClaim) {
+        sawInitialClaim = true;
+        return;
+      }
       if (hasReloadedForControllerChange.current) {
         return;
       }
