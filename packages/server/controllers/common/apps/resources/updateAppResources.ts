@@ -8,6 +8,7 @@ import {
   processResourceBody,
   throwKoaError,
   uploadAssets,
+  validateResourceReferences,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 import { type Context } from 'koa';
@@ -88,6 +89,14 @@ export async function updateAppResources(ctx: Context): Promise<void> {
       processedResources.filter((resource) => !resourceIds.has(resource.id)),
     );
   }
+
+  await validateResourceReferences(
+    ctx,
+    app.toJSON(),
+    definition,
+    preparedResources,
+    options.getAppResources,
+  );
 
   let updatedResources: Resource[];
   if (preparedAssets.length) {

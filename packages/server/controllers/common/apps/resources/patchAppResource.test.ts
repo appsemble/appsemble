@@ -186,6 +186,75 @@ describe('patchAppResource', () => {
     expect(resource.data).toStrictEqual({ foo: 'I am not Foo.' });
   });
 
+  it('should reject a patch referencing a non-existent resource', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+    const resource = await Resource.create({
+      type: 'testResourceB',
+      data: { bar: 'test', testResourceId: testResource.id },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
+      { testResourceId: 1337 },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "instance": 1337,
+              "message": "does not reference an existing resource of type testResource",
+              "path": [
+                "testResourceId",
+              ],
+              "property": "instance.testResourceId",
+              "stack": "instance.testResourceId does not reference an existing resource of type testResource",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should allow a patch which does not touch the reference property', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResourceB',
+      data: { bar: 'test', testResourceId: 1337 },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
+      { bar: 'I am Bar.' },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "bar": "I am Bar.",
+        "id": 1,
+        "testResourceId": 1337,
+      }
+    `);
+  });
+
   it('should be able to patch an existing resource from another group', async () => {
     const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
     const group = await Group.create({ name: 'Test Group' });

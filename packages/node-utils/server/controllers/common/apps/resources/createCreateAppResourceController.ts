@@ -12,6 +12,7 @@ import {
   processResourceBody,
   type PreparedAsset,
   setResourceEtagHeader,
+  validateResourceReferences,
 } from '../../../../../index.js';
 
 function clonePreparedAssets(preparedAssets: PreparedAsset[]): Promise<PreparedAsset[]> {
@@ -43,7 +44,13 @@ export function createCreateAppResourceController(options: Options): Middleware 
       query,
       queryParams: { selectedGroupId },
     } = ctx;
-    const { checkAppPermissions, createAppResourcesWithAssets, getApp, getAppAssets } = options;
+    const {
+      checkAppPermissions,
+      createAppResourcesWithAssets,
+      getApp,
+      getAppAssets,
+      getAppResources,
+    } = options;
 
     const app = await getApp({
       context: ctx,
@@ -73,6 +80,8 @@ export function createCreateAppResourceController(options: Options): Middleware 
       ctx.body = [];
       return;
     }
+
+    await validateResourceReferences(ctx, app, resourceDefinition, processedBody, getAppResources);
 
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
 
