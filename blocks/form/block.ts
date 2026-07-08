@@ -1417,7 +1417,7 @@ export interface MarkdownField extends AbstractField {
    *
    * @minimum 1
    */
-  rows?: number;
+  minRows?: number;
 
   /**
    * The type of the field.

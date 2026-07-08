@@ -69,7 +69,7 @@ export function MarkdownInput({
 
   const value = getValueByNameSequence(name, formValues) as string;
 
-  const { defaultValue, help, icon, label, rows, tag } = field;
+  const { defaultValue, help, icon, label, minRows, tag } = field;
 
   const remappedLabel = utils.remap(label, value) ?? name;
 
@@ -169,12 +169,12 @@ export function MarkdownInput({
     if (!root) {
       return;
     }
-    if (rows) {
-      root.style.setProperty('--markdown-min-rows', String(rows));
+    if (minRows) {
+      root.style.setProperty('--markdown-min-rows', String(minRows));
     } else {
       root.style.removeProperty('--markdown-min-rows');
     }
-  }, [rows]);
+  }, [minRows]);
 
   return (
     <FormComponent
