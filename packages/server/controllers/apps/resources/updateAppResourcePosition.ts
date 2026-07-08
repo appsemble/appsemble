@@ -124,7 +124,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   // e.g. If the Position of the first element is 1, the position for the updated first element
   // becomes (0 + 1)/2 = 0.5, similarly, for moving an element to the last of the list, we multiply
   // with 1.1 to make the Position greater than the lastResourcePosition
-  const updatedPosition =
+  let updatedPosition =
     nextResourcePosition == null
       ? prevResourcePosition * 1.1
       : ((prevResourcePosition ?? 0) + nextResourcePosition) / 2;
@@ -134,15 +134,30 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     updatedPosition <= (prevResourcePosition ?? 0)
   ) {
     const resetPositionResources = await Resource.findAll({
-      attributes: ['id'],
-      where: { type: resourceType },
+      attributes: ['id', 'Position'],
+      where: commonFindOptions,
       order: [['Position', 'ASC']],
     });
+    const otherResources = resetPositionResources.filter(({ id }) => id !== oldResource.id);
+    let updatedIndex = 0;
+    if (prevResourcePosition != null) {
+      const previousResourceIndex = otherResources.findIndex(
+        ({ Position }) => Number(Position) === prevResourcePosition,
+      );
+      assertKoaCondition(
+        previousResourceIndex !== -1,
+        ctx,
+        400,
+        'Invalid previous or next resource Position',
+      );
+      updatedIndex = previousResourceIndex + 1;
+    }
     await Promise.all(
-      resetPositionResources.map((resource, index) =>
-        resource.update({ Position: (index + 1) * 10 }),
+      otherResources.map((resource, index) =>
+        resource.update({ Position: (index < updatedIndex ? index + 1 : index + 2) * 10 }),
       ),
     );
+    updatedPosition = (updatedIndex + 1) * 10;
   }
   await oldResource.update({ Position: updatedPosition });
   ctx.status = 200;
