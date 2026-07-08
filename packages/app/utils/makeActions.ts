@@ -148,9 +148,6 @@ export function createAction<T extends ActionDefinition['type']>({
 
   const action = (async (args?: any, context?: Record<string, any>) => {
     await pageReady;
-    if (params.signal?.aborted) {
-      return;
-    }
     let result;
     let updatedContext: Record<string, any> | undefined;
     let data: unknown;
@@ -175,10 +172,6 @@ export function createAction<T extends ActionDefinition['type']>({
 
         result = await dispatch(data, updatedContext);
 
-        if (params.signal?.aborted) {
-          return;
-        }
-
         if (has(definition, 'remapAfter')) {
           result = localRemap(definition.remapAfter ?? null, result, updatedContext);
         }
@@ -187,6 +180,9 @@ export function createAction<T extends ActionDefinition['type']>({
           data: { ...getActionBreadcrumbData(type, prefix, prefixIndex), success: type },
         });
       } catch (error: unknown) {
+        // A chain that fails because its owner was unmounted (e.g. the event action rejecting an
+        // aborted waitFor) stops quietly: the work it was waiting for can no longer arrive and
+        // there is no view left to handle the error.
         if (params.signal?.aborted) {
           return;
         }

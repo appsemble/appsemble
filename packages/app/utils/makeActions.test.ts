@@ -363,20 +363,60 @@ describe('makeActions', () => {
       ee.removeAllListeners();
     });
 
-    it('should not dispatch when the signal is already aborted', async () => {
+    it('should not emit events when the signal is already aborted, but complete the chain', async () => {
       pageReady();
       const controller = new AbortController();
       controller.abort();
+      const listener = vi.fn();
+      ee.on('foo', listener);
       const actions = makeActions({
         ...testDefaults,
         ee,
         signal: controller.signal,
         actions: { onClick: {} },
-        context: { actions: { onClick: { type: 'event', event: 'foo' } } },
+        context: {
+          actions: {
+            onClick: { type: 'event', event: 'foo', onSuccess: { type: 'static', value: 'after' } },
+          },
+        },
       });
       const result = await actions.onClick({ test: 'data' });
-      expect(result).toBeUndefined();
-      expect(ee.emit).not.toHaveBeenCalled();
+      expect(result).toBe('after');
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should complete in-flight dispatches and their onSuccess after the signal is aborted', async () => {
+      pageReady();
+      const controller = new AbortController();
+      let resolveDispatch: (value: unknown) => void;
+      const actions = makeActions({
+        ...testDefaults,
+        ee,
+        signal: controller.signal,
+        actions: { onClick: {} },
+        context: {
+          actions: {
+            onClick: { type: 'dialog.ok', onSuccess: { type: 'static', value: 'saved' } },
+          },
+        },
+        extraCreators: {
+          'dialog.ok': () => [
+            () =>
+              new Promise((resolve) => {
+                resolveDispatch = resolve;
+              }),
+          ],
+        },
+      });
+      const promise = actions.onClick('input');
+      // Wait a tick so the dispatch is in flight.
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+      controller.abort();
+      // @ts-expect-error Used before assigned
+      resolveDispatch('written');
+      expect(await promise).toBe('saved');
     });
 
     it('should stop the chain when the signal is aborted during dispatch', async () => {
