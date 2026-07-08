@@ -1,0 +1,1 @@
+Stop the event action from emitting once its block or page is unmounted, so slow action chains started on a previous tab or page no longer overwrite the current view, while their remaining work such as resource writes still completes

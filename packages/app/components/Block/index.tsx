@@ -114,6 +114,10 @@ export function Block({
 
   const ref = useRef<HTMLDivElement>();
   const cleanups = useRef<(() => void)[]>([]);
+  const abortController = useRef<AbortController>();
+  if (!abortController.current) {
+    abortController.current = new AbortController();
+  }
   const [initialized, setInitialized] = useState(false);
   const pushNotifications = useServiceWorkerRegistration();
 
@@ -134,6 +138,7 @@ export function Block({
 
   useEffect(
     () => () => {
+      abortController.current?.abort();
       for (const fn of cleanups.current) {
         fn();
       }
@@ -153,11 +158,15 @@ export function Block({
 
     // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     const events = createEvents(ee, pageReady, manifest.events, block.events);
+    // Stop the block from receiving or emitting events on the shared page event emitter once it is
+    // unmounted, e.g. when switching tabs on a tabs page.
+    cleanups.current.push(() => events.destroy());
 
     const actions = makeActions({
       getAppMessage,
       getAppVariable: getVariable,
       appStorage,
+      signal: abortController.current?.signal,
       // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       actions: manifest.actions,
       appDefinition,

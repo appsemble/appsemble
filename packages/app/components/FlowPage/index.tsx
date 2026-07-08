@@ -16,12 +16,13 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
-import { makeActions } from '../../utils/makeActions.js';
+import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
 import { appId } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -64,6 +65,10 @@ export function FlowPage({
   const navigate = useNavigate();
   const params = useParams();
   const [currentStep, setCurrentStep] = useState(0);
+  const abortController = useRef<AbortController>();
+  if (!abortController.current) {
+    abortController.current = new AbortController();
+  }
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
   const {
@@ -124,6 +129,9 @@ export function FlowPage({
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   useMeta(name === `{${id}}` ? null : name);
+
+  // Abort in-flight action chains when the flow page is unmounted.
+  useEffect(() => () => abortController.current?.abort(), []);
 
   useEffect(() => {
     if (pageDefinition.retainFlowData === false) {
@@ -215,9 +223,16 @@ export function FlowPage({
 
   useEffect(() => {
     if (actions.onLoad.type !== 'noop') {
-      actions.onLoad().then((results) => {
-        setData(results);
-      });
+      actions
+        .onLoad()
+        .then((results) => {
+          setData(results);
+        })
+        .catch((caughtError: unknown) => {
+          if (!isActionOwnerAbortError(caughtError)) {
+            throw caughtError;
+          }
+        });
     }
     // @ts-expect-error 2454 Variable 'actions' is used before being assigned (strictNullChecks)
   }, [setData, actions]);
@@ -270,6 +285,7 @@ export function FlowPage({
         prefixIndex,
         pushNotifications,
         ee,
+        signal: abortController.current?.signal,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         pageReady: null,
         remap,
@@ -355,8 +371,10 @@ export function FlowPage({
           setLoopData(results);
           setStepsData([]);
         })
-        .catch(() => {
-          setError(true);
+        .catch((caughtError: unknown) => {
+          if (!isActionOwnerAbortError(caughtError)) {
+            setError(true);
+          }
         });
     }
   }, [actions, pageDefinition, setData, stepRef, steps]);

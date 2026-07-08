@@ -1,9 +1,11 @@
+import { EventEmitter } from 'events';
+
 import { ActionError, remap } from '@appsemble/lang-sdk';
 import { identity } from '@appsemble/utils';
 import { addBreadcrumb, captureException } from '@sentry/browser';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { makeActions, type MakeActionsParams } from './makeActions.js';
+import { ActionOwnerAbortError, makeActions, type MakeActionsParams } from './makeActions.js';
 
 vi.mock('@sentry/browser', () => ({
   addBreadcrumb: vi.fn(),
@@ -346,5 +348,169 @@ describe('makeActions', () => {
     await actions.onClick('input');
     // @ts-expect-error Used before assigned
     expect(prefix).toBe('pages.test-page.blocks.0.actions.onClick');
+  });
+
+  describe('abort', () => {
+    let ee: EventEmitter;
+
+    beforeEach(() => {
+      // eslint-disable-next-line unicorn/prefer-event-target
+      ee = new EventEmitter();
+      vi.spyOn(ee, 'emit');
+    });
+
+    afterEach(() => {
+      ee.removeAllListeners();
+    });
+
+    it('should not emit events when the signal is already aborted, but complete the chain', async () => {
+      pageReady();
+      const controller = new AbortController();
+      controller.abort();
+      const listener = vi.fn();
+      ee.on('foo', listener);
+      const actions = makeActions({
+        ...testDefaults,
+        ee,
+        signal: controller.signal,
+        actions: { onClick: {} },
+        context: {
+          actions: {
+            onClick: { type: 'event', event: 'foo', onSuccess: { type: 'static', value: 'after' } },
+          },
+        },
+      });
+      const result = await actions.onClick({ test: 'data' });
+      expect(result).toBe('after');
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should complete in-flight dispatches and their onSuccess after the signal is aborted', async () => {
+      pageReady();
+      const controller = new AbortController();
+      let resolveDispatch: (value: unknown) => void;
+      const actions = makeActions({
+        ...testDefaults,
+        ee,
+        signal: controller.signal,
+        actions: { onClick: {} },
+        context: {
+          actions: {
+            onClick: { type: 'dialog.ok', onSuccess: { type: 'static', value: 'saved' } },
+          },
+        },
+        extraCreators: {
+          'dialog.ok': () => [
+            () =>
+              new Promise((resolve) => {
+                resolveDispatch = resolve;
+              }),
+          ],
+        },
+      });
+      const promise = actions.onClick('input');
+      // Wait a tick so the dispatch is in flight.
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+      controller.abort();
+      // @ts-expect-error Used before assigned
+      resolveDispatch('written');
+      expect(await promise).toBe('saved');
+    });
+
+    it('should reject the chain when the signal is aborted during dispatch', async () => {
+      pageReady();
+      const controller = new AbortController();
+      const onBaz = vi.fn();
+      const onBoo = vi.fn();
+      ee.on('baz', onBaz);
+      ee.on('boo', onBoo);
+      const actions = makeActions({
+        ...testDefaults,
+        ee,
+        signal: controller.signal,
+        actions: { onClick: {} },
+        context: {
+          actions: {
+            onClick: {
+              type: 'event',
+              event: 'foo',
+              waitFor: 'bar',
+              onSuccess: { type: 'event', event: 'baz' },
+              onError: { type: 'event', event: 'boo' },
+            },
+          },
+        },
+      });
+      const promise = actions.onClick({ test: 'data' });
+      // Wait 1 tick so the waitFor listener is registered.
+      await Promise.resolve();
+      controller.abort();
+      await expect(promise).rejects.toThrow(ActionOwnerAbortError);
+      expect(ee.emit).toHaveBeenCalledWith('foo', { test: 'data' });
+      expect(onBaz).not.toHaveBeenCalled();
+      expect(onBoo).not.toHaveBeenCalled();
+      expect(captureException).not.toHaveBeenCalled();
+    });
+
+    it('should still handle non-abort failures after the signal is aborted', async () => {
+      pageReady();
+      const controller = new AbortController();
+      let rejectDispatch: (reason: unknown) => void;
+      const error = new Error('Saved action failed');
+      const onError = vi.fn().mockReturnValue('handled');
+      const actions = makeActions({
+        ...testDefaults,
+        ee,
+        signal: controller.signal,
+        actions: { onClick: {} },
+        context: {
+          actions: {
+            onClick: { type: 'dialog.ok', onError: { type: 'dialog.error' } },
+          },
+        },
+        extraCreators: {
+          'dialog.ok': () => [
+            () =>
+              new Promise((resolve, reject) => {
+                rejectDispatch = reject;
+              }),
+          ],
+          'dialog.error': () => [onError],
+        },
+      });
+      const promise = actions.onClick('input');
+      // Wait a tick so the dispatch is in flight.
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+      controller.abort();
+      // @ts-expect-error Used before assigned
+      rejectDispatch(error);
+      expect(await promise).toBe('handled');
+      expect(onError).toHaveBeenCalledWith(error, { history: ['input', error] });
+      expect(captureException).not.toHaveBeenCalled();
+    });
+
+    it('should remove the waitFor listener when the signal is aborted', async () => {
+      pageReady();
+      const controller = new AbortController();
+      const actions = makeActions({
+        ...testDefaults,
+        ee,
+        signal: controller.signal,
+        actions: { onClick: {} },
+        context: {
+          actions: { onClick: { type: 'event', event: 'foo', waitFor: 'bar' } },
+        },
+      });
+      const promise = actions.onClick({ test: 'data' });
+      await Promise.resolve();
+      expect(ee.listenerCount('bar')).toBe(1);
+      controller.abort();
+      await expect(promise).rejects.toThrow(ActionOwnerAbortError);
+      expect(ee.listenerCount('bar')).toBe(0);
+    });
   });
 });
