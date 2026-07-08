@@ -228,6 +228,84 @@ describe('updateAppResource', () => {
     expect(resource.data).toStrictEqual({ foo: 'I am Foo.' });
   });
 
+  it('should reject an update referencing a non-existent resource', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+    const resource = await Resource.create({
+      type: 'testResourceB',
+      data: { bar: 'test', testResourceId: testResource.id },
+    });
+
+    authorizeStudio();
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
+      { bar: 'test', testResourceId: 1337 },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "instance": 1337,
+              "message": "does not reference an existing resource of type testResource",
+              "path": [
+                "testResourceId",
+              ],
+              "property": "instance.testResourceId",
+              "stack": "instance.testResourceId does not reference an existing resource of type testResource",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should update a resource referencing an existing resource', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+    const otherTestResource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am the other Foo.' },
+    });
+    const resource = await Resource.create({
+      type: 'testResourceB',
+      data: { bar: 'test', testResourceId: testResource.id },
+    });
+
+    authorizeStudio();
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
+      { bar: 'test', testResourceId: otherTestResource.id },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+      Etag: "MkIoKgCpXmnu2h8snVTtAa0oX_D50YFYxvZs7tI14u8"
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "bar": "test",
+        "id": 3,
+        "testResourceId": 2,
+      }
+    `);
+  });
+
   it('should not be able to update an existing resource from another group if not part of the group', async () => {
     const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
     const group = await Group.create({ name: 'Test Group', AppId: app.id });

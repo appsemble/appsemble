@@ -249,6 +249,143 @@ describe('createAppResource', () => {
     `);
   });
 
+  it('should reject a resource referencing a non-existent resource', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceB`, {
+      bar: 'test',
+      testResourceId: 1337,
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "instance": 1337,
+              "message": "does not reference an existing resource of type testResource",
+              "path": [
+                "testResourceId",
+              ],
+              "property": "instance.testResourceId",
+              "stack": "instance.testResourceId does not reference an existing resource of type testResource",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should create a resource referencing an existing resource', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceB`, {
+      bar: 'test',
+      testResourceId: testResource.id,
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+      Etag: "ju3nRRge1s5fWZMieCqSBgnVUk-PIQbXGtWXlgZRFVk"
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "bar": "test",
+        "id": 2,
+        "testResourceId": 1,
+      }
+    `);
+  });
+
+  it('should reject an array of resources containing a broken reference', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceB`, [
+      { bar: 'test', testResourceId: testResource.id },
+      { bar: 'test', testResourceId: 1337 },
+    ]);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "instance": 1337,
+              "message": "does not reference an existing resource of type testResource",
+              "path": [
+                1,
+                "testResourceId",
+              ],
+              "property": "instance[1].testResourceId",
+              "stack": "instance[1].testResourceId does not reference an existing resource of type testResource",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should not treat an empty string reference as a broken reference', async () => {
+    const definition = {
+      ...app.definition,
+      resources: {
+        ...app.definition.resources,
+        testResourceB: {
+          ...app.definition.resources!.testResourceB,
+          schema: {
+            type: 'object',
+            required: ['bar'],
+            properties: { bar: { type: 'string' }, testResourceId: { type: 'string' } },
+          },
+        },
+      },
+    };
+    await app.update({ definition });
+
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceB`, {
+      bar: 'test',
+      testResourceId: '',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+      Etag: "zeuDh2ObGiE67ChG4dTnKbpNk3sXTSfschV84osOcfQ"
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "bar": "test",
+        "id": 1,
+        "testResourceId": "",
+      }
+    `);
+  });
+
   it('should reject duplicate resources for unique constraints', async () => {
     const definition = {
       ...app.definition,

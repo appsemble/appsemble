@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import { type AppDefinition, type ResourceDefinition } from '@appsemble/lang-sdk';
-import { type Resource as ResourceType } from '@appsemble/types';
+import { type App, type Resource as ResourceType } from '@appsemble/types';
 import { mapValues } from '@appsemble/utils';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import { type PreValidatePropertyFunction, ValidationError, Validator } from 'jsonschema';
@@ -16,7 +16,12 @@ import parseDuration from 'parse-duration';
 import { type JsonObject, type JsonValue } from 'type-fest';
 
 import { preProcessCSV } from './csv.js';
-import { handleValidatorResult, type PreparedAsset, TempFile } from './index.js';
+import {
+  type GetAppResourcesParams,
+  handleValidatorResult,
+  type PreparedAsset,
+  TempFile,
+} from './index.js';
 import { throwKoaError } from './koa.js';
 import { AssetUploadValidationError, validateUploadedFile } from './uploadValidation.js';
 
@@ -459,4 +464,103 @@ export async function processResourceBody(
   handleValidatorResult(ctx, result, 'Resource validation failed');
 
   return [resource, preparedAssets, knownAssetIds.filter((id) => !reusedAssets.has(id))];
+}
+
+/**
+ * Validate that the references declared in the resource definition point at existing resources.
+ *
+ * Reference properties which hold no value are skipped. Expired resources are treated as
+ * non-existent. The referenced ids are collected per referenced resource type, so each type is
+ * checked using a single lookup, even when multiple resources are submitted at once.
+ *
+ * If a reference is broken, an HTTP 400 error naming the offending property path is thrown.
+ *
+ * @param ctx The Koa context used to throw back the error response.
+ * @param app The app the resources belong to.
+ * @param definition The definition of the resource type being created or updated.
+ * @param processedBody One or more resources as processed by `processResourceBody`.
+ * @param getAppResources The function used to look up resources of the referenced types.
+ */
+export async function validateResourceReferences(
+  ctx: Context,
+  app: App,
+  definition: ResourceDefinition,
+  processedBody: Record<string, unknown> | Record<string, unknown>[],
+  getAppResources: (params: GetAppResourcesParams) => Promise<ResourceType[]>,
+): Promise<void> {
+  const references = Object.entries(definition.references ?? {});
+  if (!references.length) {
+    return;
+  }
+
+  const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
+
+  const referencedIds = new Map<string, Set<number>>();
+  for (const [propertyName, reference] of references) {
+    for (const resource of resources) {
+      for (const value of [resource[propertyName]].flat()) {
+        if (value == null || value === '') {
+          continue;
+        }
+        const id = typeof value === 'string' ? Number(value) : value;
+        if (typeof id === 'number' && Number.isInteger(id)) {
+          if (!referencedIds.has(reference.resource)) {
+            referencedIds.set(reference.resource, new Set());
+          }
+          referencedIds.get(reference.resource)!.add(id);
+        }
+      }
+    }
+  }
+
+  const existingIds = new Map<string, Set<number>>();
+  await Promise.all(
+    [...referencedIds].map(async ([type, ids]) => {
+      const existing = await getAppResources({
+        app,
+        context: ctx,
+        type,
+        findOptions: {
+          where: {
+            and: [
+              { type },
+              { or: [...ids].map((id) => ({ id })) },
+              { expires: { or: [{ gt: new Date() }, null] } },
+            ],
+          },
+        },
+      });
+      existingIds.set(type, new Set(existing.map((resource) => Number(resource.id))));
+    }),
+  );
+
+  const errors: ValidationError[] = [];
+  for (const [propertyName, reference] of references) {
+    for (const [index, resource] of resources.entries()) {
+      for (const value of [resource[propertyName]].flat()) {
+        if (value == null || value === '') {
+          continue;
+        }
+        const id = typeof value === 'string' ? Number(value) : value;
+        if (typeof id === 'number' && existingIds.get(reference.resource)?.has(id)) {
+          continue;
+        }
+        errors.push(
+          new ValidationError(
+            `does not reference an existing resource of type ${reference.resource}`,
+            value,
+            undefined,
+            Array.isArray(processedBody) ? [index, propertyName] : [propertyName],
+          ),
+        );
+      }
+    }
+  }
+
+  if (errors.length) {
+    if (ctx.response === undefined) {
+      throw new Error('Resource validation failed', { cause: errors });
+    }
+    throwKoaError(ctx, 400, 'Resource validation failed', { errors });
+  }
 }

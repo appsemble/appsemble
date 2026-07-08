@@ -7,12 +7,13 @@ import {
   processResourceBody,
   setResourceEtagHeader,
   uploadAssets,
+  validateResourceReferences,
 } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, getAppDB } from '../../../../models/index.js';
-import { getCurrentAppMember } from '../../../../options/index.js';
+import { getAppResources, getCurrentAppMember } from '../../../../options/index.js';
 import { checkAppPermissions } from '../../../../utils/authorization.js';
 import { lockResourceWithIfMatch } from '../../../../utils/optimisticResourceLock.js';
 
@@ -83,6 +84,8 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     resource.expires,
     appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
   );
+
+  await validateResourceReferences(ctx, app.toJSON(), definition, updatedResource, getAppResources);
 
   const {
     $clonable: clonable,

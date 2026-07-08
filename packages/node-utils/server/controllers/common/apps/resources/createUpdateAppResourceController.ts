@@ -5,6 +5,7 @@ import {
   type Options,
   processResourceBody,
   setResourceEtagHeader,
+  validateResourceReferences,
 } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
@@ -16,8 +17,14 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       user: authSubject,
     } = ctx;
 
-    const { checkAppPermissions, getApp, getAppAssets, getAppResource, updateAppResource } =
-      options;
+    const {
+      checkAppPermissions,
+      getApp,
+      getAppAssets,
+      getAppResource,
+      getAppResources,
+      updateAppResource,
+    } = options;
 
     const app = await getApp({
       context: ctx,
@@ -66,6 +73,8 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       oldResource.expires as Date,
       appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
     );
+
+    await validateResourceReferences(ctx, app, resourceDefinition, processedBody, getAppResources);
 
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
 
