@@ -290,8 +290,7 @@ describe('updateResourcePosition', () => {
     });
   });
 
-  it('should order a resource among the resources of its own ordering group', async () => {
-    const { Resource } = await getAppDB(app.id);
+  async function enforceOrderingGroupByBar(): Promise<void> {
     await app.update({
       definition: {
         ...app.definition,
@@ -303,6 +302,11 @@ describe('updateResourcePosition', () => {
         },
       },
     });
+  }
+
+  it('should order a resource among the resources of its own ordering group', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await enforceOrderingGroupByBar();
     await Resource.destroy({ where: { type: 'testResource' }, force: true });
     await Resource.bulkCreate([
       { type: 'testResource', data: { foo: 'first', bar: 'a' }, Position: 10 },
@@ -327,6 +331,31 @@ describe('updateResourcePosition', () => {
       )}&$orderby=${encodeURIComponent('Position asc')}`,
     );
     expect(orderingGroup.data.map(({ foo }) => foo)).toStrictEqual(['first', 'moved', 'last']);
+  });
+
+  it('should treat a missing and a null ordering group field as the same ordering group', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await enforceOrderingGroupByBar();
+    await Resource.destroy({ where: { type: 'testResource' }, force: true });
+    await Resource.bulkCreate([
+      { type: 'testResource', data: { foo: 'first' }, Position: 10 },
+      { type: 'testResource', data: { foo: 'last', bar: null }, Position: 20 },
+      { type: 'testResource', data: { foo: 'moved' }, Position: 30 },
+      { type: 'testResource', data: { foo: 'other', bar: 'a' }, Position: 17 },
+    ]);
+    const moved = await Resource.findOne({ where: { type: 'testResource', Position: 30 } });
+
+    authorizeAppMember(app, appMember);
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${moved!.id}/positions`,
+      { prevResourcePosition: 10, nextResourcePosition: 20 },
+    );
+    expect(response.status).toBe(200);
+
+    const resources = await request.get<{ foo: string }[]>(
+      `/api/apps/${app.id}/resources/testResource?$orderby=${encodeURIComponent('Position asc')}`,
+    );
+    expect(resources.data.map(({ foo }) => foo)).toStrictEqual(['first', 'moved', 'other', 'last']);
   });
 
   it('should update the position of the resource', async () => {

@@ -1,1 +1,1 @@
-Order resource positions within the ordering group defined by `enforceOrderingGroupByFields`
+Order resource positions within the group set by `enforceOrderingGroupByFields`
