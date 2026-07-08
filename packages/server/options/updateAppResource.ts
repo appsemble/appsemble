@@ -35,7 +35,13 @@ export async function updateAppResource({
   const member = await getCurrentAppMember({ context, app });
   const persistedApp = (await App.findOne({ where: { id: app.id } }))!;
 
-  const { $clonable: clonable, $expires: expires, ...data } = resource as Record<string, unknown>;
+  const {
+    $clonable: clonable,
+    $expires: expires,
+    // Exclude id from body
+    id: unusedId,
+    ...data
+  } = resource as Record<string, unknown>;
   const mappedLockWhere = mapKeysRecursively(lockWhere);
 
   let uploadedAssetIds: string[] = [];

@@ -210,6 +210,24 @@ describe('updateAppResource', () => {
     expect(fetched.data.foo).toBe('I am not Foo.');
   });
 
+  it('should not store the id echoed in the request body in the resource data', async () => {
+    const { Resource } = await getAppDB(app.id);
+    authorizeStudio();
+    const responseA = await request.post(`/api/apps/${app.id}/resources/testResource`, {
+      foo: 'I am Foo.',
+    });
+    expect(responseA.status).toBe(201);
+
+    const responseB = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${responseA.data.id}`,
+      responseA.data,
+    );
+    expect(responseB.status).toBe(200);
+
+    const resource = (await Resource.findByPk(responseA.data.id))!;
+    expect(resource.data).toStrictEqual({ foo: 'I am Foo.' });
+  });
+
   it('should not be able to update an existing resource from another group if not part of the group', async () => {
     const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
     const group = await Group.create({ name: 'Test Group', AppId: app.id });

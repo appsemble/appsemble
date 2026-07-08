@@ -136,6 +136,19 @@ describe('createAppResource', () => {
     expect(explicitResponse.data).toStrictEqual(expect.objectContaining({ pinned: true }));
   });
 
+  it('should not store the id sent in the request body in the resource data', async () => {
+    const { Resource } = await getAppDB(app.id);
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, {
+      id: 999,
+      foo: 'I am Foo.',
+    });
+    expect(response.status).toBe(201);
+
+    const resource = (await Resource.findByPk(response.data.id))!;
+    expect(resource.data).toStrictEqual({ foo: 'I am Foo.' });
+  });
+
   it('should validate resources', async () => {
     const resource = {};
     authorizeStudio();
