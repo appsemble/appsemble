@@ -68,8 +68,15 @@ preferred by the system. This action requires at least one of the app permission
 `$resource:all:get`, `$resource:all:own:get`, `$resource:all:get:<view-name>`,
 `$resource:<resource-name>:get`, `$resource:<resource-name>:own:get` or
 `$resource:<resource-name>:get:<view-name>`, depending on the context. For more information check
-out [security](../app/security.md#permissions). Here’s an example of how you can use this action to
-fetch the `person` resource.
+out [security](../app/security.md#permissions).
+
+The returned resource includes a server-managed `$etag` field. `resource.update`, `resource.patch`,
+and `resource.delete` automatically send it back as `If-Match` so concurrent writers see a
+`412 Precondition Failed` instead of silently overwriting each other. View responses
+(`view: <view-name>`) omit `$etag`; downstream writes against view results therefore run without
+`If-Match` and are not protected.
+
+Here’s an example of how you can use this action to fetch the `person` resource.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -248,6 +255,14 @@ requires at least one of the app permissions `$resource:all:update`, `$resource:
 context. For more information check out [security](../app/security.md#permissions). Here’s an
 example of how you can use this action to update an existing resource of type person.
 
+Optimistic concurrency is automatic. Resource responses include a server-managed `$etag` field, the
+same way they include `$author` and `$updated`. When the action's input data carries a `$etag`
+(typically the object returned by a prior `resource.get`, or an item from a `resource.query`
+result), Appsemble sends the value as an `If-Match` header. If another writer changed the resource
+in the meantime, the request fails with `412 Precondition Failed`; fetch the latest resource and let
+the user review before retrying. Input that does not carry `$etag` — for example data loaded via a
+view, or hand-rolled objects — is sent without `If-Match` and is not protected against lost updates.
+
 ```yaml validate blocks-snippet
 blocks:
   - type: form
@@ -272,6 +287,18 @@ blocks:
       onSubmit:
         type: resource.update
         resource: person
+        onError:
+          type: condition
+          if: { equals: [{ prop: status }, 412] }
+          then:
+            type: resource.get
+            resource: person
+            id: { prop: id }
+            onSuccess:
+              type: message
+              body: This person was updated elsewhere. Review the latest version and try again.
+          else:
+            type: throw
 ```
 
 ### resource.patch<Side name="resource.patch" />
@@ -285,6 +312,11 @@ permissions `$resource:all:patch`, `$resource:all:own:patch`, `$resource:<resour
 `$resource:<resource-name>:own:patch`, depending on the context. For more information check out
 [security](../app/security.md#permissions). Here’s an example of how you can partially update a
 resource of type person using this action.
+
+As with `resource.update`, optimistic concurrency is automatic: the `$etag` present in the action's
+input data (typically from a prior `resource.get`) is sent as `If-Match`, and a conflicting
+concurrent write returns `412 Precondition Failed`. Input without `$etag` — including view results —
+runs unprotected.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -301,6 +333,19 @@ blocks:
       onSubmit:
         type: resource.patch
         resource: person
+        id: { prop: id }
+        onError:
+          type: condition
+          if: { equals: [{ prop: status }, 412] }
+          then:
+            type: resource.get
+            resource: person
+            id: { prop: id }
+            onSuccess:
+              type: message
+              body: This person was updated elsewhere. Review the latest version and try again.
+          else:
+            type: throw
 ```
 
 ### resource.delete<Side name="resource.delete" />
@@ -310,8 +355,13 @@ blocks:
 This action is used to delete a resource from the database. This action requires at least one of the
 app permissions `$resource:all:delete`, `$resource:all:own:delete`,
 `$resource:<resource-name>:delete` or `$resource:<resource-name>:own:delete`, depending on the
-context. For more information check out [security](../app/security.md#permissions). To delete a
-person resource, you can use the following block of code.
+context. For more information check out [security](../app/security.md#permissions).
+
+As with `resource.update` and `resource.patch`, optimistic concurrency is automatic: if the action's
+input data carries `$etag`, it is sent as `If-Match` and the request fails with
+`412 Precondition Failed` when the resource was changed in the meantime.
+
+To delete a person resource, you can use the following block of code.
 
 ```yaml validate blocks-snippet
 blocks:

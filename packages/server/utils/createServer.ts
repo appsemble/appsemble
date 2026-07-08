@@ -101,7 +101,7 @@ export async function createServer({
     conditional(
       (ctx) => ctx.path === '/api',
       async (ctx, next) => {
-        ctx.set('Access-Control-Expose-Headers', 'X-Appsemble-Version');
+        ctx.set('Access-Control-Expose-Headers', 'ETag, X-Appsemble-Version');
         ctx.set('X-Appsemble-Version', version);
         await next();
       },
@@ -119,6 +119,7 @@ export async function createServer({
           cors({
             credentials: true,
             origin: (ctx) => ctx.get('origin') || '',
+            exposeHeaders: ['ETag', 'X-Appsemble-Version'],
           }),
         ),
         conditional((ctx) => ctx.path === '/api/payments/accept-payment', stripeMiddleware()),

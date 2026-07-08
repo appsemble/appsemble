@@ -1535,6 +1535,20 @@ function validateActions(definition: AppDefinition, report: Report): void {
         const resource = definition.resources?.[resourceName];
         const [, resourceAction] = action.type.split('.');
 
+        // Optimistic concurrency is implicit via `data.$etag`; the explicit
+        // `ifMatch` field used to live on the action schema and has been removed.
+        if (
+          ['update', 'patch', 'delete'].includes(resourceAction) &&
+          'ifMatch' in (action as Record<string, unknown>)
+        ) {
+          report(
+            action.type,
+            'ifMatch is no longer accepted; resource writes use the implicit $etag carried in data',
+            [...path, 'ifMatch'],
+          );
+          return;
+        }
+
         if (!resource) {
           report(action.type, 'refers to a resource that doesn’t exist', [...path, 'resource']);
           return;

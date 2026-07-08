@@ -82,6 +82,20 @@ describe('resource.get', () => {
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ type: 'dog' });
   });
+
+  it('should expose $etag from the response header', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { type: 'cat' }, { etag: '"etag-1"' }];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.get', resource: 'pet' },
+    });
+    const result = await action({ id: 1 });
+    expect(request.method).toBe('get');
+    expect(result).toStrictEqual({ $etag: '"etag-1"', type: 'cat' });
+  });
 });
 
 describe('resource.update.group', () => {
@@ -418,6 +432,34 @@ describe('resource.update', () => {
     expect(request.data).toBe('{"id":84,"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
   });
+
+  it('should send If-Match from data.$etag and expose the new $etag', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { ...JSON.parse(req.data), id: 84 }, { etag: '"etag-2"' }];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.update', resource: 'pet' },
+    });
+    const result = await action({ id: 84, type: 'fish', $etag: '"etag-1"' });
+    expect(request.method).toBe('put');
+    expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBe('"etag-1"');
+    expect(result).toStrictEqual({ $etag: '"etag-2"', id: 84, type: 'fish' });
+  });
+
+  it('should omit If-Match when data has no $etag', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { ...JSON.parse(req.data), id: 84 }, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.update', resource: 'pet' },
+    });
+    await action({ id: 84, type: 'fish' });
+    expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBeUndefined();
+  });
 });
 
 describe('resource.patch', () => {
@@ -453,6 +495,34 @@ describe('resource.patch', () => {
     expect(request.data).toBe('{"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
   });
+
+  it('should send If-Match from data.$etag for patches', async () => {
+    mock.onPatch(/.*/).reply((req) => {
+      request = req;
+      return [200, { ...JSON.parse(req.data), id: 84 }, { etag: '"etag-3"' }];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.patch', resource: 'pet', id: 84 },
+    });
+    const result = await action({ type: 'fish', $etag: '"etag-2"' });
+    expect(request.method).toBe('patch');
+    expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBe('"etag-2"');
+    expect(result).toStrictEqual({ $etag: '"etag-3"', id: 84, type: 'fish' });
+  });
+
+  it('should omit If-Match when patch data has no $etag', async () => {
+    mock.onPatch(/.*/).reply((req) => {
+      request = req;
+      return [200, { ...JSON.parse(req.data), id: 84 }, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.patch', resource: 'pet', id: 84 },
+    });
+    await action({ type: 'fish' });
+    expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBeUndefined();
+  });
 });
 
 describe('resource.delete', () => {
@@ -471,6 +541,33 @@ describe('resource.delete', () => {
     expect(request.params).toBeNull();
     expect(request.data).toBeUndefined();
     expect(result).toBeNull();
+  });
+
+  it('should send If-Match from data.$etag for deletes', async () => {
+    mock.onDelete(/.*/).reply((req) => {
+      request = req;
+      return [204, null, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.delete', resource: 'pet' },
+    });
+    await action({ id: 63, $etag: '"etag-1"' });
+    expect(request.method).toBe('delete');
+    expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBe('"etag-1"');
+  });
+
+  it('should omit If-Match when delete data has no $etag', async () => {
+    mock.onDelete(/.*/).reply((req) => {
+      request = req;
+      return [204, null, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.delete', resource: 'pet' },
+    });
+    await action({ id: 63 });
+    expect(request.headers?.['If-Match'] ?? request.headers?.['if-match']).toBeUndefined();
   });
 });
 

@@ -10,17 +10,21 @@ import { type UniqueConstraintError } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { App, getAppDB } from '../models/index.js';
+import { lockResourceWithIfMatch } from '../utils/optimisticResourceLock.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 import {
   isUniqueConstraintErrorLike,
   throwResourceUniqueConstraintKoaErrorForResource,
 } from '../utils/resourceUniqueIndexes.js';
+import { mapKeysRecursively } from '../utils/sequelize.js';
 
 export async function updateAppResource({
   app,
   context,
   deletedAssetIds,
   id,
+  ifMatch,
+  lockWhere,
   options,
   preparedAssets,
   resource,
@@ -29,28 +33,31 @@ export async function updateAppResource({
 }: UpdateAppResourceParams): Promise<ResourceInterface | null> {
   const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(app.id!);
   const member = await getCurrentAppMember({ context, app });
-
   const persistedApp = (await App.findOne({ where: { id: app.id } }))!;
 
   const { $clonable: clonable, $expires: expires, ...data } = resource as Record<string, unknown>;
+  const mappedLockWhere = mapKeysRecursively(lockWhere);
 
-  if (preparedAssets.length) {
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
-    await uploadAssets(app.id, preparedAssets);
-  }
+  let uploadedAssetIds: string[] = [];
 
   try {
     return await sequelize.transaction(async (transaction) => {
-      const oldResource = (await Resource.findOne({
-        where: { id },
-        include: [
-          { association: 'Author', attributes: ['id', 'name'], required: false },
-          { model: Asset, attributes: ['id'], required: false },
-          { association: 'Group', attributes: ['id', 'name'], required: false },
-        ],
+      const oldResource = await lockResourceWithIfMatch({
+        context,
         transaction,
-      }))!;
+        Resource,
+        where: mappedLockWhere,
+        ifMatch,
+        resourceType: type,
+        resourceId: id,
+        serializeForEtag: (model) =>
+          model.toJSON({ exclude: app.template ? ['$seed'] : undefined }),
+      });
+
+      if (preparedAssets.length) {
+        await uploadAssets(app.id!, preparedAssets);
+        uploadedAssetIds = preparedAssets.map((asset) => asset.id);
+      }
 
       const oldData = oldResource.data;
       const previousEditorId = oldResource.EditorId;
@@ -103,7 +110,11 @@ export async function updateAppResource({
       }
 
       const reloaded = await newResource.reload({
-        include: [{ association: 'Editor' }],
+        include: [
+          { association: 'Author', attributes: ['id', 'name'], required: false },
+          { association: 'Editor', attributes: ['id', 'name'], required: false },
+          { association: 'Group', attributes: ['id', 'name'], required: false },
+        ],
         transaction,
       });
 
@@ -113,11 +124,8 @@ export async function updateAppResource({
       return reloaded.toJSON({ exclude: app.template ? ['$seed'] : undefined });
     });
   } catch (error) {
-    if (preparedAssets.length) {
-      await deleteS3Files(
-        `app-${app.id}`,
-        preparedAssets.map((asset) => asset.id),
-      );
+    if (uploadedAssetIds.length) {
+      await deleteS3Files(`app-${app.id}`, uploadedAssetIds);
     }
 
     if (isUniqueConstraintErrorLike(error)) {

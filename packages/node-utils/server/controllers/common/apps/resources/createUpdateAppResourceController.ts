@@ -4,6 +4,7 @@ import {
   getResourceDefinition,
   type Options,
   processResourceBody,
+  setResourceEtagHeader,
 } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
@@ -78,6 +79,10 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       deletedAssetIds,
       resourceDefinition,
       options,
+      lockWhere: findOptions.where!,
+      ifMatch: ctx.get('If-Match') || undefined,
     });
+
+    setResourceEtagHeader(ctx, ctx.body as Record<string, unknown> | null | undefined);
   };
 }

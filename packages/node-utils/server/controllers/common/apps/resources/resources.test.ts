@@ -76,7 +76,7 @@ describe('createQueryResources', () => {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
       queryParams: { $select: 'field1, field2', $skip: 0, $top: 10 } as QueryParams,
       user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as AuthSubject,
-    } as ParameterizedContext<DefaultState, DefaultContext>;
+    } as unknown as ParameterizedContext<DefaultState, DefaultContext>;
   });
 
   it('should fetch app and resources with correct parameters', async () => {
@@ -296,7 +296,7 @@ describe('createCountResources', () => {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
       queryParams: {} as QueryParams,
       user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as AuthSubject,
-    } as ParameterizedContext<DefaultState, DefaultContext>;
+    } as unknown as ParameterizedContext<DefaultState, DefaultContext>;
   });
 
   it('should fetch app and resources with correct parameters', async () => {
@@ -432,7 +432,8 @@ describe('createGetResourceById', () => {
       pathParams: { appId: 1, resourceId: 1, resourceType: 'mockResourceType' } as PathParams,
       user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as AuthSubject,
       queryParams: {},
-    } as ParameterizedContext<DefaultState, DefaultContext>;
+      set: vi.fn(),
+    } as unknown as ParameterizedContext<DefaultState, DefaultContext>;
   });
 
   it('should fetch app and resource with correct parameters', async () => {
@@ -530,6 +531,7 @@ describe('createGetResourceById', () => {
     await middleware(mockCtx, vi.fn());
 
     expect(mockCtx.body).toStrictEqual(mockResource);
+    expect(mockCtx.set).toHaveBeenCalledWith('ETag', expect.any(String));
   });
 
   it('should set the response body to remapped resource when view is specified', async () => {
@@ -612,7 +614,8 @@ describe('createCreateResource', () => {
       is: mockCtxIs as () => string,
       request: {},
       queryParams: {},
-    } as ParameterizedContext<DefaultState, DefaultContext>;
+      set: vi.fn(),
+    } as unknown as ParameterizedContext<DefaultState, DefaultContext>;
   });
 
   it('should fetch app and create multiple resources', async () => {

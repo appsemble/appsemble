@@ -78,6 +78,7 @@ describe('createAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -86,6 +87,7 @@ describe('createAppResource', () => {
         "id": 1,
       }
     `);
+    expect(response.headers.etag).toBeDefined();
   });
 
   it('should validate resources', async () => {
@@ -277,6 +279,7 @@ describe('createAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
       Content-Type: application/json; charset=utf-8
+      Etag: "wrHuBm06ZaOOoByzn1-SiAbZHc1b8Uly1BL1nQMYeBM"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -295,9 +298,13 @@ describe('createAppResource', () => {
       $expires: '1970-01-01T00:05:00.000Z',
     });
 
+    expect(response.headers.etag).toMatch(/^".+"$/);
+    response.headers.etag = '<etag>';
+
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
       Content-Type: application/json; charset=utf-8
+      Etag: <etag>
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -693,6 +700,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -734,6 +742,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -875,6 +884,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -901,6 +911,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -999,6 +1010,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -1042,6 +1054,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "5PQbHLNnzGyNnHiR7FlWnCLC8Mru4rVIb6kyjVFW340"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",

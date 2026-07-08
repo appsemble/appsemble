@@ -5,6 +5,7 @@ import {
   getRemapperContext,
   getResourceDefinition,
   type Options,
+  setResourceEtagHeader,
 } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
@@ -66,10 +67,15 @@ export function createGetAppResourceByIdController(options: Options): Middleware
 
       const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx, view);
 
+      // No ETag for view responses: the response body is a remapped projection
+      // that does not uniquely identify the raw resource representation, so a
+      // shared ETag across views would violate RFC 7232's representation-
+      // identity requirement and confuse conditional GETs/caches.
       ctx.body = remap(resourceDefinition.views?.[view].remap ?? null, resource, context);
       return;
     }
 
+    setResourceEtagHeader(ctx, resource);
     ctx.body = resource;
   };
 }

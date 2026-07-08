@@ -83,6 +83,7 @@ describe('updateAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "mCptHCjfiFuR4OwnRAcEbjV38GlcAGdnrUbPLnhRM18"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -101,6 +102,7 @@ describe('updateAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "mCptHCjfiFuR4OwnRAcEbjV38GlcAGdnrUbPLnhRM18"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -110,6 +112,102 @@ describe('updateAppResource', () => {
         }
       `,
     );
+    expect(response.headers.etag).toBeDefined();
+    expect(responseB.headers.etag).toBe(response.headers.etag);
+  });
+
+  it('should reject stale updates with If-Match', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+
+    const initial = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+    const staleEtag = initial.headers.etag;
+
+    await request.put(`/api/apps/${app.id}/resources/testResource/${resource.id}`, {
+      foo: 'I am not Foo.',
+    });
+
+    const staleResponse = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am stale.' },
+      { headers: { 'If-Match': staleEtag } },
+    );
+
+    expect(staleResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 412 Precondition Failed
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "code": "RESOURCE_PRECONDITION_FAILED",
+          "resourceId": 1,
+          "resourceType": "testResource",
+        },
+        "error": "Precondition Failed",
+        "message": "This resource has changed since it was loaded. Fetch the latest version and try again.",
+        "statusCode": 412,
+      }
+    `);
+
+    const latest = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+
+    expect(latest.data.foo).toBe('I am not Foo.');
+  });
+
+  it('should accept a matching If-Match across consecutive PUTs on a template app', async () => {
+    await app.update({ template: true });
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+
+    const first = await request.put(`/api/apps/${app.id}/resources/testResource/${resource.id}`, {
+      foo: 'I am edited once.',
+    });
+    expect(first.status).toBe(200);
+    const firstEtag = first.headers.etag;
+    expect(firstEtag).toStrictEqual(expect.any(String));
+
+    const second = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am edited twice.', $clonable: true },
+      { headers: { 'If-Match': firstEtag } },
+    );
+
+    expect(second.status).toBe(200);
+    expect(second.headers.etag).toStrictEqual(expect.any(String));
+    expect(second.data.foo).toBe('I am edited twice.');
+    expect(second.data.$clonable).toBe(true);
+  });
+
+  it('should ignore $etag in the request body and not persist it', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.', $etag: '"forged"' },
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data.$etag).toBeUndefined();
+
+    const fetched = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+    expect(fetched.data).not.toHaveProperty('$etag');
+    expect(fetched.data.foo).toBe('I am not Foo.');
   });
 
   it('should not be able to update an existing resource from another group if not part of the group', async () => {
@@ -419,6 +517,7 @@ describe('updateAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "4Ai6FEU2j354YfQK3VXL6LgBCL6BrVgWszroFUJInHI"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -449,6 +548,7 @@ describe('updateAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "Do7wbabaG2_3Q7OLo3yUVMxXI3YpyZgcyBDui4UAznQ"
 
         {
           "$clonable": false,
@@ -469,6 +569,7 @@ describe('updateAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "uA2A3ET5p83eBpXOlC45pUBXhR5hshmjFTQpE4GiBeo"
 
         {
           "$clonable": true,
@@ -504,6 +605,7 @@ describe('updateAppResource', () => {
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "YihDBQUs5xAaFvnHu3hMKUaOO_Uz4in5DPHf25pDFmg"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -517,6 +619,7 @@ describe('updateAppResource', () => {
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "YihDBQUs5xAaFvnHu3hMKUaOO_Uz4in5DPHf25pDFmg"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -551,6 +654,7 @@ describe('updateAppResource', () => {
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Fm-xnELXjxZWsMGwOMX33GnZkneK1ZFaAo9nrdeIrvQ"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -564,6 +668,7 @@ describe('updateAppResource', () => {
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Fm-xnELXjxZWsMGwOMX33GnZkneK1ZFaAo9nrdeIrvQ"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -635,12 +740,15 @@ describe('updateAppResource', () => {
 
     const { $created, $updated, ...rest } = response.data;
     response.data = rest as ResourceType;
+    expect(response.headers.etag).toMatch(/^".+"$/);
+    response.headers.etag = '<etag>';
 
     expect(response).toMatchInlineSnapshot(
       { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: <etag>
 
       {
         "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
@@ -765,11 +873,15 @@ describe('updateAppResource', () => {
       createFormData({ resource: { file: asset.id } }),
     );
 
+    expect(response.headers.etag).toMatch(/^".+"$/);
+    response.headers.etag = '<etag>';
+
     expect(response).toMatchInlineSnapshot(
       { data: { file: expect.any(String) } },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: <etag>
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -827,6 +939,7 @@ describe('updateAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "QaMMe-eJ1t9wv0eR-zU26oAqsNJiZ8WtGr-p9GGRx4w"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -880,6 +993,7 @@ describe('updateAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "QaMMe-eJ1t9wv0eR-zU26oAqsNJiZ8WtGr-p9GGRx4w"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -941,20 +1055,21 @@ describe('updateAppResource', () => {
     expect(response).toMatchInlineSnapshot(
       { data: { $editor: { id: expect.any(String) } } },
       `
-        HTTP/1.1 200 OK
-        Content-Type: application/json; charset=utf-8
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+      Etag: "QOnb4J6PIsY-b3oAuDhFDcegXzYDhsXKtj5og7TiYAU"
 
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$editor": {
-            "id": Any<String>,
-            "name": "Test User",
-          },
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I am Foo too!",
-          "id": 1,
-        }
-      `,
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo too!",
+        "id": 1,
+      }
+    `,
     );
 
     await resource.reload();
@@ -975,6 +1090,7 @@ describe('updateAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Pt2An-HVRWQRpfD9o75ULWQ2qloo8gS1oSHJYRXm2-U"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -1011,6 +1127,7 @@ describe('updateAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Pt2An-HVRWQRpfD9o75ULWQ2qloo8gS1oSHJYRXm2-U"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -1047,6 +1164,7 @@ describe('updateAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Pt2An-HVRWQRpfD9o75ULWQ2qloo8gS1oSHJYRXm2-U"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",

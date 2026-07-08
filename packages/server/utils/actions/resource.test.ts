@@ -11,6 +11,31 @@ import { Mailer } from '../email/Mailer.js';
 
 let mailer: Mailer;
 
+/**
+ * Minimal Koa-context stub so the locked-resource helper can route 404/412 via
+ * `throwKoaError` from inside `handleAction(...)` without booting a real HTTP
+ * server. The thrown error mirrors the body shape `throwKoaError` would write
+ * to a real ctx, so existing property assertions keep working.
+ *
+ * @returns A Koa-context-shaped object accepted by `handleAction`.
+ */
+function makeKoaCtxStub(): any {
+  return {
+    response: { status: 200, body: undefined as any },
+    get: () => '',
+    throw() {
+      const body = (this.response.body ?? {}) as any;
+      const err: any = new Error(body.message ?? `Status ${this.response.status}`);
+      err.status = this.response.status;
+      err.statusCode = this.response.status;
+      err.error = body.error;
+      err.data = body.data;
+      err.expose = true;
+      throw err;
+    },
+  };
+}
+
 const exampleApp = (orgId: string, action: ActionDefinition, path = 'test-app'): Promise<App> =>
   App.create({
     OrganizationId: orgId,
@@ -159,17 +184,55 @@ describe('resource', () => {
       expect(result).toStrictEqual([
         {
           $created: '1970-01-01T00:00:00.000Z',
+          $etag: expect.any(String),
           $updated: '1970-01-01T00:00:00.000Z',
           id: 1,
           name: 'Spongebob',
         },
         {
           $created: '1970-01-01T00:00:00.000Z',
+          $etag: expect.any(String),
           $updated: '1970-01-01T00:00:00.000Z',
           id: 2,
           name: 'Patrick',
         },
       ]);
+    });
+
+    it('should expose $etag on each non-view query result, matching the get etag', async () => {
+      const queryAction: ActionDefinition = { type: 'resource.query', resource: 'person' };
+      const getAction: ActionDefinition = { type: 'resource.get', resource: 'person' };
+      const app = await exampleApp('testorg', queryAction);
+
+      const { Resource } = await getAppDB(app.id);
+      const created = await Resource.create({
+        type: 'person',
+        data: { name: 'Spongebob' },
+      });
+
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      const queryResult = await handleAction(query, {
+        app,
+        action: queryAction,
+        mailer,
+        data: {},
+        options,
+        context: {} as any,
+      });
+
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      const getResult = await handleAction(get, {
+        app,
+        action: getAction,
+        mailer,
+        data: { id: created.id },
+        options,
+        context: {} as any,
+      });
+
+      expect((queryResult as { $etag: string }[])[0].$etag).toBe(
+        (getResult as { $etag: string }).$etag,
+      );
     });
 
     it('should support views', async () => {
@@ -240,6 +303,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         name: 'Spongebob',
       });
@@ -274,7 +338,9 @@ describe('resource', () => {
         context: {} as any,
       });
 
-      expect(result).toStrictEqual({ fullName: 'Spongebob Squarepants' });
+      expect(result).toStrictEqual({
+        fullName: 'Spongebob Squarepants',
+      });
     });
 
     it('should not be able to get a resource when missing an id', async () => {
@@ -392,6 +458,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Spongebob',
         lastName: 'Squarepants',
@@ -426,6 +493,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         $ephemeral: true,
         id: 1,
         firstName: 'Spongebob',
@@ -461,6 +529,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Spongebob',
         lastName: 'Squarepants',
@@ -540,6 +609,7 @@ describe('resource', () => {
 
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         $expires: '1970-01-01T00:10:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
         id: 1,
@@ -572,6 +642,7 @@ describe('resource', () => {
 
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         $expires: '1970-01-01T00:05:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
         id: 1,
@@ -751,10 +822,123 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Patrick',
         lastName: 'Star',
       });
+    });
+
+    it('should send implicit If-Match from data.$etag for updates', async () => {
+      const action: ActionDefinition = { type: 'resource.update', resource: 'person' };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+        },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      const result = await handleAction(update as any, {
+        app,
+        action,
+        mailer,
+        data: {
+          $etag: current.$etag,
+          id: 1,
+          firstName: 'Patrick',
+          lastName: 'Star',
+        },
+        options,
+        context: {} as any,
+      });
+
+      expect(result).toStrictEqual({
+        $created: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
+        $updated: '1970-01-01T00:00:00.000Z',
+        id: 1,
+        firstName: 'Patrick',
+        lastName: 'Star',
+      });
+    });
+
+    it('should reject stale implicit If-Match for updates', async () => {
+      const action: ActionDefinition = { type: 'resource.update', resource: 'person' };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+        },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      await handleAction(update as any, {
+        app,
+        action,
+        mailer,
+        data: {
+          id: 1,
+          firstName: 'Patrick',
+          lastName: 'Star',
+        },
+        options,
+        context: {} as any,
+      });
+
+      const staleUpdate = handleAction(update as any, {
+        app,
+        action,
+        mailer,
+        data: {
+          $etag: current.$etag,
+          id: 1,
+          firstName: 'Squidward',
+          lastName: 'Tentacles',
+        },
+        options,
+        context: makeKoaCtxStub(),
+      });
+
+      await expect(staleUpdate).rejects.toMatchObject({
+        data: {
+          code: 'RESOURCE_PRECONDITION_FAILED',
+          resourceId: 1,
+          resourceType: 'person',
+        },
+        error: 'Precondition Failed',
+        statusCode: 412,
+      });
+      await expect(staleUpdate).rejects.toHaveProperty(
+        'message',
+        'This resource has changed since it was loaded. Fetch the latest version and try again.',
+      );
     });
 
     it('should update resource using body', async () => {
@@ -796,6 +980,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Patrick',
         lastName: 'Star',
@@ -1086,6 +1271,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         firstName: 'Squidward',
         id: 1,
         lastName: 'Tentacles',
@@ -1129,6 +1315,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         $expires: '1970-01-01T00:07:00.000Z',
         foo: 'updated',
         id: 1,
@@ -1212,6 +1399,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         firstName: 'Squidward',
         id: 1,
         lastName: 'Tentacles',
@@ -1256,6 +1444,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });
@@ -1308,6 +1497,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });
@@ -1360,6 +1550,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });
@@ -1415,10 +1606,120 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Squidward',
         lastName: 'Squarepants',
       });
+    });
+
+    it('should send implicit If-Match from data.$etag for patches', async () => {
+      const action: ActionDefinition = { type: 'resource.patch', resource: 'person' };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+        },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      const result = await handleAction(patch as any, {
+        app,
+        action,
+        mailer,
+        data: {
+          $etag: current.$etag,
+          id: 1,
+          firstName: 'Squidward',
+        },
+        options,
+        context: {} as any,
+      });
+
+      expect(result).toStrictEqual({
+        $created: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
+        $updated: '1970-01-01T00:00:00.000Z',
+        id: 1,
+        firstName: 'Squidward',
+        lastName: 'Squarepants',
+      });
+    });
+
+    it('should reject stale implicit If-Match for patches', async () => {
+      const action: ActionDefinition = { type: 'resource.patch', resource: 'person' };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: {
+          firstName: 'Spongebob',
+          lastName: 'Squarepants',
+        },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      await handleAction(patch as any, {
+        app,
+        action,
+        mailer,
+        data: {
+          id: 1,
+          firstName: 'Patrick',
+        },
+        options,
+        context: {} as any,
+      });
+
+      const stalePatch = handleAction(patch as any, {
+        app,
+        action,
+        mailer,
+        data: {
+          $etag: current.$etag,
+          id: 1,
+          firstName: 'Squidward',
+        },
+        options,
+        context: makeKoaCtxStub(),
+      });
+
+      await expect(stalePatch).rejects.toMatchObject({
+        data: {
+          code: 'RESOURCE_PRECONDITION_FAILED',
+          resourceId: 1,
+          resourceType: 'person',
+        },
+        error: 'Precondition Failed',
+        statusCode: 412,
+      });
+      await expect(stalePatch).rejects.toHaveProperty(
+        'message',
+        'This resource has changed since it was loaded. Fetch the latest version and try again.',
+      );
     });
 
     it('should patch resource using body', async () => {
@@ -1459,6 +1760,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Squidward',
         lastName: 'Squarepants',
@@ -1502,6 +1804,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         firstName: 'Squidward',
         lastName: 'Squarepants',
@@ -1788,6 +2091,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         firstName: 'Squidward',
         id: 1,
         lastName: 'Squarepants',
@@ -1832,6 +2136,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         firstName: 'Squidward',
         id: 1,
         lastName: 'Squarepants',
@@ -1875,6 +2180,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         $expires: '1970-01-01T00:07:00.000Z',
         foo: 'updated',
         id: 1,
@@ -1957,6 +2263,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         firstName: 'Squidward',
         id: 1,
         lastName: 'Squarepants',
@@ -2001,6 +2308,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });
@@ -2053,6 +2361,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });
@@ -2105,6 +2414,7 @@ describe('resource', () => {
       expect(result).toStrictEqual({
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
+        $etag: expect.any(String),
         id: 1,
         string: 'rev2',
       });
@@ -2125,6 +2435,92 @@ describe('resource', () => {
   });
 
   describe('resource.delete', () => {
+    it('should reject stale implicit If-Match for deletes', async () => {
+      const action: ActionDefinition = { type: 'resource.delete', resource: 'person' };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: { firstName: 'Spongebob', lastName: 'Squarepants' },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      await handleAction(update as any, {
+        app,
+        action: { type: 'resource.update', resource: 'person' },
+        mailer,
+        data: { id: 1, firstName: 'Patrick', lastName: 'Star' },
+        options,
+        context: {} as any,
+      });
+
+      const staleDelete = handleAction(remove as any, {
+        app,
+        action,
+        mailer,
+        data: { id: 1, $etag: current.$etag },
+        options,
+        context: makeKoaCtxStub(),
+      });
+
+      await expect(staleDelete).rejects.toMatchObject({
+        data: {
+          code: 'RESOURCE_PRECONDITION_FAILED',
+          resourceId: 1,
+          resourceType: 'person',
+        },
+        error: 'Precondition Failed',
+        statusCode: 412,
+      });
+
+      const remaining = await Resource.findAll();
+      expect(remaining).toHaveLength(1);
+    });
+
+    it('should accept matching implicit If-Match for deletes', async () => {
+      const action: ActionDefinition = { type: 'resource.delete', resource: 'person' };
+
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      await Resource.create({
+        type: 'person',
+        data: { firstName: 'Spongebob', lastName: 'Squarepants' },
+      });
+
+      const current = (await handleAction(get as any, {
+        app,
+        action: { type: 'resource.get', resource: 'person' },
+        mailer,
+        data: { id: 1 },
+        options,
+        context: {} as any,
+      })) as Record<string, unknown>;
+
+      const result = await handleAction(remove as any, {
+        app,
+        action,
+        mailer,
+        data: { id: 1, $etag: current.$etag },
+        options,
+        context: makeKoaCtxStub(),
+      });
+
+      expect(result).toBe('');
+      const remaining = await Resource.findAll();
+      expect(remaining).toHaveLength(0);
+    });
+
     it('should delete a resource', async () => {
       const action: ActionDefinition = {
         type: 'resource.delete',

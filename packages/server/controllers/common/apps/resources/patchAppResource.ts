@@ -5,13 +5,16 @@ import {
   getResourceDefinition,
   logger,
   processResourceBody,
+  setResourceEtagHeader,
   uploadAssets,
 } from '@appsemble/node-utils';
 import { type Context } from 'koa';
+import { Op } from 'sequelize';
 
 import { App, getAppDB } from '../../../../models/index.js';
 import { getCurrentAppMember } from '../../../../options/index.js';
 import { checkAppPermissions } from '../../../../utils/authorization.js';
+import { lockResourceWithIfMatch } from '../../../../utils/optimisticResourceLock.js';
 
 export async function deleteAppAssets(appId: number, assetIds: string[]): Promise<void> {
   await deleteS3Files(`app-${appId}`, assetIds);
@@ -33,12 +36,20 @@ export async function patchAppResource(ctx: Context): Promise<void> {
   } = ctx;
   const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(appId);
   const app = await App.findByPk(appId, {
-    attributes: ['definition', 'id'],
+    attributes: ['definition', 'demoMode', 'id'],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
+  const lockWhere = {
+    id: resourceId,
+    type: resourceType,
+    GroupId: selectedGroupId ?? null,
+    expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
+    ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+  };
+
   const resource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType, GroupId: selectedGroupId ?? null },
+    where: lockWhere,
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
   });
 
@@ -56,6 +67,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
   });
 
   const appMember = await getCurrentAppMember({ context: ctx, app: app.toJSON() });
+  const ifMatch = ctx.get('If-Match') || undefined;
 
   const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
@@ -78,17 +90,33 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     ...patchData
   } = updatedResource as Record<string, unknown>;
 
-  if (preparedAssets.length) {
-    await uploadAssets(app.id, preparedAssets);
-  }
+  let uploadedAssetIds: string[] = [];
 
   try {
-    await sequelize.transaction((transaction) => {
-      const oldData = resource.data;
+    ctx.body = await sequelize.transaction(async (transaction) => {
+      const lockedResource = await lockResourceWithIfMatch({
+        context: ctx,
+        transaction,
+        Resource,
+        where: lockWhere,
+        ifMatch,
+        resourceType,
+        resourceId,
+      });
+
+      if (preparedAssets.length) {
+        await uploadAssets(app.id, preparedAssets);
+        uploadedAssetIds = preparedAssets.map((asset) => asset.id);
+      }
+
+      const oldData = lockedResource.data;
       const data = { ...oldData, ...patchData };
-      const previousEditorId = resource.EditorId;
+      const previousEditorId = lockedResource.EditorId;
       const promises: Promise<unknown>[] = [
-        resource.update({ data, clonable, expires, EditorId: appMember?.sub }, { transaction }),
+        lockedResource.update(
+          { data, clonable, expires, EditorId: appMember?.sub },
+          { transaction },
+        ),
       ];
 
       if (preparedAssets.length) {
@@ -98,7 +126,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
               ...asset,
               ...getCompressedFileMeta(asset),
               GroupId: selectedGroupId ?? null,
-              ResourceId: resource.id,
+              ResourceId: lockedResource.id,
               AppMemberId: appMember?.sub,
             })),
             { logging: false, transaction },
@@ -124,18 +152,25 @@ export async function patchAppResource(ctx: Context): Promise<void> {
         });
       }
 
-      return Promise.all(promises);
+      await Promise.all(promises);
+
+      const reloaded = await lockedResource.reload({
+        include: [
+          { association: 'Author', attributes: ['id', 'name'], required: false },
+          { association: 'Editor', attributes: ['id', 'name'], required: false },
+          { association: 'Group', attributes: ['id', 'name'], required: false },
+        ],
+        transaction,
+      });
+
+      return reloaded.toJSON();
     });
   } catch (error) {
-    if (preparedAssets.length) {
-      await deleteAppAssets(
-        app.id,
-        preparedAssets.map((asset) => asset.id),
-      );
+    if (uploadedAssetIds.length) {
+      await deleteAppAssets(app.id, uploadedAssetIds);
     }
     throw error;
   }
-  await resource.reload({ include: [{ association: 'Editor' }] });
 
-  ctx.body = resource;
+  setResourceEtagHeader(ctx, ctx.body as Record<string, unknown> | null | undefined);
 }

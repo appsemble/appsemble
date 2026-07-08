@@ -11,6 +11,7 @@ import {
   type ResourceUpdateActionDefinition,
 } from '@appsemble/lang-sdk';
 import {
+  addResourceEtag,
   deleteS3Files,
   getCompressedFileMeta,
   getRemapperContext,
@@ -25,6 +26,8 @@ import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { getAppDB } from '../../models/index.js';
+import { type ResourceGlobal } from '../../models/apps/Resource.js';
+import { lockResourceWithIfMatch } from '../optimisticResourceLock.js';
 import {
   parseQuery,
   processHooks,
@@ -41,6 +44,16 @@ export const resourceCleanup = {
     }
   },
 };
+
+function resolveImplicitIfMatch(actionData: unknown): string | undefined {
+  if (actionData && typeof actionData === 'object' && !Array.isArray(actionData)) {
+    const etag = (actionData as Record<string, unknown>).$etag;
+    if (typeof etag === 'string') {
+      return etag;
+    }
+  }
+  return undefined;
+}
 
 export async function get({
   action,
@@ -85,10 +98,8 @@ export async function get({
     throw new Error('Resource not found');
   }
 
-  const parsedResource = resource.toJSON();
-
   if (!view) {
-    return parsedResource;
+    return addResourceEtag(resource.toJSON());
   }
 
   const remapperContext = await getRemapperContext(
@@ -102,7 +113,10 @@ export async function get({
     history: internalContext?.history ?? [],
   });
 
-  return remap(resourceDefinition.views?.[view].remap ?? null, parsedResource, remapperContext);
+  // View responses do not carry an $etag: the projection is not the raw
+  // resource representation, so an ETag here would either share with the raw
+  // resource (RFC 7232 violation) or be meaningless for If-Match round-trips.
+  return remap(resourceDefinition.views?.[view].remap ?? null, resource.toJSON(), remapperContext);
 }
 
 export async function query({
@@ -146,7 +160,7 @@ export async function query({
   const mappedResources = resources.map((resource) => resource.toJSON({ include }));
 
   if (!view) {
-    return mappedResources;
+    return mappedResources.map((resource) => addResourceEtag(resource));
   }
 
   const remapperContext = await getRemapperContext(
@@ -159,6 +173,7 @@ export async function query({
     history: internalContext?.history ?? [],
   });
 
+  // View responses omit `$etag`; see the same reasoning in `get`.
   return mappedResources.map((resource) =>
     remap(resourceDefinition.views?.[view].remap ?? null, resource, remapperContext),
   );
@@ -174,10 +189,8 @@ export async function create({
 }: ServerActionParameters<ResourceCreateActionDefinition>): Promise<unknown> {
   const { createAppResourcesWithAssets, getAppAssets } = options;
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  // eslint-disable-next-line prettier/prettier
-  const body = action.body ? ((remap(action.body ?? null, data, internalContext) ?? data) as
+  const body = action.body
+    ? ((remap(action.body ?? null, data, internalContext!) ?? data) as
         | Record<string, unknown>
         | Record<string, unknown>[])
     : (data as any);
@@ -212,7 +225,7 @@ export async function create({
     options,
   });
 
-  return Array.isArray(processedBody) ? createdResources : createdResources[0];
+  return Array.isArray(processedBody) ? createdResources : addResourceEtag(createdResources[0]);
 }
 
 export async function update({
@@ -224,10 +237,8 @@ export async function update({
   options,
 }: ServerActionParameters<ResourceUpdateActionDefinition>): Promise<unknown> {
   const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(app.id);
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  // eslint-disable-next-line prettier/prettier
-  const body = action.body ? ((remap(action.body ?? null, actionData, internalContext) ?? actionData) as Record<
+  const body = action.body
+    ? ((remap(action.body ?? null, actionData, internalContext!) ?? actionData) as Record<
         string,
         unknown
       >)
@@ -240,6 +251,8 @@ export async function update({
     throw new Error('Missing id');
   }
   body.id = resourceId;
+
+  const ifMatch = resolveImplicitIfMatch(actionData);
 
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
@@ -275,18 +288,31 @@ export async function update({
     ...data
   } = updatedResource as Record<string, unknown>;
 
-  if (preparedAssets.length) {
-    await uploadAssets(app.id, preparedAssets);
-  }
-
   const shouldDeleteDereferencedAssets = !definition.history && deletedAssetIds.length > 0;
+  let uploadedAssetIds: string[] = [];
 
+  let updatedResourceModel: ResourceGlobal | undefined;
   try {
-    await sequelize.transaction((transaction) => {
-      const oldData = resource.data;
-      const previousEditorId = resource.EditorId;
+    updatedResourceModel = await sequelize.transaction(async (transaction) => {
+      const lockedResource = await lockResourceWithIfMatch({
+        context,
+        transaction,
+        Resource,
+        where: { id: resourceId, type: action.resource },
+        ifMatch,
+        resourceType: action.resource,
+        resourceId,
+      });
+
+      if (preparedAssets.length) {
+        await uploadAssets(app.id, preparedAssets);
+        uploadedAssetIds = preparedAssets.map((asset) => asset.id);
+      }
+
+      const oldData = lockedResource.data;
+      const previousEditorId = lockedResource.EditorId;
       const promises: Promise<unknown>[] = [
-        resource.update({ data, clonable, expires }, { transaction }),
+        lockedResource.update({ data, clonable, expires }, { transaction }),
       ];
 
       if (preparedAssets.length) {
@@ -295,7 +321,7 @@ export async function update({
             preparedAssets.map((asset) => ({
               ...asset,
               ...getCompressedFileMeta(asset),
-              ResourceId: resource.id,
+              ResourceId: lockedResource.id,
             })),
             { logging: false, transaction },
           ),
@@ -306,7 +332,7 @@ export async function update({
         promises.push(
           ResourceVersion.create(
             {
-              ResourceId: resource.id,
+              ResourceId: lockedResource.id,
               AppMemberId: previousEditorId,
               data: definition.history === true || definition.history.data ? oldData : undefined,
             },
@@ -317,14 +343,13 @@ export async function update({
         promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
       }
 
-      return Promise.all(promises);
+      await Promise.all(promises);
+
+      return lockedResource.reload({ include: [{ association: 'Editor' }], transaction });
     });
   } catch (error) {
-    if (preparedAssets.length) {
-      await deleteS3Files(
-        `app-${app.id}`,
-        preparedAssets.map((asset) => asset.id),
-      );
+    if (uploadedAssetIds.length) {
+      await deleteS3Files(`app-${app.id}`, uploadedAssetIds);
     }
     throw error;
   }
@@ -333,12 +358,10 @@ export async function update({
     await resourceCleanup.deleteDereferencedS3Assets(app.id, deletedAssetIds);
   }
 
-  await resource.reload({ include: [{ association: 'Editor' }] });
+  processReferenceHooks(app, updatedResourceModel!, 'update', options, context);
+  processHooks(app, updatedResourceModel!, 'update', options, context);
 
-  processReferenceHooks(app, resource, 'update', options, context);
-  processHooks(app, resource, 'update', options, context);
-
-  return resource.toJSON();
+  return addResourceEtag(updatedResourceModel!.toJSON());
 }
 
 export async function patch({
@@ -361,11 +384,11 @@ export async function patch({
     typeof nestedActionData.resource === 'object' &&
     !Array.isArray(nestedActionData.resource) &&
     ('id' in nestedActionData || action.id);
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  // eslint-disable-next-line prettier/prettier
-  const body = action.body ? ((remap(action.body ?? null, actionData, internalContext) ?? actionData) as
-    Record<string, unknown>)
+  const body = action.body
+    ? ((remap(action.body ?? null, actionData, internalContext!) ?? actionData) as Record<
+        string,
+        unknown
+      >)
     : ((usesNestedBody ? nestedActionData.resource : actionData) as any);
 
   // Support action.id remapper (like client-side) or fallback to body.id
@@ -377,6 +400,8 @@ export async function patch({
   }
   // Ensure id is available in body for downstream processing
   body.id = resourceId;
+
+  const ifMatch = resolveImplicitIfMatch(actionData);
 
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
@@ -410,19 +435,32 @@ export async function patch({
     ...data
   } = patchedResource as Record<string, unknown>;
 
-  if (preparedAssets.length) {
-    await uploadAssets(app.id, preparedAssets);
-  }
-
   const shouldDeleteDereferencedAssets = !definition.history && deletedAssetIds.length > 0;
+  let uploadedAssetIds: string[] = [];
 
+  let patchedResourceModel: ResourceGlobal | undefined;
   try {
-    await sequelize.transaction((transaction) => {
-      const oldData = resource.data;
+    patchedResourceModel = await sequelize.transaction(async (transaction) => {
+      const lockedResource = await lockResourceWithIfMatch({
+        context,
+        transaction,
+        Resource,
+        where: { id: resourceId, type: action.resource },
+        ifMatch,
+        resourceType: action.resource,
+        resourceId,
+      });
+
+      if (preparedAssets.length) {
+        await uploadAssets(app.id, preparedAssets);
+        uploadedAssetIds = preparedAssets.map((asset) => asset.id);
+      }
+
+      const oldData = lockedResource.data;
       const patchedData = { ...oldData, ...data };
-      const previousEditorId = resource.EditorId;
+      const previousEditorId = lockedResource.EditorId;
       const promises: Promise<unknown>[] = [
-        resource.update({ data: patchedData, clonable, expires }, { transaction }),
+        lockedResource.update({ data: patchedData, clonable, expires }, { transaction }),
       ];
 
       if (preparedAssets.length) {
@@ -431,7 +469,7 @@ export async function patch({
             preparedAssets.map((asset) => ({
               ...asset,
               ...getCompressedFileMeta(asset),
-              ResourceId: resource.id,
+              ResourceId: lockedResource.id,
             })),
             { logging: false, transaction },
           ),
@@ -442,7 +480,7 @@ export async function patch({
         promises.push(
           ResourceVersion.create(
             {
-              ResourceId: resource.id,
+              ResourceId: lockedResource.id,
               AppMemberId: previousEditorId,
               data: definition.history === true || definition.history.data ? oldData : undefined,
             },
@@ -453,14 +491,13 @@ export async function patch({
         promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
       }
 
-      return Promise.all(promises);
+      await Promise.all(promises);
+
+      return lockedResource.reload({ include: [{ association: 'Editor' }], transaction });
     });
   } catch (error) {
-    if (preparedAssets.length) {
-      await deleteS3Files(
-        `app-${app.id}`,
-        preparedAssets.map((asset) => asset.id),
-      );
+    if (uploadedAssetIds.length) {
+      await deleteS3Files(`app-${app.id}`, uploadedAssetIds);
     }
     throw error;
   }
@@ -469,9 +506,7 @@ export async function patch({
     await resourceCleanup.deleteDereferencedS3Assets(app.id, deletedAssetIds);
   }
 
-  await resource.reload({ include: [{ association: 'Editor' }] });
-
-  return resource.toJSON();
+  return addResourceEtag(patchedResourceModel!.toJSON());
 }
 
 export async function remove({
@@ -482,7 +517,7 @@ export async function remove({
   internalContext,
   options,
 }: ServerActionParameters<ResourceDeleteActionDefinition>): Promise<unknown> {
-  const { Asset, Resource } = await getAppDB(app.id);
+  const { Resource, sequelize } = await getAppDB(app.id);
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const body = (remap(action.body ?? null, data, internalContext) ?? data) as Record<
@@ -495,30 +530,37 @@ export async function remove({
   // Support action.id remapper (like client-side) or fallback to body.id
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   const resourceId = action.id ? remap(action.id, data, internalContext) : body?.id;
-  if (!resourceId) {
-    throw new Error('Missing id');
+  if (typeof resourceId !== 'string' && typeof resourceId !== 'number') {
+    throw new TypeError('Missing id');
   }
   body.id = resourceId;
 
   const resource = await Resource.findOne({
     where: { id: resourceId, type: action.resource },
-    include: [
-      {
-        model: Asset,
-        required: false,
-        where: { id: null },
-      },
-    ],
   });
 
   if (!resource) {
     throw new Error('Resource not found');
   }
 
-  await resource.destroy();
+  const ifMatch = resolveImplicitIfMatch(data);
 
-  processReferenceHooks(app, resource, 'delete', options, context);
-  processHooks(app, resource, 'delete', options, context);
+  await sequelize.transaction(async (transaction) => {
+    const locked = await lockResourceWithIfMatch({
+      context,
+      transaction,
+      Resource,
+      where: { id: resourceId, type: action.resource },
+      ifMatch,
+      resourceType: action.resource,
+      resourceId,
+    });
+
+    processReferenceHooks(app, locked, 'delete', options, context);
+    processHooks(app, locked, 'delete', options, context);
+
+    await locked.destroy({ transaction });
+  });
 
   // Returning empty string just like in the client-side resource.delete action.
   return '';

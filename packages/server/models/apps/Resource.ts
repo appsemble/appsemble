@@ -388,11 +388,17 @@ export function createResourceModel(sequelize: Sequelize): typeof ResourceGlobal
     }
 
     @AfterDestroy
-    static async afterDestroyHook(instance: Resource, { force }: DestroyOptions): Promise<void> {
+    static async afterDestroyHook(
+      instance: Resource,
+      { force, transaction }: DestroyOptions,
+    ): Promise<void> {
       if (force || !instance?.ephemeral) {
         return;
       }
-      await instance?.destroy({ force: true });
+      // The hard delete must run inside the same transaction as the
+      // soft-delete UPDATE. Otherwise the new connection collides with the
+      // SELECT FOR UPDATE the outer caller holds on this row.
+      await instance?.destroy({ force: true, transaction });
     }
   }
 

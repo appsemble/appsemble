@@ -53,6 +53,8 @@ export function createDeleteAppResourceController(options: Options): Middleware 
       id: resourceId,
       type: resourceType,
       options,
+      lockWhere: findOptions.where,
+      ifMatch: ctx.get('If-Match') || undefined,
     });
 
     ctx.status = 204;
