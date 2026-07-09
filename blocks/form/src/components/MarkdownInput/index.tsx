@@ -69,7 +69,7 @@ export function MarkdownInput({
 
   const value = getValueByNameSequence(name, formValues) as string;
 
-  const { defaultValue, help, icon, label, tag } = field;
+  const { defaultValue, help, icon, label, minRows, tag } = field;
 
   const remappedLabel = utils.remap(label, value) ?? name;
 
@@ -163,6 +163,18 @@ export function MarkdownInput({
       crepeRef.current.setReadonly((disabled || readOnly) ?? false);
     }
   }, [disabled, readOnly]);
+
+  useEffect(() => {
+    const root = crepeRootRef.current;
+    if (!root) {
+      return;
+    }
+    if (minRows) {
+      root.style.setProperty('--markdown-min-rows', String(minRows));
+    } else {
+      root.style.removeProperty('--markdown-min-rows');
+    }
+  }, [minRows]);
 
   return (
     <FormComponent

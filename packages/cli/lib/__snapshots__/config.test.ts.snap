@@ -4038,6 +4038,13 @@ image can either be url or uploaded image",
             "description": "The label displayed next to the field.",
             "format": "remapper",
           },
+          "minRows": {
+            "description": "The minimum number of text lines the editor is tall.
+
+The markdown field renders a rich text editor rather than a plain text area, so this sets a minimum height rather than a fixed row count. The editor still grows as more content is added.",
+            "minimum": 1,
+            "type": "number",
+          },
           "name": {
             "description": "The name used when storing this field.",
             "type": "string",
