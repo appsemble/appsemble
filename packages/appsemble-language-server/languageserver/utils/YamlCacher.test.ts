@@ -20,7 +20,7 @@ describe('YamlCacher', () => {
     expect(again.counter).toBe(first.counter);
   });
 
-  it('reparses when the document version advances', () => {
+  it('parses again when the document version advances', () => {
     const cacher = new YamlCacher();
     const first = cacher.parseOrGetCached(doc(1, 'name: a'));
 
