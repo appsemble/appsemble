@@ -49,6 +49,15 @@ describe('loginRoleMappings', () => {
     ]);
   });
 
+  it('should match configured mapping groups with surrounding whitespace', () => {
+    expect(
+      resolveLoginRoleMappings(
+        ['/Admin'],
+        [{ group: ' /Admin ', role: 'Manager' }],
+      ),
+    ).toStrictEqual([{ externalGroup: '/Admin', role: 'Manager' }]);
+  });
+
   it('should preserve exact keycloak path groups', () => {
     expect(
       resolveLoginRoleMappings(
@@ -77,14 +86,23 @@ describe('loginRoleMappings', () => {
     ).toBe("Role mapping 1 has unknown role 'Unknown'");
   });
 
-  it('should preserve non-synced roles while replacing synced roles', async () => {
+  it('should preserve non-synced roles while replacing synced roles atomically', async () => {
     const findAll = vi.fn().mockResolvedValue([{ role: 'Manager' }]);
     const destroy = vi.fn().mockResolvedValue(1);
     const bulkCreate = vi.fn().mockResolvedValue([]);
     const reload = vi.fn().mockImplementation(() => Promise.resolve());
+    const transaction = { id: 'txn' };
+    const transactionRunner = vi
+      .fn()
+      .mockImplementation((callback: (t: unknown) => Promise<unknown>) => callback(transaction));
 
     await syncLoginRoleMappings(
-      { bulkCreate, destroy, findAll } as never,
+      {
+        bulkCreate,
+        destroy,
+        findAll,
+        sequelize: { transaction: transactionRunner },
+      } as never,
       { id: 'member-id', reload } as never,
       [
         { externalGroup: '/Managers', role: 'Manager' },
@@ -101,20 +119,27 @@ describe('loginRoleMappings', () => {
         },
       },
     });
+    // Destroy and bulkCreate must run inside a single managed transaction.
+    expect(transactionRunner).toHaveBeenCalledOnce();
     expect(destroy).toHaveBeenCalledWith({
       where: {
         AppMemberId: 'member-id',
         source: 'group-sync',
       },
+      transaction,
     });
-    expect(bulkCreate).toHaveBeenCalledWith([
-      {
-        AppMemberId: 'member-id',
-        externalGroup: '/Editors',
-        role: 'Editor',
-        source: 'group-sync',
-      },
-    ]);
+    // The preserved 'Manager' role is filtered out; only 'Editor' is inserted.
+    expect(bulkCreate).toHaveBeenCalledWith(
+      [
+        {
+          AppMemberId: 'member-id',
+          externalGroup: '/Editors',
+          role: 'Editor',
+          source: 'group-sync',
+        },
+      ],
+      { transaction },
+    );
     expect(reload).toHaveBeenCalledWith();
   });
 });

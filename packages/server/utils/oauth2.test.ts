@@ -106,6 +106,32 @@ describe('oauth2', () => {
       });
     });
 
+    it('should not let an empty groups list shadow a later source with real groups', async () => {
+      mock.onGet('/userinfo').reply(() => [
+        200,
+        {
+          groups: ['/Managers', '/Users'],
+        },
+      ]);
+      const userInfo = await getUserInfo(
+        '',
+        jwt.sign(
+          {
+            email: 'me@example.com',
+            groups: [],
+            name: 'Me',
+            picture: 'https://example.com/me.png',
+            sub: '42',
+          },
+          'secret',
+        ),
+        '/userinfo',
+      );
+      expect(userInfo).toMatchObject({
+        groups: ['/Managers', '/Users'],
+      });
+    });
+
     it('should fall back to the access token', async () => {
       const userInfo = await getUserInfo(
         jwt.sign({ sub: '1337' }, 'secret'),
