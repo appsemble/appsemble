@@ -32,7 +32,15 @@ describe('createAppSamlSecret', () => {
       OrganizationId: organization.id,
       vapidPublicKey: '',
       vapidPrivateKey: '',
-      definition: {},
+      definition: {
+        security: {
+          default: {
+            role: 'Test',
+            policy: 'everyone',
+          },
+          roles: { Manager: {}, Test: {} },
+        },
+      },
     });
     member = await OrganizationMember.create({
       OrganizationId: organization.id,
@@ -92,6 +100,51 @@ describe('createAppSamlSecret', () => {
         "error": "Not Found",
         "message": "App not found",
         "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should normalize role mappings when creating a SAML secret', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      groupAttribute: 'memberOf',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+      roleMappings: [
+        { group: ' /Managers ', role: 'Manager' },
+        { group: '/Managers', role: 'Manager' },
+      ],
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.data).toMatchObject({
+      groupAttribute: 'memberOf',
+      roleMappings: [{ group: '/Managers', role: 'Manager' }],
+    });
+  });
+
+  it('should require a group attribute when SAML role mappings are configured', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+      roleMappings: [{ group: '/Managers', role: 'Manager' }],
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Group attribute is required when role mappings are configured",
+        "statusCode": 400,
       }
     `);
   });

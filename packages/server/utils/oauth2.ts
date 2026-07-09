@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken';
 import { type Context } from 'koa';
 
 import { argv } from './argv.js';
+import { normalizeLoginGroups } from './loginRoleMappings.js';
 import {
   type App,
   type AppMember,
@@ -132,6 +133,7 @@ export async function getUserInfo(
   let sub: string | undefined;
   let locale: string | undefined;
   let zoneinfo: string | undefined;
+  let groups: string[] | undefined;
   let subscribed: boolean | undefined;
 
   function assign(info: UserInfo): void {
@@ -143,6 +145,9 @@ export async function getUserInfo(
     zoneinfo ??= info.zoneinfo;
     // The returned subject may be a number for non OpenID compliant services, e.g. GitHub.
     sub ??= typeof info.sub === 'number' ? String(info.sub) : info.sub;
+    if (groups == null && info.groups != null) {
+      groups = normalizeLoginGroups(info.groups);
+    }
     subscribed ??= info.subscribed;
   }
 
@@ -168,15 +173,14 @@ export async function getUserInfo(
     }
   }
 
-  if (shouldTryNext() && userInfoUrl) {
+  if ((shouldTryNext() || !groups) && userInfoUrl) {
     const requestConfig = {
       headers: { authorization: `Bearer ${accessToken}` },
     };
     const { data } = await axios.get<UserInfo>(userInfoUrl, requestConfig);
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks) - Severe
-    // eslint-disable-next-line prettier/prettier
-    const actualData: UserInfo = remapper ? (remap(remapper, data, null) as UserInfo) : (data as UserInfo);
+    const actualData: UserInfo = remapper
+      ? (remap(remapper, data, null as never) as UserInfo)
+      : (data as UserInfo);
     if (!actualData.email && userEmailsUrl) {
       const { data: emailsData } = await axios.get(userEmailsUrl, requestConfig);
       if (emailsData.length > 0) {
@@ -199,6 +203,7 @@ export async function getUserInfo(
     sub,
     locale,
     zoneinfo,
+    ...(groups ? { groups } : {}),
     subscribed,
   };
 }

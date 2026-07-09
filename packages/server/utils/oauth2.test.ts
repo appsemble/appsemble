@@ -85,6 +85,27 @@ describe('oauth2', () => {
       });
     });
 
+    it('should read groups from the id token', async () => {
+      const userInfo = await getUserInfo(
+        '',
+        jwt.sign(
+          {
+            email: 'me@example.com',
+            email_verified: true,
+            groups: ['/Parent/Child', '/Users'],
+            name: 'Me',
+            picture: 'https://example.com/me.png',
+            sub: '42',
+          },
+          'secret',
+        ),
+      );
+
+      expect(userInfo).toMatchObject({
+        groups: ['/Parent/Child', '/Users'],
+      });
+    });
+
     it('should fall back to the access token', async () => {
       const userInfo = await getUserInfo(
         jwt.sign({ sub: '1337' }, 'secret'),

@@ -99,10 +99,27 @@ assertAppMemberInfoIsBaseUserInfo;
 
 export interface UserInfo extends BaseUserInfo {
   /**
+   * External group values associated with the user.
+   */
+  groups?: string[];
+
+  /**
    * If the user is subscribed to the newsletter
    */
   subscribed?: boolean;
   hasPassword?: boolean;
+}
+
+export interface AppLoginRoleMapping {
+  /**
+   * The exact external group value to match.
+   */
+  group: string;
+
+  /**
+   * The app role to assign when the group matches.
+   */
+  role: AppRole;
 }
 
 export interface SSOConfiguration {
@@ -991,6 +1008,11 @@ export interface AppOAuth2Secret extends OAuth2Provider {
    * The remapper to apply on the user info data.
    */
   remapper: Remapper;
+
+  /**
+   * Optional exact external-group to app-role mappings.
+   */
+  roleMappings?: AppLoginRoleMapping[];
 }
 
 export interface WritableAppSamlSecret {
@@ -1025,9 +1047,29 @@ export interface WritableAppSamlSecret {
   nameAttribute: string;
 
   /**
-   * The custom SAML attribute that’s used to specify the user email address.
+   * The custom SAML attribute that's used to specify the user email address.
    */
   emailAttribute: string;
+
+  /**
+   * The custom SAML attribute that's used to specify whether the user's email address is verified.
+   */
+  emailVerifiedAttribute?: string;
+
+  /**
+   * The custom SAML attribute that contains the external groups for the user.
+   */
+  groupAttribute?: string;
+
+  /**
+   * The custom SAML attribute that's used to specify the external user identifier.
+   */
+  objectIdAttribute?: string;
+
+  /**
+   * Optional exact external-group to app-role mappings.
+   */
+  roleMappings?: AppLoginRoleMapping[];
 }
 
 export interface AppSamlSecret extends WritableAppSamlSecret {
@@ -1055,7 +1097,8 @@ export type SAMLStatus =
   | 'invalidstatuscode'
   | 'invalidsubjectconfirmation'
   | 'missingnameid'
-  | 'missingsubject';
+  | 'missingsubject'
+  | 'noRoleMatch';
 
 export interface ProjectBuildConfig extends ProjectConfig {
   /**

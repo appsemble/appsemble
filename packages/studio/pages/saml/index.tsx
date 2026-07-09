@@ -21,6 +21,8 @@ export function SAMLResponsePage(): ReactNode {
       return <ConfigurationError message={messages.missingSubject} />;
     case 'missingnameid':
       return <ConfigurationError message={messages.missingNameID} />;
+    case 'noRoleMatch':
+      return <ConfigurationError message={messages.noRoleMatch} />;
     default:
       return <div>Oh no</div>;
   }
