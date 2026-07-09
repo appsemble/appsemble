@@ -34,6 +34,8 @@ import {
   type TextEdit,
 } from 'vscode-languageserver-types';
 import { isKubernetesAssociatedDocument } from 'yaml-language-server/lib/esm/languageservice/parser/isKubernetes.js';
+import { yamlDocumentsCache } from 'yaml-language-server/lib/esm/languageservice/parser/yaml-documents.js';
+import { matchOffsetToDocument } from 'yaml-language-server/lib/esm/languageservice/utils/arrUtils.js';
 import { type LanguageService } from 'yaml-language-server/lib/esm/languageservice/yamlLanguageService.js';
 
 import { type ValidationHandler } from './validationHandlers.js';
@@ -45,6 +47,44 @@ function formatError(error: unknown): string {
     return error.stack ?? error.message;
   }
   return String(error);
+}
+
+function describePosition(
+  document: TextDocument,
+  position: TextDocumentPositionParams['position'],
+): string {
+  const text = document.getText();
+  const lines = text.split(/\r?\n/);
+  const from = Math.max(0, position.line - 2);
+  const to = Math.min(lines.length, position.line + 3);
+  const excerpt = lines
+    .slice(from, to)
+    .map((line, index) => {
+      const lineNumber = from + index;
+      const marker = lineNumber === position.line ? '>' : ' ';
+      return `${marker} ${lineNumber}:${line}`;
+    })
+    .join('\n');
+
+  try {
+    const offset = document.offsetAt(position);
+    const yamlDocument = yamlDocumentsCache.getYamlDocument(document);
+    const currentDocument = matchOffsetToDocument(offset, yamlDocument);
+    const node = currentDocument?.getNodeFromOffset(offset);
+
+    if (!node) {
+      return `offset: ${offset}\nnode: <none>\n${excerpt}`;
+    }
+
+    return [
+      `offset: ${offset}`,
+      `node: ${node.type} offset=${node.offset} length=${node.length}`,
+      `parent: ${node.parent?.type ?? '<none>'}`,
+      excerpt,
+    ].join('\n');
+  } catch (error: unknown) {
+    return `position context failed: ${formatError(error)}\n${excerpt}`;
+  }
 }
 
 export class LanguageHandlers {
@@ -182,9 +222,11 @@ export class LanguageHandlers {
       );
       return hover || undefined;
     } catch (error: unknown) {
-      this.connection.console.error(
-        `Hover failed for ${textDocumentPositionParams.textDocument.uri} at ${textDocumentPositionParams.position.line}:${textDocumentPositionParams.position.character}\n${formatError(error)}`,
-      );
+      this.withDocument(textDocumentPositionParams.textDocument.uri, (document) => {
+        this.connection.console.error(
+          `Hover failed for ${document.uri} at ${textDocumentPositionParams.position.line}:${textDocumentPositionParams.position.character}\n${describePosition(document, textDocumentPositionParams.position)}\n${formatError(error)}`,
+        );
+      });
       return undefined;
     }
   }
@@ -212,7 +254,7 @@ export class LanguageHandlers {
           );
         } catch (error: unknown) {
           this.connection.console.error(
-            `Completion failed for ${textDocumentPosition.textDocument.uri} at ${textDocumentPosition.position.line}:${textDocumentPosition.position.character}\n${formatError(error)}`,
+            `Completion failed for ${document.uri} at ${textDocumentPosition.position.line}:${textDocumentPosition.position.character}\n${describePosition(document, textDocumentPosition.position)}\n${formatError(error)}`,
           );
           return result;
         }
