@@ -8,7 +8,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     requestBody: {
       content: {
         'application/json': {
-          schema: {},
+          schema: { $ref: '#/components/schemas/AppSamlSecret' },
         },
       },
     },
@@ -18,7 +18,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'A list of the SAML secrets for the app.',
         content: {
           'application/json': {
-            schema: {},
+            schema: { $ref: '#/components/schemas/AppSamlSecret' },
           },
         },
       },
@@ -35,7 +35,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
           'application/json': {
             schema: {
               type: 'array',
-              items: {},
+              items: { $ref: '#/components/schemas/AppSamlSecret' },
             },
           },
         },

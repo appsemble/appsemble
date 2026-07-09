@@ -1,3 +1,4 @@
+import { getAppRoles } from '@appsemble/lang-sdk';
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { addYears } from 'date-fns';
@@ -9,13 +10,17 @@ import { App, getAppDB } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
+import {
+  normalizeLoginRoleMappings,
+  validateLoginRoleMappings,
+} from '../../../../../utils/loginRoleMappings.js';
 
 export async function createAppSamlSecret(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     request: { body },
   } = ctx;
-  const app = await App.findByPk(appId, { attributes: ['OrganizationId'] });
+  const app = await App.findByPk(appId, { attributes: ['OrganizationId', 'definition'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
@@ -48,8 +53,33 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
   cert.setIssuer(attrs);
   cert.sign(privateKey);
 
+  const roleMappingsError = validateLoginRoleMappings(
+    body.roleMappings,
+    getAppRoles(app.definition.security),
+  );
+  const roleMappings = normalizeLoginRoleMappings(body.roleMappings);
+  const groupAttribute = body.groupAttribute?.trim() || undefined;
+
+  assertKoaCondition(
+    roleMappingsError == null,
+    ctx,
+    400,
+    roleMappingsError || 'Invalid role mappings',
+  );
+  assertKoaCondition(
+    !roleMappings || Boolean(groupAttribute),
+    ctx,
+    400,
+    'Group attribute is required when role mappings are configured',
+  );
+
   const { AppSamlSecret } = await getAppDB(appId);
-  const secret = { ...body, spCertificate: forge.pki.certificateToPem(cert).trim() };
+  const secret = {
+    ...body,
+    groupAttribute,
+    roleMappings,
+    spCertificate: forge.pki.certificateToPem(cert).trim(),
+  };
   const { id } = await AppSamlSecret.create({
     ...secret,
     spPrivateKey: forge.pki.privateKeyToPem(privateKey).trim(),

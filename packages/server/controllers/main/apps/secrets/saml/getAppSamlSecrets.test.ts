@@ -68,6 +68,7 @@ describe('getAppSamlSecrets', () => {
           "emailAttribute": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
           "emailVerifiedAttribute": null,
           "entityId": "https://example.com/saml/metadata.xml",
+          "groupAttribute": null,
           "icon": "",
           "id": 1,
           "idpCertificate": "-----BEGIN CERTIFICATE-----
@@ -75,6 +76,8 @@ describe('getAppSamlSecrets', () => {
       -----END CERTIFICATE-----",
           "name": "",
           "nameAttribute": null,
+          "objectIdAttribute": null,
+          "roleMappings": null,
           "spCertificate": "-----BEGIN CERTIFICATE-----
       SP
       -----END CERTIFICATE-----",
@@ -124,6 +127,7 @@ describe('getAppSamlSecrets', () => {
           "emailAttribute": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
           "emailVerifiedAttribute": null,
           "entityId": "https://example.com/saml/metadata.xml",
+          "groupAttribute": null,
           "icon": "",
           "id": 1,
           "idpCertificate": "-----BEGIN CERTIFICATE-----
@@ -131,6 +135,8 @@ describe('getAppSamlSecrets', () => {
       -----END CERTIFICATE-----",
           "name": "",
           "nameAttribute": null,
+          "objectIdAttribute": null,
+          "roleMappings": null,
           "spCertificate": "-----BEGIN CERTIFICATE-----
       SP
       -----END CERTIFICATE-----",

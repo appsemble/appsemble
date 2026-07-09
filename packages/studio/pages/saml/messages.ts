@@ -25,4 +25,8 @@ export const messages = defineMessages({
     id: 'studio.xg78+f',
     defaultMessage: 'The name ID is missing from the SAML response.',
   },
+  noRoleMatch: {
+    id: 'studio.vzg7S3',
+    defaultMessage: 'The SAML response did not match any configured app role.',
+  },
 });

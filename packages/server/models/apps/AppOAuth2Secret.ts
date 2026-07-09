@@ -1,4 +1,5 @@
 import { type Remapper } from '@appsemble/lang-sdk';
+import { type AppLoginRoleMapping } from '@appsemble/types';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import {
   AllowNull,
@@ -26,6 +27,8 @@ export class AppOAuth2SecretGlobal extends Model {
   declare userInfoUrl?: string;
 
   declare remapper?: Remapper;
+
+  declare roleMappings?: AppLoginRoleMapping[];
 
   declare clientId: string;
 
@@ -55,6 +58,7 @@ export function createAppOAuth2SecretModel(sequelize: Sequelize): typeof AppOAut
       'id',
       'name',
       'remapper',
+      'roleMappings',
       'scope',
       'tokenUrl',
       'updated',
@@ -81,6 +85,9 @@ export function createAppOAuth2SecretModel(sequelize: Sequelize): typeof AppOAut
 
     @Column(DataType.JSON)
     declare remapper?: Remapper;
+
+    @Column(DataType.JSON)
+    declare roleMappings?: AppLoginRoleMapping[];
 
     @AllowNull(false)
     @Column(DataType.STRING)

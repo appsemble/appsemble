@@ -1,9 +1,14 @@
+import { getAppRoles } from '@appsemble/lang-sdk';
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
+import {
+  normalizeLoginRoleMappings,
+  validateLoginRoleMappings,
+} from '../../../../../utils/loginRoleMappings.js';
 
 export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
   const {
@@ -12,7 +17,7 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
       body: { id, ...body },
     },
   } = ctx;
-  const app = await App.findByPk(appId, { attributes: ['OrganizationId'] });
+  const app = await App.findByPk(appId, { attributes: ['OrganizationId', 'definition'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const { AppOAuth2Secret } = await getAppDB(appId);
@@ -26,5 +31,20 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
 
   assertKoaCondition(appOAuth2Secret != null, ctx, 404, 'OAuth2 secret not found');
 
-  ctx.body = await appOAuth2Secret.update({ ...body, userInfoUrl: body.userInfoUrl || null });
+  const roleMappingsError = validateLoginRoleMappings(
+    body.roleMappings,
+    getAppRoles(app.definition.security),
+  );
+  assertKoaCondition(
+    roleMappingsError == null,
+    ctx,
+    400,
+    roleMappingsError || 'Invalid role mappings',
+  );
+
+  ctx.body = await appOAuth2Secret.update({
+    ...body,
+    roleMappings: normalizeLoginRoleMappings(body.roleMappings) ?? null,
+    userInfoUrl: body.userInfoUrl || null,
+  });
 }

@@ -84,7 +84,10 @@ export function OAuth2Modal({
   return (
     <ModalCard
       component={SimpleForm}
-      defaultValues={secret}
+      defaultValues={{
+        ...secret,
+        roleMappings: secret.roleMappings ?? [],
+      }}
       footer={
         <SimpleModalFooter
           cancelLabel={<FormattedMessage {...messages.close} />}
@@ -217,6 +220,13 @@ export function OAuth2Modal({
         }
         label={<FormattedMessage {...messages.remapperLabel} />}
         name="remapper"
+      />
+      <SimpleFormField
+        component={JSONField}
+        disabled={locked !== 'unlocked'}
+        help={<FormattedMessage {...messages.roleMappingsHelp} />}
+        label={<FormattedMessage {...messages.roleMappingsLabel} />}
+        name="roleMappings"
       />
       {onDeleted ? (
         <Button className={styles.deleteButton} color="danger" icon="trash" onClick={onDelete}>

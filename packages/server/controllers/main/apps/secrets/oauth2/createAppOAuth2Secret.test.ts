@@ -39,7 +39,7 @@ describe('createAppOAuth2Secret', () => {
             role: 'Test',
             policy: 'everyone',
           },
-          roles: { Test: {} },
+          roles: { Manager: {}, Test: {} },
         },
       },
     });
@@ -81,6 +81,53 @@ describe('createAppOAuth2Secret', () => {
         "scope": "email openid profile",
         "tokenUrl": "https://example.com/oauth/token",
         "userInfoUrl": "https://example.com/oauth/userinfo",
+      }
+    `);
+  });
+
+  it('should normalize role mappings when creating an app secret', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/oauth2`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      roleMappings: [
+        { group: ' /Managers ', role: 'Manager' },
+        { group: '/Managers', role: 'Manager' },
+      ],
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.data).toMatchObject({
+      roleMappings: [{ group: '/Managers', role: 'Manager' }],
+    });
+  });
+
+  it('should reject role mappings for unknown app roles', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/oauth2`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      roleMappings: [{ group: '/Managers', role: 'Unknown' }],
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Role mapping 1 has unknown role 'Unknown'",
+        "statusCode": 400,
       }
     `);
   });

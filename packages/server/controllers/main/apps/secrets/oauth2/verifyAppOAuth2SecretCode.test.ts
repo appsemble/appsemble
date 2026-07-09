@@ -56,7 +56,7 @@ describe('verifyAppOAuth2SecretCode', () => {
             role: 'Test',
             policy: 'everyone',
           },
-          roles: { Test: {} },
+          roles: { Editor: {}, Manager: {}, Test: {} },
         },
       },
       path: 'test-app',
@@ -407,5 +407,183 @@ describe('verifyAppOAuth2SecretCode', () => {
       timezone: 'Europe/Amsterdam',
       updated: expect.any(Date),
     });
+  });
+
+  it('should synchronize app member roles from mapped OAuth2 groups', async () => {
+    await secret.update({
+      roleMappings: [
+        { group: '/Managers', role: 'Manager' },
+        { group: '/Editors', role: 'Editor' },
+      ],
+      userInfoUrl: null,
+    });
+    const accessToken = jwt.sign(
+      {
+        email: 'mapped@example.com',
+        email_verified: true,
+        groups: ['/Managers', '/Editors'],
+        name: 'Mapped User',
+        picture: 'https://example.com/user.jpg',
+        profile: 'https://example.com/user',
+        sub: 'mapped-user',
+      },
+      // Test secret for mocking OAuth2 token
+      // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
+      'random',
+    );
+    mock.onPost('https://example.com/oauth/token').reply(200, {
+      access_token: accessToken,
+      id_token: '',
+      refresh_token: '',
+      token_type: 'bearer',
+    });
+
+    authorizeStudio();
+    const response = await request.post<LoginCodeResponse>(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://test-app.testorganization.localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
+      { headers: { referer: 'http://localhost' } },
+    );
+
+    expect(response.status).toBe(200);
+
+    const { AppMember, OAuth2AuthorizationCode } = await getAppDB(app.id);
+    const auth = (await OAuth2AuthorizationCode.findOne({
+      where: { code: response.data.code },
+    }))!;
+    const member = await AppMember.findByPk(auth.AppMemberId);
+
+    expect(member?.roles).toStrictEqual(['Editor', 'Manager']);
+
+    mock.resetHandlers();
+    const updatedAccessToken = jwt.sign(
+      {
+        email: 'mapped@example.com',
+        email_verified: true,
+        groups: ['/Editors'],
+        name: 'Mapped User',
+        picture: 'https://example.com/user.jpg',
+        profile: 'https://example.com/user',
+        sub: 'mapped-user',
+      },
+      // Test secret for mocking OAuth2 token
+      // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
+      'random',
+    );
+    mock.onPost('https://example.com/oauth/token').reply(200, {
+      access_token: updatedAccessToken,
+      id_token: '',
+      refresh_token: '',
+      token_type: 'bearer',
+    });
+
+    const updatedResponse = await request.post<LoginCodeResponse>(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://test-app.testorganization.localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
+      { headers: { referer: 'http://localhost' } },
+    );
+
+    expect(updatedResponse.status).toBe(200);
+
+    await member?.reload();
+    expect(member?.roles).toStrictEqual(['Editor']);
+
+    mock.resetHandlers();
+    const unmappedAccessToken = jwt.sign(
+      {
+        email: 'mapped@example.com',
+        email_verified: true,
+        groups: ['/Other'],
+        name: 'Mapped User',
+        picture: 'https://example.com/user.jpg',
+        profile: 'https://example.com/user',
+        sub: 'mapped-user',
+      },
+      // Test secret for mocking OAuth2 token
+      // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
+      'random',
+    );
+    mock.onPost('https://example.com/oauth/token').reply(200, {
+      access_token: unmappedAccessToken,
+      id_token: '',
+      refresh_token: '',
+      token_type: 'bearer',
+    });
+
+    const unmappedResponse = await request.post(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://test-app.testorganization.localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
+      { headers: { referer: 'http://localhost' } },
+    );
+
+    expect(unmappedResponse.status).toBe(403);
+
+    await member?.reload();
+    expect(member?.roles).toStrictEqual([]);
+  });
+
+  it('should deny mapped OAuth2 login if no external group matches', async () => {
+    await secret.update({
+      roleMappings: [{ group: '/Managers', role: 'Manager' }],
+      userInfoUrl: null,
+    });
+    const accessToken = jwt.sign(
+      {
+        email: 'unmapped@example.com',
+        email_verified: true,
+        groups: ['/Other'],
+        name: 'Unmapped User',
+        picture: 'https://example.com/user.jpg',
+        profile: 'https://example.com/user',
+        sub: 'unmapped-user',
+      },
+      // Test secret for mocking OAuth2 token
+      // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
+      'random',
+    );
+    mock.onPost('https://example.com/oauth/token').reply(200, {
+      access_token: accessToken,
+      id_token: '',
+      refresh_token: '',
+      token_type: 'bearer',
+    });
+
+    authorizeStudio();
+    const response = await request.post(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://test-app.testorganization.localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
+      { headers: { referer: 'http://localhost' } },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User is not allowed to login because no external group matched an app role.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
