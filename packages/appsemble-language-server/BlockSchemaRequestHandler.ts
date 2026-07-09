@@ -5,14 +5,21 @@ import { type Logger } from './Logger.js';
 import { type SchemaRequestChainHandler } from './SchemaRequestWrapper.js';
 
 interface AvailBlocksRefOneOf {
-  oneOf: {
+  allOf: {
     title: string;
-    properties: {
-      type: unknown;
-      version: unknown;
-      parameters: { $ref: string };
-      actions: { $ref: string };
-      events: { $ref: string };
+    if: {
+      required: string[];
+      properties: {
+        type: unknown;
+        version: unknown;
+      };
+    };
+    then: {
+      properties: {
+        parameters: { $ref: string };
+        actions: { $ref: string };
+        events: { $ref: string };
+      };
     };
   }[];
 }
@@ -38,7 +45,7 @@ export class BlockSchemaRequestHandler implements SchemaRequestChainHandler {
 
   private readonly blockManifestCacher: BlockManifestCacher;
 
-  private availBlockRefs: AvailBlocksRefOneOf = { oneOf: [] };
+  private availBlockRefs: AvailBlocksRefOneOf = { allOf: [] };
 
   constructor(blockManifestCacher: BlockManifestCacher, logger: Logger) {
     this.blockManifestCacher = blockManifestCacher;

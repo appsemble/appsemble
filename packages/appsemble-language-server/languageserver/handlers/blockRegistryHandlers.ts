@@ -25,7 +25,7 @@ export class BlockRegistryHandlers {
 
   private readonly validationHandler: ValidationHandler;
 
-  private lastOneOf: unknown = null;
+  private lastAllOf: unknown = null;
 
   private updateCounter = 0;
 
@@ -94,36 +94,43 @@ export class BlockRegistryHandlers {
       return;
     }
     this.logger.log(`Updating block schemas for ${allBlocks.size} blocks`);
-    const oneOf = [...allBlocks.values()].map((block) => ({
+    const allOf = [...allBlocks.values()].map((block) => ({
       title: `${block.type} v${block.version}`,
-      properties: {
-        type: { oneOf: [{ const: block.type }, { const: parseBlockName(block.type)![1] }] },
-        version: { const: block.version },
-        parameters: {
-          $ref: `appsemble://blocks/${block.type}/${block.version}/parameters.json`,
+      if: {
+        required: ['type', 'version'],
+        properties: {
+          type: { oneOf: [{ const: block.type }, { const: parseBlockName(block.type)![1] }] },
+          version: { const: block.version },
         },
-        actions: {
-          $ref: `appsemble://blocks/${block.type}/${block.version}/actions.json`,
-        },
-        events: {
-          $ref: `appsemble://blocks/${block.type}/${block.version}/events.json`,
+      },
+      then: {
+        properties: {
+          parameters: {
+            $ref: `appsemble://blocks/${block.type}/${block.version}/parameters.json`,
+          },
+          actions: {
+            $ref: `appsemble://blocks/${block.type}/${block.version}/actions.json`,
+          },
+          events: {
+            $ref: `appsemble://blocks/${block.type}/${block.version}/events.json`,
+          },
         },
       },
     }));
-    if (deepEquals(oneOf, this.lastOneOf)) {
+    if (deepEquals(allOf, this.lastAllOf)) {
       this.logger.log('Block schemas unchanged, not updating');
       return;
     }
-    this.lastOneOf = oneOf;
+    this.lastAllOf = allOf;
     try {
-      this.blockSchemaRequestHandler.availableBlockRefs = { oneOf };
+      this.blockSchemaRequestHandler.availableBlockRefs = { allOf };
       await Promise.resolve(
         this.languageService.modifySchemaContent({
           action: MODIFICATION_ACTIONS.add,
           schema: 'appsemble://schema.json',
           path: 'definitions/BlockDefinition/allOf',
           key: '0',
-          content: { oneOf },
+          content: { allOf },
         }),
       );
     } catch (error: unknown) {

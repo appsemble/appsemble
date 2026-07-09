@@ -31,7 +31,7 @@ describe('createAppsembleSchemaConfig', () => {
 
     const { definitions } = config.schema as { definitions: Record<string, unknown> };
     expect((definitions.BlockDefinition as { allOf: unknown }).allOf).toStrictEqual([
-      { oneOf: [] },
+      { allOf: [] },
     ]);
   });
 

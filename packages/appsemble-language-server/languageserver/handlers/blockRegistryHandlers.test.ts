@@ -113,7 +113,7 @@ describe('BlockRegistryHandlers', () => {
     h.documents.fireChange();
     await vi.advanceTimersByTimeAsync(250);
 
-    const titles = h.blockSchemaRequestHandler.availableBlockRefs.oneOf.map(
+    const titles = h.blockSchemaRequestHandler.availableBlockRefs.allOf.map(
       (entry) => (entry as { title: string }).title,
     );
     expect(titles).toStrictEqual(['@appsemble/markdown v1.2.3']);
@@ -149,7 +149,7 @@ describe('BlockRegistryHandlers', () => {
     await vi.advanceTimersByTimeAsync(250);
 
     expect(h.fetchMock).not.toHaveBeenCalled();
-    expect(h.blockSchemaRequestHandler.availableBlockRefs.oneOf).toStrictEqual([]);
+    expect(h.blockSchemaRequestHandler.availableBlockRefs.allOf).toStrictEqual([]);
   });
 
   it('does not register a block whose manifest cannot be resolved', async () => {
@@ -161,6 +161,6 @@ describe('BlockRegistryHandlers', () => {
     await vi.advanceTimersByTimeAsync(250);
 
     expect(h.fetchMock).toHaveBeenCalledTimes(1);
-    expect(h.blockSchemaRequestHandler.availableBlockRefs.oneOf).toStrictEqual([]);
+    expect(h.blockSchemaRequestHandler.availableBlockRefs.allOf).toStrictEqual([]);
   });
 });
