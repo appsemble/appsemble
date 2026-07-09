@@ -40,6 +40,13 @@ import { type ValidationHandler } from './validationHandlers.js';
 import { ResultLimitReachedNotification } from '../../requestTypes.js';
 import { type SettingsState } from '../../yamlSettings.js';
 
+function formatError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.stack ?? error.message;
+  }
+  return String(error);
+}
+
 export class LanguageHandlers {
   pendingLimitExceededWarnings: Record<
     string,
@@ -168,10 +175,18 @@ export class LanguageHandlers {
   async hoverHandler(
     textDocumentPositionParams: TextDocumentPositionParams,
   ): Promise<Hover | undefined> {
-    const hover = await this.withDocument(textDocumentPositionParams.textDocument.uri, (document) =>
-      this.languageService.doHover(document, textDocumentPositionParams.position),
-    );
-    return hover || undefined;
+    try {
+      const hover = await this.withDocument(
+        textDocumentPositionParams.textDocument.uri,
+        (document) => this.languageService.doHover(document, textDocumentPositionParams.position),
+      );
+      return hover || undefined;
+    } catch (error: unknown) {
+      this.connection.console.error(
+        `Hover failed for ${textDocumentPositionParams.textDocument.uri} at ${textDocumentPositionParams.position.line}:${textDocumentPositionParams.position.character}\n${formatError(error)}`,
+      );
+      return undefined;
+    }
   }
 
   /**
@@ -188,13 +203,20 @@ export class LanguageHandlers {
     };
 
     return (
-      this.withDocument(textDocumentPosition.textDocument.uri, (document) =>
-        this.languageService.doComplete(
-          document,
-          textDocumentPosition.position,
-          isKubernetesAssociatedDocument(document, this.yamlSettings.specificValidatorPaths),
-        ),
-      ) ?? Promise.resolve(result)
+      this.withDocument(textDocumentPosition.textDocument.uri, async (document) => {
+        try {
+          return await this.languageService.doComplete(
+            document,
+            textDocumentPosition.position,
+            isKubernetesAssociatedDocument(document, this.yamlSettings.specificValidatorPaths),
+          );
+        } catch (error: unknown) {
+          this.connection.console.error(
+            `Completion failed for ${textDocumentPosition.textDocument.uri} at ${textDocumentPosition.position.line}:${textDocumentPosition.position.character}\n${formatError(error)}`,
+          );
+          return result;
+        }
+      }) ?? Promise.resolve(result)
     );
   }
 
