@@ -83,7 +83,7 @@
     "@types/react-router-dom": "5.3.3",
     "@types/webpack-env": "1.18.8",
     "jsonc-parser": "3.3.1",
-    "vscode-languageserver-types": "3.17.5",
+    "vscode-languageserver-types": "3.18.0",
     "path-browserify": "1.0.1",
     "vitest": "2.1.9"
   }
