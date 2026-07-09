@@ -134,6 +134,7 @@ export class BlockRegistryHandlers {
           content: { allOf },
         }),
       );
+      this.languageService.resetSchema('appsemble://schema.json');
     } catch (error: unknown) {
       this.logger.error(`Error updating blockSchemaRequestHandler: ${error}`);
     }

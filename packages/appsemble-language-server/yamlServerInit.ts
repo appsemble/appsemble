@@ -109,10 +109,13 @@ export class YAMLServerInit {
     );
 
     const referenceUri = 'https://appsemble.app/en/docs/reference';
+    this.yamlSettings.schemaConfigurationSettings = createAppsembleSchemaConfig({
+      referenceUri,
+    });
     const staticSchemaRequestHandler = new StaticSchemaRequestHandler(
-      createAppsembleSchemaConfig({
-        referenceUri,
-      }).filter(({ uri }) => uri === 'appsemble://schema.json'),
+      this.yamlSettings.schemaConfigurationSettings.filter(
+        ({ uri }) => uri === 'appsemble://schema.json',
+      ),
       this.traceLogger,
     );
     this.blockSchemaRequestHandler = new BlockSchemaRequestHandler(
@@ -123,9 +126,6 @@ export class YAMLServerInit {
       [staticSchemaRequestHandler, this.blockSchemaRequestHandler, this.schemaRequestWrapper],
       this.traceLogger,
     );
-    this.yamlSettings.schemaConfigurationSettings = createAppsembleSchemaConfig({
-      referenceUri,
-    });
 
     /**
      * Run when the client connects to the server after it is activated.
