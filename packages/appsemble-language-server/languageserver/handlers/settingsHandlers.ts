@@ -7,6 +7,7 @@ import {
   DidChangeConfigurationNotification,
   DocumentFormattingRequest,
 } from 'vscode-languageserver';
+import { cloneDeep } from 'lodash-es';
 import { type Telemetry } from 'yaml-language-server/lib/esm/languageservice/telemetry.js';
 import {
   isRelativePath,
@@ -243,7 +244,7 @@ export class SettingsHandler {
       languageSettings.schemas?.push({
         uri: checkedURI,
         fileMatch: fileMatchArray,
-        schema,
+        schema: cloneDeep(schema),
         priority: priorityLevel,
       });
     }

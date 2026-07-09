@@ -1,5 +1,5 @@
 import { getAppBlocks, type IdentifiableBlock, parseBlockName, semver } from '@appsemble/lang-sdk';
-import { isEqual as deepEquals } from 'lodash-es';
+import { isEqual as deepEquals, set } from 'lodash-es';
 import { type LanguageService } from 'yaml-language-server';
 import { MODIFICATION_ACTIONS } from 'yaml-language-server/lib/esm/languageservice/services/yamlSchemaService.js';
 
@@ -122,6 +122,7 @@ export class BlockRegistryHandlers {
       return;
     }
     this.lastAllOf = allOf;
+    this.updateAppsembleSchemaConfig(allOf);
     try {
       this.blockSchemaRequestHandler.availableBlockRefs = { allOf };
       await Promise.resolve(
@@ -139,6 +140,16 @@ export class BlockRegistryHandlers {
     this.logger.log('Updated blockSchemaRequestHandler');
     for (const document of this.yamlSettings.documents.all()) {
       this.validationHandler.validate(document);
+    }
+  }
+
+  private updateAppsembleSchemaConfig(allOf: unknown[]): void {
+    const appsembleSchema = this.yamlSettings.schemaConfigurationSettings.find(
+      (schema) => schema.uri === 'appsemble://schema.json',
+    )?.schema;
+
+    if (appsembleSchema && typeof appsembleSchema === 'object') {
+      set(appsembleSchema, 'definitions.BlockDefinition.allOf.0', { allOf });
     }
   }
 }

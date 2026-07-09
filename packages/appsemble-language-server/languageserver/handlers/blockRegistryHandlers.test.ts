@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { BlockRegistryHandlers } from './blockRegistryHandlers.js';
 import { type ValidationHandler } from './validationHandlers.js';
+import { createAppsembleSchemaConfig } from '../../appsembleSchemaConfig.js';
 import { BlockSchemaRequestHandler } from '../../BlockSchemaRequestHandler.js';
 import { type Logger } from '../../Logger.js';
 import { SettingsState } from '../../yamlSettings.js';
@@ -64,6 +65,7 @@ function notOkResponse(): Response {
 
 interface Harness {
   documents: FakeDocuments;
+  settings: SettingsState;
   blockSchemaRequestHandler: BlockSchemaRequestHandler;
   modifySchemaContent: ReturnType<typeof vi.fn>;
   fetchMock: ReturnType<typeof vi.fn>;
@@ -71,6 +73,7 @@ interface Harness {
 
 function setup(): Harness {
   const settings = new SettingsState();
+  settings.schemaConfigurationSettings = createAppsembleSchemaConfig();
   const documents = new FakeDocuments();
   settings.documents = documents as unknown as SettingsState['documents'];
 
@@ -93,7 +96,7 @@ function setup(): Harness {
     logger,
   ).registerHandlers();
 
-  return { documents, blockSchemaRequestHandler, modifySchemaContent, fetchMock };
+  return { documents, settings, blockSchemaRequestHandler, modifySchemaContent, fetchMock };
 }
 
 describe('BlockRegistryHandlers', () => {
@@ -120,6 +123,22 @@ describe('BlockRegistryHandlers', () => {
     expect(h.fetchMock.mock.calls[0][0]).toContain(
       '/api/blocks/@appsemble/markdown/versions/1.2.3',
     );
+  });
+
+  it('keeps registered block refs in the source schema config for later settings updates', async () => {
+    const h = setup();
+    h.fetchMock.mockResolvedValue(okResponse({ name: '@appsemble/markdown' }));
+    h.documents.open = [appDefinition('markdown', '1.2.3')];
+
+    h.documents.fireChange();
+    await vi.advanceTimersByTimeAsync(250);
+
+    const appsembleSchema = h.settings.schemaConfigurationSettings.find(
+      (schema) => schema.uri === 'appsemble://schema.json',
+    )?.schema as { definitions?: { BlockDefinition?: { allOf?: unknown[] } } };
+    expect(appsembleSchema.definitions?.BlockDefinition?.allOf).toStrictEqual([
+      h.blockSchemaRequestHandler.availableBlockRefs,
+    ]);
   });
 
   it('debounces rapid edits into a single delayed schema update', async () => {
