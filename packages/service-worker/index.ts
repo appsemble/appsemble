@@ -33,7 +33,9 @@ self.addEventListener('push', (event: PushEvent) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  const url = `${self.registration.scope}${event.notification.data?.link || ''}`;
+  const targetUrl = new URL(event.notification.data?.link || '', self.registration.scope);
+  targetUrl.searchParams.set('utm_source', 'notification');
+  const url = targetUrl.toString();
 
   // eslint-disable-next-line no-console
   console.log(self.registration.scope, event.notification.data?.link, url);
