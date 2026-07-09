@@ -15,8 +15,7 @@ COPY package.json package.json
 # this statement requires experimental syntax, declared at the top of the file
 COPY --parents packages/**/package.json .
 
-# https://docs.docker.com/build/cache/optimize/#use-bind-mounts
-RUN --mount=type=bind,rw,target=/root/.npm npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 RUN npx playwright install --with-deps chromium
 
@@ -51,15 +50,18 @@ RUN rm -r package-lock.json
 
 # Setup the production docker image.
 FROM node:24-trixie-slim
-ARG version=0.36.10
-ARG date
+
+# Install postgresql-client for pg_dump (used by backup-production-data command)
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+  rm -f /etc/apt/apt.conf.d/docker-clean \
+  && apt-get update \
+  && apt-get install --yes --no-install-recommends postgresql-client
 
 COPY --from=prod /app /app
 COPY --from=build /app/dist /app/dist
 COPY i18n /app/i18n
 RUN ln -s /app/packages/server/bin.js /usr/bin/appsemble-server
-# Install postgresql-client for pg_dump (used by backup-production-data command)
-RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 # By default colors aren’t detected within a Docker container. Let’s assume at least simple colors
 # are supported by those who inspect the logs.
@@ -72,6 +74,8 @@ ENTRYPOINT ["appsemble-server"]
 CMD ["start"]
 HEALTHCHECK CMD ["appsemble-server", "health"]
 EXPOSE 9999
+ARG version=0.36.10
+ARG date
 LABEL io.artifacthub.package.alternative-locations="registry.gitlab.com/appsemble/appsemble:${version}"
 LABEL io.artifacthub.package.keywords="app,apps,appsemble,framework,low-code,lowcode"
 LABEL io.artifacthub.package.license="LGPL-3.0-only"
