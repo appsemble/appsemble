@@ -6,6 +6,7 @@ import {
   resolve,
   type ResolveContext,
   type Resolution,
+  type ScannerOptions,
 } from './scanner.js';
 import { SchemaRegistry } from './schemaRegistry.js';
 import { COMPONENT_KEY, type Identity, type NodePath } from './types.js';
@@ -52,21 +53,22 @@ export class Cursor {
    * @param schemas The registry of named schemas.
    * @param rootSchema The schema at the root of the document.
    * @param data The document to navigate.
-   * @param componentKey The keyword identities are read from (defaults to COMPONENT_KEY).
+   * @param options Component key and value-directed resolver (see ScannerOptions).
    * @returns A cursor focused on the document root.
    */
   static at(
     schemas: Record<string, Schema>,
     rootSchema: Schema,
     data: unknown,
-    componentKey: string = COMPONENT_KEY,
+    options: ScannerOptions = {},
   ): Cursor {
     const registry = new SchemaRegistry(schemas);
     const ctx: ResolveContext = {
       resolveRef: (ref) => registry.resolveRef(ref),
       validator: registry.createValidator(),
       shallow: createShallow(),
-      componentKey,
+      componentKey: options.componentKey ?? COMPONENT_KEY,
+      dynamicChild: options.dynamicChild,
     };
     return new Cursor(ctx, rootSchema, data, [], null);
   }
@@ -86,9 +88,14 @@ export class Cursor {
     return this.resolution().matched;
   }
 
-  // Move down to `key`, navigating schema and value together; null when unowned.
+  // Move down to `key`, navigating schema and value together; null when unowned. A
+  // value-directed resolver (if configured) is consulted before the structural lookup, so
+  // cursor descent matches the walk (BLOCKS.md, Approach B).
   child(key: number | string): Cursor | null {
-    const schema = governingChild(this.resolution().winners, String(key), this.ctx.resolveRef);
+    const parentIdentity = this.resolution().identity?.name ?? null;
+    const schema =
+      this.ctx.dynamicChild?.(parentIdentity, this.value, String(key)) ??
+      governingChild(this.resolution().winners, String(key), this.ctx.resolveRef);
     if (!schema) {
       return null;
     }
@@ -127,14 +134,14 @@ export class Cursor {
  * @param schemas The registry of named schemas.
  * @param rootSchema The schema at the root of the document.
  * @param data The document to navigate.
- * @param componentKey The keyword identities are read from (defaults to COMPONENT_KEY).
+ * @param options Component key and value-directed resolver (see ScannerOptions).
  * @returns A cursor focused on the document root.
  */
 export function cursorAt(
   schemas: Record<string, Schema>,
   rootSchema: Schema,
   data: unknown,
-  componentKey: string = COMPONENT_KEY,
+  options: ScannerOptions = {},
 ): Cursor {
-  return Cursor.at(schemas, rootSchema, data, componentKey);
+  return Cursor.at(schemas, rootSchema, data, options);
 }

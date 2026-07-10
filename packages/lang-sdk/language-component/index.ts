@@ -3,6 +3,8 @@ export {
   type IncrementalOptions,
   type ScanResult,
   Scanner,
+  type ScannerOptions,
+  type DynamicChild,
   type MountTree,
   type ScanValidation,
 } from './scanner.js';

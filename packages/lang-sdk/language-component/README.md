@@ -103,8 +103,8 @@ Untagged combinators are still transparent — an anonymous `oneOf`/`anyOf`/`all
 identities of its tagged branches — but an untagged plain object mounts nothing, which is why the
 named object schemas above need tagging.
 
-The keyword is configurable: `annotateSchemas(raw, key)` and `new Scanner(schemas, key)` both
-default to `COMPONENT_KEY` (`appsembleLanguageComponent`) but accept any key, as long as the two
+The keyword is configurable: `annotateSchemas(raw, key)` and `new Scanner(schemas, { componentKey })`
+both default to `COMPONENT_KEY` (`appsembleLanguageComponent`) but accept any key, as long as the two
 agree.
 
 ## Files
@@ -142,8 +142,11 @@ those errors.
 - `$ref` resolution is synchronous; external/block schemas must be loaded first.
 - Map keys use JSON Pointer escaping, never `path.join('.')`.
 - Coverage is bounded by what the walk can navigate structurally: language components placed only
-  behind conditional/pattern applicators (`if`/`then`, `patternProperties`) are not discovered.
-  Appsemble's OpenAPI 3.0 schemas cannot express those, so this bound is not hit in practice.
+  behind conditional/pattern applicators (`if`/`then`, `patternProperties`) are not discovered. The
+  static Appsemble OpenAPI 3.0 schemas cannot express those. The one practical `if`/`then` case is
+  the LSP's dynamically-assembled block schema; block params are reached through the value-directed
+  `dynamicChild` resolver instead of the walk (see `BLOCKS.md`), so the bound is not hit there
+  either.
 
 ## See also
 

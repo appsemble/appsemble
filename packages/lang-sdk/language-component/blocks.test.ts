@@ -4,14 +4,17 @@ import { describe, expect, it } from 'vitest';
 import { scanComponents, defineLanguageComponent, componentSchemas } from './index.js';
 
 /*
- * Blocks prototype (Approach A in language-component/BLOCKS.md), zero engine changes. Block
- * parameters live in per-block schemas, not the static schema. Modelling the LSP's shape
- * -- BlockDefinition.allOf = [{ oneOf: [ per-block branch discriminated by `type` ] }] with
- * `parameters` pointing at that block's (materialized) schema -- the walk resolves the
+ * Blocks prototype: one approach (a materialized discriminated oneOf), zero engine changes.
+ * Block parameters live in per-block schemas, not the static schema. Hand-building a
+ * BlockDefinition.allOf = [{ oneOf: [ per-block branch discriminated by `type` ] }] with
+ * `parameters` pointing at that block's materialized schema, the walk resolves the
  * discriminated oneOf and mounts the block's parameters as language components.
  *
  * This is a prototype: it hand-builds one block branch and one materialized param schema in
- * place of the async manifest fetch. It is NOT the engine handling blocks natively.
+ * place of the async manifest fetch. It is NOT the engine handling blocks natively, and it is
+ * not the shape the LSP now assembles (an allOf of per-block if/then branches, which the walk
+ * cannot navigate -- see BLOCKS.md). blocks-dynamic.test.ts covers the resolver-hook approach
+ * (Approach B) the engine actually grows for blocks.
  *
  * The param schema is keyed by its real block URL (the scheme the LSP block schema request
  * service serves) and $ref'd by that URL -- exercising the URL-aware registry, not a synthetic
@@ -76,7 +79,7 @@ const schemas: Record<string, Schema> = {
   [formParamsUrl]: FormParams.schema,
 };
 
-describe('blocks prototype (Approach A: materialized discriminated oneOf)', () => {
+describe('blocks prototype (a materialized discriminated oneOf)', () => {
   it('should mount a block parameters language component via the discriminated oneOf', () => {
     const app = { pages: [{ blocks: [{ type: 'form', parameters: { fields: [] } }] }] };
     const result = scanComponents(app, schemas.AppDefinition, schemas);

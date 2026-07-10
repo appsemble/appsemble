@@ -35,6 +35,16 @@ export interface Resolution {
   matched: boolean;
 }
 
+// Value-directed child resolver (BLOCKS.md, Approach B): given the parent's resolved
+// identity, its value, and a child key, return the child's schema directly, bypassing the
+// structural `governingChild` lookup. Used to resolve `type`+`version`-discriminated block
+// params without materializing a union; returns null to fall back to structural descent.
+export type DynamicChild = (
+  parentIdentity: string | null,
+  parentValue: unknown,
+  key: string,
+) => Schema | null;
+
 // Everything `resolve` and `governingChild` need to decide identity and descend, minus
 // the walk's emit sink. The cursor (interactive navigation) reuses this same context.
 export interface ResolveContext {
@@ -42,6 +52,15 @@ export interface ResolveContext {
   validator: Validator;
   shallow: (schema: Schema) => Schema;
   componentKey: string;
+  dynamicChild?: DynamicChild;
+}
+
+// Per-scan configuration for a `Scanner` / cursor tree.
+export interface ScannerOptions {
+  // The schema keyword identities are read from (defaults to COMPONENT_KEY).
+  componentKey?: string;
+  // A value-directed child resolver consulted before structural descent (see DynamicChild).
+  dynamicChild?: DynamicChild;
 }
 
 interface WalkContext extends ResolveContext {
@@ -300,7 +319,9 @@ function walk(schema: Schema, value: unknown, path: NodePath, ctx: WalkContext):
   }
   if (value && typeof value === 'object') {
     for (const key of Object.keys(value)) {
-      const childSchema = governingChild(winners, key, ctx.resolveRef);
+      const childSchema =
+        ctx.dynamicChild?.(identity?.name ?? null, value, key) ??
+        governingChild(winners, key, ctx.resolveRef);
       if (childSchema) {
         walk(childSchema, (value as Record<string, unknown>)[key], [...path, key], ctx);
       }
@@ -347,11 +368,15 @@ export class Scanner {
   // The schema keyword identities are read from (defaults to COMPONENT_KEY).
   private readonly componentKey: string;
 
-  constructor(schemas: Record<string, Schema>, componentKey: string = COMPONENT_KEY) {
+  // Value-directed child resolver consulted before structural descent (see DynamicChild).
+  private readonly dynamicChild?: DynamicChild;
+
+  constructor(schemas: Record<string, Schema>, options: ScannerOptions = {}) {
     this.registry = new SchemaRegistry(schemas);
     this.resolveValidator = this.registry.createValidator();
     this.shallow = createShallow();
-    this.componentKey = componentKey;
+    this.componentKey = options.componentKey ?? COMPONENT_KEY;
+    this.dynamicChild = options.dynamicChild;
   }
 
   /**
@@ -428,6 +453,7 @@ export class Scanner {
       resolveRef: (ref) => this.registry.resolveRef(ref),
       shallow: this.shallow,
       componentKey: this.componentKey,
+      dynamicChild: this.dynamicChild,
       validator: this.resolveValidator,
     };
   }
@@ -537,5 +563,5 @@ export function scanComponents(
   schemas: Record<string, Schema>,
   componentKey: string = COMPONENT_KEY,
 ): ScanResult {
-  return new Scanner(schemas, componentKey).scan(data, rootSchema);
+  return new Scanner(schemas, { componentKey }).scan(data, rootSchema);
 }

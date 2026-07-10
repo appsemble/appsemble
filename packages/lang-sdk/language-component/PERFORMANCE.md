@@ -66,6 +66,11 @@ hot path instead (or migrate to a compiling validator such as Ajv, which address
    `validateProperties` from O(nodes × 77) to ~O(nodes) and helps any validator.
 
 The engine ships as the **pure walk**; the conditional-placement hit fallback was removed because
-Appsemble schemas are OpenAPI 3.0 components (no `if`/`then`/`dependentSchemas`/`unevaluated*`), so
-it was permanently inert. If conditional applicators ever appear, make hit collection walk-driven
-and local (probe only marked nodes during the walk) rather than reviving a whole-app hit pass.
+the static Appsemble schemas are OpenAPI 3.0 components (no
+`if`/`then`/`dependentSchemas`/`unevaluated*`). The one place `if`/`then` does arise is the LSP's
+dynamically-assembled block schema (`BlockDefinition.allOf` of per-block `if`/`then` branches, see
+`BLOCKS.md`), and the engine sidesteps it: blocks resolve through the value-directed `dynamicChild`
+hook (Approach B), not by navigating the conditional. So no walk reaches an `if`/`then`, and the
+whole-app hit fallback stays removed. If a conditional applicator ever needs walking, make hit
+collection walk-driven and local (probe only marked nodes during the walk) rather than reviving a
+whole-app hit pass.
