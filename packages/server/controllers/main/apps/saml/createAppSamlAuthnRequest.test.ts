@@ -4,6 +4,7 @@ import { inflateRaw } from 'node:zlib';
 import { PredefinedAppRole } from '@appsemble/lang-sdk';
 import { readFixture } from '@appsemble/node-utils';
 import { type SAMLRedirectResponse } from '@appsemble/types';
+import { DOMParser } from '@xmldom/xmldom';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -23,6 +24,8 @@ let secret: AppSamlSecret;
 let user: User;
 
 const inflate = promisify(inflateRaw);
+const samlAssertionNamespace = 'urn:oasis:names:tc:SAML:2.0:assertion';
+const samlProtocolNamespace = 'urn:oasis:names:tc:SAML:2.0:protocol';
 
 describe('createAuthnRequest', () => {
   beforeAll(async () => {
@@ -94,7 +97,10 @@ describe('createAuthnRequest', () => {
       Signature: expect.any(String),
     });
     const inflated = await inflate(Buffer.from(params.SAMLRequest, 'base64'));
-    const samlRequest = inflated.toString('utf8');
+    const samlRequest = new DOMParser().parseFromString(
+      inflated.toString('utf8'),
+      'application/xml',
+    ).documentElement;
 
     const { SamlLoginRequest } = await getAppDB(app.id);
     const loginRequest = (await SamlLoginRequest.findOne())!;
@@ -107,23 +113,29 @@ describe('createAuthnRequest', () => {
       state: 'secret state',
     });
 
-    expect(samlRequest).toBe(
-      '<samlp:AuthnRequest' +
-        ' xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"' +
-        ' AssertionConsumerServiceURL="http://localhost/api/apps/1/saml/1/acs"' +
-        ' Destination="https://example.com/saml/login"' +
-        ` ID="${loginRequest.id}"` +
-        ' Version="2.0"' +
-        ' IssueInstant="1970-01-01T00:00:00.000Z"' +
-        ' xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"' +
-        '>' +
-        '<saml:Issuer>' +
-        'http://localhost/api/apps/1/saml/1/metadata.xml' +
-        '</saml:Issuer>' +
-        '<samlp:NameIDPolicy' +
-        ' Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"' +
-        '/>' +
-        '</samlp:AuthnRequest>',
+    expect(samlRequest.namespaceURI).toBe(samlProtocolNamespace);
+    expect(samlRequest.localName).toBe('AuthnRequest');
+    expect(samlRequest.getAttribute('AssertionConsumerServiceURL')).toBe(
+      `http://localhost/api/apps/${app.id}/saml/${secret.id}/acs`,
+    );
+    expect(samlRequest.getAttribute('Destination')).toBe('https://example.com/saml/login');
+    expect(samlRequest.getAttribute('ID')).toBe(loginRequest.id);
+    expect(samlRequest.getAttribute('IssueInstant')).toBe('1970-01-01T00:00:00.000Z');
+    expect(samlRequest.getAttribute('Version')).toBe('2.0');
+
+    const issuers = samlRequest.getElementsByTagNameNS(samlAssertionNamespace, 'Issuer');
+    expect(issuers).toHaveLength(1);
+    expect(issuers[0].textContent).toBe(
+      `http://localhost/api/apps/${app.id}/saml/${secret.id}/metadata.xml`,
+    );
+
+    const nameIDPolicies = samlRequest.getElementsByTagNameNS(
+      samlProtocolNamespace,
+      'NameIDPolicy',
+    );
+    expect(nameIDPolicies).toHaveLength(1);
+    expect(nameIDPolicies[0].getAttribute('Format')).toBe(
+      'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
     );
   });
 
