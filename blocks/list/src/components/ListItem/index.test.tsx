@@ -11,6 +11,41 @@ type BlockProps = BootstrapParams & { ready: (value: PromiseLike<void> | void) =
 
 const defaultBootstrapParams = getDefaultBootstrapParams();
 
+/**
+ * Run a callback with an IntersectionObserver that immediately reports its target as visible, so
+ * lazily rendered images actually mount, then restore the original observer.
+ *
+ * @param run The callback to run while images are forced visible.
+ */
+async function withVisibleImages(run: () => Promise<void>): Promise<void> {
+  const original = global.IntersectionObserver;
+  class VisibleIntersectionObserver {
+    readonly callback: IntersectionObserverCallback;
+
+    constructor(callback: IntersectionObserverCallback) {
+      this.callback = callback;
+    }
+
+    observe(target: Element): void {
+      this.callback([{ isIntersecting: true, target } as IntersectionObserverEntry], this as any);
+    }
+
+    unobserve(): void {
+      // Do nothing
+    }
+
+    disconnect(): void {
+      // Do nothing
+    }
+  }
+  (global as any).IntersectionObserver = VisibleIntersectionObserver;
+  try {
+    await run();
+  } finally {
+    (global as any).IntersectionObserver = original;
+  }
+}
+
 it('should render a list item component', async () => {
   const onClickMock = vi.fn();
 
@@ -64,6 +99,50 @@ it('should render a list item component', async () => {
     .getElementsByClassName('dropdown-trigger')[0]
     .getElementsByClassName('div')[0];
   await userEvent.click(dropdown);
+
+  expect(onClickMock).toHaveBeenCalledOnce();
+});
+
+it('should trigger onClick when the image is clicked and openPreview is false', async () => {
+  const onClickMock = vi.fn();
+
+  const onClick = Object.assign(
+    // eslint-disable-next-line func-names, prefer-arrow-callback
+    function <R>(data?: any, context?: Record<string, any>): Promise<R> {
+      return onClickMock(data, context) as Promise<R>;
+    },
+    { type: 'link' as const, href: () => 'href' },
+  );
+
+  const props: BlockProps = {
+    ...defaultBootstrapParams,
+    parameters: {
+      item: {
+        content: {
+          image: {
+            file: 'https://example.com/x.png',
+            openPreview: false,
+          },
+        },
+      },
+    },
+    actions: {
+      onClick,
+      onDrop: { type: 'noop' } as Action,
+    },
+  };
+
+  await withVisibleImages(async () => {
+    render(
+      <Context.Provider value={props}>
+        <ListItem dataTestId="list-item-open-preview" index={0} item={{ id: 1 }} />
+      </Context.Provider>,
+    );
+
+    const listItem = screen.getByTestId('list-item-open-preview');
+    const image = listItem.getElementsByTagName('figure')[0].getElementsByTagName('button')[0];
+    await userEvent.click(image);
+  });
 
   expect(onClickMock).toHaveBeenCalledOnce();
 });
