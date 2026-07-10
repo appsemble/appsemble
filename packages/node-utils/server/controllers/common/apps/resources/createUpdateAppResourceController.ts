@@ -2,6 +2,7 @@ import {
   assertKoaCondition,
   type FindOptions,
   getResourceDefinition,
+  getSingleGroupId,
   type Options,
   processResourceBody,
   setResourceEtagHeader,
@@ -16,6 +17,8 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       queryParams: { selectedGroupId },
       user: authSubject,
     } = ctx;
+
+    const groupId = getSingleGroupId(selectedGroupId);
 
     const {
       checkAppPermissions,
@@ -35,7 +38,7 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       where: {
         id: resourceId,
         type: resourceType,
-        GroupId: selectedGroupId ?? null,
+        GroupId: groupId,
         expires: { or: [{ gt: new Date() }, null] },
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
@@ -59,7 +62,8 @@ export function createUpdateAppResourceController(options: Options): Middleware 
           : `$resource:${resourceType}:update`,
       ],
       app,
-      groupId: selectedGroupId,
+      // The operation acts on a single group; authorize against that group only.
+      groupId,
     });
 
     const appAssets = await getAppAssets({ context: ctx, app });

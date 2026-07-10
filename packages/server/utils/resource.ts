@@ -6,13 +6,21 @@ import {
   type ResourceDefinition,
 } from '@appsemble/lang-sdk';
 import {
+  appWideGroupId,
   getRemapperContext,
   type Options,
   type QueryParams,
   throwKoaError,
 } from '@appsemble/node-utils';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
-import { literal, type ModelStatic, Op, type Order, type WhereOptions } from 'sequelize';
+import {
+  literal,
+  type ModelStatic,
+  Op,
+  type Order,
+  type WhereAttributeHashValue,
+  type WhereOptions,
+} from 'sequelize';
 import { type Literal } from 'sequelize/types/utils';
 
 import { type FieldType, odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
@@ -301,6 +309,29 @@ export async function processReferenceTriggers(
   }
 
   await Promise.all(triggerPromises);
+}
+
+/**
+ * Build a Sequelize resource `GroupId` filter for operations that may span
+ * multiple groups (query, delete).
+ *
+ * The app-wide scope (`appWideGroupId`, or an empty selection) matches
+ * resources without a group; concrete ids match resources in those groups.
+ *
+ * @param selectedGroupId The selected group ids from the query parameters.
+ * @returns A value for a resource `GroupId` where clause.
+ */
+export function getGroupIdWhere(
+  selectedGroupId: number[] = [],
+): WhereAttributeHashValue<number | null> {
+  const groupIds = selectedGroupId.filter((id) => id > 0);
+  const includeUngrouped = selectedGroupId.length === 0 || selectedGroupId.includes(appWideGroupId);
+
+  if (!groupIds.length) {
+    return null;
+  }
+
+  return includeUngrouped ? { [Op.or]: [{ [Op.in]: groupIds }, null] } : { [Op.in]: groupIds };
 }
 
 /**

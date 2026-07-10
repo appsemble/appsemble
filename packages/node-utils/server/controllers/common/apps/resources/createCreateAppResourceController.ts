@@ -8,6 +8,7 @@ import { type Context, type Middleware } from 'koa';
 
 import {
   getResourceDefinition,
+  getSingleGroupId,
   type Options,
   processResourceBody,
   type PreparedAsset,
@@ -44,6 +45,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
       query,
       queryParams: { selectedGroupId },
     } = ctx;
+    const groupId = getSingleGroupId(selectedGroupId);
     const {
       checkAppPermissions,
       createAppResourcesWithAssets,
@@ -61,7 +63,8 @@ export function createCreateAppResourceController(options: Options): Middleware 
       context: ctx,
       permissions: [`$resource:${resourceType}:create`],
       app,
-      groupId: selectedGroupId,
+      // The resource is created in a single group; authorize against that group.
+      groupId,
     });
 
     const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx);
@@ -124,7 +127,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
       const createdSeedResources = await createAppResourcesWithAssets({
         app,
-        groupId: selectedGroupId,
+        groupId,
         context: ctx,
         resources: preparedSeedResources,
         preparedAssets: preparedSeedAssets,
@@ -143,7 +146,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
     const createdResources = await createAppResourcesWithAssets({
       app,
-      groupId: selectedGroupId,
+      groupId,
       context: ctx,
       resources: resources.map((resource) => ({
         ...resource,

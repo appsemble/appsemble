@@ -142,7 +142,7 @@ declare module 'koas-parameters' {
     roles?: string;
     includeMessages: boolean;
     demo: boolean;
-    selectedGroupId: number;
+    selectedGroupId: number[];
     $own: boolean;
     delimiter?: string;
     email: string;
@@ -312,14 +312,14 @@ export interface CheckUserOrganizationPermissionsParams {
 export interface CheckAuthSubjectAppPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
-  groupId?: number;
+  groupId?: number | number[] | null;
   permissions: CustomAppPermission[];
 }
 
 export interface CheckAppPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
-  groupId?: number;
+  groupId?: number | number[] | null;
   permissions: CustomAppPermission[];
 }
 
@@ -359,7 +359,7 @@ export interface CreateAppResourcesWithAssetsParams extends GetAppSubEntityParam
   preparedAssets: PreparedAsset[];
   resourceType: string;
   options: Options;
-  groupId?: number;
+  groupId?: number | null;
 }
 
 export interface UpdateAppResourceParams extends GetAppSubEntityParams {
@@ -535,6 +535,7 @@ export interface Options {
   ) => Promise<void>;
   checkAuthSubjectAppPermissions: (params: CheckAuthSubjectAppPermissionsParams) => Promise<void>;
   checkAppPermissions: (params: CheckAppPermissionsParams) => Promise<void>;
+  getAllowedGroups: (params: CheckAppPermissionsParams) => Promise<number[]>;
   reloadUser: (params: ReloadUserParams) => Promise<Record<string, any>>;
   parseQuery: (params: ParseQueryParams) => ParsedQuery;
   getAppResource: (params: GetAppResourceParams) => Promise<Resource | null>;

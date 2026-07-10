@@ -495,6 +495,149 @@ describe('queryAppResources', () => {
     );
   });
 
+  it('should fetch resources from every selected group', async () => {
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const groupA = await Group.create({ name: 'Group A', AppId: app.id });
+    const groupB = await Group.create({ name: 'Group B', AppId: app.id });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      timezone: 'Europe/Amsterdam',
+      userId: user.id,
+      name: user.name,
+      role: PredefinedAppRole.Member,
+    });
+    // The member manages resources in both selected groups.
+    await GroupMember.create({
+      GroupId: groupA.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+    await GroupMember.create({
+      GroupId: groupB.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'a' },
+      AuthorId: member.id,
+      GroupId: groupA.id,
+    });
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'b' },
+      AuthorId: member.id,
+      GroupId: groupB.id,
+    });
+    // A resource in a group that was not selected must be excluded.
+    const groupC = await Group.create({ name: 'Group C', AppId: app.id });
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'c' },
+      AuthorId: member.id,
+      GroupId: groupC.id,
+    });
+
+    authorizeAppMember(app, member);
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceGroup?selectedGroupId=${groupA.id}&selectedGroupId=${groupB.id}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect((response.data as ResourceType[]).map((resource) => resource.foo).sort()).toStrictEqual([
+      'a',
+      'b',
+    ]);
+  });
+
+  it('should filter querying to the groups the member has permission in', async () => {
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const groupA = await Group.create({ name: 'Group A', AppId: app.id });
+    const groupB = await Group.create({ name: 'Group B', AppId: app.id });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      timezone: 'Europe/Amsterdam',
+      userId: user.id,
+      name: user.name,
+      role: PredefinedAppRole.Member,
+    });
+    // Manager in group A, but a plain member without query permission in group B.
+    await GroupMember.create({
+      GroupId: groupA.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+    await GroupMember.create({
+      GroupId: groupB.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.Member,
+    });
+
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'a' },
+      AuthorId: member.id,
+      GroupId: groupA.id,
+    });
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'b' },
+      AuthorId: member.id,
+      GroupId: groupB.id,
+    });
+
+    authorizeAppMember(app, member);
+
+    // Both groups are selected, but the permission filters the result to the
+    // group the member may query; group B's resource is excluded.
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceGroup?selectedGroupId=${groupA.id}&selectedGroupId=${groupB.id}`,
+    );
+    expect(response.status).toBe(200);
+    expect((response.data as ResourceType[]).map((resource) => resource.foo)).toStrictEqual(['a']);
+  });
+
+  it('should parse a bracket-serialized selectedGroupId array (axios/browser default)', async () => {
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const group1 = await Group.create({ name: 'Group 1', AppId: app.id });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      timezone: 'Europe/Amsterdam',
+      userId: user.id,
+      name: user.name,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+    await GroupMember.create({
+      GroupId: group1.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'grouped' },
+      AuthorId: member.id,
+      GroupId: group1.id,
+    });
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'ungrouped' },
+      AuthorId: member.id,
+    });
+
+    authorizeAppMember(app, member);
+    // Axios serializes an array param as `selectedGroupId[]=-1&selectedGroupId[]=1`.
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceGroup`, {
+      params: { selectedGroupId: [-1, group1.id] },
+    });
+
+    expect(response.status).toBe(200);
+    expect((response.data as ResourceType[]).map((resource) => resource.foo).sort()).toStrictEqual([
+      'grouped',
+      'ungrouped',
+    ]);
+  });
+
   it('should be able to limit the amount of resources', async () => {
     const { Resource } = await getAppDB(app.id);
     await Resource.create({
