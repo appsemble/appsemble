@@ -1,15 +1,18 @@
-# Mini Schemas
+# Stress-test schemas
 
-This folder is a stress-test suite for the `../language-component` engine.
+This folder is a stress-test suite for the parent `language-component` engine.
 
 It defines a tiny annotated JSON Schema DSL plus sample data that exercise normal objects,
 `oneOf`/`anyOf`/`allOf`, nested same-path algebra, invalid local matches, local-vs-document
 validity, losing-branch ghosts, and conditional placement the walk cannot navigate.
 
+It consumes the engine **only through the parent barrel** (`../index.js`), never a deep import into
+an internal module, so it exercises the same public surface a real consumer sees.
+
 Run the suite with:
 
 ```sh
-npx vitest run packages/lang-sdk/mini-schemas
+npx vitest run packages/lang-sdk/language-component/stress-test-schemas
 ```
 
 ## What it proves
@@ -23,7 +26,7 @@ npx vitest run packages/lang-sdk/mini-schemas
 
 ## Test files
 
-- `mini-schemas.test.ts`: the baseline scenarios below.
+- `baseline.test.ts`: the baseline scenarios below.
 - `edge-cases.test.ts`: the design gaps (ghost, untagged combinator, hit order, ancestor errors) and
   a catalog of latent ones.
 - `incremental.test.ts`: incremental re-analysis fidelity — an incremental `buildTree` matches a

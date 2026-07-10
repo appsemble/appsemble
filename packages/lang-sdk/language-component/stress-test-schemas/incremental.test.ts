@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { describeIdentity, describeIdentities } from './harness.js';
 import { miniSchemas, Root } from './schemas.js';
-import { Scanner, type MountTree } from '../language-component/index.js';
+import { Scanner, type MountTree } from '../index.js';
 
 /*
  * Incremental re-analysis: given a prior tree and the paths that changed, buildTree

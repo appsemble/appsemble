@@ -67,17 +67,35 @@ interface WalkContext extends ResolveContext {
   emit: (path: NodePath, identity: Identity, localValid: boolean) => void;
 }
 
-export interface ScanResult {
-  documentValid: boolean;
-  hits: ScanHit[];
-  interpretations: Map<string, Mount>;
+// The identity tree: mounts keyed by JSON Pointer, with `mountAt` to look one up by a structured
+// data path (so callers never stringify a path themselves). `interpretations` carry `localValid`
+// but no document errors — those come from `validate`. This is what `buildTree` produces and reuses.
+export class MountTree {
+  readonly interpretations: Map<string, Mount>;
+
+  constructor(interpretations: Map<string, Mount>) {
+    this.interpretations = interpretations;
+  }
+
+  // The mount at a data path, or undefined when nothing mounted there.
+  mountAt(path: NodePath): Mount | undefined {
+    return this.interpretations.get(formatPath(path));
+  }
 }
 
-// The identity tree alone: interpretations carry `localValid` but no document errors
-// (those come from `validate`). Keyed by JSON Pointer; the identity is `.identity`. This
-// is what `buildTree` produces and reuses.
-export interface MountTree {
-  interpretations: Map<string, Mount>;
+// The identity tree plus whole-document validity: a `MountTree` (so it carries `mountAt`) with the
+// document's `documentValid` and the tooling `hits`. Each mount's `errors` are scoped at or below
+// its path. This is what `scan` / `Scanner.run` produce.
+export class ScanResult extends MountTree {
+  readonly documentValid: boolean;
+
+  readonly hits: ScanHit[];
+
+  constructor(interpretations: Map<string, Mount>, documentValid: boolean, hits: ScanHit[]) {
+    super(interpretations);
+    this.documentValid = documentValid;
+    this.hits = hits;
+  }
 }
 
 // Whole-document validation, separate from tree building.
@@ -349,7 +367,7 @@ function collectHits(
 }
 
 function treeFrom(byPath: Map<string, Mount>): MountTree {
-  return { interpretations: byPath };
+  return new MountTree(byPath);
 }
 
 /**
@@ -377,6 +395,26 @@ export class Scanner {
     this.shallow = createShallow();
     this.componentKey = options.componentKey ?? COMPONENT_KEY;
     this.dynamicChild = options.dynamicChild;
+  }
+
+  /**
+   * One-shot analysis: compile the schema set and `scan` in a single call. Use this for a
+   * throwaway analysis; construct a `Scanner` and reuse it when analyzing repeatedly, so the
+   * registry, validator, and ref-cutoff cache are compiled once.
+   *
+   * @param schemas The schema set to compile.
+   * @param data The document to analyze.
+   * @param rootSchema The root schema the document is walked and validated against.
+   * @param options Component key and value-directed resolver (see ScannerOptions).
+   * @returns The combined identity tree plus document validity.
+   */
+  static run(
+    schemas: Record<string, Schema>,
+    data: unknown,
+    rootSchema: Schema,
+    options?: ScannerOptions,
+  ): ScanResult {
+    return new Scanner(schemas, options).scan(data, rootSchema);
   }
 
   /**
@@ -436,7 +474,7 @@ export class Scanner {
         },
       ]),
     );
-    return { documentValid, hits, interpretations };
+    return new ScanResult(interpretations, documentValid, hits);
   }
 
   private emitInto(byPath: Map<string, Mount>, data: unknown): WalkContext {
@@ -555,13 +593,4 @@ export class Scanner {
     }
     return boundary;
   }
-}
-
-export function scanComponents(
-  data: unknown,
-  rootSchema: Schema,
-  schemas: Record<string, Schema>,
-  componentKey: string = COMPONENT_KEY,
-): ScanResult {
-  return new Scanner(schemas, { componentKey }).scan(data, rootSchema);
 }

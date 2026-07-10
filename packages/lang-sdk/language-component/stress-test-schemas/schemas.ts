@@ -1,11 +1,11 @@
 import { type Schema } from 'jsonschema';
 
-import { defineLanguageComponent } from '../language-component/index.js';
+import { LanguageComponent } from '../index.js';
 
-// The obj/combinator builders delegate tagging to defineLanguageComponent rather than inlining an
+// The obj/combinator builders delegate tagging to LanguageComponent.define rather than inlining an
 // `appsembleLanguageComponent` literal, so there is a single tagging path. The mode is inferred from
 // the shape each builder constructs (object vs a single oneOf/anyOf/allOf), which is
-// unambiguous; defineLanguageComponent's inference is covered directly in language-component/binding.test.ts.
+// unambiguous; LanguageComponent.define's inference is covered directly in language-component/binding.test.ts.
 
 function ref(name: string): Schema {
   return { $ref: `#/components/schemas/${name}` };
@@ -23,13 +23,13 @@ function obj(
   properties: Record<string, Schema>,
   extra: Partial<Schema> = {},
 ): Schema {
-  return defineLanguageComponent(name, { type: 'object', ...extra, required, properties }, {})
+  return LanguageComponent.define(name, { type: 'object', ...extra, required, properties }, {})
     .schema;
 }
 
 // A tagged combinator language component: `combinator(name, 'oneOf' | 'anyOf' | 'allOf', members)`.
 function combinator(name: string, mode: 'oneOf' | 'anyOf' | 'allOf', members: Schema[]): Schema {
-  return defineLanguageComponent(name, { [mode]: members }, {}).schema;
+  return LanguageComponent.define(name, { [mode]: members }, {}).schema;
 }
 
 export const TextWidget = obj('TextWidget', ['text'], { text: { type: 'string' } });

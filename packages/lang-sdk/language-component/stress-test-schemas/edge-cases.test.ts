@@ -1,15 +1,8 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import {
-  scanComponents,
-  cursorAt,
-  defineLanguageComponent,
-  getPath,
-  Scanner,
-  componentSchemas,
-} from '../language-component/index.js';
-import { analyze, describeIdentity, describeIdentities, formatPath, mountAt } from './harness.js';
+import { Cursor, LanguageComponent, Scanner } from '../index.js';
+import { analyze, describeIdentity, describeIdentities } from './harness.js';
 import { miniSchemas, Root } from './schemas.js';
 import { scenarios } from './scenarios.js';
 
@@ -170,16 +163,11 @@ describe('engine edge cases', () => {
       properties: { item: { $ref: '#/components/schemas/Missing' } },
     };
 
-    expect(() => scanComponents({ item: {} }, root, {})).toThrow(/Unknown schema ref/);
-  });
-
-  it('returns undefined when getPath traverses through null or a scalar', () => {
-    expect(getPath({ value: null }, ['value', 'child'])).toBeUndefined();
-    expect(getPath({ value: 3 }, ['value', 'child'])).toBeUndefined();
+    expect(() => Scanner.run({}, { item: {} }, root)).toThrow(/Unknown schema ref/);
   });
 
   it('navigates into a child key whose parent value is null', () => {
-    const Nested = defineLanguageComponent(
+    const Nested = LanguageComponent.define(
       'NullParent',
       {
         type: 'object',
@@ -187,8 +175,8 @@ describe('engine edge cases', () => {
       },
       {},
     );
-    const schemas = componentSchemas([Nested]);
-    const root = cursorAt(schemas, schemas.NullParent, { a: null });
+    const schemas = LanguageComponent.schemas([Nested]);
+    const root = Cursor.at(schemas, schemas.NullParent, { a: null });
 
     const grandchild = root.child('a')?.child('b');
     expect(grandchild).not.toBeNull();
@@ -196,27 +184,27 @@ describe('engine edge cases', () => {
   });
 
   it('returns null from nearest when no ancestor carries the requested identity name', () => {
-    const Solo = defineLanguageComponent(
+    const Solo = LanguageComponent.define(
       'SoloRoot',
       { type: 'object', properties: { a: { type: 'string' } } },
       {},
     );
-    const schemas = componentSchemas([Solo]);
-    const root = cursorAt(schemas, schemas.SoloRoot, { a: 'x' });
+    const schemas = LanguageComponent.schemas([Solo]);
+    const root = Cursor.at(schemas, schemas.SoloRoot, { a: 'x' });
 
     expect(root.nearest('Nonexistent')).toBeNull();
   });
 
   it('reports cursor local validity for the focused tagged object', () => {
-    const TaggedFocus = defineLanguageComponent(
+    const TaggedFocus = LanguageComponent.define(
       'TaggedFocus',
       { type: 'object', required: ['name'], properties: { name: { type: 'string' } } },
       {},
     );
-    const schemas = componentSchemas([TaggedFocus]);
+    const schemas = LanguageComponent.schemas([TaggedFocus]);
 
-    const valid = cursorAt(schemas, schemas.TaggedFocus, { name: 'ok' });
-    const invalid = cursorAt(schemas, schemas.TaggedFocus, {});
+    const valid = Cursor.at(schemas, schemas.TaggedFocus, { name: 'ok' });
+    const invalid = Cursor.at(schemas, schemas.TaggedFocus, {});
 
     expect(valid.identity?.name).toBe('TaggedFocus');
     expect(valid.localValid).toBe(true);
@@ -225,12 +213,12 @@ describe('engine edge cases', () => {
   });
 
   it('returns null for a child key not owned by the winning oneOf branch', () => {
-    const Plain = defineLanguageComponent(
+    const Plain = LanguageComponent.define(
       'PlainBranchLocal',
       { type: 'object', required: ['type'], properties: { type: { const: 'plain' } } },
       {},
     );
-    const Fancy = defineLanguageComponent(
+    const Fancy = LanguageComponent.define(
       'FancyBranchLocal',
       {
         type: 'object',
@@ -239,7 +227,7 @@ describe('engine edge cases', () => {
       },
       {},
     );
-    const Host = defineLanguageComponent(
+    const Host = LanguageComponent.define(
       'BranchHostLocal',
       {
         oneOf: [
@@ -249,15 +237,15 @@ describe('engine edge cases', () => {
       },
       {},
     );
-    const schemas = componentSchemas([Plain, Fancy, Host]);
-    const cursor = cursorAt(schemas, schemas.BranchHostLocal, { type: 'plain', action: {} });
+    const schemas = LanguageComponent.schemas([Plain, Fancy, Host]);
+    const cursor = Cursor.at(schemas, schemas.BranchHostLocal, { type: 'plain', action: {} });
 
     expect(cursor.child('type')).not.toBeNull();
     expect(cursor.child('action')).toBeNull();
   });
 
   it('enumerates owned object children and no children for non-objects', () => {
-    const OwnedObject = defineLanguageComponent(
+    const OwnedObject = LanguageComponent.define(
       'OwnedObject',
       {
         type: 'object',
@@ -265,8 +253,8 @@ describe('engine edge cases', () => {
       },
       {},
     );
-    const schemas = componentSchemas([OwnedObject]);
-    const cursor = cursorAt(schemas, schemas.OwnedObject, {
+    const schemas = LanguageComponent.schemas([OwnedObject]);
+    const cursor = Cursor.at(schemas, schemas.OwnedObject, {
       count: 2,
       ignored: true,
       title: 'hello',
@@ -281,7 +269,7 @@ describe('hits collection (public surface)', () => {
   it('records a hit for every candidate schema reached, including losing oneOf branches', () => {
     const result = analyze(scenarios.normal);
     const widgetHits = result.hits
-      .filter((hit) => formatPath(hit.path) === '/widget')
+      .filter((hit) => hit.path.length === 1 && hit.path[0] === 'widget')
       .map((hit) => hit.tag.name);
     // Every oneOf candidate the validator touches records a hit -- winners and losers alike.
     expect(widgetHits).toStrictEqual(
@@ -322,7 +310,7 @@ describe('language component gaps', () => {
   it('does not attach ancestor errors to a locally valid descendant', () => {
     const result = analyze(scenarios.ancestorError);
 
-    const inner = mountAt(result, ['container', 'inner']);
+    const inner = result.mountAt(['container', 'inner']);
     expect(inner).toBeDefined();
     expect(inner!.localValid).toBe(true);
     expect(inner!.errors).toStrictEqual([]);
@@ -331,7 +319,7 @@ describe('language component gaps', () => {
   it('keeps a tagged object identity when it fails its own constraints', () => {
     const result = analyze(scenarios.ancestorError);
 
-    const container = mountAt(result, ['container']);
+    const container = result.mountAt(['container']);
     expect(container).toBeDefined();
     expect(container!.identity.kind).toBe('single');
     expect(container!.identity.name).toBe('Container');

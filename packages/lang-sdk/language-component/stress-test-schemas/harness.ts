@@ -1,22 +1,15 @@
-import {
-  scanComponents,
-  formatPath,
-  type ScanResult,
-  type Identity,
-  type Mount,
-  type NodePath,
-} from '../language-component/index.js';
+import { type Identity, type ScanResult, Scanner } from '../index.js';
 import { miniSchemas, Root } from './schemas.js';
 
 /**
- * The only coupling point between the mini-schema tests and the language component
+ * The only coupling point between the stress-test suite and the language component
  * implementation. Tests assert against the shapes produced here, never against
  * implementation internals, so the engine can be rewritten without touching the
  * scenario assertions.
  */
 
 export function analyze(data: unknown): ScanResult {
-  return scanComponents(data, Root, miniSchemas);
+  return Scanner.run(miniSchemas, data, Root);
 }
 
 export function describeIdentity(object: Identity): string {
@@ -42,9 +35,3 @@ export function describeIdentities(source: {
       .map(([path, interpretation]) => [path, describeIdentity(interpretation.identity)]),
   );
 }
-
-export function mountAt(result: ScanResult, path: NodePath): Mount | undefined {
-  return result.interpretations.get(formatPath(path));
-}
-
-export { formatPath };

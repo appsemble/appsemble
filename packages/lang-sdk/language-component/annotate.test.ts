@@ -1,7 +1,8 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { annotateSchema, annotateSchemas, COMPONENT_KEY, Scanner } from './index.js';
+import { annotateSchema, annotateSchemas } from './annotate.js';
+import { COMPONENT_KEY, Scanner } from './index.js';
 
 describe('annotateSchema', () => {
   it('should tag an object schema with the given name and object mode', () => {

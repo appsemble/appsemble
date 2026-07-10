@@ -31,7 +31,7 @@ export class Cursor {
 
   private readonly parentCursor: Cursor | null;
 
-  // Private: a cursor is only ever rooted via `cursorAt` / `Cursor.at` (which build the internal
+  // Private: a cursor is only ever rooted via `Cursor.at` (which builds the internal
   // ResolveContext) or descended via `child`, never constructed directly by a consumer.
   private constructor(
     ctx: ResolveContext,
@@ -125,23 +125,4 @@ export class Cursor {
     }
     return this.parent()?.nearest(name) ?? null;
   }
-}
-
-/**
- * Root a cursor at `rootSchema` over `data`. Compiles a schema registry per call; when
- * navigating repeatedly, reuse one cursor tree rather than re-rooting.
- *
- * @param schemas The registry of named schemas.
- * @param rootSchema The schema at the root of the document.
- * @param data The document to navigate.
- * @param options Component key and value-directed resolver (see ScannerOptions).
- * @returns A cursor focused on the document root.
- */
-export function cursorAt(
-  schemas: Record<string, Schema>,
-  rootSchema: Schema,
-  data: unknown,
-  options: ScannerOptions = {},
-): Cursor {
-  return Cursor.at(schemas, rootSchema, data, options);
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { analyze, describeIdentities, mountAt } from './harness.js';
+import { analyze, describeIdentities } from './harness.js';
 import { scenarios } from './scenarios.js';
 
 describe('walk engine behavior', () => {
@@ -24,7 +24,7 @@ describe('walk engine behavior', () => {
 
   it('marks a tagged anyOf unresolved when its value matches no branch', () => {
     const result = analyze(scenarios.emptyAnyOf);
-    const flexible = mountAt(result, ['flexible']);
+    const flexible = result.mountAt(['flexible']);
 
     expect(flexible).toBeDefined();
     expect(flexible!.localValid).toBe(false);

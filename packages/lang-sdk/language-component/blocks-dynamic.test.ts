@@ -1,13 +1,7 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import {
-  componentSchemas,
-  cursorAt,
-  defineLanguageComponent,
-  type DynamicChild,
-  Scanner,
-} from './index.js';
+import { Cursor, type DynamicChild, LanguageComponent, Scanner } from './index.js';
 
 /*
  * Blocks via the value-directed resolver (Approach B in language-component/BLOCKS.md).
@@ -18,12 +12,12 @@ import {
  * without materializing any union. This is the shape the engine grows for blocks; the LSP's
  * assembled allOf-of-if/then is never walked.
  */
-const FormParams = defineLanguageComponent(
+const FormParams = LanguageComponent.define(
   'FormParams',
   { type: 'object', properties: { fields: { type: 'array' } } },
   {},
 );
-const TableParams = defineLanguageComponent(
+const TableParams = LanguageComponent.define(
   'TableParams',
   { type: 'object', properties: { columns: { type: 'array' } } },
   {},
@@ -44,9 +38,9 @@ const resolveBlockChild: DynamicChild = (parentIdentity, parentValue, key) => {
   return blockRegistry.get(`${block.type}@${block.version}`) ?? null;
 };
 
-const schemas: Record<string, Schema> = componentSchemas([
+const schemas: Record<string, Schema> = LanguageComponent.schemas([
   // `parameters` is deliberately absent from the schema: only the resolver can reach it.
-  defineLanguageComponent(
+  LanguageComponent.define(
     'BlockDefinition',
     {
       type: 'object',
@@ -54,7 +48,7 @@ const schemas: Record<string, Schema> = componentSchemas([
     },
     {},
   ),
-  defineLanguageComponent(
+  LanguageComponent.define(
     'PageDefinition',
     {
       type: 'object',
@@ -64,7 +58,7 @@ const schemas: Record<string, Schema> = componentSchemas([
     },
     {},
   ),
-  defineLanguageComponent(
+  LanguageComponent.define(
     'AppDefinition',
     {
       type: 'object',
@@ -113,7 +107,7 @@ describe('blocks via value-directed resolver (Approach B)', () => {
 
   it('descends the resolved child through a cursor identically to the walk', () => {
     const app = { pages: [{ blocks: [{ type: 'form', version: '0.0.0', parameters: {} }] }] };
-    const params = cursorAt(schemas, schemas.AppDefinition, app, {
+    const params = Cursor.at(schemas, schemas.AppDefinition, app, {
       dynamicChild: resolveBlockChild,
     })
       .child('pages')

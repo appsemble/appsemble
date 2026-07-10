@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { getAppPossiblePermissions } from '../authorization.js';
-import { cursorAt, defineLanguageComponent, componentSchemas } from './index.js';
+import { Cursor, LanguageComponent } from './index.js';
 import { type AppDefinition } from '../types/index.js';
 
 /*
@@ -11,7 +11,7 @@ import { type AppDefinition } from '../types/index.js';
  * reach the enclosing app through cursor.nearest('AppDefinition') — the context a flat
  * schema enum cannot provide.
  */
-const AppPermissions = defineLanguageComponent(
+const AppPermissions = LanguageComponent.define(
   'AppPermissions',
   { type: 'array', items: { type: 'string' } },
   {
@@ -32,7 +32,7 @@ const AppPermissions = defineLanguageComponent(
 
 const defs = [
   AppPermissions,
-  defineLanguageComponent(
+  LanguageComponent.define(
     'AppDefinition',
     {
       type: 'object',
@@ -44,7 +44,7 @@ const defs = [
     },
     {},
   ),
-  defineLanguageComponent(
+  LanguageComponent.define(
     'SecurityDefinition',
     {
       type: 'object',
@@ -57,7 +57,7 @@ const defs = [
     },
     {},
   ),
-  defineLanguageComponent(
+  LanguageComponent.define(
     'RoleDefinition',
     {
       type: 'object',
@@ -66,7 +66,7 @@ const defs = [
     {},
   ),
 ];
-const schemas = componentSchemas(defs);
+const schemas = LanguageComponent.schemas(defs);
 
 const app = {
   resources: { note: { views: { public: {} } } },
@@ -74,8 +74,8 @@ const app = {
   security: { roles: { Reader: { permissions: ['$resource:note:get', '$resource:bogus:get'] } } },
 };
 
-function permissionsCursor(): ReturnType<typeof cursorAt> {
-  const root = cursorAt(schemas, schemas.AppDefinition, app);
+function permissionsCursor(): Cursor {
+  const root = Cursor.at(schemas, schemas.AppDefinition, app);
   const cursor = root.child('security')?.child('roles')?.child('Reader')?.child('permissions');
   if (!cursor) {
     throw new Error('failed to navigate to permissions');

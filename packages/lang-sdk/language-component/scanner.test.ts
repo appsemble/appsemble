@@ -1,7 +1,7 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { componentSchemas, defineLanguageComponent, Scanner, scanComponents } from './index.js';
+import { LanguageComponent, Scanner } from './index.js';
 import { SchemaRegistry } from './schemaRegistry.js';
 
 /*
@@ -10,13 +10,13 @@ import { SchemaRegistry } from './schemaRegistry.js';
  * combinator (allOf/oneOf/anyOf) with structure the walk must still descend into.
  */
 
-const TaggedChild = defineLanguageComponent(
+const TaggedChild = LanguageComponent.define(
   'TaggedChild',
   { type: 'object', properties: { leaf: { type: 'string' } } },
   {},
 );
 
-const Base = defineLanguageComponent(
+const Base = LanguageComponent.define(
   'Base',
   { type: 'object', properties: { a: { type: 'string' } } },
   {},
@@ -37,15 +37,15 @@ function schemasFor(combinator: 'allOf' | 'anyOf' | 'oneOf'): {
   root: Schema;
   schemas: Record<string, Schema>;
 } {
-  const Derived = defineLanguageComponent('Derived', derivedVia(combinator), {});
-  const Root = defineLanguageComponent(
+  const Derived = LanguageComponent.define('Derived', derivedVia(combinator), {});
+  const Root = LanguageComponent.define(
     'Root',
     { type: 'object', properties: { derived: { $ref: '#/components/schemas/Derived' } } },
     {},
   );
   return {
     root: Root.schema,
-    schemas: componentSchemas([Root, Derived, Base, TaggedChild]),
+    schemas: LanguageComponent.schemas([Root, Derived, Base, TaggedChild]),
   };
 }
 
@@ -71,7 +71,7 @@ describe('SchemaRegistry.resolveRef only shortcuts the named-component prefix', 
 
 describe('resolve() terminates on schemas that self-reference at a combinator position', () => {
   it('builds the tree for a oneOf whose branch $refs the enclosing schema without overflowing', () => {
-    const Recursive = defineLanguageComponent(
+    const Recursive = LanguageComponent.define(
       'Recursive',
       {
         type: 'object',
@@ -82,12 +82,12 @@ describe('resolve() terminates on schemas that self-reference at a combinator po
       },
       {},
     );
-    const Root = defineLanguageComponent(
+    const Root = LanguageComponent.define(
       'Root',
       { type: 'object', properties: { thing: { $ref: '#/components/schemas/Recursive' } } },
       {},
     );
-    const scanner = new Scanner(componentSchemas([Root, Recursive]));
+    const scanner = new Scanner(LanguageComponent.schemas([Root, Recursive]));
     const doc = { thing: { leaf: 'x' } };
 
     // The walk resolves combinators structurally, unbounded by the value; without a cycle
@@ -101,12 +101,12 @@ describe('resolve() terminates on schemas that self-reference at a combinator po
 
 describe('governingChild() descends into tuple-form items arrays', () => {
   it('mounts a tagged element addressed by a positional items tuple', () => {
-    const Tagged = defineLanguageComponent(
+    const Tagged = LanguageComponent.define(
       'Tagged',
       { type: 'object', properties: { leaf: { type: 'string' } } },
       {},
     );
-    const Root = defineLanguageComponent(
+    const Root = LanguageComponent.define(
       'Root',
       {
         type: 'object',
@@ -116,7 +116,7 @@ describe('governingChild() descends into tuple-form items arrays', () => {
       },
       {},
     );
-    const scanner = new Scanner(componentSchemas([Root, Tagged]));
+    const scanner = new Scanner(LanguageComponent.schemas([Root, Tagged]));
     const doc = { tuple: [{ leaf: 'x' }] };
 
     const tree = scanner.buildTree(doc, Root.schema);
@@ -132,7 +132,7 @@ describe('resolve() keeps the enclosing schema as a governing winner', () => {
       const { root, schemas } = schemasFor(combinator);
       const doc = { derived: { a: 'x', child: { leaf: 'y' } } };
 
-      const result = scanComponents(doc, root, schemas);
+      const result = Scanner.run(schemas, doc, root);
 
       // The combinator itself resolves.
       expect(result.interpretations.get('/derived')?.identity.name).toBe('Derived');

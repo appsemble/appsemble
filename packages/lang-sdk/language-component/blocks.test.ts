@@ -1,7 +1,7 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { scanComponents, defineLanguageComponent, componentSchemas } from './index.js';
+import { LanguageComponent, Scanner } from './index.js';
 
 /*
  * Blocks prototype: one approach (a materialized discriminated oneOf), zero engine changes.
@@ -22,13 +22,13 @@ import { scanComponents, defineLanguageComponent, componentSchemas } from './ind
  */
 const formParamsUrl = 'appsemble://blocks/@appsemble/form/0.0.0/parameters.json';
 
-const FormParams = defineLanguageComponent(
+const FormParams = LanguageComponent.define(
   'FormParams',
   { type: 'object', properties: { fields: { type: 'array' } } },
   {},
 );
 
-const BlockDefinition = defineLanguageComponent(
+const BlockDefinition = LanguageComponent.define(
   'BlockDefinition',
   {
     type: 'object',
@@ -52,9 +52,9 @@ const BlockDefinition = defineLanguageComponent(
 );
 
 const schemas: Record<string, Schema> = {
-  ...componentSchemas([
+  ...LanguageComponent.schemas([
     BlockDefinition,
-    defineLanguageComponent(
+    LanguageComponent.define(
       'PageDefinition',
       {
         type: 'object',
@@ -64,7 +64,7 @@ const schemas: Record<string, Schema> = {
       },
       {},
     ),
-    defineLanguageComponent(
+    LanguageComponent.define(
       'AppDefinition',
       {
         type: 'object',
@@ -82,7 +82,7 @@ const schemas: Record<string, Schema> = {
 describe('blocks prototype (a materialized discriminated oneOf)', () => {
   it('should mount a block parameters language component via the discriminated oneOf', () => {
     const app = { pages: [{ blocks: [{ type: 'form', parameters: { fields: [] } }] }] };
-    const result = scanComponents(app, schemas.AppDefinition, schemas);
+    const result = Scanner.run(schemas, app, schemas.AppDefinition);
 
     expect(result.interpretations.get('/pages/0/blocks/0')?.identity.name).toBe('BlockDefinition');
     // The block's parameters resolved to the form block's schema and mounted.

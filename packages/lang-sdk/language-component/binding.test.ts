@@ -1,10 +1,10 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { defineLanguageComponent, componentBindings, componentSchemas } from './index.js';
+import { LanguageComponent } from './index.js';
 
-describe('defineLanguageComponent', () => {
-  // The mini-schema fixtures build every tag through defineLanguageComponent (obj/combinator delegate
+describe('LanguageComponent.define', () => {
+  // The stress-test fixtures build every tag through LanguageComponent.define (obj/combinator delegate
   // to it), so these cases guard the tag-writing they rely on: mode inference from shape and
   // the object fallback.
   it('infers the tag mode from the schema shape', () => {
@@ -18,7 +18,7 @@ describe('defineLanguageComponent', () => {
 
     for (const [schema, mode] of cases) {
       expect(
-        defineLanguageComponent('Tagged', schema, {}).schema.appsembleLanguageComponent,
+        LanguageComponent.define('Tagged', schema, {}).schema.appsembleLanguageComponent,
       ).toStrictEqual({
         name: 'Tagged',
         mode,
@@ -28,7 +28,7 @@ describe('defineLanguageComponent', () => {
 
   it('falls back to object mode for a shape it cannot classify', () => {
     expect(
-      defineLanguageComponent('Scalar', { type: 'string' }, {}).schema.appsembleLanguageComponent,
+      LanguageComponent.define('Scalar', { type: 'string' }, {}).schema.appsembleLanguageComponent,
     ).toStrictEqual({ name: 'Scalar', mode: 'single' });
   });
 
@@ -38,8 +38,8 @@ describe('defineLanguageComponent', () => {
       customKey: { name: 'AlreadyTagged', mode: 'single' },
     } as Schema & Record<string, unknown>;
 
-    const preserved = defineLanguageComponent('Ignored', tagged, {}, 'customKey');
-    const custom = defineLanguageComponent('CustomTagged', { type: 'object' }, {}, 'customKey');
+    const preserved = LanguageComponent.define('Ignored', tagged, {}, 'customKey');
+    const custom = LanguageComponent.define('CustomTagged', { type: 'object' }, {}, 'customKey');
 
     expect(preserved.schema).toBe(tagged);
     expect((preserved.schema as Record<string, unknown>).customKey).toStrictEqual({
@@ -54,14 +54,14 @@ describe('defineLanguageComponent', () => {
   });
 });
 
-describe('componentSchemas / componentBindings', () => {
+describe('LanguageComponent.schemas / LanguageComponent.bindings', () => {
   it('builds a name-keyed schema registry from defs', () => {
     const defs = [
-      defineLanguageComponent('Alpha', { type: 'object' }, {}),
-      defineLanguageComponent('Beta', { oneOf: [] }, {}),
+      LanguageComponent.define('Alpha', { type: 'object' }, {}),
+      LanguageComponent.define('Beta', { oneOf: [] }, {}),
     ];
 
-    const schemas = componentSchemas(defs);
+    const schemas = LanguageComponent.schemas(defs);
 
     expect(Object.keys(schemas)).toStrictEqual(['Alpha', 'Beta']);
     expect(schemas.Alpha).toBe(defs[0].schema);
@@ -71,13 +71,30 @@ describe('componentSchemas / componentBindings', () => {
     const first = { describe: () => 'first' };
     const second = { complete: () => ['second'] };
     const defs = [
-      defineLanguageComponent('FirstBinding', { type: 'object' }, first),
-      defineLanguageComponent('SecondBinding', { type: 'object' }, second),
+      LanguageComponent.define('FirstBinding', { type: 'object' }, first),
+      LanguageComponent.define('SecondBinding', { type: 'object' }, second),
     ];
 
-    const bindings = componentBindings(defs);
+    const bindings = LanguageComponent.bindings(defs);
 
     expect(bindings.get('FirstBinding')).toBe(first);
     expect(bindings.get('SecondBinding')).toBe(second);
+  });
+});
+
+describe('LanguageComponent.annotate', () => {
+  it('bulk-tags a registry by key so an untagged schema set mounts identities', () => {
+    const annotated = LanguageComponent.annotate({
+      Page: { type: 'object', properties: {} },
+      Name: { type: 'string' },
+    });
+
+    // Object schemas become language components keyed by their registry name.
+    expect(annotated.Page.appsembleLanguageComponent).toStrictEqual({
+      name: 'Page',
+      mode: 'single',
+    });
+    // Scalars are left untagged.
+    expect(annotated.Name.appsembleLanguageComponent).toBeUndefined();
   });
 });

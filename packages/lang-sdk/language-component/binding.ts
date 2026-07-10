@@ -1,6 +1,6 @@
 import { type Schema } from 'jsonschema';
 
-import { tagMode } from './annotate.js';
+import { annotateSchemas, tagMode } from './annotate.js';
 import { type Cursor } from './cursor.js';
 import { COMPONENT_KEY, schemaTag } from './types.js';
 
@@ -34,7 +34,8 @@ export interface LanguageComponent {
 /**
  * Declare a language component: its identity name, its schema (auto-annotated under `componentKey` so
  * the analyzer mounts it), and its behaviors. Collect the returned defs with
- * `componentSchemas` / `componentBindings` to build an analyzer's schema set and binding registry.
+ * `LanguageComponent.schemas` / `LanguageComponent.bindings` to build an analyzer's schema set and
+ * binding registry.
  *
  * Unlike the bulk `annotateSchemas` heuristic, this always tags the schema (an explicit
  * declaration is an opt-in whatever the shape), falling back to `single` mode; an
@@ -46,7 +47,7 @@ export interface LanguageComponent {
  * @param componentKey The keyword to annotate under (defaults to COMPONENT_KEY).
  * @returns The def carrying the annotated schema and its binding.
  */
-export function defineLanguageComponent(
+function defineLanguageComponent(
   name: string,
   schema: Schema,
   binding: LanguageComponentBinding,
@@ -59,12 +60,12 @@ export function defineLanguageComponent(
 }
 
 /**
- * Build a `name -> schema` registry from a list of defs, for `Scanner` / `cursorAt`.
+ * Build a `name -> schema` registry from a list of defs, for `Scanner` / `Cursor.at`.
  *
  * @param defs The language component defs to collect.
  * @returns The schema registry keyed by identity name.
  */
-export function componentSchemas(defs: LanguageComponent[]): Record<string, Schema> {
+function componentSchemas(defs: LanguageComponent[]): Record<string, Schema> {
   return Object.fromEntries(defs.map((def) => [def.name, def.schema]));
 }
 
@@ -75,8 +76,23 @@ export function componentSchemas(defs: LanguageComponent[]): Record<string, Sche
  * @param defs The language component defs to collect.
  * @returns The binding registry keyed by identity name.
  */
-export function componentBindings(
-  defs: LanguageComponent[],
-): Map<string, LanguageComponentBinding> {
+function componentBindings(defs: LanguageComponent[]): Map<string, LanguageComponentBinding> {
   return new Map(defs.map((def) => [def.name, def.binding]));
 }
+
+/**
+ * The language-component authoring surface, merged with the `LanguageComponent` type so one name
+ * carries both the def shape and the functions that build and collect defs.
+ *
+ * `define(name, schema, binding, key?)` declares a component (auto-annotated). `schemas(defs)` and
+ * `bindings(defs)` collect a def list into the `name -> schema` registry for `Scanner` / `Cursor`
+ * and the `name -> binding` registry for behavior dispatch. `annotate(schemas, key?)` bulk-tags an
+ * existing schema registry (e.g. the shipped Appsemble schemas) so the analyzer mounts identities
+ * for it without per-component defs.
+ */
+export const LanguageComponent = {
+  define: defineLanguageComponent,
+  schemas: componentSchemas,
+  bindings: componentBindings,
+  annotate: annotateSchemas,
+};
