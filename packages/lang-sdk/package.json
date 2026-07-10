@@ -49,7 +49,7 @@
     "intl-messageformat": "^11.0.0",
     "jsonschema": "~1.4.1",
     "language-tags": "^1.0.0",
-    "lcm": "^0.0.3",
+    "lcm": "^0.0.4",
     "openapi-types": "^12.0.0",
     "parse-duration": "^1.0.0",
     "type-fest": "^4.0.0",
