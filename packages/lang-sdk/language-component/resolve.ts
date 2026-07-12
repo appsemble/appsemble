@@ -85,18 +85,12 @@ function deref(schema: Schema, resolveRef: (ref: string) => Schema): Schema {
   return schema.$ref ? deref(resolveRef(schema.$ref), resolveRef) : schema;
 }
 
-// Performance. Without the ref-cutoff below, resolve() validated each node against
-// its full schema and jsonschema follows $refs, so a node's subtree was re-validated
-// inside every ancestor's validation -- O(N x nesting-depth), seconds on a medium app.
-//
-// The ref-cutoff makes per-node validation local (see `stripRefs`), which is the
-// dominant win. A per-run memo of validates() by (value, schema) identity was tried
-// and made no measurable difference on real apps (the costly validations are all
-// distinct, not repeated), so it was dropped. The remaining cost is the single
-// full-ref validation pass (document validity, errors, hits) plus validator
-// construction; optimize those next if the profile demands it.
-function validates(validator: Validator, value: unknown, schema: Schema): boolean {
-  return validator.validate(value, schema, { base: '#', nestedErrors: true }).valid;
+// Does `value` conform to `schema`'s own local shape? `localShape` applies the ref-cutoff
+// first (see `stripRefs`), so this checks only the schema's own constraints and never
+// recurses into referenced subtrees -- the walk visits those.
+function matchesLocalShape(value: unknown, schema: Schema, ctx: ResolveContext): boolean {
+  return ctx.validator.validate(value, ctx.localShape(schema), { base: '#', nestedErrors: true })
+    .valid;
 }
 
 // Ref-cutoff: a copy of a schema with every nested $ref replaced by accept-all, so
@@ -104,6 +98,13 @@ function validates(validator: Validator, value: unknown, schema: Schema): boolea
 // into referenced subtrees (the walk visits those). Nested `oneOf` is relaxed to
 // `anyOf` because accept-all branches make exact-one vacuously false; exclusivity is
 // not needed to recognize local shape.
+//
+// This is the dominant performance win: without it, resolve validates each node against
+// its full schema and jsonschema follows $refs, so a subtree is re-validated inside every
+// ancestor -- O(N x nesting-depth), seconds on a medium app. (A per-run memo of validation
+// by (value, schema) was tried and made no measurable difference: the costly validations
+// are all distinct, not repeated. The remaining cost is the single full-ref validation
+// pass for document validity/errors/hits, plus validator construction.)
 function stripRefs(schema: Schema): Schema {
   if (schema.$ref) {
     return {};
@@ -120,14 +121,15 @@ function stripRefs(schema: Schema): Schema {
   if (copy.additionalProperties && typeof copy.additionalProperties === 'object') {
     copy.additionalProperties = stripRefs(copy.additionalProperties);
   }
-  if (copy.allOf) {
-    copy.allOf = copy.allOf.map(stripRefs);
+  // Recurse into every combinator...
+  for (const keyword of ['allOf', 'anyOf', 'oneOf'] as const) {
+    if (copy[keyword]) {
+      copy[keyword] = copy[keyword].map(stripRefs);
+    }
   }
-  if (copy.anyOf) {
-    copy.anyOf = copy.anyOf.map(stripRefs);
-  }
+  // ...then relax the stripped `oneOf` into `anyOf` (exact-one is vacuous under accept-all).
   if (copy.oneOf) {
-    copy.anyOf = [...(copy.anyOf ?? []), ...copy.oneOf.map(stripRefs)];
+    copy.anyOf = [...(copy.anyOf ?? []), ...copy.oneOf];
     delete copy.oneOf;
   }
   return copy;
@@ -136,7 +138,7 @@ function stripRefs(schema: Schema): Schema {
 // Memoize the ref-cutoff: return a function that builds each schema's local shape
 // (stripRefs) once and caches it by schema identity, so repeated resolves against the same
 // schema reuse the copy instead of rebuilding it. The cache is stable across a scan.
-export function createLocalShape(): (schema: Schema) => Schema {
+export function localShapeFactory(): (schema: Schema) => Schema {
   const cache = new Map<Schema, Schema>();
   return (schema) => {
     let cached = cache.get(schema);
@@ -148,56 +150,52 @@ export function createLocalShape(): (schema: Schema) => Schema {
   };
 }
 
-// Exactly one branch must match. An untagged oneOf is transparent: the winner's identity
-// passes through unchanged; a tagged one wraps the winner as its single part.
-function resolveOneOf(s: Schema, branches: Resolution[], tag: SchemaTag | undefined): Resolution {
-  const matched = branches.filter((part) => part.matched);
-  if (matched.length === 1) {
-    const [winner] = matched;
-    const identity = tag ? composite('oneOf', tag, identityParts([winner])) : winner.identity;
-    return { identity, matched: true, winners: [s, ...winner.winners] };
-  }
-  return {
-    identity: unresolvedOrNull(
-      `oneOf expected exactly one match, got ${matched.length}`,
-      tag,
-      identityParts(matched),
-    ),
-    matched: false,
-    winners: [s],
-  };
-}
+// A oneOf/anyOf/allOf node. The three combinators share one skeleton -- thread the
+// governing branches' winners, wrap their parts into an identity, and on failure still
+// name what was considered -- and differ only in three axes:
+//
+//   oneOf: exactly one branch must match, and that lone winner governs descent. An
+//          untagged oneOf is transparent -- it adds no identity of its own, so the
+//          winner's identity passes straight through.
+//   anyOf: at least one must match; every matched branch governs.
+//   allOf: all must match; all branches govern, and their identities are kept even on
+//          failure so an unresolved allOf still names its parts.
+//
+// Contrast `resolveLeaf`, which has no branches to weigh and validates a shape directly.
+function resolveComposite(
+  mode: 'allOf' | 'anyOf' | 'oneOf',
+  s: Schema,
+  branches: Resolution[],
+  tag: SchemaTag | undefined,
+): Resolution {
+  const matched = branches.filter((branch) => branch.matched);
+  const satisfied =
+    mode === 'oneOf'
+      ? matched.length === 1
+      : mode === 'allOf'
+        ? matched.length === branches.length
+        : matched.length > 0;
 
-// At least one branch must match; every matched branch contributes its parts and winners.
-function resolveAnyOf(s: Schema, branches: Resolution[], tag: SchemaTag | undefined): Resolution {
-  const matched = branches.filter((part) => part.matched);
-  if (matched.length) {
-    return {
-      identity: compositeOrNull('anyOf', tag, identityParts(matched)),
-      matched: true,
-      winners: [s, ...matched.flatMap((part) => part.winners)],
-    };
+  if (satisfied) {
+    // An allOf is governed by every branch; oneOf/anyOf only by the ones that matched.
+    const governing = mode === 'allOf' ? branches : matched;
+    const parts = identityParts(governing);
+    const identity =
+      mode === 'oneOf' && !tag ? governing[0].identity : compositeOrNull(mode, tag, parts);
+    return { identity, matched: true, winners: [s, ...governing.flatMap((b) => b.winners)] };
   }
-  return {
-    identity: unresolvedOrNull('anyOf matched nothing', tag, []),
-    matched: false,
-    winners: [s],
-  };
-}
 
-// Every branch must match. The parts found on the way are kept even on failure, so an
-// unresolved identity still names what was considered.
-function resolveAllOf(s: Schema, branches: Resolution[], tag: SchemaTag | undefined): Resolution {
-  const found = identityParts(branches);
-  if (branches.every((part) => part.matched)) {
-    return {
-      identity: compositeOrNull('allOf', tag, found),
-      matched: true,
-      winners: [s, ...branches.flatMap((part) => part.winners)],
-    };
-  }
+  const reason =
+    mode === 'oneOf'
+      ? `oneOf expected exactly one match, got ${matched.length}`
+      : mode === 'allOf'
+        ? 'allOf did not fully match'
+        : 'anyOf matched nothing';
+  // Failure still names what was considered: allOf every branch, oneOf the ones that
+  // matched, anyOf nothing (none passed).
+  const considered = mode === 'allOf' ? branches : mode === 'oneOf' ? matched : [];
   return {
-    identity: unresolvedOrNull('allOf did not fully match', tag, found),
+    identity: unresolvedOrNull(reason, tag, identityParts(considered)),
     matched: false,
     winners: [s],
   };
@@ -214,7 +212,7 @@ function resolveLeaf(
   value: unknown,
   ctx: ResolveContext,
 ): Resolution {
-  const matched = validates(ctx.validator, value, ctx.localShape(s));
+  const matched = matchesLocalShape(value, s, ctx);
   return { identity: tag ? single(tag.name) : null, matched, winners: [s] };
 }
 
@@ -243,16 +241,13 @@ export function resolve(
 
   // The enclosing schema always governs its own children: a schema may carry a combinator
   // *and* its own `properties`/`items` (e.g. `allOf: [Base]` plus own fields), so `s` is a
-  // winner alongside any matched branch winners in every arm below. Mirrors the leaf path
-  // (`winners: [s]`), which descends into own properties regardless of local validity.
-  if (s.oneOf) {
-    return resolveOneOf(s, s.oneOf.map(branch), tag);
-  }
-  if (s.anyOf) {
-    return resolveAnyOf(s, s.anyOf.map(branch), tag);
-  }
-  if (s.allOf) {
-    return resolveAllOf(s, s.allOf.map(branch), tag);
+  // winner alongside any matched branch winners (see `resolveComposite`). Mirrors the leaf
+  // path (`winners: [s]`), which descends into own properties regardless of local validity.
+  for (const mode of ['oneOf', 'anyOf', 'allOf'] as const) {
+    const branches = s[mode];
+    if (branches) {
+      return resolveComposite(mode, s, branches.map(branch), tag);
+    }
   }
   return resolveLeaf(s, tag, value, ctx);
 }

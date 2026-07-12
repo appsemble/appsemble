@@ -3,7 +3,7 @@ import { type Schema, type ValidationError, type Validator } from 'jsonschema';
 import { formatPath, getPath, pathContains } from './path.js';
 import {
   childSchema,
-  createLocalShape,
+  localShapeFactory,
   type DynamicChild,
   resolve,
   type ResolveContext,
@@ -145,7 +145,7 @@ export class Scanner {
   constructor(schemas: Record<string, Schema>, options: ResolveOptions = {}) {
     this.registry = new SchemaRegistry(schemas);
     this.resolveValidator = this.registry.createValidator();
-    this.localShape = createLocalShape();
+    this.localShape = localShapeFactory();
     this.dynamicChild = options.dynamicChild;
   }
 

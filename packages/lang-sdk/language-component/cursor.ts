@@ -2,7 +2,7 @@ import { type Schema } from 'jsonschema';
 
 import {
   childSchema,
-  createLocalShape,
+  localShapeFactory,
   resolve,
   type ResolveContext,
   type ResolveOptions,
@@ -66,7 +66,7 @@ export class Cursor {
     const ctx: ResolveContext = {
       resolveRef: (ref) => registry.resolveRef(ref),
       validator: registry.createValidator(),
-      localShape: createLocalShape(),
+      localShape: localShapeFactory(),
       dynamicChild: options.dynamicChild,
     };
     return new Cursor(ctx, rootSchema, data, [], null);
