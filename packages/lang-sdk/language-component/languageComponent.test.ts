@@ -1,7 +1,7 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { LanguageComponent } from './index.js';
+import { LanguageComponent, Scanner } from './index.js';
 
 describe('LanguageComponent.define', () => {
   // The stress-test fixtures build every tag through LanguageComponent.define (obj/combinator delegate
@@ -77,18 +77,43 @@ describe('LanguageComponent.schemas / LanguageComponent.bindings', () => {
 });
 
 describe('LanguageComponent.annotate', () => {
-  it('bulk-tags a registry by key so an untagged schema set mounts identities', () => {
+  it('tags objects and combinators by key while passing scalars and tagged schemas through', () => {
+    const tagged: Schema = {
+      type: 'object',
+      appsembleLanguageComponent: { name: 'Kept', mode: 'single' },
+    };
     const annotated = LanguageComponent.annotate({
       Page: { type: 'object', properties: {} },
+      Widget: { oneOf: [] },
       Name: { type: 'string' },
+      Existing: tagged,
     });
 
-    // Object schemas become language components keyed by their registry name.
     expect(annotated.Page.appsembleLanguageComponent).toStrictEqual({
       name: 'Page',
       mode: 'single',
     });
-    // Scalars are left untagged.
+    expect(annotated.Widget.appsembleLanguageComponent).toStrictEqual({
+      name: 'Widget',
+      mode: 'oneOf',
+    });
     expect(annotated.Name.appsembleLanguageComponent).toBeUndefined();
+    // An already-tagged schema keeps its name, even when the registry key differs.
+    expect(annotated.Existing.appsembleLanguageComponent).toStrictEqual({
+      name: 'Kept',
+      mode: 'single',
+    });
+  });
+
+  it('makes an otherwise-untagged schema graph analyzable', () => {
+    const schemas = LanguageComponent.annotate({
+      Root: { type: 'object', properties: { page: { $ref: '#/components/schemas/Page' } } },
+      Page: { type: 'object', properties: { name: { type: 'string' } } },
+    });
+
+    const result = new Scanner(schemas).scan({ page: { name: 'Home' } }, schemas.Root);
+
+    expect(result.mounts.get('/')?.identity.name).toBe('Root');
+    expect(result.mounts.get('/page')?.identity.name).toBe('Page');
   });
 });

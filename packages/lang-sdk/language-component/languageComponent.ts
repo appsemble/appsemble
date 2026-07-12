@@ -1,8 +1,23 @@
 import { type Schema } from 'jsonschema';
 
-import { annotateSchemas, tagMode } from './annotate.js';
+import { mapValues } from '../mapValues.js';
 import { type Cursor } from './cursor.js';
-import { COMPONENT_KEY, schemaTag } from './types.js';
+import { COMPONENT_KEY, type TagMode, schemaTag } from './types.js';
+
+// Classify a schema for tagging: a combinator by its keyword, an object by its `type`/
+// `properties`, or null for anything else (scalars, which carry no children to mount).
+function tagMode(schema: Schema): TagMode | null {
+  const combinator = (['oneOf', 'anyOf', 'allOf'] as const).find((keyword) => schema[keyword]);
+  if (combinator) {
+    return combinator;
+  }
+  return schema.type === 'object' || schema.properties ? 'single' : null;
+}
+
+// Attach the language-component tag naming `name` with resolution `mode`.
+function withTag(schema: Schema, name: string, mode: TagMode): Schema {
+  return { ...schema, [COMPONENT_KEY]: { name, mode } };
+}
 
 /**
  * Post-choice behaviors attached to a resolved language component identity. They run only after
@@ -65,7 +80,7 @@ export class LanguageComponent {
   ): LanguageComponent {
     const annotated = schemaTag(schema)
       ? schema
-      : { ...schema, [COMPONENT_KEY]: { name, mode: tagMode(schema) ?? 'single' } };
+      : withTag(schema, name, tagMode(schema) ?? 'single');
     return new LanguageComponent(name, annotated, binding);
   }
 
@@ -90,6 +105,22 @@ export class LanguageComponent {
     return new Map(defs.map((def) => [def.name, def.binding]));
   }
 
-  // Bulk-tag an existing schema registry, each schema by its key (see `annotateSchemas`).
-  static annotate = annotateSchemas;
+  /**
+   * Bulk-tag an existing `name -> schema` registry, tagging each schema by its key so the
+   * analyzer mounts identities for it without per-component `define` calls. Unlike `define`,
+   * this only tags taggable shapes (objects and combinators); a scalar or an already-tagged
+   * schema is left untouched, so the Appsemble schemas can be opted in wholesale.
+   *
+   * @param schemas The registry of named schemas.
+   * @returns A new registry with each taggable schema annotated by its key.
+   */
+  static annotate(schemas: Record<string, Schema>): Record<string, Schema> {
+    return mapValues(schemas, (schema, name) => {
+      if (!schema || typeof schema !== 'object' || schemaTag(schema)) {
+        return schema;
+      }
+      const mode = tagMode(schema);
+      return mode ? withTag(schema, name, mode) : schema;
+    });
+  }
 }
