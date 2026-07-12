@@ -91,6 +91,13 @@ export interface IncrementalOptions {
   changed?: NodePath[];
 }
 
+// A re-walk root for incremental analysis: a subtree (the schema at a path) to re-analyze
+// because an edit fell at or below it. Boundaries sit at `$ref` cutoffs (see `boundaryFor`).
+interface Boundary {
+  path: NodePath;
+  schema: Schema;
+}
+
 function walk(schema: Schema, value: unknown, path: NodePath, ctx: WalkContext): void {
   const { identity, winners, matched } = resolve(schema, value, ctx);
   if (identity) {
@@ -225,15 +232,24 @@ export class Scanner {
     return new ScanResult(mounts, data, documentValid, hits);
   }
 
-  private walkContext(byPath: Map<string, Mount>): WalkContext {
+  // Everything the decision core needs to resolve and descend, with no emit sink. Used
+  // directly by `boundaryFor`, which navigates without producing mounts.
+  private resolveContext(): ResolveContext {
     return {
-      emit(path, identity, localValid) {
-        byPath.set(formatPath(path), { errors: [], localValid, identity, path });
-      },
       resolveRef: (ref) => this.registry.resolveRef(ref),
       localShape: this.localShape,
       dynamicChild: this.dynamicChild,
       validator: this.resolveValidator,
+    };
+  }
+
+  // The resolve context plus the walk's emit sink, which records a mount per resolved node.
+  private walkContext(byPath: Map<string, Mount>): WalkContext {
+    return {
+      ...this.resolveContext(),
+      emit(path, identity, localValid) {
+        byPath.set(formatPath(path), { errors: [], localValid, identity, path });
+      },
     };
   }
 
@@ -261,11 +277,7 @@ export class Scanner {
 
   // Outermost re-walk roots for the changed paths: deduplicate by path, then drop any
   // boundary contained by another so overlapping edits re-walk their subtree once.
-  private boundaries(
-    rootSchema: Schema,
-    data: unknown,
-    changed: NodePath[],
-  ): { path: NodePath; schema: Schema }[] {
+  private boundaries(rootSchema: Schema, data: unknown, changed: NodePath[]): Boundary[] {
     const unique = new Map(
       changed.map((path) => {
         const boundary = this.boundaryFor(rootSchema, data, path);
@@ -289,16 +301,12 @@ export class Scanner {
    * @param target The changed data path to bound.
    * @returns The nearest enclosing `$ref` boundary path and its schema.
    */
-  private boundaryFor(
-    rootSchema: Schema,
-    data: unknown,
-    target: NodePath,
-  ): { path: NodePath; schema: Schema } {
-    const ctx = this.walkContext(new Map());
+  private boundaryFor(rootSchema: Schema, data: unknown, target: NodePath): Boundary {
+    const ctx = this.resolveContext();
     let schema = rootSchema;
     let value: unknown = data;
     let path: NodePath = [];
-    let boundary: { path: NodePath; schema: Schema } = { path: [], schema: rootSchema };
+    let boundary: Boundary = { path: [], schema: rootSchema };
     for (const key of target) {
       const { winners } = resolve(schema, value, ctx);
       const child = childSchema(winners, String(key), ctx.resolveRef);
