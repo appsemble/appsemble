@@ -32,25 +32,19 @@ describe('LanguageComponent.define', () => {
     ).toStrictEqual({ name: 'Scalar', mode: 'single' });
   });
 
-  it('preserves an existing tag and writes new tags under a custom meta key', () => {
-    const tagged = {
+  it('preserves an existing tag untouched', () => {
+    const tagged: Schema = {
       type: 'object',
-      customKey: { name: 'AlreadyTagged', mode: 'single' },
-    } as Schema & Record<string, unknown>;
+      appsembleLanguageComponent: { name: 'AlreadyTagged', mode: 'single' },
+    };
 
-    const preserved = LanguageComponent.define('Ignored', tagged, {}, 'customKey');
-    const custom = LanguageComponent.define('CustomTagged', { type: 'object' }, {}, 'customKey');
+    const preserved = LanguageComponent.define('Ignored', tagged, {});
 
     expect(preserved.schema).toBe(tagged);
-    expect((preserved.schema as Record<string, unknown>).customKey).toStrictEqual({
+    expect(preserved.schema.appsembleLanguageComponent).toStrictEqual({
       name: 'AlreadyTagged',
       mode: 'single',
     });
-    expect((custom.schema as Record<string, unknown>).customKey).toStrictEqual({
-      name: 'CustomTagged',
-      mode: 'single',
-    });
-    expect(custom.schema.appsembleLanguageComponent).toBeUndefined();
   });
 });
 

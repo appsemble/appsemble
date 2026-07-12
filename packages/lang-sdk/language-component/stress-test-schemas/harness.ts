@@ -24,13 +24,13 @@ export function describeIdentity(object: Identity): string {
 }
 
 // Stable string-tree projection over any analysis result or tree: `JSON Pointer ->
-// describeIdentity(object)`. Accepts anything carrying an `interpretations` map (the full
+// describeIdentity(object)`. Accepts anything carrying an `mounts` map (the full
 // ScanResult or a MountTree), so tests share one projection instead of copying it.
 export function describeIdentities(source: {
-  interpretations: ScanResult['interpretations'];
+  mounts: ScanResult['mounts'];
 }): Record<string, string> {
   return Object.fromEntries(
-    [...source.interpretations.entries()]
+    [...source.mounts.entries()]
       .sort(([left], [right]) => left.localeCompare(right))
       .map(([path, interpretation]) => [path, describeIdentity(interpretation.identity)]),
   );

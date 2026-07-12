@@ -18,3 +18,12 @@ export function getPath(root: unknown, path: NodePath): unknown {
   }
   return value;
 }
+
+export function pathContains(parent: NodePath, child: NodePath): boolean {
+  // Compare by string value: a path segment means the same key whether it arrives as a
+  // number (array index from a caller's diff) or a string (the walk's Object.keys).
+  return (
+    parent.length <= child.length &&
+    parent.every((part, index) => String(part) === String(child[index]))
+  );
+}

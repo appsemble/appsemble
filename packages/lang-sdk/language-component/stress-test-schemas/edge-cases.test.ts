@@ -48,7 +48,7 @@ describe('engine edge cases', () => {
     } satisfies Record<string, Schema>;
 
     const tree = new Scanner(schemas).buildTree({ choice: { kind: 'a' } }, schemas.RefCutContainer);
-    const mounted = tree.interpretations.get('/');
+    const mounted = tree.mounts.get('/');
 
     expect(mounted).toBeDefined();
     expect(describeIdentity(mounted!.identity)).toBe('RefCutContainer:allOf(RefCutPart)');
@@ -72,8 +72,8 @@ describe('engine edge cases', () => {
     const valid = new Scanner(schemas).buildTree({ choice: 'a' }, schemas.AnyOfHost);
     const invalid = new Scanner(schemas).buildTree({ choice: 'c' }, schemas.AnyOfHost);
 
-    expect(valid.interpretations.get('/')!.localValid).toBe(true);
-    expect(invalid.interpretations.get('/')!.localValid).toBe(false);
+    expect(valid.mounts.get('/')!.localValid).toBe(true);
+    expect(invalid.mounts.get('/')!.localValid).toBe(false);
   });
 
   // The no-match counterpart to the scenario-driven 'composes every wrapper under an
@@ -91,7 +91,7 @@ describe('engine edge cases', () => {
     // Untagged combinator + no annotated parts + a member that fails -> nothing mounts.
     const tree = new Scanner({}).buildTree({}, schema);
 
-    expect(tree.interpretations.size).toBe(0);
+    expect(tree.mounts.size).toBe(0);
   });
 
   it('stops the incremental boundary when a value along the changed path became null', () => {
@@ -130,7 +130,7 @@ describe('engine edge cases', () => {
 
     const tree = new Scanner(schemas).buildTree({ kind: 'c' }, schemas.UntaggedChoice);
 
-    expect(tree.interpretations.size).toBe(0);
+    expect(tree.mounts.size).toBe(0);
   });
 
   it('matches a full rebuild when a changed path is below an unowned schema key', () => {

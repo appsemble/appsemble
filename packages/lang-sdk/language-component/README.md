@@ -17,8 +17,8 @@ classDiagram
   direction LR
 
   class Scanner {
-    +constructor(schemas, ScannerOptions)
-    +run(schemas, data, rootSchema, ScannerOptions)$ ScanResult
+    +constructor(schemas, ResolveOptions)
+    +run(schemas, data, rootSchema, ResolveOptions)$ ScanResult
     +buildTree(data, rootSchema, IncrementalOptions) MountTree
     +validate(data, rootSchema) ScanValidation
     +scan(data, rootSchema, IncrementalOptions) ScanResult
@@ -30,7 +30,7 @@ classDiagram
     +path NodePath
     +identity Identity
     +localValid boolean
-    +at(schemas, rootSchema, data, ScannerOptions)$ Cursor
+    +at(schemas, rootSchema, data, ResolveOptions)$ Cursor
     +child(key) Cursor
     +parent() Cursor
     +children() Cursor[]
@@ -38,19 +38,17 @@ classDiagram
   }
 
   class LanguageComponent {
-    <<type + namespace>>
     +name string
     +schema Schema
     +binding LanguageComponentBinding
-    +define(name, schema, binding, key)$ LanguageComponent
+    +define(name, schema, binding)$ LanguageComponent
     +schemas(defs)$ Record~string, Schema~
     +bindings(defs)$ Map~string, LanguageComponentBinding~
-    +annotate(schemas, key)$ Record~string, Schema~
+    +annotate(schemas)$ Record~string, Schema~
   }
 
-  class ScannerOptions {
+  class ResolveOptions {
     <<interface>>
-    +componentKey? string
     +dynamicChild? DynamicChild
   }
   class IncrementalOptions {
@@ -59,8 +57,9 @@ classDiagram
     +changed? NodePath[]
   }
   class MountTree {
-    +interpretations Map~string, Mount~
+    +mounts Map~string, Mount~
     +mountAt(path) Mount
+    +valueAt(path) unknown
   }
   class ScanResult {
     +documentValid boolean
@@ -75,7 +74,6 @@ classDiagram
   class Mount {
     <<interface>>
     +path NodePath
-    +value unknown
     +identity Identity
     +localValid boolean
     +errors ValidationError[]
@@ -125,8 +123,8 @@ classDiagram
   Scanner ..> MountTree : buildTree
   Scanner ..> ScanValidation : validate
   Scanner ..> ScanResult : scan / run
-  Scanner --> ScannerOptions : configured by
-  ScannerOptions --> DynamicChild
+  Scanner --> ResolveOptions : configured by
+  ResolveOptions --> DynamicChild
   IncrementalOptions --> MountTree : reuses previous
   MountTree "1" o-- "many" Mount
   ScanResult --|> MountTree
@@ -137,7 +135,7 @@ classDiagram
   ScanHit --> SchemaTag
   SchemaTag --> TagMode
   Cursor ..> Identity : resolves
-  Cursor ..> ScannerOptions : at
+  Cursor ..> ResolveOptions : at
   LanguageComponent *-- LanguageComponentBinding
   LanguageComponent ..> Scanner : schemas feed
   LanguageComponentBinding ..> Cursor : hooks receive
@@ -150,7 +148,7 @@ validation are separate operations:
 
 ```text
 new Scanner(schemas)          compile registry + validators + ref-cutoff cache once
-  .buildTree(data, rootSchema)     -> identity tree (walk only): interpretations
+  .buildTree(data, rootSchema)     -> identity tree (walk only): mounts
   .validate(data, rootSchema)      -> documentValid + errors (+ hits)
   .scan(data, rootSchema)       -> both, combined (the original result shape)
 ```
@@ -160,9 +158,9 @@ new Scanner(schemas)          compile registry + validators + ref-cutoff cache o
 repeatedly so the registry, validator, and ref-cutoff cache compile once.
 
 - The walk owns the whole tree. `resolve` is the single place a `oneOf`/`anyOf`/`allOf` is decided;
-  it returns the identity at a node and the concrete winner schema(s). `governingChild` then does
-  pure structural lookup on those winners, so navigation only ever descends winning branches and
-  never re-validates — losing-branch ghosts are never mounted.
+  it returns the identity at a node and the concrete winner schema(s). `childSchema` then does pure
+  structural lookup on those winners, so navigation only ever descends winning branches and never
+  re-validates — losing-branch ghosts are never mounted.
 - `validate` produces `documentValid` and `errors` independently of the walk, so a caller runs it on
   its own cadence. Its `hits` are kept for tooling but do not drive the tree.
 - The walk reaches everything Appsemble's OpenAPI 3.0 schemas can express. It cannot reach language
@@ -179,7 +177,7 @@ flowchart TD
   R -->|"ButtonWidget: no match"| B["ButtonWidget (pruned)"]
   R -->|"IconWidget: matches"| I["IconWidget"]
   I --> M["mount Widget:oneOf(IconWidget)"]
-  M --> G["governingChild descends into the winner only"]
+  M --> G["childSchema descends into the winner only"]
   B -.->|"never mounted, no ghost"| X(("discarded"))
 ```
 
@@ -309,19 +307,21 @@ Untagged combinators are still transparent — an anonymous `oneOf`/`anyOf`/`all
 identities of its tagged branches — but an untagged plain object mounts nothing, which is why the
 named object schemas above need tagging.
 
-The keyword is configurable: `LanguageComponent.annotate(raw, key)` and
-`new Scanner(schemas, { componentKey })` both default to `COMPONENT_KEY`
-(`appsembleLanguageComponent`) but accept any key, as long as the two agree.
+The tag always lives under the `COMPONENT_KEY` keyword (`appsembleLanguageComponent`), declared on
+the `jsonschema` `Schema` type by the module augmentation in `types.ts`.
 
 ## Files
 
+- `resolve.ts`: the decision core — `resolve` (combinator discrimination, one arm per combinator),
+  `childSchema` (structural descent), and the ref-cutoff (`createLocalShape`), shared by the walk
+  and the cursor so identity is decided in exactly one place.
 - `scanner.ts`: the engine — `Scanner` (`buildTree`/`validate`/`scan` and the `run` one-shot
   static), incremental re-analysis.
 - `cursor.ts`: `Cursor` (rooted via `Cursor.at`), a lazy zipper over `(value, schema)` that shares
-  `resolve` and `governingChild` with the walk, for navigating and reading a single node in context.
-- `binding.ts`: the `LanguageComponent` namespace (`define` / `schemas` / `bindings` / `annotate`)
-  and the `LanguageComponentBinding` type, to declare a component's schema and behaviors and collect
-  them into registries.
+  `resolve` and `childSchema` with the walk, for navigating and reading a single node in context.
+- `languageComponent.ts`: the `LanguageComponent` class (`define` / `schemas` / `bindings` /
+  `annotate` statics) and the `LanguageComponentBinding` type, to declare a component's schema and
+  behaviors and collect them into registries.
 - `annotate.ts`: the schema-tagging internals behind `LanguageComponent.annotate` (object and
   combinator schemas get tagged so the analyzer mounts identities for them).
 - `types.ts`: `Identity`, `Mount`, `ScanHit`, `SchemaTag`, `COMPONENT_KEY`/`schemaTag`, and the

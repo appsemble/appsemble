@@ -84,10 +84,8 @@ describe('blocks prototype (a materialized discriminated oneOf)', () => {
     const app = { pages: [{ blocks: [{ type: 'form', parameters: { fields: [] } }] }] };
     const result = Scanner.run(schemas, app, schemas.AppDefinition);
 
-    expect(result.interpretations.get('/pages/0/blocks/0')?.identity.name).toBe('BlockDefinition');
+    expect(result.mounts.get('/pages/0/blocks/0')?.identity.name).toBe('BlockDefinition');
     // The block's parameters resolved to the form block's schema and mounted.
-    expect(result.interpretations.get('/pages/0/blocks/0/parameters')?.identity.name).toBe(
-      'FormParams',
-    );
+    expect(result.mounts.get('/pages/0/blocks/0/parameters')?.identity.name).toBe('FormParams');
   });
 });

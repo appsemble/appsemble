@@ -23,13 +23,13 @@ describe('mini schema language component analysis', () => {
     expect(describeIdentities(result)).toStrictEqual({
       '/scaryWidget': 'ScaryWidget:oneOf(ExperimentalButton)',
     });
-    const interpretations = [...result.interpretations.values()];
-    expect(interpretations).toHaveLength(1);
-    expect(interpretations[0]).toMatchObject({
+    const mounts = [...result.mounts.values()];
+    expect(mounts).toHaveLength(1);
+    expect(mounts[0]).toMatchObject({
       localValid: true,
       path: ['scaryWidget'],
     });
-    expect(interpretations[0].errors).toStrictEqual(
+    expect(mounts[0].errors).toStrictEqual(
       expect.arrayContaining([
         expect.objectContaining({
           message: 'does not exactly match expected constant: false',

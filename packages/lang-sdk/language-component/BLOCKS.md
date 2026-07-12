@@ -51,7 +51,7 @@ reconstruct a union at all — it can look the block up. This is Approach B.
 
 ## Approach B: a value-directed resolver hook
 
-Add an optional `ResolveContext` hook that `governingChild` consults when descending:
+Add an optional `ResolveContext` hook that `childSchema` consults when descending:
 
 ```text
 dynamicChild?(parentIdentity: string, parentValue: unknown, key: string): Schema | null;
@@ -74,11 +74,9 @@ re-walks just the block subtrees via the incremental API:
 const a0 = new Scanner(baseSchemas);
 // Blocks mount; params unresolved.
 let tree = a0.buildTree(app, root);
-const blocks = [...tree.interpretations.values()].filter(
-  (i) => i.identity.name === 'BlockDefinition',
-);
+const blocks = [...tree.mounts.values()].filter((i) => i.identity.name === 'BlockDefinition');
 // Async fetch lives in the consumer.
-const registry = await fetchBlockSchemas(blocks.map((i) => i.value));
+const registry = await fetchBlockSchemas(blocks.map((i) => tree.valueAt(i.path)));
 const a1 = new Scanner(baseSchemas, { dynamicChild: registry.resolve });
 tree = a1.buildTree(app, root, { previous: tree, changed: blocks.map((i) => i.path) });
 ```
@@ -94,12 +92,12 @@ sequenceDiagram
   participant A1 as Scanner a1 (dynamicChild)
   C->>A0: buildTree(app, root)
   A0-->>C: tree, BlockDefinition mounted, parameters unresolved
-  C->>C: filter interpretations for BlockDefinition
+  C->>C: filter mounts for BlockDefinition
   C->>F: await fetch(block values)
   Note over C,F: async, cannot run inside a sync walk
   F-->>C: per-app registry keyed by type+version
   C->>A1: buildTree(app, root, previous tree + changed block paths)
-  A1-->>C: governingChild consults dynamicChild; parameters mount, non-block nodes reused
+  A1-->>C: childSchema consults dynamicChild; parameters mount, non-block nodes reused
 ```
 
 ### Annotation

@@ -1,6 +1,14 @@
 import { type Schema, type ValidationError, type Validator } from 'jsonschema';
 
-import { formatPath, getPath } from './path.js';
+import { formatPath, getPath, pathContains } from './path.js';
+import {
+  childSchema,
+  createLocalShape,
+  type DynamicChild,
+  resolve,
+  type ResolveContext,
+  type ResolveOptions,
+} from './resolve.js';
 import { SchemaRegistry } from './schemaRegistry.js';
 import {
   COMPONENT_KEY,
@@ -8,15 +16,12 @@ import {
   type Identity,
   type Mount,
   type NodePath,
-  type SchemaTag,
   schemaTag,
 } from './types.js';
 
 /**
- * Language component analyzer: one structural walk builds the whole tree. `resolve` is the
- * single place a oneOf/anyOf/allOf is decided, returning the identity and the
- * concrete winner schema(s); `governingChild` then does pure structural lookup on
- * those winners to descend, so the walk only ever follows winning branches.
+ * Language component analyzer: one structural walk builds the whole tree, descending
+ * only into winning branches via the decision core in `resolve.ts`.
  *
  * The walk reaches everything Appsemble's OpenAPI 3.0 schemas can express. It cannot
  * reach language components placed behind conditional/pattern applicators (`if`/`then`,
@@ -29,57 +34,33 @@ import {
  * paths (see `boundaryFor`), so a per-edit re-analysis is near-free (see PERFORMANCE.md).
  */
 
-export interface Resolution {
-  identity: Identity | null;
-  winners: Schema[];
-  matched: boolean;
-}
-
-// Value-directed child resolver (BLOCKS.md, Approach B): given the parent's resolved
-// identity, its value, and a child key, return the child's schema directly, bypassing the
-// structural `governingChild` lookup. Used to resolve `type`+`version`-discriminated block
-// params without materializing a union; returns null to fall back to structural descent.
-export type DynamicChild = (
-  parentIdentity: string | null,
-  parentValue: unknown,
-  key: string,
-) => Schema | null;
-
-// Everything `resolve` and `governingChild` need to decide identity and descend, minus
-// the walk's emit sink. The cursor (interactive navigation) reuses this same context.
-export interface ResolveContext {
-  resolveRef: (ref: string) => Schema;
-  validator: Validator;
-  shallow: (schema: Schema) => Schema;
-  componentKey: string;
-  dynamicChild?: DynamicChild;
-}
-
-// Per-scan configuration for a `Scanner` / cursor tree.
-export interface ScannerOptions {
-  // The schema keyword identities are read from (defaults to COMPONENT_KEY).
-  componentKey?: string;
-  // A value-directed child resolver consulted before structural descent (see DynamicChild).
-  dynamicChild?: DynamicChild;
-}
-
 interface WalkContext extends ResolveContext {
   emit: (path: NodePath, identity: Identity, localValid: boolean) => void;
 }
 
-// The identity tree: mounts keyed by JSON Pointer, with `mountAt` to look one up by a structured
-// data path (so callers never stringify a path themselves). `interpretations` carry `localValid`
-// but no document errors — those come from `validate`. This is what `buildTree` produces and reuses.
+// The identity tree: mounts keyed by JSON Pointer over the analyzed document, with `mountAt` to
+// look one up by a structured data path (so callers never stringify a path themselves). Mounts
+// carry `localValid` but no document errors — those come from `validate` — and no value: values
+// are derived on demand via `valueAt`, so reused mounts stay fresh across incremental rebuilds.
+// This is what `buildTree` produces and reuses.
 export class MountTree {
-  readonly interpretations: Map<string, Mount>;
+  readonly mounts: Map<string, Mount>;
 
-  constructor(interpretations: Map<string, Mount>) {
-    this.interpretations = interpretations;
+  readonly data: unknown;
+
+  constructor(mounts: Map<string, Mount>, data: unknown) {
+    this.mounts = mounts;
+    this.data = data;
   }
 
   // The mount at a data path, or undefined when nothing mounted there.
   mountAt(path: NodePath): Mount | undefined {
-    return this.interpretations.get(formatPath(path));
+    return this.mounts.get(formatPath(path));
+  }
+
+  // The document value at a data path (a mount's `path`, typically), or undefined.
+  valueAt(path: NodePath): unknown {
+    return getPath(this.data, path);
   }
 }
 
@@ -91,8 +72,8 @@ export class ScanResult extends MountTree {
 
   readonly hits: ScanHit[];
 
-  constructor(interpretations: Map<string, Mount>, documentValid: boolean, hits: ScanHit[]) {
-    super(interpretations);
+  constructor(mounts: Map<string, Mount>, data: unknown, documentValid: boolean, hits: ScanHit[]) {
+    super(mounts, data);
     this.documentValid = documentValid;
     this.hits = hits;
   }
@@ -110,226 +91,6 @@ export interface IncrementalOptions {
   changed?: NodePath[];
 }
 
-function single(name: string): Identity {
-  return { kind: 'single', name, parts: [] };
-}
-
-function unresolved(reason: string, parts: Identity[] = []): Identity {
-  return { kind: 'unresolved', name: 'UnresolvedLanguageComponent', parts, reason };
-}
-
-function composite(
-  mode: 'allOf' | 'anyOf' | 'oneOf',
-  tag: SchemaTag | undefined,
-  parts: Identity[],
-): Identity {
-  return { kind: 'composite', mode, name: tag?.name ?? mode, parts };
-}
-
-// A combinator yields an identity only when it is itself tagged or resolved some tagged parts;
-// an anonymous combinator over untagged branches is transparent and contributes nothing.
-function compositeOrNull(
-  mode: 'allOf' | 'anyOf' | 'oneOf',
-  tag: SchemaTag | undefined,
-  parts: Identity[],
-): Identity | null {
-  return tag || parts.length ? composite(mode, tag, parts) : null;
-}
-
-function unresolvedOrNull(
-  reason: string,
-  tag: SchemaTag | undefined,
-  parts: Identity[],
-): Identity | null {
-  return tag || parts.length ? unresolved(reason, parts) : null;
-}
-
-function deref(schema: Schema, resolveRef: (ref: string) => Schema): Schema {
-  return schema.$ref ? deref(resolveRef(schema.$ref), resolveRef) : schema;
-}
-
-// Performance. Without the ref-cutoff below, resolve() validated each node against
-// its full schema and jsonschema follows $refs, so a node's subtree was re-validated
-// inside every ancestor's validation -- O(N x nesting-depth), seconds on a medium app.
-//
-// The ref-cutoff makes per-node validation local (see `stripRefs`), which is the
-// dominant win. A per-run memo of validates() by (value, schema) identity was tried
-// and made no measurable difference on real apps (the costly validations are all
-// distinct, not repeated), so it was dropped. The remaining cost is the single
-// full-ref validation pass below (document validity, errors, hits) plus validator
-// construction; optimize those next if the profile demands it.
-function validates(validator: Validator, value: unknown, schema: Schema): boolean {
-  return validator.validate(value, schema, { base: '#', nestedErrors: true }).valid;
-}
-
-// Ref-cutoff: a copy of a schema with every nested $ref replaced by accept-all, so
-// validating against it checks only the schema's own local shape and never recurses
-// into referenced subtrees (the walk visits those). Nested `oneOf` is relaxed to
-// `anyOf` because accept-all branches make exact-one vacuously false; exclusivity is
-// not needed to recognize local shape.
-function stripRefs(schema: Schema): Schema {
-  if (schema.$ref) {
-    return {};
-  }
-  const copy: Schema = { ...schema };
-  if (copy.properties) {
-    copy.properties = Object.fromEntries(
-      Object.entries(copy.properties).map(([key, value]) => [key, stripRefs(value)]),
-    );
-  }
-  if (copy.items && typeof copy.items === 'object') {
-    copy.items = Array.isArray(copy.items) ? copy.items.map(stripRefs) : stripRefs(copy.items);
-  }
-  if (copy.additionalProperties && typeof copy.additionalProperties === 'object') {
-    copy.additionalProperties = stripRefs(copy.additionalProperties);
-  }
-  if (copy.allOf) {
-    copy.allOf = copy.allOf.map(stripRefs);
-  }
-  if (copy.anyOf) {
-    copy.anyOf = copy.anyOf.map(stripRefs);
-  }
-  if (copy.oneOf) {
-    copy.anyOf = [...(copy.anyOf ?? []), ...copy.oneOf.map(stripRefs)];
-    delete copy.oneOf;
-  }
-  return copy;
-}
-
-// Memoize the ref-cutoff: return a function that builds each schema's local-shape copy
-// (stripRefs) once and caches it by schema identity, so repeated resolves against the same
-// schema reuse the copy instead of rebuilding it. The cache is stable across a scan.
-export function createShallow(): (schema: Schema) => Schema {
-  const cache = new Map<Schema, Schema>();
-  return (schema) => {
-    let cached = cache.get(schema);
-    if (!cached) {
-      cached = stripRefs(schema);
-      cache.set(schema, cached);
-    }
-    return cached;
-  };
-}
-
-function identityParts(parts: Resolution[]): Identity[] {
-  return parts
-    .map((part) => part.identity)
-    .filter((identity): identity is Identity => identity != null);
-}
-
-function pathContains(parent: NodePath, child: NodePath): boolean {
-  // Compare by string value: a path segment means the same key whether it arrives as a
-  // number (array index from a caller's diff) or a string (the walk's Object.keys).
-  return (
-    parent.length <= child.length &&
-    parent.every((part, index) => String(part) === String(child[index]))
-  );
-}
-
-export function governingChild(
-  winners: Schema[],
-  key: string,
-  resolveRef: (ref: string) => Schema,
-): Schema | null {
-  const owned: Schema[] = [];
-  for (const winner of winners) {
-    const schema = deref(winner, resolveRef);
-    if (schema.properties && Object.hasOwn(schema.properties, key)) {
-      owned.push(schema.properties[key]);
-    } else if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
-      owned.push(schema.additionalProperties);
-    } else if (schema.items && typeof schema.items === 'object') {
-      // Single-schema `items` governs every element; tuple-form `items` governs by position.
-      const item = Array.isArray(schema.items) ? schema.items[Number(key)] : schema.items;
-      if (item && typeof item === 'object') {
-        owned.push(item);
-      }
-    }
-  }
-  if (owned.length === 0) {
-    return null;
-  }
-  return owned.length === 1 ? owned[0] : { allOf: owned };
-}
-
-export function resolve(
-  schema: Schema,
-  value: unknown,
-  ctx: ResolveContext,
-  seen: ReadonlySet<Schema> = new Set(),
-): Resolution {
-  const s = deref(schema, ctx.resolveRef);
-  const tag = schemaTag(s, ctx.componentKey);
-
-  // Cycle guard: a combinator branch that $refs an enclosing combinator expands `s` forever,
-  // unbounded by the value (the walk is bounded by data; resolve expands combinators
-  // structurally). `seen` is the ancestor path of schemas currently being resolved; re-entering
-  // one is a cycle, so stop with the enclosing schema still governing descent (`winners: [s]`).
-  if (seen.has(s)) {
-    return {
-      identity: tag ? unresolved('cyclic schema reference') : null,
-      matched: false,
-      winners: [s],
-    };
-  }
-  const nested = new Set(seen).add(s);
-
-  // The enclosing schema always governs its own children: a schema may carry a combinator
-  // *and* its own `properties`/`items` (e.g. `allOf: [Base]` plus own fields), so `s` is a
-  // winner alongside any matched branch winners. Mirrors the leaf path (`winners: [s]`),
-  // which descends into own properties regardless of local validity.
-  if (s.oneOf) {
-    const parts = s.oneOf.map((branch) => resolve(branch, value, ctx, nested));
-    const matched = parts.filter((part) => part.matched);
-    if (matched.length === 1) {
-      const [winner] = matched;
-      const identity = tag ? composite('oneOf', tag, identityParts([winner])) : winner.identity;
-      return { identity, matched: true, winners: [s, ...winner.winners] };
-    }
-    const found = identityParts(matched);
-    const identity = unresolvedOrNull(
-      `oneOf expected exactly one match, got ${matched.length}`,
-      tag,
-      found,
-    );
-    return { identity, matched: false, winners: [s] };
-  }
-
-  if (s.anyOf) {
-    const parts = s.anyOf.map((branch) => resolve(branch, value, ctx, nested));
-    const matched = parts.filter((part) => part.matched);
-    if (matched.length) {
-      const identity = compositeOrNull('anyOf', tag, identityParts(matched));
-      return { identity, matched: true, winners: [s, ...matched.flatMap((part) => part.winners)] };
-    }
-    return {
-      identity: unresolvedOrNull('anyOf matched nothing', tag, []),
-      matched: false,
-      winners: [s],
-    };
-  }
-
-  if (s.allOf) {
-    const parts = s.allOf.map((branch) => resolve(branch, value, ctx, nested));
-    const found = identityParts(parts);
-    if (parts.every((part) => part.matched)) {
-      const identity = compositeOrNull('allOf', tag, found);
-      return { identity, matched: true, winners: [s, ...parts.flatMap((part) => part.winners)] };
-    }
-    const identity = unresolvedOrNull('allOf did not fully match', tag, found);
-    return { identity, matched: false, winners: [s] };
-  }
-
-  // Leaf/object schema: its own properties govern children regardless of validity.
-  // Validate only the local shape (ref-cutoff); the walk visits referenced subtrees.
-  // A tagged object keeps its identity even when it fails its own constraints; the
-  // failure surfaces through localValid and the attached errors, never by erasing
-  // the object (mirroring how a oneOf winner keeps identity under an outer if/then).
-  const matched = validates(ctx.validator, value, ctx.shallow(s));
-  const identity = tag ? single(tag.name) : null;
-  return { identity, matched, winners: [s] };
-}
-
 function walk(schema: Schema, value: unknown, path: NodePath, ctx: WalkContext): void {
   const { identity, winners, matched } = resolve(schema, value, ctx);
   if (identity) {
@@ -337,11 +98,11 @@ function walk(schema: Schema, value: unknown, path: NodePath, ctx: WalkContext):
   }
   if (value && typeof value === 'object') {
     for (const key of Object.keys(value)) {
-      const childSchema =
+      const child =
         ctx.dynamicChild?.(identity?.name ?? null, value, key) ??
-        governingChild(winners, key, ctx.resolveRef);
-      if (childSchema) {
-        walk(childSchema, (value as Record<string, unknown>)[key], [...path, key], ctx);
+        childSchema(winners, key, ctx.resolveRef);
+      if (child) {
+        walk(child, (value as Record<string, unknown>)[key], [...path, key], ctx);
       }
     }
   }
@@ -351,12 +112,11 @@ function collectHits(
   validator: Validator,
   data: unknown,
   rootSchema: Schema,
-  componentKey: string,
 ): { hits: ScanHit[]; documentValid: boolean; errors: ValidationError[] } {
   const hits: ScanHit[] = [];
   // eslint-disable-next-line no-param-reassign
-  validator.attributes[componentKey] = (instance, currentSchema, options, context) => {
-    const tag = schemaTag(currentSchema, componentKey);
+  validator.attributes[COMPONENT_KEY] = (instance, currentSchema, options, context) => {
+    const tag = schemaTag(currentSchema);
     if (instance !== undefined && tag) {
       hits.push({ path: context.path, schema: currentSchema, tag });
     }
@@ -364,10 +124,6 @@ function collectHits(
   };
   const result = validator.validate(data, rootSchema, { base: '#', nestedErrors: true });
   return { documentValid: result.valid, errors: result.errors, hits };
-}
-
-function treeFrom(byPath: Map<string, Mount>): MountTree {
-  return new MountTree(byPath);
 }
 
 /**
@@ -381,19 +137,15 @@ export class Scanner {
   private readonly resolveValidator: Validator;
 
   // Persistent ref-cutoff cache, keyed on schema identity (stable across calls).
-  private readonly shallow: (schema: Schema) => Schema;
-
-  // The schema keyword identities are read from (defaults to COMPONENT_KEY).
-  private readonly componentKey: string;
+  private readonly localShape: (schema: Schema) => Schema;
 
   // Value-directed child resolver consulted before structural descent (see DynamicChild).
   private readonly dynamicChild?: DynamicChild;
 
-  constructor(schemas: Record<string, Schema>, options: ScannerOptions = {}) {
+  constructor(schemas: Record<string, Schema>, options: ResolveOptions = {}) {
     this.registry = new SchemaRegistry(schemas);
     this.resolveValidator = this.registry.createValidator();
-    this.shallow = createShallow();
-    this.componentKey = options.componentKey ?? COMPONENT_KEY;
+    this.localShape = createLocalShape();
     this.dynamicChild = options.dynamicChild;
   }
 
@@ -405,14 +157,14 @@ export class Scanner {
    * @param schemas The schema set to compile.
    * @param data The document to analyze.
    * @param rootSchema The root schema the document is walked and validated against.
-   * @param options Component key and value-directed resolver (see ScannerOptions).
+   * @param options The value-directed resolver (see ResolveOptions).
    * @returns The combined identity tree plus document validity.
    */
   static run(
     schemas: Record<string, Schema>,
     data: unknown,
     rootSchema: Schema,
-    options?: ScannerOptions,
+    options?: ResolveOptions,
   ): ScanResult {
     return new Scanner(schemas, options).scan(data, rootSchema);
   }
@@ -424,15 +176,15 @@ export class Scanner {
    * @param data The document to analyze.
    * @param rootSchema The root schema the document is walked against.
    * @param options Optional prior tree plus changed paths, for incremental reuse.
-   * @returns The identity tree: the per-path `interpretations` map.
+   * @returns The identity tree: the per-path `mounts` map.
    */
   buildTree(data: unknown, rootSchema: Schema, options?: IncrementalOptions): MountTree {
     if (options?.previous && options.changed?.length) {
       return this.incremental(data, rootSchema, options.previous, options.changed);
     }
     const byPath = new Map<string, Mount>();
-    walk(rootSchema, data, [], this.emitInto(byPath, data));
-    return treeFrom(byPath);
+    walk(rootSchema, data, [], this.walkContext(byPath));
+    return new MountTree(byPath, data);
   }
 
   /**
@@ -448,14 +200,13 @@ export class Scanner {
       this.registry.createValidator(),
       data,
       rootSchema,
-      this.componentKey,
     );
     return { documentValid, errors, hits };
   }
 
   /**
    * Combined result in the original shape: the identity tree plus document validity,
-   * with each interpretation's errors scoped to at or below its path.
+   * with each mount's errors scoped to at or below its path.
    *
    * @param data The document to analyze.
    * @param rootSchema The root schema the document is walked and validated against.
@@ -465,32 +216,22 @@ export class Scanner {
   scan(data: unknown, rootSchema: Schema, options?: IncrementalOptions): ScanResult {
     const tree = this.buildTree(data, rootSchema, options);
     const { documentValid, errors, hits } = this.validate(data, rootSchema);
-    const interpretations = new Map(
-      [...tree.interpretations].map(([key, interpretation]) => [
+    const mounts = new Map(
+      [...tree.mounts].map(([key, mount]) => [
         key,
-        {
-          ...interpretation,
-          errors: errors.filter((error) => pathContains(interpretation.path, error.path)),
-        },
+        { ...mount, errors: errors.filter((error) => pathContains(mount.path, error.path)) },
       ]),
     );
-    return new ScanResult(interpretations, documentValid, hits);
+    return new ScanResult(mounts, data, documentValid, hits);
   }
 
-  private emitInto(byPath: Map<string, Mount>, data: unknown): WalkContext {
+  private walkContext(byPath: Map<string, Mount>): WalkContext {
     return {
       emit(path, identity, localValid) {
-        byPath.set(formatPath(path), {
-          errors: [],
-          localValid,
-          identity,
-          path,
-          value: getPath(data, path),
-        });
+        byPath.set(formatPath(path), { errors: [], localValid, identity, path });
       },
       resolveRef: (ref) => this.registry.resolveRef(ref),
-      shallow: this.shallow,
-      componentKey: this.componentKey,
+      localShape: this.localShape,
       dynamicChild: this.dynamicChild,
       validator: this.resolveValidator,
     };
@@ -504,32 +245,18 @@ export class Scanner {
   ): MountTree {
     const boundaries = this.boundaries(rootSchema, data, changed);
     const byPath = new Map<string, Mount>();
-    // Reuse every prior interpretation not inside a re-walked boundary.
-    for (const interpretation of previous.interpretations.values()) {
-      if (!boundaries.some((boundary) => pathContains(boundary.path, interpretation.path))) {
-        byPath.set(formatPath(interpretation.path), interpretation);
+    // The new tree is pure set algebra: reused mounts (outside every boundary) plus
+    // re-walked mounts. Mounts carry no values, so reuse cannot go stale — values are
+    // derived from the new document through `valueAt`.
+    for (const mount of previous.mounts.values()) {
+      if (!boundaries.some((boundary) => pathContains(boundary.path, mount.path))) {
+        byPath.set(formatPath(mount.path), mount);
       }
     }
-    // Re-walk each affected subtree from its enclosing boundary.
     for (const boundary of boundaries) {
-      walk(
-        boundary.schema,
-        getPath(data, boundary.path),
-        boundary.path,
-        this.emitInto(byPath, data),
-      );
-      // A reused ancestor of the boundary keeps its identity but its value subtree
-      // changed; refresh its value (cloning, so the previous tree stays intact).
-      for (let depth = 0; depth < boundary.path.length; depth += 1) {
-        const ancestorPath = boundary.path.slice(0, depth);
-        const key = formatPath(ancestorPath);
-        const reused = byPath.get(key);
-        if (reused) {
-          byPath.set(key, { ...reused, value: getPath(data, ancestorPath) });
-        }
-      }
+      walk(boundary.schema, getPath(data, boundary.path), boundary.path, this.walkContext(byPath));
     }
-    return treeFrom(byPath);
+    return new MountTree(byPath, data);
   }
 
   // Outermost re-walk roots for the changed paths: deduplicate by path, then drop any
@@ -567,14 +294,14 @@ export class Scanner {
     data: unknown,
     target: NodePath,
   ): { path: NodePath; schema: Schema } {
-    const ctx = this.emitInto(new Map(), data);
+    const ctx = this.walkContext(new Map());
     let schema = rootSchema;
     let value: unknown = data;
     let path: NodePath = [];
     let boundary: { path: NodePath; schema: Schema } = { path: [], schema: rootSchema };
     for (const key of target) {
       const { winners } = resolve(schema, value, ctx);
-      const child = governingChild(winners, String(key), ctx.resolveRef);
+      const child = childSchema(winners, String(key), ctx.resolveRef);
       if (!child) {
         break;
       }

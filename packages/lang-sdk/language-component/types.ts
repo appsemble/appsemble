@@ -40,14 +40,13 @@ export interface SchemaTag {
   mode?: TagMode;
 }
 
-// The schema keyword the analyzer reads identities from and the annotator writes.
-// Configurable per analyzer/annotator call; this is the default. The `Schema`
-// augmentation above must use the literal, so keep the two in sync if it changes.
+// The schema keyword the analyzer reads identities from and the annotator writes,
+// declared on `Schema` by the module augmentation above.
 export const COMPONENT_KEY = 'appsembleLanguageComponent';
 
-// Read a language component tag from a schema under `key` (defaults to COMPONENT_KEY).
-export function schemaTag(schema: Schema, key: string = COMPONENT_KEY): SchemaTag | undefined {
-  return (schema as Record<string, unknown>)[key] as SchemaTag | undefined;
+// Read a language component tag from a schema.
+export function schemaTag(schema: Schema): SchemaTag | undefined {
+  return schema[COMPONENT_KEY];
 }
 
 export interface ScanHit {
@@ -68,10 +67,11 @@ export interface Identity {
 
 // An Identity mounted at a concrete data path. `localValid` is whether the value
 // satisfies its own schema; whole-document validity lives on the analysis result,
-// not here. `errors` are the validation errors at or below this path.
+// not here. `errors` are the validation errors at or below this path. The value
+// itself is not stored — read it through `MountTree.valueAt(path)`, so a mount
+// reused across incremental rebuilds can never carry a stale value.
 export interface Mount {
   path: NodePath;
-  value: unknown;
   identity: Identity;
   localValid: boolean;
   errors: ValidationError[];

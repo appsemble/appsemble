@@ -27,7 +27,7 @@ canonical page path segments.
 
 The [language component engine](./language-component/README.md) is a schema-directed identity,
 cursor, and binding layer over app definitions, with a
-[mini-schema stress suite](./mini-schemas/README.md).
+[mini-schema stress suite](./language-component/stress-test-schemas/README.md).
 
 ## Exports
 

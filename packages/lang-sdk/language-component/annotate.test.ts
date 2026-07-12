@@ -39,15 +39,6 @@ describe('annotateSchema', () => {
       mode: 'single',
     });
   });
-
-  it('should write the tag under a custom key', () => {
-    const result = annotateSchema({ type: 'object' }, 'Thing', 'customKey') as Record<
-      string,
-      unknown
-    >;
-    expect(result.customKey).toStrictEqual({ name: 'Thing', mode: 'single' });
-    expect(result.appsembleLanguageComponent).toBeUndefined();
-  });
 });
 
 describe('annotateSchemas', () => {
@@ -71,25 +62,8 @@ describe('annotateSchemas', () => {
       Page: { type: 'object', properties: { name: { type: 'string' } } },
     });
     const result = new Scanner(schemas).scan({ page: { name: 'Home' } }, schemas.Root);
-    expect(result.interpretations.get('/')?.identity.name).toBe('Root');
-    expect(result.interpretations.get('/page')?.identity.name).toBe('Page');
-  });
-
-  it('should honor a custom meta key end to end', () => {
-    const raw = {
-      Root: { type: 'object', properties: { page: { $ref: '#/components/schemas/Page' } } },
-      Page: { type: 'object', properties: {} },
-    };
-    const schemas = annotateSchemas(raw, 'customKey');
-    // The analyzer reading the same custom key mounts identities.
-    const matched = new Scanner(schemas, { componentKey: 'customKey' }).scan(
-      { page: {} },
-      schemas.Root,
-    );
-    expect(matched.interpretations.get('/page')?.identity.name).toBe('Page');
-    // The default key sees nothing, proving the key is actually threaded through.
-    const missed = new Scanner(schemas).scan({ page: {} }, schemas.Root);
-    expect(missed.interpretations.size).toBe(0);
+    expect(result.mounts.get('/')?.identity.name).toBe('Root');
+    expect(result.mounts.get('/page')?.identity.name).toBe('Page');
   });
 
   it('should expose the default key as COMPONENT_KEY', () => {

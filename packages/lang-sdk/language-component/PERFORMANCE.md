@@ -1,33 +1,34 @@
 # Language component analyzer performance notes
 
-Profiled on a real ~3,300-line app (sittard-geleen reservations, ~2,300 language components,
+Profiled on a real ~3,300-line production reservations app (~2,300 language components,
 remapper-heavy).
 
 ## Where the time goes
 
-A single `scanComponents` run was ~8.2 s, split roughly in half:
+A single `scan` run was ~8.2 s, split roughly in half:
 
 - **~4.1 s walk + fallback** — per-node identity resolution. The ref-cutoff (`stripRefs` in
-  `scanner.ts`) already cuts this ~2–4x, and ~98–100% of it is redundant across consecutive editor
+  `resolve.ts`) already cuts this ~2–4x, and ~98–100% of it is redundant across consecutive editor
   edits, so incremental re-analysis skips nearly all of it.
 - **~4.2 s `collectHits`** — one full-ref `jsonschema` validation for `documentValid` + `errors` +
   `hits`. This is the painful half, and it is **not needed to build the tree** — the walk already
   produces identity. Expose it as a separate call the caller runs on its own cadence (an LSP
   computes diagnostics on idle, not per keystroke).
 
-**Ref-cutoff rationale.** `createShallow()` memoizes `stripRefs(schema)` by schema-object identity
-for a run: each schema node is stripped to its local shape once, and the many `$ref`-reached
-revisits reuse the cached copy. A node's resolution then depends on its value only down to the next
-`$ref` boundary — which is exactly what makes incremental re-analysis correct: re-walking from a
-boundary reproduces the subtree independent of anything above it. (A per-run `(value, schema)`
-validation memo was tried and dropped — the costly validations are all distinct, so nothing hit.)
+**Ref-cutoff rationale.** `createLocalShape()` memoizes `stripRefs(schema)` by schema-object
+identity for a run: each schema node is stripped to its local shape once, and the many
+`$ref`-reached revisits reuse the cached copy. A node's resolution then depends on its value only
+down to the next `$ref` boundary — which is exactly what makes incremental re-analysis correct:
+re-walking from a boundary reproduces the subtree independent of anything above it. (A per-run
+`(value, schema)` validation memo was tried and dropped — the costly validations are all distinct,
+so nothing hit.)
 
 ## Incremental re-analysis (shipped: `Scanner.buildTree`)
 
 The caller passes the changed paths (an LSP has them from edit ranges); the engine re-walks only the
 subtree enclosing each, from the nearest `$ref` boundary (`boundaryFor`), and reuses the rest of the
 previous tree. No content hashing, diffing, or library — the retained previous tree is the cache.
-Checked against a full analysis every time (identical `interpretations` throughout):
+Checked against a full analysis every time (identical `mounts` throughout):
 
 - **single-leaf edit (per-keystroke case): 3,148 ms → 37 ms, 84x** on reservations (2,339 objects).
 - replaying 84 git commits: only 1.6x — each commit bundles ~33 scattered edits whose boundaries

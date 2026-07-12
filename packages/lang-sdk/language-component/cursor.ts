@@ -1,21 +1,21 @@
 import { type Schema } from 'jsonschema';
 
 import {
-  createShallow,
-  governingChild,
+  childSchema,
+  createLocalShape,
   resolve,
   type ResolveContext,
+  type ResolveOptions,
   type Resolution,
-  type ScannerOptions,
-} from './scanner.js';
+} from './resolve.js';
 import { SchemaRegistry } from './schemaRegistry.js';
-import { COMPONENT_KEY, type Identity, type NodePath } from './types.js';
+import { type Identity, type NodePath } from './types.js';
 
 /**
  * A zipper over (value, schema) pairs. Each focus derives its identity by resolving the
- * schema against the value, and `child` moves down both the schema (via `governingChild`)
+ * schema against the value, and `child` moves down both the schema (via `childSchema`)
  * and the value together, yielding a new cursor. It reuses the same `resolve` and
- * `governingChild` the analyzer uses, so identity is decided identically. The raw value
+ * `childSchema` the analyzer uses, so identity is decided identically. The raw value
  * is never mutated; a cursor is just `(schema, value, path)` plus its parent.
  */
 export class Cursor {
@@ -53,21 +53,20 @@ export class Cursor {
    * @param schemas The registry of named schemas.
    * @param rootSchema The schema at the root of the document.
    * @param data The document to navigate.
-   * @param options Component key and value-directed resolver (see ScannerOptions).
+   * @param options The value-directed resolver (see ResolveOptions).
    * @returns A cursor focused on the document root.
    */
   static at(
     schemas: Record<string, Schema>,
     rootSchema: Schema,
     data: unknown,
-    options: ScannerOptions = {},
+    options: ResolveOptions = {},
   ): Cursor {
     const registry = new SchemaRegistry(schemas);
     const ctx: ResolveContext = {
       resolveRef: (ref) => registry.resolveRef(ref),
       validator: registry.createValidator(),
-      shallow: createShallow(),
-      componentKey: options.componentKey ?? COMPONENT_KEY,
+      localShape: createLocalShape(),
       dynamicChild: options.dynamicChild,
     };
     return new Cursor(ctx, rootSchema, data, [], null);
@@ -95,7 +94,7 @@ export class Cursor {
     const parentIdentity = this.resolution().identity?.name ?? null;
     const schema =
       this.ctx.dynamicChild?.(parentIdentity, this.value, String(key)) ??
-      governingChild(this.resolution().winners, String(key), this.ctx.resolveRef);
+      childSchema(this.resolution().winners, String(key), this.ctx.resolveRef);
     if (!schema) {
       return null;
     }

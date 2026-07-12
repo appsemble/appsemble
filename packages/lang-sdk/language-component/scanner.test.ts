@@ -6,7 +6,7 @@ import { SchemaRegistry } from './schemaRegistry.js';
 
 /*
  * Regression tests for the structural walk in scanner.ts: how resolve() picks winners and
- * how governingChild() descends into them. These guard the cases where a schema combines a
+ * how childSchema() descends into them. These guard the cases where a schema combines a
  * combinator (allOf/oneOf/anyOf) with structure the walk must still descend into.
  */
 
@@ -95,11 +95,11 @@ describe('resolve() terminates on schemas that self-reference at a combinator po
     // ref-stripped schemas, so this exercises resolve's recursion, not jsonschema's.
     const tree = scanner.buildTree(doc, Root.schema);
 
-    expect(tree.interpretations.get('/thing')?.identity.name).toBe('Recursive');
+    expect(tree.mounts.get('/thing')?.identity.name).toBe('Recursive');
   });
 });
 
-describe('governingChild() descends into tuple-form items arrays', () => {
+describe('childSchema() descends into tuple-form items arrays', () => {
   it('mounts a tagged element addressed by a positional items tuple', () => {
     const Tagged = LanguageComponent.define(
       'Tagged',
@@ -121,7 +121,7 @@ describe('governingChild() descends into tuple-form items arrays', () => {
 
     const tree = scanner.buildTree(doc, Root.schema);
 
-    expect(tree.interpretations.get('/tuple/0')?.identity.name).toBe('Tagged');
+    expect(tree.mounts.get('/tuple/0')?.identity.name).toBe('Tagged');
   });
 });
 
@@ -135,9 +135,9 @@ describe('resolve() keeps the enclosing schema as a governing winner', () => {
       const result = Scanner.run(schemas, doc, root);
 
       // The combinator itself resolves.
-      expect(result.interpretations.get('/derived')?.identity.name).toBe('Derived');
+      expect(result.mounts.get('/derived')?.identity.name).toBe('Derived');
       // The child under the enclosing schema's own `properties` must still mount.
-      expect(result.interpretations.get('/derived/child')?.identity.name).toBe('TaggedChild');
+      expect(result.mounts.get('/derived/child')?.identity.name).toBe('TaggedChild');
     },
   );
 });

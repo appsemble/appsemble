@@ -1,20 +1,19 @@
+export { Cursor } from './cursor.js';
+export { LanguageComponent, type LanguageComponentBinding } from './languageComponent.js';
+export { type DynamicChild, type ResolveOptions } from './resolve.js';
 export {
   type IncrementalOptions,
-  ScanResult,
-  Scanner,
-  type ScannerOptions,
-  type DynamicChild,
   MountTree,
+  ScanResult,
   type ScanValidation,
+  Scanner,
 } from './scanner.js';
-export { LanguageComponent, type LanguageComponentBinding } from './binding.js';
-export { Cursor } from './cursor.js';
 export {
   COMPONENT_KEY,
-  type ScanHit,
   type Identity,
   type Mount,
-  type TagMode,
   type NodePath,
+  type ScanHit,
   type SchemaTag,
+  type TagMode,
 } from './types.js';

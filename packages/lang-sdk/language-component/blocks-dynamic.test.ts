@@ -87,22 +87,18 @@ describe('blocks via value-directed resolver (Approach B)', () => {
       schemas.AppDefinition,
     );
 
-    expect(result.interpretations.get('/pages/0/blocks/0')?.identity.name).toBe('BlockDefinition');
+    expect(result.mounts.get('/pages/0/blocks/0')?.identity.name).toBe('BlockDefinition');
     // Each block's parameters resolve to a different schema, chosen by its own type+version.
-    expect(result.interpretations.get('/pages/0/blocks/0/parameters')?.identity.name).toBe(
-      'FormParams',
-    );
-    expect(result.interpretations.get('/pages/0/blocks/1/parameters')?.identity.name).toBe(
-      'TableParams',
-    );
+    expect(result.mounts.get('/pages/0/blocks/0/parameters')?.identity.name).toBe('FormParams');
+    expect(result.mounts.get('/pages/0/blocks/1/parameters')?.identity.name).toBe('TableParams');
   });
 
   it('mounts nothing under parameters without the resolver, proving the schema carries no union', () => {
     const app = { pages: [{ blocks: [{ type: 'form', version: '0.0.0', parameters: {} }] }] };
     const result = new Scanner(schemas).scan(app, schemas.AppDefinition);
 
-    expect(result.interpretations.get('/pages/0/blocks/0')?.identity.name).toBe('BlockDefinition');
-    expect(result.interpretations.has('/pages/0/blocks/0/parameters')).toBe(false);
+    expect(result.mounts.get('/pages/0/blocks/0')?.identity.name).toBe('BlockDefinition');
+    expect(result.mounts.has('/pages/0/blocks/0/parameters')).toBe(false);
   });
 
   it('descends the resolved child through a cursor identically to the walk', () => {

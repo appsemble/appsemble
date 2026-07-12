@@ -9,14 +9,14 @@ import { Scanner, type MountTree } from '../index.js';
  * re-walks only the subtrees enclosing those paths (from the nearest $ref boundary)
  * and reuses the rest. Every test's fidelity gate is the same: the incremental result
  * must be identical to a full analysis of the new document. The reuse assertions prove
- * work was actually skipped (untouched interpretations are the same object reference).
+ * work was actually skipped (untouched mounts are the same object reference).
  */
 const analyzer = new Scanner(miniSchemas);
 
 const objects = describeIdentities;
 
-function byPath(tree: MountTree): MountTree['interpretations'] {
-  return tree.interpretations;
+function byPath(tree: MountTree): MountTree['mounts'] {
+  return tree.mounts;
 }
 
 describe('incremental re-analysis', () => {
@@ -45,7 +45,7 @@ describe('incremental re-analysis', () => {
   it('should capture an identity change inside the re-walked boundary', () => {
     const v1 = { environment: 'development', widget: { icon: 'save' } };
     const treeV1 = analyzer.buildTree(v1, Root);
-    expect(describeIdentity(treeV1.interpretations.get('/widget')!.identity)).toBe(
+    expect(describeIdentity(treeV1.mounts.get('/widget')!.identity)).toBe(
       'Widget:oneOf(IconWidget)',
     );
 
@@ -53,7 +53,7 @@ describe('incremental re-analysis', () => {
     const incremental = analyzer.buildTree(v2, Root, { previous: treeV1, changed: [['widget']] });
 
     expect(objects(incremental)).toStrictEqual(objects(analyzer.buildTree(v2, Root)));
-    expect(describeIdentity(incremental.interpretations.get('/widget')!.identity)).toBe(
+    expect(describeIdentity(incremental.mounts.get('/widget')!.identity)).toBe(
       'Widget:oneOf(TextWidget)',
     );
   });
@@ -65,15 +65,15 @@ describe('incremental re-analysis', () => {
     const treeOne = analyzer.buildTree(one, Root);
     const grown = analyzer.buildTree(two, Root, { previous: treeOne, changed: [['gallery']] });
     expect(objects(grown)).toStrictEqual(objects(analyzer.buildTree(two, Root)));
-    expect(grown.interpretations.has('/gallery/1')).toBe(true);
+    expect(grown.mounts.has('/gallery/1')).toBe(true);
 
     const shrunk = analyzer.buildTree(one, Root, { previous: grown, changed: [['gallery']] });
     expect(objects(shrunk)).toStrictEqual(objects(analyzer.buildTree(one, Root)));
     // The stale second badge must not survive the shrink.
-    expect(shrunk.interpretations.has('/gallery/1')).toBe(false);
+    expect(shrunk.mounts.has('/gallery/1')).toBe(false);
   });
 
-  it('should refresh the value of reused ancestors above the edit', () => {
+  it('should read fresh values for reused ancestors above the edit', () => {
     const v1 = { environment: 'development', gallery: [{ label: 'gold' }, { label: 'silver' }] };
     const treeV1 = analyzer.buildTree(v1, Root);
 
@@ -86,10 +86,11 @@ describe('incremental re-analysis', () => {
       changed: [['gallery', 0, 'label']],
     });
 
-    // /gallery is reused (identity unchanged) but its value subtree changed, so its
-    // value must reflect v2, not the previous document.
-    const gallery = byPath(incremental).get('/gallery')!;
-    expect(gallery.value).toStrictEqual(v2.gallery);
+    // /gallery is reused (identity unchanged) but its value subtree changed; values are
+    // derived through the tree, so the read must reflect v2, not the previous document.
+    expect(byPath(incremental).get('/gallery')).toBeDefined();
+    expect(incremental.valueAt(['gallery'])).toStrictEqual(v2.gallery);
+    expect(treeV1.valueAt(['gallery'])).toStrictEqual(v1.gallery);
   });
 
   it('should handle multiple changed paths and reuse everything else', () => {
@@ -131,7 +132,7 @@ describe('incremental re-analysis', () => {
   it('should drop a nested language component removed under an array-index boundary', () => {
     const v1 = { environment: 'development', holders: [{ text: 'a', badge: { label: 'x' } }] };
     const treeV1 = analyzer.buildTree(v1, Root);
-    expect(treeV1.interpretations.has('/holders/0/badge')).toBe(true);
+    expect(treeV1.mounts.has('/holders/0/badge')).toBe(true);
 
     const v2 = { environment: 'development', holders: [{ text: 'a' }] };
     const incremental = analyzer.buildTree(v2, Root, {
@@ -140,7 +141,7 @@ describe('incremental re-analysis', () => {
     });
 
     expect(objects(incremental)).toStrictEqual(objects(analyzer.buildTree(v2, Root)));
-    expect(incremental.interpretations.has('/holders/0/badge')).toBe(false);
+    expect(incremental.mounts.has('/holders/0/badge')).toBe(false);
   });
 
   // Regression: a changed path pointing at a removed array element must not re-emit a
@@ -156,7 +157,7 @@ describe('incremental re-analysis', () => {
     });
 
     expect(objects(incremental)).toStrictEqual(objects(analyzer.buildTree(v2, Root)));
-    expect(incremental.interpretations.has('/gallery/1')).toBe(false);
+    expect(incremental.mounts.has('/gallery/1')).toBe(false);
   });
 
   it('should match a full analyze() through the combined result too', () => {
