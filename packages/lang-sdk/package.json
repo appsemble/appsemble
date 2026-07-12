@@ -32,7 +32,8 @@
     "**/*.js",
     "!**/*.test.js",
     "!**/*.test.d.ts",
-    "!*.config.js"
+    "!*.config.js",
+    "!language-component/stress-test-schemas/**"
   ],
   "scripts": {
     "prepack": "tsc --noEmit false",
