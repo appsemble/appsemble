@@ -4,31 +4,15 @@ import { analyze, describeIdentities } from './harness.js';
 import { scenarios } from './scenarios.js';
 
 describe('walk engine behavior', () => {
-  it('descends array items, mounting a language component at each index', () => {
-    const result = analyze(scenarios.arrayItems);
-    const objects = describeIdentities(result);
-
-    expect(objects['/gallery']).toBe('Gallery');
-    expect(objects['/gallery/0']).toBe('Badge');
-    expect(objects['/gallery/1']).toBe('Badge');
-  });
-
-  it('descends additionalProperties values, mounting a language component at each key', () => {
-    const result = analyze(scenarios.mapValues);
-    const objects = describeIdentities(result);
-
-    expect(objects['/registry']).toBe('Registry');
-    expect(objects['/registry/primary']).toBe('Badge');
-    expect(objects['/registry/secondary']).toBe('Badge');
-  });
-
-  it('marks a tagged anyOf unresolved when its value matches no branch', () => {
-    const result = analyze(scenarios.emptyAnyOf);
+  // Array, map, and unresolved-identity coverage lives in the scenarios table (baseline.test.ts).
+  // These cases assert walk behavior the identity projection alone does not show: mount validity
+  // and the divergence between the walk and the validator's short-circuit.
+  it('marks a tagged anyOf mount invalid when its value matches no branch', () => {
+    const result = analyze(scenarios.emptyAnyOf.data);
     const flexible = result.mountAt(['flexible']);
 
     expect(flexible).toBeDefined();
     expect(flexible!.localValid).toBe(false);
-    expect(flexible!.identity.kind).toBe('unresolved');
   });
 
   it('mounts a child under a non-first anyOf branch (validator short-circuits)', () => {

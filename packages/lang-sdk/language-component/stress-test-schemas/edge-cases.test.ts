@@ -267,7 +267,7 @@ describe('engine edge cases', () => {
 
 describe('hits collection (public surface)', () => {
   it('records a hit for every candidate schema reached, including losing oneOf branches', () => {
-    const result = analyze(scenarios.normal);
+    const result = analyze(scenarios.normal.data);
     const widgetHits = result.hits
       .filter((hit) => hit.path.length === 1 && hit.path[0] === 'widget')
       .map((hit) => hit.tag.name);
@@ -286,7 +286,8 @@ describe('hits collection (public surface)', () => {
  * collected hits). The ghost-from-a-losing-branch case (#1) lives in capabilities.test.ts.
  *
  * - #2 untagged combinator: identity comes from the entry schema, so an untagged allOf
- *   resolves as a full composite instead of collapsing to the first wrapper.
+ *   resolves as a full composite instead of collapsing to the first wrapper (asserted by the
+ *   `untaggedComposite` scenario in baseline.test.ts).
  * - #4 ancestor errors: kept only at or below a node, never stapled onto a valid child.
  * - #6 failing object tag: a tagged object keeps its identity and reports failure via
  *   localValid + errors instead of collapsing to unresolved.
@@ -297,18 +298,8 @@ describe('hits collection (public surface)', () => {
  *   the walk uses a separate clean validator so re-validation never records extra hits.
  */
 describe('language component gaps', () => {
-  it('composes every wrapper under an untagged combinator', () => {
-    const result = analyze(scenarios.untaggedComposite);
-
-    expect(result.documentValid).toBe(true);
-    expect(describeIdentities(result)).toStrictEqual({
-      '/untaggedComposite':
-        'allOf(StrictButtonOrText:oneOf(StrictButton), StrictIconOrTrackable:anyOf(IconWidget, Trackable))',
-    });
-  });
-
   it('does not attach ancestor errors to a locally valid descendant', () => {
-    const result = analyze(scenarios.ancestorError);
+    const result = analyze(scenarios.ancestorError.data);
 
     const inner = result.mountAt(['container', 'inner']);
     expect(inner).toBeDefined();
@@ -317,7 +308,7 @@ describe('language component gaps', () => {
   });
 
   it('keeps a tagged object identity when it fails its own constraints', () => {
-    const result = analyze(scenarios.ancestorError);
+    const result = analyze(scenarios.ancestorError.data);
 
     const container = result.mountAt(['container']);
     expect(container).toBeDefined();
