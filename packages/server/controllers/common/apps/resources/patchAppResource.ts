@@ -3,6 +3,7 @@ import {
   deleteS3Files,
   getCompressedFileMeta,
   getResourceDefinition,
+  getSingleGroupId,
   logger,
   processResourceBody,
   setResourceEtagHeader,
@@ -35,6 +36,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     queryParams: { selectedGroupId },
     user: authSubject,
   } = ctx;
+  const groupId = getSingleGroupId(selectedGroupId);
   const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(appId);
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'demoMode', 'id'],
@@ -44,7 +46,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
   const lockWhere = {
     id: resourceId,
     type: resourceType,
-    GroupId: selectedGroupId ?? null,
+    GroupId: groupId,
     expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
     ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
   };
@@ -64,7 +66,8 @@ export async function patchAppResource(ctx: Context): Promise<void> {
         ? `$resource:${resourceType}:own:patch`
         : `$resource:${resourceType}:patch`,
     ],
-    groupId: selectedGroupId,
+    // The operation acts on a single group; authorize against that group only.
+    groupId,
   });
 
   const appMember = await getCurrentAppMember({ context: ctx, app: app.toJSON() });
@@ -74,7 +77,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
 
   const appAssets = await Asset.findAll({
     attributes: ['id', 'name', 'ResourceId'],
-    where: { GroupId: selectedGroupId ?? null },
+    where: { GroupId: groupId },
   });
 
   const [updatedResource, preparedAssets, deletedAssetIds] = await processResourceBody(
@@ -130,7 +133,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
             preparedAssets.map((asset) => ({
               ...asset,
               ...getCompressedFileMeta(asset),
-              GroupId: selectedGroupId ?? null,
+              GroupId: groupId,
               ResourceId: lockedResource.id,
               AppMemberId: appMember?.sub,
             })),

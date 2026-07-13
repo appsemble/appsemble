@@ -105,6 +105,37 @@ describe('deleteAppResource', () => {
     `);
   });
 
+  it('should delete a resource scoped to a single selectedGroupId (backwards compatible number)', async () => {
+    const { Group, Resource } = await getAppDB(app.id);
+    const groupA = await Group.create({ name: 'Group A' });
+    const groupB = await Group.create({ name: 'Group B' });
+    const inGroupA = await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'a' },
+      GroupId: groupA.id,
+    });
+    const inGroupB = await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'b' },
+      GroupId: groupB.id,
+    });
+
+    authorizeStudio();
+    // A single numeric selectedGroupId still scopes the delete to that group.
+    const deleted = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceGroup/${inGroupA.id}?selectedGroupId=${groupA.id}`,
+    );
+    expect(deleted.status).toBe(204);
+    expect(await Resource.findByPk(inGroupA.id)).toBeNull();
+
+    // The resource in another group is out of scope and is not found.
+    const notFound = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceGroup/${inGroupB.id}?selectedGroupId=${groupA.id}`,
+    );
+    expect(notFound.status).toBe(404);
+    expect(await Resource.findByPk(inGroupB.id)).not.toBeNull();
+  });
+
   it('should reject stale deletes with If-Match', async () => {
     const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({

@@ -52,6 +52,7 @@ let mockCreateAppResourcesWithAssets: Mock<
 >;
 let mockGetAppAssets: Mock<(params: GetAppSubEntityParams) => Promise<Asset[]>>;
 let mockCheckAppPermissions: Mock<(params: CheckAppPermissionsParams) => Promise<void>>;
+let mockGetAllowedGroups: Mock<(params: CheckAppPermissionsParams) => Promise<number[]>>;
 let mockGetCurrentAppMember: Mock<(params: GetCurrentAppMemberParams) => Promise<AppMemberInfo>>;
 let mockGetCurrentAppMemberSelectedGroup: Mock<
   (params: GetCurrentAppMemberSelectedGroupParams) => Promise<AppMemberGroup>
@@ -69,6 +70,9 @@ describe('createQueryResources', () => {
     mockGetAppMessages = vi.fn();
     mockGetAppVariables = vi.fn();
     mockCheckAppPermissions = vi.fn();
+    mockGetAllowedGroups = vi.fn();
+    // The current subject is permitted in the (app-wide) selected scope.
+    mockGetAllowedGroups.mockResolvedValue([-1]);
     mockGetCurrentAppMember = vi.fn();
     mockGetCurrentAppMemberSelectedGroup = vi.fn();
 
@@ -108,6 +112,9 @@ describe('createQueryResources', () => {
       ) => Promise<Resource[]>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
       checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
+      getAllowedGroups: mockGetAllowedGroups as (
+        params: CheckAppPermissionsParams,
+      ) => Promise<number[]>,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -204,6 +211,9 @@ describe('createQueryResources', () => {
       ) => Promise<Resource[]>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
       checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
+      getAllowedGroups: mockGetAllowedGroups as (
+        params: CheckAppPermissionsParams,
+      ) => Promise<number[]>,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -259,6 +269,9 @@ describe('createQueryResources', () => {
         params: GetCurrentAppMemberSelectedGroupParams,
       ) => void,
       checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
+      getAllowedGroups: mockGetAllowedGroups as (
+        params: CheckAppPermissionsParams,
+      ) => Promise<number[]>,
     } as Options;
 
     const resourceDefinition = getResourceDefinition(
@@ -292,6 +305,10 @@ describe('createCountResources', () => {
     mockGetApp = vi.fn();
     mockGetAppResources = vi.fn();
     mockParseQuery = vi.fn();
+    mockCheckAppPermissions = vi.fn();
+    mockGetAllowedGroups = vi.fn();
+    // The current subject is permitted in the (app-wide) selected scope.
+    mockGetAllowedGroups.mockResolvedValue([-1]);
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
       queryParams: {} as QueryParams,
@@ -328,6 +345,9 @@ describe('createCountResources', () => {
       ) => Promise<Resource[]>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
       checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
+      getAllowedGroups: mockGetAllowedGroups as (
+        params: CheckAppPermissionsParams,
+      ) => Promise<number[]>,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -412,6 +432,9 @@ describe('createCountResources', () => {
       ) => Promise<Resource[]>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
       checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
+      getAllowedGroups: mockGetAllowedGroups as (
+        params: CheckAppPermissionsParams,
+      ) => Promise<number[]>,
     } as Options);
 
     await middleware(mockCtx, vi.fn());

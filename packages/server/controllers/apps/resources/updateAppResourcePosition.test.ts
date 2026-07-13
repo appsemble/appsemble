@@ -290,6 +290,36 @@ describe('updateResourcePosition', () => {
     });
   });
 
+  it('should authorize positioning against the selected group, not the app-wide role', async () => {
+    const { Group, GroupMember, Resource } = await getAppDB(app.id);
+    // No app-wide update permission; the group Owner role grants it instead.
+    await appMember.update({ role: PredefinedAppRole.Member });
+    const { id: groupId } = await Group.create({ name: 'testGroup' });
+    await GroupMember.create({
+      GroupId: groupId,
+      AppMemberId: appMember.id,
+      role: PredefinedAppRole.Owner,
+    });
+    await Resource.destroy({ where: { type: 'testResource' }, force: true });
+    await Resource.bulkCreate(
+      [...Array.from({ length: 5 }).keys()].map((i) => ({
+        data: { foo: `bar ${i}` },
+        type: 'testResource',
+        Position: i + 1,
+        GroupId: groupId,
+      })),
+    );
+    const resource2 = await Resource.findOne({
+      where: { type: 'testResource', GroupId: groupId, Position: { [Op.gt]: 2 } },
+    });
+    authorizeAppMember(app, appMember);
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource2!.id}/positions?selectedGroupId=${groupId}`,
+      { prevResourcePosition: 1, nextResourcePosition: 2 },
+    );
+    expect(response.status).toBe(200);
+  });
+
   async function enforceOrderingGroupByBar(): Promise<void> {
     await app.update({
       definition: {

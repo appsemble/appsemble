@@ -256,6 +256,47 @@ describe('patchAppResource', () => {
     `);
   });
 
+  it('should authorize a multi-group patch against only the single group acted on', async () => {
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const group1 = await Group.create({ name: 'Group 1' });
+    const group2 = await Group.create({ name: 'Group 2' });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      timezone: 'Europe/Amsterdam',
+      userId: user.id,
+      name: user.name,
+      role: PredefinedAppRole.Member,
+    });
+    // Patch permission in group 1 only; a plain member without it in group 2.
+    await GroupMember.create({
+      GroupId: group1.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+    await GroupMember.create({
+      GroupId: group2.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.Member,
+    });
+
+    const resource = await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'before' },
+      GroupId: group1.id,
+    });
+
+    authorizeAppMember(app, member);
+    // Selecting both groups collapses to group 1 (the group being acted on); the
+    // permission check must not also require the patch permission in group 2.
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}?selectedGroupId=${group1.id}&selectedGroupId=${group2.id}`,
+      { foo: 'after' },
+    );
+
+    expect(response.status).toBe(200);
+    expect((response.data as ResourceType).foo).toBe('after');
+  });
+
   it('should be able to patch an existing resource from another group', async () => {
     const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
     const group = await Group.create({ name: 'Test Group' });

@@ -1,4 +1,4 @@
-import { assertKoaCondition, getResourceDefinition } from '@appsemble/node-utils';
+import { assertKoaCondition, getResourceDefinition, getSingleGroupId } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
@@ -15,6 +15,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     },
     user: authSubject,
   } = ctx;
+  const groupId = getSingleGroupId(selectedGroupId);
   const { Resource } = await getAppDB(appId);
   const app = await App.findByPk(appId, { attributes: ['definition', 'demoMode'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
@@ -22,7 +23,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   const { query } = parseQuery({ $filter, resourceDefinition, tableName: 'Resource' });
 
   const oldResource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType, GroupId: selectedGroupId ?? null },
+    where: { id: resourceId, type: resourceType, GroupId: groupId },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
     attributes: ['Position', 'id', 'created', 'updated', 'data'],
   });
@@ -42,7 +43,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     ...(query ? { query } : {}),
     ...orderingGroup,
     type: resourceType,
-    GroupId: selectedGroupId ?? null,
+    GroupId: groupId,
     ...(app.demoMode ? { ephemeral: true, seed: false } : {}),
   };
   if (!nextResourcePosition) {
@@ -119,6 +120,8 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
         ? `$resource:${resourceType}:own:update`
         : `$resource:${resourceType}:update`,
     ],
+    // Reordering happens within a single group; authorize against that group.
+    groupId,
   });
   // If the previous Position is not defined i.e. to insert at the top, use 0 as the default.
   // e.g. If the Position of the first element is 1, the position for the updated first element
