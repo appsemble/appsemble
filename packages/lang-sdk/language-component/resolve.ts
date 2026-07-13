@@ -102,50 +102,50 @@ function matchesLocalShape(value: unknown, schema: Schema, ctx: ResolveContext):
     .valid;
 }
 
-// Ref-cutoff: a copy of a schema with every nested $ref replaced by accept-all, so
-// validating against it checks only the schema's own local shape and never recurses
-// into referenced subtrees (the walk visits those). Nested `oneOf` is relaxed to
-// `anyOf` because accept-all branches make exact-one vacuously false; exclusivity is
-// not needed to recognize local shape.
-//
-// This is the dominant performance win: without it, resolve validates each node against
-// its full schema and jsonschema follows $refs, so a subtree is re-validated inside every
-// ancestor -- O(N x nesting-depth), seconds on a medium app. (A per-run memo of validation
-// by (value, schema) was tried and made no measurable difference: the costly validations
-// are all distinct, not repeated. The remaining cost is the single full-ref validation
-// pass for document validity/errors/hits, plus validator construction.)
-function stripRefs(schema: Schema): Schema {
-  if (schema.$ref) {
-    return {};
-  }
-  const copy: Schema = { ...schema };
-  if (copy.properties) {
-    copy.properties = mapValues(copy.properties, stripRefs);
-  }
-  if (copy.items && typeof copy.items === 'object') {
-    copy.items = Array.isArray(copy.items) ? copy.items.map(stripRefs) : stripRefs(copy.items);
-  }
-  if (copy.additionalProperties && typeof copy.additionalProperties === 'object') {
-    copy.additionalProperties = stripRefs(copy.additionalProperties);
-  }
-  // Recurse into every combinator...
-  for (const keyword of ['allOf', 'anyOf', 'oneOf'] as const) {
-    if (copy[keyword]) {
-      copy[keyword] = copy[keyword].map(stripRefs);
-    }
-  }
-  // ...then relax the stripped `oneOf` into `anyOf` (exact-one is vacuous under accept-all).
-  if (copy.oneOf) {
-    copy.anyOf = [...(copy.anyOf ?? []), ...copy.oneOf];
-    delete copy.oneOf;
-  }
-  return copy;
-}
-
-// Memoize the ref-cutoff: return a function that builds each schema's local shape
-// (stripRefs) once and caches it by schema identity, so repeated resolves against the same
-// schema reuse the copy instead of rebuilding it. The cache is stable across a scan.
+// Memoize the ref-cutoff: build each schema's local shape (`stripRefs`) once and cache it by
+// schema identity, so repeated resolves against the same schema reuse the copy. The cache is
+// stable across a scan, and `stripRefs` lives here because the cacher is its only caller.
 export function localShapeFactory(): (schema: Schema) => Schema {
+  // Ref-cutoff: a copy of a schema with every nested $ref replaced by accept-all, so
+  // validating against it checks only the schema's own local shape and never recurses
+  // into referenced subtrees (the walk visits those). Nested `oneOf` is relaxed to
+  // `anyOf` because accept-all branches make exact-one vacuously false; exclusivity is
+  // not needed to recognize local shape.
+  //
+  // This is the dominant performance win: without it, resolve validates each node against
+  // its full schema and jsonschema follows $refs, so a subtree is re-validated inside every
+  // ancestor -- O(N x nesting-depth), seconds on a medium app. (A per-run memo of validation
+  // by (value, schema) was tried and made no measurable difference: the costly validations
+  // are all distinct, not repeated. The remaining cost is the single full-ref validation
+  // pass for document validity/errors/hits, plus validator construction.)
+  function stripRefs(schema: Schema): Schema {
+    if (schema.$ref) {
+      return {};
+    }
+    const copy: Schema = { ...schema };
+    if (copy.properties) {
+      copy.properties = mapValues(copy.properties, stripRefs);
+    }
+    if (copy.items && typeof copy.items === 'object') {
+      copy.items = Array.isArray(copy.items) ? copy.items.map(stripRefs) : stripRefs(copy.items);
+    }
+    if (copy.additionalProperties && typeof copy.additionalProperties === 'object') {
+      copy.additionalProperties = stripRefs(copy.additionalProperties);
+    }
+    // Recurse into every combinator...
+    for (const keyword of ['allOf', 'anyOf', 'oneOf'] as const) {
+      if (copy[keyword]) {
+        copy[keyword] = copy[keyword].map(stripRefs);
+      }
+    }
+    // ...then relax the stripped `oneOf` into `anyOf` (exact-one is vacuous under accept-all).
+    if (copy.oneOf) {
+      copy.anyOf = [...(copy.anyOf ?? []), ...copy.oneOf];
+      delete copy.oneOf;
+    }
+    return copy;
+  }
+
   const cache = new Map<Schema, Schema>();
   return (schema) => {
     let cached = cache.get(schema);
@@ -176,12 +176,11 @@ function resolveComposite(
   tag: SchemaTag | undefined,
 ): Resolution {
   const matched = branches.filter((branch) => branch.matched);
-  const satisfied =
-    mode === 'oneOf'
-      ? matched.length === 1
-      : mode === 'allOf'
-        ? matched.length === branches.length
-        : matched.length > 0;
+  const satisfied = {
+    oneOf: matched.length === 1,
+    allOf: matched.length === branches.length,
+    anyOf: matched.length > 0,
+  }[mode];
 
   if (satisfied) {
     // An allOf is governed by every branch; oneOf/anyOf only by the ones that matched.
@@ -192,15 +191,14 @@ function resolveComposite(
     return { identity, matched: true, winners: [s, ...governing.flatMap((b) => b.winners)] };
   }
 
-  const reason =
-    mode === 'oneOf'
-      ? `oneOf expected exactly one match, got ${matched.length}`
-      : mode === 'allOf'
-        ? 'allOf did not fully match'
-        : 'anyOf matched nothing';
+  const reason = {
+    oneOf: `oneOf expected exactly one match, got ${matched.length}`,
+    allOf: 'allOf did not fully match',
+    anyOf: 'anyOf matched nothing',
+  }[mode];
   // Failure still names what was considered: allOf every branch, oneOf the ones that
   // matched, anyOf nothing (none passed).
-  const considered = mode === 'allOf' ? branches : mode === 'oneOf' ? matched : [];
+  const considered = { allOf: branches, oneOf: matched, anyOf: [] as Resolution[] }[mode];
   return {
     identity: unresolvedOrNull(reason, tag, identityParts(considered)),
     matched: false,
