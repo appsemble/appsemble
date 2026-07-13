@@ -64,8 +64,8 @@ WORKDIR /app
 # By default colors aren’t detected within a Docker container. Let’s assume at least simple colors
 # are supported by those who inspect the logs.
 # https://www.npmjs.com/package/chalk#chalksupportscolor
-ENV FORCE_COLOR 1
-ENV NODE_ENV production
+ENV FORCE_COLOR="1"
+ENV NODE_ENV="production"
 ENV NODE_OPTIONS="--enable-source-maps --import /app/packages/server/instrumentation.mjs"
 USER node
 ENTRYPOINT ["appsemble-server"]
