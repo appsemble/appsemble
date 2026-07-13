@@ -2,11 +2,11 @@ import { type Schema, type ValidationError, type Validator } from 'jsonschema';
 
 import { formatPath, getPath, pathContains } from './path.js';
 import {
-  childFor,
   childSchema,
   localShapeFactory,
   type DynamicChild,
   resolve,
+  resolveChild,
   type ResolveContext,
   type ResolveOptions,
 } from './resolve.js';
@@ -106,7 +106,7 @@ function walk(schema: Schema, value: unknown, path: NodePath, ctx: WalkContext):
   }
   if (value && typeof value === 'object') {
     for (const key of Object.keys(value)) {
-      const child = childFor(ctx, identity?.name ?? null, value, key, winners);
+      const child = resolveChild(ctx, identity?.name ?? null, value, key, winners);
       if (child) {
         walk(child, (value as Record<string, unknown>)[key], [...path, key], ctx);
       }

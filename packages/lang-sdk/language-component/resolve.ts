@@ -6,9 +6,9 @@ import { type Identity, type SchemaTag, schemaTag } from './types.js';
 /**
  * The decision core shared by the analyzer walk (`Scanner`) and interactive navigation
  * (`Cursor`): `resolve` is the single place a oneOf/anyOf/allOf is decided, returning the
- * identity and the concrete winner schema(s); `childSchema` then does pure structural
- * lookup on those winners to descend. Both consumers only ever follow winning branches
- * and decide identity identically.
+ * identity and the concrete winner schema(s); `resolveChild` then descends, taking the
+ * value-directed resolver when one is configured and `childSchema`'s structural lookup
+ * otherwise. Both consumers only ever follow winning branches and decide identity identically.
  */
 
 export interface Resolution {
@@ -259,11 +259,28 @@ export function resolve(
   return resolveLeaf(s, tag, value, ctx);
 }
 
+// The schema a single winner contributes for `key`, or null when it does not own the key: a
+// declared property, the open `additionalProperties` schema, or an `items` entry (single-schema
+// `items` owns every element; tuple-form `items` owns by position).
+function ownedChild(schema: Schema, key: string): Schema | null {
+  if (schema.properties && Object.hasOwn(schema.properties, key)) {
+    return schema.properties[key];
+  }
+  if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+    return schema.additionalProperties;
+  }
+  if (schema.items && typeof schema.items === 'object') {
+    const item = Array.isArray(schema.items) ? schema.items[Number(key)] : schema.items;
+    return item && typeof item === 'object' ? item : null;
+  }
+  return null;
+}
+
 /**
- * The schema owning the child at `key`, drawn from the winning schemas: an owned
- * property, an `additionalProperties` schema, or the governing `items` entry. Multiple
- * winners owning the same key compose into one `allOf`, and null means no winner owns
- * the key at all (the child is outside the schema's vocabulary).
+ * The schema governing the child at `key`, gathered across the parent's winning schemas: each
+ * winner may own the key through a property, `additionalProperties`, or `items` (see `ownedChild`).
+ * Winners that own it compose into one `allOf`; null means no winner owns the key, so the child is
+ * outside the schema's vocabulary and does not mount.
  *
  * @param winners The winning schemas from `resolve` at the parent node.
  * @param key The child key (an object property or a stringified array index).
@@ -275,40 +292,29 @@ export function childSchema(
   key: string,
   resolveRef: (ref: string) => Schema,
 ): Schema | null {
-  const owned: Schema[] = [];
-  for (const winner of winners) {
-    const schema = deref(winner, resolveRef);
-    if (schema.properties && Object.hasOwn(schema.properties, key)) {
-      owned.push(schema.properties[key]);
-    } else if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
-      owned.push(schema.additionalProperties);
-    } else if (schema.items && typeof schema.items === 'object') {
-      // Single-schema `items` governs every element; tuple-form `items` governs by position.
-      const item = Array.isArray(schema.items) ? schema.items[Number(key)] : schema.items;
-      if (item && typeof item === 'object') {
-        owned.push(item);
-      }
-    }
-  }
-  if (owned.length === 0) {
+  const owners = winners
+    .map((winner) => ownedChild(deref(winner, resolveRef), key))
+    .filter((schema): schema is Schema => schema != null);
+  if (owners.length === 0) {
     return null;
   }
-  return owned.length === 1 ? owned[0] : { allOf: owned };
+  return owners.length === 1 ? owners[0] : { allOf: owners };
 }
 
 /**
- * The child schema at `key`: a value-directed resolver (if configured) decides first, falling
- * back to the structural `childSchema` lookup over the winners. This is the one descent step the
- * walk (`Scanner`) and interactive navigation (`Cursor`) share, so both stay in lockstep.
+ * Resolve the child at `key` during descent: consult the value-directed resolver first (when one
+ * is configured), otherwise fall back to `childSchema`'s structural lookup over the winners. This
+ * is the single descent step the walk (`Scanner`) and interactive navigation (`Cursor`) share, so
+ * both pick the same child schema.
  *
  * @param ctx The resolve context carrying the ref resolver and optional dynamic-child resolver.
  * @param parentIdentity The resolved identity name at the parent, or null when untagged.
  * @param parentValue The parent's value, passed to the dynamic-child resolver.
  * @param key The child key (an object property or a stringified array index).
  * @param winners The winning schemas from `resolve` at the parent node.
- * @returns The child's governing schema, or null when nothing owns the key.
+ * @returns The child's schema, or null when nothing owns the key.
  */
-export function childFor(
+export function resolveChild(
   ctx: ResolveContext,
   parentIdentity: string | null,
   parentValue: unknown,

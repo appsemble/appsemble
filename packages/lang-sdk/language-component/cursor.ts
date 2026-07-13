@@ -1,9 +1,9 @@
 import { type Schema } from 'jsonschema';
 
 import {
-  childFor,
   localShapeFactory,
   resolve,
+  resolveChild,
   type ResolveContext,
   type ResolveOptions,
   type Resolution,
@@ -13,9 +13,9 @@ import { type Identity, type NodePath } from './types.js';
 
 /**
  * A zipper over (value, schema) pairs. Each focus derives its identity by resolving the
- * schema against the value, and `child` moves down both the schema (via `childSchema`)
+ * schema against the value, and `child` moves down both the schema (via `resolveChild`)
  * and the value together, yielding a new cursor. It reuses the same `resolve` and
- * `childSchema` the analyzer uses, so identity is decided identically. The raw value
+ * `resolveChild` the analyzer uses, so identity is decided identically. The raw value
  * is never mutated; a cursor is just `(schema, value, path)` plus its parent.
  */
 export class Cursor {
@@ -92,7 +92,7 @@ export class Cursor {
   // cursor descent matches the walk (BLOCKS.md, Approach B).
   child(key: number | string): Cursor | null {
     const resolution = this.resolution();
-    const schema = childFor(
+    const schema = resolveChild(
       this.ctx,
       resolution.identity?.name ?? null,
       this.value,
