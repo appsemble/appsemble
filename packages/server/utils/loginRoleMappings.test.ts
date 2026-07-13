@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
   normalizeLoginGroups,
@@ -8,6 +8,75 @@ import {
   syncLoginRoleMappings,
   validateLoginRoleMappings,
 } from './loginRoleMappings.js';
+
+interface AppMemberAssignedRoleRow {
+  AppMemberId: string;
+  role: string;
+  source: string;
+  externalGroup?: string;
+}
+
+interface FakeAssignedRoleModel {
+  sequelize: {
+    transaction: (callback: (transaction: unknown) => Promise<unknown>) => Promise<unknown>;
+  };
+  findAll: (query: { where: Record<string, unknown> }) => Promise<AppMemberAssignedRoleRow[]>;
+  destroy: (query: { where: Record<string, unknown> }) => Promise<number>;
+  bulkCreate: (rows: AppMemberAssignedRoleRow[]) => Promise<AppMemberAssignedRoleRow[]>;
+}
+
+/**
+ * Build an in-memory stand-in for the AppMemberAssignedRole repository that honors the
+ * transaction semantics `syncLoginRoleMappings` relies on: mutations made inside a
+ * `sequelize.transaction` callback are rolled back when the callback throws.
+ *
+ * @param initialRows The rows the member starts with.
+ * @returns The fake repository and its backing store, so tests can assert on the end state.
+ */
+function createAppMemberAssignedRoleStore(initialRows: AppMemberAssignedRoleRow[]): {
+  model: FakeAssignedRoleModel;
+  store: { rows: AppMemberAssignedRoleRow[] };
+} {
+  const store = { rows: initialRows.map((row) => ({ ...row })) };
+
+  const matches = (row: AppMemberAssignedRoleRow, where: Record<string, unknown>): boolean =>
+    Object.entries(where).every(([key, value]) => {
+      if (value != null && typeof value === 'object' && Op.ne in value) {
+        return (
+          row[key as keyof AppMemberAssignedRoleRow] !== (value as Record<symbol, unknown>)[Op.ne]
+        );
+      }
+      return row[key as keyof AppMemberAssignedRoleRow] === value;
+    });
+
+  const model: FakeAssignedRoleModel = {
+    sequelize: {
+      async transaction(callback: (transaction: unknown) => Promise<unknown>): Promise<unknown> {
+        const snapshot = store.rows.map((row) => ({ ...row }));
+        try {
+          return await callback({ id: 'txn' });
+        } catch (error) {
+          store.rows = snapshot;
+          throw error;
+        }
+      },
+    },
+    findAll({ where }: { where: Record<string, unknown> }): Promise<AppMemberAssignedRoleRow[]> {
+      return Promise.resolve(store.rows.filter((row) => matches(row, where)));
+    },
+    destroy({ where }: { where: Record<string, unknown> }): Promise<number> {
+      const before = store.rows.length;
+      store.rows = store.rows.filter((row) => !matches(row, where));
+      return Promise.resolve(before - store.rows.length);
+    },
+    bulkCreate(rows: AppMemberAssignedRoleRow[]): Promise<AppMemberAssignedRoleRow[]> {
+      store.rows.push(...rows.map((row) => ({ ...row })));
+      return Promise.resolve(rows);
+    },
+  };
+
+  return { model, store };
+}
 
 describe('loginRoleMappings', () => {
   it('should normalize login groups', () => {
@@ -51,10 +120,7 @@ describe('loginRoleMappings', () => {
 
   it('should match configured mapping groups with surrounding whitespace', () => {
     expect(
-      resolveLoginRoleMappings(
-        ['/Admin'],
-        [{ group: ' /Admin ', role: 'Manager' }],
-      ),
+      resolveLoginRoleMappings(['/Admin'], [{ group: ' /Admin ', role: 'Manager' }]),
     ).toStrictEqual([{ externalGroup: '/Admin', role: 'Manager' }]);
   });
 
@@ -86,60 +152,48 @@ describe('loginRoleMappings', () => {
     ).toBe("Role mapping 1 has unknown role 'Unknown'");
   });
 
-  it('should preserve non-synced roles while replacing synced roles atomically', async () => {
-    const findAll = vi.fn().mockResolvedValue([{ role: 'Manager' }]);
-    const destroy = vi.fn().mockResolvedValue(1);
-    const bulkCreate = vi.fn().mockResolvedValue([]);
-    const reload = vi.fn().mockImplementation(() => Promise.resolve());
-    const transaction = { id: 'txn' };
-    const transactionRunner = vi
-      .fn()
-      .mockImplementation((callback: (t: unknown) => Promise<unknown>) => callback(transaction));
+  it('should replace synced roles while preserving externally assigned roles', async () => {
+    // A Manager granted outside group sync must survive, while a stale group-sync
+    // role is removed and the newly matched Editor role is inserted.
+    const { model, store } = createAppMemberAssignedRoleStore([
+      { AppMemberId: 'member-id', role: 'Manager', source: 'oauth2' },
+      { AppMemberId: 'member-id', role: 'Viewer', source: 'group-sync', externalGroup: '/Legacy' },
+    ]);
 
     await syncLoginRoleMappings(
-      {
-        bulkCreate,
-        destroy,
-        findAll,
-        sequelize: { transaction: transactionRunner },
-      } as never,
-      { id: 'member-id', reload } as never,
+      model as never,
+      { id: 'member-id', reload: () => Promise.resolve() } as never,
       [
         { externalGroup: '/Managers', role: 'Manager' },
         { externalGroup: '/Editors', role: 'Editor' },
       ],
     );
 
-    expect(findAll).toHaveBeenCalledWith({
-      attributes: ['role'],
-      where: {
-        AppMemberId: 'member-id',
-        source: {
-          [Op.ne]: 'group-sync',
-        },
-      },
-    });
-    // Destroy and bulkCreate must run inside a single managed transaction.
-    expect(transactionRunner).toHaveBeenCalledOnce();
-    expect(destroy).toHaveBeenCalledWith({
-      where: {
-        AppMemberId: 'member-id',
-        source: 'group-sync',
-      },
-      transaction,
-    });
-    // The preserved 'Manager' role is filtered out; only 'Editor' is inserted.
-    expect(bulkCreate).toHaveBeenCalledWith(
-      [
-        {
-          AppMemberId: 'member-id',
-          externalGroup: '/Editors',
-          role: 'Editor',
-          source: 'group-sync',
-        },
-      ],
-      { transaction },
-    );
-    expect(reload).toHaveBeenCalledWith();
+    // The externally assigned Manager stays; Manager is not duplicated as a
+    // group-sync role, the stale Viewer role is gone, and Editor is added.
+    expect(store.rows).toStrictEqual([
+      { AppMemberId: 'member-id', role: 'Manager', source: 'oauth2' },
+      { AppMemberId: 'member-id', externalGroup: '/Editors', role: 'Editor', source: 'group-sync' },
+    ]);
+  });
+
+  it('should leave existing roles untouched when inserting new roles fails', async () => {
+    const { model, store } = createAppMemberAssignedRoleStore([
+      { AppMemberId: 'member-id', role: 'Viewer', source: 'group-sync', externalGroup: '/Legacy' },
+    ]);
+    const initialRows = store.rows.map((row) => ({ ...row }));
+    model.bulkCreate = () => Promise.reject(new Error('insert failed'));
+
+    await expect(
+      syncLoginRoleMappings(
+        model as never,
+        { id: 'member-id', reload: () => Promise.resolve() } as never,
+        [{ externalGroup: '/Editors', role: 'Editor' }],
+      ),
+    ).rejects.toThrow('insert failed');
+
+    // The destroy and insert share one transaction, so a failed insert rolls the
+    // removal back and the member keeps its original roles.
+    expect(store.rows).toStrictEqual(initialRows);
   });
 });
