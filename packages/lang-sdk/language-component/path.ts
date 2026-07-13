@@ -1,11 +1,8 @@
+import { escapeJsonPointer } from '../jsonPointer.js';
 import { type NodePath } from './types.js';
 
-function escapePathPart(part: number | string): string {
-  return String(part).replaceAll('~', '~0').replaceAll('/', '~1');
-}
-
 export function formatPath(path: NodePath): string {
-  return path.length ? `/${path.map(escapePathPart).join('/')}` : '/';
+  return path.length ? `/${path.map((part) => escapeJsonPointer(String(part))).join('/')}` : '/';
 }
 
 export function getPath(root: unknown, path: NodePath): unknown {

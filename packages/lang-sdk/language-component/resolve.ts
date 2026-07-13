@@ -1,5 +1,6 @@
 import { type Schema, type Validator } from 'jsonschema';
 
+import { mapValues } from '../mapValues.js';
 import { type Identity, type SchemaTag, schemaTag } from './types.js';
 
 /**
@@ -59,12 +60,20 @@ function composite(
 
 // A combinator yields an identity only when it is itself tagged or resolved some tagged parts;
 // an anonymous combinator over untagged branches is transparent and contributes nothing.
+function taggedOrNull(
+  tag: SchemaTag | undefined,
+  parts: Identity[],
+  build: () => Identity,
+): Identity | null {
+  return tag || parts.length ? build() : null;
+}
+
 function compositeOrNull(
   mode: 'allOf' | 'anyOf' | 'oneOf',
   tag: SchemaTag | undefined,
   parts: Identity[],
 ): Identity | null {
-  return tag || parts.length ? composite(mode, tag, parts) : null;
+  return taggedOrNull(tag, parts, () => composite(mode, tag, parts));
 }
 
 function unresolvedOrNull(
@@ -72,7 +81,7 @@ function unresolvedOrNull(
   tag: SchemaTag | undefined,
   parts: Identity[],
 ): Identity | null {
-  return tag || parts.length ? unresolved(reason, parts) : null;
+  return taggedOrNull(tag, parts, () => unresolved(reason, parts));
 }
 
 function identityParts(parts: Resolution[]): Identity[] {
@@ -111,9 +120,7 @@ function stripRefs(schema: Schema): Schema {
   }
   const copy: Schema = { ...schema };
   if (copy.properties) {
-    copy.properties = Object.fromEntries(
-      Object.entries(copy.properties).map(([key, value]) => [key, stripRefs(value)]),
-    );
+    copy.properties = mapValues(copy.properties, stripRefs);
   }
   if (copy.items && typeof copy.items === 'object') {
     copy.items = Array.isArray(copy.items) ? copy.items.map(stripRefs) : stripRefs(copy.items);
