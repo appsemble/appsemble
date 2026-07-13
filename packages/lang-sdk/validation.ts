@@ -1406,6 +1406,13 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
   }
 
   iterApp(definition, { onBlock: checkRoles, onPage: checkRoles });
+
+  const { hideGroupDropdown } = definition.layout ?? {};
+  if (Array.isArray(hideGroupDropdown)) {
+    for (const [index, role] of hideGroupDropdown.entries()) {
+      checkRoleExists(role, ['layout', 'hideGroupDropdown', index]);
+    }
+  }
 }
 
 /**

@@ -97,5 +97,12 @@ If this is omitted, a collapsable side navigation menu will be rendered on the l
       type: 'boolean',
       default: false,
     },
+    hideGroupDropdown: {
+      description: `Whether to hide the group dropdown.
+
+Set to \`true\` to hide it for all users, or provide a list of role names to hide it only
+for members holding any of those roles.`,
+      oneOf: [{ type: 'boolean' }, { type: 'array', items: { type: 'string' } }],
+    },
   },
 };
