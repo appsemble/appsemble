@@ -22,7 +22,7 @@ export class SchemaRegistry {
   resolveRef(ref: string): Schema {
     // The registry is keyed by component name, so only the `#/components/schemas/{name}` prefix
     // maps to a key. A deeper pointer (e.g. `.../Foo/properties/bar`) is not a named component;
-    // shortcutting on its last segment would return an unrelated same-named schema, so it falls
+    // matching on its last segment would return an unrelated same-named schema, so it falls
     // through to the unknown-ref error rather than resolving to the wrong shape.
     const prefix = '#/components/schemas/';
     const name = ref.startsWith(prefix) ? ref.slice(prefix.length) : ref;
