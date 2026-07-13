@@ -295,3 +295,28 @@ export function childSchema(
   }
   return owned.length === 1 ? owned[0] : { allOf: owned };
 }
+
+/**
+ * The child schema at `key`: a value-directed resolver (if configured) decides first, falling
+ * back to the structural `childSchema` lookup over the winners. This is the one descent step the
+ * walk (`Scanner`) and interactive navigation (`Cursor`) share, so both stay in lockstep.
+ *
+ * @param ctx The resolve context carrying the ref resolver and optional dynamic-child resolver.
+ * @param parentIdentity The resolved identity name at the parent, or null when untagged.
+ * @param parentValue The parent's value, passed to the dynamic-child resolver.
+ * @param key The child key (an object property or a stringified array index).
+ * @param winners The winning schemas from `resolve` at the parent node.
+ * @returns The child's governing schema, or null when nothing owns the key.
+ */
+export function childFor(
+  ctx: ResolveContext,
+  parentIdentity: string | null,
+  parentValue: unknown,
+  key: string,
+  winners: Schema[],
+): Schema | null {
+  return (
+    ctx.dynamicChild?.(parentIdentity, parentValue, key) ??
+    childSchema(winners, key, ctx.resolveRef)
+  );
+}

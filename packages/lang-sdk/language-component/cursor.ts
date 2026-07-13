@@ -1,7 +1,7 @@
 import { type Schema } from 'jsonschema';
 
 import {
-  childSchema,
+  childFor,
   localShapeFactory,
   resolve,
   type ResolveContext,
@@ -91,10 +91,14 @@ export class Cursor {
   // value-directed resolver (if configured) is consulted before the structural lookup, so
   // cursor descent matches the walk (BLOCKS.md, Approach B).
   child(key: number | string): Cursor | null {
-    const parentIdentity = this.resolution().identity?.name ?? null;
-    const schema =
-      this.ctx.dynamicChild?.(parentIdentity, this.value, String(key)) ??
-      childSchema(this.resolution().winners, String(key), this.ctx.resolveRef);
+    const resolution = this.resolution();
+    const schema = childFor(
+      this.ctx,
+      resolution.identity?.name ?? null,
+      this.value,
+      String(key),
+      resolution.winners,
+    );
     if (!schema) {
       return null;
     }
