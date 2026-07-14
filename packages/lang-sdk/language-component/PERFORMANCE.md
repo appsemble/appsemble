@@ -15,7 +15,7 @@ A single `scan` run was ~8.2 s, split roughly in half:
   produces identity. Expose it as a separate call the caller runs on its own cadence (an LSP
   computes diagnostics on idle, not per keystroke).
 
-**Ref-cutoff rationale.** `createLocalShape()` memoizes `stripRefs(schema)` by schema-object
+**Ref-cutoff rationale.** `localShapeFactory()` memoizes `stripRefs(schema)` by schema-object
 identity for a run: each schema node is stripped to its local shape once, and the many
 `$ref`-reached revisits reuse the cached copy. A node's resolution then depends on its value only
 down to the next `$ref` boundary — which is exactly what makes incremental re-analysis correct:

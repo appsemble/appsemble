@@ -39,7 +39,7 @@ classDiagram
 
   class LanguageComponent {
     +name string
-    +schema Schema
+    +schema TaggedSchema
     +binding LanguageComponentBinding
     +define(name, schema, binding)$ LanguageComponent
     +schemas(defs)$ Record~string, Schema~
@@ -50,6 +50,7 @@ classDiagram
   class ResolveOptions {
     <<interface>>
     +dynamicChild? DynamicChild
+    +validatorFactory? () Validator
   }
   class IncrementalOptions {
     <<interface>>
@@ -313,19 +314,20 @@ the `jsonschema` `Schema` type by the module augmentation in `types.ts`.
 ## Files
 
 - `resolve.ts`: the decision core — `resolve` (combinator discrimination, one arm per combinator),
-  `childSchema` (structural descent), and the ref-cutoff (`createLocalShape`), shared by the walk
-  and the cursor so identity is decided in exactly one place.
+  `childSchema`/`resolveChild` (structural descent plus the value-directed `dynamicChild` hook), and
+  the ref-cutoff (`localShapeFactory`), shared by the walk and the cursor so identity is decided in
+  exactly one place.
 - `scanner.ts`: the engine — `Scanner` (`buildTree`/`validate`/`scan` and the `run` one-shot
   static), incremental re-analysis.
 - `cursor.ts`: `Cursor` (rooted via `Cursor.at`), a lazy zipper over `(value, schema)` that shares
-  `resolve` and `childSchema` with the walk, for navigating and reading a single node in context.
+  `resolve` and `resolveChild` with the walk, for navigating and reading a single node in context.
 - `languageComponent.ts`: the `LanguageComponent` class (`define` / `schemas` / `bindings` /
   `annotate` statics) and the `LanguageComponentBinding` type, to declare a component's schema and
-  behaviors and collect them into registries.
-- `annotate.ts`: the schema-tagging internals behind `LanguageComponent.annotate` (object and
-  combinator schemas get tagged so the analyzer mounts identities for them).
-- `types.ts`: `Identity`, `Mount`, `ScanHit`, `SchemaTag`, `COMPONENT_KEY`/`schemaTag`, and the
-  `jsonschema` `Schema` augmentation for `appsembleLanguageComponent`.
+  behaviors and collect them into registries. `annotate` bulk-tags object and combinator schemas so
+  the analyzer mounts identities for them.
+- `types.ts`: `Identity`, `Mount`, `ScanHit`, `SchemaTag`, `TaggedSchema`,
+  `COMPONENT_KEY`/`schemaTag`/`isTagged`, and the `jsonschema` `Schema` augmentation for
+  `appsembleLanguageComponent`.
 - `path.ts`: JSON Pointer-safe path formatting and lookup — internal plumbing behind
   `MountTree.mountAt` and the walk; not part of the barrel.
 - `schemaRegistry.ts`: synchronous schema registry for `$ref` resolution.

@@ -1,6 +1,8 @@
 # Language components for blocks (design)
 
-**Status: design + prototype only. Not implemented in the engine.**
+**Status: the `dynamicChild` resolver hook (Approach B) is implemented in the engine
+(`ResolveOptions`, covered by `blocks-dynamic.test.ts`); wiring it to a per-app block registry is the
+consumer's part.**
 
 Block parameters are not in the static schema: each block type/version ships its own parameters JSON
 Schema (from its manifest), and the base `BlockDefinition` leaves `parameters` (and `actions`,
@@ -51,17 +53,18 @@ reconstruct a union at all — it can look the block up. This is Approach B.
 
 ## Approach B: a value-directed resolver hook
 
-Add an optional `ResolveContext` hook that `childSchema` consults when descending:
+An optional `ResolveOptions` hook that `resolveChild` consults before the structural `childSchema`
+lookup when descending:
 
 ```text
-dynamicChild?(parentIdentity: string, parentValue: unknown, key: string): Schema | null;
+dynamicChild?(parentIdentity: string | null, parentValue: unknown, key: string): Schema | null;
 ```
 
 At a `BlockDefinition` node, resolving `parameters` (or `actions`/`events`) reads `type` + `version`
 and returns that block's schema from a per-app registry — O(1), no union, no `if`/`then`, no
 pre-patching. It hands back the schema _object_, so it sidesteps ref keying entirely. The same hook
-generalizes to any `type`-discriminated union (e.g. actions). Cost: an engine extension, and the
-registry must be injected by the consumer.
+generalizes to any `type`-discriminated union (e.g. actions). Cost: the registry must be injected by
+the consumer.
 
 ### Sync materialization: two walks with an async fetch between
 
@@ -97,7 +100,7 @@ sequenceDiagram
   Note over C,F: async, cannot run inside a sync walk
   F-->>C: per-app registry keyed by type+version
   C->>A1: buildTree(app, root, previous tree + changed block paths)
-  A1-->>C: childSchema consults dynamicChild; parameters mount, non-block nodes reused
+  A1-->>C: resolveChild consults dynamicChild; parameters mount, non-block nodes reused
 ```
 
 ### Annotation
@@ -130,12 +133,13 @@ resolveRef(ref) {
 Caveat: `buildTree` resolves refs via `resolveRef` (identity works immediately), while
 `validate`/`collectHits` route through the jsonschema validator, whose handling of the non-standard
 `appsemble://` scheme needs checking. The measured `analyze` cliff and its fix — Approach B plus a
-resolver-registered, scoped/debounced validator, no `jsonschema` patching — are in
-`USABILITY-3RD-MR.md` §6.
+resolver-registered, scoped/debounced validator (inject it via `ResolveOptions.validatorFactory`),
+no `jsonschema` patching — are in `USABILITY-3RD-MR.md` §6.
 
 ## Status / prerequisites
 
 The walk-driven approach mounts block params once fetched schemas are materialized between the two
-walks and the `dynamicChild` hook is wired. Still required for real use: the `dynamicChild` engine
-extension, and block schema fetching (exists in the LSP). Recommendation: **Approach B** — the LSP's
-`if`/`then` construct is not walkable, so a value-directed resolver is the path, not a fallback.
+walks and the `dynamicChild` hook is wired to the registry. Still required for real use: block schema
+fetching (exists in the LSP) and wiring `dynamicChild` to it. Recommendation: **Approach B** — the
+LSP's `if`/`then` construct is not walkable, so a value-directed resolver is the path, not a
+fallback.
