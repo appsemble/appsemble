@@ -142,6 +142,11 @@ export class Scanner {
   // Clean validator for the walk's local checks; never carries the hit side effect.
   private readonly resolveValidator: Validator;
 
+  // Dedicated validator for the whole-document pass. Built once and reused across scans
+  // (registering every schema is not free); `collectHits` reinstalls its hit side effect per
+  // call, so it stays separate from `resolveValidator`, which the walk keeps hit-free.
+  private readonly documentValidator: Validator;
+
   // Persistent ref-cutoff cache, keyed on schema identity (stable across calls).
   private readonly localShape: (schema: Schema) => Schema;
 
@@ -150,7 +155,9 @@ export class Scanner {
 
   constructor(schemas: Record<string, Schema>, options: ResolveOptions = {}) {
     this.registry = new SchemaRegistry(schemas);
-    this.resolveValidator = this.registry.createValidator();
+    const validatorFactory = options.validatorFactory ?? (() => this.registry.createValidator());
+    this.resolveValidator = validatorFactory();
+    this.documentValidator = validatorFactory();
     this.localShape = localShapeFactory();
     this.dynamicChild = options.dynamicChild;
   }
@@ -202,11 +209,7 @@ export class Scanner {
    * @returns Whole-document validity, the validation errors, and collected hits.
    */
   validate(data: unknown, rootSchema: Schema): ScanValidation {
-    const { documentValid, errors, hits } = collectHits(
-      this.registry.createValidator(),
-      data,
-      rootSchema,
-    );
+    const { documentValid, errors, hits } = collectHits(this.documentValidator, data, rootSchema);
     return { documentValid, errors, hits };
   }
 

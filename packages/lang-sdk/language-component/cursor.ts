@@ -65,7 +65,7 @@ export class Cursor {
     const registry = new SchemaRegistry(schemas);
     const ctx: ResolveContext = {
       resolveRef: (ref) => registry.resolveRef(ref),
-      validator: registry.createValidator(),
+      validator: options.validatorFactory?.() ?? registry.createValidator(),
       localShape: localShapeFactory(),
       dynamicChild: options.dynamicChild,
     };

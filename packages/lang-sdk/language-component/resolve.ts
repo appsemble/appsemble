@@ -31,6 +31,11 @@ export type DynamicChild = (
 export interface ResolveOptions {
   // A value-directed child resolver consulted before structural descent (see DynamicChild).
   dynamicChild?: DynamicChild;
+  // Build the jsonschema validator, overriding the registry's default. Supply this to control
+  // how schemas and $refs resolve during validation -- e.g. an editor registering per-block
+  // schemas under their own URLs so a large `BlockDefinition` union validates without walking
+  // every branch. The whole-document pass installs its hit-collection attribute on the result.
+  validatorFactory?: () => Validator;
 }
 
 // Everything `resolve` and `childSchema` need to decide identity and descend, minus
