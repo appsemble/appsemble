@@ -67,7 +67,7 @@ export function createAppsembleSchemaConfig({
   return [
     {
       uri: 'appsemble://schema.json',
-      fileMatch: ['app-definition.yaml'],
+      fileMatch: ['app-definition.yaml', 'app-definition.yml'],
       schema: {
         id: 'appsemble://schema.json',
         url: referenceUri,

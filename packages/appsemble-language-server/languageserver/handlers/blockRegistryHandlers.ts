@@ -29,7 +29,7 @@ export class BlockRegistryHandlers {
 
   private updateCounter = 0;
 
-  private updateTimeout: NodeJS.Timeout | undefined;
+  private updatePromise: Promise<boolean> | undefined;
 
   private isCompleteBlock(block: IdentifiableBlock): boolean {
     return Boolean(parseBlockName(block.type) && semver.test(String(block.version)));
@@ -54,17 +54,20 @@ export class BlockRegistryHandlers {
   }
 
   registerHandlers(): void {
-    this.yamlSettings.documents.onDidChangeContent(() => {
-      clearTimeout(this.updateTimeout);
-      this.updateTimeout = setTimeout(() => {
-        this.updateBlockSchemas().catch((error: unknown) => {
-          this.logger.error(`Error updating block schemas: ${error}`);
-        });
-      }, this.yamlSettings.validationDelayMs);
-    });
+    this.validationHandler.setBlockSchemaUpdater(() => this.updateBlockSchemas());
   }
 
-  private async updateBlockSchemas(): Promise<void> {
+  private updateBlockSchemas(): Promise<boolean> {
+    if (!this.updatePromise) {
+      this.updatePromise = this.doUpdateBlockSchemas().finally(() => {
+        this.updatePromise = undefined;
+      });
+    }
+
+    return this.updatePromise;
+  }
+
+  private async doUpdateBlockSchemas(): Promise<boolean> {
     this.updateCounter += 1;
     const updateId = this.updateCounter;
     const candidateBlocks = new Map<string, IdentifiableBlock>();
@@ -91,7 +94,7 @@ export class BlockRegistryHandlers {
     );
     if (updateId !== this.updateCounter) {
       this.logger.log('Skipping stale block schema update');
-      return;
+      return false;
     }
     this.logger.log(`Updating block schemas for ${allBlocks.size} blocks`);
     const allOf = [...allBlocks.values()].map((block) => ({
@@ -119,9 +122,8 @@ export class BlockRegistryHandlers {
     }));
     if (deepEquals(allOf, this.lastAllOf)) {
       this.logger.log('Block schemas unchanged, not updating');
-      return;
+      return false;
     }
-    this.lastAllOf = allOf;
     this.updateAppsembleSchemaConfig(allOf);
     try {
       this.blockSchemaRequestHandler.availableBlockRefs = { allOf };
@@ -135,13 +137,13 @@ export class BlockRegistryHandlers {
         }),
       );
       this.languageService.resetSchema('appsemble://schema.json');
+      this.lastAllOf = allOf;
     } catch (error: unknown) {
       this.logger.error(`Error updating blockSchemaRequestHandler: ${error}`);
+      return false;
     }
     this.logger.log('Updated blockSchemaRequestHandler');
-    for (const document of this.yamlSettings.documents.all()) {
-      this.validationHandler.validate(document);
-    }
+    return true;
   }
 
   private updateAppsembleSchemaConfig(allOf: unknown[]): void {

@@ -68,7 +68,11 @@ export class SettingsHandler {
         this.telemetry.sendError('yaml.settings.error', err);
       }
     }
-    this.connection.onDidChangeConfiguration(() => this.pullConfiguration());
+    this.connection.onDidChangeConfiguration(() =>
+      this.pullConfiguration().catch((error: unknown) => {
+        this.connection.console.error(`Error pulling configuration: ${error}`);
+      }),
+    );
   }
 
   async pullConfiguration(): Promise<void> {

@@ -15,6 +15,10 @@ import { type SettingsState } from '../../yamlSettings.js';
 import { type BlockManifestCacher } from '../utils/BlockManifestCacher.js';
 import { type YamlCacher } from '../utils/YamlCacher.js';
 
+interface ValidationOptions {
+  refreshBlockSchemas?: boolean;
+}
+
 function validatorRangeToDiagnosticRange(
   counter: LineCounter,
   [start, valueEnd, ,]: [number, number, number],
@@ -46,6 +50,10 @@ export class ValidationHandler {
 
   private readonly appValidator: AppValidator;
 
+  private readonly activeValidationControllers = new Map<string, AbortController>();
+
+  private blockSchemaUpdater: (() => Promise<boolean>) | undefined;
+
   constructor(
     connection: Connection,
     languageService: LanguageService,
@@ -70,6 +78,10 @@ export class ValidationHandler {
     this.blockManifestCacher = blockManifestCacher;
   }
 
+  setBlockSchemaUpdater(blockSchemaUpdater: () => Promise<boolean>): void {
+    this.blockSchemaUpdater = blockSchemaUpdater;
+  }
+
   handleSettingsUpdate(): void {
     this.blockManifestCacher.apiUrl = this.yamlSettings.blockRegistryBaseUrl;
 
@@ -78,23 +90,57 @@ export class ValidationHandler {
     }
   }
 
-  validate(textDocument: TextDocument): void {
+  validate(textDocument: TextDocument, options: ValidationOptions = {}): void {
     this.cleanPendingValidation(textDocument);
     this.yamlSettings.pendingValidationRequests[textDocument.uri] = setTimeout(() => {
       delete this.yamlSettings.pendingValidationRequests[textDocument.uri];
-      this.validateTextDocument(textDocument);
+      const abortController = new AbortController();
+      this.activeValidationControllers.set(textDocument.uri, abortController);
+      this.validateTextDocument(textDocument, abortController.signal, {
+        refreshBlockSchemas: options.refreshBlockSchemas ?? true,
+      })
+        .catch((error: unknown) => {
+          this.connection.console.error(`Validation failed for ${textDocument.uri}: ${error}`);
+        })
+        .finally(() => {
+          if (this.activeValidationControllers.get(textDocument.uri) === abortController) {
+            this.activeValidationControllers.delete(textDocument.uri);
+          }
+        });
     }, this.yamlSettings.validationDelayMs);
   }
 
-  private async validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
+  private async validateTextDocument(
+    textDocument: TextDocument,
+    signal: AbortSignal,
+    options: Required<ValidationOptions>,
+  ): Promise<Diagnostic[]> {
     if (!textDocument) {
       return [];
+    }
+
+    if (options.refreshBlockSchemas && this.blockSchemaUpdater) {
+      const blockSchemasChanged = await this.blockSchemaUpdater();
+      if (signal.aborted) {
+        return [];
+      }
+
+      if (blockSchemasChanged) {
+        for (const document of this.yamlSettings.documents.all()) {
+          if (document.uri !== textDocument.uri) {
+            this.validate(document, { refreshBlockSchemas: false });
+          }
+        }
+      }
     }
 
     const diagnosticResults = await this.languageService.doValidation(
       textDocument,
       isKubernetesAssociatedDocument(textDocument, this.yamlSettings.specificValidatorPaths),
     );
+    if (signal.aborted) {
+      return [];
+    }
 
     const { counter, doc } = this.yamlCacher.parseOrGetCached(textDocument);
     const definition = doc.toJS({ maxAliasCount: 10_000 });
@@ -106,6 +152,10 @@ export class ValidationHandler {
       undefined,
       validatorResult,
     );
+    if (signal.aborted) {
+      return [];
+    }
+
     const errors: Diagnostic[] = validationResult.errors
       .map((error) => {
         const node = doc.getIn(error.path, true);
@@ -141,6 +191,9 @@ export class ValidationHandler {
   }
 
   private cleanPendingValidation(textDocument: TextDocument): void {
+    this.activeValidationControllers.get(textDocument.uri)?.abort();
+    this.activeValidationControllers.delete(textDocument.uri);
+
     const request = this.yamlSettings.pendingValidationRequests[textDocument.uri];
 
     if (request) {

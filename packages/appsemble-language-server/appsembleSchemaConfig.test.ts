@@ -3,11 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { createAppsembleSchemaConfig } from './appsembleSchemaConfig.js';
 
 describe('createAppsembleSchemaConfig', () => {
-  it('registers the Appsemble app definition schema for app-definition.yaml', () => {
+  it('registers the Appsemble app definition schema for app definition files', () => {
     const [config] = createAppsembleSchemaConfig();
 
     expect(config.uri).toBe('appsemble://schema.json');
-    expect(config.fileMatch).toStrictEqual(['app-definition.yaml']);
+    expect(config.fileMatch).toStrictEqual(['app-definition.yaml', 'app-definition.yml']);
     expect((config.schema as { $ref: string }).$ref).toBe('#/definitions/AppDefinition');
   });
 

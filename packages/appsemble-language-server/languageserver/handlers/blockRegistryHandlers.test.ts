@@ -1,6 +1,6 @@
 import { type LanguageService } from 'yaml-language-server';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { BlockRegistryHandlers } from './blockRegistryHandlers.js';
 import { type ValidationHandler } from './validationHandlers.js';
@@ -14,31 +14,13 @@ import { YamlCacher } from '../utils/YamlCacher.js';
 const logger = { log: vi.fn(), error: vi.fn(), warn: vi.fn(), info: vi.fn() } as unknown as Logger;
 
 /**
- * A document manager standing in for the editor, exposing only what the handler consumes: a change
- * subscription and the set of open documents.
+ * A document manager standing in for the editor, exposing only the set of open documents.
  */
 class FakeDocuments {
-  private handler: ((event: { document: TextDocument }) => void) | undefined;
-
   open: TextDocument[] = [];
-
-  onDidChangeContent(handler: (event: { document: TextDocument }) => void): {
-    dispose: () => void;
-  } {
-    this.handler = handler;
-    return {
-      dispose: () => {
-        this.handler = undefined;
-      },
-    };
-  }
 
   all(): TextDocument[] {
     return this.open;
-  }
-
-  fireChange(): void {
-    this.handler?.({ document: this.open[0] });
   }
 }
 
@@ -67,7 +49,9 @@ interface Harness {
   documents: FakeDocuments;
   settings: SettingsState;
   blockSchemaRequestHandler: BlockSchemaRequestHandler;
+  schemaUpdater: () => Promise<boolean>;
   modifySchemaContent: ReturnType<typeof vi.fn>;
+  resetSchema: ReturnType<typeof vi.fn>;
   fetchMock: ReturnType<typeof vi.fn>;
 }
 
@@ -80,8 +64,14 @@ function setup(): Harness {
   const blockManifestCacher = new BlockManifestCacher(settings.blockRegistryBaseUrl, logger);
   const blockSchemaRequestHandler = new BlockSchemaRequestHandler(blockManifestCacher, logger);
   const modifySchemaContent = vi.fn();
-  const languageService = { modifySchemaContent } as unknown as LanguageService;
-  const validationHandler = { validate: vi.fn() } as unknown as ValidationHandler;
+  const resetSchema = vi.fn();
+  const languageService = { modifySchemaContent, resetSchema } as unknown as LanguageService;
+  let schemaUpdater: (() => Promise<boolean>) | undefined;
+  const validationHandler = {
+    setBlockSchemaUpdater: vi.fn((updater: () => Promise<boolean>) => {
+      schemaUpdater = updater;
+    }),
+  } as unknown as ValidationHandler;
 
   const fetchMock = vi.fn();
   vi.stubGlobal('fetch', fetchMock);
@@ -96,25 +86,28 @@ function setup(): Harness {
     logger,
   ).registerHandlers();
 
-  return { documents, settings, blockSchemaRequestHandler, modifySchemaContent, fetchMock };
+  if (!schemaUpdater) {
+    throw new Error('Expected block registry handler to register a schema updater');
+  }
+
+  return {
+    documents,
+    settings,
+    blockSchemaRequestHandler,
+    schemaUpdater,
+    modifySchemaContent,
+    resetSchema,
+    fetchMock,
+  };
 }
 
 describe('BlockRegistryHandlers', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   it('registers a known block so its schema becomes available for validation', async () => {
     const h = setup();
     h.fetchMock.mockResolvedValue(okResponse({ name: '@appsemble/markdown' }));
     h.documents.open = [appDefinition('markdown', '1.2.3')];
 
-    h.documents.fireChange();
-    await vi.advanceTimersByTimeAsync(250);
+    expect(await h.schemaUpdater()).toBe(true);
 
     const titles = h.blockSchemaRequestHandler.availableBlockRefs.allOf.map(
       (entry) => (entry as { title: string }).title,
@@ -130,8 +123,7 @@ describe('BlockRegistryHandlers', () => {
     h.fetchMock.mockResolvedValue(okResponse({ name: '@appsemble/markdown' }));
     h.documents.open = [appDefinition('markdown', '1.2.3')];
 
-    h.documents.fireChange();
-    await vi.advanceTimersByTimeAsync(250);
+    await h.schemaUpdater();
 
     const appsembleSchema = h.settings.schemaConfigurationSettings.find(
       (schema) => schema.uri === 'appsemble://schema.json',
@@ -141,21 +133,26 @@ describe('BlockRegistryHandlers', () => {
     ]);
   });
 
-  it('debounces rapid edits into a single delayed schema update', async () => {
+  it('does not update the schema when the block set has not changed', async () => {
     const h = setup();
     h.fetchMock.mockResolvedValue(okResponse({ name: '@appsemble/markdown' }));
     h.documents.open = [appDefinition('markdown', '1.2.3')];
 
-    h.documents.fireChange();
-    h.documents.fireChange();
-    h.documents.fireChange();
+    expect(await h.schemaUpdater()).toBe(true);
+    expect(await h.schemaUpdater()).toBe(false);
 
-    // Nothing runs until the debounce window elapses.
-    await vi.advanceTimersByTimeAsync(100);
-    expect(h.fetchMock).not.toHaveBeenCalled();
+    expect(h.fetchMock).toHaveBeenCalledTimes(1);
+    expect(h.modifySchemaContent).toHaveBeenCalledTimes(1);
+    expect(h.resetSchema).toHaveBeenCalledTimes(1);
+  });
 
-    // Once it elapses, the burst results in a single update.
-    await vi.advanceTimersByTimeAsync(150);
+  it('shares an in-flight schema update between concurrent validation requests', async () => {
+    const h = setup();
+    h.fetchMock.mockResolvedValue(okResponse({ name: '@appsemble/markdown' }));
+    h.documents.open = [appDefinition('markdown', '1.2.3')];
+
+    expect(await Promise.all([h.schemaUpdater(), h.schemaUpdater()])).toStrictEqual([true, true]);
+
     expect(h.fetchMock).toHaveBeenCalledTimes(1);
     expect(h.modifySchemaContent).toHaveBeenCalledTimes(1);
   });
@@ -164,8 +161,7 @@ describe('BlockRegistryHandlers', () => {
     const h = setup();
     h.documents.open = [appDefinition('markdown', 'draft')];
 
-    h.documents.fireChange();
-    await vi.advanceTimersByTimeAsync(250);
+    expect(await h.schemaUpdater()).toBe(true);
 
     expect(h.fetchMock).not.toHaveBeenCalled();
     expect(h.blockSchemaRequestHandler.availableBlockRefs.allOf).toStrictEqual([]);
@@ -176,8 +172,7 @@ describe('BlockRegistryHandlers', () => {
     h.fetchMock.mockResolvedValue(notOkResponse());
     h.documents.open = [appDefinition('unlisted', '1.0.0')];
 
-    h.documents.fireChange();
-    await vi.advanceTimersByTimeAsync(250);
+    expect(await h.schemaUpdater()).toBe(true);
 
     expect(h.fetchMock).toHaveBeenCalledTimes(1);
     expect(h.blockSchemaRequestHandler.availableBlockRefs.allOf).toStrictEqual([]);

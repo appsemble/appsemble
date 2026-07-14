@@ -227,7 +227,7 @@ export class YAMLServerInit {
     );
     // TODO: ignore
     // await this.setupLocalizationBundle(params);
-    return {
+    const result: InitializeResult = {
       capabilities: {
         textDocumentSync: TextDocumentSyncKind.Incremental,
         completionProvider: { resolveProvider: false },
@@ -258,7 +258,16 @@ export class YAMLServerInit {
           },
         },
       },
+      serverInfo: {
+        name: 'Appsemble Language Server',
+      },
     };
+
+    if (params.initializationOptions?.appsemble?.skipExecuteCommandProvider) {
+      delete result.capabilities.executeCommandProvider;
+    }
+
+    return result;
   }
 
   start(): void {
