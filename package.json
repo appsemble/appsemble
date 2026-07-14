@@ -57,7 +57,7 @@
     "lint-staged": "15.5.2",
     "postcss": "8.5.16",
     "postcss-preset-env": "9.6.0",
-    "prettier": "3.8.5",
+    "prettier": "3.9.5",
     "prettier-plugin-packagejson": "2.5.22",
     "remark-cli": "12.0.1",
     "remark-frontmatter": "5.0.0",
