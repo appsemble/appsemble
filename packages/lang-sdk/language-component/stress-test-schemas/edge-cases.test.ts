@@ -76,6 +76,23 @@ describe('engine edge cases', () => {
     expect(invalid.mounts.get('/')!.localValid).toBe(false);
   });
 
+  it("captures a node's own local-shape errors on its mount during the walk", () => {
+    const Strict = LanguageComponent.define(
+      'StrictLocal',
+      { type: 'object', required: ['name'], properties: { name: { type: 'string' } } },
+      {},
+    );
+    const schemas = LanguageComponent.schemas([Strict]);
+    const tree = new Scanner(schemas).buildTree({}, schemas.StrictLocal);
+    const mount = tree.mounts.get('/');
+
+    expect(mount).toBeDefined();
+    expect(mount!.localValid).toBe(false);
+    expect(mount!.localErrors.length).toBeGreaterThan(0);
+    // The whole-document `errors` field stays empty until `validate` runs.
+    expect(mount!.errors).toStrictEqual([]);
+  });
+
   // The no-match counterpart to the scenario-driven 'composes every wrapper under an
   // untagged combinator' in 'language component gaps'. It stays here because the null-identity
   // branch needs untagged members with no annotated parts, which the shared fixtures

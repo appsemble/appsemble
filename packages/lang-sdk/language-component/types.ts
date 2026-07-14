@@ -76,14 +76,16 @@ export interface Identity {
   reason?: string;
 }
 
-// An Identity mounted at a concrete data path. `localValid` is whether the value
-// satisfies its own schema; whole-document validity lives on the analysis result,
-// not here. `errors` are the validation errors at or below this path. The value
-// itself is not stored — read it through `MountTree.valueAt(path)`, so a mount
-// reused across incremental rebuilds can never carry a stale value.
+// An Identity mounted at a concrete data path. `localValid` is whether the value satisfies its own
+// schema, and `localErrors` are that node's own local-shape failures (ref-cut), produced by the walk
+// per node. `errors` are the whole-document validation errors at or below this path, filled by
+// `validate` (empty until then). The value itself is not stored — read it through
+// `MountTree.valueAt(path)`, so a mount reused across incremental rebuilds can never carry a stale
+// value.
 export interface Mount {
   path: NodePath;
   identity: Identity;
   localValid: boolean;
+  localErrors: ValidationError[];
   errors: ValidationError[];
 }

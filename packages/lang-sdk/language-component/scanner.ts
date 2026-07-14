@@ -35,7 +35,12 @@ import {
  */
 
 interface WalkContext extends ResolveContext {
-  emit: (path: NodePath, identity: Identity, localValid: boolean) => void;
+  emit: (
+    path: NodePath,
+    identity: Identity,
+    localValid: boolean,
+    localErrors: ValidationError[],
+  ) => void;
 }
 
 // The identity tree: mounts keyed by JSON Pointer over the analyzed document, with `mountAt` to
@@ -99,9 +104,9 @@ interface Boundary {
 }
 
 function walk(schema: Schema, value: unknown, path: NodePath, ctx: WalkContext): void {
-  const { identity, winners, matched } = resolve(schema, value, ctx);
+  const { identity, winners, matched, localErrors } = resolve(schema, value, ctx);
   if (identity) {
-    ctx.emit(path, identity, matched);
+    ctx.emit(path, identity, matched, localErrors ?? []);
   }
   if (value && typeof value === 'object') {
     for (const key of Object.keys(value)) {
@@ -248,8 +253,8 @@ export class Scanner {
   private walkContext(byPath: Map<string, Mount>): WalkContext {
     return {
       ...this.resolveContext(),
-      emit(path, identity, localValid) {
-        byPath.set(formatPath(path), { errors: [], localValid, identity, path });
+      emit(path, identity, localValid, localErrors) {
+        byPath.set(formatPath(path), { errors: [], localErrors, localValid, identity, path });
       },
     };
   }

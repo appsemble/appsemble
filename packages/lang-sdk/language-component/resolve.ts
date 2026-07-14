@@ -1,4 +1,4 @@
-import { type Schema, type Validator } from 'jsonschema';
+import { type Schema, type ValidationError, type Validator } from 'jsonschema';
 
 import { mapValues } from '../mapValues.js';
 import { type Identity, type SchemaTag, schemaTag } from './types.js';
@@ -15,6 +15,9 @@ export interface Resolution {
   identity: Identity | null;
   winners: Schema[];
   matched: boolean;
+  // The node's own local-shape validation errors (ref-cut). Present for leaf nodes; a combinator
+  // node has none of its own (its validity is whether branches matched).
+  localErrors?: ValidationError[];
 }
 
 // Value-directed child resolver (BLOCKS.md, Approach B): given the parent's resolved
@@ -102,9 +105,16 @@ function deref(schema: Schema, resolveRef: (ref: string) => Schema): Schema {
 // Does `value` conform to `schema`'s own local shape? `localShape` applies the ref-cutoff
 // first (see `stripRefs`), so this checks only the schema's own constraints and never
 // recurses into referenced subtrees -- the walk visits those.
-function matchesLocalShape(value: unknown, schema: Schema, ctx: ResolveContext): boolean {
-  return ctx.validator.validate(value, ctx.localShape(schema), { base: '#', nestedErrors: true })
-    .valid;
+function matchesLocalShape(
+  value: unknown,
+  schema: Schema,
+  ctx: ResolveContext,
+): { matched: boolean; errors: ValidationError[] } {
+  const result = ctx.validator.validate(value, ctx.localShape(schema), {
+    base: '#',
+    nestedErrors: true,
+  });
+  return { matched: result.valid, errors: result.errors };
 }
 
 // Memoize the ref-cutoff: build each schema's local shape (`stripRefs`) once and cache it by
@@ -222,8 +232,8 @@ function resolveLeaf(
   value: unknown,
   ctx: ResolveContext,
 ): Resolution {
-  const matched = matchesLocalShape(value, s, ctx);
-  return { identity: tag ? single(tag.name) : null, matched, winners: [s] };
+  const { matched, errors } = matchesLocalShape(value, s, ctx);
+  return { identity: tag ? single(tag.name) : null, matched, winners: [s], localErrors: errors };
 }
 
 export function resolve(
