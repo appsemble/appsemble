@@ -69,12 +69,14 @@ export function resolveLoginRoleMappings(
   const resolvedMappings: ResolvedLoginRoleMapping[] = [];
 
   for (const { group, role } of roleMappings) {
-    if (!normalizedGroups.has(group) || seenRoles.has(role)) {
+    const normalizedGroup = group.trim();
+
+    if (!normalizedGroups.has(normalizedGroup) || seenRoles.has(role)) {
       continue;
     }
 
     seenRoles.add(role);
-    resolvedMappings.push({ externalGroup: group, role });
+    resolvedMappings.push({ externalGroup: normalizedGroup, role });
   }
 
   return resolvedMappings;
@@ -132,13 +134,6 @@ export async function syncLoginRoleMappings(
     ).map(({ role }) => role),
   );
 
-  await appMemberAssignedRoleModel.destroy({
-    where: {
-      AppMemberId: appMember.id,
-      source: 'group-sync',
-    },
-  });
-
   const rows = resolvedMappings
     .filter(({ role }) => !preservedRoles.has(role))
     .map(({ externalGroup, role }) => ({
@@ -148,9 +143,19 @@ export async function syncLoginRoleMappings(
       source: 'group-sync',
     }));
 
-  if (rows.length) {
-    await appMemberAssignedRoleModel.bulkCreate(rows);
-  }
+  await appMemberAssignedRoleModel.sequelize!.transaction(async (transaction) => {
+    await appMemberAssignedRoleModel.destroy({
+      where: {
+        AppMemberId: appMember.id,
+        source: 'group-sync',
+      },
+      transaction,
+    });
+
+    if (rows.length) {
+      await appMemberAssignedRoleModel.bulkCreate(rows, { transaction });
+    }
+  });
 
   await appMember.reload();
 }

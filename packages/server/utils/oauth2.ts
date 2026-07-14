@@ -145,8 +145,11 @@ export async function getUserInfo(
     zoneinfo ??= info.zoneinfo;
     // The returned subject may be a number for non OpenID compliant services, e.g. GitHub.
     sub ??= typeof info.sub === 'number' ? String(info.sub) : info.sub;
-    if (groups == null && info.groups != null) {
-      groups = normalizeLoginGroups(info.groups);
+    if (!groups?.length && info.groups != null) {
+      const normalizedGroups = normalizeLoginGroups(info.groups);
+      if (normalizedGroups.length) {
+        groups = normalizedGroups;
+      }
     }
     subscribed ??= info.subscribed;
   }
