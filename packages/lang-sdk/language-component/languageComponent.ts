@@ -2,7 +2,7 @@ import { type Schema } from 'jsonschema';
 
 import { mapValues } from '../mapValues.js';
 import { type Cursor } from './cursor.js';
-import { COMPONENT_KEY, type TagMode, schemaTag } from './types.js';
+import { COMPONENT_KEY, isTagged, type TagMode, type TaggedSchema } from './types.js';
 
 // Classify a schema for tagging: a combinator by its keyword, an object by its `type`/
 // `properties`, or null for anything else (scalars, which carry no children to mount).
@@ -15,7 +15,7 @@ function tagMode(schema: Schema): TagMode | null {
 }
 
 // Attach the language-component tag naming `name` with resolution `mode`.
-function withTag(schema: Schema, name: string, mode: TagMode): Schema {
+function withTag(schema: Schema, name: string, mode: TagMode): TaggedSchema {
   return { ...schema, [COMPONENT_KEY]: { name, mode } };
 }
 
@@ -50,11 +50,11 @@ export interface LanguageComponentBinding {
 export class LanguageComponent {
   readonly name: string;
 
-  readonly schema: Schema;
+  readonly schema: TaggedSchema;
 
   readonly binding: LanguageComponentBinding;
 
-  private constructor(name: string, schema: Schema, binding: LanguageComponentBinding) {
+  private constructor(name: string, schema: TaggedSchema, binding: LanguageComponentBinding) {
     this.name = name;
     this.schema = schema;
     this.binding = binding;
@@ -78,7 +78,7 @@ export class LanguageComponent {
     schema: Schema,
     binding: LanguageComponentBinding,
   ): LanguageComponent {
-    const annotated = schemaTag(schema)
+    const annotated = isTagged(schema)
       ? schema
       : withTag(schema, name, tagMode(schema) ?? 'single');
     return new LanguageComponent(name, annotated, binding);
@@ -116,7 +116,7 @@ export class LanguageComponent {
    */
   static annotate(schemas: Record<string, Schema>): Record<string, Schema> {
     return mapValues(schemas, (schema, name) => {
-      if (!schema || typeof schema !== 'object' || schemaTag(schema)) {
+      if (!schema || typeof schema !== 'object' || isTagged(schema)) {
         return schema;
       }
       const mode = tagMode(schema);

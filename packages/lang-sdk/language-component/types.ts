@@ -44,9 +44,20 @@ export interface SchemaTag {
 // declared on `Schema` by the module augmentation above.
 export const COMPONENT_KEY = 'appsembleLanguageComponent';
 
-// Read a language component tag from a schema.
+// A schema known to carry the language component tag. Producers (e.g. `LanguageComponent.define`,
+// `withTag`) return this so the tag is guaranteed at the type level; `isTagged` narrows a plain
+// `Schema` to it. The augmentation keeps the tag optional on every `Schema`; this names the subset
+// that definitely has it.
+export type TaggedSchema = Schema & Record<typeof COMPONENT_KEY, SchemaTag>;
+
+// Read a language component tag from a schema, or undefined when untagged.
 export function schemaTag(schema: Schema): SchemaTag | undefined {
   return schema[COMPONENT_KEY];
+}
+
+// Whether a schema carries the language component tag; narrows to `TaggedSchema`.
+export function isTagged(schema: Schema): schema is TaggedSchema {
+  return schema[COMPONENT_KEY] != null;
 }
 
 export interface ScanHit {
