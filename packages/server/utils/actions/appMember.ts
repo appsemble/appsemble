@@ -30,9 +30,7 @@ export async function appMemberQuery({
   });
 
   const remappedRoles = remap(action.roles ?? null, data, remapperContext) as
-    | AppRole[]
-    | AppRole
-    | null;
+    AppRole[] | AppRole | null;
   const roles = normalizeAppMemberRoles(remappedRoles);
   const query = (remap(action.query ?? '', data, remapperContext) ?? {}) as { $filter?: string };
   const parsedFilter = parseMemberFilterQuery(query.$filter ?? '');

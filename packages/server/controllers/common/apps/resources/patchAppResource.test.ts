@@ -886,8 +886,7 @@ describe('patchAppResource', () => {
       .spyOn(sequelize, 'transaction')
       .mockImplementationOnce((...args: unknown[]) => {
         const cb = args.find((arg) => typeof arg === 'function') as
-          | ((t: unknown) => Promise<unknown>)
-          | undefined;
+          ((t: unknown) => Promise<unknown>) | undefined;
         return realTransaction(async (t: any) => {
           // Deliberately run the callback so uploadAssets executes, then reject.
           // eslint-disable-next-line n/callback-return

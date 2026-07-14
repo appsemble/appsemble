@@ -191,8 +191,7 @@ export async function create({
 
   const body = action.body
     ? ((remap(action.body ?? null, data, internalContext!) ?? data) as
-        | Record<string, unknown>
-        | Record<string, unknown>[])
+        Record<string, unknown> | Record<string, unknown>[])
     : (data as any);
 
   const definition = getResourceDefinition(app.definition, action.resource, context);
