@@ -8,6 +8,12 @@ interface NotificationPayload extends NotificationOptions {
   title: string;
 }
 
+function getNotificationUrl(link = ''): string {
+  const targetUrl = new URL(self.registration.scope + link);
+  targetUrl.searchParams.set('utm_source', 'notification');
+  return targetUrl.toString();
+}
+
 self.addEventListener('fetch', onFetch);
 self.addEventListener('push', (event: PushEvent) => {
   if (!event.data) {
@@ -33,12 +39,7 @@ self.addEventListener('push', (event: PushEvent) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  const targetUrl = new URL(event.notification.data?.link || '', self.registration.scope);
-  targetUrl.searchParams.set('utm_source', 'notification');
-  const url = targetUrl.toString();
-
-  // eslint-disable-next-line no-console
-  console.log(self.registration.scope, event.notification.data?.link, url);
+  const url = getNotificationUrl(event.notification.data?.link);
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
