@@ -6,7 +6,7 @@ import { AppsembleError, resolveFixture } from '@appsemble/node-utils';
 import { ts } from 'ts-json-schema-generator';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getProjectImplementations, getRepositoryUrl } from './config.js';
+import { getProjectImplementations, getProjectWebpackConfig, getRepositoryUrl } from './config.js';
 
 describe('config', () => {
   beforeEach(() => {
@@ -49,6 +49,30 @@ describe('config', () => {
           },
         }),
       ).toBe('https://gitlab.com/appsemble/appsemble/-/tree/main/blocks/form');
+    });
+  });
+
+  describe('getProjectWebpackConfig', () => {
+    it('should import webpack config from a filesystem path', async () => {
+      const config = await getProjectWebpackConfig(
+        {
+          dir: resolveFixture('getProjectWebpackConfig/local'),
+          name: '@appsemble/test',
+          output: '',
+          version: '1.2.3',
+          webpack: 'webpack.config.js',
+        },
+        'development',
+      );
+
+      expect(config).toStrictEqual({
+        mode: 'development',
+        name: '@appsemble/test',
+        output: {
+          path: '/api/blocks/@appsemble/test/versions/1.2.3/',
+          publicPath: '/api/blocks/@appsemble/test/versions/1.2.3/',
+        },
+      });
     });
   });
 
