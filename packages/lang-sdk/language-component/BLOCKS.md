@@ -9,6 +9,20 @@ Schema (from its manifest), and the base `BlockDefinition` leaves `parameters` (
 `events`) open — so the analyzer mounts `BlockDefinition` but nothing under it (confirmed on
 reservations: 100 `BlockDefinition`s, zero block-param language components).
 
+## How production validates blocks
+
+`validateAppDefinition` (`validation.ts`) validates blocks separately and imperatively: it fetches
+each block's manifest (`getBlockVersions`), then walks every block (`iterApp.onBlock`) and validates
+its `parameters` against that block's own `version.parameters` schema via
+`BlockParamInstanceValidator`. It is linear in the number of blocks — one validation each against its
+own schema — and never asks a single `jsonschema` pass to discriminate across all blocks.
+
+So the `if`/`then` construct below is an LSP accommodation, not how Appsemble validates.
+yaml-language-server is a declarative `jsonschema` engine and cannot call an imperative per-block
+validator, so the LSP encodes the same discrimination declaratively; that encoding is what makes
+whole-document validation O(blocks) per block node. Production does not pay that cost, and Approach B
+mirrors production's resolve-the-block-then-validate-its-own-schema model in incremental form.
+
 ## How the LSP (685-lsp) solves it
 
 `appsembleSchemaConfig.ts` seeds `BlockDefinition.allOf = [{ allOf: [] }]`, and
