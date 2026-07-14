@@ -1,7 +1,7 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { Cursor, type DynamicChild, LanguageComponent, Scanner } from './index.js';
+import { Cursor, type DynamicChild, LanguageComponent, type MountTree, Scanner } from './index.js';
 
 /*
  * Blocks via the value-directed resolver (Approach B in language-component/BLOCKS.md).
@@ -113,5 +113,83 @@ describe('blocks via value-directed resolver (Approach B)', () => {
       ?.child('parameters');
 
     expect(params?.identity?.name).toBe('FormParams');
+  });
+});
+
+describe('incremental boundaries honor the value-directed resolver', () => {
+  // BlockDefinition declares a generic `parameters` schema that the resolver overrides per block.
+  // A full walk mounts the resolved override; an incremental rebuild must too. The re-walk root is
+  // found by boundaryFor, which therefore has to descend the same way the walk does -- a plain
+  // structural lookup would follow the generic `$ref` and re-walk the wrong schema.
+  const GenericParams = LanguageComponent.define(
+    'GenericParams',
+    { type: 'object', properties: { raw: { type: 'object' } } },
+    {},
+  );
+  const overrideSchemas: Record<string, Schema> = LanguageComponent.schemas([
+    GenericParams,
+    FormParams,
+    LanguageComponent.define(
+      'BlockDefinition',
+      {
+        type: 'object',
+        properties: {
+          type: { type: 'string' },
+          version: { type: 'string' },
+          parameters: { $ref: '#/components/schemas/GenericParams' },
+        },
+      },
+      {},
+    ),
+    LanguageComponent.define(
+      'PageDefinition',
+      {
+        type: 'object',
+        properties: {
+          blocks: { type: 'array', items: { $ref: '#/components/schemas/BlockDefinition' } },
+        },
+      },
+      {},
+    ),
+    LanguageComponent.define(
+      'AppDefinition',
+      {
+        type: 'object',
+        properties: {
+          pages: { type: 'array', items: { $ref: '#/components/schemas/PageDefinition' } },
+        },
+      },
+      {},
+    ),
+  ]);
+  const resolveFormParams: DynamicChild = (parentIdentity, parentValue, key) =>
+    parentIdentity === 'BlockDefinition' && key === 'parameters' ? FormParams.schema : null;
+
+  const identityNames = (tree: MountTree): Record<string, string> =>
+    Object.fromEntries([...tree.mounts].map(([path, mount]) => [path, mount.identity.name]));
+
+  it('re-walks the resolver-chosen schema, matching a full analysis after an edit', () => {
+    const analyzer = new Scanner(overrideSchemas, { dynamicChild: resolveFormParams });
+    const root = overrideSchemas.AppDefinition;
+    const v1 = {
+      pages: [{ blocks: [{ type: 'form', version: '0.0.0', parameters: { fields: ['a'] } }] }],
+    };
+    const treeV1 = analyzer.buildTree(v1, root);
+    expect(treeV1.mounts.get('/pages/0/blocks/0/parameters')?.identity.name).toBe('FormParams');
+
+    const v2 = {
+      pages: [{ blocks: [{ type: 'form', version: '0.0.0', parameters: { fields: ['a', 'b'] } }] }],
+    };
+    const incremental = analyzer.buildTree(v2, root, {
+      previous: treeV1,
+      changed: [['pages', 0, 'blocks', 0, 'parameters', 'fields']],
+    });
+
+    // A structural boundaryFor would follow the generic `parameters` $ref and mount GenericParams
+    // here, diverging from the full walk that resolves FormParams.
+    expect(identityNames(incremental)).toStrictEqual(identityNames(analyzer.buildTree(v2, root)));
+    expect(incremental.mounts.get('/pages/0/blocks/0/parameters')?.identity.name).toBe(
+      'FormParams',
+    );
   });
 });

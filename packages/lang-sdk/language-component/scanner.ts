@@ -2,7 +2,6 @@ import { type Schema, type ValidationError, type Validator } from 'jsonschema';
 
 import { formatPath, getPath, pathContains } from './path.js';
 import {
-  childSchema,
   localShapeFactory,
   type DynamicChild,
   resolve,
@@ -310,8 +309,11 @@ export class Scanner {
     let path: NodePath = [];
     let boundary: Boundary = { path: [], schema: rootSchema };
     for (const key of target) {
-      const { winners } = resolve(schema, value, ctx);
-      const child = childSchema(winners, String(key), ctx.resolveRef);
+      const { winners, identity } = resolve(schema, value, ctx);
+      // Descend exactly as the walk does (dynamic-directed, then structural), so the boundary
+      // sits where the walk actually cut -- a plain childSchema lookup would diverge wherever a
+      // dynamicChild resolver governs descent, placing the re-walk root at the wrong node.
+      const child = resolveChild(ctx, identity?.name ?? null, value, String(key), winners);
       if (!child) {
         break;
       }
