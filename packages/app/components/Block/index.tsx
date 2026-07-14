@@ -13,7 +13,7 @@ import { type BlockUtils } from '@appsemble/sdk';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -94,6 +94,13 @@ export function Block({
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
+  const pageParameters = useMemo(
+    () => ({
+      ...params,
+      query: Object.fromEntries(new URLSearchParams(location.search)),
+    }),
+    [location.search, params],
+  );
   const push = useMessages();
   const { blockManifests, definition: appDefinition } = useAppDefinition();
   const { getAppMessage, getBlockMessage } = useAppMessages();
@@ -265,7 +272,7 @@ export function Block({
         parameters: block.parameters || {},
         data: data || location.state,
         events,
-        pageParameters: params,
+        pageParameters,
         theme,
         shadowRoot,
         utils,
@@ -291,6 +298,7 @@ export function Block({
     manifest,
     pageDefinition,
     pageReady,
+    pageParameters,
     params,
     passwordLogin,
     logout,
