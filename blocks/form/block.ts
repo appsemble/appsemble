@@ -294,19 +294,13 @@ export type SelectionRequirement = CountRequirement;
  * All requirements applicable to string fields.
  */
 export type StringRequirement =
-  | LengthRequirement
-  | ProhibitedRequirement
-  | RegexRequirement
-  | RequiredRequirement;
+  LengthRequirement | ProhibitedRequirement | RegexRequirement | RequiredRequirement;
 
 /**
  * All requirements applicable to number fields.
  */
 export type NumberRequirement =
-  | MinMaxRequirement
-  | ProhibitedRequirement
-  | RequiredRequirement
-  | StepRequirement;
+  MinMaxRequirement | ProhibitedRequirement | RequiredRequirement | StepRequirement;
 
 /**
  * All requirements applicable to boolean fields.

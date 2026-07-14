@@ -1568,9 +1568,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         Object.values(
           (
             action as
-              | AppMemberCurrentPatchAction
-              | AppMemberPropertiesPatchAction
-              | AppMemberRegisterAction
+              AppMemberCurrentPatchAction | AppMemberPropertiesPatchAction | AppMemberRegisterAction
           ).properties ?? {},
         )[0] &&
         definition.members?.properties
