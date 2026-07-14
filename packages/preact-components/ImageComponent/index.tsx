@@ -58,12 +58,22 @@ interface ImageComponentProps {
    * The alt image to display.
    */
   readonly alt: string;
+
+  /**
+   * Open a fullscreen preview of the image when it is clicked.
+   *
+   * When false, the click is left to propagate to surrounding elements instead.
+   *
+   * @default true
+   */
+  readonly openPreview?: boolean;
 }
 
 export function ImageComponent({
   alt,
   aspectRatio = 'square',
   id,
+  openPreview = true,
   rounded,
   size = 48,
   src,
@@ -118,10 +128,13 @@ export function ImageComponent({
 
   const handleClick = useCallback(
     (e: MouseEvent) => {
+      if (!openPreview) {
+        return;
+      }
       e.stopPropagation();
       modal.enable();
     },
-    [modal],
+    [modal, openPreview],
   );
 
   return (

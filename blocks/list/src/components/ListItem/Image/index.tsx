@@ -29,7 +29,7 @@ interface ImageComponentProps {
 }
 
 export function Image({
-  field: { alt, aspectRatio = 'square', file, rounded, size = 48 },
+  field: { alt, aspectRatio = 'square', file, openPreview = true, rounded, size = 48 },
   index,
   isVisible,
   item,
@@ -92,6 +92,7 @@ export function Image({
       alt={alternate}
       aspectRatio={aspectRatio}
       id={index}
+      openPreview={openPreview}
       rounded={rounded}
       size={size}
       src={src}

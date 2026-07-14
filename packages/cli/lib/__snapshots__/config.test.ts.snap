@@ -6784,6 +6784,13 @@ Cannot be set in combination with button or dropdown.",
 image can either be url or uploaded image",
             "format": "remapper",
           },
+          "openPreview": {
+            "default": true,
+            "description": "Open a fullscreen preview of the image when it is clicked.
+
+When false, clicking the image triggers the list item's \`onClick\` action instead of opening the preview.",
+            "type": "boolean",
+          },
           "rounded": {
             "description": "Is image rounded.",
             "type": "boolean",
