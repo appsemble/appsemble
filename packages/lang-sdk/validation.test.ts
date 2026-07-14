@@ -1361,6 +1361,36 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should validate hideGroupDropdown roles', async () => {
+    const app = createTestApp();
+    app.layout = { hideGroupDropdown: ['User', 'Unknown'] };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not exist in this app’s roles', 'Unknown', undefined, [
+        'layout',
+        'hideGroupDropdown',
+        1,
+      ]),
+    ]);
+  });
+
+  it('should accept hideGroupDropdown with defined roles', async () => {
+    const app = createTestApp();
+    app.layout = { hideGroupDropdown: ['User'] };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should accept hideGroupDropdown set to true', async () => {
+    const app = createTestApp();
+    app.layout = { hideGroupDropdown: true };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
   it('should validate inherited roles', async () => {
     const app = createTestApp();
     app.security!.roles!.User.inherits = ['Unknown'];

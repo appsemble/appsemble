@@ -74,6 +74,7 @@ function sanitizeAppDefinitionForPublicSettings(
           navigation: definition.layout.navigation,
           settings: definition.layout.settings,
           titleBarText: definition.layout.titleBarText,
+          hideGroupDropdown: definition.layout.hideGroupDropdown,
         }
       : undefined,
     members: definition.members

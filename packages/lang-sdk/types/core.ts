@@ -7,7 +7,7 @@ import { type CompanionContainerDefinition } from './container.js';
 import { type LayoutPosition, type Navigation } from './layout.js';
 import { type Remapper } from './remapper.js';
 import { type ResourceDefinition } from './resource.js';
-import { type ViewRole } from './roles.js';
+import { type AppRole, type ViewRole } from './roles.js';
 import { type Security } from './security.js';
 import { type Theme } from './theme.js';
 import { type PageLayoutDefinition } from './gridLayout.js';
@@ -129,6 +129,14 @@ export interface AppDefinition {
      * Whether to hide the title bar from all pages in the app.
      */
     hideTitleBar?: boolean;
+
+    /**
+     * Whether to hide the group dropdown.
+     *
+     * Set to `true` to hide it for all users, or provide a list of role names to hide it
+     * only for members holding any of those roles.
+     */
+    hideGroupDropdown?: boolean | AppRole[];
   };
 
   /**

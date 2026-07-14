@@ -56,6 +56,19 @@ function isBuiltInPage(pathname: string): boolean {
   return builtInPages.has(lastSegment);
 }
 
+export function shouldHideGroupDropdown(
+  hideGroupDropdown: boolean | AppRole[] | undefined,
+  appMemberRoles: AppRole[],
+): boolean {
+  if (hideGroupDropdown === true) {
+    return true;
+  }
+  if (Array.isArray(hideGroupDropdown)) {
+    return appMemberRoles.some((role) => hideGroupDropdown.includes(role));
+  }
+  return false;
+}
+
 export function shouldShowMenu(
   appDefinition: AppDefinition,
   appMemberRoles: AppRole[],
