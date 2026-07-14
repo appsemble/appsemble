@@ -19,6 +19,10 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           }
         : formatRequestAction(definition, data, remap, context);
 
+      if (!proxy && !req.url) {
+        return null;
+      }
+
       const isResourceBodyWrite =
         'resource' in definition && (method === 'PUT' || method === 'PATCH');
 

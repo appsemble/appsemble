@@ -1,5 +1,6 @@
 // CSpell:ignore cooldown
 import { act, render, waitFor } from '@testing-library/react';
+import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -258,6 +259,42 @@ describe('ServiceWorkerRegistrationProvider', () => {
     expect(caches.delete).not.toHaveBeenCalled();
     expect(waiting.postMessage).not.toHaveBeenCalled();
     expect(registration.update).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not report service worker script load failures to Sentry', async () => {
+    const error = new DOMException(
+      'Script https://samson.jouwhoreca.app/service-worker.js load failed',
+      'SecurityError',
+    );
+    const registration = createRegistration();
+    vi.mocked(registration.update).mockRejectedValue(error);
+
+    renderProvider(registration);
+
+    await waitFor(() => expect(registration.update).toHaveBeenCalledTimes(1));
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(captureMessage).not.toHaveBeenCalled();
+    expect(captureException).not.toHaveBeenCalled();
+    expect(addBreadcrumb).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: 'appsemble.service-worker',
+        level: 'warning',
+      }),
+    );
+  });
+
+  it('should report unexpected service worker update failures to Sentry', async () => {
+    const error = new Error('Unexpected update failure');
+    const registration = createRegistration();
+    vi.mocked(registration.update).mockRejectedValue(error);
+
+    renderProvider(registration);
+
+    await waitFor(() => expect(captureException).toHaveBeenCalledWith(error));
+    expect(captureMessage).toHaveBeenCalledWith('Unexpected service worker error.');
   });
 
   it('should reload when a push notification targets the current page', async () => {

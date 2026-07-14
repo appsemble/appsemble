@@ -7,6 +7,7 @@ import {
 } from '@appsemble/lang-sdk';
 import { defaultLocale, has } from '@appsemble/utils';
 import { addBreadcrumb, captureException } from '@sentry/browser';
+import { AxiosError, isAxiosError } from 'axios';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { type SetRequired } from 'type-fest';
 
@@ -101,6 +102,13 @@ function getActionBreadcrumbData(
   prefixIndex: string,
 ): Record<string, string> {
   return { path: prefix, pathIndex: prefixIndex, type };
+}
+
+function shouldCaptureActionError(error: unknown): boolean {
+  return (
+    !isAxiosError(error) ||
+    (error.code !== AxiosError.ERR_NETWORK && error.code !== AxiosError.ERR_CANCELED)
+  );
 }
 
 /**
@@ -219,7 +227,7 @@ export function createAction<T extends ActionDefinition['type']>({
       if (isActionOwnerAbortError(error)) {
         throw error;
       }
-      if (!(error instanceof ActionError)) {
+      if (!(error instanceof ActionError) && shouldCaptureActionError(error)) {
         const appMemberInfo = getAppMemberInfo?.();
         const selectedGroup = getAppMemberSelectedGroup?.();
 

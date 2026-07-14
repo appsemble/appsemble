@@ -39,6 +39,7 @@ const initialState: LoginState = {
   appMemberGroups: [],
   totpPending: null,
 };
+const apiOrigin = new URL(apiUrl).origin;
 
 interface PasswordLoginParams {
   username: string;
@@ -528,8 +529,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
 
     const interceptor = axios.interceptors.request.use((config) => {
       // Only assign the authorization header to requests made to the Appsemble API.
-      const url = new URL(axios.getUri(config));
-      if (url.origin === new URL(apiUrl).origin) {
+      let url: URL;
+      try {
+        url = new URL(axios.getUri(config));
+      } catch {
+        return config;
+      }
+
+      if (url.origin === apiOrigin) {
         Object.assign(config.headers, { authorization });
       }
       return config;
