@@ -42,7 +42,7 @@ classDiagram
     +schema TaggedSchema
     +binding LanguageComponentBinding
     +define(name, schema, binding)$ LanguageComponent
-    +schemas(defs)$ Record~string, Schema~
+    +schemas(defs)$ Record~string, TaggedSchema~
     +bindings(defs)$ Map~string, LanguageComponentBinding~
     +annotate(schemas)$ Record~string, Schema~
   }

@@ -85,12 +85,13 @@ export class LanguageComponent {
   }
 
   /**
-   * Build a `name -> schema` registry from a list of defs, for `Scanner` / `Cursor.at`.
+   * Build a `name -> schema` registry from a list of defs, for `Scanner` / `Cursor.at`. Every
+   * value is tagged (each def carries a `TaggedSchema`), unlike `annotate`, whose output is mixed.
    *
    * @param defs The language component defs to collect.
    * @returns The schema registry keyed by identity name.
    */
-  static schemas(defs: LanguageComponent[]): Record<string, Schema> {
+  static schemas(defs: LanguageComponent[]): Record<string, TaggedSchema> {
     return Object.fromEntries(defs.map((def) => [def.name, def.schema]));
   }
 
