@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.23-labs
+# syntax=docker/dockerfile:1.25-labs
 # Build production files
 FROM node:24-trixie-slim AS build
 WORKDIR /app
