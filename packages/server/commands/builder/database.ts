@@ -46,6 +46,11 @@ export function databaseBuilder(yargs: Argv): Argv {
       type: 'number',
       default: 100,
     })
+    .option('app-db-cache-limit', {
+      desc: 'The maximum number of app databases to keep cached. The least recently used app database connection is closed and evicted when the limit is exceeded.',
+      type: 'number',
+      default: 200,
+    })
     .option('s3-host', {
       desc: 'The host of the Amazon S3 compatible object storage server',
     })

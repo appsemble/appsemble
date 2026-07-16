@@ -320,7 +320,18 @@ export interface AppDB extends AppModels {
   sequelize: Sequelize;
 }
 
-const appDBs: Record<number, AppDB | null> = {};
+/**
+ * Cache of app database instances, ordered from least to most recently used.
+ *
+ * Each entry holds a Sequelize instance with its own connection pool and model definitions, so
+ * the cache is bounded by `argv.appDbCacheLimit` to keep memory usage bounded.
+ */
+const appDBs = new Map<number, AppDB>();
+
+/**
+ * In-flight app database initializations, used to deduplicate concurrent `getAppDB()` calls.
+ */
+const pendingAppDBs = new Map<number, Promise<void>>();
 
 export async function initAppDB(
   appId: number,
@@ -331,8 +342,14 @@ export async function initAppDB(
 ): Promise<void> {
   const mainDB = rootDB ?? getDB();
 
-  if (appDBs[appId] && !replace) {
+  if (appDBs.has(appId) && !replace) {
     throw new Error('initAppDB() was called multiple times within the same context.');
+  }
+
+  const replaced = appDBs.get(appId);
+  if (replaced) {
+    appDBs.delete(appId);
+    await replaced.sequelize.close();
   }
 
   const app = (await mainDB.models.App.findOne({
@@ -425,11 +442,21 @@ export async function initAppDB(
 
     await migrate(appDB, argv.migrateTo ?? 'next', migrations);
 
-    appDBs[appId] = {
+    appDBs.set(appId, {
       sequelize: appDB,
       ...models,
-    };
+    });
+
+    while (appDBs.size > argv.appDbCacheLimit) {
+      const [lruAppId, lruAppDB] = appDBs.entries().next().value!;
+      appDBs.delete(lruAppId);
+      await lruAppDB.sequelize.close().catch((closeError: Error) => logger.error(closeError));
+    }
   } catch (error) {
+    // Close the instance so failed initializations do not leak Sequelize instances.
+    if (appDB) {
+      await appDB.close().catch((closeError: Error) => logger.error(closeError));
+    }
     handleDBError(error as Error);
   }
 }
@@ -441,34 +468,44 @@ export async function getAppDB(
   replace?: boolean,
   aesSecret?: string,
 ): Promise<AppDB> {
-  if (appDBs[appId] == null || replace === true) {
-    await initAppDB(appId, rootDB, transaction, replace, aesSecret);
+  const cached = appDBs.get(appId);
+  if (cached && replace !== true) {
+    // Re-insert the entry so eviction targets the least recently used app database.
+    appDBs.delete(appId);
+    appDBs.set(appId, cached);
+    return cached;
   }
 
-  return appDBs[appId]!;
+  let pending = pendingAppDBs.get(appId);
+  if (!pending || replace === true) {
+    pending = initAppDB(appId, rootDB, transaction, replace, aesSecret).finally(() =>
+      pendingAppDBs.delete(appId),
+    );
+    pendingAppDBs.set(appId, pending);
+  }
+  await pending;
+
+  return appDBs.get(appId)!;
 }
 
 export async function closeAppDB(appId: number): Promise<void> {
-  const appDB = appDBs[appId];
+  const appDB = appDBs.get(appId);
 
   if (!appDB) {
     return;
   }
 
-  delete appDBs[appId];
+  appDBs.delete(appId);
   await appDB.sequelize.close();
 }
 
 export async function dropAndCloseAllAppDBs(): Promise<void> {
+  await Promise.allSettled(pendingAppDBs.values());
   await Promise.all(
-    Object.entries(appDBs).map(async ([appId, appDB]) => {
-      const sequelize = appDB?.sequelize;
-      if (!sequelize) {
-        return;
-      }
-      await sequelize.getQueryInterface().dropAllTables();
-      await sequelize.close();
-      appDBs[Number(appId)] = null;
+    [...appDBs.entries()].map(async ([appId, appDB]) => {
+      await appDB.sequelize.getQueryInterface().dropAllTables();
+      await appDB.sequelize.close();
+      appDBs.delete(appId);
     }),
   );
 }
