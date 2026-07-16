@@ -1,8 +1,8 @@
 # Language components for blocks (design)
 
 **Status: the `dynamicChild` resolver hook (Approach B) is implemented in the engine
-(`ResolveOptions`, covered by `blocks-dynamic.test.ts`); wiring it to a per-app block registry is the
-consumer's part.**
+(`ResolveOptions`, covered by `blocks-dynamic.test.ts`); wiring it to a per-app block registry is
+the consumer's part.**
 
 Block parameters are not in the static schema: each block type/version ships its own parameters JSON
 Schema (from its manifest), and the base `BlockDefinition` leaves `parameters` (and `actions`,
@@ -14,14 +14,14 @@ reservations: 100 `BlockDefinition`s, zero block-param language components).
 `validateAppDefinition` (`validation.ts`) validates blocks separately and imperatively: it fetches
 each block's manifest (`getBlockVersions`), then walks every block (`iterApp.onBlock`) and validates
 its `parameters` against that block's own `version.parameters` schema via
-`BlockParamInstanceValidator`. It is linear in the number of blocks — one validation each against its
-own schema — and never asks a single `jsonschema` pass to discriminate across all blocks.
+`BlockParamInstanceValidator`. It is linear in the number of blocks — one validation each against
+its own schema — and never asks a single `jsonschema` pass to discriminate across all blocks.
 
 So the `if`/`then` construct below is an LSP accommodation, not how Appsemble validates.
 yaml-language-server is a declarative `jsonschema` engine and cannot call an imperative per-block
 validator, so the LSP encodes the same discrimination declaratively; that encoding is what makes
-whole-document validation O(blocks) per block node. Production does not pay that cost, and Approach B
-mirrors production's resolve-the-block-then-validate-its-own-schema model in incremental form.
+whole-document validation O(blocks) per block node. Production does not pay that cost, and Approach
+B mirrors production's resolve-the-block-then-validate-its-own-schema model in incremental form.
 
 ## How the LSP (685-lsp) solves it
 
@@ -67,7 +67,7 @@ reconstruct a union at all — it can look the block up. This is Approach B.
 
 ## Approach B: a value-directed resolver hook
 
-An optional `ResolveOptions` hook that `resolveChild` consults before the structural `childSchema`
+An optional `CompileOptions` hook that `resolveAtKey` consults before the structural `childSchema`
 lookup when descending:
 
 ```text
@@ -88,33 +88,33 @@ before the pass that walks into it. The first walk _is_ the discovery: it mounts
 re-walks just the block subtrees via the incremental API:
 
 ```ts
-const a0 = new Scanner(baseSchemas);
+const ctx0 = LanguageCtx.compile(baseSchemas, 'AppDefinition');
 // Blocks mount; params unresolved.
-let tree = a0.buildTree(app, root);
+let tree = buildTree(ctx0, app);
 const blocks = [...tree.mounts.values()].filter((i) => i.identity.name === 'BlockDefinition');
 // Async fetch lives in the consumer.
 const registry = await fetchBlockSchemas(blocks.map((i) => tree.valueAt(i.path)));
-const a1 = new Scanner(baseSchemas, { dynamicChild: registry.resolve });
-tree = a1.buildTree(app, root, { previous: tree, changed: blocks.map((i) => i.path) });
+const ctx1 = LanguageCtx.compile(baseSchemas, 'AppDefinition', { dynamicChild: registry.resolve });
+tree = buildTree(ctx1, app, { previous: tree, changed: blocks.map((i) => i.path) });
 ```
 
-`previous` is plain data, so the second analyzer reuses every non-block interpretation. Fetching
+`previous` is plain data, so the second context reuses every non-block interpretation. Fetching
 cannot happen _inside_ a sync walk — hence two walks with the async fetch between them:
 
 ```mermaid
 sequenceDiagram
   participant C as Consumer
-  participant A0 as Scanner a0
+  participant A0 as buildTree (ctx0)
   participant F as fetchBlockSchemas
-  participant A1 as Scanner a1 (dynamicChild)
-  C->>A0: buildTree(app, root)
+  participant A1 as buildTree (ctx1, dynamicChild)
+  C->>A0: buildTree(ctx0, app)
   A0-->>C: tree, BlockDefinition mounted, parameters unresolved
   C->>C: filter mounts for BlockDefinition
   C->>F: await fetch(block values)
   Note over C,F: async, cannot run inside a sync walk
   F-->>C: per-app registry keyed by type+version
-  C->>A1: buildTree(app, root, previous tree + changed block paths)
-  A1-->>C: resolveChild consults dynamicChild; parameters mount, non-block nodes reused
+  C->>A1: buildTree(ctx1, app, previous tree + changed block paths)
+  A1-->>C: resolveAtKey consults dynamicChild; parameters mount, non-block nodes reused
 ```
 
 ### Annotation
@@ -153,7 +153,7 @@ no `jsonschema` patching — are in `USABILITY-3RD-MR.md` §6.
 ## Status / prerequisites
 
 The walk-driven approach mounts block params once fetched schemas are materialized between the two
-walks and the `dynamicChild` hook is wired to the registry. Still required for real use: block schema
-fetching (exists in the LSP) and wiring `dynamicChild` to it. Recommendation: **Approach B** — the
-LSP's `if`/`then` construct is not walkable, so a value-directed resolver is the path, not a
+walks and the `dynamicChild` hook is wired to the registry. Still required for real use: block
+schema fetching (exists in the LSP) and wiring `dynamicChild` to it. Recommendation: **Approach B**
+— the LSP's `if`/`then` construct is not walkable, so a value-directed resolver is the path, not a
 fallback.

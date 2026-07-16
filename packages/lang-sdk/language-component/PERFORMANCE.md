@@ -23,7 +23,7 @@ re-walking from a boundary reproduces the subtree independent of anything above 
 `(value, schema)` validation memo was tried and dropped — the costly validations are all distinct,
 so nothing hit.)
 
-## Incremental re-analysis (shipped: `Scanner.buildTree`)
+## Incremental re-analysis (shipped: `buildTree`)
 
 The caller passes the changed paths (an LSP has them from edit ranges); the engine re-walks only the
 subtree enclosing each, from the nearest `$ref` boundary (`boundaryFor`), and reuses the rest of the

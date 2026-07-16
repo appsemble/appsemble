@@ -15,19 +15,22 @@ describe('mini schema language component analysis', () => {
     expect(describeIdentities(result)).toStrictEqual(identities);
   });
 
-  // The scaryProduction case additionally proves the shape of a kept-but-invalid node: a single
+  // The experimentalVariantInProduction case additionally proves the shape of a kept-but-invalid node: a single
   // mount that stays locally valid while the outer constraint error is attached to it.
   it('keeps the local mount valid and attaches the outer constraint error', () => {
-    const result = analyze(scenarios.scaryProduction.data);
+    const result = analyze(scenarios.experimentalVariantInProduction.data);
     const mounts = [...result.mounts.values()];
 
     expect(mounts).toHaveLength(1);
-    expect(mounts[0]).toMatchObject({ localValid: true, path: ['scaryWidget'] });
+    expect(mounts[0]).toMatchObject({
+      localValid: true,
+      path: ['productionVariantHost', 'buttonVariant'],
+    });
     expect(mounts[0].errors).toStrictEqual(
       expect.arrayContaining([
         expect.objectContaining({
           message: 'does not exactly match expected constant: false',
-          path: ['scaryWidget', 'experimental'],
+          path: ['productionVariantHost', 'buttonVariant', 'experimental'],
         }),
       ]),
     );

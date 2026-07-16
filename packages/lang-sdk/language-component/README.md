@@ -6,168 +6,241 @@ code actions, and editor tooling.
 
 ## Public surface (the barrel)
 
-Everything re-exported from `index.ts`. Three nodes carry the surface: the `Scanner` and `Cursor`
-classes and the `LanguageComponent` namespace (which is also the def _type_ — value and type share
-one name); there are no free functions. The rest are the result shapes they produce (`MountTree` /
-`ScanResult`, which carry `mountAt` for path lookup) and the config/data types. Stereotypes:
-`<<interface>>` data shapes, `<<type>>` aliases, `<<const>>` values; `$` marks a static method.
+Everything re-exported from `index.ts`. The engine factors into a compiled context, a navigable
+node, and stateless tree functions:
+
+- **`LanguageComponent`** — declare components and collect them into registries (`define` /
+  `schemas` / `bindings` / `annotate`).
+- **`LanguageCtx`** — a schema set compiled once (`LanguageCtx.compile(schemas, rootName)`), reused
+  across every value and edit. Hands out `root(data)` nodes and owns the whole-document `validate`.
+- **`Node`** — one navigable `(comp, val, path)` focus with `resolve`/`child`/`children`/`nearest`/
+  `cursorAt`/`boundaryAt`/`is`/`as`.
+- **`buildTree` / `scan`** — stateless functions over a `LanguageCtx` that produce the identity tree
+  (`MountIndex`) and the combined `ScanResult`.
+
+Each box below is grouped by its file (the namespaces). `<<util fns>>` / `<<private fn>>` are
+module-level free functions (not classes — the decision core and the tree layer are free functions
+for the perf guardrail); `<<private>>` is an internal class; `<<type>>` / `<<interface>>` are data
+shapes; `$` marks a static method; `-` marks a private member.
 
 ```mermaid
 classDiagram
-  direction LR
+  direction TB
 
-  class Scanner {
-    +constructor(schemas, ResolveOptions)
-    +run(schemas, data, rootSchema, ResolveOptions)$ ScanResult
-    +buildTree(data, rootSchema, IncrementalOptions) MountTree
-    +validate(data, rootSchema) ScanValidation
-    +scan(data, rootSchema, IncrementalOptions) ScanResult
-  }
-
-  class Cursor {
-    +schema Schema
-    +value unknown
-    +path NodePath
-    +identity Identity
-    +localValid boolean
-    +at(schemas, rootSchema, data, ResolveOptions)$ Cursor
-    +child(key) Cursor
-    +parent() Cursor
-    +children() Cursor[]
-    +nearest(name) Cursor
+  namespace languageComponent_ts {
+    class LanguageComponent {
+      +name string
+      +schema TaggedSchema
+      +binding LanguageComponentBinding
+      +define(name, schema, binding)$ LanguageComponent
+      +schemas(defs)$ Record
+      +bindings(defs)$ Map
+      +annotate(schemas)$ Record
+    }
+    class LanguageComponentBinding {
+      <<interface>>
+      +validate?(node) string[]
+      +complete?(node) string[]
+      +describe?(node) string
+    }
   }
 
-  class LanguageComponent {
-    +name string
-    +schema TaggedSchema
-    +binding LanguageComponentBinding
-    +define(name, schema, binding)$ LanguageComponent
-    +schemas(defs)$ Record~string, TaggedSchema~
-    +bindings(defs)$ Map~string, LanguageComponentBinding~
-    +annotate(schemas)$ Record~string, Schema~
+  namespace languageCtx_ts {
+    class LanguageCtx {
+      +rootName string
+      +rootSchema Schema
+      +binds Map
+      -registry SchemaRegistry
+      -resolveValidator Validator
+      -documentValidator Validator
+      +compile(schemas, rootName, options)$ LanguageCtx
+      +root(data, path) Node
+      +validate(data) ScanValidation
+      +resolveContext() ResolveContext
+    }
+    class SchemaRegistry {
+      <<private>>
+      +schemas Record
+      +resolveRef(ref) Schema
+      +createValidator() Validator
+    }
+    class collectHits {
+      <<private fn>>
+      +call(validator, data, root) ScanValidation
+    }
   }
 
-  class ResolveOptions {
-    <<interface>>
-    +dynamicChild? DynamicChild
-    +validatorFactory? () Validator
-  }
-  class IncrementalOptions {
-    <<interface>>
-    +previous? MountTree
-    +changed? NodePath[]
-  }
-  class MountTree {
-    +mounts Map~string, Mount~
-    +mountAt(path) Mount
-    +valueAt(path) unknown
-  }
-  class ScanResult {
-    +documentValid boolean
-    +hits ScanHit[]
-  }
-  class ScanValidation {
-    <<interface>>
-    +documentValid boolean
-    +errors ValidationError[]
-    +hits ScanHit[]
-  }
-  class Mount {
-    <<interface>>
-    +path NodePath
-    +identity Identity
-    +localValid boolean
-    +errors ValidationError[]
-  }
-  class Identity {
-    <<interface>>
-    +kind single/composite/unresolved
-    +name string
-    +mode? oneOf/anyOf/allOf
-    +parts Identity[]
-    +reason? string
-  }
-  class ScanHit {
-    <<interface>>
-    +path NodePath
-    +tag SchemaTag
-    +schema Schema
-  }
-  class SchemaTag {
-    <<interface>>
-    +name string
-    +mode? TagMode
-  }
-  class LanguageComponentBinding {
-    <<interface>>
-    +validate?(cursor) string[]
-    +complete?(cursor) string[]
-    +describe?(cursor) string
-  }
-  class DynamicChild {
-    <<type>>
-    +call(parentIdentity, parentValue, key) Schema?
-  }
-  class NodePath {
-    <<type>>
-    +value (number/string)[]
-  }
-  class TagMode {
-    <<type>>
-    +value single/oneOf/anyOf/allOf
-  }
-  class COMPONENT_KEY {
-    <<const>>
-    +value appsembleLanguageComponent
+  namespace node_ts {
+    class Node {
+      +comp Schema
+      +val unknown
+      +path NodePath
+      -ctx ResolveContext
+      -parentNode Node
+      +resolve() Resolution
+      +identity Identity
+      +localValid boolean
+      +child(key) Node
+      +children() Node[]
+      +parent() Node
+      +cursorAt(relativePath) Node
+      +boundaryAt(targetPath) Node
+      +nearest(name) Node
+      +is(name) boolean
+      +as(name) Node
+      -boundaryFrom(boundary, target) Node
+    }
   }
 
-  Scanner ..> MountTree : buildTree
-  Scanner ..> ScanValidation : validate
-  Scanner ..> ScanResult : scan / run
-  Scanner --> ResolveOptions : configured by
-  ResolveOptions --> DynamicChild
-  IncrementalOptions --> MountTree : reuses previous
-  MountTree "1" o-- "many" Mount
-  ScanResult --|> MountTree
-  ScanResult o-- ScanHit
-  ScanValidation o-- ScanHit
-  Mount --> Identity
-  Identity --> Identity : parts
-  ScanHit --> SchemaTag
-  SchemaTag --> TagMode
-  Cursor ..> Identity : resolves
-  Cursor ..> ResolveOptions : at
+  namespace resolve_ts {
+    class ResolveFns {
+      <<util fns>>
+      +resolve(schema, value, ctx) Resolution
+      +resolveAtKey(resolution, val, key, ctx) Schema
+      +childNode(val, path, resolution, key, ctx) StepChild
+      +childSchema(winners, key, resolveRef) Schema
+      +localShapeFactory() ShapeFn
+      -resolveComposite(mode, s, branches, tag)
+      -resolveLeaf(s, tag, value, ctx)
+      -deref(schema, resolveRef) Schema
+      -ownedChild(schema, key) Schema
+    }
+    class Resolution {
+      <<type>>
+      +identity Identity
+      +winners Schema[]
+      +matched boolean
+      +localErrors ValidationError[]
+    }
+    class StepChild {
+      <<type>>
+      +schema Schema
+      +value unknown
+      +path NodePath
+    }
+  }
+
+  namespace treeLayer_ts {
+    class TreeLayerFns {
+      <<util fns>>
+      +buildTree(ctx, data, options) MountIndex
+      +scan(ctx, data, options) ScanResult
+      -walk(schema, value, path, ctx)
+      -incremental(ctx, data, previous, changed)
+      -boundaries(ctx, data, changed)
+    }
+    class MountIndex {
+      +mounts Map
+      +data unknown
+      -ctx LanguageCtx
+      +mountAt(path) Mount
+      +valueAt(path) unknown
+      +nodeAt(path) Node
+      +bindingContextAt(path) BindingContext
+      +callBindingAt(path, hook) Ret
+    }
+    class ScanResult {
+      +documentValid boolean
+      +hits ScanHit[]
+    }
+    class BindingContext {
+      <<type>>
+      +node Node
+      +binding LanguageComponentBinding
+      +componentPath NodePath
+      +relativePath NodePath
+    }
+  }
+
+  namespace types_ts {
+    class Identity {
+      <<type>>
+      +kind single/composite/unresolved
+      +name string
+      +mode? oneOf/anyOf/allOf
+      +parts Identity[]
+    }
+    class Mount {
+      <<type>>
+      +path NodePath
+      +identity Identity
+      +localValid boolean
+      +localErrors ValidationError[]
+      +errors ValidationError[]
+    }
+    class ScanHit {
+      <<type>>
+      +path NodePath
+      +tag SchemaTag
+      +schema Schema
+    }
+    class SchemaTag {
+      <<type>>
+      +name string
+      +mode? TagMode
+    }
+  }
+
+  namespace path_ts {
+    class PathFns {
+      <<util fns>>
+      +formatPath(path) ptr
+      +getPath(root, path) unknown
+      +pathContains(parent, child) boolean
+    }
+  }
+
   LanguageComponent *-- LanguageComponentBinding
-  LanguageComponent ..> Scanner : schemas feed
-  LanguageComponentBinding ..> Cursor : hooks receive
+  LanguageComponent ..> LanguageCtx : feeds compile
+  LanguageCtx *-- SchemaRegistry : owns
+  LanguageCtx ..> collectHits : validate uses
+  LanguageCtx ..> Node : root(data)
+  Node ..> ResolveFns : resolve / childNode
+  ResolveFns ..> Resolution : returns
+  ResolveFns ..> StepChild : childNode returns
+  Resolution --> Identity : identity
+  Node ..> Node : child / cursorAt / boundaryAt
+  TreeLayerFns ..> Node : boundaryAt
+  TreeLayerFns ..> ResolveFns : walk resolves
+  TreeLayerFns ..> MountIndex : builds
+  TreeLayerFns ..> LanguageCtx : validate deferred
+  MountIndex o-- Mount : holds
+  MountIndex ..> Node : nodeAt / callBindingAt
+  MountIndex ..> BindingContext : bindingContextAt
+  BindingContext --> Node
+  ScanResult --|> MountIndex
+  ScanResult o-- ScanHit
+  Mount --> Identity
+  Identity o-- Identity : parts
+  ScanHit --> SchemaTag
 ```
 
 ## Engine
 
-`Scanner` compiles a schema set once and drives every analysis. Tree building and document
-validation are separate operations:
+`LanguageCtx.compile(schemas, rootName)` compiles a schema set once — the registry, the two
+validators, and the ref-cutoff cache are keyed on the schema set and never on the data. The value
+enters later, so a per-keystroke re-analysis reuses every compiled artifact. Tree building and
+document validation are separate operations:
 
 ```text
-new Scanner(schemas)          compile registry + validators + ref-cutoff cache once
-  .buildTree(data, rootSchema)     -> identity tree (walk only): mounts
-  .validate(data, rootSchema)      -> documentValid + errors (+ hits)
-  .scan(data, rootSchema)       -> both, combined (the original result shape)
+LanguageCtx.compile(schemas, rootName)   compile registry + validators + ref-cutoff cache once
+  buildTree(ctx, data)     -> identity tree (walk only): mounts (a MountIndex)
+  ctx.validate(data)       -> documentValid + errors (+ hits)
+  scan(ctx, data)          -> both, combined (a ScanResult)
 ```
 
-`Scanner.run(schemas, data, rootSchema)` is a one-shot static equal to
-`new Scanner(schemas).scan(data, rootSchema)`; construct and reuse a `Scanner` when analyzing
-repeatedly so the registry, validator, and ref-cutoff cache compile once.
-
 - The walk owns the whole tree. `resolve` is the single place a `oneOf`/`anyOf`/`allOf` is decided;
-  it returns the identity at a node and the concrete winner schema(s). `childSchema` then does pure
-  structural lookup on those winners, so navigation only ever descends winning branches and never
-  re-validates — losing-branch ghosts are never mounted.
+  it returns the identity at a node and the concrete winner schema(s). `childNode` (over
+  `resolveAtKey`) then does the value/path/schema descent, so the walk, `Node`, and boundary-finding
+  all step into a child identically and only ever descend winning branches — losing-branch ghosts
+  are never mounted.
 - `validate` produces `documentValid` and `errors` independently of the walk, so a caller runs it on
-  its own cadence. Its `hits` are kept for tooling but do not drive the tree.
+  its own cadence (an LSP computes diagnostics on idle, not per keystroke). Its `hits` are kept for
+  tooling but do not drive the tree.
 - The walk reaches everything Appsemble's OpenAPI 3.0 schemas can express. It cannot reach language
   components placed behind conditional/pattern applicators (`if`/`then`, `patternProperties`), which
-  those schemas do not support; if they ever appear, a walk-driven local probe would cover them (see
-  `PERFORMANCE.md`).
+  those schemas do not use; blocks are reached through the value-directed `dynamicChild` hook
+  instead (see `BLOCKS.md`).
 
 `resolve` is the single decision point, and losing branches leave no ghost. For a value at `/widget`
 against `Widget = oneOf[ButtonWidget, IconWidget]`:
@@ -178,7 +251,7 @@ flowchart TD
   R -->|"ButtonWidget: no match"| B["ButtonWidget (pruned)"]
   R -->|"IconWidget: matches"| I["IconWidget"]
   I --> M["mount Widget:oneOf(IconWidget)"]
-  M --> G["childSchema descends into the winner only"]
+  M --> G["childNode descends into the winner only"]
   B -.->|"never mounted, no ghost"| X(("discarded"))
 ```
 
@@ -188,61 +261,65 @@ After an edit, re-analyze by handing `buildTree` the previous tree and the chang
 LSP has these from its edit ranges):
 
 ```ts
-const analyzer = new Scanner(schemas);
-let tree = analyzer.buildTree(app, rootSchema);
+const ctx = LanguageCtx.compile(schemas, 'AppDefinition');
+let tree = buildTree(ctx, app);
 // User edits app at /pages/0/blocks/2/parameters/title
-tree = analyzer.buildTree(app, rootSchema, {
+tree = buildTree(ctx, app, {
   previous: tree,
   changed: [['pages', 0, 'blocks', 2, 'parameters', 'title']],
 });
 ```
 
-Only the subtree enclosing each changed path (from its nearest `$ref` boundary) is re-walked; the
-rest of the tree is reused. On a ~2,300-object app a single-leaf edit is ~37 ms versus ~3.1 s for a
-full build (see `PERFORMANCE.md`). No hashing or diffing — the retained previous tree is the cache,
-and the caller supplies what changed.
+Only the subtree enclosing each changed path (from its nearest `$ref` boundary, found by
+`Node.boundaryAt`) is re-walked; the rest of the tree is reused. On a ~2,300-object app a
+single-leaf edit is ~9 ms versus a multi-second full build (see `PERFORMANCE.md`). No hashing or
+diffing — the retained previous tree is the cache, and the caller supplies what changed.
 
-A `scan` returns a `ScanResult`: a `MountTree` (so `mountAt` looks a node up by path) that also
-carries `documentValid` and the tooling-facing `hits`.
+A `scan` returns a `ScanResult`: a `MountIndex` (so `mountAt` looks a node up by path, `nodeAt`
+navigates to any path) that also carries `documentValid` and the tooling-facing `hits`.
 
 ```ts
-const result = new Scanner(schemas).scan(app, schemas.AppDefinition);
+const result = scan(ctx, app);
 // The Mount at that path, or undefined.
 const mount = result.mountAt(['pages', 0, 'blocks', 2]);
+// A navigable Node at any path (not only mount points).
+const node = result.nodeAt(['pages', 0, 'blocks', 2]);
 // Every candidate schema the validator reached (ScanHit[]), winners and losers.
 const { hits } = result;
 ```
 
 ## Navigating a single node
 
-`buildTree`/`scan` walk the whole document; `Cursor` reads one node in context without materializing
-a tree. `Cursor.at` roots it, then `child`/`parent`/`nearest`/`children` move over value and schema
-together, each focus deriving its own `identity` and `localValid` from the same `resolve` the walk
-uses.
+`buildTree`/`scan` walk the whole document; a `Node` reads one node in context without materializing
+a tree. `LanguageCtx.root(data)` roots one, then `child`/`parent`/`nearest`/`children`/`cursorAt`
+move over value and schema together, each focus deriving its own `identity` and `localValid` from
+the same `resolve` the walk uses. `is`/`as` narrow a node to a component by name.
 
 ```ts
-import { Cursor, LanguageComponent } from '@appsemble/lang-sdk';
-
-const root = Cursor.at(schemas, schemas.AppDefinition, app);
+const root = LanguageCtx.compile(schemas, 'AppDefinition').root(app);
 
 const block = root.child('pages')?.child(0)?.child('blocks')?.child(2);
 // Identity of the resolved node, e.g. { kind: 'single', name: 'Block' }.
 const identity = block?.identity;
 // Whether the value satisfies its own (ref-cut) schema.
 const valid = block?.localValid;
-// The enclosing page's cursor, found by climbing ancestors.
+// The enclosing page's node, found by climbing ancestors.
 const page = block?.nearest('PageDefinition');
-// A cursor for every owned key.
+// A node for every owned key.
 const fields = block?.children();
 ```
+
+The eager `walk` deliberately does NOT mint a `Node` per document node (it steps over transient
+frames — see `PERFORMANCE.md`). Nodes are minted only where navigation is needed: `root`,
+`cursorAt`, `boundaryAt`, and `MountIndex.nodeAt`.
 
 ## Declaring components and behaviors
 
 `LanguageComponent.define` declares a component — an identity name, its schema (auto-annotated), and
 a `LanguageComponentBinding` of optional `validate`/`complete`/`describe` hooks.
 `schemas`/`bindings` collect a def list into the two registries: the `name -> schema` set for
-`Scanner`/`Cursor.at`, and the `name -> binding` map for dispatching behavior by the identity a node
-resolves to. Hooks run only after resolution and each receive a `Cursor`, so they read value,
+`LanguageCtx.compile`, and the `name -> binding` map for dispatching behavior by the identity a node
+resolves to. Hooks run only after resolution and each receive the `Node`, so they read value,
 schema, and surrounding context, and report what a schema cannot express.
 
 ```ts
@@ -250,8 +327,8 @@ const Email = LanguageComponent.define(
   'Email',
   { type: 'string', format: 'email' },
   {
-    validate: (cursor) =>
-      typeof cursor.value === 'string' && cursor.value.endsWith('@example.com')
+    validate: (node) =>
+      typeof node.val === 'string' && node.val.endsWith('@example.com')
         ? []
         : ['must be an @example.com address'],
     describe: () => 'Email address',
@@ -263,10 +340,14 @@ const schemas = LanguageComponent.schemas([Email]);
 const bindings = LanguageComponent.bindings([Email]);
 
 // Dispatch a resolved node's behavior by its identity name.
-const cursor = Cursor.at(schemas, schemas.Email, 'a@other.com');
+const node = LanguageCtx.compile(schemas, 'Email').root('a@other.com');
 // Returns ['must be an @example.com address'].
-bindings.get(cursor.identity!.name)?.validate?.(cursor);
+bindings.get(node.identity!.name)?.validate?.(node);
 ```
+
+Passing the bindings to `compile` (via `CompileOptions.binds`) lets a `MountIndex` dispatch them by
+location: `callBindingAt(path, 'complete')` finds the nearest enclosing component at `path` and runs
+that hook on its node.
 
 ## Annotation
 
@@ -281,56 +362,57 @@ const Widget = {
     { $ref: '#/components/schemas/IconWidget' },
   ],
 };
-
-const ButtonWidget = {
-  appsembleLanguageComponent: { name: 'ButtonWidget', mode: 'single' },
-  type: 'object',
-  required: ['type', 'text'],
-  properties: { type: { const: 'button' }, text: { type: 'string' } },
-};
 ```
 
 The shipped Appsemble schemas carry no such tags. To use the engine against them, tag the registry
 with `LanguageComponent.annotate` (each named object/combinator schema becomes a language component;
-scalars and already-tagged schemas pass through).
+scalars and already-tagged schemas pass through), then compile pinning the root component:
 
 ```ts
-import { LanguageComponent, Scanner } from '@appsemble/lang-sdk';
+import { LanguageComponent, LanguageCtx, scan } from '@appsemble/lang-sdk';
 import * as rawSchemas from '@appsemble/lang-sdk/schemas';
 
 const schemas = LanguageComponent.annotate(rawSchemas as Record<string, Schema>);
-const analyzer = new Scanner(schemas);
+const ctx = LanguageCtx.compile(schemas, 'AppDefinition');
 // Mounts / -> AppDefinition, /pages/0 -> PageDefinition, ...
-analyzer.scan(app, schemas.AppDefinition);
+scan(ctx, app);
 ```
 
 Untagged combinators are still transparent — an anonymous `oneOf`/`anyOf`/`allOf` surfaces the
 identities of its tagged branches — but an untagged plain object mounts nothing, which is why the
-named object schemas above need tagging.
-
-The tag always lives under the `COMPONENT_KEY` keyword (`appsembleLanguageComponent`), declared on
-the `jsonschema` `Schema` type by the module augmentation in `types.ts`.
+named object schemas need tagging. The tag always lives under the `COMPONENT_KEY` keyword
+(`appsembleLanguageComponent`), declared on the `jsonschema` `Schema` type by the module
+augmentation in `types.ts`.
 
 ## Files
 
 - `resolve.ts`: the decision core — `resolve` (combinator discrimination, one arm per combinator),
-  `childSchema`/`resolveChild` (structural descent plus the value-directed `dynamicChild` hook), and
-  the ref-cutoff (`localShapeFactory`), shared by the walk and the cursor so identity is decided in
-  exactly one place.
-- `scanner.ts`: the engine — `Scanner` (`buildTree`/`validate`/`scan` and the `run` one-shot
-  static), incremental re-analysis.
-- `cursor.ts`: `Cursor` (rooted via `Cursor.at`), a lazy zipper over `(value, schema)` that shares
-  `resolve` and `resolveChild` with the walk, for navigating and reading a single node in context.
+  `resolveAtKey`/`childSchema` (structural descent plus the value-directed `dynamicChild` hook), the
+  shared `childNode` step, and the ref-cutoff (`localShapeFactory`). Free functions, shared by the
+  walk and `Node` so identity is decided in exactly one place (and the walk stays allocation-free).
+- `languageCtx.ts`: `LanguageCtx` — the compiled, value-independent memo (`compile`, `root`,
+  `validate`, `resolveContext`).
+- `node.ts`: `Node` — a parent-linked `(comp, val, path)` focus that shares `resolve`/`childNode`
+  with the walk, for navigating and reading a single node in context.
+- `treeLayer.ts`: the stateless tree functions — `buildTree`/`scan` and incremental re-analysis —
+  plus `MountIndex` (the queryable/dispatch surface) and `ScanResult`.
 - `languageComponent.ts`: the `LanguageComponent` class (`define` / `schemas` / `bindings` /
-  `annotate` statics) and the `LanguageComponentBinding` type, to declare a component's schema and
-  behaviors and collect them into registries. `annotate` bulk-tags object and combinator schemas so
-  the analyzer mounts identities for them.
+  `annotate` statics) and the `LanguageComponentBinding` type.
 - `types.ts`: `Identity`, `Mount`, `ScanHit`, `SchemaTag`, `TaggedSchema`,
-  `COMPONENT_KEY`/`schemaTag`/`isTagged`, and the `jsonschema` `Schema` augmentation for
-  `appsembleLanguageComponent`.
+  `COMPONENT_KEY`/`schemaTag`/`isTagged`, and the `jsonschema` `Schema` augmentation.
 - `path.ts`: JSON Pointer-safe path formatting and lookup — internal plumbing behind
-  `MountTree.mountAt` and the walk; not part of the barrel.
+  `MountIndex.mountAt` and the walk.
 - `schemaRegistry.ts`: synchronous schema registry for `$ref` resolution.
+
+## Optional type overlay (Tier-2)
+
+`overlay.ts` is an `import type`-only layer (zero runtime) that, where a schema is known as a
+`const` type, derives its value type (`LCValue<Comp, Refs>` via `FromSchema`) and gives the node
+surface component-aware generics: structural `child(key)` narrowing and registry-driven
+`is`/`as`/`nearest` narrowing without hand-written predicates. It depends on the
+`ngruychev/json-schema-to-ts` fork's `ignoreRefSiblings` option (draft-07) so recursive
+language-component schemas stay type-checkable. The runtime engine is untouched; a consumer opts
+into the typed view by compiling with `const` schemas.
 
 ## Identity
 
@@ -355,8 +437,7 @@ those errors.
   behind conditional/pattern applicators (`if`/`then`, `patternProperties`) are not discovered. The
   static Appsemble OpenAPI 3.0 schemas cannot express those. The one practical `if`/`then` case is
   the LSP's dynamically-assembled block schema; block params are reached through the value-directed
-  `dynamicChild` resolver instead of the walk (see `BLOCKS.md`), so the bound is not hit there
-  either.
+  `dynamicChild` resolver instead of the walk (see `BLOCKS.md`).
 
 ## See also
 
@@ -364,3 +445,7 @@ those errors.
 - [`PERFORMANCE.md`](./PERFORMANCE.md): where the time goes and how incremental re-analysis wins.
 - [`./stress-test-schemas/README.md`](./stress-test-schemas/README.md): the stress-test suite for
   the walk.
+
+```
+
+```

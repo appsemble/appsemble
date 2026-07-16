@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { getAppPossiblePermissions } from '../authorization.js';
-import { Cursor, LanguageComponent } from './index.js';
+import { LanguageComponent, LanguageCtx, type Node } from './index.js';
 import { type AppDefinition } from '../types/index.js';
 
 /*
@@ -15,16 +15,16 @@ const AppPermissions = LanguageComponent.define(
   'AppPermissions',
   { type: 'array', items: { type: 'string' } },
   {
-    validate(cursor) {
-      const app = cursor.nearest('AppDefinition')?.value as AppDefinition;
+    validate(node) {
+      const app = node.nearest('AppDefinition')?.val as AppDefinition;
       const valid = new Set<string>(getAppPossiblePermissions(app));
-      return ((cursor.value as string[]) ?? [])
+      return ((node.val as string[]) ?? [])
         .filter((permission) => !valid.has(permission))
         .map((permission) => `unknown permission: ${permission}`);
     },
-    complete(cursor) {
-      const app = cursor.nearest('AppDefinition')?.value as AppDefinition;
-      const present = new Set((cursor.value as string[]) ?? []);
+    complete(node) {
+      const app = node.nearest('AppDefinition')?.val as AppDefinition;
+      const present = new Set((node.val as string[]) ?? []);
       return getAppPossiblePermissions(app).filter((permission) => !present.has(permission));
     },
   },
@@ -74,31 +74,31 @@ const app = {
   security: { roles: { Reader: { permissions: ['$resource:note:get', '$resource:bogus:get'] } } },
 };
 
-function permissionsCursor(): Cursor {
-  const root = Cursor.at(schemas, schemas.AppDefinition, app);
-  const cursor = root.child('security')?.child('roles')?.child('Reader')?.child('permissions');
-  if (!cursor) {
+function permissionsNode(): Node {
+  const root = LanguageCtx.compile(schemas, 'AppDefinition').root(app);
+  const node = root.child('security')?.child('roles')?.child('Reader')?.child('permissions');
+  if (!node) {
     throw new Error('failed to navigate to permissions');
   }
-  return cursor;
+  return node;
 }
 
 describe('language component binding: app permissions', () => {
   it('should navigate to the permissions node and resolve its identity', () => {
-    const cursor = permissionsCursor();
-    expect(cursor.identity?.name).toBe('AppPermissions');
-    expect(cursor.value).toStrictEqual(['$resource:note:get', '$resource:bogus:get']);
+    const node = permissionsNode();
+    expect(node.identity?.name).toBe('AppPermissions');
+    expect(node.val).toStrictEqual(['$resource:note:get', '$resource:bogus:get']);
     // Climbing past the untagged intermediate nodes reaches the enclosing app.
-    expect(permissionsCursor().nearest('AppDefinition')?.value).toBe(app);
+    expect(permissionsNode().nearest('AppDefinition')?.val).toBe(app);
   });
 
   it('should flag a permission the app cannot grant', () => {
-    const problems = AppPermissions.binding.validate!(permissionsCursor());
+    const problems = AppPermissions.binding.validate!(permissionsNode());
     expect(problems).toStrictEqual(['unknown permission: $resource:bogus:get']);
   });
 
   it('should complete with valid permissions not yet present', () => {
-    const completions = AppPermissions.binding.complete!(permissionsCursor());
+    const completions = AppPermissions.binding.complete!(permissionsNode());
     // Resource/view/webhook permissions derived from THIS app's definition.
     expect(completions).toContain('$webhook:sync:invoke');
     expect(completions).toContain('$resource:note:get:public');

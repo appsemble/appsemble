@@ -1,48 +1,41 @@
 import { type Schema, type ValidationError, type Validator } from 'jsonschema';
 
 import { mapValues } from '../mapValues.js';
-import { type Identity, type SchemaTag, schemaTag } from './types.js';
+import { type Identity, type NodePath, type SchemaTag, schemaTag } from './types.js';
 
 /**
- * The decision core shared by the analyzer walk (`Scanner`) and interactive navigation
- * (`Cursor`): `resolve` is the single place a oneOf/anyOf/allOf is decided, returning the
- * identity and the concrete winner schema(s); `resolveChild` then descends, taking the
- * value-directed resolver when one is configured and `childSchema`'s structural lookup
- * otherwise. Both consumers only ever follow winning branches and decide identity identically.
+ * The decision core. `resolve` decides a oneOf/anyOf/allOf and returns the identity plus the winner
+ * schema(s); `resolveAtKey`/`childNode` descend (the value-directed resolver first, else
+ * `childSchema`'s structural lookup). The walk and `Node` share these, so both decide identity
+ * identically and only ever follow winning branches.
  */
 
 export interface Resolution {
   identity: Identity | null;
   winners: Schema[];
   matched: boolean;
-  // The node's own local-shape validation errors (ref-cut). Present for leaf nodes; a combinator
-  // node has none of its own (its validity is whether branches matched).
+  // A leaf's own ref-cut errors; a combinator has none (its validity is whether branches matched).
   localErrors?: ValidationError[];
 }
 
-// Value-directed child resolver (BLOCKS.md, Approach B): given the parent's resolved
-// identity, its value, and a child key, return the child's schema directly, bypassing the
-// structural `childSchema` lookup. Used to resolve `type`+`version`-discriminated block
-// params without materializing a union; returns null to fall back to structural descent.
+// Value-directed child resolver (BLOCKS.md): return a child schema directly from the parent's
+// identity + value + key, bypassing `childSchema` — resolves type+version-discriminated block
+// params without a union. Null falls back to structural descent.
 export type DynamicChild = (
   parentIdentity: string | null,
   parentValue: unknown,
   key: string,
 ) => Schema | null;
 
-// Per-analysis configuration shared by `Scanner` and `Cursor.at`.
 export interface ResolveOptions {
-  // A value-directed child resolver consulted before structural descent (see DynamicChild).
   dynamicChild?: DynamicChild;
-  // Build the jsonschema validator, overriding the registry's default. Supply this to control
-  // how schemas and $refs resolve during validation -- e.g. an editor registering per-block
-  // schemas under their own URLs so a large `BlockDefinition` union validates without walking
-  // every branch. The whole-document pass installs its hit-collection attribute on the result.
+  // Override the registry's default jsonschema validator — e.g. an editor registering per-block
+  // schemas under their own URLs so a large union validates without walking every branch.
   validatorFactory?: () => Validator;
 }
 
-// Everything `resolve` and `childSchema` need to decide identity and descend, minus
-// the walk's emit sink. The cursor (interactive navigation) reuses this same context.
+// The descent core's inputs (ref resolver, validator, ref-cut, dynamic-child hook), minus the
+// walk's emit sink; `Node` reuses the same context.
 export interface ResolveContext {
   resolveRef: (ref: string) => Schema;
   validator: Validator;
@@ -51,7 +44,7 @@ export interface ResolveContext {
 }
 
 function single(name: string): Identity {
-  return { kind: 'single', name, parts: [] };
+  return { kind: 'single', name };
 }
 
 function unresolved(reason: string, parts: Identity[] = []): Identity {
@@ -66,8 +59,8 @@ function composite(
   return { kind: 'composite', mode, name: tag?.name ?? mode, parts };
 }
 
-// A combinator yields an identity only when it is itself tagged or resolved some tagged parts;
-// an anonymous combinator over untagged branches is transparent and contributes nothing.
+// A combinator yields an identity only if tagged or it resolved tagged parts; an anonymous
+// combinator over untagged branches is transparent.
 function taggedOrNull(
   tag: SchemaTag | undefined,
   parts: Identity[],
@@ -102,9 +95,8 @@ function deref(schema: Schema, resolveRef: (ref: string) => Schema): Schema {
   return schema.$ref ? deref(resolveRef(schema.$ref), resolveRef) : schema;
 }
 
-// Does `value` conform to `schema`'s own local shape? `localShape` applies the ref-cutoff
-// first (see `stripRefs`), so this checks only the schema's own constraints and never
-// recurses into referenced subtrees -- the walk visits those.
+// Does `value` match `schema`'s own (ref-cut) local shape? Never recurses into $ref'd subtrees —
+// the walk visits those.
 function matchesLocalShape(
   value: unknown,
   schema: Schema,
@@ -117,22 +109,16 @@ function matchesLocalShape(
   return { matched: result.valid, errors: result.errors };
 }
 
-// Memoize the ref-cutoff: build each schema's local shape (`stripRefs`) once and cache it by
-// schema identity, so repeated resolves against the same schema reuse the copy. The cache is
-// stable across a scan, and `stripRefs` lives here because the cacher is its only caller.
+// Memoize the ref-cutoff: `stripRefs` each schema once, cached by schema identity, reused across a
+// scan. This is the dominant perf win — without it, resolve validates each node against its full
+// schema and jsonschema follows $refs, re-validating a subtree inside every ancestor (O(N x depth),
+// seconds on a medium app). (A per-(value, schema) memo was tried and didn't help: the costly
+// validations are all distinct.)
 export function localShapeFactory(): (schema: Schema) => Schema {
-  // Ref-cutoff: a copy of a schema with every nested $ref replaced by accept-all, so
-  // validating against it checks only the schema's own local shape and never recurses
-  // into referenced subtrees (the walk visits those). Nested `oneOf` is relaxed to
-  // `anyOf` because accept-all branches make exact-one vacuously false; exclusivity is
-  // not needed to recognize local shape.
-  //
-  // This is the dominant performance win: without it, resolve validates each node against
-  // its full schema and jsonschema follows $refs, so a subtree is re-validated inside every
-  // ancestor -- O(N x nesting-depth), seconds on a medium app. (A per-run memo of validation
-  // by (value, schema) was tried and made no measurable difference: the costly validations
-  // are all distinct, not repeated. The remaining cost is the single full-ref validation
-  // pass for document validity/errors/hits, plus validator construction.)
+  // A copy of `schema` with every nested $ref replaced by accept-all, so validating against it
+  // checks only the schema's own shape (the walk visits referenced subtrees). Nested `oneOf` is
+  // relaxed to `anyOf` — accept-all branches make exact-one vacuous, and exclusivity isn't needed
+  // to recognize local shape.
   function stripRefs(schema: Schema): Schema {
     if (schema.$ref) {
       return {};
@@ -147,13 +133,11 @@ export function localShapeFactory(): (schema: Schema) => Schema {
     if (copy.additionalProperties && typeof copy.additionalProperties === 'object') {
       copy.additionalProperties = stripRefs(copy.additionalProperties);
     }
-    // Recurse into every combinator...
     for (const keyword of ['allOf', 'anyOf', 'oneOf'] as const) {
       if (copy[keyword]) {
         copy[keyword] = copy[keyword].map(stripRefs);
       }
     }
-    // ...then relax the stripped `oneOf` into `anyOf` (exact-one is vacuous under accept-all).
     if (copy.oneOf) {
       copy.anyOf = [...(copy.anyOf ?? []), ...copy.oneOf];
       delete copy.oneOf;
@@ -172,21 +156,14 @@ export function localShapeFactory(): (schema: Schema) => Schema {
   };
 }
 
-// A oneOf/anyOf/allOf node. The three combinators share one skeleton -- thread the
-// governing branches' winners, wrap their parts into an identity, and on failure still
-// name what was considered -- and differ only in three axes:
-//
-//   oneOf: exactly one branch must match, and that lone winner governs descent. An
-//          untagged oneOf is transparent -- it adds no identity of its own, so the
-//          winner's identity passes straight through.
-//   anyOf: at least one must match; every matched branch governs.
-//   allOf: all must match; all branches govern, and their identities are kept even on
-//          failure so an unresolved allOf still names its parts.
-//
-// Contrast `resolveLeaf`, which has no branches to weigh and validates a shape directly.
+// A oneOf/anyOf/allOf node. One skeleton over three rules:
+//   oneOf: exactly one branch matches and governs; an untagged oneOf is transparent (the winner's
+//          identity passes through).
+//   anyOf: at least one matches; every matched branch governs.
+//   allOf: all match; all branches govern, and their identities are kept even on failure.
 function resolveComposite(
   mode: 'allOf' | 'anyOf' | 'oneOf',
-  s: Schema,
+  schema: Schema,
   branches: Resolution[],
   tag: SchemaTag | undefined,
 ): Resolution {
@@ -198,12 +175,11 @@ function resolveComposite(
   }[mode];
 
   if (satisfied) {
-    // An allOf is governed by every branch; oneOf/anyOf only by the ones that matched.
     const governing = mode === 'allOf' ? branches : matched;
     const parts = identityParts(governing);
     const identity =
       mode === 'oneOf' && !tag ? governing[0].identity : compositeOrNull(mode, tag, parts);
-    return { identity, matched: true, winners: [s, ...governing.flatMap((b) => b.winners)] };
+    return { identity, matched: true, winners: [schema, ...governing.flatMap((b) => b.winners)] };
   }
 
   const reason = {
@@ -211,29 +187,31 @@ function resolveComposite(
     allOf: 'allOf did not fully match',
     anyOf: 'anyOf matched nothing',
   }[mode];
-  // Failure still names what was considered: allOf every branch, oneOf the ones that
-  // matched, anyOf nothing (none passed).
+  // Failure still names what was considered: allOf every branch, oneOf the ones that matched.
   const considered = { allOf: branches, oneOf: matched, anyOf: [] as Resolution[] }[mode];
   return {
     identity: unresolvedOrNull(reason, tag, identityParts(considered)),
     matched: false,
-    winners: [s],
+    winners: [schema],
   };
 }
 
-// Leaf/object schema: its own properties govern children regardless of validity.
-// Validate only the local shape (ref-cutoff); the walk visits referenced subtrees.
-// A tagged object keeps its identity even when it fails its own constraints; the
-// failure surfaces through localValid and the attached errors, never by erasing
-// the object (mirroring how a oneOf winner keeps identity under an outer if/then).
+// Leaf/object: own properties govern children regardless of validity. A tagged object keeps its
+// identity even when it fails its constraints — the failure surfaces via localValid + errors, not
+// by erasing the object.
 function resolveLeaf(
-  s: Schema,
+  schema: Schema,
   tag: SchemaTag | undefined,
   value: unknown,
   ctx: ResolveContext,
 ): Resolution {
-  const { matched, errors } = matchesLocalShape(value, s, ctx);
-  return { identity: tag ? single(tag.name) : null, matched, winners: [s], localErrors: errors };
+  const { matched, errors } = matchesLocalShape(value, schema, ctx);
+  return {
+    identity: tag ? single(tag.name) : null,
+    matched,
+    winners: [schema],
+    localErrors: errors,
+  };
 }
 
 export function resolve(
@@ -242,39 +220,35 @@ export function resolve(
   ctx: ResolveContext,
   seen: ReadonlySet<Schema> = new Set(),
 ): Resolution {
-  const s = deref(schema, ctx.resolveRef);
-  const tag = schemaTag(s);
+  const resolved = deref(schema, ctx.resolveRef);
+  const tag = schemaTag(resolved);
 
-  // Cycle guard: a combinator branch that $refs an enclosing combinator expands `s` forever,
-  // unbounded by the value (the walk is bounded by data; resolve expands combinators
-  // structurally). `seen` is the ancestor path of schemas currently being resolved; re-entering
-  // one is a cycle, so stop with the enclosing schema still governing descent (`winners: [s]`).
-  if (seen.has(s)) {
+  // Cycle guard: a combinator branch that $refs an enclosing combinator expands forever (resolve
+  // expands combinators structurally, unbounded by the value). `seen` = ancestor schemas being
+  // resolved; re-entering one stops, with the enclosing schema still governing (`winners: [resolved]`).
+  if (seen.has(resolved)) {
     return {
       identity: tag ? unresolved('cyclic schema reference') : null,
       matched: false,
-      winners: [s],
+      winners: [resolved],
     };
   }
-  const nested = new Set(seen).add(s);
-  const branch = (b: Schema): Resolution => resolve(b, value, ctx, nested);
+  const nested = new Set(seen).add(resolved);
+  const resolveBranch = (branch: Schema): Resolution => resolve(branch, value, ctx, nested);
 
-  // The enclosing schema always governs its own children: a schema may carry a combinator
-  // *and* its own `properties`/`items` (e.g. `allOf: [Base]` plus own fields), so `s` is a
-  // winner alongside any matched branch winners (see `resolveComposite`). Mirrors the leaf
-  // path (`winners: [s]`), which descends into own properties regardless of local validity.
+  // The enclosing schema always governs its own children: it may carry a combinator AND its own
+  // `properties`/`items`, so `resolved` is a winner alongside any matched-branch winners.
   for (const mode of ['oneOf', 'anyOf', 'allOf'] as const) {
-    const branches = s[mode];
+    const branches = resolved[mode];
     if (branches) {
-      return resolveComposite(mode, s, branches.map(branch), tag);
+      return resolveComposite(mode, resolved, branches.map(resolveBranch), tag);
     }
   }
-  return resolveLeaf(s, tag, value, ctx);
+  return resolveLeaf(resolved, tag, value, ctx);
 }
 
-// The schema a single winner contributes for `key`, or null when it does not own the key: a
-// declared property, the open `additionalProperties` schema, or an `items` entry (single-schema
-// `items` owns every element; tuple-form `items` owns by position).
+// The schema a winner contributes for `key` (a declared property, open `additionalProperties`, or
+// an `items` entry — single `items` owns every element, tuple `items` by position), or null.
 function ownedChild(schema: Schema, key: string): Schema | null {
   if (schema.properties && Object.hasOwn(schema.properties, key)) {
     return schema.properties[key];
@@ -289,17 +263,9 @@ function ownedChild(schema: Schema, key: string): Schema | null {
   return null;
 }
 
-/**
- * The schema governing the child at `key`, gathered across the parent's winning schemas: each
- * winner may own the key through a property, `additionalProperties`, or `items` (see `ownedChild`).
- * Winners that own it compose into one `allOf`; null means no winner owns the key, so the child is
- * outside the schema's vocabulary and does not mount.
- *
- * @param winners The winning schemas from `resolve` at the parent node.
- * @param key The child key (an object property or a stringified array index).
- * @param resolveRef The registry's ref resolver.
- * @returns The child's governing schema, or null when no winner owns the key.
- */
+// The schema governing the child at `key`, gathered across the parent's winning schemas: each winner
+// may own the key via a property, `additionalProperties`, or `items`. Owners compose into one
+// `allOf`; null means no winner owns the key, so the child is outside the vocabulary and won't mount.
 export function childSchema(
   winners: Schema[],
   key: string,
@@ -314,28 +280,44 @@ export function childSchema(
   return owners.length === 1 ? owners[0] : { allOf: owners };
 }
 
-/**
- * Resolve the child at `key` during descent: consult the value-directed resolver first (when one
- * is configured), otherwise fall back to `childSchema`'s structural lookup over the winners. This
- * is the single descent step the walk (`Scanner`) and interactive navigation (`Cursor`) share, so
- * both pick the same child schema.
- *
- * @param ctx The resolve context carrying the ref resolver and optional dynamic-child resolver.
- * @param parentIdentity The resolved identity name at the parent, or null when untagged.
- * @param parentValue The parent's value, passed to the dynamic-child resolver.
- * @param key The child key (an object property or a stringified array index).
- * @param winners The winning schemas from `resolve` at the parent node.
- * @returns The child's schema, or null when nothing owns the key.
- */
-export function resolveChild(
-  ctx: ResolveContext,
-  parentIdentity: string | null,
+// The schema half of the descent step: the value-directed resolver first (when configured), else
+// `childSchema`'s structural lookup over the winners. `childNode` wraps this with the value/path
+// arithmetic, so the walk, `Node`, and `boundaryAt` all step identically.
+export function resolveAtKey(
+  resolution: Resolution,
   parentValue: unknown,
   key: string,
-  winners: Schema[],
+  ctx: ResolveContext,
 ): Schema | null {
   return (
-    ctx.dynamicChild?.(parentIdentity, parentValue, key) ??
-    childSchema(winners, key, ctx.resolveRef)
+    ctx.dynamicChild?.(resolution.identity?.name ?? null, parentValue, key) ??
+    childSchema(resolution.winners, key, ctx.resolveRef)
   );
+}
+
+// One descent frame: schema + value + path. The walk steps over these transient frames — never a
+// `Node` per document node (perf guardrail, PERFORMANCE.md); `Node`/`boundaryAt` reuse the same step.
+export interface StepChild {
+  schema: Schema;
+  value: unknown;
+  path: NodePath;
+}
+
+// The single descent step shared by the walk, `Node`, and `boundaryAt`: resolve the child schema at
+// `key` (value-directed then structural) and pair it with the child's value and path; null when no
+// winner owns the key. A free function over plain frames, so the walk allocates no `Node` per node.
+export function childNode(
+  parentValue: unknown,
+  parentPath: NodePath,
+  resolution: Resolution,
+  key: number | string,
+  ctx: ResolveContext,
+): StepChild | null {
+  const schema = resolveAtKey(resolution, parentValue, String(key), ctx);
+  if (!schema) {
+    return null;
+  }
+  const value =
+    parentValue == null ? undefined : (parentValue as Record<number | string, unknown>)[key];
+  return { schema, value, path: [...parentPath, key] };
 }

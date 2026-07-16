@@ -1,12 +1,13 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { Cursor, LanguageComponent, Scanner } from '../index.js';
+import { buildTree, LanguageComponent, LanguageCtx, scan } from '../index.js';
 import { analyze, describeIdentity, describeIdentities } from './harness.js';
-import { miniSchemas, Root } from './schemas.js';
+import { miniSchemas } from './schemas.js';
 import { scenarios } from './scenarios.js';
 
 const treeIdentities = describeIdentities;
+const miniCtx = LanguageCtx.compile(miniSchemas, 'Root');
 
 describe('engine edge cases', () => {
   it('keeps local validation possible when a nested oneOf contains refs', () => {
@@ -47,7 +48,9 @@ describe('engine edge cases', () => {
       },
     } satisfies Record<string, Schema>;
 
-    const tree = new Scanner(schemas).buildTree({ choice: { kind: 'a' } }, schemas.RefCutContainer);
+    const tree = buildTree(LanguageCtx.compile(schemas, 'RefCutContainer'), {
+      choice: { kind: 'a' },
+    });
     const mounted = tree.mounts.get('/');
 
     expect(mounted).toBeDefined();
@@ -69,8 +72,9 @@ describe('engine edge cases', () => {
       },
     } satisfies Record<string, Schema>;
 
-    const valid = new Scanner(schemas).buildTree({ choice: 'a' }, schemas.AnyOfHost);
-    const invalid = new Scanner(schemas).buildTree({ choice: 'c' }, schemas.AnyOfHost);
+    const anyOfCtx = LanguageCtx.compile(schemas, 'AnyOfHost');
+    const valid = buildTree(anyOfCtx, { choice: 'a' });
+    const invalid = buildTree(anyOfCtx, { choice: 'c' });
 
     expect(valid.mounts.get('/')!.localValid).toBe(true);
     expect(invalid.mounts.get('/')!.localValid).toBe(false);
@@ -83,7 +87,7 @@ describe('engine edge cases', () => {
       {},
     );
     const schemas = LanguageComponent.schemas([Strict]);
-    const tree = new Scanner(schemas).buildTree({}, schemas.StrictLocal);
+    const tree = buildTree(LanguageCtx.compile(schemas, 'StrictLocal'), {});
     const mount = tree.mounts.get('/');
 
     expect(mount).toBeDefined();
@@ -106,23 +110,22 @@ describe('engine edge cases', () => {
     } satisfies Schema;
 
     // Untagged combinator + no annotated parts + a member that fails -> nothing mounts.
-    const tree = new Scanner({}).buildTree({}, schema);
+    const tree = buildTree(LanguageCtx.compile({ Root: schema }, 'Root'), {});
 
     expect(tree.mounts.size).toBe(0);
   });
 
   it('stops the incremental boundary when a value along the changed path became null', () => {
-    const analyzer = new Scanner(miniSchemas);
     const v1 = { environment: 'development', holders: [{ text: 'a', badge: { label: 'x' } }] };
-    const treeV1 = analyzer.buildTree(v1, Root);
+    const treeV1 = buildTree(miniCtx, v1);
 
     const v2 = { environment: 'development', holders: null };
-    const incremental = analyzer.buildTree(v2, Root, {
+    const incremental = buildTree(miniCtx, v2, {
       previous: treeV1,
       changed: [['holders', 0, 'badge']],
     });
 
-    expect(treeIdentities(incremental)).toStrictEqual(treeIdentities(analyzer.buildTree(v2, Root)));
+    expect(treeIdentities(incremental)).toStrictEqual(treeIdentities(buildTree(miniCtx, v2)));
   });
 
   it('mounts nothing for an untagged oneOf with no matching annotated branch', () => {
@@ -145,13 +148,12 @@ describe('engine edge cases', () => {
       },
     } satisfies Record<string, Schema>;
 
-    const tree = new Scanner(schemas).buildTree({ kind: 'c' }, schemas.UntaggedChoice);
+    const tree = buildTree(LanguageCtx.compile(schemas, 'UntaggedChoice'), { kind: 'c' });
 
     expect(tree.mounts.size).toBe(0);
   });
 
   it('matches a full rebuild when a changed path is below an unowned schema key', () => {
-    const analyzer = new Scanner(miniSchemas);
     const before = {
       environment: 'development',
       gallery: [{ label: 'gold' }],
@@ -162,16 +164,14 @@ describe('engine edge cases', () => {
       gallery: [{ label: 'gold' }],
       metadata: { note: 'after' },
     };
-    const previous = analyzer.buildTree(before, Root);
+    const previous = buildTree(miniCtx, before);
 
-    const incremental = analyzer.buildTree(after, Root, {
+    const incremental = buildTree(miniCtx, after, {
       previous,
       changed: [['metadata', 'note']],
     });
 
-    expect(treeIdentities(incremental)).toStrictEqual(
-      treeIdentities(analyzer.buildTree(after, Root)),
-    );
+    expect(treeIdentities(incremental)).toStrictEqual(treeIdentities(buildTree(miniCtx, after)));
   });
 
   it('reports an unknown schema ref when analysis resolves a missing ref', () => {
@@ -180,7 +180,9 @@ describe('engine edge cases', () => {
       properties: { item: { $ref: '#/components/schemas/Missing' } },
     };
 
-    expect(() => Scanner.run({}, { item: {} }, root)).toThrow(/Unknown schema ref/);
+    expect(() => scan(LanguageCtx.compile({ Root: root }, 'Root'), { item: {} })).toThrow(
+      /Unknown schema ref/,
+    );
   });
 
   it('navigates into a child key whose parent value is null', () => {
@@ -193,11 +195,11 @@ describe('engine edge cases', () => {
       {},
     );
     const schemas = LanguageComponent.schemas([Nested]);
-    const root = Cursor.at(schemas, schemas.NullParent, { a: null });
+    const root = LanguageCtx.compile(schemas, 'NullParent').root({ a: null });
 
     const grandchild = root.child('a')?.child('b');
     expect(grandchild).not.toBeNull();
-    expect(grandchild!.value).toBeUndefined();
+    expect(grandchild!.val).toBeUndefined();
   });
 
   it('returns null from nearest when no ancestor carries the requested identity name', () => {
@@ -207,7 +209,7 @@ describe('engine edge cases', () => {
       {},
     );
     const schemas = LanguageComponent.schemas([Solo]);
-    const root = Cursor.at(schemas, schemas.SoloRoot, { a: 'x' });
+    const root = LanguageCtx.compile(schemas, 'SoloRoot').root({ a: 'x' });
 
     expect(root.nearest('Nonexistent')).toBeNull();
   });
@@ -219,9 +221,10 @@ describe('engine edge cases', () => {
       {},
     );
     const schemas = LanguageComponent.schemas([TaggedFocus]);
+    const focusCtx = LanguageCtx.compile(schemas, 'TaggedFocus');
 
-    const valid = Cursor.at(schemas, schemas.TaggedFocus, { name: 'ok' });
-    const invalid = Cursor.at(schemas, schemas.TaggedFocus, {});
+    const valid = focusCtx.root({ name: 'ok' });
+    const invalid = focusCtx.root({});
 
     expect(valid.identity?.name).toBe('TaggedFocus');
     expect(valid.localValid).toBe(true);
@@ -255,10 +258,13 @@ describe('engine edge cases', () => {
       {},
     );
     const schemas = LanguageComponent.schemas([Plain, Fancy, Host]);
-    const cursor = Cursor.at(schemas, schemas.BranchHostLocal, { type: 'plain', action: {} });
+    const node = LanguageCtx.compile(schemas, 'BranchHostLocal').root({
+      type: 'plain',
+      action: {},
+    });
 
-    expect(cursor.child('type')).not.toBeNull();
-    expect(cursor.child('action')).toBeNull();
+    expect(node.child('type')).not.toBeNull();
+    expect(node.child('action')).toBeNull();
   });
 
   it('enumerates owned object children and no children for non-objects', () => {
@@ -271,14 +277,14 @@ describe('engine edge cases', () => {
       {},
     );
     const schemas = LanguageComponent.schemas([OwnedObject]);
-    const cursor = Cursor.at(schemas, schemas.OwnedObject, {
+    const node = LanguageCtx.compile(schemas, 'OwnedObject').root({
       count: 2,
       ignored: true,
       title: 'hello',
     });
 
-    expect(cursor.children().map((child) => child.path.at(-1))).toStrictEqual(['count', 'title']);
-    expect(cursor.child('title')?.children()).toStrictEqual([]);
+    expect(node.children().map((child) => child.path.at(-1))).toStrictEqual(['count', 'title']);
+    expect(node.child('title')?.children()).toStrictEqual([]);
   });
 });
 
@@ -300,7 +306,7 @@ describe('hits collection (public surface)', () => {
 /*
  * Consolidated from the former gaps.test.ts: known engine gaps now closed by the
  * structural walk (identity comes from resolving the schema at each node, not from
- * collected hits). The ghost-from-a-losing-branch case (#1) lives in capabilities.test.ts.
+ * collected hits). The losing-branch-child case (#1) lives in capabilities.test.ts.
  *
  * - #2 untagged combinator: identity comes from the entry schema, so an untagged allOf
  *   resolves as a full composite instead of collapsing to the first wrapper (asserted by the

@@ -81,7 +81,11 @@ export const StoredText = combinator(
 
 export const TextAndIcon = combinator('TextAndIcon', 'allOf', refs('TextWidget', 'IconWidget'));
 
-export const CursedA = combinator('CursedA', 'oneOf', refs('ButtonWidget', 'TextAndIcon'));
+export const AmbiguousButton = combinator(
+  'AmbiguousButton',
+  'oneOf',
+  refs('ButtonWidget', 'TextAndIcon'),
+);
 
 export const ButtonOrText = combinator('ButtonOrText', 'oneOf', refs('ButtonWidget', 'TextWidget'));
 
@@ -91,7 +95,11 @@ export const IconOrTrackable = combinator(
   refs('IconWidget', 'Trackable'),
 );
 
-export const CursedB = combinator('CursedB', 'allOf', refs('ButtonOrText', 'IconOrTrackable'));
+export const AmbiguousControl = combinator(
+  'AmbiguousControl',
+  'allOf',
+  refs('ButtonOrText', 'IconOrTrackable'),
+);
 
 export const StrictButtonOrText = combinator('StrictButtonOrText', 'oneOf', [
   obj('StrictButton', ['kind', 'text'], { kind: { const: 'button' }, text: { type: 'string' } }),
@@ -104,44 +112,48 @@ export const StrictIconOrTrackable = combinator(
   refs('IconWidget', 'Trackable'),
 );
 
-export const CursedValid = combinator('CursedValid', 'allOf', [
+export const ResolvedComposite = combinator('ResolvedComposite', 'allOf', [
   StrictButtonOrText,
   StrictIconOrTrackable,
 ]);
 
-// StandardGhostButton and ExperimentalGhostButton are byte-identical on purpose (an
+// DuplicateButtonA and DuplicateButtonB are byte-identical on purpose (an
 // indistinguishable oneOf) — generated from one builder so their sameness is by
 // construction, not by hand-copied literals.
-const ghostButton = (name: string): Schema =>
+const duplicateButton = (name: string): Schema =>
   obj(name, ['type'], { type: { const: 'button' } }, { additionalProperties: false });
 
-export const StandardGhostButton = ghostButton('StandardGhostButton');
-export const ExperimentalGhostButton = ghostButton('ExperimentalGhostButton');
+export const DuplicateButtonA = duplicateButton('DuplicateButtonA');
+export const DuplicateButtonB = duplicateButton('DuplicateButtonB');
 
-export const GhostWidget = combinator('GhostWidget', 'oneOf', [
-  StandardGhostButton,
-  ExperimentalGhostButton,
+export const DuplicateVariant = combinator('DuplicateVariant', 'oneOf', [
+  DuplicateButtonA,
+  DuplicateButtonB,
 ]);
 
-export const ScaryWidget = combinator(
-  'ScaryWidget',
+export const ButtonVariant = combinator(
+  'ButtonVariant',
   'oneOf',
   refs('StandardButton', 'ExperimentalButton'),
 );
 
 // --- Gap repro schemas (drive the deliberately-failing tests) ---
 
-// #1 ghost: an annotated child living inside a oneOf branch that loses.
-export const GhostAction = obj('GhostAction', ['kind'], { kind: { type: 'string' } });
+// #1 losing-branch child: an annotated child inside a oneOf branch that loses (must not mount).
+export const BranchAction = obj('BranchAction', ['kind'], { kind: { type: 'string' } });
 
 export const FancyBranch = obj('FancyBranch', ['type'], {
   type: { const: 'fancy' },
-  action: ref('GhostAction'),
+  action: ref('BranchAction'),
 });
 
 export const PlainBranch = obj('PlainBranch', ['type'], { type: { const: 'plain' } });
 
-export const GhostHost = combinator('GhostHost', 'oneOf', refs('FancyBranch', 'PlainBranch'));
+export const ActionBranchHost = combinator(
+  'ActionBranchHost',
+  'oneOf',
+  refs('FancyBranch', 'PlainBranch'),
+);
 
 // #4 ancestor errors: a valid inner object under a container that fails locally.
 export const InnerThing = obj('InnerThing', ['ok'], { ok: { type: 'boolean' } });
@@ -197,20 +209,32 @@ export const ConditionalHost = {
   },
 } satisfies Schema;
 
-export const Root = {
+// Production gate: environment=production forces the button variant non-experimental. Keeps the
+// outer-if/then case (local identity kept while the document is invalid) out of Root's normal shape.
+export const ProductionVariantHost = {
   type: 'object',
   properties: {
     environment: { enum: ['development', 'production'] },
+    buttonVariant: ref('ButtonVariant'),
+  },
+  if: { properties: { environment: { const: 'production' } } },
+  then: { properties: { buttonVariant: { properties: { experimental: { const: false } } } } },
+} satisfies Schema;
+
+export const Root = {
+  type: 'object',
+  properties: {
+    productionVariantHost: ref('ProductionVariantHost'),
     widget: ref('Widget'),
     flexible: ref('FlexibleThing'),
     composed: ref('StoredText'),
-    cursedA: ref('CursedA'),
-    cursedB: ref('CursedB'),
-    cursedValid: ref('CursedValid'),
-    ghostWidget: ref('GhostWidget'),
-    scaryWidget: ref('ScaryWidget'),
-    // #1 ghost interpretation from a losing branch.
-    ghostHost: ref('GhostHost'),
+    ambiguousButton: ref('AmbiguousButton'),
+    ambiguousControl: ref('AmbiguousControl'),
+    resolvedComposite: ref('ResolvedComposite'),
+    duplicateVariant: ref('DuplicateVariant'),
+    buttonVariant: ref('ButtonVariant'),
+    // #1 annotated child surfacing from a losing branch.
+    actionBranchHost: ref('ActionBranchHost'),
     // #2 untagged combinator composing two tagged wrappers.
     untaggedComposite: { allOf: [ref('StrictButtonOrText'), ref('StrictIconOrTrackable')] },
     // #4 ancestor error over-attachment.
@@ -226,18 +250,6 @@ export const Root = {
     // Conditional-applicator placement the structural walk cannot reach.
     condHost: ref('ConditionalHost'),
   },
-  if: {
-    properties: { environment: { const: 'production' } },
-  },
-  then: {
-    properties: {
-      scaryWidget: {
-        properties: {
-          experimental: { const: false },
-        },
-      },
-    },
-  },
 } satisfies Schema;
 
 export const miniSchemas = {
@@ -247,28 +259,29 @@ export const miniSchemas = {
   ButtonWidget,
   ConditionalHost,
   Container,
-  CursedA,
-  CursedB,
-  CursedValid,
+  AmbiguousButton,
+  AmbiguousControl,
+  ResolvedComposite,
   ExperimentalButton,
-  ExperimentalGhostButton,
+  DuplicateButtonB,
   FancyBranch,
   FlexibleThing,
   Gallery,
-  GhostAction,
-  GhostHost,
-  GhostWidget,
+  BranchAction,
+  ActionBranchHost,
+  DuplicateVariant,
   Host,
   IconOrTrackable,
   IconWidget,
   Identified,
   InnerThing,
   PlainBranch,
+  ProductionVariantHost,
   Registry,
   Root,
-  ScaryWidget,
+  ButtonVariant,
   StandardButton,
-  StandardGhostButton,
+  DuplicateButtonA,
   StoredText,
   StrictButtonOrText,
   StrictIconOrTrackable,

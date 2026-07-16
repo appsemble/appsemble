@@ -1,7 +1,7 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { LanguageComponent, Scanner } from './index.js';
+import { LanguageComponent, LanguageCtx, scan } from './index.js';
 
 describe('LanguageComponent.define', () => {
   // The stress-test fixtures build every tag through LanguageComponent.define (obj/combinator delegate
@@ -111,7 +111,7 @@ describe('LanguageComponent.annotate', () => {
       Page: { type: 'object', properties: { name: { type: 'string' } } },
     });
 
-    const result = new Scanner(schemas).scan({ page: { name: 'Home' } }, schemas.Root);
+    const result = scan(LanguageCtx.compile(schemas, 'Root'), { page: { name: 'Home' } });
 
     expect(result.mounts.get('/')?.identity.name).toBe('Root');
     expect(result.mounts.get('/page')?.identity.name).toBe('Page');

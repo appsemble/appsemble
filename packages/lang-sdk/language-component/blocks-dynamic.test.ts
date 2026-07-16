@@ -1,7 +1,14 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { Cursor, type DynamicChild, LanguageComponent, type MountTree, Scanner } from './index.js';
+import {
+  buildTree,
+  type DynamicChild,
+  LanguageComponent,
+  LanguageCtx,
+  type MountIndex,
+  scan,
+} from './index.js';
 
 /*
  * Blocks via the value-directed resolver (Approach B in language-component/BLOCKS.md).
@@ -82,9 +89,9 @@ describe('blocks via value-directed resolver (Approach B)', () => {
         },
       ],
     };
-    const result = new Scanner(schemas, { dynamicChild: resolveBlockChild }).scan(
+    const result = scan(
+      LanguageCtx.compile(schemas, 'AppDefinition', { dynamicChild: resolveBlockChild }),
       app,
-      schemas.AppDefinition,
     );
 
     expect(result.mounts.get('/pages/0/blocks/0')?.identity.name).toBe('BlockDefinition');
@@ -95,7 +102,7 @@ describe('blocks via value-directed resolver (Approach B)', () => {
 
   it('mounts nothing under parameters without the resolver, proving the schema carries no union', () => {
     const app = { pages: [{ blocks: [{ type: 'form', version: '0.0.0', parameters: {} }] }] };
-    const result = new Scanner(schemas).scan(app, schemas.AppDefinition);
+    const result = scan(LanguageCtx.compile(schemas, 'AppDefinition'), app);
 
     expect(result.mounts.get('/pages/0/blocks/0')?.identity.name).toBe('BlockDefinition');
     expect(result.mounts.has('/pages/0/blocks/0/parameters')).toBe(false);
@@ -103,9 +110,10 @@ describe('blocks via value-directed resolver (Approach B)', () => {
 
   it('descends the resolved child through a cursor identically to the walk', () => {
     const app = { pages: [{ blocks: [{ type: 'form', version: '0.0.0', parameters: {} }] }] };
-    const params = Cursor.at(schemas, schemas.AppDefinition, app, {
+    const params = LanguageCtx.compile(schemas, 'AppDefinition', {
       dynamicChild: resolveBlockChild,
     })
+      .root(app)
       .child('pages')
       ?.child(0)
       ?.child('blocks')
@@ -165,29 +173,30 @@ describe('incremental boundaries honor the value-directed resolver', () => {
   const resolveFormParams: DynamicChild = (parentIdentity, parentValue, key) =>
     parentIdentity === 'BlockDefinition' && key === 'parameters' ? FormParams.schema : null;
 
-  const identityNames = (tree: MountTree): Record<string, string> =>
+  const identityNames = (tree: MountIndex): Record<string, string> =>
     Object.fromEntries([...tree.mounts].map(([path, mount]) => [path, mount.identity.name]));
 
   it('re-walks the resolver-chosen schema, matching a full analysis after an edit', () => {
-    const analyzer = new Scanner(overrideSchemas, { dynamicChild: resolveFormParams });
-    const root = overrideSchemas.AppDefinition;
+    const ctx = LanguageCtx.compile(overrideSchemas, 'AppDefinition', {
+      dynamicChild: resolveFormParams,
+    });
     const v1 = {
       pages: [{ blocks: [{ type: 'form', version: '0.0.0', parameters: { fields: ['a'] } }] }],
     };
-    const treeV1 = analyzer.buildTree(v1, root);
+    const treeV1 = buildTree(ctx, v1);
     expect(treeV1.mounts.get('/pages/0/blocks/0/parameters')?.identity.name).toBe('FormParams');
 
     const v2 = {
       pages: [{ blocks: [{ type: 'form', version: '0.0.0', parameters: { fields: ['a', 'b'] } }] }],
     };
-    const incremental = analyzer.buildTree(v2, root, {
+    const incremental = buildTree(ctx, v2, {
       previous: treeV1,
       changed: [['pages', 0, 'blocks', 0, 'parameters', 'fields']],
     });
 
-    // A structural boundaryFor would follow the generic `parameters` $ref and mount GenericParams
+    // A structural boundary would follow the generic `parameters` $ref and mount GenericParams
     // here, diverging from the full walk that resolves FormParams.
-    expect(identityNames(incremental)).toStrictEqual(identityNames(analyzer.buildTree(v2, root)));
+    expect(identityNames(incremental)).toStrictEqual(identityNames(buildTree(ctx, v2)));
     expect(incremental.mounts.get('/pages/0/blocks/0/parameters')?.identity.name).toBe(
       'FormParams',
     );

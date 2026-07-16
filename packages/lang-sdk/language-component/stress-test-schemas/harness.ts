@@ -1,5 +1,7 @@
-import { type Identity, type ScanResult, Scanner } from '../index.js';
-import { miniSchemas, Root } from './schemas.js';
+import { type Identity, LanguageCtx, scan, type ScanResult } from '../index.js';
+import { miniSchemas } from './schemas.js';
+
+const ctx = LanguageCtx.compile(miniSchemas, 'Root');
 
 /**
  * The only coupling point between the stress-test suite and the language component
@@ -9,7 +11,7 @@ import { miniSchemas, Root } from './schemas.js';
  */
 
 export function analyze(data: unknown): ScanResult {
-  return Scanner.run(miniSchemas, data, Root);
+  return scan(ctx, data);
 }
 
 export function describeIdentity(object: Identity): string {

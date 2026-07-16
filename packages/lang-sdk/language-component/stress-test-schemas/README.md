@@ -2,9 +2,10 @@
 
 This folder is a stress-test suite for the parent `language-component` engine.
 
-It defines a tiny annotated JSON Schema DSL (`schemas.ts`) plus sample documents that exercise normal
-objects, `oneOf`/`anyOf`/`allOf`, nested same-path algebra, invalid local matches, local-vs-document
-validity, losing-branch ghosts, and conditional placement the walk cannot navigate.
+It defines a tiny annotated JSON Schema DSL (`schemas.ts`) plus sample documents that exercise
+normal objects, `oneOf`/`anyOf`/`allOf`, nested same-path algebra, invalid local matches,
+local-vs-document validity, losing-branch ghosts, and conditional placement the walk cannot
+navigate.
 
 It consumes the engine **only through the parent barrel** (`../index.js`), never a deep import into
 an internal module, so it exercises the same public surface a real consumer sees.
@@ -25,7 +26,7 @@ that produces it and cannot drift from a separate description.
 The other test files add what an identity map alone does not show:
 
 - `edge-cases.test.ts`: ref-cutoff local validation, untagged combinators with no annotated parts,
-  incremental boundaries, and cursor navigation.
+  incremental boundaries, and node navigation.
 - `capabilities.test.ts`: walk behavior the validator diverges from — a child mounted under a
   short-circuited `anyOf` branch, and a component behind `if`/`then` the walk cannot reach.
 - `incremental.test.ts`: an incremental `buildTree` matches a full build after each change, and
@@ -34,7 +35,8 @@ The other test files add what an identity map alone does not show:
 ## Nested composite identity
 
 A single value can resolve to one nested composite identity — the algebra of the `allOf` / `oneOf` /
-`anyOf` at that path, not a tree of separately mounted nodes. The `cursedValid` scenario resolves to:
+`anyOf` at that path, not a tree of separately mounted nodes. The `cursedValid` scenario resolves
+to:
 
 ```mermaid
 graph TD

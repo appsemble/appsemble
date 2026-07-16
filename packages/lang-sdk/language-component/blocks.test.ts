@@ -1,7 +1,7 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { LanguageComponent, Scanner } from './index.js';
+import { LanguageComponent, LanguageCtx, scan } from './index.js';
 
 /*
  * Blocks prototype: one approach (a materialized discriminated oneOf), zero engine changes.
@@ -82,7 +82,7 @@ const schemas: Record<string, Schema> = {
 describe('blocks prototype (a materialized discriminated oneOf)', () => {
   it('should mount a block parameters language component via the discriminated oneOf', () => {
     const app = { pages: [{ blocks: [{ type: 'form', parameters: { fields: [] } }] }] };
-    const result = Scanner.run(schemas, app, schemas.AppDefinition);
+    const result = scan(LanguageCtx.compile(schemas, 'AppDefinition'), app);
 
     expect(result.mounts.get('/pages/0/blocks/0')?.identity.name).toBe('BlockDefinition');
     // The block's parameters resolved to the form block's schema and mounted.

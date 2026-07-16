@@ -32,10 +32,10 @@ describe('walk engine behavior', () => {
     expect(Object.keys(describeIdentities(result))).not.toContain('/condHost/trinket');
   });
 
-  it('does not mount a ghost from a losing oneOf branch', () => {
+  it('does not mount an annotated child from a losing oneOf branch', () => {
     // PlainBranch wins; the FancyBranch.action hit must not become a language component.
-    const result = analyze({ ghostHost: { action: { kind: 'noop' }, type: 'plain' } });
+    const result = analyze({ actionBranchHost: { action: { kind: 'noop' }, type: 'plain' } });
 
-    expect(Object.keys(describeIdentities(result))).not.toContain('/ghostHost/action');
+    expect(Object.keys(describeIdentities(result))).not.toContain('/actionBranchHost/action');
   });
 });

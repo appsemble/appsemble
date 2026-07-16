@@ -1,7 +1,7 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { LanguageComponent, Scanner } from './index.js';
+import { buildTree, LanguageComponent, LanguageCtx, scan } from './index.js';
 import { SchemaRegistry } from './schemaRegistry.js';
 
 /*
@@ -87,13 +87,13 @@ describe('resolve() terminates on schemas that self-reference at a combinator po
       { type: 'object', properties: { thing: { $ref: '#/components/schemas/Recursive' } } },
       {},
     );
-    const scanner = new Scanner(LanguageComponent.schemas([Root, Recursive]));
+    const ctx = LanguageCtx.compile(LanguageComponent.schemas([Root, Recursive]), 'Root');
     const doc = { thing: { leaf: 'x' } };
 
     // The walk resolves combinators structurally, unbounded by the value; without a cycle
     // guard the self-ref branch expands forever (RangeError). buildTree validates against
     // ref-stripped schemas, so this exercises resolve's recursion, not jsonschema's.
-    const tree = scanner.buildTree(doc, Root.schema);
+    const tree = buildTree(ctx, doc);
 
     expect(tree.mounts.get('/thing')?.identity.name).toBe('Recursive');
   });
@@ -116,10 +116,10 @@ describe('childSchema() descends into tuple-form items arrays', () => {
       },
       {},
     );
-    const scanner = new Scanner(LanguageComponent.schemas([Root, Tagged]));
+    const ctx = LanguageCtx.compile(LanguageComponent.schemas([Root, Tagged]), 'Root');
     const doc = { tuple: [{ leaf: 'x' }] };
 
-    const tree = scanner.buildTree(doc, Root.schema);
+    const tree = buildTree(ctx, doc);
 
     expect(tree.mounts.get('/tuple/0')?.identity.name).toBe('Tagged');
   });
@@ -129,10 +129,10 @@ describe('resolve() keeps the enclosing schema as a governing winner', () => {
   it.each(['allOf', 'anyOf', 'oneOf'] as const)(
     'mounts a tagged child declared on the enclosing schema alongside a %s combinator',
     (combinator) => {
-      const { root, schemas } = schemasFor(combinator);
+      const { schemas } = schemasFor(combinator);
       const doc = { derived: { a: 'x', child: { leaf: 'y' } } };
 
-      const result = Scanner.run(schemas, doc, root);
+      const result = scan(LanguageCtx.compile(schemas, 'Root'), doc);
 
       // The combinator itself resolves.
       expect(result.mounts.get('/derived')?.identity.name).toBe('Derived');

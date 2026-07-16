@@ -7,28 +7,17 @@ declare module 'jsonschema' {
 }
 
 /*
- * Vocabulary of the engine, in the order data flows through it:
+ * Vocabulary, in the order data flows:
+ *   SchemaTag  the static `{ name, mode }` annotation declared on a schema (under COMPONENT_KEY).
+ *   Identity   the resolved classification of a node (the union below) — what the walk computes
+ *              from the tag against the value.
+ *   Mount      an Identity located at a JSON Pointer (path + localValid + errors, no value) — what
+ *              `buildTree` produces.
+ *   ScanHit    a side-channel breadcrumb (not in that chain) recorded when the validator touches a
+ *              tagged node during document validation.
  *
- *   SchemaTag  the static annotation written on a schema (`{ name, mode }` under
- *              COMPONENT_KEY) — what you declare.
- *      |  resolve() reads the tag against the value
- *      v
- *   Identity   the resolved classification of a node: a single named component, a
- *              composite of parts, or unresolved — what the walk computes.
- *      |  emitted at a data path
- *      v
- *   Mount      an Identity located in the document (path + value + localValid + errors),
- *              keyed by JSON Pointer — what `buildTree` produces.
- *
- *   ScanHit    a side-channel, not part of that chain: a breadcrumb recorded when the
- *              validator physically touches a tagged node during document validation.
- *
- * Two `mode` vocabularies exist on purpose and only partly overlap:
- *   - TagMode (on SchemaTag): 'single' | 'oneOf' | 'anyOf' | 'allOf' — the declared shape.
- *   - Identity.kind: 'single' | 'composite' | 'unresolved', with Identity.mode carrying
- *     the combinator ('oneOf' | 'anyOf' | 'allOf') only for a composite.
- *   TagMode 'single' maps to kind 'single'; the combinator TagModes map to kind 'composite'
- *   carrying that mode. 'single' is never an Identity.mode.
+ * TagMode ('single'|'oneOf'|'anyOf'|'allOf', the declared shape) and Identity.kind differ on
+ * purpose: TagMode 'single' -> kind 'single'; the combinator TagModes -> kind 'composite'.
  */
 
 export type NodePath = readonly (number | string)[];
@@ -66,22 +55,34 @@ export interface ScanHit {
   schema: Schema;
 }
 
-// The resolved identity algebra: a single named identity, a composite of parts,
-// or unresolved (with the reason and the candidate parts that were considered).
-export interface Identity {
-  kind: 'composite' | 'single' | 'unresolved';
+// The resolved identity, a discriminated union on `kind` so the field correlations are types, not
+// conventions: a single named component; a composite carrying its combinator `mode` and governing
+// branch `parts`; or unresolved, carrying the `reason` and the `parts` that were considered.
+export type Identity = SingleIdentity | CompositeIdentity | UnresolvedIdentity;
+
+export interface SingleIdentity {
+  kind: 'single';
   name: string;
-  mode?: 'allOf' | 'anyOf' | 'oneOf';
-  parts: Identity[];
-  reason?: string;
 }
 
-// An Identity mounted at a concrete data path. `localValid` is whether the value satisfies its own
-// schema, and `localErrors` are that node's own local-shape failures (ref-cut), produced by the walk
-// per node. `errors` are the whole-document validation errors at or below this path, filled by
-// `validate` (empty until then). The value itself is not stored — read it through
-// `MountTree.valueAt(path)`, so a mount reused across incremental rebuilds can never carry a stale
-// value.
+export interface CompositeIdentity {
+  kind: 'composite';
+  name: string;
+  mode: 'allOf' | 'anyOf' | 'oneOf';
+  parts: Identity[];
+}
+
+export interface UnresolvedIdentity {
+  kind: 'unresolved';
+  name: string;
+  reason: string;
+  parts: Identity[];
+}
+
+// An Identity mounted at a data path. `localValid` = does the value satisfy its own (ref-cut)
+// schema; `localErrors` = that node's own ref-cut failures (from the walk); `errors` = whole-document
+// errors at or below this path (from `validate`, empty until then). No value stored — read it via
+// `MountIndex.valueAt`, so a mount reused across incremental rebuilds can't carry a stale value.
 export interface Mount {
   path: NodePath;
   identity: Identity;

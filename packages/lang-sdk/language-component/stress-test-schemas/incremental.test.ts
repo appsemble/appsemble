@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { describeIdentity, describeIdentities } from './harness.js';
-import { miniSchemas, Root } from './schemas.js';
-import { Scanner, type MountTree } from '../index.js';
+import { miniSchemas } from './schemas.js';
+import { buildTree, LanguageCtx, type MountIndex, scan } from '../index.js';
 
 /*
  * Incremental re-analysis: given a prior tree and the paths that changed, buildTree
@@ -11,29 +11,29 @@ import { Scanner, type MountTree } from '../index.js';
  * must be identical to a full analysis of the new document. The reuse assertions prove
  * work was actually skipped (untouched mounts are the same object reference).
  */
-const analyzer = new Scanner(miniSchemas);
+const ctx = LanguageCtx.compile(miniSchemas, 'Root');
 
 const objects = describeIdentities;
 
-function byPath(tree: MountTree): MountTree['mounts'] {
+function byPath(tree: MountIndex): MountIndex['mounts'] {
   return tree.mounts;
 }
 
 describe('incremental re-analysis', () => {
   it('should re-walk only the changed subtree and match a full analysis', () => {
     const v1 = { environment: 'development', gallery: [{ label: 'gold' }, { label: 'silver' }] };
-    const treeV1 = analyzer.buildTree(v1, Root);
+    const treeV1 = buildTree(ctx, v1);
 
     const v2 = {
       environment: 'development',
       gallery: [{ label: 'platinum' }, { label: 'silver' }],
     };
-    const incremental = analyzer.buildTree(v2, Root, {
+    const incremental = buildTree(ctx, v2, {
       previous: treeV1,
       changed: [['gallery', 0, 'label']],
     });
 
-    expect(objects(incremental)).toStrictEqual(objects(analyzer.buildTree(v2, Root)));
+    expect(objects(incremental)).toStrictEqual(objects(buildTree(ctx, v2)));
 
     // The untouched sibling is reused verbatim; the edited badge is re-walked fresh.
     const before = byPath(treeV1);
@@ -44,15 +44,15 @@ describe('incremental re-analysis', () => {
 
   it('should capture an identity change inside the re-walked boundary', () => {
     const v1 = { environment: 'development', widget: { icon: 'save' } };
-    const treeV1 = analyzer.buildTree(v1, Root);
+    const treeV1 = buildTree(ctx, v1);
     expect(describeIdentity(treeV1.mounts.get('/widget')!.identity)).toBe(
       'Widget:oneOf(IconWidget)',
     );
 
     const v2 = { environment: 'development', widget: { text: 'hi' } };
-    const incremental = analyzer.buildTree(v2, Root, { previous: treeV1, changed: [['widget']] });
+    const incremental = buildTree(ctx, v2, { previous: treeV1, changed: [['widget']] });
 
-    expect(objects(incremental)).toStrictEqual(objects(analyzer.buildTree(v2, Root)));
+    expect(objects(incremental)).toStrictEqual(objects(buildTree(ctx, v2)));
     expect(describeIdentity(incremental.mounts.get('/widget')!.identity)).toBe(
       'Widget:oneOf(TextWidget)',
     );
@@ -62,26 +62,26 @@ describe('incremental re-analysis', () => {
     const one = { environment: 'development', gallery: [{ label: 'gold' }] };
     const two = { environment: 'development', gallery: [{ label: 'gold' }, { label: 'silver' }] };
 
-    const treeOne = analyzer.buildTree(one, Root);
-    const grown = analyzer.buildTree(two, Root, { previous: treeOne, changed: [['gallery']] });
-    expect(objects(grown)).toStrictEqual(objects(analyzer.buildTree(two, Root)));
+    const treeOne = buildTree(ctx, one);
+    const grown = buildTree(ctx, two, { previous: treeOne, changed: [['gallery']] });
+    expect(objects(grown)).toStrictEqual(objects(buildTree(ctx, two)));
     expect(grown.mounts.has('/gallery/1')).toBe(true);
 
-    const shrunk = analyzer.buildTree(one, Root, { previous: grown, changed: [['gallery']] });
-    expect(objects(shrunk)).toStrictEqual(objects(analyzer.buildTree(one, Root)));
+    const shrunk = buildTree(ctx, one, { previous: grown, changed: [['gallery']] });
+    expect(objects(shrunk)).toStrictEqual(objects(buildTree(ctx, one)));
     // The stale second badge must not survive the shrink.
     expect(shrunk.mounts.has('/gallery/1')).toBe(false);
   });
 
   it('should read fresh values for reused ancestors above the edit', () => {
     const v1 = { environment: 'development', gallery: [{ label: 'gold' }, { label: 'silver' }] };
-    const treeV1 = analyzer.buildTree(v1, Root);
+    const treeV1 = buildTree(ctx, v1);
 
     const v2 = {
       environment: 'development',
       gallery: [{ label: 'platinum' }, { label: 'silver' }],
     };
-    const incremental = analyzer.buildTree(v2, Root, {
+    const incremental = buildTree(ctx, v2, {
       previous: treeV1,
       changed: [['gallery', 0, 'label']],
     });
@@ -100,30 +100,30 @@ describe('incremental re-analysis', () => {
       gallery: [{ label: 'gold' }],
       composed: { id: 'a', createdAt: '2026-06-26', text: 'y' },
     };
-    const treeV1 = analyzer.buildTree(v1, Root);
+    const treeV1 = buildTree(ctx, v1);
 
     const v2 = { ...v1, widget: { text: 'now' }, gallery: [{ label: 'silver' }] };
-    const incremental = analyzer.buildTree(v2, Root, {
+    const incremental = buildTree(ctx, v2, {
       previous: treeV1,
       changed: [['widget'], ['gallery', 0, 'label']],
     });
 
-    expect(objects(incremental)).toStrictEqual(objects(analyzer.buildTree(v2, Root)));
+    expect(objects(incremental)).toStrictEqual(objects(buildTree(ctx, v2)));
     // The untouched composed subtree is reused verbatim.
     expect(byPath(incremental).get('/composed')).toBe(byPath(treeV1).get('/composed'));
   });
 
   it('should collapse overlapping changed paths to the outer boundary', () => {
     const v1 = { environment: 'development', gallery: [{ label: 'gold' }, { label: 'silver' }] };
-    const treeV1 = analyzer.buildTree(v1, Root);
+    const treeV1 = buildTree(ctx, v1);
 
     const v2 = { environment: 'development', gallery: [{ label: 'bronze' }] };
-    const incremental = analyzer.buildTree(v2, Root, {
+    const incremental = buildTree(ctx, v2, {
       previous: treeV1,
       changed: [['gallery'], ['gallery', 0, 'label']],
     });
 
-    expect(objects(incremental)).toStrictEqual(objects(analyzer.buildTree(v2, Root)));
+    expect(objects(incremental)).toStrictEqual(objects(buildTree(ctx, v2)));
   });
 
   // Regression: array indices arrive as numbers from a caller's diff but strings from
@@ -131,16 +131,16 @@ describe('incremental re-analysis', () => {
   // dropped (path containment compares by value, not JS type).
   it('should drop a nested language component removed under an array-index boundary', () => {
     const v1 = { environment: 'development', holders: [{ text: 'a', badge: { label: 'x' } }] };
-    const treeV1 = analyzer.buildTree(v1, Root);
+    const treeV1 = buildTree(ctx, v1);
     expect(treeV1.mounts.has('/holders/0/badge')).toBe(true);
 
     const v2 = { environment: 'development', holders: [{ text: 'a' }] };
-    const incremental = analyzer.buildTree(v2, Root, {
+    const incremental = buildTree(ctx, v2, {
       previous: treeV1,
       changed: [['holders', 0, 'badge']],
     });
 
-    expect(objects(incremental)).toStrictEqual(objects(analyzer.buildTree(v2, Root)));
+    expect(objects(incremental)).toStrictEqual(objects(buildTree(ctx, v2)));
     expect(incremental.mounts.has('/holders/0/badge')).toBe(false);
   });
 
@@ -148,25 +148,25 @@ describe('incremental re-analysis', () => {
   // phantom language component; the boundary stops at the enclosing array.
   it('should not re-emit a phantom language component for a removed array element', () => {
     const v1 = { environment: 'development', gallery: [{ label: 'a' }, { label: 'b' }] };
-    const treeV1 = analyzer.buildTree(v1, Root);
+    const treeV1 = buildTree(ctx, v1);
 
     const v2 = { environment: 'development', gallery: [{ label: 'a' }] };
-    const incremental = analyzer.buildTree(v2, Root, {
+    const incremental = buildTree(ctx, v2, {
       previous: treeV1,
       changed: [['gallery', 1]],
     });
 
-    expect(objects(incremental)).toStrictEqual(objects(analyzer.buildTree(v2, Root)));
+    expect(objects(incremental)).toStrictEqual(objects(buildTree(ctx, v2)));
     expect(incremental.mounts.has('/gallery/1')).toBe(false);
   });
 
   it('should match a full analyze() through the combined result too', () => {
     const v1 = { environment: 'development', widget: { icon: 'save' } };
-    const full1 = analyzer.scan(v1, Root);
+    const full1 = scan(ctx, v1);
 
     const v2 = { environment: 'development', widget: { text: 'hi' } };
-    const incremental = analyzer.scan(v2, Root, { previous: full1, changed: [['widget']] });
-    const full2 = analyzer.scan(v2, Root);
+    const incremental = scan(ctx, v2, { previous: full1, changed: [['widget']] });
+    const full2 = scan(ctx, v2);
 
     expect(objects(incremental)).toStrictEqual(objects(full2));
     expect(incremental.documentValid).toBe(full2.documentValid);
