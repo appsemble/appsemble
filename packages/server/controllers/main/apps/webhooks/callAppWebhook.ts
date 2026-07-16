@@ -1,6 +1,13 @@
-import { assertKoaCondition, handleValidatorResult, logger } from '@appsemble/node-utils';
+import {
+  assertKoaCondition,
+  handleValidatorResult,
+  isSerializedMultipartBody,
+  logger,
+  serializeServerResource,
+} from '@appsemble/node-utils';
+import { deserializeResource } from '@appsemble/utils';
+import { type Schema, Validator } from 'jsonschema';
 import { type Context } from 'koa';
-import { type OpenAPIV3 } from 'openapi-types';
 
 import { App } from '../../../../models/index.js';
 import { checkAppPermissions } from '../../../../options/checkAppPermissions.js';
@@ -8,11 +15,36 @@ import { options } from '../../../../options/options.js';
 import { handleAction } from '../../../../utils/action.js';
 import { actions } from '../../../../utils/actions/index.js';
 
+function parseWebhookBody(body: Record<string, unknown>): unknown {
+  return Object.hasOwn(body, 'resource') && Object.hasOwn(body, 'assets')
+    ? deserializeResource(body)
+    : body;
+}
+
+function validateWebhookBody(ctx: Context, body: unknown, schema: Schema): void {
+  const validator = new Validator();
+  const serializedBody = serializeServerResource(body);
+  const validationBody = isSerializedMultipartBody(serializedBody)
+    ? serializedBody.resource
+    : serializedBody;
+  const assetCount = isSerializedMultipartBody(serializedBody) ? serializedBody.assets.length : 0;
+
+  validator.customFormats.binary = (input) => {
+    const index = Number(input);
+    return typeof input === 'string' && Number.isInteger(index) && index >= 0 && index < assetCount;
+  };
+
+  handleValidatorResult(
+    ctx,
+    validator.validate(validationBody || {}, schema, { nestedErrors: true }),
+    'Webhook body validation failed',
+  );
+}
+
 export async function callAppWebhook(ctx: Context): Promise<void> {
   const {
     client,
     mailer,
-    openApi,
     pathParams: { appId, webhookName },
     request: { body },
     user,
@@ -44,33 +76,12 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
     });
   }
 
-  const parsedSchema = structuredClone(webhookDefinition.schema);
-  parsedSchema.properties ??= {};
-  for (const [propertyName, propertySchema] of Object.entries(parsedSchema.properties)) {
-    const schemaObject = propertySchema as OpenAPIV3.SchemaObject;
-    if (schemaObject.type === 'string' && schemaObject.format === 'binary') {
-      parsedSchema.properties[propertyName] = {
-        type: 'object',
-        properties: {
-          path: { type: 'string' },
-          mime: { type: 'string' },
-          filename: { type: 'string' },
-        },
-      };
-    }
-  }
+  const parsedBody = parseWebhookBody(body || {});
 
-  // XXX: unify with resource upload logic
-  handleValidatorResult(
-    ctx,
-    openApi!.validate(body || {}, parsedSchema, {
-      throw: false,
-    }),
-    'Webhook body validation failed',
-  );
+  validateWebhookBody(ctx, parsedBody, webhookDefinition.schema);
 
   logger.info(`Webhook '${webhookName}' received data:`);
-  logger.info(JSON.stringify(body, null, 2));
+  logger.info(JSON.stringify(parsedBody, null, 2));
 
   const action = actions[webhookDefinition.action.type];
   // @ts-expect-error Messed up
@@ -78,7 +89,7 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
     app,
     action: webhookDefinition.action,
     mailer,
-    data: body,
+    data: parsedBody,
     options,
     context: ctx,
   });

@@ -23,10 +23,10 @@ import {
   waitForPodReadiness,
 } from '@appsemble/node-utils';
 import { type App } from '@appsemble/types';
+import { deserializeResource } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { type Context, type Middleware } from 'koa';
-import { get, mapValues, pick } from 'lodash-es';
-import { type JsonObject, type JsonValue } from 'type-fest';
+import { get, pick } from 'lodash-es';
 
 /**
  * These response headers are forwarded when proxying requests.
@@ -95,29 +95,6 @@ export async function handleNotify(
   await sendNotifications({ app, to, title, body, link });
 
   ctx.status = 204;
-}
-
-function deserializeResource(data: any): any {
-  // Extract the resource and assets from the JSON object
-  const { resource } = data;
-  const assets = data.assets as Blob[];
-
-  // Function to replace asset placeholders with actual Blobs
-  const replaceAssets = (value: JsonValue): any => {
-    if (Array.isArray(value)) {
-      return value.map(replaceAssets);
-    }
-    if (typeof value === 'string' && /^\d+$/.test(value)) {
-      return assets[Number(value)];
-    }
-    if (value && typeof value === 'object') {
-      return mapValues(value as JsonObject, replaceAssets);
-    }
-    return value;
-  };
-
-  // Replace placeholders and return the deserialized resource
-  return replaceAssets(resource);
 }
 
 async function handleRequestProxy(

@@ -37,3 +37,24 @@ export function serializeResource(data: any): FormData | JsonValue {
   }
   return form;
 }
+
+export function deserializeResource(data: any): any {
+  const resource =
+    typeof data.resource === 'string' ? (JSON.parse(data.resource) as JsonValue) : data.resource;
+  const assets = Array.isArray(data.assets) ? data.assets : [data.assets];
+
+  const replaceAssets = (value: JsonValue): any => {
+    if (Array.isArray(value)) {
+      return value.map(replaceAssets);
+    }
+    if (typeof value === 'string' && /^\d+$/.test(value)) {
+      return assets[Number(value)];
+    }
+    if (value && typeof value === 'object') {
+      return mapValues(value as JsonObject, replaceAssets);
+    }
+    return value;
+  };
+
+  return replaceAssets(resource);
+}

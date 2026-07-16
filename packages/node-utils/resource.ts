@@ -71,12 +71,12 @@ export function serializeServerResource(
 }
 
 export type SerializedServerResourceBody = ReturnType<typeof serializeServerResource>;
-type SerializedMultipartBody = Extract<
+export type SerializedMultipartBody = Extract<
   SerializedServerResourceBody,
   { resource: JsonValue; assets: TempFile[] }
 >;
 
-function isSerializedMultipartBody(
+export function isSerializedMultipartBody(
   value: SerializedServerResourceBody,
 ): value is SerializedMultipartBody {
   return (

@@ -34,29 +34,34 @@ describe('webhook', () => {
     expect(result).toStrictEqual({ ok: true });
   });
 
-  it('should submit top-level files as multipart form data', async () => {
+  it('should submit nested files as resource multipart form data', async () => {
     mock.onPost(/.*/).reply((req) => {
       request = req;
       return [200, { ok: true }, {}];
     });
 
-    const pdf = new File(['attachment'], 'attachment.pdf', { type: 'application/pdf' });
-    const xml = new File(['xml'], 'note.xml', { type: 'application/xml' });
+    const attachment = new File(['attachment'], 'attachment.pdf', { type: 'application/pdf' });
+    const image = new File(['image'], 'image.png', { type: 'image/png' });
     const action = createTestAction({
       definition: { type: 'webhook', name: 'submit-form' },
     });
 
     const result = await action({
-      foo: 'Example',
-      pdf,
-      xml,
+      itemId: 123,
+      metadata: {
+        attachment,
+        category: 'Example category',
+        count: 10,
+        image,
+      },
     });
 
     const body = request.data as FormData;
     expect(body).toBeInstanceOf(FormData);
-    expect(body.get('foo')).toBe('Example');
-    expect(body.get('pdf')).toBe(pdf);
-    expect(body.get('xml')).toBe(xml);
+    expect(body.get('resource')).toBe(
+      '{"itemId":123,"metadata":{"attachment":"0","category":"Example category","count":10,"image":"1"}}',
+    );
+    expect(body.getAll('assets')).toStrictEqual([attachment, image]);
     expect(result).toStrictEqual({ ok: true });
   });
 });
