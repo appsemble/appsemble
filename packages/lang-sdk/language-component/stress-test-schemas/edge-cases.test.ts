@@ -2,12 +2,14 @@ import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
 import { buildTree, LanguageComponent, LanguageCtx, scan } from '../index.js';
-import { analyze, describeIdentity, describeIdentities } from './harness.js';
+import { analyzeComponent, describeIdentity, describeIdentities } from './harness.js';
 import { miniSchemas } from './schemas.js';
-import { scenarios } from './scenarios.js';
+import { componentScenarios } from './scenarios.js';
 
 const treeIdentities = describeIdentities;
-const miniCtx = LanguageCtx.compile(miniSchemas, 'Root');
+// The badge-list parameters own gallery/registry/holders directly, so they root the incremental
+// mechanics cases (array-index boundaries, a null value along the changed path, an unowned key).
+const miniCtx = LanguageCtx.compile(miniSchemas, 'BadgeListBlockParams');
 
 describe('engine edge cases', () => {
   it('keeps local validation possible when a nested oneOf contains refs', () => {
@@ -116,10 +118,10 @@ describe('engine edge cases', () => {
   });
 
   it('stops the incremental boundary when a value along the changed path became null', () => {
-    const v1 = { environment: 'development', holders: [{ text: 'a', badge: { label: 'x' } }] };
+    const v1 = { holders: [{ text: 'a', badge: { label: 'x' } }] };
     const treeV1 = buildTree(miniCtx, v1);
 
-    const v2 = { environment: 'development', holders: null };
+    const v2 = { holders: null };
     const incremental = buildTree(miniCtx, v2, {
       previous: treeV1,
       changed: [['holders', 0, 'badge']],
@@ -155,12 +157,10 @@ describe('engine edge cases', () => {
 
   it('matches a full rebuild when a changed path is below an unowned schema key', () => {
     const before = {
-      environment: 'development',
       gallery: [{ label: 'gold' }],
       metadata: { note: 'before' },
     };
     const after = {
-      environment: 'development',
       gallery: [{ label: 'gold' }],
       metadata: { note: 'after' },
     };
@@ -290,16 +290,14 @@ describe('engine edge cases', () => {
 
 describe('hits collection (public surface)', () => {
   it('records a hit for every candidate schema reached, including losing oneOf branches', () => {
-    const result = analyze(scenarios.normal.data);
-    const widgetHits = result.hits
-      .filter((hit) => hit.path.length === 1 && hit.path[0] === 'widget')
-      .map((hit) => hit.tag.name);
+    const result = analyzeComponent('Widget', { icon: 'save' });
+    const rootHits = result.hits.filter((hit) => hit.path.length === 0).map((hit) => hit.tag.name);
     // Every oneOf candidate the validator touches records a hit -- winners and losers alike.
-    expect(widgetHits).toStrictEqual(
+    expect(rootHits).toStrictEqual(
       expect.arrayContaining(['Widget', 'ButtonWidget', 'TextWidget', 'IconWidget']),
     );
     // ...while only the winning branch is mounted as an interpretation.
-    expect(describeIdentities(result)['/widget']).toBe('Widget:oneOf(IconWidget)');
+    expect(describeIdentities(result)['/']).toBe('Widget:oneOf(IconWidget)');
   });
 });
 
@@ -322,18 +320,24 @@ describe('hits collection (public surface)', () => {
  */
 describe('language component gaps', () => {
   it('does not attach ancestor errors to a locally valid descendant', () => {
-    const result = analyze(scenarios.ancestorError.data);
+    const result = analyzeComponent(
+      componentScenarios.ancestorError.root,
+      componentScenarios.ancestorError.data,
+    );
 
-    const inner = result.mountAt(['container', 'inner']);
+    const inner = result.mountAt(['inner']);
     expect(inner).toBeDefined();
     expect(inner!.localValid).toBe(true);
     expect(inner!.errors).toStrictEqual([]);
   });
 
   it('keeps a tagged object identity when it fails its own constraints', () => {
-    const result = analyze(scenarios.ancestorError.data);
+    const result = analyzeComponent(
+      componentScenarios.ancestorError.root,
+      componentScenarios.ancestorError.data,
+    );
 
-    const container = result.mountAt(['container']);
+    const container = result.mountAt([]);
     expect(container).toBeDefined();
     expect(container!.identity.kind).toBe('single');
     expect(container!.identity.name).toBe('Container');
