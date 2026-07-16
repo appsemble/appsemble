@@ -85,6 +85,17 @@ describe('getAppDB', () => {
     expect(await getAppDB(app.id)).toBe(after);
   });
 
+  it('should not close a displaced app database while it is actively used', async () => {
+    const app = await createApp('test-app');
+    const before = await getAppDB(app.id);
+    await getAppDB(app.id, undefined, undefined, true);
+
+    // Keep the displaced pool busy across the first idle check (10s), then query again: the
+    // instance must only be closed at a check where its pool is fully idle.
+    await before.sequelize.query('SELECT pg_sleep(11)');
+    expect(await before.AppMember.findAll()).toStrictEqual([]);
+  });
+
   it('should reject and not cache anything when the app database is unreachable', async () => {
     const app = await createApp('broken-app', { dbHost: '127.0.0.1', dbPort: 1 });
     await expect(getAppDB(app.id)).rejects.toThrow('ConnectionRefusedError');

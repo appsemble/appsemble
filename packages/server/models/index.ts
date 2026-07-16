@@ -345,9 +345,10 @@ const appDBCloseInterval = 10_000;
  * instance while it drains: the close only happens at an idle check, so such callers get at least
  * one full interval to finish their queries.
  *
+ * @param appId The id of the app the displaced instance belongs to.
  * @param sequelize The displaced Sequelize instance to close.
  */
-function closeWhenIdle(sequelize: Sequelize): void {
+function closeWhenIdle(appId: number, sequelize: Sequelize): void {
   const { pool } = sequelize.connectionManager as unknown as {
     pool?: { using: number; waiting: number };
   };
@@ -356,6 +357,7 @@ function closeWhenIdle(sequelize: Sequelize): void {
       return;
     }
     clearInterval(interval);
+    logger.info(`Closing displaced app database for app ${appId}`);
     sequelize.close().catch((error: Error) => logger.error(error));
   }, appDBCloseInterval);
   interval.unref();
@@ -377,7 +379,7 @@ export async function initAppDB(
   const replaced = appDBs.get(appId);
   if (replaced) {
     appDBs.delete(appId);
-    closeWhenIdle(replaced.sequelize);
+    closeWhenIdle(appId, replaced.sequelize);
   }
 
   const app = (await mainDB.models.App.findOne({
@@ -475,10 +477,14 @@ export async function initAppDB(
       ...models,
     });
 
-    while (appDBs.size > argv.appDbCacheLimit) {
+    const cacheLimit = Math.max(argv.appDbCacheLimit, 1);
+    while (appDBs.size > cacheLimit) {
       const [lruAppId, lruAppDB] = appDBs.entries().next().value!;
       appDBs.delete(lruAppId);
-      closeWhenIdle(lruAppDB.sequelize);
+      logger.info(
+        `Evicting least recently used app database for app ${lruAppId} (cache size ${appDBs.size}, limit ${cacheLimit})`,
+      );
+      closeWhenIdle(lruAppId, lruAppDB.sequelize);
     }
   } catch (error) {
     // Close the instance so failed initializations do not leak Sequelize instances.
@@ -506,14 +512,31 @@ export async function getAppDB(
 
   let pending = pendingAppDBs.get(appId);
   if (!pending || replace === true) {
-    pending = initAppDB(appId, rootDB, transaction, replace, aesSecret).finally(() =>
-      pendingAppDBs.delete(appId),
-    );
-    pendingAppDBs.set(appId, pending);
+    // A replacement waits for the in-flight initialization to settle instead of racing it, so at
+    // most one initAppDB() runs per app at any time.
+    const previous: Promise<unknown> = pending ? Promise.allSettled([pending]) : Promise.resolve();
+    const tracked: Promise<void> = previous
+      .then(() => initAppDB(appId, rootDB, transaction, replace, aesSecret))
+      .finally(() => {
+        // Only delete the pending entry this initialization owns; a replacement may have set a
+        // newer one.
+        if (pendingAppDBs.get(appId) === tracked) {
+          pendingAppDBs.delete(appId);
+        }
+      });
+    pendingAppDBs.set(appId, tracked);
+    pending = tracked;
   }
   await pending;
 
-  return appDBs.get(appId)!;
+  const initialized = appDBs.get(appId);
+  if (initialized) {
+    return initialized;
+  }
+
+  // The entry was evicted again between initialization and this lookup; go through the cache once
+  // more so callers never receive undefined.
+  return getAppDB(appId, rootDB, transaction, undefined, aesSecret);
 }
 
 export async function closeAppDB(appId: number): Promise<void> {
