@@ -245,6 +245,8 @@ This enables encryption in transit between Appsemble and PostgreSQL.
 | `quotas.appEmail.enabled`                 | `false`                       | If `true`, enable app email quotas.                                                                                                       |
 | `quotas.appEmail.dailyLimit`              | `10`                          | The maximum number of emails an app can send per day.                                                                                     |
 | `quotas.appEmail.alertOrganizationOwner`  | `false`                       | If `true`, send an email to the organization owner when the daily limit is reached.                                                       |
+| `prometheusRule.enabled`                  | `false`                       | If `true`, deploy a PrometheusRule with alerts for server container restarts and high memory usage. Needs the prometheus-operator CRDs.   |
+| `prometheusRule.labels`                   | `{ release: prometheus }`     | Extra labels for the PrometheusRule, so it matches the ruleSelector of the Prometheus instance.                                           |
 
 [sentry]: https://sentry.io
 

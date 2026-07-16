@@ -1423,6 +1423,8 @@ production:
       --set "postgresql.primary.resources.limits.memory=2Gi"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
+      --set "replicaCount=2"
+      --set "prometheusRule.enabled=true"
       --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
       --set "sentry.environment=production"
       --set "sentry.secret=sentry"

@@ -603,6 +603,21 @@
           "minimum": 1
         }
       }
+    },
+    "prometheusRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether or not to deploy a PrometheusRule with alerts for Appsemble server container restarts and high memory usage. Requires the prometheus-operator CRDs."
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Extra labels for the PrometheusRule, so it matches the ruleSelector of the Prometheus instance."
+        }
+      }
     }
   }
 }
