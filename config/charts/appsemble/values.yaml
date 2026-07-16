@@ -254,3 +254,8 @@ assetsBackups:
   enableMonthlyFullSnapshot: true
   fullSnapshotDay: 1
   fullSnapshotRetentionMonths: 12
+
+prometheusRule:
+  enabled: false
+  labels:
+    release: prometheus
