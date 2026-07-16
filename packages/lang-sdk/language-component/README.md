@@ -100,8 +100,8 @@ classDiagram
       +childNode(val, path, resolution, key, ctx) StepChild
       +childSchema(winners, key, resolveRef) Schema
       +localShapeFactory() ShapeFn
-      -resolveComposite(mode, s, branches, tag)
-      -resolveLeaf(s, tag, value, ctx)
+      -resolveComposite(mode, schema, branches, tag)
+      -resolveLeaf(schema, tag, value, ctx)
       -deref(schema, resolveRef) Schema
       -ownedChild(schema, key) Schema
     }
@@ -127,7 +127,7 @@ classDiagram
       +scan(ctx, data, options) ScanResult
       -walk(schema, value, path, ctx)
       -incremental(ctx, data, previous, changed)
-      -boundaries(ctx, data, changed)
+      -rewalkBoundaries(ctx, data, changed)
     }
     class MountIndex {
       +mounts Map
