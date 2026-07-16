@@ -204,7 +204,7 @@ test.describe('App Keycloak OIDC login', () => {
               - Manager
             blocks:
               - type: html
-                version: 0.36.10
+                version: 0.36.7
                 parameters:
                   content: <h1>Manager content</h1>
           - name: Editor Page
@@ -212,7 +212,7 @@ test.describe('App Keycloak OIDC login', () => {
               - Editor
             blocks:
               - type: html
-                version: 0.36.10
+                version: 0.36.7
                 parameters:
                   content: <h1>Editor content</h1>
           - name: Auditor Page
@@ -220,7 +220,7 @@ test.describe('App Keycloak OIDC login', () => {
               - Auditor
             blocks:
               - type: html
-                version: 0.36.10
+                version: 0.36.7
                 parameters:
                   content: <h1>Auditor content</h1>
       `,
