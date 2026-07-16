@@ -205,6 +205,7 @@
     "securitytxt",
     "httponly",
     "xffyo",
-    "synthesised"
+    "synthesised",
+    "capabilities"
   ]
 }
