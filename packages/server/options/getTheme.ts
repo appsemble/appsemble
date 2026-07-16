@@ -2,9 +2,7 @@ import { type GetThemeParams, type Theme as ThemeInterface } from '@appsemble/no
 
 import { Theme } from '../models/index.js';
 
-export async function getTheme({ theme }: GetThemeParams): Promise<ThemeInterface> {
+export async function getTheme({ theme }: GetThemeParams): Promise<ThemeInterface | null> {
   const persistedTheme = await Theme.findOne({ where: theme });
-  return {
-    css: persistedTheme ? persistedTheme.css : '',
-  };
+  return persistedTheme && { css: persistedTheme.css };
 }
