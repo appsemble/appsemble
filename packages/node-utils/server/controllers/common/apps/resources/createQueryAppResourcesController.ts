@@ -1,4 +1,4 @@
-import { defaultLocale, remap } from '@appsemble/lang-sdk';
+import { type CustomAppPermission, defaultLocale, remap } from '@appsemble/lang-sdk';
 import {
   type FindOptions,
   getRemapperContext,
@@ -7,7 +7,7 @@ import {
 } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
-import { generateResourceQuery } from '../../../../utils/resources.js';
+import { generateResourceQuery, getGroupIdWhere } from '../../../../utils/resources.js';
 
 export function createQueryAppResourcesController(options: Options): Middleware {
   return async (ctx: Context) => {
@@ -17,7 +17,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
       user: authSubject,
     } = ctx;
 
-    const { checkAppPermissions, getApp, getAppResources } = options;
+    const { checkAppPermissions, getAllowedGroups, getApp, getAppResources } = options;
 
     const app = await getApp({
       context: ctx,
@@ -28,18 +28,27 @@ export function createQueryAppResourcesController(options: Options): Middleware 
 
     const { order, where } = generateResourceQuery(ctx, options, resourceDefinition);
 
-    await checkAppPermissions({
+    const permissions: CustomAppPermission[] = [
+      $own
+        ? `$resource:${resourceType}:own:query`
+        : view
+          ? `$resource:${resourceType}:query:${view}`
+          : `$resource:${resourceType}:query`,
+    ];
+
+    // Across multiple selected groups the permission acts as a filter: only the
+    // groups the subject may query are returned. When no selected group is
+    // queryable, the strict permission check throws its usual 403.
+    const allowedGroups = await getAllowedGroups({
       context: ctx,
-      permissions: [
-        $own
-          ? `$resource:${resourceType}:own:query`
-          : view
-            ? `$resource:${resourceType}:query:${view}`
-            : `$resource:${resourceType}:query`,
-      ],
+      permissions,
       app,
       groupId: selectedGroupId,
     });
+
+    if (!allowedGroups.length) {
+      await checkAppPermissions({ context: ctx, permissions, app, groupId: selectedGroupId });
+    }
 
     const isSameOrigin = ctx?.headers?.origin === ctx?.headers?.host;
 
@@ -52,7 +61,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
           where,
           {
             type: resourceType,
-            GroupId: selectedGroupId ?? null,
+            GroupId: getGroupIdWhere(allowedGroups.length ? allowedGroups : selectedGroupId),
             expires: { or: [{ gt: new Date() }, null] },
             ...(app.demoMode && !isSameOrigin ? { seed: false, ephemeral: true } : {}),
             ...($own ? { AuthorId: authSubject?.id } : {}),

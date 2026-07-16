@@ -48,7 +48,8 @@ A full list of possible variables and more information about Appsemble theming c
 ## Custom CSS
 
 Traditional CSS can be used to style your app. Appsemble additionally offers some unique classes to
-target specific parts of your app.
+target specific parts of your app, as well as the [`asset()`](assets.md#custom-css) function to
+reference app assets.
 
 Styling is split into 3 categories:
 

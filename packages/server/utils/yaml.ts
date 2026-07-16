@@ -65,8 +65,7 @@ export interface Patch {
    * `Scalar`, because the value would otherwise be used in multiple document branches.
    */
   value?:
-    | unknown
-    | ((path: Path, transaction: Transaction, ...params: unknown[]) => Promisable<unknown>);
+    unknown | ((path: Path, transaction: Transaction, ...params: unknown[]) => Promisable<unknown>);
 
   /**
    * Additional paths to be patched.

@@ -16,6 +16,11 @@ export const ResourceGetActionDefinition = extendJSONSchema(
         type: 'string',
         description: 'The type of the resource to get.',
       },
+      selectedGroupId: {
+        $ref: '#/components/schemas/RemapperDefinition',
+        description:
+          'The ID of the group to scope the request to. Defaults to the currently selected group.',
+      },
       view: {
         type: 'string',
         description: 'The view to use for the resource.',

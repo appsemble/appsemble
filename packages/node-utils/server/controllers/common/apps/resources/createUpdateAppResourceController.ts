@@ -2,8 +2,11 @@ import {
   assertKoaCondition,
   type FindOptions,
   getResourceDefinition,
+  getSingleGroupId,
   type Options,
   processResourceBody,
+  setResourceEtagHeader,
+  validateResourceReferences,
 } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
@@ -15,8 +18,16 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       user: authSubject,
     } = ctx;
 
-    const { checkAppPermissions, getApp, getAppAssets, getAppResource, updateAppResource } =
-      options;
+    const groupId = getSingleGroupId(selectedGroupId);
+
+    const {
+      checkAppPermissions,
+      getApp,
+      getAppAssets,
+      getAppResource,
+      getAppResources,
+      updateAppResource,
+    } = options;
 
     const app = await getApp({
       context: ctx,
@@ -27,7 +38,7 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       where: {
         id: resourceId,
         type: resourceType,
-        GroupId: selectedGroupId ?? null,
+        GroupId: groupId,
         expires: { or: [{ gt: new Date() }, null] },
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
@@ -51,7 +62,8 @@ export function createUpdateAppResourceController(options: Options): Middleware 
           : `$resource:${resourceType}:update`,
       ],
       app,
-      groupId: selectedGroupId,
+      // The operation acts on a single group; authorize against that group only.
+      groupId,
     });
 
     const appAssets = await getAppAssets({ context: ctx, app });
@@ -66,6 +78,8 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
     );
 
+    await validateResourceReferences(ctx, app, resourceDefinition, processedBody, getAppResources);
+
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
 
     ctx.body = await updateAppResource({
@@ -78,6 +92,10 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       deletedAssetIds,
       resourceDefinition,
       options,
+      lockWhere: findOptions.where!,
+      ifMatch: ctx.get('If-Match') || undefined,
     });
+
+    setResourceEtagHeader(ctx, ctx.body as Record<string, unknown> | null | undefined);
   };
 }

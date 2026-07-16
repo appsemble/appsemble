@@ -1,8 +1,8 @@
 import { readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { SignedXml } from 'xml-crypto';
 import { toXml } from 'xast-util-to-xml';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { x as h } from 'xastscript';
 
 import { App, type AppSamlSecret, getAppDB, Organization } from '../../../../models/index.js';
@@ -23,10 +23,18 @@ let secret: AppSamlSecret;
  * @returns the base64 encoded SAML response object.
  */
 function createSamlResponse({
+  attributes = [{ name: 'foo', values: ['bar'] }],
   digest = 'QZii75yFqDTK8/RwecJX1RFca8o=',
   statusCode = 'urn:oasis:names:tc:SAML:2.0:status:Success',
   subject = { nameId: 'user@idp.example', loginId: 'id00000000-0000-0000-0000-000000000000' },
 }: CreateSamlResponseOptions = {}): string {
+  const attributeElements = attributes.map(({ name, values }) =>
+    h(
+      'saml:Attribute',
+      { Name: name, NameFormat: 'urn:oasis:names:tc:SAML:2.0:attrname-format:basic' },
+      values.map((value) => h('saml:AttributeValue', value)),
+    ),
+  );
   const tree = (
     <samlp:Response
       Destination="http://localhost:9999/api/apps/7/saml/1/acs"
@@ -120,13 +128,13 @@ function createSamlResponse({
                 Format="urn:oasis:names:tc:SAML:2.0:nameid-format:email"
                 SPNameQualifier="http://localhost:9999/api/apps/7/saml/1/metadata.xml"
               >
-                alex@example.com
+                {subject.nameId}
               </saml:NameID>
             ) : null}
             {subject.loginId ? (
               <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
                 <saml:SubjectConfirmationData
-                  InResponseTo="id27748888-5253-48bf-8cf5-b65f793b7643"
+                  InResponseTo={subject.loginId}
                   NotOnOrAfter="2020-11-20T10:41:11.008603+00:00"
                   Recipient="http://localhost:9999/api/apps/7/saml/1/acs"
                 />
@@ -149,11 +157,7 @@ function createSamlResponse({
             </saml:AuthnContextClassRef>
           </saml:AuthnContext>
         </saml:AuthnStatement>
-        <saml:AttributeStatement>
-          <saml:Attribute Name="foo" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
-            <saml:AttributeValue>bar</saml:AttributeValue>
-          </saml:Attribute>
-        </saml:AttributeStatement>
+        <saml:AttributeStatement>{attributeElements}</saml:AttributeStatement>
       </saml:Assertion>
     </samlp:Response>
   );
@@ -183,7 +187,16 @@ describe('assertAppSamlConsumerService', () => {
       OrganizationId: organization.id,
       vapidPublicKey: '',
       vapidPrivateKey: '',
-      definition: {},
+      definition: {
+        security: {
+          default: {
+            role: 'Test',
+            policy: 'everyone',
+          },
+          roles: { Editor: {}, Manager: {}, Test: {} },
+        },
+      },
+      path: 'test-app',
     });
     const { AppSamlSecret } = await getAppDB(app.id);
     secret = await AppSamlSecret.create({
@@ -196,6 +209,10 @@ describe('assertAppSamlConsumerService', () => {
       spPrivateKey: await readFixture('saml/sp-private-key.pem', 'utf8'),
       spPublicKey: await readFixture('saml/sp-public-key.pem', 'utf8'),
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   afterAll(() => {
@@ -294,5 +311,171 @@ describe('assertAppSamlConsumerService', () => {
       status: 302,
       data: 'Redirecting to /saml/response/invalidstatuscode.',
     });
+  });
+
+  it('should synchronize app member roles from mapped SAML groups', async () => {
+    const { AppMember, OAuth2AuthorizationCode, SamlLoginRequest } = await getAppDB(app.id);
+    const firstLoginId = 'id27748888-5253-48bf-8cf5-b65f793b7643';
+    const secondLoginId = 'id37748888-5253-48bf-8cf5-b65f793b7643';
+
+    await secret.update({
+      emailAttribute: 'email',
+      emailVerifiedAttribute: 'emailVerified',
+      entityId: '',
+      groupAttribute: 'memberOf',
+      nameAttribute: 'name',
+      roleMappings: [
+        { group: '/Managers', role: 'Manager' },
+        { group: '/Editors', role: 'Editor' },
+      ],
+    });
+    vi.spyOn(SignedXml.prototype, 'checkSignature').mockReturnValue(true);
+
+    await SamlLoginRequest.create({
+      id: firstLoginId,
+      AppSamlSecretId: secret.id,
+      redirectUri: 'http://test-app.testorganization.localhost',
+      scope: 'resources:manage',
+      state: 'first-state',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    const response = await request.post(
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
+      new URLSearchParams({
+        SAMLResponse: createSamlResponse({
+          attributes: [
+            { name: 'email', values: ['mapped@example.com'] },
+            { name: 'emailVerified', values: ['true'] },
+            { name: 'memberOf', values: ['/Managers', '/Editors'] },
+            { name: 'name', values: ['Mapped User'] },
+          ],
+          subject: { nameId: 'mapped-user', loginId: firstLoginId },
+        }),
+        RelayState: 'http://localhost',
+      }),
+    );
+
+    expect(response.status).toBe(302);
+
+    const redirect = new URL(response.headers.location);
+    const auth = (await OAuth2AuthorizationCode.findOne({
+      where: { code: redirect.searchParams.get('code') },
+    }))!;
+    const member = await AppMember.findByPk(auth.AppMemberId);
+
+    expect(member?.roles).toStrictEqual(['Editor', 'Manager']);
+
+    await SamlLoginRequest.create({
+      id: secondLoginId,
+      AppSamlSecretId: secret.id,
+      redirectUri: 'http://test-app.testorganization.localhost',
+      scope: 'resources:manage',
+      state: 'second-state',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    const updatedResponse = await request.post(
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
+      new URLSearchParams({
+        SAMLResponse: createSamlResponse({
+          attributes: [
+            { name: 'email', values: ['mapped@example.com'] },
+            { name: 'emailVerified', values: ['true'] },
+            { name: 'memberOf', values: ['/Editors'] },
+            { name: 'name', values: ['Mapped User'] },
+          ],
+          subject: { nameId: 'mapped-user', loginId: secondLoginId },
+        }),
+        RelayState: 'http://localhost',
+      }),
+    );
+
+    expect(updatedResponse.status).toBe(302);
+
+    await member?.reload();
+    expect(member?.roles).toStrictEqual(['Editor']);
+
+    const thirdLoginId = 'id47748888-5253-48bf-8cf5-b65f793b7643';
+    await SamlLoginRequest.create({
+      id: thirdLoginId,
+      AppSamlSecretId: secret.id,
+      redirectUri: 'http://test-app.testorganization.localhost',
+      scope: 'resources:manage',
+      state: 'third-state',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    const unmappedResponse = await request.post(
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
+      new URLSearchParams({
+        SAMLResponse: createSamlResponse({
+          attributes: [
+            { name: 'email', values: ['mapped@example.com'] },
+            { name: 'emailVerified', values: ['true'] },
+            { name: 'memberOf', values: ['/Other'] },
+            { name: 'name', values: ['Mapped User'] },
+          ],
+          subject: { nameId: 'mapped-user', loginId: thirdLoginId },
+        }),
+        RelayState: 'http://localhost',
+      }),
+    );
+
+    expect(unmappedResponse).toMatchObject({
+      status: 302,
+      headers: { location: '/saml/response/noRoleMatch' },
+      data: 'Redirecting to /saml/response/noRoleMatch.',
+    });
+
+    await member?.reload();
+    expect(member?.roles).toStrictEqual([]);
+  });
+
+  it('should redirect mapped SAML login if no external group matches', async () => {
+    const { AppMember, SamlLoginRequest } = await getAppDB(app.id);
+    const loginId = 'id27748888-5253-48bf-8cf5-b65f793b7643';
+
+    await secret.update({
+      emailAttribute: 'email',
+      emailVerifiedAttribute: 'emailVerified',
+      entityId: '',
+      groupAttribute: 'memberOf',
+      nameAttribute: 'name',
+      roleMappings: [{ group: '/Managers', role: 'Manager' }],
+    });
+    vi.spyOn(SignedXml.prototype, 'checkSignature').mockReturnValue(true);
+
+    await SamlLoginRequest.create({
+      id: loginId,
+      AppSamlSecretId: secret.id,
+      redirectUri: 'http://test-app.testorganization.localhost',
+      scope: 'resources:manage',
+      state: 'secret-state',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    const response = await request.post(
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
+      new URLSearchParams({
+        SAMLResponse: createSamlResponse({
+          attributes: [
+            { name: 'email', values: ['unmapped@example.com'] },
+            { name: 'emailVerified', values: ['true'] },
+            { name: 'memberOf', values: ['/Other'] },
+            { name: 'name', values: ['Unmapped User'] },
+          ],
+          subject: { nameId: 'unmapped-user', loginId },
+        }),
+        RelayState: 'http://localhost',
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 302,
+      headers: { location: '/saml/response/noRoleMatch' },
+      data: 'Redirecting to /saml/response/noRoleMatch.',
+    });
+    expect(await AppMember.count()).toBe(0);
   });
 });

@@ -1,3 +1,4 @@
+import { type AppLoginRoleMapping } from '@appsemble/types';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import {
   AllowNull,
@@ -44,6 +45,10 @@ export class AppSamlSecretGlobal extends Model {
 
   declare nameAttribute?: string;
 
+  declare groupAttribute?: string;
+
+  declare roleMappings?: AppLoginRoleMapping[];
+
   declare objectIdAttribute?: string;
 
   declare created: Date;
@@ -68,6 +73,9 @@ export function createAppSamlSecretModel(sequelize: Sequelize): typeof AppSamlSe
       'emailAttribute',
       'emailVerifiedAttribute',
       'nameAttribute',
+      'groupAttribute',
+      'roleMappings',
+      'objectIdAttribute',
     ],
   }))
   @Table({ tableName: 'AppSamlSecret' })
@@ -119,6 +127,12 @@ export function createAppSamlSecretModel(sequelize: Sequelize): typeof AppSamlSe
 
     @Column(DataType.STRING)
     declare nameAttribute?: string;
+
+    @Column(DataType.STRING)
+    declare groupAttribute?: string;
+
+    @Column(DataType.JSON)
+    declare roleMappings?: AppLoginRoleMapping[];
 
     // Unique identifier of the external user
     @Column(DataType.STRING)

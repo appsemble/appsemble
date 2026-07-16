@@ -19,7 +19,14 @@ import { literal } from 'sequelize';
 import webpush from 'web-push';
 import { parse } from 'yaml';
 
-import { App, AppSnapshot, getAppDB, Organization, transactional } from '../../../models/index.js';
+import {
+  App,
+  AppBuildSnapshot,
+  AppSnapshot,
+  getAppDB,
+  Organization,
+  transactional,
+} from '../../../models/index.js';
 import {
   createAppReadmes,
   createAppScreenshots,
@@ -35,6 +42,7 @@ import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 import { syncResourceUniqueIndexes } from '../../../utils/resourceUniqueIndexes.js';
 import { isValidSentryDsn } from '../../../utils/sentry.js';
+import { createAppBuildManifest } from '../../../utils/appBuildManifest.js';
 
 export async function createApp(ctx: Context): Promise<void> {
   const {
@@ -208,7 +216,13 @@ export async function createApp(ctx: Context): Promise<void> {
 
         await checkAppLimit(ctx, app);
 
-        app.AppSnapshots = [await AppSnapshot.create({ AppId: app.id, yaml }, { transaction })];
+        const buildManifestJson = await createAppBuildManifest(definition, transaction);
+        const snapshot = await AppSnapshot.create({ AppId: app.id, yaml }, { transaction });
+        await AppBuildSnapshot.create(
+          { AppSnapshotId: snapshot.id, buildManifestJson },
+          { transaction },
+        );
+        app.AppSnapshots = [snapshot];
 
         app.AppScreenshots = screenshots?.length
           ? await createAppScreenshots(app.id, screenshots, transaction, ctx)

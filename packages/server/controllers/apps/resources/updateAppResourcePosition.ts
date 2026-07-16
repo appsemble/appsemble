@@ -1,4 +1,4 @@
-import { assertKoaCondition, getResourceDefinition } from '@appsemble/node-utils';
+import { assertKoaCondition, getResourceDefinition, getSingleGroupId } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
@@ -15,15 +15,35 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     },
     user: authSubject,
   } = ctx;
+  const groupId = getSingleGroupId(selectedGroupId);
   const { Resource } = await getAppDB(appId);
   const app = await App.findByPk(appId, { attributes: ['definition', 'demoMode'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
   const resourceDefinition = getResourceDefinition(app.definition, resourceType);
   const { query } = parseQuery({ $filter, resourceDefinition, tableName: 'Resource' });
+
+  const oldResource = await Resource.findOne({
+    where: { id: resourceId, type: resourceType, GroupId: groupId },
+    include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
+    attributes: ['Position', 'id', 'created', 'updated', 'data'],
+  });
+
+  assertKoaCondition(oldResource != null, ctx, 404, 'Resource not found');
+
+  // Positions restart for every ordering group, so resources are only ordered against the
+  // resources sharing their ordering group field values.
+  const orderingGroup = Object.fromEntries(
+    (resourceDefinition.enforceOrderingGroupByFields ?? []).map((field) => [
+      `data.${field}`,
+      oldResource.data[field] ?? null,
+    ]),
+  );
+
   const commonFindOptions = {
     ...(query ? { query } : {}),
+    ...orderingGroup,
     type: resourceType,
-    GroupId: selectedGroupId ?? null,
+    GroupId: groupId,
     ...(app.demoMode ? { ephemeral: true, seed: false } : {}),
   };
   if (!nextResourcePosition) {
@@ -92,13 +112,6 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     );
   }
 
-  const oldResource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType, GroupId: selectedGroupId ?? null },
-    include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
-    attributes: ['Position', 'id', 'created', 'updated'],
-  });
-
-  assertKoaCondition(oldResource != null, ctx, 404, 'Resource not found');
   await checkAppPermissions({
     context: ctx,
     appId,
@@ -107,12 +120,14 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
         ? `$resource:${resourceType}:own:update`
         : `$resource:${resourceType}:update`,
     ],
+    // Reordering happens within a single group; authorize against that group.
+    groupId,
   });
   // If the previous Position is not defined i.e. to insert at the top, use 0 as the default.
   // e.g. If the Position of the first element is 1, the position for the updated first element
   // becomes (0 + 1)/2 = 0.5, similarly, for moving an element to the last of the list, we multiply
   // with 1.1 to make the Position greater than the lastResourcePosition
-  const updatedPosition =
+  let updatedPosition =
     nextResourcePosition == null
       ? prevResourcePosition * 1.1
       : ((prevResourcePosition ?? 0) + nextResourcePosition) / 2;
@@ -122,15 +137,30 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     updatedPosition <= (prevResourcePosition ?? 0)
   ) {
     const resetPositionResources = await Resource.findAll({
-      attributes: ['id'],
-      where: { type: resourceType },
+      attributes: ['id', 'Position'],
+      where: commonFindOptions,
       order: [['Position', 'ASC']],
     });
+    const otherResources = resetPositionResources.filter(({ id }) => id !== oldResource.id);
+    let updatedIndex = 0;
+    if (prevResourcePosition != null) {
+      const previousResourceIndex = otherResources.findIndex(
+        ({ Position }) => Number(Position) === prevResourcePosition,
+      );
+      assertKoaCondition(
+        previousResourceIndex !== -1,
+        ctx,
+        400,
+        'Invalid previous or next resource Position',
+      );
+      updatedIndex = previousResourceIndex + 1;
+    }
     await Promise.all(
-      resetPositionResources.map((resource, index) =>
-        resource.update({ Position: (index + 1) * 10 }),
+      otherResources.map((resource, index) =>
+        resource.update({ Position: (index < updatedIndex ? index + 1 : index + 2) * 10 }),
       ),
     );
+    updatedPosition = (updatedIndex + 1) * 10;
   }
   await oldResource.update({ Position: updatedPosition });
   ctx.status = 200;

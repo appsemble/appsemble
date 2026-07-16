@@ -45,7 +45,8 @@ export async function createAppResourcesWithAssets({
       createdResources = await Resource.bulkCreate(
         await Promise.all(
           resources.map(
-            async ({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }, idx) => {
+            // Exclude id from body
+            async ({ $clonable, $ephemeral, $expires, $seed, $thumbnails, id, ...data }, idx) => {
               const { query } = parseQuery({
                 $filter: enforceOrderingGroupByFields
                   ?.map((item) => `${item} eq ${data[item] ? `'${data[item]}'` : null}`)

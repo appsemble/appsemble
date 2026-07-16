@@ -34,6 +34,7 @@ export function useServiceWorkerRegistration(): ServiceWorkerRegistrationContext
 const apiVersionUrl = `${apiUrl}/api`;
 // CSpell:ignore cooldown
 const VERSION_CHECK_COOLDOWN_MS = 60_000;
+const serviceWorkerScriptLoadErrorPattern = /service-worker\.js.*load failed/i;
 
 interface ServiceWorkerNotificationMessage {
   notification?: {
@@ -67,6 +68,20 @@ export const pageReloader = {
   },
 };
 
+function isServiceWorkerScriptLoadError(
+  error: unknown,
+): error is { message: string; name: string } {
+  return (
+    typeof error === 'object' &&
+    error != null &&
+    'message' in error &&
+    'name' in error &&
+    error.name === 'SecurityError' &&
+    typeof error.message === 'string' &&
+    serviceWorkerScriptLoadErrorPattern.test(error.message)
+  );
+}
+
 export function ServiceWorkerRegistrationProvider({
   children,
   serviceWorkerRegistrationPromise,
@@ -77,9 +92,35 @@ export function ServiceWorkerRegistrationProvider({
   const hasReloadedForControllerChange = useRef(false);
   const lastVersionCheckAtRef = useRef(0);
   const versionCheckPromiseRef = useRef<Promise<string | null> | null>(null);
+  const handleServiceWorkerError = useCallback((error: unknown) => {
+    if (isServiceWorkerScriptLoadError(error)) {
+      addBreadcrumb({
+        category: 'appsemble.service-worker',
+        data: {
+          error: error.message,
+        },
+        level: 'warning',
+      });
+      return;
+    }
+
+    setServiceWorkerError(error as Error);
+  }, []);
 
   useEffect(() => {
+    // Only reload when an updated worker takes over a page a previous worker
+    // already controlled. On the first visit the page starts uncontrolled and
+    // the initial clients.claim() fires controllerchange with nothing new to
+    // load, so reloading there is pointless and discards input typed while the
+    // worker was activating.
+    const startedUncontrolled = !navigator.serviceWorker?.controller;
+    let sawInitialClaim = false;
+
     const onControllerChange = (): void => {
+      if (startedUncontrolled && !sawInitialClaim) {
+        sawInitialClaim = true;
+        return;
+      }
       if (hasReloadedForControllerChange.current) {
         return;
       }
@@ -114,8 +155,8 @@ export function ServiceWorkerRegistrationProvider({
     serviceWorkerRegistrationPromise
       .then((reg) => reg?.pushManager?.getSubscription())
       .then(setSubscription)
-      .catch(setServiceWorkerError);
-  }, [serviceWorkerRegistrationPromise]);
+      .catch(handleServiceWorkerError);
+  }, [handleServiceWorkerError, serviceWorkerRegistrationPromise]);
 
   const checkForUpdates = useCallback(async () => {
     try {
@@ -126,9 +167,9 @@ export function ServiceWorkerRegistrationProvider({
 
       await registration.update();
     } catch (error) {
-      setServiceWorkerError(error as Error);
+      handleServiceWorkerError(error);
     }
-  }, [serviceWorkerRegistrationPromise]);
+  }, [handleServiceWorkerError, serviceWorkerRegistrationPromise]);
 
   const update = useCallback(async () => {
     try {
@@ -145,9 +186,9 @@ export function ServiceWorkerRegistrationProvider({
 
       await registration.update();
     } catch (error) {
-      setServiceWorkerError(error as Error);
+      handleServiceWorkerError(error);
     }
-  }, [serviceWorkerRegistrationPromise]);
+  }, [handleServiceWorkerError, serviceWorkerRegistrationPromise]);
 
   const clearServiceWorkerCaches = useCallback(async () => {
     if (!('caches' in window)) {
@@ -263,8 +304,8 @@ export function ServiceWorkerRegistrationProvider({
 
         return checkForUpdates();
       })
-      .catch(setServiceWorkerError);
-  }, [checkForUpdates, serviceWorkerRegistrationPromise]);
+      .catch(handleServiceWorkerError);
+  }, [checkForUpdates, handleServiceWorkerError, serviceWorkerRegistrationPromise]);
 
   // Poll for updates every hour
   useEffect(() => {

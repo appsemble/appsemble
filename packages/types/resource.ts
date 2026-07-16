@@ -43,6 +43,11 @@ export interface Resource {
   $editor?: ResourceAuthor;
 
   /**
+   * The opaque version token of the resource.
+   */
+  $etag?: string;
+
+  /**
    * The app group that this resource is scoped to.
    */
   $group?: ResourceGroup;

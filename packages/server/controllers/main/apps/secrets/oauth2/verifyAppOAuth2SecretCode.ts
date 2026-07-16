@@ -14,6 +14,11 @@ import {
   getAccessToken,
   getUserInfo,
 } from '../../../../../utils/oauth2.js';
+import {
+  hasLoginRoleMappings,
+  resolveLoginRoleMappings,
+  syncLoginRoleMappings,
+} from '../../../../../utils/loginRoleMappings.js';
 
 export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   const {
@@ -43,9 +48,18 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  const { AppMember, AppOAuth2Authorization, AppOAuth2Secret } = await getAppDB(appId);
+  const { AppMember, AppMemberAssignedRole, AppOAuth2Authorization, AppOAuth2Secret } =
+    await getAppDB(appId);
   const appOAuth2Secrets = await AppOAuth2Secret.findAll({
-    attributes: ['id', 'tokenUrl', 'clientId', 'clientSecret', 'remapper', 'userInfoUrl'],
+    attributes: [
+      'id',
+      'tokenUrl',
+      'clientId',
+      'clientSecret',
+      'remapper',
+      'roleMappings',
+      'userInfoUrl',
+    ],
     where: { id: appOAuth2SecretId },
   });
 
@@ -67,9 +81,12 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   const {
     email,
     email_verified: emailVerified,
+    groups,
     name,
     sub,
   } = await getUserInfo(accessToken, idToken, secret.userInfoUrl, secret.remapper);
+  const resolvedRoleMappings = resolveLoginRoleMappings(groups, secret.roleMappings);
+  const shouldSyncRoleMappings = hasLoginRoleMappings(secret.roleMappings);
   const authorization = await AppOAuth2Authorization.findOne({
     where: { sub, AppOAuth2SecretId: secret.id },
     include: [{ model: AppMember, attributes: ['id'] }],
@@ -77,7 +94,13 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
 
   function handleAuthorization(appMember?: AppMember): Promise<AppOAuth2Authorization> {
     return authorization
-      ? authorization.update({ accessToken, refreshToken })
+      ? authorization.update({
+          accessToken,
+          refreshToken,
+          email,
+          emailVerified,
+          ...(appMember ? { AppMemberId: appMember.id } : {}),
+        })
       : AppOAuth2Authorization.create({
           accessToken,
           AppOAuth2SecretId: secret.id,
@@ -90,17 +113,43 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   }
 
   let appMember = authorization?.AppMember;
-  if (!appMember) {
+  if (shouldSyncRoleMappings && appMember && !resolvedRoleMappings.length) {
+    await syncLoginRoleMappings(AppMemberAssignedRole, appMember, []);
+    throwKoaError(
+      ctx,
+      403,
+      'User is not allowed to login because no external group matched an app role.',
+    );
+  }
+
+  if (!appMember && shouldSyncRoleMappings && !resolvedRoleMappings.length) {
+    throwKoaError(
+      ctx,
+      403,
+      'User is not allowed to login because no external group matched an app role.',
+    );
+  }
+
+  if (appMember) {
+    await handleAuthorization(appMember);
+
+    if (shouldSyncRoleMappings) {
+      await syncLoginRoleMappings(AppMemberAssignedRole, appMember, resolvedRoleMappings);
+    }
+  } else {
     const role = app.definition.security?.default?.role;
     try {
       appMember = await AppMember.create({
-        role,
+        ...(shouldSyncRoleMappings ? {} : { role }),
         name,
         email,
         emailVerified,
         timezone,
       });
       await handleAuthorization(appMember);
+      if (shouldSyncRoleMappings) {
+        await syncLoginRoleMappings(AppMemberAssignedRole, appMember, resolvedRoleMappings);
+      }
     } catch (error) {
       // @ts-expect-error 2345 argument of type is not assignable to parameter of type
       // (strictNullChecks) - Severe

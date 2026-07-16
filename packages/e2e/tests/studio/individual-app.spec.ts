@@ -61,12 +61,13 @@ test.describe('Individual app', () => {
 
     const responsePromise = page.waitForResponse(
       (response) =>
-        response.url().includes('/api/apps/') && response.request().method() === 'PATCH',
+        response.url().includes('/api/apps/') &&
+        response.request().method() === 'PATCH' &&
+        response.status() === 200,
     );
     await page.getByRole('button', { name: 'Publish' }).click();
     await responsePromise;
-
-    await expect(page.getByText('Successfully updated app definition')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Publish' })).toBeDisabled();
 
     await page.getByRole('link', { name: 'Details' }).click();
 

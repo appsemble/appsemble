@@ -5,6 +5,7 @@ export * from './AppMember.js';
 export * from './AppMemberInfo.js';
 export * from './AppMessages.js';
 export * from './AppOAuth2Secret.js';
+export * from './AppSamlSecret.js';
 export * from './AppsembleMessages.js';
 export * from './AppServiceSecret.js';
 export * from './AppVariable.js';

@@ -1676,6 +1676,10 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
                     },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
+                    },
                     "type": {
                       "description": "Count the number of resources a similar \`resource.query\` action would return.",
                       "enum": [
@@ -1775,6 +1779,10 @@ disabled by setting this to \`false\`
                     "schema": {
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
                     },
                     "type": {
                       "description": "Create a resource.",
@@ -1876,6 +1884,10 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
                     },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
+                    },
                     "type": {
                       "description": "Delete a resource.",
                       "enum": [
@@ -1975,6 +1987,10 @@ disabled by setting this to \`false\`
                     "schema": {
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
                     },
                     "type": {
                       "description": "Delete all instances of a resource.
@@ -2082,6 +2098,10 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
                     },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
+                    },
                     "type": {
                       "description": "Delete several instances of a resource.",
                       "enum": [
@@ -2184,6 +2204,10 @@ disabled by setting this to \`false\`
                     "schema": {
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
                     },
                     "type": {
                       "description": "Get a single resource.",
@@ -2300,6 +2324,10 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
                     },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
+                    },
                     "type": {
                       "description": "Get the complete history of a resource.",
                       "enum": [
@@ -2403,6 +2431,10 @@ disabled by setting this to \`false\`
                     "schema": {
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
                     },
                     "type": {
                       "description": "Query a list of resources.",
@@ -2756,6 +2788,19 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "optimistic": {
+                      "additionalProperties": false,
+                      "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
+                      "properties": {
+                        "retries": {
+                          "default": 0,
+                          "description": "The number of precondition conflicts to retry after fetching the latest resource again.",
+                          "minimum": 0,
+                          "type": "integer",
+                        },
+                      },
+                      "type": "object",
+                    },
                     "proxy": {
                       "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -2779,6 +2824,10 @@ disabled by setting this to \`false\`
                     "schema": {
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
                     },
                     "type": {
                       "description": "Update a resource.",
@@ -2888,6 +2937,10 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
                     },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
+                    },
                     "type": {
                       "description": "Move a resource from one group to another.",
                       "enum": [
@@ -2967,6 +3020,14 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "order": {
+                      "default": "asc",
+                      "enum": [
+                        "asc",
+                        "desc",
+                      ],
+                      "type": "string",
+                    },
                     "proxy": {
                       "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -2990,6 +3051,10 @@ disabled by setting this to \`false\`
                     "schema": {
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
                     },
                     "type": {
                       "description": "Update the position of a resource.",
@@ -3070,6 +3135,19 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "optimistic": {
+                      "additionalProperties": false,
+                      "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
+                      "properties": {
+                        "retries": {
+                          "default": 0,
+                          "description": "The number of precondition conflicts to retry after fetching the latest resource again.",
+                          "minimum": 0,
+                          "type": "integer",
+                        },
+                      },
+                      "type": "object",
+                    },
                     "proxy": {
                       "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -3093,6 +3171,10 @@ disabled by setting this to \`false\`
                     "schema": {
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "selectedGroupId": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
                     },
                     "type": {
                       "description": "Patch a resource.",
@@ -7462,6 +7544,10 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
             },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
+            },
             "type": {
               "description": "Count the number of resources a similar \`resource.query\` action would return.",
               "enum": [
@@ -7561,6 +7647,10 @@ disabled by setting this to \`false\`
             "schema": {
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
+            },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
             },
             "type": {
               "description": "Create a resource.",
@@ -7662,6 +7752,10 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
             },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
+            },
             "type": {
               "description": "Delete a resource.",
               "enum": [
@@ -7761,6 +7855,10 @@ disabled by setting this to \`false\`
             "schema": {
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
+            },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
             },
             "type": {
               "description": "Delete all instances of a resource.
@@ -7868,6 +7966,10 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
             },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
+            },
             "type": {
               "description": "Delete several instances of a resource.",
               "enum": [
@@ -7970,6 +8072,10 @@ disabled by setting this to \`false\`
             "schema": {
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
+            },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
             },
             "type": {
               "description": "Get a single resource.",
@@ -8086,6 +8192,10 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
             },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
+            },
             "type": {
               "description": "Get the complete history of a resource.",
               "enum": [
@@ -8189,6 +8299,10 @@ disabled by setting this to \`false\`
             "schema": {
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
+            },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
             },
             "type": {
               "description": "Query a list of resources.",
@@ -8542,6 +8656,19 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "optimistic": {
+              "additionalProperties": false,
+              "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
+              "properties": {
+                "retries": {
+                  "default": 0,
+                  "description": "The number of precondition conflicts to retry after fetching the latest resource again.",
+                  "minimum": 0,
+                  "type": "integer",
+                },
+              },
+              "type": "object",
+            },
             "proxy": {
               "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
@@ -8565,6 +8692,10 @@ disabled by setting this to \`false\`
             "schema": {
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
+            },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
             },
             "type": {
               "description": "Update a resource.",
@@ -8674,6 +8805,10 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
             },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
+            },
             "type": {
               "description": "Move a resource from one group to another.",
               "enum": [
@@ -8753,6 +8888,14 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "order": {
+              "default": "asc",
+              "enum": [
+                "asc",
+                "desc",
+              ],
+              "type": "string",
+            },
             "proxy": {
               "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
@@ -8776,6 +8919,10 @@ disabled by setting this to \`false\`
             "schema": {
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
+            },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
             },
             "type": {
               "description": "Update the position of a resource.",
@@ -8856,6 +9003,19 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "optimistic": {
+              "additionalProperties": false,
+              "description": "Fetch the latest resource before writing, merge its \`$etag\` into the request data so the implicit \`If-Match\` precondition holds, and retry on precondition conflicts. The fetched resource is also exposed to remappers as \`{ context: resource }\`.",
+              "properties": {
+                "retries": {
+                  "default": 0,
+                  "description": "The number of precondition conflicts to retry after fetching the latest resource again.",
+                  "minimum": 0,
+                  "type": "integer",
+                },
+              },
+              "type": "object",
+            },
             "proxy": {
               "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
@@ -8879,6 +9039,10 @@ disabled by setting this to \`false\`
             "schema": {
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
+            },
+            "selectedGroupId": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The ID of the group to scope the request to. Defaults to the currently selected group.",
             },
             "type": {
               "description": "Patch a resource.",

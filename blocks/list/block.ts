@@ -199,6 +199,16 @@ export interface Image {
    * @default square
    */
   aspectRatio?: '4:3' | '9:16' | '16:9' | 'square';
+
+  /**
+   * Open a fullscreen preview of the image when it is clicked.
+   *
+   * When false, clicking the image triggers the list item's `onClick` action instead of opening
+   * the preview.
+   *
+   * @default true
+   */
+  openPreview?: boolean;
 }
 
 interface HeaderWithTitles {

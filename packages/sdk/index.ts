@@ -98,7 +98,15 @@ export interface EventListeners {}
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Parameters {}
 
-export type PageParameters = Record<string, string>;
+export interface PageParameters extends Record<
+  string,
+  string | Record<string, string> | undefined
+> {
+  /**
+   * Query parameters from the current URL.
+   */
+  query?: Record<string, string>;
+}
 
 /**
  * A menu item that can be displayed in addition to the normal app menu.

@@ -51,6 +51,26 @@ export const AppOAuth2Secret: OpenAPIV3.NonArraySchemaObject = {
       description: 'A remapper to apply on retrieved user information from the user info endpoint.',
       items: {},
     },
+    roleMappings: {
+      type: 'array',
+      description: 'Optional exact external-group to app-role mappings.',
+      items: {
+        type: 'object',
+        description: 'A mapping from one exact external group value to one app role.',
+        required: ['group', 'role'],
+        additionalProperties: false,
+        properties: {
+          group: {
+            type: 'string',
+            description: 'The exact external group value to match.',
+          },
+          role: {
+            type: 'string',
+            description: 'The app role to assign when the external group matches.',
+          },
+        },
+      },
+    },
     created: {
       type: 'string',
       format: 'date-time',

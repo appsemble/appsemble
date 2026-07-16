@@ -89,6 +89,7 @@ describe('patchAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "8c7rluf8gfrQccir5zr_kIU5zqPZC612rMiG5YM-ge8"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -108,6 +109,7 @@ describe('patchAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "8c7rluf8gfrQccir5zr_kIU5zqPZC612rMiG5YM-ge8"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -118,6 +120,181 @@ describe('patchAppResource', () => {
         }
       `,
     );
+    expect(response.headers.etag).toBeDefined();
+    expect(responseB.headers.etag).toBe(response.headers.etag);
+  });
+
+  it('should reject stale patches with If-Match', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.', bar: 'I am Bar.' },
+    });
+
+    authorizeStudio();
+
+    const initial = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+    const staleEtag = initial.headers.etag;
+
+    await request.patch(`/api/apps/${app.id}/resources/testResource/${resource.id}`, {
+      foo: 'I am not Foo.',
+    });
+
+    const staleResponse = await request.patch(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am stale.' },
+      { headers: { 'If-Match': staleEtag } },
+    );
+
+    expect(staleResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 412 Precondition Failed
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "code": "RESOURCE_PRECONDITION_FAILED",
+          "resourceId": 1,
+          "resourceType": "testResource",
+        },
+        "error": "Precondition Failed",
+        "message": "This resource has changed since it was loaded. Fetch the latest version and try again.",
+        "statusCode": 412,
+      }
+    `);
+
+    const latest = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+
+    expect(latest.data.foo).toBe('I am not Foo.');
+    expect(latest.data.bar).toBe('I am Bar.');
+  });
+
+  it('should not store the id echoed in the request body in the resource data', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { id: resource.id, foo: 'I am not Foo.' },
+    );
+    expect(response.status).toBe(200);
+
+    await resource.reload();
+    expect(resource.data).toStrictEqual({ foo: 'I am not Foo.' });
+  });
+
+  it('should reject a patch referencing a non-existent resource', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+    const resource = await Resource.create({
+      type: 'testResourceB',
+      data: { bar: 'test', testResourceId: testResource.id },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
+      { testResourceId: 1337 },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "instance": 1337,
+              "message": "does not reference an existing resource of type testResource",
+              "path": [
+                "testResourceId",
+              ],
+              "property": "instance.testResourceId",
+              "stack": "instance.testResourceId does not reference an existing resource of type testResource",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should allow a patch which does not touch the reference property', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResourceB',
+      data: { bar: 'test', testResourceId: 1337 },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
+      { bar: 'I am Bar.' },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+      Etag: "ILVSw2Vgk6ruVlBL55e_FgQSnNkJvTeC177sF_xffyo"
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "bar": "I am Bar.",
+        "id": 1,
+        "testResourceId": 1337,
+      }
+    `);
+  });
+
+  it('should authorize a multi-group patch against only the single group acted on', async () => {
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const group1 = await Group.create({ name: 'Group 1' });
+    const group2 = await Group.create({ name: 'Group 2' });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      timezone: 'Europe/Amsterdam',
+      userId: user.id,
+      name: user.name,
+      role: PredefinedAppRole.Member,
+    });
+    // Patch permission in group 1 only; a plain member without it in group 2.
+    await GroupMember.create({
+      GroupId: group1.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+    await GroupMember.create({
+      GroupId: group2.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.Member,
+    });
+
+    const resource = await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'before' },
+      GroupId: group1.id,
+    });
+
+    authorizeAppMember(app, member);
+    // Selecting both groups collapses to group 1 (the group being acted on); the
+    // permission check must not also require the patch permission in group 2.
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}?selectedGroupId=${group1.id}&selectedGroupId=${group2.id}`,
+      { foo: 'after' },
+    );
+
+    expect(response.status).toBe(200);
+    expect((response.data as ResourceType).foo).toBe('after');
   });
 
   it('should be able to patch an existing resource from another group', async () => {
@@ -173,6 +350,7 @@ describe('patchAppResource', () => {
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "4Ai6FEU2j354YfQK3VXL6LgBCL6BrVgWszroFUJInHI"
 
       {
         "$author": {
@@ -374,6 +552,7 @@ describe('patchAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "4Ai6FEU2j354YfQK3VXL6LgBCL6BrVgWszroFUJInHI"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -409,6 +588,7 @@ describe('patchAppResource', () => {
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "YihDBQUs5xAaFvnHu3hMKUaOO_Uz4in5DPHf25pDFmg"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -422,6 +602,7 @@ describe('patchAppResource', () => {
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "YihDBQUs5xAaFvnHu3hMKUaOO_Uz4in5DPHf25pDFmg"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -493,12 +674,15 @@ describe('patchAppResource', () => {
 
     const { $created, $updated, ...rest } = response.data;
     response.data = rest as ResourceType;
+    expect(response.headers.etag).toMatch(/^".+"$/);
+    response.headers.etag = '<etag>';
 
     expect(response).toMatchInlineSnapshot(
       { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: <etag>
 
       {
         "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
@@ -623,11 +807,15 @@ describe('patchAppResource', () => {
       createFormData({ resource: { file: asset.id } }),
     );
 
+    expect(response.headers.etag).toMatch(/^".+"$/);
+    response.headers.etag = '<etag>';
+
     expect(response).toMatchInlineSnapshot(
       { data: { file: expect.any(String) } },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: <etag>
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -690,9 +878,22 @@ describe('patchAppResource', () => {
       data: { file: 'old-asset' },
     });
 
+    // Asset upload happens inside the transaction, so failing the transaction
+    // outright would leave nothing to clean up. Run the callback first so
+    // uploadAssets executes, then make the transaction reject afterwards.
+    const realTransaction = sequelize.transaction.bind(sequelize);
     const transactionSpy = vi
       .spyOn(sequelize, 'transaction')
-      .mockRejectedValueOnce(new Error('transaction failed'));
+      .mockImplementationOnce((...args: unknown[]) => {
+        const cb = args.find((arg) => typeof arg === 'function') as
+          ((t: unknown) => Promise<unknown>) | undefined;
+        return realTransaction(async (t: any) => {
+          // Deliberately run the callback so uploadAssets executes, then reject.
+          // eslint-disable-next-line n/callback-return
+          await cb?.(t);
+          throw new Error('transaction failed');
+        }) as any;
+      });
     const deleteSpy = vi.spyOn(nodeUtils, 'deleteS3Files').mockResolvedValue();
 
     authorizeStudio();
@@ -724,6 +925,7 @@ describe('patchAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "QaMMe-eJ1t9wv0eR-zU26oAqsNJiZ8WtGr-p9GGRx4w"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -777,6 +979,7 @@ describe('patchAppResource', () => {
       `
         HTTP/1.1 200 OK
         Content-Type: application/json; charset=utf-8
+        Etag: "QaMMe-eJ1t9wv0eR-zU26oAqsNJiZ8WtGr-p9GGRx4w"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -838,20 +1041,21 @@ describe('patchAppResource', () => {
     expect(response).toMatchInlineSnapshot(
       { data: { $editor: { id: expect.any(String) } } },
       `
-        HTTP/1.1 200 OK
-        Content-Type: application/json; charset=utf-8
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+      Etag: "QOnb4J6PIsY-b3oAuDhFDcegXzYDhsXKtj5og7TiYAU"
 
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$editor": {
-            "id": Any<String>,
-            "name": "Test User",
-          },
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I am Foo too!",
-          "id": 1,
-        }
-      `,
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo too!",
+        "id": 1,
+      }
+    `,
     );
 
     await resource.reload();
@@ -872,6 +1076,7 @@ describe('patchAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Pt2An-HVRWQRpfD9o75ULWQ2qloo8gS1oSHJYRXm2-U"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -908,6 +1113,7 @@ describe('patchAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Pt2An-HVRWQRpfD9o75ULWQ2qloo8gS1oSHJYRXm2-U"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -944,6 +1150,7 @@ describe('patchAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Pt2An-HVRWQRpfD9o75ULWQ2qloo8gS1oSHJYRXm2-U"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",

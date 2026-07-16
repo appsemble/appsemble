@@ -11,6 +11,9 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
+  AppBuildSnapshot,
+  AppSnapshot,
+  BlockAsset,
   BlockVersion,
   getAppDB,
   Organization,
@@ -63,7 +66,7 @@ describe('patchApp', () => {
 
     await Organization.create({ id: 'appsemble', name: 'Appsemble' });
 
-    await BlockVersion.create({
+    const blockVersion = await BlockVersion.create({
       name: 'test',
       OrganizationId: 'appsemble',
       version: '0.0.0',
@@ -76,6 +79,21 @@ describe('patchApp', () => {
         },
       },
     });
+
+    await BlockAsset.bulkCreate([
+      {
+        BlockVersionId: blockVersion.id,
+        OrganizationId: 'appsemble',
+        filename: 'test.css',
+        content: Buffer.from(''),
+      },
+      {
+        BlockVersionId: blockVersion.id,
+        OrganizationId: 'appsemble',
+        filename: 'test.js',
+        content: Buffer.from(''),
+      },
+    ]);
   });
 
   afterAll(() => {
@@ -177,6 +195,26 @@ describe('patchApp', () => {
               ",
       }
     `);
+
+    const latestSnapshot = await AppSnapshot.findOne({
+      include: [{ model: AppBuildSnapshot }],
+      order: [['created', 'DESC']],
+      where: { AppId: app.id },
+    });
+
+    expect(latestSnapshot?.AppBuildSnapshot?.buildManifestJson).toStrictEqual({
+      version: 1,
+      blockManifests: [
+        {
+          actions: null,
+          events: null,
+          files: ['test.css', 'test.js'],
+          layout: null,
+          name: '@appsemble/test',
+          version: '0.0.0',
+        },
+      ],
+    });
   });
 
   it('should update the supportedLanguages of an app', async () => {
@@ -200,6 +238,64 @@ describe('patchApp', () => {
     );
     expect(status).toBe(200);
     expect(data.supportedLanguages).toStrictEqual(['en', 'nl']);
+  });
+
+  it('should keep only the latest build snapshot after repeated app definition updates', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    authorizeStudio();
+
+    for (const name of ['Foobar', 'Barbaz']) {
+      const response = await request.patch(
+        `/api/apps/${app.id}`,
+        createFormData({
+          yaml: stripIndent(`
+            name: ${name}
+            defaultPage: Test Page
+            pages:
+              - name: Test Page
+                blocks:
+                  - type: test
+                    version: 0.0.0
+          `),
+        }),
+      );
+
+      expect(response.status).toBe(200);
+    }
+
+    const snapshots = await AppSnapshot.findAll({
+      include: [{ model: AppBuildSnapshot, required: false }],
+      order: [['id', 'ASC']],
+      where: { AppId: app.id },
+    });
+
+    expect(snapshots).toHaveLength(2);
+    expect(
+      snapshots.map(({ AppBuildSnapshot: buildSnapshot }) => Boolean(buildSnapshot)),
+    ).toStrictEqual([false, true]);
+    expect(snapshots[1].AppBuildSnapshot?.buildManifestJson).toStrictEqual({
+      version: 1,
+      blockManifests: [
+        {
+          actions: null,
+          events: null,
+          files: ['test.css', 'test.js'],
+          layout: null,
+          name: '@appsemble/test',
+          version: '0.0.0',
+        },
+      ],
+    });
   });
 
   it('should assign the positions to resources if enabled in the app definition', async () => {

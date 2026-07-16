@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.36.10-test.3",
+  "version": "0.37.0",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -40,10 +40,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.36.10-test.3",
-    "@appsemble/types": "0.36.10-test.3",
-    "@appsemble/utils": "0.36.10-test.3",
-    "@appsemble/lang-sdk": "0.36.10-test.3",
+    "@appsemble/lang-sdk": "0.37.0",
+    "@appsemble/node-utils": "0.37.0",
+    "@appsemble/types": "0.37.0",
+    "@appsemble/utils": "0.37.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@koa/cors": "^5.0.0",
     "@odata/parser": "^0.2.0",
@@ -132,7 +132,7 @@
     "@types/mime-types": "2.1.4",
     "@types/node": "22.19.19",
     "@types/node-forge": "1.3.14",
-    "@types/nodemailer": "6.4.23",
+    "@types/nodemailer": "6.4.24",
     "@types/semver": "7.7.1",
     "@types/validator": "13.15.10",
     "@types/web-push": "3.6.4",
@@ -142,7 +142,7 @@
     "ein-validator": "1.0.1",
     "jest-image-snapshot": "6.5.2",
     "jsvat": "2.5.4",
-    "memfs": "4.57.2",
+    "memfs": "4.57.8",
     "strip-indent": "4.1.1",
     "validate-vat": "0.9.0",
     "vitest": "2.1.9",

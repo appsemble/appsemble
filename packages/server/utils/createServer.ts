@@ -56,6 +56,24 @@ export async function createServer({
     app.use(middleware);
   }
 
+  // Fold bracketed array query keys (`selectedGroupId[]=1&selectedGroupId[]=2`,
+  // the default array serialization for axios and browsers) into their base key
+  // so they are parsed as arrays. Only keys with a trailing `[]` are touched;
+  // every other parameter keeps Koa's default flat parsing, so no other endpoint
+  // is affected.
+  app.use((ctx, next) => {
+    if (Object.keys(ctx.query).some((key) => key.endsWith('[]'))) {
+      const query = Object.fromEntries(
+        Object.entries(ctx.query).map(([key, value]) => [
+          key.endsWith('[]') ? key.slice(0, -2) : key,
+          value,
+        ]),
+      );
+      Object.defineProperty(ctx.request, 'query', { configurable: true, value: query });
+    }
+    return next();
+  });
+
   app.use(loggerMiddleware());
   app.use(errorMiddleware());
   app.use(range);
@@ -101,7 +119,7 @@ export async function createServer({
     conditional(
       (ctx) => ctx.path === '/api',
       async (ctx, next) => {
-        ctx.set('Access-Control-Expose-Headers', 'X-Appsemble-Version');
+        ctx.set('Access-Control-Expose-Headers', 'ETag, X-Appsemble-Version');
         ctx.set('X-Appsemble-Version', version);
         await next();
       },
@@ -119,6 +137,7 @@ export async function createServer({
           cors({
             credentials: true,
             origin: (ctx) => ctx.get('origin') || '',
+            exposeHeaders: ['ETag', 'X-Appsemble-Version'],
           }),
         ),
         conditional((ctx) => ctx.path === '/api/payments/accept-payment', stripeMiddleware()),

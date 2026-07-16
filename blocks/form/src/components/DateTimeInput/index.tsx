@@ -73,6 +73,7 @@ export function DateTimeInput({
       dateFormat={field.dateFormat}
       disable={disable}
       disabled={disabled}
+      disableMobile={field.disableNativePicker ?? true}
       enableTime={field.type === 'date-time'}
       error={dirty ? error : null}
       errorLinkRef={errorLinkRef}

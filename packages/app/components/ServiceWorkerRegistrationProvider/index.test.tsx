@@ -1,5 +1,6 @@
 // CSpell:ignore cooldown
 import { act, render, waitFor } from '@testing-library/react';
+import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -71,6 +72,13 @@ function createRegistration({
     },
     update: vi.fn(() => Promise.resolve()),
   } as unknown as ServiceWorkerRegistration;
+}
+
+function setServiceWorkerController(controller: ServiceWorker | null): void {
+  Object.defineProperty(navigator.serviceWorker, 'controller', {
+    configurable: true,
+    value: controller,
+  });
 }
 
 beforeEach(() => {
@@ -253,6 +261,42 @@ describe('ServiceWorkerRegistrationProvider', () => {
     expect(registration.update).toHaveBeenCalledTimes(1);
   });
 
+  it('should not report service worker script load failures to Sentry', async () => {
+    const error = new DOMException(
+      'Script https://samson.jouwhoreca.app/service-worker.js load failed',
+      'SecurityError',
+    );
+    const registration = createRegistration();
+    vi.mocked(registration.update).mockRejectedValue(error);
+
+    renderProvider(registration);
+
+    await waitFor(() => expect(registration.update).toHaveBeenCalledTimes(1));
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(captureMessage).not.toHaveBeenCalled();
+    expect(captureException).not.toHaveBeenCalled();
+    expect(addBreadcrumb).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: 'appsemble.service-worker',
+        level: 'warning',
+      }),
+    );
+  });
+
+  it('should report unexpected service worker update failures to Sentry', async () => {
+    const error = new Error('Unexpected update failure');
+    const registration = createRegistration();
+    vi.mocked(registration.update).mockRejectedValue(error);
+
+    renderProvider(registration);
+
+    await waitFor(() => expect(captureException).toHaveBeenCalledWith(error));
+    expect(captureMessage).toHaveBeenCalledWith('Unexpected service worker error.');
+  });
+
   it('should reload when a push notification targets the current page', async () => {
     const registration = createRegistration();
     const reloadSpy = vi
@@ -310,5 +354,63 @@ describe('ServiceWorkerRegistrationProvider', () => {
         expect.any(Function),
       ),
     );
+  });
+
+  it('should not reload on the first visit when the worker initially claims an uncontrolled page', async () => {
+    // A first visit starts without a controller: the worker installs and claims
+    // the open page, which fires controllerchange even though no updated assets
+    // exist to reload for.
+    setServiceWorkerController(null);
+    const registration = createRegistration();
+    const reloadSpy = vi
+      .spyOn(ServiceWorkerRegistrationProviderModule.pageReloader, 'reload')
+      .mockImplementation(vi.fn());
+
+    renderProvider(registration);
+    await waitFor(() => expect(serviceWorkerListeners.controllerchange).toBeTruthy());
+
+    await act(() => {
+      serviceWorkerListeners.controllerchange?.(new Event('controllerchange'));
+    });
+
+    expect(reloadSpy).not.toHaveBeenCalled();
+  });
+
+  it('should reload on a later controllerchange after the initial first-visit claim', async () => {
+    setServiceWorkerController(null);
+    const registration = createRegistration();
+    const reloadSpy = vi
+      .spyOn(ServiceWorkerRegistrationProviderModule.pageReloader, 'reload')
+      .mockImplementation(vi.fn());
+
+    renderProvider(registration);
+    await waitFor(() => expect(serviceWorkerListeners.controllerchange).toBeTruthy());
+
+    await act(() => {
+      serviceWorkerListeners.controllerchange?.(new Event('controllerchange'));
+      serviceWorkerListeners.controllerchange?.(new Event('controllerchange'));
+    });
+
+    expect(reloadSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should reload once when an updated worker takes over an already controlled page', async () => {
+    // A returning visit is already controlled: a controllerchange now means an
+    // updated worker took over, so the page reloads to pick up its new assets.
+    setServiceWorkerController({} as ServiceWorker);
+    const registration = createRegistration();
+    const reloadSpy = vi
+      .spyOn(ServiceWorkerRegistrationProviderModule.pageReloader, 'reload')
+      .mockImplementation(vi.fn());
+
+    renderProvider(registration);
+    await waitFor(() => expect(serviceWorkerListeners.controllerchange).toBeTruthy());
+
+    await act(() => {
+      serviceWorkerListeners.controllerchange?.(new Event('controllerchange'));
+      serviceWorkerListeners.controllerchange?.(new Event('controllerchange'));
+    });
+
+    expect(reloadSpy).toHaveBeenCalledTimes(1);
   });
 });

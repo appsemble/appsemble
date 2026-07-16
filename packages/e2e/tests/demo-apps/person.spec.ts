@@ -38,14 +38,17 @@ test.describe('Person', () => {
     const email = `Email${date}@example.com`;
     const description = `Description ${date}`;
 
+    const submitButton = page.locator('button[type="submit"]');
+    await expect(submitButton).toBeEnabled({ timeout: 15_000 });
+
     // The form block resets field values while it finishes initializing (the
     // file field briefly holds the form in a loading state), dropping values
     // typed too early. Re-fill until every field keeps its value.
     await expect(async () => {
-      await page.getByPlaceholder('First name').fill(firstName);
       await page.getByPlaceholder('Last name').fill(lastName);
       await page.getByPlaceholder('Email').fill(email);
       await page.getByPlaceholder('Description').fill(description);
+      await page.getByPlaceholder('First name').fill(firstName);
 
       await expect(page.getByPlaceholder('First name')).toHaveValue(firstName, {
         timeout: 1000,
@@ -61,7 +64,7 @@ test.describe('Person', () => {
       });
     }).toPass({ timeout: 10_000 });
 
-    await page.click('button[type="submit"]');
+    await submitButton.click();
 
     await page.click(`td:has-text("${firstName}")`);
 

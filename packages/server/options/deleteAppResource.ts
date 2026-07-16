@@ -1,38 +1,45 @@
 import { type DeleteAppResourceParams } from '@appsemble/node-utils';
 
 import { App, getAppDB } from '../models/index.js';
+import { lockResourceWithIfMatch } from '../utils/optimisticResourceLock.js';
 import {
   processHooks,
   processReferenceHooks,
   processReferenceTriggers,
 } from '../utils/resource.js';
+import { mapKeysRecursively } from '../utils/sequelize.js';
 
 export async function deleteAppResource({
   app,
   context,
   id,
+  ifMatch,
+  lockWhere,
   options,
   type,
   whereOptions,
 }: DeleteAppResourceParams): Promise<void> {
-  const { Resource } = await getAppDB(app.id!);
+  const { Resource, sequelize } = await getAppDB(app.id!);
   const persistedApp = (await App.findOne({ where: { id: app.id } }))!;
 
-  const resource = await Resource.findOne({
-    where: { id, type, ...whereOptions },
+  const mappedLockWhere = lockWhere ? mapKeysRecursively(lockWhere) : { id, type, ...whereOptions };
+
+  await sequelize.transaction(async (transaction) => {
+    const locked = await lockResourceWithIfMatch({
+      context,
+      transaction,
+      Resource,
+      where: mappedLockWhere,
+      ifMatch,
+      resourceType: type,
+      resourceId: id,
+    });
+
+    processReferenceHooks(persistedApp, locked, 'delete', options, context);
+    processHooks(persistedApp, locked, 'delete', options, context);
+
+    await processReferenceTriggers(persistedApp, locked, 'delete', context);
+
+    await locked.destroy({ transaction });
   });
-
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  processReferenceHooks(persistedApp, resource, 'delete', options, context);
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  processHooks(persistedApp, resource, 'delete', options, context);
-
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  await processReferenceTriggers(persistedApp, resource, 'delete', context);
-
-  // @ts-expect-error 18048 variable is possibly null (strictNullChecks)
-  return resource.destroy();
 }

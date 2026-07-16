@@ -4,10 +4,12 @@ import {
   extractResourceBody,
   getCompressedFileMeta,
   getResourceDefinition,
+  getSingleGroupId,
   logger,
   processResourceBody,
   throwKoaError,
   uploadAssets,
+  validateResourceReferences,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 import { type Context } from 'koa';
@@ -23,6 +25,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     pathParams: { appId, resourceType },
     queryParams: { selectedGroupId },
   } = ctx;
+  const groupId = getSingleGroupId(selectedGroupId);
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'id'],
   });
@@ -34,7 +37,8 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     context: ctx,
     appId,
     requiredPermissions: [`$resource:${resourceType}:update`],
-    groupId: selectedGroupId,
+    // The operation acts on a single group; authorize against that group only.
+    groupId,
   });
 
   const appMember = await getCurrentAppMember({ context: ctx, app: app.toJSON() });
@@ -61,7 +65,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     where: {
       id: resourcesPayload.map((resource) => Number(resource.id)),
       type: resourceType,
-      GroupId: selectedGroupId ?? null,
+      GroupId: groupId,
     },
     include: [
       { association: 'Author', attributes: ['id', 'name'], required: false },
@@ -88,6 +92,14 @@ export async function updateAppResources(ctx: Context): Promise<void> {
       processedResources.filter((resource) => !resourceIds.has(resource.id)),
     );
   }
+
+  await validateResourceReferences(
+    ctx,
+    app.toJSON(),
+    definition,
+    preparedResources,
+    options.getAppResources,
+  );
 
   let updatedResources: Resource[];
   if (preparedAssets.length) {
@@ -141,7 +153,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
             return {
               ...asset,
               ...getCompressedFileMeta(asset),
-              GroupId: selectedGroupId ?? null,
+              GroupId: groupId,
               ResourceId,
               AppMemberId: appMember?.sub,
             };

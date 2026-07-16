@@ -1,4 +1,4 @@
-import { assertKoaCondition } from '@appsemble/node-utils';
+import { assertKoaCondition, getSingleGroupId } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../models/index.js';
@@ -14,6 +14,7 @@ export async function updateAppResourceGroup(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
 
+  const fromGroupId = getSingleGroupId(selectedGroupId);
   const app = await App.findByPk(appId, {
     attributes: ['id'],
   });
@@ -22,7 +23,9 @@ export async function updateAppResourceGroup(ctx: Context): Promise<void> {
   const resource = await Resource.findOne({
     where: {
       id: resourceId,
-      ...(selectedGroupId ? { GroupId: selectedGroupId } : {}),
+      // The app-wide scope (getSingleGroupId returns null) matches ungrouped
+      // resources via `IS NULL` rather than being omitted from the filter.
+      GroupId: fromGroupId,
       type: resourceType,
     },
   });
@@ -37,7 +40,8 @@ export async function updateAppResourceGroup(ctx: Context): Promise<void> {
         ? `$resource:${resourceType}:own:delete`
         : `$resource:${resourceType}:delete`,
     ],
-    groupId: selectedGroupId,
+    // Authorize the removal against the single source group being acted on.
+    groupId: fromGroupId,
   });
   // We should check for create permissions in the group we're moving the resources to, because
   // we're essentially creating a resource for that group

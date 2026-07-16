@@ -13,11 +13,12 @@ import { BlockParamInstanceValidator } from './BasicValidator.js';
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { partialNormalized } from './constants/index.js';
 import { findPageByName } from './findPageByName.js';
-import { iterApp, type Prefix } from './iterApp.js';
+import { iterAction, iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { normalize } from './normalize.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
 import {
+  type ActionDefinition,
   type AppDefinition,
   type AppMemberCurrentPatchAction,
   type AppMemberPropertiesPatchAction,
@@ -61,6 +62,45 @@ const resourceViewPermissionPattern = /^\$resource:[^:]+:(get|query):[^:]+$/;
 const allWebhookPermissionPattern = /^\$webhook:all:invoke$/;
 
 const webhookPermissionPattern = /^\$webhook:[^:]+:invoke$/;
+
+function hasResourcePermission(
+  permissions: readonly CustomAppPermission[],
+  resourceName: string,
+  resourceAction: string,
+  view: string | undefined,
+): boolean {
+  return permissions.some((permission) => {
+    if (resourcePermissionPattern.test(permission)) {
+      const [, permissionResourceName, permissionResourceAction] = permission.split(':');
+      return (
+        ['all', resourceName].includes(permissionResourceName) &&
+        (permissionResourceAction === resourceAction ||
+          (resourceAction === 'count' && permissionResourceAction === 'query'))
+      );
+    }
+
+    if (ownResourcePermissionPattern.test(permission)) {
+      const [, permissionResourceName, , permissionResourceAction] = permission.split(':');
+      return (
+        ['all', resourceName].includes(permissionResourceName) &&
+        (permissionResourceAction === resourceAction ||
+          (resourceAction === 'count' && permissionResourceAction === 'query'))
+      );
+    }
+
+    if (view && resourceViewPermissionPattern.test(permission)) {
+      const [, permissionResourceName, permissionResourceAction, permissionResourceView] =
+        permission.split(':');
+      return (
+        ['all', resourceName].includes(permissionResourceName) &&
+        permissionResourceAction === resourceAction &&
+        (!permissionResourceView || permissionResourceView === view)
+      );
+    }
+
+    return false;
+  });
+}
 
 /**
  * Check whether or not the given link represents a link related to the Appsemble core.
@@ -1366,6 +1406,13 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
   }
 
   iterApp(definition, { onBlock: checkRoles, onPage: checkRoles });
+
+  const { hideGroupDropdown } = definition.layout ?? {};
+  if (Array.isArray(hideGroupDropdown)) {
+    for (const [index, role] of hideGroupDropdown.entries()) {
+      checkRoleExists(role, ['layout', 'hideGroupDropdown', index]);
+    }
+  }
 }
 
 /**
@@ -1474,6 +1521,25 @@ function validateCronJobs({ cron }: AppDefinition, report: Report): void {
 function validateActions(definition: AppDefinition, report: Report): void {
   const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 
+  const validateUnsupportedServerOptimisticResourceWrite = (
+    action: ActionDefinition,
+    path: Prefix,
+  ): boolean => {
+    if (
+      (path[0] === 'cron' || path[0] === 'webhooks') &&
+      (action.type === 'resource.update' || action.type === 'resource.patch') &&
+      'optimistic' in action
+    ) {
+      report(action.type, 'optimistic resource writes are not supported for server-side actions', [
+        ...path,
+        'optimistic',
+      ]);
+      return true;
+    }
+
+    return false;
+  };
+
   iterApp(definition, {
     onAction(action, path) {
       // XXX: could we validate server-side actions differently
@@ -1482,8 +1548,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         return;
       }
 
-      if (path[0] === 'webhooks' && !serverActions.has(action.type as ServerActionName)) {
-        report(action.type, 'action type is not supported for webhooks', [...path, 'type']);
+      if (validateUnsupportedServerOptimisticResourceWrite(action, path)) {
         return;
       }
 
@@ -1503,9 +1568,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         Object.values(
           (
             action as
-              | AppMemberCurrentPatchAction
-              | AppMemberPropertiesPatchAction
-              | AppMemberRegisterAction
+              AppMemberCurrentPatchAction | AppMemberPropertiesPatchAction | AppMemberRegisterAction
           ).properties ?? {},
         )[0] &&
         definition.members?.properties
@@ -1535,6 +1598,20 @@ function validateActions(definition: AppDefinition, report: Report): void {
         const resource = definition.resources?.[resourceName];
         const [, resourceAction] = action.type.split('.');
 
+        // Optimistic concurrency is implicit via `data.$etag`; the explicit
+        // `ifMatch` field used to live on the action schema and has been removed.
+        if (
+          ['update', 'patch', 'delete'].includes(resourceAction) &&
+          'ifMatch' in (action as Record<string, unknown>)
+        ) {
+          report(
+            action.type,
+            'ifMatch is no longer accepted; resource writes use the implicit $etag carried in data',
+            [...path, 'ifMatch'],
+          );
+          return;
+        }
+
         if (!resource) {
           report(action.type, 'refers to a resource that doesn’t exist', [...path, 'resource']);
           return;
@@ -1562,45 +1639,24 @@ function validateActions(definition: AppDefinition, report: Report): void {
             allPermissions.push(...allRolePermissions);
           }
 
-          // TODO: repeats way too much, code not self-explanatory at all
-          if (
-            !allPermissions.some((permission) => {
-              if (resourcePermissionPattern.test(permission)) {
-                const [, permissionResourceName, permissionResourceAction] = permission.split(':');
-                return (
-                  ['all', resourceName].includes(permissionResourceName) &&
-                  (permissionResourceAction === resourceAction ||
-                    (resourceAction === 'count' && permissionResourceAction === 'query'))
-                );
-              }
-
-              if (ownResourcePermissionPattern.test(permission)) {
-                const [, permissionResourceName, , permissionResourceAction] =
-                  permission.split(':');
-                return (
-                  ['all', resourceName].includes(permissionResourceName) &&
-                  (permissionResourceAction === resourceAction ||
-                    (resourceAction === 'count' && permissionResourceAction === 'query'))
-                );
-              }
-
-              if (view && resourceViewPermissionPattern.test(permission)) {
-                const [, permissionResourceName, permissionResourceAction, permissionResourceView] =
-                  permission.split(':');
-                return (
-                  ['all', resourceName].includes(permissionResourceName) &&
-                  permissionResourceAction === resourceAction &&
-                  (!permissionResourceView || permissionResourceView === view)
-                );
-              }
-
-              return false;
-            })
-          ) {
+          if (!hasResourcePermission(allPermissions, resourceName, resourceAction, view)) {
             report(
               action.type,
               'there is no one in the app who has permissions to use this action',
               [...path, 'resource'],
+            );
+            return;
+          }
+
+          if (
+            ['update', 'patch'].includes(resourceAction) &&
+            'optimistic' in action &&
+            !hasResourcePermission(allPermissions, resourceName, 'get', view)
+          ) {
+            report(
+              action.type,
+              'there is no one in the app who has permissions to fetch this resource for optimistic writes',
+              [...path, 'optimistic'],
             );
             return;
           }
@@ -1764,6 +1820,23 @@ function validateActions(definition: AppDefinition, report: Report): void {
       }
     },
   });
+
+  for (const [name, webhook] of Object.entries(definition.webhooks ?? {})) {
+    if (
+      webhook.action &&
+      iterAction(
+        webhook.action,
+        {
+          onAction(action, path) {
+            return validateUnsupportedServerOptimisticResourceWrite(action, path);
+          },
+        },
+        ['webhooks', name, 'action'],
+      )
+    ) {
+      return;
+    }
+  }
 }
 
 function validateEvents(

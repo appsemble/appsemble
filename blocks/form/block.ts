@@ -294,19 +294,13 @@ export type SelectionRequirement = CountRequirement;
  * All requirements applicable to string fields.
  */
 export type StringRequirement =
-  | LengthRequirement
-  | ProhibitedRequirement
-  | RegexRequirement
-  | RequiredRequirement;
+  LengthRequirement | ProhibitedRequirement | RegexRequirement | RequiredRequirement;
 
 /**
  * All requirements applicable to number fields.
  */
 export type NumberRequirement =
-  | MinMaxRequirement
-  | ProhibitedRequirement
-  | RequiredRequirement
-  | StepRequirement;
+  MinMaxRequirement | ProhibitedRequirement | RequiredRequirement | StepRequirement;
 
 /**
  * All requirements applicable to boolean fields.
@@ -625,6 +619,20 @@ export interface DateTimeField extends AbstractField {
    * @default false
    */
   altInput?: boolean;
+
+  /**
+   * Disable the operating system's native date picker on mobile devices and
+   * always render the Appsemble date picker instead.
+   *
+   * On mobile browsers the field falls back to the native date picker by
+   * default. That picker cannot render decorations or disabled dates, and it
+   * ignores the configured date format and the minimum and maximum date
+   * requirements, so the field can behave differently on mobile than on
+   * desktop. Set this to `false` to use the native mobile picker.
+   *
+   * @default true
+   */
+  disableNativePicker?: boolean;
 }
 
 /**
@@ -659,6 +667,13 @@ interface BaseDateDecoration {
    * Accessibility label for the decoration (used for tooltips and screen readers).
    */
   label?: string;
+
+  /**
+   * Whether the date this decoration is applied to is disabled, making it unselectable.
+   *
+   * @default false
+   */
+  disabled?: boolean;
 }
 
 /**
@@ -776,9 +791,26 @@ export interface DateField extends AbstractField, InlineField {
   decorations?: DateDecorationsAction | { remap: Remapper };
 
   /**
-   * Dates to disable in the picker (ISO date strings).
+   * Dates to disable in the picker.
+   *
+   * A remapper that should resolve to an array of ISO date strings (`yyyy-MM-dd`). The resolved
+   * dates cannot be selected in the picker.
    */
-  disabledDates?: string[];
+  disabledDates?: Remapper;
+
+  /**
+   * Disable the operating system's native date picker on mobile devices and
+   * always render the Appsemble date picker instead.
+   *
+   * On mobile browsers the field falls back to the native date picker by
+   * default. That picker cannot render decorations or disabled dates, and it
+   * ignores the configured date format and the minimum and maximum date
+   * requirements, so the field can behave differently on mobile than on
+   * desktop. Set this to `false` to use the native mobile picker.
+   *
+   * @default true
+   */
+  disableNativePicker?: boolean;
 }
 
 /**
@@ -1370,6 +1402,16 @@ export interface MarkdownField extends AbstractField {
    * The default value of the field.
    */
   defaultValue?: string;
+
+  /**
+   * The minimum number of text lines the editor is tall.
+   *
+   * The markdown field renders a rich text editor rather than a plain text area, so this sets a
+   * minimum height rather than a fixed row count. The editor still grows as more content is added.
+   *
+   * @minimum 1
+   */
+  minRows?: number;
 
   /**
    * The type of the field.

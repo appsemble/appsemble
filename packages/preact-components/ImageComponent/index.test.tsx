@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/preact';
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { ImageComponent } from './index.js';
 
@@ -110,6 +111,46 @@ it('should append dimensions to existing Appsemble asset query parameters', asyn
       'http://localhost/api/apps/1/assets/course-image?foo=bar&width=96&height=96',
     );
   });
+});
+
+it('should open the preview and not propagate the click by default', async () => {
+  const parentClick = vi.fn();
+
+  render(
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+    <div onClick={parentClick}>
+      <ImageComponent alt="Preview image" id="preview" size={48} src="https://example.com/x.png" />
+    </div>,
+  );
+
+  const button = screen.getByAltText('Preview image').closest('button') as HTMLButtonElement;
+  await userEvent.click(button);
+
+  expect(parentClick).not.toHaveBeenCalled();
+  expect(document.querySelector('.modal')).not.toBeNull();
+});
+
+it('should let the click propagate and not open the preview when openPreview is false', async () => {
+  const parentClick = vi.fn();
+
+  render(
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+    <div onClick={parentClick}>
+      <ImageComponent
+        alt="Passthrough image"
+        id="passthrough"
+        openPreview={false}
+        size={48}
+        src="https://example.com/x.png"
+      />
+    </div>,
+  );
+
+  const button = screen.getByAltText('Passthrough image').closest('button') as HTMLButtonElement;
+  await userEvent.click(button);
+
+  expect(parentClick).toHaveBeenCalledOnce();
+  expect(document.querySelector('.modal')).toBeNull();
 });
 
 it('should not modify external image URLs', async () => {

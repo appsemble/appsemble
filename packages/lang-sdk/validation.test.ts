@@ -1361,6 +1361,36 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should validate hideGroupDropdown roles', async () => {
+    const app = createTestApp();
+    app.layout = { hideGroupDropdown: ['User', 'Unknown'] };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not exist in this app’s roles', 'Unknown', undefined, [
+        'layout',
+        'hideGroupDropdown',
+        1,
+      ]),
+    ]);
+  });
+
+  it('should accept hideGroupDropdown with defined roles', async () => {
+    const app = createTestApp();
+    app.layout = { hideGroupDropdown: ['User'] };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should accept hideGroupDropdown set to true', async () => {
+    const app = createTestApp();
+    app.layout = { hideGroupDropdown: true };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
   it('should validate inherited roles', async () => {
     const app = createTestApp();
     app.security!.roles!.User.inherits = ['Unknown'];
@@ -2312,6 +2342,161 @@ describe('validateAppDefinition', () => {
         'app.member.current.patch',
         undefined,
         ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'properties'],
+      ),
+    ]);
+  });
+
+  it('should reject the removed explicit ifMatch field on resource writes', async () => {
+    const app = createTestApp();
+    app.security!.roles!.User = { permissions: ['$resource:person:update'] };
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'resource.update',
+          resource: 'person',
+          // Schema no longer accepts ifMatch; OCC is implicit via data.$etag.
+          ifMatch: { prop: '$etag' },
+        } as any,
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+  });
+
+  it('should accept the optimistic.retries option on resource.update', async () => {
+    const app = createTestApp();
+    app.security!.roles!.User = {
+      permissions: ['$resource:person:get', '$resource:person:update'],
+    };
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'resource.update',
+          resource: 'person',
+          optimistic: { retries: 1 },
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should reject optimistic resource writes without get permissions', async () => {
+    const app = createTestApp();
+    app.security!.roles!.User = { permissions: ['$resource:person:update'] };
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'resource.update',
+          resource: 'person',
+          optimistic: {},
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'there is no one in the app who has permissions to fetch this resource for optimistic writes',
+        'resource.update',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'optimistic'],
+      ),
+    ]);
+  });
+
+  it('should reject optimistic resource writes in cron actions', async () => {
+    const app = createTestApp();
+    app.security!.roles!.User = {
+      permissions: ['$resource:person:get', '$resource:person:update'],
+    };
+    app.cron = {
+      updatePerson: {
+        schedule: '* * * * *',
+        action: {
+          type: 'resource.update',
+          resource: 'person',
+          optimistic: {},
+        },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'optimistic resource writes are not supported for server-side actions',
+        'resource.update',
+        undefined,
+        ['cron', 'updatePerson', 'action', 'optimistic'],
+      ),
+    ]);
+  });
+
+  it('should reject optimistic resource writes in webhook actions', async () => {
+    const app = createTestApp();
+    app.security!.roles!.User = {
+      permissions: ['$resource:person:get', '$resource:person:patch'],
+    };
+    app.webhooks = {
+      patchPerson: {
+        schema: { type: 'object' },
+        action: {
+          type: 'resource.patch',
+          resource: 'person',
+          optimistic: {},
+        },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'optimistic resource writes are not supported for server-side actions',
+        'resource.patch',
+        undefined,
+        ['webhooks', 'patchPerson', 'action', 'optimistic'],
       ),
     ]);
   });

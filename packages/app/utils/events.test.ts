@@ -180,4 +180,83 @@ describe('createEvents', () => {
       expect(emitter).toBeUndefined();
     });
   });
+
+  describe('destroy', () => {
+    it('should remove registered listeners from the event emitter', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
+      const listener = vi.fn();
+      events.on.foo(listener);
+      events.destroy();
+      ee.emit('bar', 'data');
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should not remove listeners that were registered outside of the events object', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
+      const external = vi.fn();
+      ee.on('bar', external);
+      events.on.foo(vi.fn());
+      events.destroy();
+      ee.emit('bar', 'data');
+      expect(external).toHaveBeenCalledWith('data');
+    });
+
+    it('should not remove a later external listener that uses the same callback', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
+      const listener = vi.fn();
+      events.on.foo(listener);
+      ee.on('bar', listener);
+      events.destroy();
+      ee.emit('bar', 'data');
+      expect(listener).toHaveBeenCalledOnce();
+      expect(listener).toHaveBeenCalledWith('data');
+    });
+
+    it('should not track listeners that were unregistered before destroy', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
+      const listener = vi.fn();
+      events.on.foo(listener);
+      events.off.foo(listener);
+      events.destroy();
+      expect(ee.listenerCount('bar')).toBe(0);
+    });
+
+    it('should unregister one owned duplicate listener at a time', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
+      const listener = vi.fn();
+      events.on.foo(listener);
+      events.on.foo(listener);
+      events.off.foo(listener);
+      ee.emit('bar', 'data');
+      expect(listener).toHaveBeenCalledOnce();
+    });
+
+    it('should not register new listeners after destroy', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
+      const listener = vi.fn();
+      events.destroy();
+      const implemented = events.on.foo(listener);
+      expect(implemented).toBe(false);
+      ee.emit('bar', 'data');
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should not emit events after destroy', async () => {
+      const events = createEvents(ee, promise, { emit: { foo: {} } }, { emit: { foo: 'bar' } });
+      await ready();
+      events.destroy();
+      const implemented = await events.emit.foo('test');
+      expect(implemented).toBe(false);
+      expect(ee.emit).not.toHaveBeenCalled();
+    });
+
+    it('should cancel emits that are still waiting for the page to be ready', async () => {
+      const events = createEvents(ee, promise, { emit: { foo: {} } }, { emit: { foo: 'bar' } });
+      const implemented = events.emit.foo('test');
+      events.destroy();
+      await ready();
+      expect(await implemented).toBe(false);
+      expect(ee.emit).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -3,9 +3,12 @@ import {
   browserProfilingIntegration,
   browserTracingIntegration,
   captureMessage,
+  type ErrorEvent,
+  type EventHint,
   init,
   replayIntegration,
 } from '@sentry/browser';
+import { AxiosError, isAxiosError } from 'axios';
 
 import pkg from './package.json' with { type: 'json' };
 
@@ -13,6 +16,20 @@ const tracesSampleRate = 0.2;
 const profileSampleRate = 0.25;
 const replaysSessionSampleRate = 0.02;
 const replaysOnErrorSampleRate = 1;
+
+/**
+ * Drop requests the browser never managed to send, such as those cancelled by going offline, by
+ * closing the tab, or by a content blocker. They carry no response and no server involvement, so
+ * they say nothing about the application.
+ *
+ * @param event The Sentry event about to be sent.
+ * @param hint Metadata about the event, including the error that caused it.
+ * @returns The event, or `null` to discard it.
+ */
+export function discardNetworkErrors(event: ErrorEvent, hint: EventHint): ErrorEvent | null {
+  const error = hint.originalException;
+  return isAxiosError(error) && error.code === AxiosError.ERR_NETWORK ? null : event;
+}
 
 export function setupSentry(dsn?: string, environment?: string): void {
   if (!dsn) {
@@ -30,6 +47,7 @@ export function setupSentry(dsn?: string, environment?: string): void {
     profileLifecycle: 'trace',
     replaysSessionSampleRate,
     replaysOnErrorSampleRate,
+    beforeSend: discardNetworkErrors,
   });
 
   window.addEventListener('online', () => {

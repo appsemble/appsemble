@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.37.0](https://gitlab.com/appsemble/appsemble/-/releases/0.37.0)] - 2026-07-14
+
+### Added
+
+- Block(`form`): Add `minRows` option to the markdown field to set the editor's minimum height in
+  lines.
+- Block(`list`): Add `openPreview` option to image fields to trigger the item's action instead of
+  opening a fullscreen preview.
+
+### Changed
+
+- App: Expose URL query parameters to block page parameters.
+- Service-worker: Append `utm_source=notification` to URLs opened from notification clicks.
+- Web-utils: Stop reporting failed requests that never reached the server to Sentry.
+
+### Fixed
+
+- Block(`data-loader`): Drop the result of a data load when a newer load started meanwhile, so rapid
+  refreshes no longer overwrite newer data with stale responses.
+- Block(`filter`): Drop the result of a filter load when a newer load started meanwhile, so rapid
+  interactions no longer overwrite newer data with stale responses.
+- App: Remove a block's event listeners and disable its emitters when the block is unmounted, so
+  blocks from a previously shown tab or page can no longer receive or emit events on the current
+  one.
+- App: Stop the event action from emitting once its block or page is unmounted, so slow action
+  chains started on a previous tab or page no longer overwrite the current view, while their
+  remaining work such as resource writes still completes.
+- Cli: Convert local file paths to file URLs on Windows.
+- Node-utils: Apply resource schema property defaults when creating or replacing resources.
+- Server: Order resource positions within the group set by `enforceOrderingGroupByFields`.
+- Server: Reject resource creation, update, and patch requests that reference non-existent
+  resources.
+- Server: Strip the id metadata field from the stored resource data on create, update, and patch.
+
+## \[[0.36.10](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10)] - 2026-07-07
+
+## \[[0.36.10-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10-test.4)] - 2026-07-02
+
+### Added
+
+- Block(`form`): Add `disableNativePicker` option to date fields to keep the Appsemble picker on
+  mobile.
+- Block(`form`): Add `disabled` property to date picker decorations to make their date unselectable.
+
+### Fixed
+
+- Block(`form`): Fix a `self.config is undefined` crash when a date field's constraints change, by
+  updating the flatpickr instance in place instead of recreating it.
+- Block(`form`): In date fields, set the default value to undefined if today falls under one of the
+  disabled days.
+- Preact-components: Render the date picker with flatpickr instead of the native mobile picker by
+  default.
+
 ## \[[0.36.10-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10-test.3)] - 2026-05-21
 
 ## \[[0.36.10-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10-test.2)] - 2026-05-20

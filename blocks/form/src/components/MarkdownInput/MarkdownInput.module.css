@@ -1,7 +1,13 @@
 /* Necessary to avoid webpack tree-shaking from causing bugs */
 
-/* No idea why imports only work sometimes in blocks */
-@import url(@milkdown/crepe/theme/common/style.css);
+/* Keep these Crepe theme imports in this CSS module so they are included in the block bundle. */
+@import url(@milkdown/crepe/theme/common/prosemirror.css);
+@import url(@milkdown/crepe/theme/common/reset.css);
+@import url(@milkdown/crepe/theme/common/cursor.css);
+@import url(@milkdown/crepe/theme/common/link-tooltip.css);
+@import url(@milkdown/crepe/theme/common/list-item.css);
+@import url(@milkdown/crepe/theme/common/placeholder.css);
+@import url(@milkdown/crepe/theme/common/table.css);
 @import url(@milkdown/crepe/theme/frame.css);
 
 .gap {
@@ -9,6 +15,7 @@
 }
 
 :global(#root-crepe .milkdown .editor) {
+  min-height: calc(var(--markdown-min-rows, 0) * 1.5em);
   padding: 0;
 }
 

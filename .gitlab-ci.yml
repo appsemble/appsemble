@@ -185,27 +185,19 @@ npm_ci:
 
 # Build the Docker image.
 build docker image:
-  tags:
-    - saas-linux-small-amd64
   extends: .docker
   stage: build
-  cache:
-    key: '$CI_COMMIT_REF_NAME'
-    paths:
-      - /root/.npm/
   script:
-    # https://docs.gitlab.com/ee/ci/docker/docker_layer_caching.html
-    # We're pulling latest if no previous builds exist because we want the greatest possibility of cache hits for build layers.
-    - CACHE_IMAGE="$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-    # We wouldn't like anything funny to happen to us because of cache
-    - if [ "$CI_COMMIT_REF_NAME" == "main" ] || [ "$CI_COMMIT_REF_NAME" == "staging" ]; then USE_CACHE="0"; else USE_CACHE="1"; fi
-    - if ! docker pull "$CACHE_IMAGE"; then CACHE_IMAGE="$CI_REGISTRY_IMAGE:latest"; docker pull "$CACHE_IMAGE" || true; fi
-    - docker build
+    - CACHE_IMAGE="$CI_REGISTRY_IMAGE/cache:$CI_COMMIT_REF_SLUG"
+    - docker buildx create --use
+    - docker buildx build
       -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-      --cache-from "$CACHE_IMAGE"
-      --build-arg "BUILDKIT_INLINE_CACHE=$USE_CACHE"
+      --cache-from "type=registry,ref=$CACHE_IMAGE"
+      --cache-from "type=registry,ref=$CI_REGISTRY_IMAGE/cache:main"
+      --cache-to "type=registry,ref=$CACHE_IMAGE,mode=min"
       --build-arg "version=$CI_COMMIT_REF_NAME"
-      --build-arg "date=$CI_JOB_STARTED_AT" .
+      --build-arg "date=$CI_JOB_STARTED_AT"
+      --load .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
     # Extract dist/ from the built image for sourcemap uploads to Sentry
     - mkdir -p dist
@@ -216,8 +208,6 @@ build docker image:
 
 # Populate a postgres database with the 'default' data it needs to function
 seed database:
-  tags:
-    - saas-linux-small-amd64
   stage: build
   interruptible: true
   needs:
@@ -294,8 +284,6 @@ seed database:
 
 # Build the database into a docker image for use in other jobs
 build seeded db image:
-  tags:
-    - saas-linux-small-amd64
   extends: .docker
   stage: build
   needs:
@@ -694,6 +682,94 @@ e2e node:
     - npm --workspace @appsemble/node-utils run prepack
     - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
   parallel: 6
+  artifacts:
+    expose_as: Playwright videos
+    when: always
+    paths:
+      - packages/e2e/test-results/
+    reports:
+      junit: packages/e2e/results.xml
+
+e2e keycloak:
+  stage: end 2 end
+  image: mcr.microsoft.com/playwright:v1.58.2-noble
+  interruptible: true
+  needs:
+    - build docker image
+    - npm_ci
+    - build seeded db image
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_COMMIT_TAG
+  parallel:
+    matrix:
+      - KEYCLOAK_PROTOCOL: oidc
+      - KEYCLOAK_PROTOCOL: saml
+  variables:
+    FF_NETWORK_PER_BUILD: 'true'
+    DATABASE_HOST: database
+    DATABASE_PORT: 5432
+    DATABASE_NAME: appsemble
+    DATABASE_USER: admin
+    DATABASE_PASSWORD: password
+    E2E_HOST: 'http://appsemble:9999'
+    KEYCLOAK_ADMIN_PASSWORD: password
+    KEYCLOAK_ADMIN_USERNAME: admin
+    KEYCLOAK_BASE_URL: 'http://keycloak:8080'
+    KEYCLOAK_REALM: appsemble-e2e
+  services:
+    - name: '$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG'
+      alias: database
+      variables:
+        POSTGRES_DB: appsemble
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: password
+    - name: minio/minio:latest
+      alias: minio
+      entrypoint: ['sh', '-c', 'minio server /data']
+      variables:
+        MINIO_ROOT_USER: admin
+        MINIO_ROOT_PASSWORD: password
+    - name: quay.io/keycloak/keycloak:26.6.1
+      alias: keycloak
+      command: ['start-dev', '--http-enabled=true', '--hostname-strict=false']
+      variables:
+        KC_BOOTSTRAP_ADMIN_PASSWORD: password
+        KC_BOOTSTRAP_ADMIN_USERNAME: admin
+        KC_HEALTH_ENABLED: 'true'
+    - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+      alias: appsemble
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          until pg_isready -h database -p 5432 -U admin; do
+            sleep 1
+          done
+          exec appsemble-server start
+      variables:
+        SECRET: secret
+        AES_SECRET: secret
+        HOST: 'http://appsemble:9999'
+        REMOTE: 'https://appsemble.app'
+        DATABASE_HOST: database
+        DATABASE_PORT: 5432
+        DATABASE_NAME: appsemble
+        DATABASE_USER: admin
+        DATABASE_PASSWORD: password
+        S3_HOST: minio
+        S3_SECURE: false
+        S3_ACCESS_KEY: admin
+        S3_SECRET_KEY: password
+        migrateTo: next
+        E2E: true
+  script:
+    - npm run appsemble -- config set context e2e
+    - npm run appsemble -- config set remote 'http://appsemble:9999'
+    - npm --workspace @appsemble/types run prepack
+    - npm --workspace @appsemble/lang-sdk run prepack
+    - npm --workspace @appsemble/utils run prepack
+    - npm --workspace @appsemble/node-utils run prepack
+    - npm --workspace @appsemble/e2e run e2e -- --project=chromium tests/studio/logins/keycloak-${KEYCLOAK_PROTOCOL}.spec.ts
   artifacts:
     expose_as: Playwright videos
     when: always
@@ -1183,7 +1259,9 @@ staging:
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
     # This is the only way to make sure staging can be overwritten
-    - helm delete staging || true
+    - helm delete staging --no-hooks || true
+    # Replaces the skipped pre-delete cleanup hook: remove server-created app ingresses and TLS secrets
+    - kubectl delete ingress,secret -l app.kubernetes.io/managed-by=staging-appsemble || true
     - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
     - kubectl delete namespace "companion-containers-staging" || true
     - kubectl delete secret staging-mailpit-tls || true
@@ -1203,7 +1281,7 @@ staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=staging"
-      --set "ingress.clusterIssuer=acme-issuer-dev"
+      --set "ingress.clusterIssuer=acme-issuer-staging"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.eu"
       --set "ingress.tls=true"
@@ -1245,9 +1323,9 @@ staging:
       --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
       --set "minio.fullnameOverride=staging-minio"
       --set "minio.ingress.hostname=console.minio.appsemble.eu"
-      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-staging"
       --set "minio.apiIngress.hostname=api.minio.appsemble.eu"
-      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-staging"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "valkey.fullnameOverride=staging-valkey"
       --set "valkey.auth.usersExistingSecret=valkey"

@@ -1,5 +1,8 @@
 import { type AppMemberGroup } from '@appsemble/lang-sdk';
-import { type GetCurrentAppMemberSelectedGroupParams } from '@appsemble/node-utils';
+import {
+  type GetCurrentAppMemberSelectedGroupParams,
+  getSingleGroupId,
+} from '@appsemble/node-utils';
 
 import { getAppDB } from '../models/index.js';
 
@@ -12,11 +15,12 @@ export async function getCurrentAppMemberSelectedGroup({
     return null;
   }
 
-  if (!selectedGroupId) {
+  const groupId = getSingleGroupId(selectedGroupId);
+  if (groupId == null) {
     return null;
   }
   const { Group, GroupMember } = await getAppDB(app.id!);
-  const group = await Group.findByPk(selectedGroupId, {
+  const group = await Group.findByPk(groupId, {
     include: [
       {
         model: GroupMember,

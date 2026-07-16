@@ -21,6 +21,8 @@ import {
 } from '../../../../utils/test/authorization.js';
 import { exampleApp } from '../../../../utils/test/exampleApp.js';
 
+// CSpell:ignore LKNMDHNG
+
 let organization: Organization;
 let orgMember: OrganizationMember;
 let user: User;
@@ -70,6 +72,7 @@ describe('getAppResourceById', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -122,6 +125,7 @@ describe('getAppResourceById', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -259,6 +263,7 @@ describe('getAppResourceById', () => {
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$author": {
@@ -276,6 +281,38 @@ describe('getAppResourceById', () => {
       }
     `,
     );
+  });
+
+  it('should find a resource by id across any of the selected groups', async () => {
+    const { Group, Resource } = await getAppDB(app.id);
+    const groupA = await Group.create({ name: 'Group A' });
+    const groupB = await Group.create({ name: 'Group B' });
+    const resource = await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'bar' },
+      GroupId: groupB.id,
+    });
+
+    authorizeStudio();
+    // Searching across both groups finds the resource even though it lives in group B.
+    const found = await request.get(
+      `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}?selectedGroupId=${groupA.id}&selectedGroupId=${groupB.id}`,
+    );
+    expect(found.status).toBe(200);
+    expect(found.data.id).toBe(resource.id);
+
+    // A single group that contains the resource still finds it (backwards compatible number).
+    const single = await request.get(
+      `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}?selectedGroupId=${groupB.id}`,
+    );
+    expect(single.status).toBe(200);
+    expect(single.data.id).toBe(resource.id);
+
+    // A single group that does not contain the resource yields a 404.
+    const missing = await request.get(
+      `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}?selectedGroupId=${groupA.id}`,
+    );
+    expect(missing.status).toBe(404);
   });
 
   it('should not be able to fetch a resource you are not a group member of', async () => {
@@ -388,6 +425,7 @@ describe('getAppResourceById', () => {
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "ejnExWLaIvr-qLKNMDHNGVeMRGfgXZT4pl8nRyXU_gc"
 
       {
         "$author": {
@@ -427,6 +465,7 @@ describe('getAppResourceById', () => {
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "ejnExWLaIvr-qLKNMDHNGVeMRGfgXZT4pl8nRyXU_gc"
 
       {
         "$author": {
@@ -467,6 +506,7 @@ describe('getAppResourceById', () => {
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "wrHuBm06ZaOOoByzn1-SiAbZHc1b8Uly1BL1nQMYeBM"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -501,6 +541,7 @@ describe('getAppResourceById', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -550,6 +591,7 @@ describe('getAppResourceById', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",

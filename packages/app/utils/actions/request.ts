@@ -19,10 +19,50 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           }
         : formatRequestAction(definition, data, remap, context);
 
+      if (!proxy && !req.url) {
+        return null;
+      }
+
+      const isResourceBodyWrite =
+        'resource' in definition && (method === 'PUT' || method === 'PATCH');
+
+      if (
+        'resource' in definition &&
+        (method === 'PUT' || method === 'PATCH' || method === 'DELETE') &&
+        data &&
+        typeof data === 'object' &&
+        !Array.isArray(data) &&
+        typeof (data as Record<string, unknown>).$etag === 'string'
+      ) {
+        req.headers = {
+          ...req.headers,
+          'If-Match': (data as Record<string, unknown>).$etag as string,
+        };
+      }
+
+      // $etag is transport metadata, not part of the resource. Strip it before
+      // the body is built so it does not end up persisted as resource.data.
+      const stripEtag = (value: unknown): unknown => {
+        if (
+          value &&
+          typeof value === 'object' &&
+          !Array.isArray(value) &&
+          !(value instanceof Blob) &&
+          !(value instanceof Date) &&
+          '$etag' in (value as Record<string, unknown>)
+        ) {
+          const { $etag, ...rest } = value as Record<string, unknown>;
+          return rest;
+        }
+        return value;
+      };
+
       if (method === 'PUT' || method === 'POST' || method === 'PATCH') {
-        const requestData = body ? remap(body, data, context) : data;
+        const remappedBody = body ? remap(body, data, context) : data;
+        const requestData = isResourceBodyWrite ? stripEtag(remappedBody) : remappedBody;
         if (requestData instanceof Blob) {
           req.headers = {
+            ...req.headers,
             'Content-Type': requestData.type,
           };
           req.data = requestData;
@@ -31,13 +71,12 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           // Excluding some common types which should be inferred from BLOB type.
           const contentType = definition.headers?.['Content-Type'];
           if (contentType) {
-            Object.assign(req, {
-              headers: {
-                'Content-Type': contentType,
-              },
-            });
+            req.headers = {
+              ...req.headers,
+              'Content-Type': contentType,
+            };
           }
-          req.data = serializeResource(body ? remap(body, data, context) : data);
+          req.data = serializeResource(requestData);
         }
       } else if (method === 'DELETE' && body) {
         req.data = remap(body, data, context);
@@ -100,6 +139,21 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         // (strictNullChecks)
         responseBody = xmlToJson(responseBody, schema);
       }
+
+      if (
+        'resource' in definition &&
+        response.headers.etag &&
+        responseBody &&
+        typeof responseBody === 'object' &&
+        !Array.isArray(responseBody) &&
+        !(responseBody instanceof Blob)
+      ) {
+        responseBody = {
+          ...responseBody,
+          $etag: response.headers.etag,
+        };
+      }
+
       return responseBody;
     },
     {

@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { readFile, stat } from 'node:fs/promises';
-import { dirname, join, relative } from 'node:path';
+import { dirname, isAbsolute, join, relative } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { inspect } from 'node:util';
 
 import { prefixBlockURL } from '@appsemble/lang-sdk';
@@ -497,7 +498,8 @@ export async function getProjectWebpackConfig(
   }
   logger.info(`Using webpack config from ${configPath}`);
   const publicPath = prefixBlockURL({ type: buildConfig.name, version: buildConfig.version }, '');
-  let config = await import(String(configPath));
+  const configSpecifier = isAbsolute(configPath) ? pathToFileURL(configPath).href : configPath;
+  let config = await import(configSpecifier);
   config = await (config.default || config);
   config = config instanceof Function ? await config(buildConfig, { mode, publicPath }) : config;
 

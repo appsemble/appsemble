@@ -7,7 +7,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
-import { shouldShowMenu } from '../../utils/layout.js';
+import { shouldHideGroupDropdown, shouldShowMenu } from '../../utils/layout.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -58,6 +58,11 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   ) as string;
   const headerTagHide = remap(definition.layout?.headerTag?.hide ?? null, {}, remapperContext);
 
+  const hideGroupDropdownForMember = shouldHideGroupDropdown(
+    definition.layout?.hideGroupDropdown,
+    appMemberRoles,
+  );
+
   const navigation = (page?.navigation || definition?.layout?.navigation) ?? 'left-menu';
   const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;
 
@@ -98,7 +103,7 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
           </div>
         ) : null}
         <div className={styles.dropdowns}>
-          {appMemberGroups.length ? (
+          {appMemberGroups.length && !hideGroupDropdownForMember ? (
             <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
               <GroupDropdown />
             </div>

@@ -13,6 +13,7 @@ import { parseDocument } from 'yaml';
 
 import {
   App,
+  AppBuildSnapshot,
   AppMessages,
   AppReadme,
   AppScreenshot,
@@ -23,6 +24,7 @@ import { handleAppValidationError, setAppPath } from '../../../utils/app.js';
 import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
+import { createAppBuildManifest } from '../../../utils/appBuildManifest.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 import {
   assertResourceUniqueConstraintSchemaValues,
@@ -329,11 +331,13 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     doc.setIn(['description'], result.definition.description);
     // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     doc.setIn(['name'], result.definition.name);
+    const buildManifestJson = await createAppBuildManifest(record.definition);
     const snapshot = await AppSnapshot.create({
       AppId: record.id,
       UserId: user!.id,
       yaml: String(doc),
     });
+    await AppBuildSnapshot.create({ AppSnapshotId: snapshot.id, buildManifestJson });
     record.AppSnapshots = [snapshot];
 
     if (template.definition.containers && template.definition.containers.length > 0) {

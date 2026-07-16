@@ -1,12 +1,19 @@
-import { parseBlockName, type AppDefinition } from '@appsemble/lang-sdk';
+import { type AppDefinition } from '@appsemble/lang-sdk';
 import {
   type CreateSettingsParams,
   createSettings as createUtilsSettings,
+  logger,
 } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
-import { Op } from 'sequelize';
+import { parse } from 'yaml';
 
-import { App, AppSnapshot, BlockAsset, BlockVersion, getAppDB } from '../models/index.js';
+import { App, AppBuildSnapshot, AppSnapshot, getAppDB, transactional } from '../models/index.js';
+import {
+  createAppBuildManifest,
+  getMissingBlockManifestIdentifiers,
+  pruneAppBuildSnapshots,
+  resolveBlockManifests,
+} from '../utils/appBuildManifest.js';
 import { createGtagCode, createMetaPixelCode, createMSClarityCode } from '../utils/render.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
@@ -67,6 +74,7 @@ function sanitizeAppDefinitionForPublicSettings(
           navigation: definition.layout.navigation,
           settings: definition.layout.settings,
           titleBarText: definition.layout.titleBarText,
+          hideGroupDropdown: definition.layout.hideGroupDropdown,
         }
       : undefined,
     members: definition.members
@@ -92,26 +100,6 @@ export async function createSettings({
   nonce,
 }: CreateSettingsParams): Promise<[digest: string, script: string]> {
   const { AppOAuth2Secret, AppSamlSecret } = await getAppDB(app.id!);
-  const blockManifests = await BlockVersion.findAll({
-    attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
-    include: [
-      {
-        attributes: ['filename'],
-        model: BlockAsset,
-        where: {
-          BlockVersionId: { [Op.col]: 'BlockVersion.id' },
-        },
-      },
-    ],
-    where: {
-      [Op.or]: identifiableBlocks.map(({ type, version }) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore Messed up
-        const [OrganizationId, name] = parseBlockName(type);
-        return { name, OrganizationId, version };
-      }),
-    },
-  });
 
   const persistedApp = (await App.findOne({
     attributes: [
@@ -140,13 +128,69 @@ export async function createSettings({
     where: { id: app.id },
     include: [
       {
-        attributes: ['id'],
+        attributes: ['id', 'yaml'],
         order: [['created', 'DESC']],
         limit: 1,
         model: AppSnapshot,
+        include: [{ attributes: ['buildManifestJson'], model: AppBuildSnapshot, required: false }],
       },
     ],
   }))!;
+
+  const latestSnapshot = persistedApp.AppSnapshots?.[0];
+  let blockManifests = latestSnapshot?.AppBuildSnapshot?.buildManifestJson?.blockManifests;
+  let shouldResolveBlockManifests: boolean = !blockManifests && !latestSnapshot;
+
+  if (!blockManifests && latestSnapshot) {
+    let buildManifestJson;
+
+    try {
+      const definition = parse(latestSnapshot.yaml, { maxAliasCount: 10_000 }) as AppDefinition;
+      buildManifestJson = await createAppBuildManifest(definition);
+      const missingBlockIdentifiers = getMissingBlockManifestIdentifiers(
+        definition,
+        buildManifestJson.blockManifests,
+      );
+
+      shouldResolveBlockManifests = Boolean(missingBlockIdentifiers.length);
+    } catch (error) {
+      logger.warn(`Failed to derive a build manifest from app snapshot ${latestSnapshot.id}.`);
+      logger.error(error);
+      shouldResolveBlockManifests = true;
+    }
+
+    if (buildManifestJson && !shouldResolveBlockManifests) {
+      blockManifests = buildManifestJson.blockManifests;
+
+      try {
+        await transactional(async (transaction) => {
+          const [, created] = await AppBuildSnapshot.findOrCreate({
+            defaults: {
+              AppSnapshotId: latestSnapshot.id,
+              buildManifestJson,
+            },
+            transaction,
+            where: { AppSnapshotId: latestSnapshot.id },
+          });
+
+          if (created) {
+            await pruneAppBuildSnapshots({
+              AppSnapshotId: latestSnapshot.id,
+              appId: persistedApp.id,
+              transaction,
+            });
+          }
+        });
+      } catch (error) {
+        logger.warn(`Failed to persist a build manifest for app snapshot ${latestSnapshot.id}.`);
+        logger.error(error);
+      }
+    }
+  }
+
+  if (shouldResolveBlockManifests) {
+    blockManifests = await resolveBlockManifests({ identifiableBlocks });
+  }
 
   const appOAuth2Secrets = await AppOAuth2Secret.findAll({ attributes: ['icon', 'id', 'name'] });
   const appSamlSecrets = await AppSamlSecret.findAll({ attributes: ['icon', 'id', 'name'] });
@@ -162,16 +206,7 @@ export async function createSettings({
       apiUrl: host,
       appControllerCode: persistedApp.controllerCode,
       appControllerImplementations: persistedApp.controllerImplementations,
-      blockManifests: blockManifests.map(
-        ({ BlockAssets, OrganizationId, actions, events, layout, name, version }) => ({
-          name: `@${OrganizationId}/${name}`,
-          version,
-          layout,
-          actions,
-          events,
-          files: (BlockAssets ?? []).map(({ filename }) => filename),
-        }),
-      ),
+      blockManifests,
       id: persistedApp.id,
       languages,
       logins: [
@@ -193,7 +228,7 @@ export async function createSettings({
         persistedApp.definition,
         app.showAppDefinition,
       ),
-      snapshotId: persistedApp.AppSnapshots?.[0]?.id,
+      snapshotId: latestSnapshot?.id,
       demoMode: persistedApp.demoMode,
       showAppsembleLogin: persistedApp.showAppsembleLogin ?? false,
       displayAppMemberName: persistedApp.displayAppMemberName ?? false,

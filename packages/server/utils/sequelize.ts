@@ -1,7 +1,15 @@
-import { Op } from 'sequelize';
+import { Op, Utils } from 'sequelize';
 
 export function mapKeysRecursively(obj: any): any {
   if (typeof obj !== 'object' || obj == null) {
+    return obj;
+  }
+
+  // Sequelize query helpers such as where(), json(), col(), fn(), and
+  // literal() are class instances the query generator consumes directly.
+  // Flattening them into plain objects makes Sequelize reject them as
+  // unescapable values, so they pass through verbatim.
+  if (obj instanceof Utils.SequelizeMethod) {
     return obj;
   }
 
@@ -14,16 +22,18 @@ export function mapKeysRecursively(obj: any): any {
     return obj.map((value) => mapKeysRecursively(value));
   }
 
-  let result = obj as Record<string, any>;
+  const result: Record<string | symbol, any> = {};
 
-  for (const entry of Object.entries(obj)) {
-    const [key, value] = entry;
+  for (const [key, value] of Object.entries(obj)) {
     const newKey = Op[key as keyof typeof Op] || key;
-    delete result[key];
-    result = {
-      ...result,
-      [newKey]: mapKeysRecursively(value),
-    };
+    result[newKey as PropertyKey] = mapKeysRecursively(value);
+  }
+
+  // Sequelize operator objects built upstream (e.g. by the OData parser) use
+  // `Op.*` Symbol keys which Object.entries skips. Preserve them verbatim —
+  // they are already in the form Sequelize expects.
+  for (const sym of Object.getOwnPropertySymbols(obj)) {
+    result[sym] = mapKeysRecursively((obj as any)[sym]);
   }
 
   return result;
