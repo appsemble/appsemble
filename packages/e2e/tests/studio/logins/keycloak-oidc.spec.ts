@@ -1,6 +1,7 @@
 import { type App, type AppOAuth2Secret } from '@appsemble/types';
 
 import { expect, authenticatedTest as test } from '../../../index.js';
+import pkg from '../../../package.json' with { type: 'json' };
 
 const {
   KEYCLOAK_ADMIN_PASSWORD = 'password',
@@ -204,7 +205,7 @@ test.describe('App Keycloak OIDC login', () => {
               - Manager
             blocks:
               - type: html
-                version: 0.36.7
+                version: ${pkg.version}
                 parameters:
                   content: <h1>Manager content</h1>
           - name: Editor Page
@@ -212,7 +213,7 @@ test.describe('App Keycloak OIDC login', () => {
               - Editor
             blocks:
               - type: html
-                version: 0.36.7
+                version: ${pkg.version}
                 parameters:
                   content: <h1>Editor content</h1>
           - name: Auditor Page
@@ -220,7 +221,7 @@ test.describe('App Keycloak OIDC login', () => {
               - Auditor
             blocks:
               - type: html
-                version: 0.36.7
+                version: ${pkg.version}
                 parameters:
                   content: <h1>Auditor content</h1>
       `,
