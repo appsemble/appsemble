@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App, getAppDB, Organization } from './index.js';
 import { updateArgv } from '../utils/argv.js';
@@ -43,7 +43,7 @@ describe('getAppDB', () => {
     expect(await first.AppMember.findAll()).toStrictEqual([]);
   });
 
-  it('should close and evict the least recently used app database beyond the cache limit', async () => {
+  it('should evict the least recently used app database beyond the cache limit', async () => {
     const app1 = await createApp('test-app-1');
     const app2 = await createApp('test-app-2');
     const app3 = await createApp('test-app-3');
@@ -54,19 +54,40 @@ describe('getAppDB', () => {
     await getAppDB(app1.id);
     await getAppDB(app3.id);
 
-    await expect(db2.AppMember.findAll()).rejects.toThrowError(
-      'ConnectionManager.getConnection was called after the connection manager was closed!',
-    );
+    // Evicted instances drain lazily, so callers holding a reference can finish their queries.
+    expect(await db2.AppMember.findAll()).toStrictEqual([]);
     expect(await db1.AppMember.findAll()).toStrictEqual([]);
 
+    // A new request for the evicted app gets a fresh instance.
     const db2Again = await getAppDB(app2.id);
     expect(db2Again).not.toBe(db2);
     expect(await db2Again.AppMember.findAll()).toStrictEqual([]);
+
+    // The evicted instance is closed once it has been idle for a full check interval.
+    await vi.waitFor(
+      () =>
+        expect(db2.AppMember.findAll()).rejects.toThrow(
+          'ConnectionManager.getConnection was called after the connection manager was closed!',
+        ),
+      { timeout: 30_000, interval: 2000 },
+    );
+  });
+
+  it('should keep a replaced app database usable while it drains', async () => {
+    const app = await createApp('test-app');
+    const before = await getAppDB(app.id);
+    const after = await getAppDB(app.id, undefined, undefined, true);
+
+    expect(after).not.toBe(before);
+    // References from before the replacement, such as in-flight requests, keep working.
+    expect(await before.AppMember.findAll()).toStrictEqual([]);
+    expect(await after.AppMember.findAll()).toStrictEqual([]);
+    expect(await getAppDB(app.id)).toBe(after);
   });
 
   it('should reject and not cache anything when the app database is unreachable', async () => {
     const app = await createApp('broken-app', { dbHost: '127.0.0.1', dbPort: 1 });
-    await expect(getAppDB(app.id)).rejects.toThrowError('ConnectionRefusedError');
-    await expect(getAppDB(app.id)).rejects.toThrowError('ConnectionRefusedError');
+    await expect(getAppDB(app.id)).rejects.toThrow('ConnectionRefusedError');
+    await expect(getAppDB(app.id)).rejects.toThrow('ConnectionRefusedError');
   });
 });

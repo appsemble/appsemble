@@ -333,6 +333,34 @@ const appDBs = new Map<number, AppDB>();
  */
 const pendingAppDBs = new Map<number, Promise<void>>();
 
+/**
+ * Interval in milliseconds between idle checks when lazily closing a displaced app database.
+ */
+const appDBCloseInterval = 10_000;
+
+/**
+ * Close a displaced app database once its connection pool is fully idle.
+ *
+ * Callers that still hold a reference from before a replacement or eviction keep a working
+ * instance while it drains: the close only happens at an idle check, so such callers get at least
+ * one full interval to finish their queries.
+ *
+ * @param sequelize The displaced Sequelize instance to close.
+ */
+function closeWhenIdle(sequelize: Sequelize): void {
+  const { pool } = sequelize.connectionManager as unknown as {
+    pool?: { using: number; waiting: number };
+  };
+  const interval = setInterval(() => {
+    if (pool && (pool.using > 0 || pool.waiting > 0)) {
+      return;
+    }
+    clearInterval(interval);
+    sequelize.close().catch((error: Error) => logger.error(error));
+  }, appDBCloseInterval);
+  interval.unref();
+}
+
 export async function initAppDB(
   appId: number,
   rootDB?: RootSequelize,
@@ -349,7 +377,7 @@ export async function initAppDB(
   const replaced = appDBs.get(appId);
   if (replaced) {
     appDBs.delete(appId);
-    await replaced.sequelize.close();
+    closeWhenIdle(replaced.sequelize);
   }
 
   const app = (await mainDB.models.App.findOne({
@@ -450,7 +478,7 @@ export async function initAppDB(
     while (appDBs.size > argv.appDbCacheLimit) {
       const [lruAppId, lruAppDB] = appDBs.entries().next().value!;
       appDBs.delete(lruAppId);
-      await lruAppDB.sequelize.close().catch((closeError: Error) => logger.error(closeError));
+      closeWhenIdle(lruAppDB.sequelize);
     }
   } catch (error) {
     // Close the instance so failed initializations do not leak Sequelize instances.
