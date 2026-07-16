@@ -1260,6 +1260,8 @@ staging:
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
     # This is the only way to make sure staging can be overwritten
     - helm delete staging --no-hooks || true
+    # Replaces the skipped pre-delete cleanup hook: remove server-created app ingresses and TLS secrets
+    - kubectl delete ingress,secret -l app.kubernetes.io/managed-by=staging-appsemble || true
     - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
     - kubectl delete namespace "companion-containers-staging" || true
     - kubectl delete secret staging-mailpit-tls || true
