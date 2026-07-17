@@ -2,7 +2,13 @@ import { randomUUID } from 'node:crypto';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, dropAndCloseAllAppDBs, getAppDB, Organization } from './index.js';
+import {
+  App,
+  dropAndCloseAllAppDBs,
+  getAppDB,
+  Organization,
+  trackBackgroundTask,
+} from './index.js';
 import { updateArgv } from '../utils/argv.js';
 
 function createApp(path: string, overrides: Record<string, unknown> = {}): Promise<App> {
@@ -168,5 +174,44 @@ describe('getAppDB', () => {
     const racedDb = await racer;
     expect(racedDb).not.toBe(db);
     expect(await racedDb.AppMember.findAll()).toStrictEqual([]);
+  });
+
+  it('should wait for tracked background tasks before dropping app database tables', async () => {
+    const app = await createApp('test-app');
+    const db = await getAppDB(app.id);
+
+    // Record when the physical table drop happens relative to the background task, exactly the
+    // window in which a fire-and-forget hook query used to run against tables being dropped.
+    const order: string[] = [];
+    const queryInterface = db.sequelize.getQueryInterface();
+    const dropAllTables = queryInterface.dropAllTables.bind(queryInterface);
+    vi.spyOn(queryInterface, 'dropAllTables').mockImplementation(async (options) => {
+      order.push('drop');
+      await dropAllTables(options);
+    });
+
+    let releaseTask!: () => void;
+    const taskGate = new Promise<void>((resolve) => {
+      releaseTask = resolve;
+    });
+    trackBackgroundTask(
+      taskGate.then(() => {
+        order.push('task');
+      }),
+    );
+
+    const teardown = dropAndCloseAllAppDBs();
+
+    // While the background task is still running, the teardown must not have dropped any tables.
+    await new Promise((resolve) => {
+      setTimeout(resolve, 500);
+    });
+    expect(order).toStrictEqual([]);
+
+    releaseTask();
+    await teardown;
+
+    // The background task settled before the first table was dropped.
+    expect(order).toStrictEqual(['task', 'drop']);
   });
 });

@@ -25,7 +25,13 @@ import { type Literal } from 'sequelize/types/utils';
 
 import { type FieldType, odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 import { sendNotification, type SendNotificationOptions } from './sendNotification.js';
-import { type App, type AppSubscription, getAppDB, type Resource } from '../models/index.js';
+import {
+  type App,
+  type AppSubscription,
+  getAppDB,
+  type Resource,
+  trackBackgroundTask,
+} from '../models/index.js';
 
 export function renameOData(name: string): string {
   switch (name) {
@@ -133,7 +139,7 @@ async function sendSubscriptionNotifications(
   }
 }
 
-export async function processHooks(
+async function runHooks(
   app: App,
   resource: Resource,
   action: 'create' | 'delete' | 'update',
@@ -191,7 +197,20 @@ export async function processHooks(
   }
 }
 
-export async function processReferenceHooks(
+// Run resource notification hooks as tracked background work so a caller can leave it running after
+// responding, without a teardown dropping the app database out from under its queries and without
+// leaking an unhandled rejection.
+export function processHooks(
+  app: App,
+  resource: Resource,
+  action: 'create' | 'delete' | 'update',
+  options: Options,
+  context: ParameterizedContext<DefaultState, DefaultContext, any>,
+): Promise<void> {
+  return trackBackgroundTask(runHooks(app, resource, action, options, context));
+}
+
+async function runReferenceHooks(
   app: App,
   resource: Resource,
   action: 'create' | 'delete' | 'update',
@@ -226,6 +245,17 @@ export async function processReferenceHooks(
       },
     ),
   );
+}
+
+// Run resource reference hooks as tracked background work (see trackBackgroundTask).
+export function processReferenceHooks(
+  app: App,
+  resource: Resource,
+  action: 'create' | 'delete' | 'update',
+  options: Options,
+  context: ParameterizedContext<DefaultState, DefaultContext, any>,
+): Promise<void> {
+  return trackBackgroundTask(runReferenceHooks(app, resource, action, options, context));
 }
 
 export async function processReferenceTriggers(
