@@ -1,10 +1,10 @@
 // eslint-disable-next-line unicorn/import-style
 import crypto from 'node:crypto';
 
-import { logger } from '@appsemble/node-utils';
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import {
   errorMiddleware,
+  logger,
   type AppServingCache,
   type AppServingCacheResult,
 } from '@appsemble/node-utils';
@@ -49,13 +49,12 @@ function createTestCache(): AppServingCache & { keys: () => IterableIterator<str
   const store = new Map<string, unknown>();
 
   return {
-    get: vi.fn(
-      <T>(key: string): Promise<AppServingCacheResult<T>> =>
-        Promise.resolve(
-          store.has(key)
-            ? { status: 'hit' as const, value: store.get(key) as T }
-            : { status: 'miss' as const },
-        ),
+    get: vi.fn(<T>(key: string): Promise<AppServingCacheResult<T>> =>
+      Promise.resolve(
+        store.has(key)
+          ? { status: 'hit' as const, value: store.get(key) as T }
+          : { status: 'miss' as const },
+      ),
     ),
     keys: store.keys.bind(store),
     set: vi.fn((key: string, value: unknown) => {
