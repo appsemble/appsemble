@@ -552,11 +552,22 @@ export async function closeAppDB(appId: number): Promise<void> {
 
 export async function dropAndCloseAllAppDBs(): Promise<void> {
   await Promise.allSettled(pendingAppDBs.values());
+
+  // Detach every instance from the cache before dropping and closing it. Removing entries up front
+  // keeps the cache consistent even if a close is interrupted or a connection was already closed,
+  // so a single failed teardown cannot leave a closed instance behind that breaks every subsequent
+  // teardown.
+  const appDBsToClose = [...appDBs.values()];
+  appDBs.clear();
+
   await Promise.all(
-    [...appDBs.entries()].map(async ([appId, appDB]) => {
-      await appDB.sequelize.getQueryInterface().dropAllTables();
-      await appDB.sequelize.close();
-      appDBs.delete(appId);
+    appDBsToClose.map(async ({ sequelize }) => {
+      try {
+        await sequelize.getQueryInterface().dropAllTables();
+        await sequelize.close();
+      } catch (error) {
+        logger.error(error as Error);
+      }
     }),
   );
 }

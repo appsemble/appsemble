@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, getAppDB, Organization } from './index.js';
+import { App, dropAndCloseAllAppDBs, getAppDB, Organization } from './index.js';
 import { updateArgv } from '../utils/argv.js';
 
 function createApp(path: string, overrides: Record<string, unknown> = {}): Promise<App> {
@@ -100,5 +100,21 @@ describe('getAppDB', () => {
     const app = await createApp('broken-app', { dbHost: '127.0.0.1', dbPort: 1 });
     await expect(getAppDB(app.id)).rejects.toThrow('ConnectionRefusedError');
     await expect(getAppDB(app.id)).rejects.toThrow('ConnectionRefusedError');
+  });
+
+  it('should drop and close all app databases even when a cached connection is already closed', async () => {
+    const app = await createApp('test-app');
+    const db = await getAppDB(app.id);
+
+    // An interrupted teardown can leave a closed connection in the cache. Dropping and closing all
+    // app databases must tolerate that instead of throwing and failing this and every subsequent
+    // teardown.
+    await db.sequelize.close();
+    await dropAndCloseAllAppDBs();
+
+    // The cache is left clean, so a fresh instance can still be created afterwards.
+    const fresh = await getAppDB(app.id);
+    expect(fresh).not.toBe(db);
+    expect(await fresh.AppMember.findAll()).toStrictEqual([]);
   });
 });
