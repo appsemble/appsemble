@@ -164,12 +164,13 @@ describe('callAppWebhook', () => {
                 metadata: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['attachment', 'category', 'count', 'image'],
+                  required: ['attachment', 'category', 'count', 'image', 'reference'],
                   properties: {
                     attachment: { type: 'string', format: 'binary' },
                     category: { type: 'string' },
                     count: { type: 'number' },
                     image: { type: 'string', format: 'binary' },
+                    reference: { type: 'string' },
                   },
                 },
               },
@@ -474,6 +475,8 @@ describe('callAppWebhook', () => {
             category: 'Example category',
             count: 10,
             image: '1',
+            // A numeric string on a non-binary property must not be resolved to an asset.
+            reference: '0',
           },
         },
       }),
@@ -495,6 +498,7 @@ describe('callAppWebhook', () => {
           mime: expect.any(String),
           path: expect.any(String),
         }),
+        reference: '0',
       },
     });
   });
