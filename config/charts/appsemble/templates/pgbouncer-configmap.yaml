@@ -1,0 +1,48 @@
+{{- if .Values.pgbouncer.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "appsemble.pgbouncer.fullname" . }}
+  labels:
+    {{ include "appsemble.labels" . }}
+data:
+  pgbouncer.ini: |
+    [databases]
+    {{ .Values.global.postgresql.auth.database }} = host={{ .Values.postgresql.fullnameOverride }} port={{ .Values.global.postgresql.service.ports.postgresql }} dbname={{ .Values.global.postgresql.auth.database }} pool_size={{ .Values.pgbouncer.mainPoolSize }}
+    ; Fallback for the dynamically created per-app databases (app-<id>).
+    * = host={{ .Values.postgresql.fullnameOverride }} port={{ .Values.global.postgresql.service.ports.postgresql }}
+
+    [pgbouncer]
+    listen_addr = 0.0.0.0
+    listen_port = {{ .Values.pgbouncer.service.port }}
+    auth_type = {{ .Values.pgbouncer.auth.type }}
+    auth_file = /etc/pgbouncer/userlist.txt
+{{- if .Values.postgresSSL }}
+    client_tls_sslmode = {{ .Values.pgbouncer.tls.client.sslmode }}
+    client_tls_cert_file = /etc/pgbouncer/tls/tls.crt
+    client_tls_key_file = /etc/pgbouncer/tls/tls.key
+{{- with .Values.pgbouncer.tls.client.caSecret }}
+    client_tls_ca_file = /etc/pgbouncer/client-ca/ca.crt
+{{- end }}
+    client_tls_protocols = {{ .Values.pgbouncer.tls.client.protocols }}
+    client_tls_ciphers = {{ .Values.pgbouncer.tls.client.ciphers }}
+{{- with .Values.pgbouncer.tls.client.tls13Ciphers }}
+    client_tls13_ciphers = {{ . }}
+{{- end }}
+    server_tls_sslmode = {{ .Values.pgbouncer.tls.server.sslmode }}
+{{- with .Values.pgbouncer.tls.server.caSecret }}
+    server_tls_ca_file = /etc/pgbouncer/server-ca/ca.crt
+{{- end }}
+    server_tls_protocols = {{ .Values.pgbouncer.tls.server.protocols }}
+    server_tls_ciphers = {{ .Values.pgbouncer.tls.server.ciphers }}
+{{- with .Values.pgbouncer.tls.server.tls13Ciphers }}
+    server_tls13_ciphers = {{ . }}
+{{- end }}
+{{- end }}
+    pool_mode = {{ .Values.pgbouncer.poolMode }}
+    max_client_conn = {{ .Values.pgbouncer.maxClientConn }}
+    default_pool_size = {{ .Values.pgbouncer.defaultPoolSize }}
+    max_db_connections = {{ .Values.pgbouncer.maxDbConnections }}
+    server_idle_timeout = 30
+    ignore_startup_parameters = extra_float_digits
+{{- end }}
