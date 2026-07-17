@@ -1422,6 +1422,23 @@ production:
     - kubectl create secret generic pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
     - rm pgbouncer-userlist.txt
     - kubectl rollout restart deployment appsemble-mailpit || true
+    # PostgreSQL performance tuning for the 2Gi production container, applied
+    # through the bitnami subchart's extendedConfiguration (override.conf).
+    # shared_buffers is ~25% of the container limit; work_mem is raised to cut
+    # temp-file spilling on sorts/hashes across the many per-app databases; and
+    # effective_cache_size reflects the real cgroup budget rather than the
+    # subchart default of 4GB. The shared_preload_libraries and pg_stat_statements
+    # settings match the chart default so pgaudit and pg_stat_statements keep
+    # working; extendedConfiguration is a single value, so it is set in full here.
+    - |
+      cat > postgresql-tuning.conf <<'EOF'
+      shared_preload_libraries = 'pgaudit,pg_stat_statements'
+      pg_stat_statements.max = 10000
+      pg_stat_statements.track = all
+      shared_buffers = 512MB
+      effective_cache_size = 1536MB
+      work_mem = 16MB
+      EOF
     - helm upgrade appsemble appsemble/appsemble
       --debug
       --timeout 30m
@@ -1452,6 +1469,7 @@ production:
       --set "postgresql.primary.resources.requests.memory=1Gi"
       --set "postgresql.primary.resources.limits.cpu=1"
       --set "postgresql.primary.resources.limits.memory=2Gi"
+      --set-file "postgresql.primary.extendedConfiguration=postgresql-tuning.conf"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "replicaCount=2"
