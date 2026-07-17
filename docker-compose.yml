@@ -61,7 +61,7 @@ services:
 
   # A persistent Valkey instance for local development.
   valkey-dev:
-    image: valkey/valkey:9.0.2
+    image: valkey/valkey:9.0.3
     restart: always
     command: valkey-server --requirepass password
     ports:
@@ -69,7 +69,7 @@ services:
 
   # A Valkey instance for faster test runs.
   valkey-test:
-    image: valkey/valkey:9.0.2
+    image: valkey/valkey:9.0.3
     restart: always
     command: valkey-server --requirepass password
     ports:
