@@ -321,3 +321,49 @@ export function childNode(
     parentValue == null ? undefined : (parentValue as Record<number | string, unknown>)[key];
   return { schema, value, path: [...parentPath, key] };
 }
+
+// The raw (pre-deref) schema the winners give `key`: the first winner that owns it. Unlike
+// `childSchema` this does NOT deref, so a `$ref` child stays a `$ref` — the marker that the child is
+// a separately-mounted component rather than an inline field.
+function rawOwnedChild(
+  winners: Schema[],
+  key: string,
+  resolveRef: (ref: string) => Schema,
+): Schema | null {
+  for (const winner of winners) {
+    const owned = ownedChild(deref(winner, resolveRef), key);
+    if (owned) {
+      return owned;
+    }
+  }
+  return null;
+}
+
+// The value projected onto its local (ref-cut) shape: the runtime mirror of `stripRefs`. Own inline
+// fields are kept (recursively projected); slots that mount a SEPARATE component — a `$ref` child or
+// a value-directed (`dynamicChild`) child — are blanked to `undefined`; keys outside the vocabulary
+// pass through unchanged; containers (arrays, maps) keep their length/keys. Projects over the same
+// resolved winners `childNode` descends, so it follows combinator resolution (oneOf winner, anyOf
+// matched, allOf all) and never surfaces losing-branch fields. Cheap: one `resolve` per level, no
+// deref of the cut subtrees. For a GUI editor rendering just this component's own editable fields.
+export function localValue(schema: Schema, value: unknown, ctx: ResolveContext): unknown {
+  if (value == null || typeof value !== 'object') {
+    return value;
+  }
+  const { winners, identity } = resolve(schema, value, ctx);
+  const projectKey = (key: number | string): unknown => {
+    const own = (value as Record<number | string, unknown>)[key];
+    if (ctx.dynamicChild?.(identity?.name ?? null, value, String(key))) {
+      return undefined;
+    }
+    const raw = rawOwnedChild(winners, String(key), ctx.resolveRef);
+    if (!raw) {
+      return own;
+    }
+    return raw.$ref ? undefined : localValue(raw, own, ctx);
+  };
+  if (Array.isArray(value)) {
+    return value.map((element, index) => projectKey(index));
+  }
+  return Object.fromEntries(Object.keys(value).map((key) => [key, projectKey(key)]));
+}

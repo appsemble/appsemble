@@ -1,6 +1,6 @@
 import { type Schema } from 'jsonschema';
 
-import { childNode, resolve, type ResolveContext, type Resolution } from './resolve.js';
+import { childNode, localValue, resolve, type ResolveContext, type Resolution } from './resolve.js';
 import { type Identity, type NodePath } from './types.js';
 
 /**
@@ -53,6 +53,14 @@ export class Node {
   // Whether the value satisfies its own (ref-cut) schema.
   get localValid(): boolean {
     return this.resolve().matched;
+  }
+
+  // This node's value projected onto its local (ref-cut) shape: own inline fields kept, slots that
+  // mount a separate component (`$ref` or value-directed child) blanked to `undefined`, containers
+  // preserved. The value-level mirror of the schema ref-cut — the editable shape of just this
+  // component, for a GUI editor. Navigate to a child node for a sub-component's own local value.
+  localValue(): unknown {
+    return localValue(this.comp, this.val, this.ctx);
   }
 
   // Move down to `key`, schema + value together; null when unowned. Value-directed resolver first
