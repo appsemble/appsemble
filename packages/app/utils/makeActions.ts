@@ -106,8 +106,9 @@ function getActionBreadcrumbData(
 
 function shouldCaptureActionError(error: unknown): boolean {
   return (
-    !isAxiosError(error) ||
-    (error.code !== AxiosError.ERR_NETWORK && error.code !== AxiosError.ERR_CANCELED)
+    error != null &&
+    (!isAxiosError(error) ||
+      (error.code !== AxiosError.ERR_NETWORK && error.code !== AxiosError.ERR_CANCELED))
   );
 }
 
