@@ -549,6 +549,12 @@
       "description": "Threshold in milliseconds. Queries slower than this are logged as warnings when benchmark mode is enabled.",
       "default": 100
     },
+    "appServingCacheTtl": {
+      "type": "integer",
+      "description": "The TTL in seconds for cached app-serving metadata. Set to 0 to disable the app-serving cache.",
+      "default": 300,
+      "minimum": 0
+    },
     "quotas": {
       "type": "object",
       "additionalProperties": false,

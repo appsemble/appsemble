@@ -4,6 +4,7 @@ import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../../models/index.js';
+import { touchApp } from '../../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import {
   normalizeLoginRoleMappings,
@@ -47,4 +48,5 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
     roleMappings: normalizeLoginRoleMappings(body.roleMappings) ?? null,
     userInfoUrl: body.userInfoUrl || null,
   });
+  await touchApp(appId);
 }

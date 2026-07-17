@@ -1,21 +1,42 @@
+import { type AppServingCache, type AppServingCacheResult } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
   AppMessages,
   BlockVersion,
+  getDB,
   Organization,
   OrganizationMember,
   type User,
 } from '../../../../models/index.js';
+import { options } from '../../../../options/options.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
+import { appServingCache } from '../../../../utils/serverCache.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
 let app: App;
 let user: User;
+
+function createTestCache(): AppServingCache {
+  const store = new Map<string, unknown>();
+
+  return {
+    get: <T>(key: string): Promise<AppServingCacheResult<T>> =>
+      Promise.resolve(
+        store.has(key)
+          ? { status: 'hit' as const, value: store.get(key) as T }
+          : { status: 'miss' as const },
+      ),
+    set<T>(key: string, value: T) {
+      store.set(key, value);
+      return Promise.resolve('miss' as const);
+    },
+  };
+}
 
 describe('createAppMessages', () => {
   beforeAll(async () => {
@@ -48,13 +69,23 @@ describe('createAppMessages', () => {
     });
   });
 
+  afterEach(() => {
+    options.appServingCache = appServingCache;
+  });
+
   it('should accept valid requests', async () => {
     authorizeStudio();
+    await getDB().query('UPDATE "App" SET "updated" = :updated WHERE "id" = :appId', {
+      replacements: { appId: app.id, updated: new Date(0) },
+    });
+    await app.reload();
+    const previousUpdated = app.updated;
     const response = await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
       messages: { messageIds: { test: 'Test.' } },
     });
     const translation = (await AppMessages.findOne({ where: { AppId: app.id, language: 'en' } }))!;
+    await app.reload();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
@@ -70,6 +101,7 @@ describe('createAppMessages', () => {
       }
     `);
     expect(translation.messages).toStrictEqual({ messageIds: { test: 'Test.' } });
+    expect(app.updated.getTime()).toBeGreaterThan(previousUpdated.getTime());
   });
 
   it('should accept arrays of objects as request body', async () => {
@@ -119,6 +151,28 @@ describe('createAppMessages', () => {
       { AppId: app.id, language: 'en', messages: { messageIds: { test: 'Test' } } },
       { AppId: app.id, language: 'ru', messages: { messageIds: { test: 'Test Ru' } } },
     ]);
+  });
+
+  it('should refresh app-serving message cache after adding app messages', async () => {
+    authorizeStudio();
+    options.appServingCache = createTestCache();
+
+    const requestOptions = { headers: { host: 'test-app.testorganization.localhost' } };
+    const firstResponse = await request.get('/', requestOptions);
+    const secondResponse = await request.get('/', requestOptions);
+
+    expect(firstResponse.headers['x-appsemble-messages-cache']).toBe('miss');
+    expect(secondResponse.headers['x-appsemble-messages-cache']).toBe('hit');
+
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'nl',
+      messages: { messageIds: { test: 'Test.' } },
+    });
+
+    const thirdResponse = await request.get('/', requestOptions);
+
+    expect(thirdResponse.headers['x-appsemble-messages-cache']).toBe('miss');
+    expect(thirdResponse.data.data.locales).toContain('nl');
   });
 
   it('should validate language tags in array request body', async () => {

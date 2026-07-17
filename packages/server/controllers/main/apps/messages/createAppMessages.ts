@@ -6,6 +6,7 @@ import { type Context } from 'koa';
 import tags from 'language-tags';
 
 import { App, AppMessages } from '../../../../models/index.js';
+import { touchApp } from '../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../utils/checkAppLock.js';
 
@@ -71,6 +72,8 @@ export async function createAppMessages(ctx: Context): Promise<void> {
     validateMessageBodies(ctx, app.definition, ctx.request.body.messages);
     await validateAndCreateMessages(ctx.request.body.language, appId, ctx.request.body.messages);
   }
+
+  await touchApp(appId);
 
   ctx.body = Array.isArray(ctx.request.body)
     ? ctx.request.body

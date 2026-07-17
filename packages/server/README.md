@@ -54,6 +54,7 @@ passed as a command line parameter instead, if desired.
 | `VALKEY_USERNAME`               | `default`    | The username to use to login to the Valkey server.                                                                     |
 | `VALKEY_PASSWORD`               |              | The password to use to login to the Valkey server.                                                                     |
 | `VALKEY_TLS`                    | `false`      | Use TLS when connecting to the Valkey server.                                                                          |
+| `APP_SERVING_CACHE_TTL`         | `300`        | The TTL in seconds for cached app-serving metadata. Set to `0` to disable the cache.                                   |
 | `SENTRY_DSN`                    |              | The Sentry DSN to use for error reporting. See [Sentry](https://sentry.io) for details.                                |
 | `SENTRY_ENVIRONMENT`            |              | The Sentry environment to send with captured events.                                                                   |
 | `SENTRY_TRACES_SAMPLE_RATE`     | `0.2`        | The Sentry trace sampling rate between 0 and 1.                                                                        |

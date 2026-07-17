@@ -223,6 +223,8 @@ Configure the environment variables for Appsemble to connect with Valkey.
   value: {{ ternary "default" .Values.externalValkey.username .Values.valkey.enabled | quote }}
 - name: VALKEY_TLS
   value: {{ ternary false .Values.externalValkey.tls .Values.valkey.enabled | quote }}
+- name: APP_SERVING_CACHE_TTL
+  value: {{ .Values.appServingCacheTtl | quote }}
 - name: VALKEY_PASSWORD
   valueFrom:
     secretKeyRef:

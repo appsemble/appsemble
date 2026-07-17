@@ -7,6 +7,7 @@ import forge from 'node-forge';
 
 import { DEFAULT_SAML_EMAIL_ATTRIBUTE } from '../../../../../models/apps/AppSamlSecret.js';
 import { App, getAppDB } from '../../../../../models/index.js';
+import { touchApp } from '../../../../../utils/app.js';
 import { argv } from '../../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
@@ -86,6 +87,7 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
     spPublicKey: forge.pki.publicKeyToPem(publicKey).trim(),
     emailAttribute: secret.emailAttribute || DEFAULT_SAML_EMAIL_ATTRIBUTE,
   });
+  await touchApp(appId);
 
   ctx.body = { ...secret, id };
 }

@@ -3,7 +3,13 @@ import crypto from 'node:crypto';
 
 import { logger } from '@appsemble/node-utils';
 import { type AppDefinition } from '@appsemble/lang-sdk';
+import {
+  errorMiddleware,
+  type AppServingCache,
+  type AppServingCacheResult,
+} from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
+import Koa from 'koa';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -15,8 +21,10 @@ import {
   BlockVersion,
   Organization,
 } from '../../models/index.js';
+import { options } from '../../options/options.js';
+import { appRouter } from './index.js';
 import { setArgv } from '../../utils/argv.js';
-import { createServer } from '../../utils/createServer.js';
+import { appServingCache } from '../../utils/serverCache.js';
 
 let requestURL: URL;
 
@@ -35,6 +43,26 @@ function parseSettingsScript(settings: string): {
   return JSON.parse(settings.slice('<script>window.settings='.length, -'</script>'.length)) as {
     definition: AppDefinition & Record<string, unknown>;
   };
+}
+
+function createTestCache(): AppServingCache & { keys: () => IterableIterator<string> } {
+  const store = new Map<string, unknown>();
+
+  return {
+    get: vi.fn(
+      <T>(key: string): Promise<AppServingCacheResult<T>> =>
+        Promise.resolve(
+          store.has(key)
+            ? { status: 'hit' as const, value: store.get(key) as T }
+            : { status: 'miss' as const },
+        ),
+    ),
+    keys: store.keys.bind(store),
+    set: vi.fn((key: string, value: unknown) => {
+      store.set(key, value);
+      return Promise.resolve('miss' as const);
+    }),
+  } as AppServingCache & { keys: () => IterableIterator<string> };
 }
 
 describe('indexHandler', () => {
@@ -159,13 +187,15 @@ describe('indexHandler', () => {
       },
     ]);
     setArgv({ host: 'http://host.example', secret: 'test' });
-    const server = await createServer({
-      middleware(ctx, next) {
+    options.appServingCache = appServingCache;
+    const server = new Koa()
+      .use((ctx, next) => {
         Object.defineProperty(ctx, 'URL', { get: () => requestURL });
         Object.defineProperty(ctx, 'hostname', { get: () => requestURL.hostname });
         return next();
-      },
-    });
+      })
+      .use(errorMiddleware())
+      .use(appRouter);
     await setTestApp(server);
   });
 
@@ -252,6 +282,8 @@ describe('indexHandler', () => {
       Content-Security-Policy: base-uri 'self'; connect-src * blob: data:; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-zCYrniI+9/bTmzwyYtPfYOHkPht43kpSB8FKKbsGTl4=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
+      X-Appsemble-Messages-Cache: miss
+      X-Appsemble-Settings-Cache: miss
 
       {
         "data": {
@@ -382,6 +414,68 @@ describe('indexHandler', () => {
         "filename": "app/index.html",
       }
     `);
+  });
+
+  it('should cache app messages and settings for repeated app loads', async () => {
+    const cache = createTestCache();
+    options.appServingCache = cache;
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/a', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'en',
+      messages: { app: { description: 'Test app' }, messageIds: {} },
+    });
+
+    const firstResponse = await request.get('/');
+    const secondResponse = await request.get('/');
+
+    expect(firstResponse.headers['x-appsemble-messages-cache']).toBe('miss');
+    expect(firstResponse.headers['x-appsemble-settings-cache']).toBe('miss');
+    expect(secondResponse.headers['x-appsemble-messages-cache']).toBe('hit');
+    expect(secondResponse.headers['x-appsemble-settings-cache']).toBe('hit');
+    secondResponse.data.data.nonce = firstResponse.data.data.nonce;
+    expect(secondResponse.data).toStrictEqual(firstResponse.data);
+  });
+
+  it('should miss the settings cache when the latest snapshot changes', async () => {
+    const cache = createTestCache();
+    options.appServingCache = cache;
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/a', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'en',
+      messages: { app: { description: 'Test app' }, messageIds: {} },
+    });
+
+    await request.get('/');
+    await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\npages: []\n' });
+    const response = await request.get('/');
+
+    expect(response.headers['x-appsemble-messages-cache']).toBe('hit');
+    expect(response.headers['x-appsemble-settings-cache']).toBe('miss');
+    expect([...cache.keys()].filter((key) => key.startsWith('app-settings:'))).toHaveLength(2);
   });
 
   it('should omit security permission mappings from bootstrapped settings if showAppDefinition is false', async () => {
@@ -733,6 +827,8 @@ describe('indexHandler', () => {
       Content-Security-Policy: base-uri 'self'; connect-src * blob: data: https://clarity.ms https://www.clarity.ms; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example https://clarity.ms https://www.clarity.ms; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clarity.ms https://scripts.clarity.ms https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
+      X-Appsemble-Messages-Cache: miss
+      X-Appsemble-Settings-Cache: miss
 
       {
         "data": {

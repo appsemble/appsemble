@@ -209,6 +209,13 @@ export interface Argv {
    */
   valkeyTls: boolean;
 
+  /**
+   * The TTL in seconds for cached app-serving metadata. Set to 0 to disable the cache.
+   *
+   * @default 300
+   */
+  appServingCacheTtl: number;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // SSL                                                                                          //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -651,6 +658,7 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   valkeyPassword: undefined,
   valkeyTls: false,
+  appServingCacheTtl: 300,
   ssl: false,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sslKey: undefined,

@@ -279,6 +279,7 @@ allows TLS 1.2 and TLS 1.3.
 | `valkey.enabled`                          | `true`                        | Set this to false explicitly to use `externalValkey` instead of bundled Valkey.                                                           |
 | `valkey.fullnameOverride`                 | `appsemble-valkey`            | The name used for the bundled Valkey service.                                                                                             |
 | `valkey.auth.usersExistingSecret`         | `valkey`                      | The secret from which to read the bundled Valkey password.                                                                                |
+| `appServingCacheTtl`                      | `300`                         | The TTL in seconds for cached app-serving metadata. Set this to `0` to disable the app-serving cache.                                     |
 | `externalValkey.host`                     | `null`                        | The external Valkey host. Required when `valkey.enabled=false`.                                                                           |
 | `externalValkey.port`                     | `6379`                        | The external Valkey port.                                                                                                                 |
 | `externalValkey.username`                 | `default`                     | The external Valkey ACL username.                                                                                                         |

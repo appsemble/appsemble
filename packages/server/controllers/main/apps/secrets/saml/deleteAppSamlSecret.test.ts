@@ -5,7 +5,13 @@ import {
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, getAppDB, Organization, OrganizationMember } from '../../../../../models/index.js';
+import {
+  App,
+  getAppDB,
+  getDB,
+  Organization,
+  OrganizationMember,
+} from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
@@ -61,10 +67,17 @@ describe('deleteAppSamlSecret', () => {
       spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
+    await getDB().query('UPDATE "App" SET "updated" = :updated WHERE "id" = :appId', {
+      replacements: { appId: app.id, updated: new Date(-1000) },
+    });
+    await app.reload();
+    const previousUpdated = app.updated;
     const response = await request.delete<AppSamlSecretType>(
       `/api/apps/${app.id}/secrets/saml/${secret.id}`,
     );
+    await app.reload();
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(app.updated.getTime()).toBeGreaterThan(previousUpdated.getTime());
   });
 
   it('should not throw status 404 for unknown apps', async () => {
