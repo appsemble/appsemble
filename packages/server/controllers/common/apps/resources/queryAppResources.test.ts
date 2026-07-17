@@ -1516,6 +1516,25 @@ describe('queryAppResources', () => {
     expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([bar.id]);
   });
 
+  it('should negate a startswith function with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'abc' } });
+    const other = await Resource.create({ type: 'testResource', data: { foo: 'xyz' } });
+    // Row without foo: the LIKE argument is null, so the negated match is null too.
+    await Resource.create({ type: 'testResource', data: { number: 1 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (startswith(foo, 'ab'))" },
+    });
+
+    // The startswith function uses a different operator (LIKE 'ab%') than contains, so its
+    // negation is covered separately: only the row whose foo has a concrete value not starting
+    // with 'ab' is returned; the matching and foo-less rows are excluded.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([other.id]);
+  });
+
   it('should distribute not over and (De Morgan)', async () => {
     const { Resource } = await getAppDB(app.id);
     await Resource.create({ type: 'testResource', data: { foo: 'a', bar: 'b' } });
