@@ -276,6 +276,16 @@ spec:
       affinity:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      # Prefer spreading server replicas across nodes, so a node failure or
+      # node-level memory pressure cannot take out all replicas at once.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: {{ .Release.Name | quote }}
+              app.kubernetes.io/name: {{ include "appsemble.name" . }}
     {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
