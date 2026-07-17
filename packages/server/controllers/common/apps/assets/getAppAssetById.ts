@@ -8,7 +8,7 @@ import {
 } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { extension } from 'mime-types';
-import { Op } from 'sequelize';
+import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 
 import { App, getAppDB } from '../../../../models/index.js';
@@ -181,13 +181,21 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
           .toBuffer()
       : await image.rotate().avif().toBuffer();
 
-    const newAsset = await Asset.create({
-      name: derivedAssetName,
-      mime: 'image/avif',
-      ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
-    });
+    try {
+      const newAsset = await Asset.create({
+        name: derivedAssetName,
+        mime: 'image/avif',
+        ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+      });
 
-    await uploadS3File(bucketName, newAsset.id, derivedImage);
+      await uploadS3File(bucketName, newAsset.id, derivedImage);
+    } catch (error) {
+      // A concurrent request already cached this derived asset. The name is deterministic, so a
+      // unique-constraint clash just means the other request won the race; serve our in-memory copy.
+      if (!(error instanceof UniqueConstraintError)) {
+        throw error;
+      }
+    }
 
     setAssetHeaders(ctx, 'image/avif', getDerivedFilename(sourceAsset.id, sourceAsset.filename));
     ctx.body = derivedImage;

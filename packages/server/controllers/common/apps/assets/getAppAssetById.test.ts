@@ -240,6 +240,48 @@ describe('getAppAssetById', () => {
     expect(cachedAssetsAfter[0].id).toBe(cachedAssets[0].id);
   });
 
+  it('should serve concurrent requests for an uncached derivative without failing.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+    });
+    const image = await sharp({
+      create: {
+        width: 120,
+        height: 80,
+        channels: 3,
+        background: { r: 0, g: 128, b: 255 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    // Fire several requests together so they all miss the cache and race to create the derivative
+    // with the same deterministic name; the loser(s) hit the unique constraint.
+    const responses = await Promise.all(
+      Array.from({ length: 8 }, () =>
+        request.get(`/api/apps/${app.id}/assets/${asset.id}`, { responseType: 'arraybuffer' }),
+      ),
+    );
+
+    for (const response of responses) {
+      expect(response).toMatchObject({
+        status: 200,
+        headers: expect.objectContaining({
+          'content-type': 'image/avif',
+        }),
+      });
+    }
+
+    const cachedAssets = await Asset.findAll({
+      where: { name: `${asset.id}-full-avif` },
+      attributes: ['id'],
+    });
+    expect(cachedAssets).toHaveLength(1);
+  });
+
   it('should resize the image when the requested size is smaller.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
