@@ -8,6 +8,34 @@ import { CollapsibleListComponent } from './components/CollapsibleList/index.js'
 import { ListItem } from './components/ListItem/index.js';
 import styles from './index.module.css';
 
+/**
+ * Group items by the value of their `groupBy` field.
+ *
+ * @param data The items to group.
+ * @param groupBy The item field to group by.
+ * @param groups The group names in display order, or null when no ordered groups were provided.
+ * @returns The grouped items, keyed by group name, and the items that matched no group.
+ */
+export function groupItems(
+  data: Item[],
+  groupBy: string,
+  groups: string[] | null,
+): { groupedData: Record<string, Item[]>; leftoverData: Item[] } {
+  const groupedData: Record<string, Item[]> = groups?.length
+    ? Object.fromEntries(groups.map((name) => [name, []]))
+    : {};
+  const leftoverData: Item[] = [];
+  for (const entry of data) {
+    const groupName = entry[groupBy];
+    if (groupName && typeof groupName === 'string') {
+      groupedData[groupName] = [...(groupedData[groupName] ?? []), entry];
+    } else {
+      leftoverData.push(entry);
+    }
+  }
+  return { groupedData, leftoverData };
+}
+
 export function List({
   data: blockData,
   dataTestId,
@@ -254,20 +282,9 @@ export function List({
 
   useEffect(() => {
     if (data != null && groupBy) {
-      const newGroupedData: Record<string, Item[]> = groups.length
-        ? Object.fromEntries(groups.map((name) => [name, []]))
-        : {};
-      const newLeftoverData: Item[] = [];
-      for (const entry of data) {
-        const groupName = entry[groupBy];
-        if (groupName && typeof groupName === 'string') {
-          newGroupedData[groupName] = [...(newGroupedData[groupName] ?? []), entry];
-        } else {
-          newLeftoverData.push(entry);
-        }
-      }
-      setGroupedData(newGroupedData);
-      setLeftoverData(newLeftoverData);
+      const { groupedData: grouped, leftoverData: leftover } = groupItems(data, groupBy, groups);
+      setGroupedData(grouped);
+      setLeftoverData(leftover);
     }
   }, [data, groupBy, groups]);
 
