@@ -32,7 +32,7 @@ the fields below and submit to connect the app to your SMTP server.
 
 | Field          | Description                                                                                                                    |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Email name     | The name displayed as sender for emails sent from this app. For example: `John Doe <test@example.com>`, or `test@example.com`. |
+| Email name     | The display name shown as sender for emails sent from this app. For example: `John Doe`.                                      |
 | Email host     | The hostname of the custom SMTP server. For example: `smtp.gmail.com`.                                                         |
 | Email username | The username used to authenticate against the SMTP server. This address is also used as the sender address of the emails.      |
 | Email password | The password used to authenticate against the SMTP server. It is encrypted when stored and is never returned by the API.       |
