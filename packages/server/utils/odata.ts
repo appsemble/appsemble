@@ -54,6 +54,25 @@ const operators = new Map([
   [TokenType.ModExpression, '%'],
 ]);
 
+/**
+ * OData literal types which may be used as the scalar value of a JSONB containment expression.
+ *
+ * `Edm.null` is excluded because containment cannot express a null/missing check. Dates and GUIDs
+ * are excluded to keep their text-based comparison semantics.
+ */
+const containmentLiteralTypes = new Set<unknown>([
+  Edm.Boolean,
+  Edm.Byte,
+  Edm.Decimal,
+  Edm.Double,
+  Edm.Int16,
+  Edm.Int32,
+  Edm.Int64,
+  Edm.SByte,
+  Edm.Single,
+  Edm.String,
+]);
+
 type MethodConverter = [Edm[], (...args: any[]) => Fn | Where];
 
 function whereFunction(op: symbol): (haystack: any, needle: any) => Where {
@@ -141,7 +160,99 @@ function processMethod(token: Token, tableName: string, rename: Rename): Fn | Wh
   return implementation(...parsedParameters);
 }
 
-function processToken(token: Token, tableName: string, rename: Rename): WhereOptions | WhereValue {
+/**
+ * Translate an equality comparison between a path into a JSONB column and a scalar literal into a
+ * query the GIN index on the column can answer.
+ *
+ * The plain text extraction comparison `("data"#>>'{foo}') = 'bar'` cannot use a GIN index, so
+ * PostgreSQL extracts and compares text for every row of the bitmap scan. A containment
+ * expression such as `"Resource"."data" @> '{"foo":"bar"}'` is answered through the index.
+ *
+ * For a number or boolean literal the text extraction comparison is invalid SQL (`text = 12`
+ * has no operator), so the type-exact containment expression is the only working translation.
+ *
+ * A string literal keeps the text extraction comparison for exact semantics: it also matches
+ * rows where the stored value is a number or boolean whose text rendering equals the literal
+ * (e.g. `'123'` matches the stored number `123`). That comparison is AND-ed with a containment
+ * disjunction covering every JSON value the literal can render from, so the index prunes the
+ * candidate rows without ever changing the result.
+ *
+ * @param token The equals expression token to process.
+ * @param tableName The name of the table to do a query for.
+ * @param rename A rename function.
+ * @param jsonbColumns Names of JSONB columns for which containment may be used.
+ * @returns The index enabled equality expression, or undefined if the comparison is not an
+ *   equality between a path into one of `jsonbColumns` and a scalar literal.
+ */
+function processContainment(
+  token: Token,
+  tableName: string,
+  rename: Rename,
+  jsonbColumns: string[],
+): Where | WhereOptions | undefined {
+  const { left, right } = token.value as { left: Token; right: Token };
+  let propertyToken: Token;
+  let literalToken: Token;
+  if (left.type === TokenType.FirstMemberExpression && right.type === TokenType.Literal) {
+    propertyToken = left;
+    literalToken = right;
+  } else if (right.type === TokenType.FirstMemberExpression && left.type === TokenType.Literal) {
+    propertyToken = right;
+    literalToken = left;
+  } else {
+    return;
+  }
+  if (!containmentLiteralTypes.has(literalToken.value)) {
+    return;
+  }
+  const [column, ...path] = rename(propertyToken.raw).replaceAll('/', '.').split('.');
+  if (!path.length || !jsonbColumns.includes(column)) {
+    return;
+  }
+
+  const value = processLiteral(literalToken);
+  const contain = (scalar: unknown): Where => {
+    let nested = scalar;
+    for (let index = path.length - 1; index >= 0; index -= 1) {
+      nested = { [path[index]]: nested };
+    }
+    return where(col(`${tableName}.${column}`), { [Op.contains]: JSON.stringify(nested) });
+  };
+
+  if (literalToken.value !== Edm.String) {
+    return contain(value);
+  }
+
+  const textComparison = where(
+    processName(propertyToken, tableName, rename) as WhereValue,
+    '=',
+    value,
+  );
+  const variants = [contain(value)];
+  try {
+    const parsed = JSON.parse(value as string);
+    if (typeof parsed === 'number' && JSON.stringify(parsed) !== value) {
+      return textComparison;
+    }
+    if (typeof parsed !== 'string') {
+      variants.push(contain(parsed));
+    }
+  } catch {
+    // The literal is not the text rendering of any non-string JSON value, so the string
+    // containment variant covers everything the text extraction comparison can match.
+  }
+  return {
+    [Op.and]: [textComparison, variants.length > 1 ? { [Op.or]: variants } : variants[0]],
+  };
+}
+
+function processToken(
+  token: Token,
+  tableName: string,
+  rename: Rename,
+  jsonbColumns: string[],
+  negated: boolean,
+): WhereOptions | WhereValue {
   if (token.type === 'FirstMemberExpression') {
     return processName(token, tableName, rename) as WhereValue;
   }
@@ -149,13 +260,22 @@ function processToken(token: Token, tableName: string, rename: Rename): WhereOpt
     return processMethod(token, tableName, rename);
   }
   if (token.type === TokenType.ParenExpression) {
-    return processToken(token.value, tableName, rename);
+    return processToken(token.value, tableName, rename, jsonbColumns, negated);
   }
   if (operators.has(token.type)) {
+    // A negated containment expression also matches rows where the path is absent, whereas a
+    // negated text extraction comparison evaluates to null for those rows and matches nothing, so
+    // containment only applies outside negations.
+    if (token.type === TokenType.EqualsExpression && !negated) {
+      const containment = processContainment(token, tableName, rename, jsonbColumns);
+      if (containment) {
+        return containment;
+      }
+    }
     return where(
-      processToken(token.value.left, tableName, rename),
+      processToken(token.value.left, tableName, rename, jsonbColumns, negated),
       operators.get(token.type)!,
-      processToken(token.value.right, tableName, rename),
+      processToken(token.value.right, tableName, rename, jsonbColumns, negated),
     );
   }
 
@@ -175,15 +295,25 @@ function processToken(token: Token, tableName: string, rename: Rename): WhereOpt
  * @param token The token to process.
  * @param tableName The name of the table to do a query for.
  * @param rename A rename function.
+ * @param jsonbColumns Names of JSONB columns for which containment may be used.
+ * @param negated Whether the token is nested in an odd number of `not` expressions.
  * @returns The Sequelize query that matches the given token.
  */
-function processLogicalExpression(token: Token, tableName: string, rename: Rename): WhereOptions {
+function processLogicalExpression(
+  token: Token,
+  tableName: string,
+  rename: Rename,
+  jsonbColumns: string[],
+  negated: boolean,
+): WhereOptions {
   if (token.type === TokenType.BoolParenExpression || token.type === TokenType.CommonExpression) {
-    return processLogicalExpression(token.value, tableName, rename);
+    return processLogicalExpression(token.value, tableName, rename, jsonbColumns, negated);
   }
 
   if (token.type === TokenType.NotExpression) {
-    return { [Op.not]: processLogicalExpression(token.value, tableName, rename) };
+    return {
+      [Op.not]: processLogicalExpression(token.value, tableName, rename, jsonbColumns, !negated),
+    };
   }
 
   const op =
@@ -193,11 +323,15 @@ function processLogicalExpression(token: Token, tableName: string, rename: Renam
         ? Op.or
         : undefined;
   if (!op) {
-    return processToken(token, tableName, rename) as WhereOptions;
+    return processToken(token, tableName, rename, jsonbColumns, negated) as WhereOptions;
   }
   const flatten = (expr: any): WhereOptions => (op in expr ? expr[op] : expr);
-  const left = flatten(processLogicalExpression(token.value.left, tableName, rename));
-  const right = flatten(processLogicalExpression(token.value.right, tableName, rename));
+  const left = flatten(
+    processLogicalExpression(token.value.left, tableName, rename, jsonbColumns, negated),
+  );
+  const right = flatten(
+    processLogicalExpression(token.value.right, tableName, rename, jsonbColumns, negated),
+  );
   return { [op]: ([] as WhereOptions[]).concat(left).concat(right) };
 }
 
@@ -207,18 +341,22 @@ function processLogicalExpression(token: Token, tableName: string, rename: Renam
  * @param query The OData query to convert to a Sequelize query.
  * @param tableName The name of the table to parse the query for.
  * @param rename A function for renaming incoming property names.
+ * @param jsonbColumns Names of JSONB columns. Equality comparisons between a path into one of
+ *   these columns and a scalar literal are translated to expressions a GIN index on the column
+ *   can answer.
  * @returns The OData filter converted to a Sequelize query.
  */
 export function odataFilterToSequelize(
   query: Token | string,
   tableName: string,
   rename: Rename = defaultRename,
+  jsonbColumns: string[] = [],
 ): WhereOptions {
   if (!query) {
     return {};
   }
   const ast = typeof query === 'string' ? defaultParser.filter(query) : query;
-  return processLogicalExpression(ast, tableName, rename);
+  return processLogicalExpression(ast, tableName, rename, jsonbColumns, false);
 }
 
 export function odataOrderbyToSequelize(

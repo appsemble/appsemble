@@ -372,6 +372,7 @@ export function parseQuery({
           .replaceAll(/(^|\B)\$ephemeral(\b|$)/g, '__ephemeral__'),
         tableName,
         renameOData,
+        ['data'],
       )
     : undefined;
 
