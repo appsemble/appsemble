@@ -8,7 +8,7 @@ bootstrap(
     events,
     parameters: { itemsPerPage, paginationType = 'limit-offset', paginatorType = 'buttons' },
     ready,
-    utils: { formatMessage },
+    utils: { formatMessage, isActionOwnerAbortError },
   }) => {
     const [page, setPage] = useState(0);
     const [pageCount, setPageCount] = useState<number>();
@@ -69,10 +69,14 @@ bootstrap(
         const data = await actions.onLoad(paginationObject);
         events.emit.paginated(data);
       } catch (error: unknown) {
-        events.emit.paginated(null, error as any);
+        // The block was unmounted mid-load, e.g. by switching tabs. The load was cancelled, not
+        // failed, so there is nothing to report.
+        if (!isActionOwnerAbortError(error)) {
+          events.emit.paginated(null, error as any);
+        }
       }
       setLoading(false);
-    }, [actions, events.emit, itemsPerPage, page, paginationType]);
+    }, [actions, events.emit, isActionOwnerAbortError, itemsPerPage, page, paginationType]);
 
     useEffect(() => {
       fetchData();

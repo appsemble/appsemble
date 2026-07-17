@@ -23,7 +23,7 @@ import { type ActionCreators } from '../../utils/actions/index.js';
 import { callBootstrap } from '../../utils/bootstrapper.js';
 import { createEvents } from '../../utils/events.js';
 import { injectCSS } from '../../utils/injectCSS.js';
-import { makeActions } from '../../utils/makeActions.js';
+import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
 import { apiUrl, appId, appUpdated } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -239,6 +239,9 @@ export function Block({
       fa,
       isActionError(input): input is ActionError {
         return input instanceof ActionError;
+      },
+      isActionOwnerAbortError(input) {
+        return isActionOwnerAbortError(input);
       },
       menu(items, header) {
         setBlockMenu({ items, header, path: prefix });
