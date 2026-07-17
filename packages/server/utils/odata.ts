@@ -311,8 +311,16 @@ function processLogicalExpression(
   }
 
   if (token.type === TokenType.NotExpression) {
+    // Sequelize v6 silently drops an `Op.not` that directly wraps a `where()` instance: the
+    // generated SQL contains the inner condition without the `NOT`. Wrapping the inner
+    // expression in an `Op.and` group forces Sequelize to render `NOT (...)`, so the negation
+    // applies to every negatable expression, including single comparisons and method calls.
     return {
-      [Op.not]: processLogicalExpression(token.value, tableName, rename, jsonbColumns, !negated),
+      [Op.not]: {
+        [Op.and]: [
+          processLogicalExpression(token.value, tableName, rename, jsonbColumns, !negated),
+        ],
+      },
     };
   }
 
