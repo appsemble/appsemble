@@ -342,6 +342,45 @@ const pendingAppDBs = new Map<number, Promise<void>>();
 let activeTeardown: Promise<void> | undefined;
 
 /**
+ * Fire-and-forget work that queries app databases after a request has already responded, such as
+ * resource notification hooks. It is tracked so a teardown can wait for it to finish instead of
+ * dropping an app database's tables out from under an in-flight query.
+ */
+const backgroundTasks = new Set<Promise<unknown>>();
+
+/**
+ * Track a fire-and-forget promise so {@link dropAndCloseAllAppDBs} waits for it before dropping app
+ * database tables, and so its rejection is logged instead of becoming an unhandled rejection.
+ *
+ * @param task The background promise to track.
+ * @returns A settled-safe promise for the task; awaiting it never rejects.
+ */
+export function trackBackgroundTask(task: Promise<unknown>): Promise<void> {
+  const tracked = Promise.resolve(task)
+    .catch((error: unknown) => {
+      logger.error(error as Error);
+    })
+    .finally(() => {
+      backgroundTasks.delete(tracked);
+    }) as Promise<void>;
+  backgroundTasks.add(tracked);
+  return tracked;
+}
+
+/**
+ * Wait for all tracked background tasks to settle.
+ *
+ * A task may schedule further tasks (a hook triggering another hook), so this drains until quiescent
+ * rather than awaiting a single snapshot. It is bounded so a task that keeps scheduling work cannot
+ * hang teardown forever.
+ */
+async function settleBackgroundTasks(): Promise<void> {
+  for (let round = 0; backgroundTasks.size && round < 100; round += 1) {
+    await Promise.allSettled(backgroundTasks);
+  }
+}
+
+/**
  * Interval in milliseconds between idle checks when lazily closing a displaced app database.
  */
 const appDBCloseInterval = 10_000;
@@ -570,6 +609,11 @@ export async function dropAndCloseAllAppDBs(): Promise<void> {
   while (activeTeardown) {
     await activeTeardown;
   }
+
+  // Let fire-and-forget background work (resource hooks querying app databases) finish before
+  // dropping any tables, so a drop never races an in-flight query. This runs before `activeTeardown`
+  // is published so the background work's own getAppDB() calls are not blocked by this teardown.
+  await settleBackgroundTasks();
 
   // Snapshotting the pending initializations and publishing the teardown both happen in this
   // synchronous run, so a racing `getAppDB()` is either already in the snapshot below or observes
