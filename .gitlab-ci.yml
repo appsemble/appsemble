@@ -1,5 +1,12 @@
 default:
   image: node:24-trixie-slim
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - scheduler_failure
+      - api_failure
 
 stages:
   - security
