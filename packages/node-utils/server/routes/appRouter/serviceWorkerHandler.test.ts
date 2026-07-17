@@ -37,6 +37,7 @@ describe('createServiceWorkerHandler', () => {
 
     const response = await request.get('/service-worker.js', {
       headers: { 'if-none-match': initial.headers.etag },
+      validateStatus: (status) => status === 304,
     });
 
     expect(response.status).toBe(304);
