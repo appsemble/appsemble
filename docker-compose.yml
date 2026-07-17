@@ -10,6 +10,18 @@ services:
     ports:
       - '5432:5432'
 
+  pgbouncer:
+    image: edoburu/pgbouncer:v1.25.2-p0
+    container_name: pgbouncer
+    restart: always
+    depends_on:
+      - postgres-dev
+    ports:
+      - '6432:6432'
+    volumes:
+      - ./pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini
+      - ./pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt
+
   # A database using tmpfs for faster test runs.
   postgres-test:
     image: postgres:14

@@ -1106,6 +1106,8 @@ update dependencies:
     on_stop: stop review
   variables:
     GIT_STRATEGY: fetch
+    # Matches the chart default global.postgresql.auth.username.
+    POSTGRES_APP_USER: appsemble
   retry:
     max: 1
     when:
@@ -1122,6 +1124,13 @@ update dependencies:
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-valkey --from-literal "password=$(openssl rand -base64 30)"
+    # PgBouncer setup, auth file generation
+    - |
+      POSTGRES_PASSWORD="$(kubectl get secret postgresql-secret -o jsonpath='{.data.password}' | base64 -d)"
+
+      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
+    - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt
+    - rm pgbouncer-userlist.txt
     # Stripe webhook setup
     - |
       STRIPE_RELEASE_URL=$(curl -fsSL -H 'User-Agent: appsemble-ci' \
@@ -1205,6 +1214,8 @@ update dependencies:
       --set "valkey.resources.limits.cpu=250m"
       --set "valkey.resources.limits.memory=128Mi"
       --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
+      --set "pgbouncer.enabled=true"
+      --set "pgbouncer.auth.existingSecret=review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist"
       --set "backups.enabled=false"
 
 review:
@@ -1256,6 +1267,8 @@ staging:
     url: https://appsemble.eu
   variables:
     GIT_STRATEGY: none
+    # Matches the chart default global.postgresql.auth.username.
+    POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
     # This is the only way to make sure staging can be overwritten
@@ -1272,6 +1285,13 @@ staging:
     - '[ -n "$STAGING_BACKUPS_HOST" ] || { echo "Please set STAGING_BACKUPS_HOST for staging backup destination" >&2; exit 1; }'
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
+    # PgBouncer auth file, generated from the PostgreSQL user password
+    - |
+      POSTGRES_PASSWORD="$(kubectl get secret postgresql-secret -o jsonpath='{.data.password}' | base64 -d)"
+
+      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
+    - kubectl create secret generic staging-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
+    - rm pgbouncer-userlist.txt
     - helm install staging ./public/appsemble-*.tgz
       --atomic
       --timeout 30m0s
@@ -1329,6 +1349,8 @@ staging:
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "valkey.fullnameOverride=staging-valkey"
       --set "valkey.auth.usersExistingSecret=valkey"
+      --set "pgbouncer.enabled=true"
+      --set "pgbouncer.auth.existingSecret=staging-pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=50m"
       --set "valkey.resources.requests.memory=64Mi"
       --set "valkey.resources.limits.cpu=500m"
@@ -1357,6 +1379,8 @@ production:
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
+    # Matches the chart default global.postgresql.auth.username.
+    POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:production"
     - kubectl config set-context --current --namespace default
@@ -1390,6 +1414,13 @@ production:
     - rm mailpit.key mailpit.crt
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
+    # PgBouncer auth file, generated from the PostgreSQL user password
+    - |
+      POSTGRES_PASSWORD="$(kubectl get secret "$POSTGRESQL_SECRET" -o jsonpath='{.data.password}' | base64 -d)"
+
+      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
+    - kubectl create secret generic pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
+    - rm pgbouncer-userlist.txt
     - kubectl rollout restart deployment appsemble-mailpit || true
     - helm upgrade appsemble appsemble/appsemble
       --debug
@@ -1439,6 +1470,8 @@ production:
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "valkey.fullnameOverride=appsemble-valkey"
       --set "valkey.auth.usersExistingSecret=valkey"
+      --set "pgbouncer.enabled=true"
+      --set "pgbouncer.auth.existingSecret=pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=100m"
       --set "valkey.resources.requests.memory=128Mi"
       --set "valkey.resources.limits.cpu=1"

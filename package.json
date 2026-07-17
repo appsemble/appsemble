@@ -13,7 +13,7 @@
     "prepare": "husky install || true",
     "prettier": "prettier --check",
     "scripts": "tsx packages/scripts/index.ts",
-    "start": "tsx packages/cli/index.ts start --remote https://appsemble.app",
+    "start": "tsx packages/cli/index.ts start --remote https://appsemble.app --database-port 6432",
     "stylelint": "stylelint .",
     "test": "vitest"
   },
