@@ -15,10 +15,6 @@ describe('bulmaHandler', () => {
     await setTestApp(app);
   });
 
-  beforeEach(async () => {
-    await Theme.destroy({ truncate: true });
-  });
-
   it('should serve compiled css for the requested theme and persist it', async () => {
     const response = await request.get(bulmaUrl);
     expect(response.status).toBe(200);
