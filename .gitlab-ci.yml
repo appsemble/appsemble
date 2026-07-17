@@ -889,6 +889,7 @@ e2e keycloak:
     matrix:
       - KEYCLOAK_PROTOCOL: oidc
       - KEYCLOAK_PROTOCOL: saml
+      - KEYCLOAK_PROTOCOL: entra-broker
   variables:
     FF_NETWORK_PER_BUILD: 'true'
     DATABASE_HOST: database

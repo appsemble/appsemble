@@ -2,13 +2,16 @@ import { type App, type AppOAuth2Secret } from '@appsemble/types';
 
 import { expect, authenticatedTest as test } from '../../../index.js';
 import pkg from '../../../package.json' with { type: 'json' };
+import {
+  createGroup,
+  createRealm,
+  createUser,
+  getAdminToken,
+  joinGroup,
+  requestKc,
+} from './utils/keycloak-admin.js';
 
-const {
-  KEYCLOAK_ADMIN_PASSWORD = 'password',
-  KEYCLOAK_ADMIN_USERNAME = 'admin',
-  KEYCLOAK_BASE_URL,
-  KEYCLOAK_REALM = 'appsemble-e2e',
-} = process.env;
+const { KEYCLOAK_BASE_URL, KEYCLOAK_REALM = 'appsemble-e2e' } = process.env;
 
 const clientId = 'appsemble-oidc';
 const clientSecret = 'appsemble-oidc-secret';
@@ -19,127 +22,13 @@ let app: App;
 let organizationId: string;
 let secret: AppOAuth2Secret;
 
-async function requestKc(
-  path: string,
-  {
-    body,
-    expectedStatuses,
-    method,
-    token,
-  }: {
-    body?: string;
-    expectedStatuses: number[];
-    method: 'DELETE' | 'POST' | 'PUT';
-    token: string;
-  },
-): Promise<Response> {
-  const response = await fetch(`${KEYCLOAK_BASE_URL}${path}`, {
-    body,
-    headers: {
-      authorization: `Bearer ${token}`,
-      'content-type': 'application/json',
-    },
-    method,
-  });
-
-  if (!expectedStatuses.includes(response.status)) {
-    throw new Error(`${method} ${path} returned ${response.status}: ${await response.text()}`);
-  }
-
-  return response;
-}
-
-async function getAdminToken(): Promise<string> {
-  for (let attempt = 0; attempt < 60; attempt += 1) {
-    try {
-      const response = await fetch(
-        `${KEYCLOAK_BASE_URL}/realms/master/protocol/openid-connect/token`,
-        {
-          body: new URLSearchParams({
-            client_id: 'admin-cli',
-            grant_type: 'password',
-            password: KEYCLOAK_ADMIN_PASSWORD,
-            username: KEYCLOAK_ADMIN_USERNAME,
-          }),
-          headers: { 'content-type': 'application/x-www-form-urlencoded' },
-          method: 'POST',
-        },
-      );
-
-      if (response.ok) {
-        const { access_token: token } = (await response.json()) as { access_token: string };
-        return token;
-      }
-    } catch {
-      // The service may still be starting.
-    }
-
-    await new Promise((resolve) => {
-      setTimeout(resolve, 1000);
-    });
-  }
-
-  throw new Error('Could not obtain Keycloak admin token');
-}
-
-async function createGroup(token: string, name: string, parentGroupId?: string): Promise<string> {
-  const path = parentGroupId
-    ? `/admin/realms/${KEYCLOAK_REALM}/groups/${parentGroupId}/children`
-    : `/admin/realms/${KEYCLOAK_REALM}/groups`;
-  const response = await requestKc(path, {
-    body: JSON.stringify({ name }),
-    expectedStatuses: [201],
-    method: 'POST',
-    token,
-  });
-
-  return response.headers.get('location')!.split('/').pop()!;
-}
-
-async function createUser(token: string): Promise<string> {
-  const response = await requestKc(`/admin/realms/${KEYCLOAK_REALM}/users`, {
-    body: JSON.stringify({
-      credentials: [{ temporary: false, type: 'password', value: userPassword }],
-      email: userEmail,
-      emailVerified: true,
-      enabled: true,
-      firstName: 'Keycloak',
-      lastName: 'User',
-      username: userEmail,
-    }),
-    expectedStatuses: [201],
-    method: 'POST',
-    token,
-  });
-
-  return response.headers.get('location')!.split('/').pop()!;
-}
-
-async function joinGroup(token: string, userId: string, groupId: string): Promise<void> {
-  await requestKc(`/admin/realms/${KEYCLOAK_REALM}/users/${userId}/groups/${groupId}`, {
-    expectedStatuses: [204],
-    method: 'PUT',
-    token,
-  });
-}
-
 async function configureRealm(): Promise<void> {
   const token = await getAdminToken();
-  await requestKc(`/admin/realms/${KEYCLOAK_REALM}`, {
-    expectedStatuses: [204, 404],
-    method: 'DELETE',
-    token,
-  });
-  await requestKc('/admin/realms', {
-    body: JSON.stringify({ enabled: true, realm: KEYCLOAK_REALM }),
-    expectedStatuses: [201],
-    method: 'POST',
-    token,
-  });
+  await createRealm(token, KEYCLOAK_REALM);
 
-  const parentGroupId = await createGroup(token, 'Appsemble');
-  const managersGroupId = await createGroup(token, 'Managers', parentGroupId);
-  const editorsGroupId = await createGroup(token, 'Editors', parentGroupId);
+  const parentGroupId = await createGroup(token, KEYCLOAK_REALM, 'Appsemble');
+  const managersGroupId = await createGroup(token, KEYCLOAK_REALM, 'Managers', parentGroupId);
+  const editorsGroupId = await createGroup(token, KEYCLOAK_REALM, 'Editors', parentGroupId);
 
   await requestKc(`/admin/realms/${KEYCLOAK_REALM}/clients`, {
     body: JSON.stringify({
@@ -173,9 +62,14 @@ async function configureRealm(): Promise<void> {
     token,
   });
 
-  const userId = await createUser(token);
-  await joinGroup(token, userId, managersGroupId);
-  await joinGroup(token, userId, editorsGroupId);
+  const userId = await createUser(token, KEYCLOAK_REALM, {
+    email: userEmail,
+    firstName: 'Keycloak',
+    lastName: 'User',
+    password: userPassword,
+  });
+  await joinGroup(token, KEYCLOAK_REALM, userId, managersGroupId);
+  await joinGroup(token, KEYCLOAK_REALM, userId, editorsGroupId);
 }
 
 test.describe('App Keycloak OIDC login', () => {
