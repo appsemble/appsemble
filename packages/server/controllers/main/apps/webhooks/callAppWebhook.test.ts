@@ -475,7 +475,6 @@ describe('callAppWebhook', () => {
             category: 'Example category',
             count: 10,
             image: '1',
-            // A numeric string on a non-binary property must not be resolved to an asset.
             reference: '0',
           },
         },
