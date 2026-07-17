@@ -80,6 +80,7 @@ classDiagram
       +resolve() Resolution
       +identity Identity
       +localValid boolean
+      +localValue() unknown
       +child(key) Node
       +children() Node[]
       +parent() Node
@@ -190,6 +191,41 @@ classDiagram
     }
   }
 
+  namespace overlay_ts {
+    class TypedNode {
+      <<type-only view>>
+      +val V
+      +child(key) TypedNode
+      +children() TypedNode[]
+      +as(name) TypedNode
+      +nearest(name) TypedNode
+      +is(name) boolean
+      +localValue() V
+    }
+    class TypedLanguageCtx {
+      <<type-only view>>
+      +root(data) TypedNode
+    }
+    class OverlayFns {
+      <<util fns>>
+      +typed(ctx) TypedLanguageCtx
+      +compileTyped(schemas, rootName) TypedLanguageCtx
+    }
+    class ChildValue {
+      <<type>>
+      +array element / property
+    }
+  }
+
+  namespace overlay_schema_ts {
+    class SchemaOverlay {
+      <<opt-in, FromSchema>>
+      +LocalValue shallow
+      +LCValue deep
+      +DeriveComponents
+    }
+  }
+
   LanguageComponent *-- LanguageComponentBinding
   LanguageComponent ..> LanguageCtx : feeds compile
   LanguageCtx *-- SchemaRegistry : owns
@@ -213,6 +249,10 @@ classDiagram
   Mount --> Identity
   Identity o-- Identity : parts
   ScanHit --> SchemaTag
+  TypedNode ..> Node : typed view of
+  TypedLanguageCtx ..> LanguageCtx : typed view of
+  OverlayFns ..> LanguageCtx : wraps compile
+  SchemaOverlay ..> TypedNode : derives value types (opt-in)
 ```
 
 ## Engine
@@ -406,13 +446,22 @@ augmentation in `types.ts`.
 
 ## Optional type overlay (Tier-2)
 
-`overlay.ts` is an `import type`-only layer (zero runtime) that, where a schema is known as a
-`const` type, derives its value type (`LCValue<Comp, Refs>` via `FromSchema`) and gives the node
-surface component-aware generics: structural `child(key)` narrowing and registry-driven
-`is`/`as`/`nearest` narrowing without hand-written predicates. It depends on the
-`ngruychev/json-schema-to-ts` fork's `ignoreRefSiblings` option (draft-07) so recursive
-language-component schemas stay type-checkable. The runtime engine is untouched; a consumer opts
-into the typed view by compiling with `const` schemas.
+`overlay.ts` is a typed VIEW over the runtime cursor: `import type` plus one boundary cast, zero
+runtime, and no json-schema dependency. A consumer brings a `Components` registry (component name ->
+value type) and the value types themselves — hand-written lang-sdk interfaces (natively recursive,
+so cyclic components need no `Omit`) or types derived from `const` schemas. `TypedNode<V, C>` slices
+the value type `V` by array-aware indexed access (`child`) and narrows by registry lookup
+(`as`/`nearest`/`is`); `compileTyped`/`typed` are the entrypoints. It stays finite over deeply
+recursive component graphs precisely because it never transforms a schema type internally — a
+recursive interface is already tied off nominally, whereas re-deriving that shape from schema
+literals inside a recursive cursor surface over-instantiates (TS2589).
+
+`overlay-schema.ts` is the opt-in `FromSchema` derivation
+(`LocalValue`/`LCValue`/`DeriveComponents`) for consumers who want value types generated from
+`const` schema literals. It is the only part that touches the published
+`@ngruychev/json-schema-to-ts` fork's `ignoreRefSiblings` option (draft-07), and it is a deep import
+— the barrel never pulls it in, so the overlay's recursion-safety is unconditional. The runtime
+engine is untouched throughout.
 
 ## Identity
 
