@@ -188,7 +188,8 @@ npm_ci:
       - '**/node_modules'
     expire_in: 1 day
   script:
-    - npm ci
+    # ponytail: retry to survive transient prebuild-install/registry download timeouts (e.g. keytar)
+    - npm ci || npm ci || npm ci
 
 # Build the Docker image.
 build docker image:
