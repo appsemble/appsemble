@@ -334,6 +334,14 @@ const appDBs = new Map<number, AppDB>();
 const pendingAppDBs = new Map<number, Promise<void>>();
 
 /**
+ * The teardown that is currently dropping and closing every cached app database, if any.
+ *
+ * While it is set, `getAppDB()` waits for it to finish before initializing anything, so no
+ * migration runs against an app database whose tables are being dropped.
+ */
+let activeTeardown: Promise<void> | undefined;
+
+/**
  * Interval in milliseconds between idle checks when lazily closing a displaced app database.
  */
 const appDBCloseInterval = 10_000;
@@ -502,6 +510,13 @@ export async function getAppDB(
   replace?: boolean,
   aesSecret?: string,
 ): Promise<AppDB> {
+  // Never initialize an app database while a teardown is dropping tables. Waiting keeps
+  // initialization from running its migrations against a database whose tables are being dropped,
+  // and lets the fresh instance start from the cleared cache once teardown has finished.
+  while (activeTeardown) {
+    await activeTeardown;
+  }
+
   const cached = appDBs.get(appId);
   if (cached && replace !== true) {
     // Re-insert the entry so eviction targets the least recently used app database.
@@ -551,23 +566,40 @@ export async function closeAppDB(appId: number): Promise<void> {
 }
 
 export async function dropAndCloseAllAppDBs(): Promise<void> {
-  await Promise.allSettled(pendingAppDBs.values());
+  // Serialize concurrent teardowns so each one drops and closes a consistent snapshot.
+  while (activeTeardown) {
+    await activeTeardown;
+  }
 
-  // Detach every instance from the cache before dropping and closing it. Removing entries up front
-  // keeps the cache consistent even if a close is interrupted or a connection was already closed,
-  // so a single failed teardown cannot leave a closed instance behind that breaks every subsequent
-  // teardown.
-  const appDBsToClose = [...appDBs.values()];
-  appDBs.clear();
+  // Snapshotting the pending initializations and publishing the teardown both happen in this
+  // synchronous run, so a racing `getAppDB()` is either already in the snapshot below or observes
+  // `activeTeardown` and waits instead of initializing against the databases being dropped.
+  const teardown = (async () => {
+    await Promise.allSettled(pendingAppDBs.values());
 
-  await Promise.all(
-    appDBsToClose.map(async ({ sequelize }) => {
-      try {
-        await sequelize.getQueryInterface().dropAllTables();
-        await sequelize.close();
-      } catch (error) {
-        logger.error(error as Error);
-      }
-    }),
-  );
+    // Detach every instance from the cache before dropping and closing it. Removing entries up
+    // front keeps the cache consistent even if a close is interrupted or a connection was already
+    // closed, so a single failed teardown cannot leave a closed instance behind that breaks every
+    // subsequent teardown.
+    const appDBsToClose = [...appDBs.values()];
+    appDBs.clear();
+
+    await Promise.all(
+      appDBsToClose.map(async ({ sequelize }) => {
+        try {
+          await sequelize.getQueryInterface().dropAllTables();
+          await sequelize.close();
+        } catch (error) {
+          logger.error(error as Error);
+        }
+      }),
+    );
+  })();
+
+  activeTeardown = teardown;
+  try {
+    await teardown;
+  } finally {
+    activeTeardown = undefined;
+  }
 }
