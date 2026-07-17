@@ -1447,6 +1447,161 @@ describe('queryAppResources', () => {
     ]);
   });
 
+  it('should negate a data-property equality comparison with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'match' } });
+    const other = await Resource.create({ type: 'testResource', data: { foo: 'other' } });
+    // Row without foo: the text extraction is null, so the negated comparison is null too.
+    await Resource.create({ type: 'testResource', data: { number: 1 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (foo eq 'match')" },
+    });
+
+    // The filter not (foo eq 'match') follows SQL three-valued logic: only rows whose foo
+    // has a concrete value other than 'match' are returned. The matching row and rows
+    // without foo are excluded, matching the semantics of `foo ne 'match'`.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([other.id]);
+  });
+
+  it('should turn a negated inequality into an equality with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const match = await Resource.create({ type: 'testResource', data: { foo: 'match' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'other' } });
+    await Resource.create({ type: 'testResource', data: { number: 1 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (foo ne 'match')" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([match.id]);
+  });
+
+  it('should negate a greater-than comparison on a regular column with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const first = await Resource.create({ type: 'testResource', data: { foo: 'a' } });
+    const second = await Resource.create({ type: 'testResource', data: { foo: 'b' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'c' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'd' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: `not (id gt ${second.id})` },
+    });
+
+    // The filter not (id gt 2) keeps the rows with id 1 and 2.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([
+      first.id,
+      second.id,
+    ]);
+  });
+
+  it('should negate a contains function with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'foo' } });
+    const bar = await Resource.create({ type: 'testResource', data: { foo: 'bar' } });
+    await Resource.create({ type: 'testResource', data: { number: 1 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (contains(foo, 'oo'))" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([bar.id]);
+  });
+
+  it('should negate a startswith function with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'abc' } });
+    const other = await Resource.create({ type: 'testResource', data: { foo: 'xyz' } });
+    // Row without foo: the LIKE argument is null, so the negated match is null too.
+    await Resource.create({ type: 'testResource', data: { number: 1 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (startswith(foo, 'ab'))" },
+    });
+
+    // The startswith function uses a different operator (LIKE 'ab%') than contains, so its
+    // negation is covered separately: only the row whose foo has a concrete value not starting
+    // with 'ab' is returned; the matching and foo-less rows are excluded.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([other.id]);
+  });
+
+  it('should distribute not over and (De Morgan)', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'a', bar: 'b' } });
+    const second = await Resource.create({ type: 'testResource', data: { foo: 'a', bar: 'c' } });
+    const third = await Resource.create({ type: 'testResource', data: { foo: 'x', bar: 'b' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (foo eq 'a' and bar eq 'b')" },
+    });
+
+    // The filter not (foo eq 'a' and bar eq 'b') excludes only the row matching both.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([
+      second.id,
+      third.id,
+    ]);
+  });
+
+  it('should distribute not over or (De Morgan)', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'a' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'b' } });
+    const third = await Resource.create({ type: 'testResource', data: { foo: 'c' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (foo eq 'a' or foo eq 'b')" },
+    });
+
+    // The filter not (foo eq 'a' or foo eq 'b') excludes both disjuncts.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([third.id]);
+  });
+
+  it('should cancel a double negation', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const match = await Resource.create({ type: 'testResource', data: { foo: 'a' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'b' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (not (foo eq 'a'))" },
+    });
+
+    // The filter not (not (foo eq 'a')) is equivalent to foo eq 'a'.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([match.id]);
+  });
+
+  it('should negate a null check into a not-null check with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const set = await Resource.create({ type: 'testResource', data: { foo: 'a', bar: 'set' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'b', bar: null } });
+    await Resource.create({ type: 'testResource', data: { foo: 'c' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: 'not (bar eq null)' },
+    });
+
+    // The filter not (bar eq null) is the complement of the null/missing check: only rows
+    // whose bar has a concrete value are returned.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([set.id]);
+  });
+
   it('should be able to filter by author', async () => {
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const { AppMember, Resource } = await getAppDB(app.id);

@@ -1,4 +1,15 @@
-import { and, col, fn, json, Op, or, type Order, where, type WhereOptions } from 'sequelize';
+import {
+  and,
+  col,
+  fn,
+  json,
+  Op,
+  or,
+  type Order,
+  Sequelize,
+  where,
+  type WhereOptions,
+} from 'sequelize';
 import { describe, expect, it } from 'vitest';
 
 import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
@@ -117,7 +128,8 @@ describe('odataFilterToSequelize', () => {
     ),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Not
-    'not foo eq 12': { [Op.not]: where(col('Model.foo'), '=', 12) },
+    // Negation is asserted against the generated SQL in the 'applies NOT' describe block, since
+    // the where-object shape alone does not reveal whether the NOT survives into the SQL.
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Has
     // XXX
@@ -230,9 +242,6 @@ describe('odataFilterToSequelize', () => {
       where(col('Model.foo'), '=', 12),
       or(where(col('Model.bar'), '=', 14), where(col('Model.baz'), '=', 8)),
     ),
-    'not (foo eq 12 and bar eq 14)': {
-      [Op.not]: and(where(col('Model.foo'), '=', 12), where(col('Model.bar'), '=', 14)),
-    },
   };
 
   it.each(Object.entries(cases))('%s', (filter, expected) => {
@@ -247,6 +256,45 @@ describe('odataFilterToSequelize', () => {
     // (strictNullChecks)
     const result = odataFilterToSequelize(filter, 'Model');
     expect(result).toStrictEqual({});
+  });
+});
+
+describe('odataFilterToSequelize applies NOT to the generated SQL', () => {
+  // Sequelize v6 silently drops an `Op.not` that wraps a `where()` instance, so the negation must
+  // be verified against the rendered SQL rather than the where-object shape.
+  const sequelize = new Sequelize('postgres://user:password@localhost:5432/db', {
+    dialect: 'postgres',
+    logging: false,
+  });
+  const { queryGenerator } = sequelize.getQueryInterface() as unknown as {
+    queryGenerator: {
+      whereItemsQuery: (query: WhereOptions, options: Record<string, unknown>) => string;
+    };
+  };
+  const toSql = (filter: string): string =>
+    queryGenerator.whereItemsQuery(odataFilterToSequelize(filter, 'Model'), { model: null });
+
+  it('does not negate a plain comparison', () => {
+    expect(toSql('foo eq 12')).not.toMatch(/\bNOT\b/);
+  });
+
+  it('negates a single comparison', () => {
+    const sql = toSql('not foo eq 12');
+    expect(sql).toMatch(/\bNOT\b/);
+    expect(sql).toContain('"Model"."foo" = 12');
+  });
+
+  it('negates a method call', () => {
+    const sql = toSql("not contains(foo, 'bar')");
+    expect(sql).toMatch(/\bNOT\b/);
+    expect(sql).toContain(`"Model"."foo" LIKE '%bar%'`);
+  });
+
+  it('negates a grouped and expression', () => {
+    const sql = toSql('not (foo eq 12 and bar eq 14)');
+    expect(sql).toMatch(/\bNOT\b/);
+    expect(sql).toContain('"Model"."foo" = 12');
+    expect(sql).toContain('"Model"."bar" = 14');
   });
 });
 
