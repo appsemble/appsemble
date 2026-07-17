@@ -521,7 +521,7 @@ export interface Options {
   getBlockMessages: (params: GetBlockMessagesParams) => Promise<BlockMessages[]>;
   getBlockAsset: (params: GetBlockAssetParams) => Promise<ProjectAsset>;
   getBlocksAssetsPaths: (params: GetBlocksAssetsPathsParams) => Promise<string[]>;
-  getTheme: (params: GetThemeParams) => Promise<Theme>;
+  getTheme: (params: GetThemeParams) => Promise<Theme | null>;
   createTheme: (params: CreateThemeParams) => Promise<Theme>;
   getHost: (params: GetHostParams) => string;
   getCsp: (params: GetCspParams) => ContentSecurityPolicy;
