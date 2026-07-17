@@ -350,6 +350,22 @@ describe('makeActions', () => {
     expect(captureException).not.toHaveBeenCalled();
   });
 
+  it('should not report a dialog closed by the user to Sentry', async () => {
+    pageReady();
+    // Closing a dialog rejects the action with no reason.
+    // eslint-disable-next-line prefer-promise-reject-errors
+    const dialogOk = vi.fn().mockImplementation(() => Promise.reject());
+    const actions = makeActions({
+      ...testDefaults,
+      actions: { onClick: {} },
+      context: { actions: { onClick: { type: 'dialog.ok' } } },
+      extraCreators: { 'dialog.ok': () => [dialogOk] },
+    });
+
+    await expect(actions.onClick('input')).rejects.toThrow(ActionError);
+    expect(captureException).not.toHaveBeenCalled();
+  });
+
   it('should remap input values', async () => {
     pageReady();
     const actions = makeActions({
