@@ -85,12 +85,14 @@ describe('queryAppResources OData filter laws', () => {
     return (response.data as ResourceType[]).map((resource) => resource.id).sort((a, b) => a - b);
   }
 
-  // Leaf predicates covering the translator's paths: data-property equality and inequality, the
-  // three string functions (each compiles to a different operator), a null check and a regular
-  // column comparison.
+  // Leaf predicates covering the translator's paths: data-property equality and inequality, an
+  // equality whose compared value is absent or null for some rows (so it is unknown there under
+  // three-valued logic), the three string functions (each compiles to a different operator), a null
+  // check and a regular column comparison.
   const predicates = [
     "foo eq 'apple'",
     "foo ne 'apple'",
+    "bar eq 'x'",
     "contains(foo, 'a')",
     "startswith(foo, 'ap')",
     "endswith(foo, 'a')",
