@@ -3,6 +3,7 @@ import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { App, AppMessages } from '../../../../models/index.js';
+import { touchApp } from '../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../utils/checkAppLock.js';
 
@@ -31,4 +32,6 @@ export async function deleteAppMessages(ctx: Context): Promise<void> {
   });
 
   assertKoaCondition(affectedRows > 0, ctx, 404, `App does not have messages for “${language}”`);
+
+  await touchApp(appId);
 }

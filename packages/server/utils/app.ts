@@ -115,6 +115,19 @@ export function getAppUrl(app: App): URL {
 }
 
 /**
+ * Update the app timestamp.
+ *
+ * @param appId The id of the app to update.
+ */
+export async function touchApp(appId: number): Promise<void> {
+  const app = (await App.findByPk(appId, { attributes: ['id'] }))!;
+
+  app.set('updated', new Date());
+  app.changed('updated', true);
+  await app.save({ fields: ['updated'] });
+}
+
+/**
  * Sort apps by rating, in descending order.
  *
  * @param a The first app to compare.

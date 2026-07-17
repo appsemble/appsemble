@@ -500,6 +500,18 @@ export interface ParsedQuery {
 
 export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
+export type AppServingCacheStatus = 'disabled' | 'error' | 'hit' | 'miss';
+
+export interface AppServingCacheResult<T> {
+  status: AppServingCacheStatus;
+  value?: T;
+}
+
+export interface AppServingCache {
+  get: <T>(key: string) => Promise<AppServingCacheResult<T>>;
+  set: <T>(key: string, value: T) => Promise<AppServingCacheStatus>;
+}
+
 export interface Options {
   getSecurityEmail: () => string;
   getCurrentAppMember: (params: GetCurrentAppMemberParams) => Promise<AppMemberInfo | null>;
@@ -526,6 +538,7 @@ export interface Options {
   getHost: (params: GetHostParams) => string;
   getCsp: (params: GetCspParams) => ContentSecurityPolicy;
   createSettings: (params: CreateSettingsParams) => Promise<[digest: string, script: string]>;
+  appServingCache?: AppServingCache;
   applyAppServiceSecrets: (
     params: ApplyAppServiceSecretsParams,
   ) => Promise<RawAxiosRequestConfig<any>>;

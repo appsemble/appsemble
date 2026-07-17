@@ -1,13 +1,38 @@
+import { type AppServingCache, type AppServingCacheResult } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App, Organization, OrganizationMember } from '../../../../../models/index.js';
+import { options } from '../../../../../options/options.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
+import { appServingCache } from '../../../../../utils/serverCache.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
 
 let app: App;
+
+function createTestCache(): AppServingCache {
+  const store = new Map<string, unknown>();
+
+  return {
+    get: <T>(key: string): Promise<AppServingCacheResult<T>> =>
+      Promise.resolve(
+        store.has(key)
+          ? { status: 'hit' as const, value: store.get(key) as T }
+          : { status: 'miss' as const },
+      ),
+    set<T>(key: string, value: T) {
+      store.set(key, value);
+      return Promise.resolve('miss' as const);
+    },
+  };
+}
+
+function parseSettingsLogins(settings: string): unknown[] {
+  const json = settings.slice('<script>window.settings='.length, -'</script>'.length);
+  return (JSON.parse(json) as { logins: unknown[] }).logins;
+}
 
 describe('createAppOAuth2Secret', () => {
   beforeAll(async () => {
@@ -31,6 +56,7 @@ describe('createAppOAuth2Secret', () => {
     });
     app = await App.create({
       OrganizationId: organization.id,
+      path: 'test-app',
       vapidPublicKey: '',
       vapidPrivateKey: '',
       definition: {
@@ -48,6 +74,10 @@ describe('createAppOAuth2Secret', () => {
       UserId: user.id,
       role: PredefinedOrganizationRole.Owner,
     });
+  });
+
+  afterEach(() => {
+    options.appServingCache = appServingCache;
   });
 
   // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
@@ -83,6 +113,38 @@ describe('createAppOAuth2Secret', () => {
         "userInfoUrl": "https://example.com/oauth/userinfo",
       }
     `);
+  });
+
+  it('should refresh app-serving settings after creating an OAuth2 secret', async () => {
+    authorizeStudio();
+    options.appServingCache = createTestCache();
+    const requestOptions = { headers: { host: 'test-app.testorganization.localhost' } };
+
+    const firstResponse = await request.get('/', requestOptions);
+    const secondResponse = await request.get('/', requestOptions);
+
+    expect(firstResponse.headers['x-appsemble-settings-cache']).toBe('miss');
+    expect(secondResponse.headers['x-appsemble-settings-cache']).toBe('hit');
+    expect(parseSettingsLogins(secondResponse.data.data.settings)).toStrictEqual([]);
+
+    vi.setSystemTime(1000);
+    await request.post(`/api/apps/${app.id}/secrets/oauth2`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+      userInfoUrl: 'https://example.com/oauth/userinfo',
+    });
+
+    const thirdResponse = await request.get('/', requestOptions);
+
+    expect(thirdResponse.headers['x-appsemble-settings-cache']).toBe('miss');
+    expect(parseSettingsLogins(thirdResponse.data.data.settings)).toStrictEqual([
+      { icon: 'example', id: 1, name: 'Example', type: 'oauth2' },
+    ]);
   });
 
   it('should normalize role mappings when creating an app secret', async () => {

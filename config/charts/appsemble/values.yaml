@@ -158,6 +158,7 @@ postgresSSL: true
 
 databaseBenchmark: true
 slowQueryThreshold: 100
+appServingCacheTtl: 300
 
 pgbouncer:
   # Requires the pgbouncer.auth.existingSecret userlist secret to exist before enabling.
