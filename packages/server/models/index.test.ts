@@ -154,12 +154,14 @@ describe('getAppDB', () => {
     // Without the teardown guard the racer runs a fresh initialization (and its migrations) against
     // the database being dropped and settles right away. With the guard it stays parked until the
     // teardown finishes, so it must still be pending here.
-    await new Promise((resolve) => {
-      setTimeout(resolve, 1000);
-    });
-    expect(racerSettled).toBe(false);
-
-    releaseDrop();
+    try {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
+      expect(racerSettled).toBe(false);
+    } finally {
+      releaseDrop();
+    }
     await teardown;
 
     // Once the teardown drained the database, the racer initializes cleanly against it.
