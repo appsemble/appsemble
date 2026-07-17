@@ -56,7 +56,9 @@ export function FilterBlock({
           events.emit.filtered(data);
         }
       } catch (error: unknown) {
-        if (currentLoad === latestLoad.current) {
+        // The block was unmounted mid-load, e.g. by switching tabs. The load was cancelled, not
+        // failed, so there is nothing to report.
+        if (currentLoad === latestLoad.current && !utils.isActionOwnerAbortError(error)) {
           events.emit.filtered(null, error as any);
         }
       }
@@ -115,7 +117,9 @@ export function FilterBlock({
           events.emit.refreshed(data);
         }
       } catch (error: unknown) {
-        if (currentLoad === latestLoad.current) {
+        // The block was unmounted mid-load, e.g. by switching tabs. The load was cancelled, not
+        // failed, so there is nothing to report.
+        if (currentLoad === latestLoad.current && !utils.isActionOwnerAbortError(error)) {
           events.emit.refreshed(null, error as any);
         }
       }

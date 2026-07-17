@@ -41,6 +41,8 @@ describe('DataLoader', () => {
       utils: {
         formatMessage: vi.fn().mockReturnValue('Failed to load data'),
         showMessage,
+        isActionOwnerAbortError: (input: unknown) =>
+          (input as Error | null)?.name === 'ActionOwnerAbortError',
       },
     } as unknown as BootstrapParams;
   });
@@ -77,5 +79,16 @@ describe('DataLoader', () => {
     expect(emit).toHaveBeenCalledTimes(1);
     expect(emit).toHaveBeenCalledWith('newest');
     expect(showMessage).not.toHaveBeenCalled();
+  });
+
+  it('should not report an error when the load is aborted by owner unmount', async () => {
+    DataLoader(params);
+    const abortError = new Error('Action owner was aborted');
+    abortError.name = 'ActionOwnerAbortError';
+    rejecters[0](abortError);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(showMessage).not.toHaveBeenCalled();
+    expect(emit).not.toHaveBeenCalled();
   });
 });

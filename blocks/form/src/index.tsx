@@ -183,8 +183,15 @@ bootstrap(
               return result;
             },
             (errorResponse) => {
+              const index = (requirements ?? []).indexOf(requirement);
+              // The block was unmounted mid-validation, e.g. by switching tabs. The requirement
+              // action was cancelled, not failed, so it does not count as a requirement error.
+              if (utils.isActionOwnerAbortError(errorResponse)) {
+                requirementErrors.set(index, null);
+                return;
+              }
               requirementErrors.set(
-                (requirements ?? []).indexOf(requirement),
+                index,
                 requirement.errorMessage
                   ? (utils.remap(requirement.errorMessage, values, {
                       error: errorResponse,
@@ -236,6 +243,11 @@ bootstrap(
             $thumbnails: thumbnails,
           });
         } catch (submitActionError: unknown) {
+          // The block was unmounted mid-submit, e.g. by switching tabs. The submission was
+          // cancelled, not failed, so there is nothing to report.
+          if (utils.isActionOwnerAbortError(submitActionError)) {
+            return;
+          }
           // Log the error to the console for troubleshooting.
           // eslint-disable-next-line no-console
           console.error(submitActionError);
@@ -367,8 +379,15 @@ bootstrap(
             actions[requirement.action](newValues).then(
               () => requirementErrors.set(requirements.indexOf(requirement), null),
               (errorResponse) => {
+                const index = requirements.indexOf(requirement);
+                // The block was unmounted mid-validation, e.g. by switching tabs. The requirement
+                // action was cancelled, not failed, so it does not count as a requirement error.
+                if (utils.isActionOwnerAbortError(errorResponse)) {
+                  requirementErrors.set(index, null);
+                  return;
+                }
                 requirementErrors.set(
-                  requirements.indexOf(requirement),
+                  index,
                   requirement.errorMessage
                     ? (utils.remap(requirement.errorMessage, newValues, {
                         error: errorResponse,
