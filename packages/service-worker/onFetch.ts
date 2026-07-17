@@ -1,9 +1,6 @@
-import { cacheFirst, handleModifyAndInvalidateCache, requestFirst } from './utils.js';
+import { partialNormalized } from '@appsemble/utils';
 
-// Copy of `partialNormalized` in `@appsemble/utils`, inlined because importing the package pulls
-// its entire dependency tree into the service worker bundle.
-// eslint-disable-next-line unicorn/better-regex
-const partialNormalized = /([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)/;
+import { cacheFirst, handleModifyAndInvalidateCache, requestFirst } from './utils.js';
 
 /**
  * Map all requests to a caching behavior based on the HTTP method and URL.
