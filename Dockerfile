@@ -15,7 +15,8 @@ COPY package.json package.json
 # this statement requires experimental syntax, declared at the top of the file
 COPY --parents packages/**/package.json .
 
-RUN --mount=type=cache,target=/root/.npm npm ci
+# ponytail: retry to survive transient prebuild-install/registry download timeouts (e.g. keytar)
+RUN --mount=type=cache,target=/root/.npm npm ci || npm ci || npm ci
 
 RUN npx playwright install --with-deps chromium
 
