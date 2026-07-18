@@ -110,7 +110,7 @@ export class BlockRegistryHandlers {
       if: {
         required: ['type', 'version'],
         properties: {
-          type: { oneOf: [{ const: block.type }, { const: parseBlockName(block.type)![1] }] },
+          type: { enum: [block.type, parseBlockName(block.type)![1]] },
           version: { const: block.version },
         },
       },

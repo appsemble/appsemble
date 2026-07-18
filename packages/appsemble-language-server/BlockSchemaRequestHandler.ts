@@ -47,6 +47,8 @@ export class BlockSchemaRequestHandler implements SchemaRequestChainHandler {
 
   private availBlockRefs: AvailBlocksRefOneOf = { allOf: [] };
 
+  private readonly schemaCache = new Map<string, Promise<string | null>>();
+
   constructor(blockManifestCacher: BlockManifestCacher, logger: Logger) {
     this.blockManifestCacher = blockManifestCacher;
     this.logger = logger;
@@ -58,6 +60,7 @@ export class BlockSchemaRequestHandler implements SchemaRequestChainHandler {
 
   set availableBlockRefs(blocks: AvailBlocksRefOneOf) {
     this.availBlockRefs = blocks;
+    this.schemaCache.clear();
   }
 
   handle(uri: string): Promise<string | null> {
@@ -71,22 +74,35 @@ export class BlockSchemaRequestHandler implements SchemaRequestChainHandler {
     if (blockParametersMatch) {
       const { blockName, version } = getBlockRequest(blockParametersMatch);
       this.logger.log(`Block parameters schema request for ${blockName} version ${version}`);
-      return this.handleBlockParameters(blockName, version);
+      return this.getCachedSchema(uri, () => this.handleBlockParameters(blockName, version));
     }
     const blockActionsMatch = uri.match(blockActionsRegex);
     if (blockActionsMatch) {
       const { blockName, version } = getBlockRequest(blockActionsMatch);
       this.logger.log(`Block actions schema request for ${blockName} version ${version}`);
-      return this.handleBlockActions(blockName, version);
+      return this.getCachedSchema(uri, () => this.handleBlockActions(blockName, version));
     }
     const blockEventsMatch = uri.match(blockEventsRegex);
     if (blockEventsMatch) {
       const { blockName, version } = getBlockRequest(blockEventsMatch);
       this.logger.log(`Block events schema request for ${blockName} version ${version}`);
-      return this.handleBlockEvents(blockName, version);
+      return this.getCachedSchema(uri, () => this.handleBlockEvents(blockName, version));
     }
     this.logger.log(`No block schema found for ${uri}`);
     return Promise.resolve(null);
+  }
+
+  private getCachedSchema(
+    uri: string,
+    loadSchema: () => Promise<string | null>,
+  ): Promise<string | null> {
+    const key = uri.toLowerCase();
+    let cachedSchema = this.schemaCache.get(key);
+    if (!cachedSchema) {
+      cachedSchema = loadSchema();
+      this.schemaCache.set(key, cachedSchema);
+    }
+    return cachedSchema;
   }
 
   private async handleBlockEvents(type: string, version: string): Promise<string | null> {

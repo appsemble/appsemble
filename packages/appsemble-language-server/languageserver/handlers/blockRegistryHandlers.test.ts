@@ -53,6 +53,7 @@ interface Harness {
   modifySchemaContent: ReturnType<typeof vi.fn>;
   resetSchema: ReturnType<typeof vi.fn>;
   fetchMock: ReturnType<typeof vi.fn>;
+  getCachedBlockVersions: ReturnType<typeof vi.fn>;
 }
 
 function setup(): Harness {
@@ -62,6 +63,10 @@ function setup(): Harness {
   settings.documents = documents as unknown as SettingsState['documents'];
 
   const blockManifestCacher = new BlockManifestCacher(settings.blockRegistryBaseUrl, logger);
+  const getCachedBlockVersions = vi.spyOn(
+    blockManifestCacher,
+    'getCachedBlockVersions',
+  ) as unknown as ReturnType<typeof vi.fn>;
   const blockSchemaRequestHandler = new BlockSchemaRequestHandler(blockManifestCacher, logger);
   const modifySchemaContent = vi.fn();
   const resetSchema = vi.fn();
@@ -98,6 +103,7 @@ function setup(): Harness {
     modifySchemaContent,
     resetSchema,
     fetchMock,
+    getCachedBlockVersions,
   };
 }
 
@@ -113,6 +119,9 @@ describe('BlockRegistryHandlers', () => {
       (entry) => (entry as { title: string }).title,
     );
     expect(titles).toStrictEqual(['@appsemble/markdown v1.2.3']);
+    expect(
+      h.blockSchemaRequestHandler.availableBlockRefs.allOf[0].if.properties.type,
+    ).toStrictEqual({ enum: ['@appsemble/markdown', 'markdown'] });
     expect(h.fetchMock.mock.calls[0][0]).toContain(
       '/api/blocks/@appsemble/markdown/versions/1.2.3',
     );
@@ -176,5 +185,36 @@ describe('BlockRegistryHandlers', () => {
 
     expect(h.fetchMock).toHaveBeenCalledTimes(1);
     expect(h.blockSchemaRequestHandler.availableBlockRefs.allOf).toStrictEqual([]);
+  });
+
+  it('caches generated block schemas until the available block refs are replaced', async () => {
+    const h = setup();
+    h.fetchMock.mockResolvedValue(
+      okResponse({
+        name: '@appsemble/markdown',
+        parameters: {
+          type: 'object',
+          properties: { content: { type: 'string' } },
+        },
+      }),
+    );
+    h.blockSchemaRequestHandler.availableBlockRefs = { allOf: [] };
+
+    expect(
+      await h.blockSchemaRequestHandler.handle(
+        'appsemble://blocks/@appsemble/markdown/1.2.3/parameters.json',
+      ),
+    ).toBe(JSON.stringify({ type: 'object', properties: { content: { type: 'string' } } }));
+    await h.blockSchemaRequestHandler.handle(
+      'appsemble://blocks/@appsemble/markdown/1.2.3/parameters.json',
+    );
+    expect(h.getCachedBlockVersions).toHaveBeenCalledTimes(1);
+
+    h.blockSchemaRequestHandler.availableBlockRefs = { allOf: [] };
+    await h.blockSchemaRequestHandler.handle(
+      'appsemble://blocks/@appsemble/markdown/1.2.3/parameters.json',
+    );
+
+    expect(h.getCachedBlockVersions).toHaveBeenCalledTimes(2);
   });
 });
