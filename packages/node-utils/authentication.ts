@@ -22,7 +22,7 @@ async function importKeyring(): Promise<typeof import('@napi-rs/keyring')> {
     return await import('@napi-rs/keyring');
   } catch {
     throw new AppsembleError(
-      'Couldn’t access the system keyring. Either install libsecret and reinstall @appsemble/cli, or pass --client-credentials on the command line.',
+      'Couldn’t access the system keyring. Reinstall @appsemble/cli, or pass --client-credentials on the command line.',
     );
   }
 }
