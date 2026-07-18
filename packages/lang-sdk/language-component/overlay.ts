@@ -1,5 +1,6 @@
 import { type Schema } from 'jsonschema';
 
+import { LanguageComponent } from './languageComponent.js';
 import { type CompileOptions, LanguageCtx } from './languageCtx.js';
 import { type NodePath } from './types.js';
 
@@ -88,4 +89,39 @@ export function compileTyped<Root, C>(
   options?: CompileOptions,
 ): TypedLanguageCtx<Root, C> {
   return typed<Root, C>(LanguageCtx.compile(schemas, rootName, options));
+}
+
+// The `Components` registry harvested from a tuple of component definitions: each def's name mapped to
+// its injected `valueType`. This is how the registry is *contained in* the definitions instead of
+// hand-passed — every value type was fixed at its `define` site, so the cursor only ever reads
+// already-materialized types (no `FromSchema` reaches this file).
+export type RegistryOf<Defs extends readonly LanguageComponent[]> = {
+  [Def in Defs[number] as Def['name']]: Def['valueType'];
+};
+
+// The value type of the root component, selected from the defs tuple by name.
+type RootValue<Defs extends readonly LanguageComponent[], RootName extends string> = Extract<
+  Defs[number],
+  { name: RootName }
+>['valueType'];
+
+// Compile a set of component definitions and view the result typed in one step, harvesting the root
+// value type and the `Components` registry from the definitions themselves and wiring their bindings.
+// The typed counterpart of `LanguageComponent.schemas` + `LanguageCtx.compile`: unlike the schema-map
+// form above, the consumer passes neither the registry nor the schema map — both come from the defs,
+// with any `FromSchema`/fork derivation already resolved at each `define`.
+export function compileComponents<
+  const Defs extends readonly LanguageComponent[],
+  RootName extends Defs[number]['name'],
+>(
+  defs: Defs,
+  rootName: RootName,
+  options?: CompileOptions,
+): TypedLanguageCtx<RootValue<Defs, RootName>, RegistryOf<Defs>> {
+  const list = defs as unknown as LanguageComponent[];
+  const ctx = LanguageCtx.compile(LanguageComponent.schemas(list), rootName, {
+    ...options,
+    binds: options?.binds ?? LanguageComponent.bindings(list),
+  });
+  return typed<RootValue<Defs, RootName>, RegistryOf<Defs>>(ctx);
 }

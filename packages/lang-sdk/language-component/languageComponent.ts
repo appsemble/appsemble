@@ -40,14 +40,22 @@ export interface LanguageComponentBinding {
  * for `LanguageCtx.compile`; `annotate` bulk-tags an existing schema registry (e.g. the shipped
  * Appsemble schemas) so the analyzer mounts identities without per-component defs.
  */
-export class LanguageComponent {
-  readonly name: string;
+export class LanguageComponent<Name extends string = string, V = unknown> {
+  readonly name: Name;
 
   readonly schema: TaggedSchema;
 
   readonly binding: LanguageComponentBinding;
 
-  private constructor(name: string, schema: TaggedSchema, binding: LanguageComponentBinding) {
+  // The materialized TS type of a node of this component, injected at `define`: a hand-written
+  // interface for cyclic components (natively recursive, no `Omit`), or an opt-in `FromSchema`
+  // derivation for simple ones. Type-only (`declare`, never assigned) so it adds no runtime cost and
+  // never widens the schema. The typed overlay harvests it (`RegistryOf`/`compileComponents`); the
+  // runtime never reads it, and the recursion-heavy derivation stays at this `define` boundary rather
+  // than inside the recursive cursor — which is what keeps the cursor free of TS2589.
+  declare readonly valueType: V;
+
+  private constructor(name: Name, schema: TaggedSchema, binding: LanguageComponentBinding) {
     this.name = name;
     this.schema = schema;
     this.binding = binding;
@@ -55,16 +63,18 @@ export class LanguageComponent {
 
   // Declare a language component: name, schema (auto-annotated so the analyzer mounts it), behaviors.
   // Unlike the `annotate` heuristic, `define` always tags (an explicit declaration is opt-in whatever
-  // the shape), falling back to `single` mode; an existing annotation is kept.
-  static define(
-    name: string,
+  // the shape), falling back to `single` mode; an existing annotation is kept. Pass the value type
+  // explicitly (`define<'Menu', Menu>(…)`) to carry it into the typed overlay; it defaults to
+  // `unknown` and is erased at runtime either way.
+  static define<const Name extends string, V = unknown>(
+    name: Name,
     schema: Schema,
     binding: LanguageComponentBinding,
-  ): LanguageComponent {
+  ): LanguageComponent<Name, V> {
     const annotated = isTagged(schema)
       ? schema
       : withTag(schema, name, tagMode(schema) ?? 'single');
-    return new LanguageComponent(name, annotated, binding);
+    return new LanguageComponent<Name, V>(name, annotated, binding);
   }
 
   // The `name -> schema` registry from a def list, for `LanguageCtx.compile`. Every value is tagged
