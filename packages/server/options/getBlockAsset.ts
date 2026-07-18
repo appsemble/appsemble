@@ -28,7 +28,7 @@ export async function getBlockAsset({
   }
 
   const asset = await BlockAsset.findOne({
-    attributes: ['filename', 'mime', 'storageKey'],
+    attributes: ['content', 'filename', 'mime', 'storageKey'],
     where: { filename, BlockVersionId: blockVersion.id },
   });
 
@@ -37,32 +37,36 @@ export async function getBlockAsset({
     return null;
   }
 
-  if (!asset.storageKey) {
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-    return null;
-  }
+  if (asset.storageKey) {
+    try {
+      const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
 
-  try {
-    const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
+      if (stream) {
+        const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
 
-    if (!stream) {
-      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-      return null;
+        return {
+          etag: stats.etag,
+          filename: asset.filename,
+          lastModified: stats.lastModified,
+          mime: asset.mime ?? 'application/octet-stream',
+          size: stats.size,
+          stream,
+        };
+      }
+    } catch (error) {
+      logger.warn(error);
     }
-
-    const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
-
-    return {
-      etag: stats.etag,
-      filename: asset.filename,
-      lastModified: stats.lastModified,
-      mime: asset.mime ?? 'application/octet-stream',
-      size: stats.size,
-      stream,
-    };
-  } catch (error) {
-    logger.warn(error);
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-    return null;
   }
+
+  // Fall back to database-backed content for assets that have not been migrated to S3 yet.
+  if (asset.content) {
+    return {
+      content: asset.content,
+      filename: asset.filename,
+      mime: asset.mime ?? 'application/octet-stream',
+    };
+  }
+
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+  return null;
 }

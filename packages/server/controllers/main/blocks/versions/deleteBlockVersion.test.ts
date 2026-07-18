@@ -125,6 +125,8 @@ describe('deleteBlockVersion', () => {
 
     expect(status).toBe(204);
     expect(await BlockAsset.count({ where: { storageKey } })).toBe(1);
+    // The shared object must remain in S3 because the retained block version still references it.
+    expect(await getS3FileBuffer(getBlockAssetsBucketName(), storageKey)).toStrictEqual(content);
   });
 
   it('should not delete a block version, user does not have sufficient permission.', async () => {

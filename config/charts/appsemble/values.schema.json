@@ -90,58 +90,6 @@
         "tlsWildcardSecretName": {
           "type": "string",
           "description": "The secret name to use to configure TLS for the direct wildcard host."
-        },
-        "blockAssets": {
-          "type": "object",
-          "description": "Optional dedicated ingress for block asset routes, e.g. to attach proxy-cache annotations without affecting the whole app.",
-          "additionalProperties": false,
-          "properties": {
-            "enabled": {
-              "type": "boolean",
-              "description": "Whether to create a dedicated ingress for block asset paths."
-            },
-            "annotations": {
-              "type": "object",
-              "description": "Annotations for the block assets ingress.",
-              "additionalProperties": {
-                "type": "string"
-              }
-            },
-            "cache": {
-              "type": "object",
-              "description": "Optional ingress-nginx proxy cache snippet for block asset routes. Requires a matching controller-level proxy cache zone.",
-              "additionalProperties": false,
-              "properties": {
-                "enabled": {
-                  "type": "boolean",
-                  "description": "Whether to render the ingress-nginx proxy cache configuration snippet."
-                },
-                "zone": {
-                  "type": "string",
-                  "description": "The ingress-nginx proxy cache zone name configured on the ingress controller."
-                },
-                "key": {
-                  "type": "string",
-                  "description": "The nginx proxy_cache_key expression."
-                },
-                "methods": {
-                  "type": "string",
-                  "description": "The HTTP methods to cache."
-                },
-                "valid": {
-                  "type": "string",
-                  "description": "The nginx proxy_cache_valid value."
-                }
-              }
-            },
-            "pathPatterns": {
-              "type": "array",
-              "description": "Regex path patterns for block asset routes handled by the dedicated ingress.",
-              "items": {
-                "type": "string"
-              }
-            }
-          }
         }
       }
     },

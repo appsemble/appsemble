@@ -133,6 +133,8 @@ export async function handler(options: AdditionalArguments = {}): Promise<void> 
     handleDBError(error as Error);
   }
 
+  let s3Available = true;
+
   try {
     initS3Client({
       accessKey: argv.s3AccessKey,
@@ -142,11 +144,20 @@ export async function handler(options: AdditionalArguments = {}): Promise<void> 
       useSSL: argv.s3Secure,
     });
   } catch (error: unknown) {
+    s3Available = false;
     logger.warn(`S3Error: ${error}`);
     logger.warn('Block asset migration will not work correctly without S3 access.');
   }
 
-  await migrateBlockAssetsToS3(options);
+  const result = await migrateBlockAssetsToS3(options);
   await db.close();
+
+  // Fail loudly so the post-upgrade migration hook does not report success while assets are still
+  // not migrated (and would be served as 404s).
+  if (!s3Available || result.failed > 0) {
+    logger.error(`Block asset migration finished with ${result.failed} failure(s).`);
+    process.exit(1);
+  }
+
   process.exit();
 }

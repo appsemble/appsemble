@@ -18,31 +18,38 @@ export async function getBlockVersionAsset(ctx: Context): Promise<void> {
   assertKoaCondition(block != null, ctx, 404, 'Block version not found');
 
   const asset = await BlockAsset.findOne({
-    attributes: ['mime', 'storageKey'],
+    attributes: ['content', 'mime', 'storageKey'],
     where: { filename, BlockVersionId: block.id },
   });
 
   assertKoaCondition(asset != null, ctx, 404, `Block has no asset named "${filename}"`);
 
-  ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
+  if (asset.storageKey) {
+    try {
+      const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
 
-  assertKoaCondition(asset.storageKey != null, ctx, 404, `Block has no asset named "${filename}"`);
+      if (stream) {
+        const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
 
-  try {
-    const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
-
-    if (stream) {
-      const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
-
-      ctx.set('Content-Length', String(stats.size));
-      ctx.set('ETag', stats.etag);
-      ctx.set('Last-Modified', stats.lastModified.toUTCString());
-      ctx.body = stream;
-      ctx.type = asset.mime ?? 'application/octet-stream';
-      return;
+        ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
+        ctx.set('Content-Length', String(stats.size));
+        ctx.set('ETag', stats.etag);
+        ctx.set('Last-Modified', stats.lastModified.toUTCString());
+        ctx.body = stream;
+        ctx.type = asset.mime ?? 'application/octet-stream';
+        return;
+      }
+    } catch (error) {
+      logger.warn(error);
     }
-  } catch (error) {
-    logger.warn(error);
+  }
+
+  // Fall back to database-backed content for assets that have not been migrated to S3 yet.
+  if (asset.content) {
+    ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
+    ctx.body = asset.content;
+    ctx.type = asset.mime ?? 'application/octet-stream';
+    return;
   }
 
   assertKoaCondition(false, ctx, 404, `Block has no asset named "${filename}"`);

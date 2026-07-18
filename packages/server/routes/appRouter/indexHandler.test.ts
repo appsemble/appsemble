@@ -38,9 +38,11 @@ function parseCsp(csp: string): Record<string, string[]> {
 }
 
 function parseSettingsScript(settings: string): {
+  blockManifests: { name: string; version: string; fileUrls?: Record<string, string> }[];
   definition: AppDefinition & Record<string, unknown>;
 } {
   return JSON.parse(settings.slice('<script>window.settings='.length, -'</script>'.length)) as {
+    blockManifests: { name: string; version: string; fileUrls?: Record<string, string> }[];
     definition: AppDefinition & Record<string, unknown>;
   };
 }
@@ -962,6 +964,40 @@ describe('indexHandler', () => {
         "filename": "app/index.html",
       }
     `);
+  });
+
+  it('should include public block asset file URLs in settings when blockAssetsBaseUrl is set', async () => {
+    setArgv({
+      blockAssetsBaseUrl: 'https://static.appsemble.example/minio',
+      host: 'http://host.example',
+      secret: 'test',
+    });
+    await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/a', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const response = await request.get('/');
+    const settings = parseSettingsScript(response.data.data.settings);
+    const manifest = settings.blockManifests.find(
+      ({ name, version }) => name === '@test/a' && version === '0.0.0',
+    );
+
+    expect(manifest?.fileUrls).toStrictEqual({
+      'a0.css':
+        'https://static.appsemble.example/minio/appsemble-block-assets/test/a/0.0.0/hash/a0.css',
+      'a0.js':
+        'https://static.appsemble.example/minio/appsemble-block-assets/test/a/0.0.0/hash/a0.js',
+    });
   });
 
   it('should render a stricter published app CSP when contentSecurityPolicy is configured', async () => {

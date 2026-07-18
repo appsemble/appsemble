@@ -35,6 +35,7 @@ import {
   getBlockAssetFileHash,
   getBlockAssetsBucketName,
   getBlockAssetStorageKey,
+  isValidBlockAssetFilename,
 } from '../../../utils/blockAssets.js';
 import { blockVersionToJson } from '../../../utils/block.js';
 
@@ -115,6 +116,16 @@ export async function createBlock(ctx: Context): Promise<void> {
       ctx,
       409,
       `Version ${blockVersion.version} is equal to or lower than the already existing ${name}@${version}.`,
+    );
+  }
+
+  for (const file of files) {
+    const filename = decodeURIComponent(file.filename);
+    assertKoaCondition(
+      isValidBlockAssetFilename(filename),
+      ctx,
+      400,
+      `Invalid block asset filename: ${filename}`,
     );
   }
 

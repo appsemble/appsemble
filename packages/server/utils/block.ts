@@ -13,6 +13,7 @@ import {
   getBlockAssetContentHash,
   getBlockAssetsBucketName,
   getBlockAssetStorageKey,
+  isValidBlockAssetFilename,
 } from './blockAssets.js';
 import { App, BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
 
@@ -105,6 +106,10 @@ export async function syncBlock({
 
       // Use callbacks to defer firing the request and not overload the server
       const promises = block.files.map((filename) => async () => {
+        if (!isValidBlockAssetFilename(filename)) {
+          throw new Error(`Invalid block asset filename from ${blockUrl}: ${filename}`);
+        }
+
         const { data: content, headers } = await axios.get(
           getBlockAssetDownloadUrl(blockUrl, block.fileUrls, filename),
           {

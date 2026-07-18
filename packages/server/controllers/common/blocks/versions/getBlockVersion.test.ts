@@ -112,7 +112,7 @@ describe('getBlockVersion', () => {
     await authorizeClientCredentials('blocks:write');
     await request.post<BlockManifest>('/api/blocks', formData);
 
-    const findByPkSpy = vi.spyOn(BlockVersion, 'findByPk');
+    const updateSpy = vi.spyOn(BlockVersion, 'update');
     const { data, status } = await request.get<BlockManifest>(
       '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
@@ -121,7 +121,8 @@ describe('getBlockVersion', () => {
     const contentHash = getBlockAssetContentHash(content);
 
     expect(status).toBe(200);
-    expect(findByPkSpy).not.toHaveBeenCalled();
+    // The cached manifest must not be rebuilt and re-persisted on a read (no write-on-read).
+    expect(updateSpy).not.toHaveBeenCalled();
     expect(data).toMatchObject({
       files: ['standing.png'],
       fileUrls: {

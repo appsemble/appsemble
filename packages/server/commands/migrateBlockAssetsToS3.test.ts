@@ -79,7 +79,7 @@ describe('migrateBlockAssetsToS3', () => {
     });
   });
 
-  it('should leave content retryable when uploading to S3 fails', async () => {
+  it('should retry and succeed on a later run when an S3 upload fails once', async () => {
     const uploadS3FileSpy = vi
       .spyOn(await import('@appsemble/node-utils'), 'uploadS3File')
       .mockRejectedValueOnce(new Error('S3 unavailable'));
@@ -91,21 +91,58 @@ describe('migrateBlockAssetsToS3', () => {
       filename: 'hello.js',
       mime: 'application/javascript',
     });
+    const storageKey = getBlockAssetStorageKey({
+      blockName: blockVersion.name,
+      contentHash: getBlockAssetContentHash(content),
+      filename: 'hello.js',
+      organizationId: blockVersion.OrganizationId,
+      version: blockVersion.version,
+    });
 
+    // The upload fails, so the row must be left untouched and remain retryable.
     expect(await migrateBlockAssetsToS3({ batch: 10 })).toStrictEqual({
       failed: 1,
       scanned: 1,
       skipped: 0,
       uploaded: 0,
     });
-
     await blockAsset.reload();
-    expect(blockAsset).toMatchObject({
-      content,
-      size: null,
-      storageKey: null,
+    expect(blockAsset).toMatchObject({ content, size: null, storageKey: null });
+
+    // A later run (with S3 available again) picks the same row up and completes the migration.
+    expect(await migrateBlockAssetsToS3({ batch: 10 })).toStrictEqual({
+      failed: 0,
+      scanned: 1,
+      skipped: 0,
+      uploaded: 1,
     });
+    await blockAsset.reload();
+    expect(blockAsset).toMatchObject({ content: null, size: content.byteLength, storageKey });
+    expect(await getS3FileBuffer(getBlockAssetsBucketName(), storageKey)).toStrictEqual(content);
 
     uploadS3FileSpy.mockRestore();
+  });
+
+  it('should migrate every asset across multiple batches', async () => {
+    const blockVersion = await createBlockVersion();
+    const contents = [0, 1, 2].map((index) => Buffer.from(`console.log(${index})`));
+    await BlockAsset.bulkCreate(
+      contents.map((content, index) => ({
+        BlockVersionId: blockVersion.id,
+        content,
+        filename: `file-${index}.js`,
+        mime: 'application/javascript',
+      })),
+    );
+
+    expect(await migrateBlockAssetsToS3({ batch: 2 })).toStrictEqual({
+      failed: 0,
+      scanned: 3,
+      skipped: 0,
+      uploaded: 3,
+    });
+
+    expect(await BlockAsset.count({ where: { content: null } })).toBe(3);
+    expect(await BlockAsset.count({ where: { storageKey: null } })).toBe(0);
   });
 });

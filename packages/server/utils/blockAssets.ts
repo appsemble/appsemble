@@ -1,11 +1,12 @@
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 
+import { parseBlockName } from '@appsemble/lang-sdk';
 import { deleteS3Files, setS3BucketPolicy } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 
 import { argv } from './argv.js';
-import { BlockAsset } from '../models/index.js';
+import { BlockAsset, BlockVersion } from '../models/index.js';
 
 const blockAssetsBucketName = 'appsemble-block-assets';
 
@@ -130,4 +131,53 @@ export async function deleteUnreferencedBlockAssetObjects(storageKeys: string[])
   if (unreferencedStorageKeys.length) {
     await deleteS3Files(getBlockAssetsBucketName(), unreferencedStorageKeys);
   }
+}
+// Resolve public block asset URLs for a set of resolved block manifests, keyed by `name@version`.
+// The URLs embed the deploy-time base URL, so they are derived from the immutable storage keys at
+// request time instead of being persisted in the app build manifest.
+export async function getSettingsBlockFileUrls(
+  blockManifests: { name: string; version: string }[],
+): Promise<Record<string, Record<string, string>>> {
+  if (!argv.blockAssetsBaseUrl || !blockManifests.length) {
+    return {};
+  }
+
+  const blockQueries = blockManifests.flatMap(({ name }) => {
+    const parsed = parseBlockName(name);
+
+    return parsed ? [{ name: parsed[1], OrganizationId: parsed[0] }] : [];
+  });
+
+  if (!blockQueries.length) {
+    return {};
+  }
+
+  const versions = [...new Set(blockManifests.map(({ version }) => version))];
+  const blockVersions = await BlockVersion.findAll({
+    attributes: ['name', 'OrganizationId', 'version'],
+    include: [
+      {
+        attributes: ['filename', 'storageKey'],
+        model: BlockAsset,
+        required: false,
+        where: { BlockVersionId: { [Op.col]: 'BlockVersion.id' } },
+      },
+    ],
+    where: { [Op.and]: [{ [Op.or]: blockQueries }, { version: { [Op.in]: versions } }] },
+  });
+
+  return Object.fromEntries(
+    blockVersions.flatMap((blockVersion) => {
+      const fileUrls = getBlockAssetFileUrls(blockVersion.BlockAssets);
+
+      return Object.keys(fileUrls).length
+        ? [
+            [
+              `@${blockVersion.OrganizationId}/${blockVersion.name}@${blockVersion.version}`,
+              fileUrls,
+            ],
+          ]
+        : [];
+    }),
+  );
 }
