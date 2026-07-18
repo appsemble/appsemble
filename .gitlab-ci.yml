@@ -708,6 +708,12 @@ e2e node:
     - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/utils run prepack
     - npm --workspace @appsemble/node-utils run prepack
+    - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
+      --s3-host minio
+      --s3-secure=false
+      --s3-access-key admin
+      --s3-secret-key password
+      --public-read
     - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
   parallel: 6
   artifacts:

@@ -160,6 +160,7 @@ English (\`en\`) messages are required.
     fileUrls: {
       type: 'object',
       description: 'Public URLs for file assets, keyed by filename.',
+      readOnly: true,
       additionalProperties: {
         type: 'string',
         format: 'uri',

@@ -1,4 +1,9 @@
-import { initS3Client, logger, uploadS3File } from '@appsemble/node-utils';
+import {
+  initS3Client,
+  isValidBlockAssetFilename,
+  logger,
+  uploadS3File,
+} from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
@@ -7,10 +12,8 @@ import { BlockAsset, BlockVersion, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import {
   ensureBlockAssetsBucketPublicRead,
-  getBlockAssetContentHash,
   getBlockAssetsBucketName,
   getBlockAssetStorageKey,
-  isValidBlockAssetFilename,
 } from '../utils/blockAssets.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
@@ -39,6 +42,10 @@ export function builder(yargs: Argv): Argv {
 export async function migrateBlockAssetsToS3({
   batch = 100,
 }: AdditionalArguments = {}): Promise<MigrateBlockAssetsToS3Result> {
+  if (!Number.isInteger(batch) || batch < 1) {
+    throw new RangeError('The block asset migration batch size must be a positive integer.');
+  }
+
   const result: MigrateBlockAssetsToS3Result = {
     failed: 0,
     scanned: 0,
@@ -54,15 +61,15 @@ export async function migrateBlockAssetsToS3({
       attributes: ['id', 'content', 'filename', 'mime', 'size', 'storageKey'],
       include: [
         {
-          attributes: ['OrganizationId', 'name', 'version'],
+          attributes: ['id', 'OrganizationId', 'name', 'version'],
           model: BlockVersion,
         },
       ],
       limit: batch,
       order: [['id', 'ASC']],
       where: {
-        content: { [Op.not]: null },
         id: { [Op.gt]: lastId },
+        storageKey: null,
       },
     });
 
@@ -81,8 +88,8 @@ export async function migrateBlockAssetsToS3({
         continue;
       }
 
-      // Legacy rows predate filename validation, so guard here too before a filename becomes an
-      // object storage key and public URL segment. Leave the database content intact for these.
+      // Validate every filename before using it as an object key and preserve database content if
+      // validation fails.
       if (!isValidBlockAssetFilename(filename)) {
         result.skipped += 1;
         logger.warn(
@@ -91,10 +98,9 @@ export async function migrateBlockAssetsToS3({
         continue;
       }
 
-      const contentHash = getBlockAssetContentHash(content);
       const storageKey = getBlockAssetStorageKey({
         blockName: blockVersion.name,
-        contentHash,
+        blockVersionId: blockVersion.id,
         filename,
         organizationId: blockVersion.OrganizationId,
         version: blockVersion.version,
@@ -106,7 +112,6 @@ export async function migrateBlockAssetsToS3({
           'Content-Type': mime ?? 'application/octet-stream',
         });
         await blockAsset.update({
-          content: null,
           size: content.byteLength,
           storageKey,
         });
@@ -163,10 +168,10 @@ export async function handler(options: AdditionalArguments = {}): Promise<void> 
   const result = await migrateBlockAssetsToS3(options);
   await db.close();
 
-  // Fail loudly so the post-upgrade migration hook does not report success while assets are still
-  // not migrated (and would be served as 404s).
-  if (!s3Available || result.failed > 0) {
-    logger.error(`Block asset migration finished with ${result.failed} failure(s).`);
+  if (!s3Available || result.failed > 0 || result.skipped > 0) {
+    logger.error(
+      `Block asset migration finished with ${result.failed} failure(s) and ${result.skipped} skipped asset(s).`,
+    );
     process.exit(1);
   }
 

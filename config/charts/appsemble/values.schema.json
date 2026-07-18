@@ -112,6 +112,7 @@
             },
             "batch": {
               "type": "integer",
+              "minimum": 1,
               "description": "The number of block assets to migrate per database batch."
             }
           }

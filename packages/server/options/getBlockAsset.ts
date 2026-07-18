@@ -39,11 +39,10 @@ export async function getBlockAsset({
 
   if (asset.storageKey) {
     try {
+      const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
       const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
 
       if (stream) {
-        const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
-
         return {
           etag: stats.etag,
           filename: asset.filename,

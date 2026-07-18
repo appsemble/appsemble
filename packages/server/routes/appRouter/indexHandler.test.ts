@@ -89,104 +89,106 @@ describe('indexHandler', () => {
       { name: 'b', OrganizationId: 'appsemble', version: '0.1.0' },
       { name: 'b', OrganizationId: 'appsemble', version: '0.1.2' },
     ]);
-    await BlockAsset.bulkCreate([
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a00.id,
-        filename: 'a0.js',
-        storageKey: 'test/a/0.0.0/hash/a0.js',
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a00.id,
-        filename: 'a0.css',
-        storageKey: 'test/a/0.0.0/hash/a0.css',
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a01.id,
-        filename: 'a1.js',
-        storageKey: 'test/a/0.0.1/hash/a1.js',
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a01.id,
-        filename: 'a1.css',
-        storageKey: 'test/a/0.0.1/hash/a1.css',
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b00.id,
-        filename: 'b0.js',
-        storageKey: 'test/b/0.0.0/hash/b0.js',
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b00.id,
-        filename: 'b0.css',
-        storageKey: 'test/b/0.0.0/hash/b0.css',
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b02.id,
-        filename: 'b2.js',
-        storageKey: 'test/b/0.0.2/hash/b2.js',
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b02.id,
-        filename: 'b2.css',
-        storageKey: 'test/b/0.0.2/hash/b2.css',
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a10.id,
-        filename: 'a0.js',
-        storageKey: 'appsemble/a/0.1.0/hash/a0.js',
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a10.id,
-        filename: 'a0.css',
-        storageKey: 'appsemble/a/0.1.0/hash/a0.css',
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a11.id,
-        filename: 'a1.js',
-        storageKey: 'appsemble/a/0.1.1/hash/a1.js',
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a11.id,
-        filename: 'a1.css',
-        storageKey: 'appsemble/a/0.1.1/hash/a1.css',
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b10.id,
-        filename: 'b0.js',
-        storageKey: 'appsemble/b/0.1.0/hash/b0.js',
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b10.id,
-        filename: 'b0.css',
-        storageKey: 'appsemble/b/0.1.0/hash/b0.css',
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b12.id,
-        filename: 'b2.js',
-        storageKey: 'appsemble/b/0.1.2/hash/b2.js',
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b12.id,
-        filename: 'b2.css',
-        storageKey: 'appsemble/b/0.1.2/hash/b2.css',
-      },
-    ]);
+    await BlockAsset.bulkCreate(
+      [
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a00.id,
+          filename: 'a0.js',
+          storageKey: 'test/a/0.0.0/hash/a0.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a00.id,
+          filename: 'a0.css',
+          storageKey: 'test/a/0.0.0/hash/a0.css',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a01.id,
+          filename: 'a1.js',
+          storageKey: 'test/a/0.0.1/hash/a1.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a01.id,
+          filename: 'a1.css',
+          storageKey: 'test/a/0.0.1/hash/a1.css',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b00.id,
+          filename: 'b0.js',
+          storageKey: 'test/b/0.0.0/hash/b0.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b00.id,
+          filename: 'b0.css',
+          storageKey: 'test/b/0.0.0/hash/b0.css',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b02.id,
+          filename: 'b2.js',
+          storageKey: 'test/b/0.0.2/hash/b2.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b02.id,
+          filename: 'b2.css',
+          storageKey: 'test/b/0.0.2/hash/b2.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a10.id,
+          filename: 'a0.js',
+          storageKey: 'appsemble/a/0.1.0/hash/a0.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a10.id,
+          filename: 'a0.css',
+          storageKey: 'appsemble/a/0.1.0/hash/a0.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a11.id,
+          filename: 'a1.js',
+          storageKey: 'appsemble/a/0.1.1/hash/a1.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a11.id,
+          filename: 'a1.css',
+          storageKey: 'appsemble/a/0.1.1/hash/a1.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b10.id,
+          filename: 'b0.js',
+          storageKey: 'appsemble/b/0.1.0/hash/b0.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b10.id,
+          filename: 'b0.css',
+          storageKey: 'appsemble/b/0.1.0/hash/b0.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b12.id,
+          filename: 'b2.js',
+          storageKey: 'appsemble/b/0.1.2/hash/b2.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b12.id,
+          filename: 'b2.css',
+          storageKey: 'appsemble/b/0.1.2/hash/b2.css',
+        },
+      ].map((asset) => ({ ...asset, content: Buffer.alloc(0) })),
+    );
     setArgv({ host: 'http://host.example', secret: 'test' });
     options.appServingCache = appServingCache;
     const server = new Koa()

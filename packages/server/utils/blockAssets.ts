@@ -1,6 +1,3 @@
-import { createHash } from 'node:crypto';
-import { createReadStream } from 'node:fs';
-
 import { parseBlockName } from '@appsemble/lang-sdk';
 import { deleteS3Files, logger, setS3BucketPolicy } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
@@ -17,7 +14,7 @@ interface BlockAssetReference {
 
 interface BlockAssetLocation {
   blockName: string;
-  contentHash: string;
+  blockVersionId: string;
   filename: string;
   organizationId: string;
   version: string;
@@ -29,12 +26,12 @@ export function getBlockAssetsBucketName(): string {
 
 export function getBlockAssetStorageKey({
   blockName,
-  contentHash,
+  blockVersionId,
   filename,
   organizationId,
   version,
 }: BlockAssetLocation): string {
-  return [organizationId, blockName, version, contentHash, filename].join('/');
+  return [organizationId, blockName, version, blockVersionId, filename].join('/');
 }
 
 export function getBlockAssetPublicUrl(storageKey?: string | null): string | undefined {
@@ -53,8 +50,12 @@ export function getBlockAssetPublicUrl(storageKey?: string | null): string | und
 export function getBlockAssetFileUrls(
   blockAssets: BlockAssetReference[] | undefined,
 ): Record<string, string> {
+  if (!blockAssets?.length || blockAssets.some(({ storageKey }) => !storageKey)) {
+    return {};
+  }
+
   return Object.fromEntries(
-    (blockAssets ?? []).flatMap(({ filename, storageKey }) => {
+    blockAssets.flatMap(({ filename, storageKey }) => {
       const publicUrl = getBlockAssetPublicUrl(storageKey);
 
       return publicUrl ? [[filename, publicUrl]] : [];
@@ -91,65 +92,23 @@ export async function ensureBlockAssetsBucketPublicRead(): Promise<void> {
   );
 }
 
-export function getBlockAssetContentHash(content: Buffer): string {
-  return createHash('sha256').update(content).digest('hex');
-}
-
-export async function getBlockAssetFileHash(path: string): Promise<string> {
-  const hash = createHash('sha256');
-
-  for await (const chunk of createReadStream(path)) {
-    hash.update(chunk);
-  }
-
-  return hash.digest('hex');
-}
-
-export async function deleteUnreferencedBlockAssetObjects(storageKeys: string[]): Promise<void> {
+export async function deleteBlockAssetObjects(storageKeys: string[]): Promise<void> {
   const uniqueStorageKeys = [...new Set(storageKeys)];
 
   if (!uniqueStorageKeys.length) {
     return;
   }
 
-  const referencedAssets = await BlockAsset.findAll({
-    attributes: ['storageKey'],
-    raw: true,
-    where: {
-      storageKey: {
-        [Op.in]: uniqueStorageKeys,
-      },
-    },
-  });
-  const referencedStorageKeys = new Set(
-    referencedAssets.flatMap(({ storageKey }) => (storageKey ? [storageKey] : [])),
-  );
-  const unreferencedStorageKeys = uniqueStorageKeys.filter(
-    (key) => !referencedStorageKeys.has(key),
-  );
-
-  if (!unreferencedStorageKeys.length) {
-    return;
-  }
-
-  // Best-effort cleanup: block asset objects are immutable and content-addressed, so a failed or
-  // orphaned delete is a storage leak, never data loss. On failure log the exact keys so they stay
-  // recoverable instead of vanishing into a swallowed error.
-  // ponytail: the reference check above and this delete are not atomic, so a concurrent publish of
-  // the identical content committed in between could leave a referenced object deleted. Bounded by
-  // content-addressing (re-uploadable) and rare; a mark-and-sweep GC is the upgrade path if needed.
   try {
-    await deleteS3Files(getBlockAssetsBucketName(), unreferencedStorageKeys);
+    await deleteS3Files(getBlockAssetsBucketName(), uniqueStorageKeys);
   } catch (error) {
-    logger.error(
-      `Failed to delete unreferenced block asset object(s): ${unreferencedStorageKeys.join(', ')}`,
-    );
+    logger.error(`Failed to delete block asset object(s): ${uniqueStorageKeys.join(', ')}`);
     logger.error(error);
   }
 }
+
 // Resolve public block asset URLs for a set of resolved block manifests, keyed by `name@version`.
-// The URLs embed the deploy-time base URL, so they are derived from the immutable storage keys at
-// request time instead of being persisted in the app build manifest.
+// The URLs embed deployment configuration and are derived from immutable storage keys per request.
 export async function getSettingsBlockFileUrls(
   blockManifests: { name: string; version: string }[],
 ): Promise<Record<string, Record<string, string>>> {
@@ -157,17 +116,16 @@ export async function getSettingsBlockFileUrls(
     return {};
   }
 
-  const blockQueries = blockManifests.flatMap(({ name }) => {
+  const blockQueries = blockManifests.flatMap(({ name, version }) => {
     const parsed = parseBlockName(name);
 
-    return parsed ? [{ name: parsed[1], OrganizationId: parsed[0] }] : [];
+    return parsed ? [{ name: parsed[1], OrganizationId: parsed[0], version }] : [];
   });
 
   if (!blockQueries.length) {
     return {};
   }
 
-  const versions = [...new Set(blockManifests.map(({ version }) => version))];
   const blockVersions = await BlockVersion.findAll({
     attributes: ['name', 'OrganizationId', 'version'],
     include: [
@@ -178,7 +136,7 @@ export async function getSettingsBlockFileUrls(
         where: { BlockVersionId: { [Op.col]: 'BlockVersion.id' } },
       },
     ],
-    where: { [Op.and]: [{ [Op.or]: blockQueries }, { version: { [Op.in]: versions } }] },
+    where: { [Op.or]: blockQueries },
   });
 
   return Object.fromEntries(

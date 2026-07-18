@@ -1,11 +1,12 @@
 import { createReadStream, createWriteStream } from 'node:fs';
-import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, sep } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 
 import {
   getS3File,
   initS3Client,
+  isValidBlockAssetFilename,
   listS3Files,
   logger,
   setS3BucketPolicy,
@@ -60,7 +61,13 @@ async function exportBucket(bucket: string, directory: string): Promise<void> {
   const objectsDirectory = join(bucketDirectory, objectsDirectoryName);
   const metadata: Record<string, StoredObjectMetadata> = {};
   const files = await listS3Files(bucket);
+  const unsafeFile = files.find(({ key }) => !isValidBlockAssetFilename(key));
 
+  if (unsafeFile) {
+    throw new Error(`Unsafe object storage key: ${unsafeFile.key}`);
+  }
+
+  await rm(bucketDirectory, { force: true, recursive: true });
   await mkdir(objectsDirectory, { recursive: true });
 
   for (const file of files) {

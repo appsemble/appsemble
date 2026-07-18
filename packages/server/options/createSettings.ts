@@ -194,6 +194,7 @@ export async function createSettings({
     blockManifests = await resolveBlockManifests({ identifiableBlocks });
   }
 
+  // Public URLs embed deployment configuration, so derive them from stable storage keys per request.
   const blockFileUrls = await getSettingsBlockFileUrls(blockManifests ?? []);
 
   const appOAuth2Secrets = await AppOAuth2Secret.findAll({ attributes: ['icon', 'id', 'name'] });

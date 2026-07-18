@@ -9,7 +9,6 @@ import {
   transactional,
 } from '../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
-import { deleteUnreferencedBlockAssetObjects } from '../../../../utils/blockAssets.js';
 import { findBlockInApps } from '../../../../utils/block.js';
 
 export async function deleteBlockVersion(ctx: Context): Promise<void> {
@@ -34,13 +33,6 @@ export async function deleteBlockVersion(ctx: Context): Promise<void> {
   assertKoaCondition(!usedBlocks, ctx, 403, 'Cannot delete blocks that are used by apps.');
 
   await transactional(async (transaction) => {
-    const assets = await BlockAsset.findAll({
-      attributes: ['storageKey'],
-      transaction,
-      where: { BlockVersionId: version.id },
-    });
-    const storageKeys = assets.flatMap((asset) => (asset.storageKey ? [asset.storageKey] : []));
-
     await BlockAsset.destroy({
       transaction,
       where: { BlockVersionId: version.id },
@@ -51,10 +43,6 @@ export async function deleteBlockVersion(ctx: Context): Promise<void> {
       where: { BlockVersionId: version.id },
     });
     await version.destroy({ transaction });
-
-    if (storageKeys.length) {
-      transaction.afterCommit(() => deleteUnreferencedBlockAssetObjects(storageKeys));
-    }
   });
 
   ctx.status = 204;

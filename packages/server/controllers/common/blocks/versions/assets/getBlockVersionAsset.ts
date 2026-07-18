@@ -26,11 +26,10 @@ export async function getBlockVersionAsset(ctx: Context): Promise<void> {
 
   if (asset.storageKey) {
     try {
+      const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
       const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
 
       if (stream) {
-        const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
-
         ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
         ctx.set('Content-Length', String(stats.size));
         ctx.set('ETag', stats.etag);

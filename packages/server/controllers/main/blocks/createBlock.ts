@@ -1,6 +1,3 @@
-import { createReadStream } from 'node:fs';
-import { stat } from 'node:fs/promises';
-
 import {
   type BlockDefinition,
   BlockExampleValidator,
@@ -10,6 +7,7 @@ import {
   assertKoaCondition,
   handleValidatorResult,
   logger,
+  isValidBlockAssetFilename,
   throwKoaError,
   uploadS3File,
   uploadToBuffer,
@@ -30,12 +28,9 @@ import {
 import { type PublishBlockBody } from '../../../types/index.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import {
-  deleteUnreferencedBlockAssetObjects,
-  ensureBlockAssetsBucketPublicRead,
-  getBlockAssetFileHash,
+  deleteBlockAssetObjects,
   getBlockAssetsBucketName,
   getBlockAssetStorageKey,
-  isValidBlockAssetFilename,
 } from '../../../utils/blockAssets.js';
 import { blockVersionToJson } from '../../../utils/block.js';
 
@@ -119,8 +114,15 @@ export async function createBlock(ctx: Context): Promise<void> {
     );
   }
 
-  for (const file of files) {
-    const filename = decodeURIComponent(file.filename);
+  const filenames = files.map((file) => {
+    try {
+      return decodeURIComponent(file.filename);
+    } catch {
+      throwKoaError(ctx, 400, `Invalid block asset filename: ${file.filename}`);
+    }
+  });
+
+  for (const filename of filenames) {
     assertKoaCondition(
       isValidBlockAssetFilename(filename),
       ctx,
@@ -150,45 +152,37 @@ export async function createBlock(ctx: Context): Promise<void> {
         );
       }
 
-      await ensureBlockAssetsBucketPublicRead();
+      const assets = [];
+      for (const [index, file] of files.entries()) {
+        const filename = filenames[index];
+        const content = await uploadToBuffer(file.path);
+        const storageKey = getBlockAssetStorageKey({
+          blockName: blockId,
+          blockVersionId: createdBlock.id,
+          filename,
+          organizationId: OrganizationId,
+          version,
+        });
 
-      createdBlock.BlockAssets = await BlockAsset.bulkCreate(
-        await Promise.all(
-          files.map(async (file) => {
-            const filename = decodeURIComponent(file.filename);
-            const { size } = await stat(file.path);
-            const contentHash = await getBlockAssetFileHash(file.path);
-            const storageKey = getBlockAssetStorageKey({
-              blockName: blockId,
-              contentHash,
-              filename,
-              organizationId: OrganizationId,
-              version,
-            });
+        await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength, {
+          'Cache-Control': 'public,max-age=31536000,immutable',
+          'Content-Type': file.mime ?? 'application/octet-stream',
+        });
+        uploadedKeys.push(storageKey);
+        assets.push({
+          BlockVersionId: createdBlock.id,
+          content,
+          filename,
+          mime: file.mime,
+          size: content.byteLength,
+          storageKey,
+        });
+      }
 
-            await uploadS3File(
-              getBlockAssetsBucketName(),
-              storageKey,
-              createReadStream(file.path),
-              size,
-              {
-                'Cache-Control': 'public,max-age=31536000,immutable',
-                'Content-Type': file.mime ?? 'application/octet-stream',
-              },
-            );
-            uploadedKeys.push(storageKey);
-
-            return {
-              BlockVersionId: createdBlock.id,
-              filename,
-              mime: file.mime,
-              size,
-              storageKey,
-            };
-          }),
-        ),
-        { logging: false, transaction },
-      );
+      createdBlock.BlockAssets = await BlockAsset.bulkCreate(assets, {
+        logging: false,
+        transaction,
+      });
 
       createdBlock.BlockMessages = messages
         ? await BlockMessages.bulkCreate(
@@ -215,7 +209,7 @@ export async function createBlock(ctx: Context): Promise<void> {
     });
   } catch (err: unknown) {
     if (uploadedKeys.length) {
-      await deleteUnreferencedBlockAssetObjects(uploadedKeys);
+      await deleteBlockAssetObjects(uploadedKeys);
     }
 
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {

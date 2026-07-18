@@ -5,14 +5,12 @@ import FormData from 'form-data';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  BlockAsset,
   BlockVersion,
   Organization,
   OrganizationMember,
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
-import { getBlockAssetContentHash } from '../../../../utils/blockAssets.js';
 import { createServer } from '../../../../utils/createServer.js';
 import {
   authorizeClientCredentials,
@@ -61,7 +59,7 @@ describe('getBlockVersion', () => {
     expect(retrieved.iconUrl).toBeNull();
     expect(retrieved).toStrictEqual(created);
     expect(status).toBe(200);
-    expect(headers['cache-control']).toBe('public,max-age=31536000,immutable');
+    expect(headers['cache-control']).toBe('public,max-age=300');
   });
 
   it('should lazily backfill manifestJson when missing', async () => {
@@ -96,7 +94,7 @@ describe('getBlockVersion', () => {
     expect(persisted?.manifestJson).toBeTruthy();
   });
 
-  it('should add public file URLs to cached manifestJson without rebuilding it', async () => {
+  it('should derive public file URLs from the current deployment base URL', async () => {
     setArgv({
       blockAssetsBaseUrl: 'https://static.appsemble.example',
       host: 'http://localhost',
@@ -112,26 +110,25 @@ describe('getBlockVersion', () => {
     await authorizeClientCredentials('blocks:write');
     await request.post<BlockManifest>('/api/blocks', formData);
 
-    const updateSpy = vi.spyOn(BlockVersion, 'update');
-    const { data, status } = await request.get<BlockManifest>(
+    const { data: firstResponse, status } = await request.get<BlockManifest>(
+      '/api/blocks/@xkcd/standing/versions/1.32.9',
+    );
+    const firstUrl = firstResponse.fileUrls!['standing.png'];
+
+    setArgv({
+      blockAssetsBaseUrl: 'https://cdn.appsemble.example',
+      host: 'http://localhost',
+      secret: 'test',
+    });
+    const { data: secondResponse } = await request.get<BlockManifest>(
       '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
 
-    const content = await readFixture('standing.png');
-    const contentHash = getBlockAssetContentHash(content);
-
     expect(status).toBe(200);
-    // The cached manifest must not be rebuilt and re-persisted on a read (no write-on-read).
-    expect(updateSpy).not.toHaveBeenCalled();
-    expect(data).toMatchObject({
-      files: ['standing.png'],
-      fileUrls: {
-        'standing.png': `https://static.appsemble.example/appsemble-block-assets/xkcd/standing/1.32.9/${contentHash}/standing.png`,
-      },
-    });
-
-    const blockAssetCount = await BlockAsset.count();
-    expect(blockAssetCount).toBe(1);
+    expect(firstUrl).toMatch(/^https:\/\/static\.appsemble\.example\/appsemble-block-assets\//);
+    expect(secondResponse.fileUrls!['standing.png']).toBe(
+      firstUrl.replace('static.appsemble.example', 'cdn.appsemble.example'),
+    );
   });
 
   it('should use the block’s icon in the iconUrl if the block has one', async () => {

@@ -31,7 +31,7 @@ async function columnExists(
 }
 
 describe('migration 0.37.2', () => {
-  it('should leave content nullable on down when assets have been migrated to S3', async () => {
+  it('should preserve database content when removing the S3 metadata columns', async () => {
     const db = getDB();
     const transaction = await db.transaction();
     try {
@@ -40,11 +40,11 @@ describe('migration 0.37.2', () => {
         { OrganizationId: 'org', name: 'test', version: '1.2.3' },
         { transaction, hooks: false },
       );
-      // A migrated asset has its bytes in S3 only, so content is null.
+      const content = Buffer.from('asset');
       await BlockAsset.create(
         {
           BlockVersionId: version.id,
-          content: null,
+          content,
           filename: 'a.js',
           mime: 'application/javascript',
           size: 3,
@@ -53,24 +53,19 @@ describe('migration 0.37.2', () => {
         { transaction, hooks: false },
       );
 
-      // Must not throw: restoring NOT NULL would fail on the null-content row.
-      await down(transaction, db);
-
-      expect(await columnExists(db, transaction, 'storageKey')).toBe(false);
-      expect(await isContentNullable(db, transaction)).toBe(true);
-    } finally {
-      await transaction.rollback();
-    }
-  });
-
-  it('should restore the content NOT NULL constraint on down when no asset is S3-only', async () => {
-    const db = getDB();
-    const transaction = await db.transaction();
-    try {
       await down(transaction, db);
 
       expect(await columnExists(db, transaction, 'storageKey')).toBe(false);
       expect(await isContentNullable(db, transaction)).toBe(false);
+      const [asset] = await db.query<{ content: Buffer }>(
+        'SELECT content FROM "BlockAsset" WHERE filename = :filename',
+        {
+          replacements: { filename: 'a.js' },
+          transaction,
+          type: QueryTypes.SELECT,
+        },
+      );
+      expect(asset.content).toStrictEqual(content);
     } finally {
       await transaction.rollback();
     }

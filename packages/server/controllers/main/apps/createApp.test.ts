@@ -28,7 +28,6 @@ import {
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { findAppMemberByRole } from '../../../utils/appMember.js';
-import { getBlockAssetContentHash } from '../../../utils/blockAssets.js';
 import { createServer } from '../../../utils/createServer.js';
 import { decrypt } from '../../../utils/crypto.js';
 import { getResourceUniqueIndexName } from '../../../utils/resourceUniqueIndexes.js';
@@ -2584,16 +2583,16 @@ describe('createApp', () => {
             {
               filename: 'a.js',
               mime: 'application/javascript',
-              content: null,
+              content: aContent,
               size: aContent.byteLength,
-              storageKey: `appsemble/upstream/1.2.3/${getBlockAssetContentHash(aContent)}/a.js`,
+              storageKey: `appsemble/upstream/1.2.3/${block!.id}/a.js`,
             },
             {
               filename: 'b.css',
               mime: 'text/css',
-              content: null,
+              content: bContent,
               size: bContent.byteLength,
-              storageKey: `appsemble/upstream/1.2.3/${getBlockAssetContentHash(bContent)}/b.css`,
+              storageKey: `appsemble/upstream/1.2.3/${block!.id}/b.css`,
             },
           ],
           BlockMessages: [{ language: 'en', messages: { hello: 'world' } }],

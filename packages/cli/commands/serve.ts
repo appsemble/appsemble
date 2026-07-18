@@ -1,8 +1,9 @@
 import { createWriteStream, existsSync } from 'node:fs';
 import { mkdir, readFile } from 'node:fs/promises';
 import http from 'node:http';
-import { basename, extname, join, parse } from 'node:path';
+import { basename, dirname, extname, join, parse } from 'node:path';
 import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 import {
   getAppBlocks,
@@ -15,6 +16,7 @@ import {
   AppsembleError,
   type ExtendedGroup,
   getBlockAssetDownloadUrl,
+  isValidBlockAssetFilename,
   logger,
   opendirSafe,
   readData,
@@ -212,15 +214,18 @@ export async function handler(argv: ServeArguments): Promise<void> {
       try {
         const { data: blockManifest }: { data: BlockManifest } = await axios.get(blockUrl);
 
-        await writeData(cachedBlockManifest, blockManifest);
-
         const assetsDir = join(blockCacheDir, 'assets');
         if (!existsSync(assetsDir)) {
           await mkdir(assetsDir);
         }
 
         const blockFilesPromises = blockManifest.files.map(async (filename) => {
-          const writer = createWriteStream(join(assetsDir, filename));
+          if (!isValidBlockAssetFilename(filename)) {
+            throw new AppsembleError(`Invalid block asset filename: ${filename}`);
+          }
+
+          const target = join(assetsDir, filename);
+          await mkdir(dirname(target), { recursive: true });
 
           const { data: content } = await axios.get(
             getBlockAssetDownloadUrl(blockUrl, blockManifest.fileUrls, filename),
@@ -229,12 +234,15 @@ export async function handler(argv: ServeArguments): Promise<void> {
             },
           );
 
-          content.pipe(writer);
+          await pipeline(content, createWriteStream(target));
         });
 
         await Promise.all(blockFilesPromises);
+        const localBlockManifest = { ...blockManifest };
+        delete localBlockManifest.fileUrls;
+        await writeData(cachedBlockManifest, localBlockManifest);
 
-        return blockManifest;
+        return localBlockManifest;
       } catch {
         throw new AppsembleError(
           `The server was unable to fetch the "${blockName}" block\nThis could be due to a misconfigured remote\nMake sure the passed remote supports fetching blocks such as https://appsemble.app`,
@@ -242,7 +250,8 @@ export async function handler(argv: ServeArguments): Promise<void> {
       }
     }
 
-    const [blockManifest] = await readData(cachedBlockManifest);
+    const [blockManifest] = (await readData(cachedBlockManifest)) as [BlockManifest, string];
+    delete blockManifest.fileUrls;
     return blockManifest;
   });
 

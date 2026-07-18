@@ -1,7 +1,7 @@
 import { type BlockManifest } from '@appsemble/types';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { callBootstrap } from './bootstrapper.js';
+import { callBootstrap, getBlockFileURL } from './bootstrapper.js';
 
 function registerBootstrapOnAppend(bootstrapFn: () => unknown): ReturnType<typeof vi.spyOn> {
   return vi.spyOn(document.head, 'append').mockImplementation((...nodes: (string | Node)[]) => {
@@ -54,32 +54,6 @@ describe('callBootstrap', () => {
     expect(bootstrapFn).toHaveBeenCalledTimes(1);
   });
 
-  it('should prefer the manifest file URL for the block entry file', async () => {
-    const bootstrapFn = vi.fn();
-    const appendSpy = registerBootstrapOnAppend(bootstrapFn);
-
-    const manifest = {
-      name: '@appsemble/list',
-      version: '0.36.4',
-      files: ['list.css', 'list.js'],
-      fileUrls: {
-        'list.js':
-          'https://static.appsemble.example/appsemble-block-assets/appsemble/list/0.36.4/hash/list.js',
-      },
-    } as unknown as BlockManifest;
-
-    await callBootstrap(manifest, {
-      shadowRoot: document.createElement('div').attachShadow({ mode: 'open' }),
-    } as any);
-
-    expect(appendSpy).toHaveBeenCalledTimes(1);
-    const script = appendSpy.mock.calls[0][0] as HTMLScriptElement;
-    expect(script.src).toBe(
-      'https://static.appsemble.example/appsemble-block-assets/appsemble/list/0.36.4/hash/list.js',
-    );
-    expect(bootstrapFn).toHaveBeenCalledTimes(1);
-  });
-
   it('should fall back to first JavaScript file when normalized entry is missing', async () => {
     const bootstrapFn = vi.fn();
     const appendSpy = registerBootstrapOnAppend(bootstrapFn);
@@ -98,5 +72,29 @@ describe('callBootstrap', () => {
     const script = appendSpy.mock.calls[0][0] as HTMLScriptElement;
     expect(script.src).toContain('/api/blocks/@acme/custom/versions/1.0.1/vendors.form.js');
     expect(bootstrapFn).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('getBlockFileURL', () => {
+  const manifest = {
+    name: '@appsemble/list',
+    version: '0.36.4',
+    files: ['list.css', 'list.js'],
+    fileUrls: {
+      'list.css':
+        'https://static.appsemble.example/appsemble-block-assets/appsemble/list/0.36.4/id/list.css',
+      'list.js':
+        'https://static.appsemble.example/appsemble-block-assets/appsemble/list/0.36.4/id/list.js',
+    },
+  } as unknown as BlockManifest;
+
+  it.each(['list.css', 'list.js'])('should use the public URL for %s', (filename) => {
+    expect(getBlockFileURL(manifest, filename)).toBe(manifest.fileUrls![filename]);
+  });
+
+  it('should ignore inherited file URL properties', () => {
+    expect(getBlockFileURL({ ...manifest, files: ['toString'], fileUrls: {} }, 'toString')).toBe(
+      '/api/blocks/@appsemble/list/versions/0.36.4/toString',
+    );
   });
 });

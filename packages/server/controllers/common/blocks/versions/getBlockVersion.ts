@@ -28,7 +28,7 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
     ctx.body = Object.keys(fileUrls).length
       ? { ...version.manifestJson, fileUrls }
       : version.manifestJson;
-    ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
+    ctx.set('Cache-Control', 'public,max-age=300');
     return;
   }
 
@@ -75,5 +75,5 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
   );
 
   ctx.body = blockVersionToJson(blockVersionRecord);
-  ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
+  ctx.set('Cache-Control', 'public,max-age=300');
 }

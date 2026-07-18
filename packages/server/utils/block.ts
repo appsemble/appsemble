@@ -2,6 +2,7 @@ import { getAppBlocks, type IdentifiableBlock, parseBlockName } from '@appsemble
 import {
   getBlockAssetDownloadUrl,
   getSSRFProtectedAgents,
+  isValidBlockAssetFilename,
   logger,
   uploadS3File,
 } from '@appsemble/node-utils';
@@ -12,13 +13,10 @@ import { Op } from 'sequelize';
 
 import { argv } from './argv.js';
 import {
-  deleteUnreferencedBlockAssetObjects,
-  ensureBlockAssetsBucketPublicRead,
+  deleteBlockAssetObjects,
   getBlockAssetFileUrls,
-  getBlockAssetContentHash,
   getBlockAssetsBucketName,
   getBlockAssetStorageKey,
-  isValidBlockAssetFilename,
 } from './blockAssets.js';
 import { App, BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
 
@@ -107,8 +105,6 @@ export async function syncBlock({
         { transaction },
       );
 
-      await ensureBlockAssetsBucketPublicRead();
-
       // Use callbacks to defer firing the request and not overload the server
       const promises = block.files.map((filename) => async () => {
         if (!isValidBlockAssetFilename(filename)) {
@@ -128,10 +124,9 @@ export async function syncBlock({
         });
         const [mime] = headers['content-type'].split(';');
         const buffer = Buffer.from(content);
-        const contentHash = getBlockAssetContentHash(buffer);
         const storageKey = getBlockAssetStorageKey({
           blockName: name,
-          contentHash,
+          blockVersionId: BlockVersionId,
           filename,
           organizationId: OrganizationId,
           version,
@@ -146,6 +141,7 @@ export async function syncBlock({
         await BlockAsset.create(
           {
             BlockVersionId,
+            content: buffer,
             filename,
             mime,
             size: buffer.byteLength,
@@ -173,7 +169,7 @@ export async function syncBlock({
     return block;
   } catch (error) {
     if (uploadedKeys.length) {
-      await deleteUnreferencedBlockAssetObjects(uploadedKeys);
+      await deleteBlockAssetObjects(uploadedKeys);
     }
 
     if (axios.isAxiosError(error) && error.response?.status === 404) {

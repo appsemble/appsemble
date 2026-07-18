@@ -56,31 +56,6 @@ describe('getBlockVersionAsset', () => {
     expect(response.data).toBe('console.log("Hello from Postgres!")');
   });
 
-  it('should respond with 404 and not cache when the asset has no content or S3 object', async () => {
-    const block = await BlockVersion.create({
-      OrganizationId: 'xkcd',
-      name: 'test',
-      version: '1.2.3',
-    });
-    await BlockAsset.create({
-      BlockVersionId: block.id,
-      filename: 'hello.js',
-      mime: 'application/javascript',
-    });
-
-    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {
-      params: { filename: 'hello.js' },
-    });
-
-    expect(response.status).toBe(404);
-    expect(response.headers['cache-control']).toBeUndefined();
-    expect(response.data).toMatchObject({
-      error: 'Not Found',
-      message: 'Block has no asset named "hello.js"',
-      statusCode: 404,
-    });
-  });
-
   it('should serve an S3-backed block asset', async () => {
     const block = await BlockVersion.create({
       OrganizationId: 'xkcd',
@@ -93,6 +68,7 @@ describe('getBlockVersionAsset', () => {
     await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength);
     await BlockAsset.create({
       BlockVersionId: block.id,
+      content,
       filename: 'hello.js',
       mime: 'application/javascript',
       size: content.byteLength,
@@ -107,32 +83,6 @@ describe('getBlockVersionAsset', () => {
     expect(response.headers['content-length']).toBe(String(content.byteLength));
     expect(response.headers.etag).toBeDefined();
     expect(response.data).toBe('console.log("Hello from S3!")');
-  });
-
-  it('should respond with 404 if an S3-backed asset is missing in S3 and has no content', async () => {
-    const block = await BlockVersion.create({
-      OrganizationId: 'xkcd',
-      name: 'test',
-      version: '1.2.3',
-    });
-    await BlockAsset.create({
-      BlockVersionId: block.id,
-      filename: 'hello.js',
-      mime: 'application/javascript',
-      storageKey: 'xkcd/test/1.2.3/missing/hello.js',
-    });
-
-    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {
-      params: { filename: 'hello.js' },
-    });
-
-    expect(response.status).toBe(404);
-    expect(response.headers['cache-control']).toBeUndefined();
-    expect(response.data).toMatchObject({
-      error: 'Not Found',
-      message: 'Block has no asset named "hello.js"',
-      statusCode: 404,
-    });
   });
 
   it('should fall back to database content when the S3 object is missing', async () => {
@@ -166,6 +116,7 @@ describe('getBlockVersionAsset', () => {
     });
     await BlockAsset.create({
       BlockVersionId: block.id,
+      content: Buffer.from('console.log("Hello world!")'),
       filename: 'hello.js',
       mime: 'application/javascript',
     });
@@ -191,6 +142,7 @@ describe('getBlockVersionAsset', () => {
     });
     await BlockAsset.create({
       BlockVersionId: block.id,
+      content: Buffer.from('console.log("Hello world!")'),
       filename: 'hello.js',
       mime: 'application/javascript',
     });
@@ -216,6 +168,7 @@ describe('getBlockVersionAsset', () => {
     });
     await BlockAsset.create({
       BlockVersionId: block.id,
+      content: Buffer.from('console.log("Hello world!")'),
       filename: 'hello.js',
       mime: 'application/javascript',
     });
@@ -241,6 +194,7 @@ describe('getBlockVersionAsset', () => {
     });
     await BlockAsset.create({
       BlockVersionId: block.id,
+      content: Buffer.from('console.log("Hello world!")'),
       filename: 'hello.js',
       mime: 'application/javascript',
     });

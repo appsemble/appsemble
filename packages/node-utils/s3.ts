@@ -1,4 +1,4 @@
-import { type Readable } from 'node:stream';
+import { Readable } from 'node:stream';
 
 import { buffer as streamToBuffer } from 'node:stream/consumers';
 import { type BucketItemStat, Client, S3Error } from 'minio';
@@ -83,7 +83,7 @@ export async function uploadS3File(
     await ensureBucket(bucket);
     await s3Client.putObject(bucket, key, content, size, metadata);
   } catch (error) {
-    if (isS3ErrorCode(error, 'NoSuchBucket')) {
+    if (isS3ErrorCode(error, 'NoSuchBucket') && !(content instanceof Readable)) {
       logger.warn(error);
       await ensureBucket(bucket);
       await s3Client.putObject(bucket, key, content, size, metadata);

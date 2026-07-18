@@ -134,10 +134,12 @@ function getBootstrapEntryFile(manifest: BlockManifest): string {
 }
 
 export function getBlockFileURL(manifest: BlockManifest, filename: string): string {
-  return (
-    manifest.fileUrls?.[filename] ??
-    prefixBlockURL({ type: manifest.name, version: manifest.version }, filename)
-  );
+  const fileUrl =
+    manifest.fileUrls && Object.hasOwn(manifest.fileUrls, filename)
+      ? manifest.fileUrls[filename]
+      : undefined;
+
+  return fileUrl ?? prefixBlockURL({ type: manifest.name, version: manifest.version }, filename);
 }
 
 export function getHandlerFunction(handler: string): HandlerFunction {

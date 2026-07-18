@@ -24,6 +24,7 @@ describe('blockAssetHandler', () => {
 
     await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength);
     await BlockAsset.create({
+      content,
       filename: 'tux.png',
       mime: 'image/png',
       size: content.byteLength,

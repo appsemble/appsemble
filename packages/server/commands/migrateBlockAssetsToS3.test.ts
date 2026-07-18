@@ -4,11 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { migrateBlockAssetsToS3 } from './migrateBlockAssetsToS3.js';
 import { BlockAsset, BlockVersion, Organization } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
-import {
-  getBlockAssetContentHash,
-  getBlockAssetsBucketName,
-  getBlockAssetStorageKey,
-} from '../utils/blockAssets.js';
+import { getBlockAssetsBucketName, getBlockAssetStorageKey } from '../utils/blockAssets.js';
 
 async function createBlockVersion(): Promise<BlockVersion> {
   await Organization.create({
@@ -28,7 +24,13 @@ describe('migrateBlockAssetsToS3', () => {
     setArgv({ host: 'http://localhost', secret: 'test' });
   });
 
-  it('should upload database-backed block assets to S3 and clear database content', async () => {
+  it('should reject a non-positive batch size', async () => {
+    await expect(migrateBlockAssetsToS3({ batch: 0 })).rejects.toThrow(
+      'The block asset migration batch size must be a positive integer.',
+    );
+  });
+
+  it('should upload database-backed block assets to S3 and preserve rollback content', async () => {
     const blockVersion = await createBlockVersion();
     const content = Buffer.from('console.log("Hello from Postgres!")');
     const blockAsset = await BlockAsset.create({
@@ -39,7 +41,7 @@ describe('migrateBlockAssetsToS3', () => {
     });
     const storageKey = getBlockAssetStorageKey({
       blockName: blockVersion.name,
-      contentHash: getBlockAssetContentHash(content),
+      blockVersionId: blockVersion.id,
       filename: 'hello.js',
       organizationId: blockVersion.OrganizationId,
       version: blockVersion.version,
@@ -54,7 +56,7 @@ describe('migrateBlockAssetsToS3', () => {
 
     await blockAsset.reload();
     expect(blockAsset).toMatchObject({
-      content: null,
+      content,
       size: content.byteLength,
       storageKey,
     });
@@ -65,6 +67,7 @@ describe('migrateBlockAssetsToS3', () => {
     const blockVersion = await createBlockVersion();
     await BlockAsset.create({
       BlockVersionId: blockVersion.id,
+      content: Buffer.from('x'),
       filename: 'hello.js',
       mime: 'application/javascript',
       size: 1,
@@ -93,7 +96,7 @@ describe('migrateBlockAssetsToS3', () => {
     });
     const storageKey = getBlockAssetStorageKey({
       blockName: blockVersion.name,
-      contentHash: getBlockAssetContentHash(content),
+      blockVersionId: blockVersion.id,
       filename: 'hello.js',
       organizationId: blockVersion.OrganizationId,
       version: blockVersion.version,
@@ -117,7 +120,7 @@ describe('migrateBlockAssetsToS3', () => {
       uploaded: 1,
     });
     await blockAsset.reload();
-    expect(blockAsset).toMatchObject({ content: null, size: content.byteLength, storageKey });
+    expect(blockAsset).toMatchObject({ content, size: content.byteLength, storageKey });
     expect(await getS3FileBuffer(getBlockAssetsBucketName(), storageKey)).toStrictEqual(content);
 
     uploadS3FileSpy.mockRestore();
@@ -142,7 +145,49 @@ describe('migrateBlockAssetsToS3', () => {
       uploaded: 3,
     });
 
-    expect(await BlockAsset.count({ where: { content: null } })).toBe(3);
+    const migratedAssets = await BlockAsset.findAll({ order: [['filename', 'ASC']] });
+    expect(migratedAssets.map(({ content }) => content)).toStrictEqual(contents);
+    expect(await BlockAsset.count({ where: { storageKey: null } })).toBe(0);
+  });
+
+  it('should preserve fallback content and resume after a partial batch failure', async () => {
+    const nodeUtils = await import('@appsemble/node-utils');
+    const { uploadS3File } = nodeUtils;
+    let uploadCount = 0;
+    const uploadS3FileSpy = vi.spyOn(nodeUtils, 'uploadS3File').mockImplementation((...args) => {
+      uploadCount += 1;
+      return uploadCount === 2
+        ? Promise.reject(new Error('S3 unavailable'))
+        : uploadS3File(...args);
+    });
+    const blockVersion = await createBlockVersion();
+    const contents = [0, 1, 2].map((index) => Buffer.from(`console.log(${index})`));
+    await BlockAsset.bulkCreate(
+      contents.map((content, index) => ({
+        BlockVersionId: blockVersion.id,
+        content,
+        filename: `partial-${index}.js`,
+        mime: 'application/javascript',
+      })),
+    );
+
+    expect(await migrateBlockAssetsToS3({ batch: 3 })).toStrictEqual({
+      failed: 1,
+      scanned: 3,
+      skipped: 0,
+      uploaded: 2,
+    });
+    const partiallyMigrated = await BlockAsset.findAll({ order: [['filename', 'ASC']] });
+    expect(partiallyMigrated.map(({ content }) => content)).toStrictEqual(contents);
+    expect(partiallyMigrated.filter(({ storageKey }) => storageKey)).toHaveLength(2);
+
+    uploadS3FileSpy.mockRestore();
+    expect(await migrateBlockAssetsToS3({ batch: 3 })).toStrictEqual({
+      failed: 0,
+      scanned: 1,
+      skipped: 0,
+      uploaded: 1,
+    });
     expect(await BlockAsset.count({ where: { storageKey: null } })).toBe(0);
   });
 });
