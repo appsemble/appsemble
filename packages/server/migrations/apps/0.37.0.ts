@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
+import { DataTypes, type QueryOptions, type Sequelize, type Transaction } from 'sequelize';
 
 export const key = '0.37.0';
 
@@ -14,29 +14,27 @@ export const key = '0.37.0';
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
+  async function addColumnIfMissing(
+    table: string,
+    column: string,
+    attribute: Parameters<typeof queryInterface.addColumn>[2],
+  ): Promise<void> {
+    // `describeTable` forwards its options to `sequelize.query`, so it honours the transaction at
+    // runtime even though its type definition omits it.
+    const columns = await queryInterface.describeTable(table, { transaction } as QueryOptions);
+    if (!(column in columns)) {
+      await queryInterface.addColumn(table, column, attribute, { transaction });
+    }
+  }
+
   logger.info('Adding `AppOAuth2Secret.roleMappings`');
-  await queryInterface.addColumn(
-    'AppOAuth2Secret',
-    'roleMappings',
-    { type: DataTypes.JSON },
-    { transaction },
-  );
+  await addColumnIfMissing('AppOAuth2Secret', 'roleMappings', { type: DataTypes.JSON });
 
   logger.info('Adding `AppSamlSecret.groupAttribute`');
-  await queryInterface.addColumn(
-    'AppSamlSecret',
-    'groupAttribute',
-    { type: DataTypes.STRING },
-    { transaction },
-  );
+  await addColumnIfMissing('AppSamlSecret', 'groupAttribute', { type: DataTypes.STRING });
 
   logger.info('Adding `AppSamlSecret.roleMappings`');
-  await queryInterface.addColumn(
-    'AppSamlSecret',
-    'roleMappings',
-    { type: DataTypes.JSON },
-    { transaction },
-  );
+  await addColumnIfMissing('AppSamlSecret', 'roleMappings', { type: DataTypes.JSON });
 }
 
 /**
