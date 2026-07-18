@@ -118,7 +118,10 @@ function validateJSONSchema(schema: Schema, prefix: Prefix, report: Report): voi
   if (schema.type !== 'object') {
     return;
   }
-  if (!('properties' in schema)) {
+  // An object that only defines `additionalProperties` (an open map, e.g. a
+  // dictionary of confidence scores) is a valid schema and does not need
+  // `properties`. Only require `properties` when there is no `additionalProperties`.
+  if (!('properties' in schema) && !schema.additionalProperties) {
     report(schema, 'is missing properties', prefix);
     return;
   }
@@ -131,6 +134,11 @@ function validateJSONSchema(schema: Schema, prefix: Prefix, report: Report): voi
   }
   for (const [key, propertySchema] of Object.entries(schema.properties ?? {})) {
     validateJSONSchema(propertySchema, [...prefix, 'properties', key], report);
+  }
+  // Recurse into the `additionalProperties` sub schema so open maps are validated
+  // as thoroughly as `properties`. A boolean `additionalProperties` has no sub schema.
+  if (typeof schema.additionalProperties === 'object') {
+    validateJSONSchema(schema.additionalProperties, [...prefix, 'additionalProperties'], report);
   }
 }
 

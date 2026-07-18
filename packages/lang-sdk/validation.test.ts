@@ -1294,6 +1294,35 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should allow objects with only additionalProperties and no properties', async () => {
+    const app = createTestApp();
+    app.resources!.person.schema = {
+      type: 'object',
+      additionalProperties: { type: 'number' },
+    };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should report missing properties in additionalProperties schemas', async () => {
+    const app = createTestApp();
+    app.resources!.person.schema = {
+      type: 'object',
+      additionalProperties: { type: 'object' },
+    };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is missing properties', { type: 'object' }, undefined, [
+        'resources',
+        'person',
+        'schema',
+        'additionalProperties',
+      ]),
+    ]);
+  });
+
   it('should report unknown required properties in JSON schemas', async () => {
     const app = createTestApp();
     app.resources!.person.schema = {
