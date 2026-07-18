@@ -6,7 +6,7 @@ metadata:
   labels:
     {{ include "appsemble.labels" . }}
 spec:
-  schedule: 0 2 * * * # Run every day at 2:00:00
+  schedule: 40 2 * * * # Run every day at 02:40
   successfulJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   jobTemplate:
