@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.37.1](https://gitlab.com/appsemble/appsemble/-/releases/0.37.1)] - 2026-07-18
+
+### Added
+
+- Server: Route database connections through PgBouncer when connection pooling is enabled in the
+  Helm chart.
+
 ## \[[0.37.0](https://gitlab.com/appsemble/appsemble/-/releases/0.37.0)] - 2026-07-14
 
 ### Added

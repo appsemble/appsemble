@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.37.0
-appVersion: 0.37.0
+version: 0.37.1
+appVersion: 0.37.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -35,52 +35,10 @@ dependencies:
     repository: https://valkey.io/valkey-helm
     condition: valkey.enabled
 annotations:
-  artifacthub.io/changes: >
+  artifacthub.io/changes: |
     - kind: added
-      description: "Block(form): Add minRows option to the markdown field to set the
-        editor's minimum height in lines."
-    - kind: added
-      description: "Block(list): Add openPreview option to image fields to trigger the
-        item's action instead of opening a fullscreen preview."
-    - kind: changed
-      description: "App: Expose URL query parameters to block page parameters."
-    - kind: changed
-      description: "Service-worker: Append utm_source=notification to URLs opened from
-        notification clicks."
-    - kind: changed
-      description: "Web-utils: Stop reporting failed requests that never reached the
-        server to Sentry."
-    - kind: fixed
-      description: "Block(data-loader): Drop the result of a data load when a newer
-        load started meanwhile, so rapid refreshes no longer overwrite newer data
-        with stale responses."
-    - kind: fixed
-      description: "Block(filter): Drop the result of a filter load when a newer load
-        started meanwhile, so rapid interactions no longer overwrite newer data with
-        stale responses."
-    - kind: fixed
-      description: "App: Remove a block's event listeners and disable its emitters
-        when the block is unmounted, so blocks from a previously shown tab or page
-        can no longer receive or emit events on the current one."
-    - kind: fixed
-      description: "App: Stop the event action from emitting once its block or page is
-        unmounted, so slow action chains started on a previous tab or page no longer
-        overwrite the current view, while their remaining work such as resource
-        writes still completes."
-    - kind: fixed
-      description: "Cli: Convert local file paths to file URLs on Windows."
-    - kind: fixed
-      description: "Node-utils: Apply resource schema property defaults when creating
-        or replacing resources."
-    - kind: fixed
-      description: "Server: Order resource positions within the group set by
-        enforceOrderingGroupByFields."
-    - kind: fixed
-      description: "Server: Reject resource creation, update, and patch requests that
-        reference non-existent resources."
-    - kind: fixed
-      description: "Server: Strip the id metadata field from the stored resource data
-        on create, update, and patch."
+      description: "Server: Route database connections through PgBouncer when
+        connection pooling is enabled in the Helm chart."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
