@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { getAppPossiblePermissions } from '../authorization.js';
-import { LanguageComponent, LanguageCtx, type Node } from './index.js';
+import { LanguageComponent, LanguageCtx, type Node, scan } from './index.js';
 import { type AppDefinition } from '../types/index.js';
 
 /*
@@ -105,5 +105,54 @@ describe('language component binding: app permissions', () => {
     expect(completions).toContain('$resource:note:delete');
     // Already-present permissions are not suggested again.
     expect(completions).not.toContain('$resource:note:get');
+  });
+});
+
+// The tests above call the binding hook directly. A consumer (GUI editor, LSP) instead hands the
+// engine a path and lets it find the governing binding — this exercises that dispatch seam:
+// `bindingContextAt` (which component governs a position, and the relative path within it) and
+// `callBindingAt` (run a hook there).
+describe('language component binding dispatched through the engine at a path', () => {
+  const permissionsPath = ['security', 'roles', 'Reader', 'permissions'];
+  const tree = scan(
+    LanguageCtx.compile(schemas, 'AppDefinition', { binds: LanguageComponent.bindings(defs) }),
+    app,
+  );
+
+  it('resolves the governing binding at the mounted path, with an empty relative path', () => {
+    const context = tree.bindingContextAt(permissionsPath);
+    expect(context?.binding).toBe(AppPermissions.binding);
+    expect(context?.componentPath).toStrictEqual(permissionsPath);
+    expect(context?.relativePath).toStrictEqual([]);
+    expect(context?.node.identity?.name).toBe('AppPermissions');
+  });
+
+  it('resolves a position inside the component to that binding with the relative subpath', () => {
+    // A cursor on element 0 of the permissions array still resolves to the array's binding.
+    const context = tree.bindingContextAt([...permissionsPath, 0]);
+    expect(context?.componentPath).toStrictEqual(permissionsPath);
+    expect(context?.relativePath).toStrictEqual([0]);
+  });
+
+  it('dispatches validate and complete by path, matching the direct-call results', () => {
+    expect(tree.callBindingAt(permissionsPath, 'validate')).toStrictEqual([
+      'unknown permission: $resource:bogus:get',
+    ]);
+    expect(tree.callBindingAt(permissionsPath, 'complete')).toContain('$webhook:sync:invoke');
+  });
+
+  it('returns undefined for an absent hook or a path no binding governs', () => {
+    // The root AppDefinition is bound but has no `validate` hook: undefined, not a throw.
+    expect(tree.callBindingAt([], 'validate')).toBeUndefined();
+    // Bind only the permissions component, so the root mount is not a candidate; a sibling path
+    // then has no governing binding at all.
+    const permissionsOnly = scan(
+      LanguageCtx.compile(schemas, 'AppDefinition', {
+        binds: LanguageComponent.bindings([AppPermissions]),
+      }),
+      app,
+    );
+    expect(permissionsOnly.bindingContextAt(['resources'])).toBeUndefined();
+    expect(permissionsOnly.callBindingAt(['resources'], 'complete')).toBeUndefined();
   });
 });
