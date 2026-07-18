@@ -49,11 +49,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       { scheme: 'file', language: 'yaml', pattern: '**/app-definition.yaml' },
       { scheme: 'file', language: 'yaml', pattern: '**/app-definition.yml' },
     ],
-    initializationOptions: {
-      appsemble: {
-        skipExecuteCommandProvider: true,
-      },
-    },
     outputChannel,
     synchronize: {
       fileEvents: vscode.workspace.createFileSystemWatcher('**/app-definition.{yaml,yml}'),
