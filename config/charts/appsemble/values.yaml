@@ -195,7 +195,7 @@ pgbouncer:
       tls13Ciphers: ''
       caSecret: ''
   poolMode: transaction
-  maxClientConn: 1000
+  maxClientConn: 500
   mainPoolSize: 10
   defaultPoolSize: 3
   maxDbConnections: 10

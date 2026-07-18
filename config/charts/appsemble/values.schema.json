@@ -535,7 +535,7 @@
         },
         "maxUserConnections": {
           "type": "integer",
-          "description": "Global cap on server connections PgBouncer opens for the Appsemble database user across all pools, bounding total PostgreSQL backends."
+          "description": "Maximum number of server connections PgBouncer opens per database user across all database pools. Keep this below PostgreSQL's non-reserved connection budget after direct and other clients."
         }
       }
     },
