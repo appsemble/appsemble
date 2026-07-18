@@ -58,6 +58,7 @@ export function getCsp({
           'blob:',
           'data:',
           host,
+          blockAssetsOrigin,
           sentryOrigin ?? false,
           app.metaPixelID ? 'https://graph.facebook.com' : false,
           app.msClarityID ? 'https://www.clarity.ms' : false,
@@ -74,7 +75,7 @@ export function getCsp({
           app.msClarityID ? 'https://clarity.ms' : false,
         ],
     'default-src': ["'self'"],
-    'worker-src': ["'self'", 'blob:'],
+    'worker-src': ["'self'", 'blob:', blockAssetsOrigin],
     'script-src': scriptSrc,
     'img-src': hasStrictContentSecurityPolicy
       ? [

@@ -1,5 +1,10 @@
 import { getAppBlocks, type IdentifiableBlock, parseBlockName } from '@appsemble/lang-sdk';
-import { getBlockAssetDownloadUrl, logger, uploadS3File } from '@appsemble/node-utils';
+import {
+  getBlockAssetDownloadUrl,
+  getSSRFProtectedAgents,
+  logger,
+  uploadS3File,
+} from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
@@ -110,12 +115,17 @@ export async function syncBlock({
           throw new Error(`Invalid block asset filename from ${blockUrl}: ${filename}`);
         }
 
-        const { data: content, headers } = await axios.get(
-          getBlockAssetDownloadUrl(blockUrl, block.fileUrls, filename),
-          {
-            responseType: 'arraybuffer',
-          },
-        );
+        // `fileUrls` comes from the remote manifest body, so it may point at an internal host.
+        // Route the fetch through the same IP-based SSRF guard as the request proxy.
+        const downloadUrl = getBlockAssetDownloadUrl(blockUrl, block.fileUrls, filename);
+        const { httpAgent, httpsAgent } = await getSSRFProtectedAgents({
+          hostname: new URL(downloadUrl).hostname,
+        });
+        const { data: content, headers } = await axios.get(downloadUrl, {
+          httpAgent,
+          httpsAgent,
+          responseType: 'arraybuffer',
+        });
         const [mime] = headers['content-type'].split(';');
         const buffer = Buffer.from(content);
         const contentHash = getBlockAssetContentHash(buffer);

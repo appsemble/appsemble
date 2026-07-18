@@ -10,6 +10,7 @@ import {
   getBlockAssetContentHash,
   getBlockAssetsBucketName,
   getBlockAssetStorageKey,
+  isValidBlockAssetFilename,
 } from '../utils/blockAssets.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
@@ -77,6 +78,16 @@ export async function migrateBlockAssetsToS3({
       if (!content || !blockVersion) {
         result.skipped += 1;
         logger.warn(`Skipped block asset ${blockAsset.id} because required metadata is missing.`);
+        continue;
+      }
+
+      // Legacy rows predate filename validation, so guard here too before a filename becomes an
+      // object storage key and public URL segment. Leave the database content intact for these.
+      if (!isValidBlockAssetFilename(filename)) {
+        result.skipped += 1;
+        logger.warn(
+          `Skipped block asset ${blockAsset.id} because its filename is invalid: ${filename}`,
+        );
         continue;
       }
 
