@@ -6,7 +6,7 @@ metadata:
   labels:
     {{ include "appsemble.labels" . }}
 spec:
-  schedule: "*/10 * * * *" # Run every 10 minutes
+  schedule: "2-59/10 * * * *" # Run every 10 minutes, offset from run-cronjobs
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}

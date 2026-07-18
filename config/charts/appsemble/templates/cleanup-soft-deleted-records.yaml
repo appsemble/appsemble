@@ -6,8 +6,7 @@ metadata:
   labels:
     {{ include "appsemble.labels" . }}
 spec:
-  # Revert back to daily at 23 once debugging is complete.
-  schedule: 0 3 * * * # Run every day at 23:00:00
+  schedule: 0 3 * * * # Run every day at 03:00
   successfulJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   jobTemplate:
