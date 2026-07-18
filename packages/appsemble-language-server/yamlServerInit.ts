@@ -10,7 +10,6 @@ import {
   TextDocumentSyncKind,
 } from 'vscode-languageserver';
 import { URI } from 'vscode-uri';
-import { registerCommands } from 'yaml-language-server/lib/esm/languageservice/services/yamlCommands.js';
 import { type Telemetry } from 'yaml-language-server/lib/esm/languageservice/telemetry.js';
 import { workspaceFoldersChanged } from 'yaml-language-server/lib/esm/languageservice/utils/paths.js';
 import {
@@ -21,7 +20,6 @@ import {
 
 import { createAppsembleSchemaConfig } from './appsembleSchemaConfig.js';
 import { BlockSchemaRequestHandler } from './BlockSchemaRequestHandler.js';
-import { YamlCommands } from './commands.js';
 import { commandExecutor } from './languageserver/commandExecutor.js';
 import { BlockRegistryHandlers } from './languageserver/handlers/blockRegistryHandlers.js';
 import { LanguageHandlers } from './languageserver/handlers/languageHandlers.js';
@@ -131,8 +129,8 @@ export class YAMLServerInit {
      * Run when the client connects to the server after it is activated.
      * The server receives the root path(s) of the workspace and the client capabilities.
      */
-    this.connection.onInitialize((params: InitializeParams): Promise<InitializeResult> =>
-      this.connectionInitialized(params),
+    this.connection.onInitialize(
+      (params: InitializeParams): Promise<InitializeResult> => this.connectionInitialized(params),
     );
 
     this.connection.onInitialized(() => {
@@ -221,10 +219,6 @@ export class YAMLServerInit {
       this.yamlSettings.capabilities.workspace.didChangeWatchedFiles.dynamicRegistration,
     );
     this.registerHandlers();
-    registerCommands(
-      commandExecutor as unknown as Parameters<typeof registerCommands>[0],
-      this.connection,
-    );
     // TODO: ignore
     // await this.setupLocalizationBundle(params);
     const result: InitializeResult = {
@@ -246,11 +240,6 @@ export class YAMLServerInit {
         codeLensProvider: {
           resolveProvider: false,
         },
-        executeCommandProvider: {
-          commands: Object.keys(YamlCommands).map(
-            (k) => YamlCommands[k as keyof typeof YamlCommands],
-          ),
-        },
         workspace: {
           workspaceFolders: {
             changeNotifications: true,
@@ -262,10 +251,6 @@ export class YAMLServerInit {
         name: 'Appsemble Language Server',
       },
     };
-
-    if (params.initializationOptions?.appsemble?.skipExecuteCommandProvider) {
-      delete result.capabilities.executeCommandProvider;
-    }
 
     return result;
   }

@@ -315,7 +315,9 @@ export class LanguageHandlers {
 
   codeActionHandler(params: CodeActionParams): CodeAction[] | undefined {
     return this.withDocument(params.textDocument.uri, (document) =>
-      this.languageService.getCodeAction(document, params),
+      this.languageService
+        .getCodeAction(document, params)
+        ?.filter((action) => action.command?.command !== 'jumpToSchema'),
     );
   }
 
