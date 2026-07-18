@@ -1,4 +1,4 @@
-import { assertKoaCondition, logger } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -53,13 +53,7 @@ export async function deleteBlockVersion(ctx: Context): Promise<void> {
     await version.destroy({ transaction });
 
     if (storageKeys.length) {
-      transaction.afterCommit(async () => {
-        try {
-          await deleteUnreferencedBlockAssetObjects(storageKeys);
-        } catch (error) {
-          logger.error(error);
-        }
-      });
+      transaction.afterCommit(() => deleteUnreferencedBlockAssetObjects(storageKeys));
     }
   });
 

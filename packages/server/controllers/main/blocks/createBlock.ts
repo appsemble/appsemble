@@ -215,11 +215,7 @@ export async function createBlock(ctx: Context): Promise<void> {
     });
   } catch (err: unknown) {
     if (uploadedKeys.length) {
-      try {
-        await deleteUnreferencedBlockAssetObjects(uploadedKeys);
-      } catch (error) {
-        logger.error(error);
-      }
+      await deleteUnreferencedBlockAssetObjects(uploadedKeys);
     }
 
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {

@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
+import { DataTypes, QueryTypes, type Sequelize, type Transaction } from 'sequelize';
 
 export const key = '0.37.2';
 
@@ -62,6 +62,22 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
 
   logger.info('Remove column `storageKey` from `BlockAsset` table');
   await queryInterface.removeColumn('BlockAsset', 'storageKey', { transaction });
+
+  // Rows migrated to S3 have null `content`, and their bytes live in object storage, so the NOT
+  // NULL constraint cannot be restored here without dropping data. Only re-add it when every row
+  // still has database content; otherwise leave `content` nullable so this down migration can
+  // never fail or lose data.
+  const [{ count }] = await queryInterface.sequelize.query<{ count: number }>(
+    'SELECT COUNT(*)::int AS count FROM "BlockAsset" WHERE content IS NULL',
+    { type: QueryTypes.SELECT, transaction },
+  );
+
+  if (count > 0) {
+    logger.warn(
+      `Leaving \`content\` nullable in \`BlockAsset\`: ${count} row(s) have their content in S3 only.`,
+    );
+    return;
+  }
 
   logger.info('Disallow null values for `content` in `BlockAsset` table');
   await queryInterface.changeColumn(

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 
 import { parseBlockName } from '@appsemble/lang-sdk';
-import { deleteS3Files, setS3BucketPolicy } from '@appsemble/node-utils';
+import { deleteS3Files, logger, setS3BucketPolicy } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 
 import { argv } from './argv.js';
@@ -128,8 +128,23 @@ export async function deleteUnreferencedBlockAssetObjects(storageKeys: string[])
     (key) => !referencedStorageKeys.has(key),
   );
 
-  if (unreferencedStorageKeys.length) {
+  if (!unreferencedStorageKeys.length) {
+    return;
+  }
+
+  // Best-effort cleanup: block asset objects are immutable and content-addressed, so a failed or
+  // orphaned delete is a storage leak, never data loss. On failure log the exact keys so they stay
+  // recoverable instead of vanishing into a swallowed error.
+  // ponytail: the reference check above and this delete are not atomic, so a concurrent publish of
+  // the identical content committed in between could leave a referenced object deleted. Bounded by
+  // content-addressing (re-uploadable) and rare; a mark-and-sweep GC is the upgrade path if needed.
+  try {
     await deleteS3Files(getBlockAssetsBucketName(), unreferencedStorageKeys);
+  } catch (error) {
+    logger.error(
+      `Failed to delete unreferenced block asset object(s): ${unreferencedStorageKeys.join(', ')}`,
+    );
+    logger.error(error);
   }
 }
 // Resolve public block asset URLs for a set of resolved block manifests, keyed by `name@version`.

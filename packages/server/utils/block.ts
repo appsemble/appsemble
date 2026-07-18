@@ -173,11 +173,7 @@ export async function syncBlock({
     return block;
   } catch (error) {
     if (uploadedKeys.length) {
-      try {
-        await deleteUnreferencedBlockAssetObjects(uploadedKeys);
-      } catch (cleanupError) {
-        logger.error(cleanupError);
-      }
+      await deleteUnreferencedBlockAssetObjects(uploadedKeys);
     }
 
     if (axios.isAxiosError(error) && error.response?.status === 404) {
