@@ -112,7 +112,7 @@
     "yoctocolors-cjs": "2.1.3"
   },
   "optionalDependencies": {
-    "keytar": "^7.0.0"
+    "@napi-rs/keyring": "^1.3.0"
   },
   "engines": {
     "node": ">=24"
