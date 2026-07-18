@@ -72,9 +72,17 @@ export class BlockRegistryHandlers {
     const updateId = this.updateCounter;
     const candidateBlocks = new Map<string, IdentifiableBlock>();
     for (const document of this.yamlSettings.documents.all()) {
-      const { doc } = this.yamlCacher.parseOrGetCached(document);
-      const definition = doc.toJS({ maxAliasCount: 10_000 });
-      const appBlocks = getAppBlocks(definition);
+      let appBlocks: IdentifiableBlock[];
+      try {
+        const { doc } = this.yamlCacher.parseOrGetCached(document);
+        const definition = doc.toJS({ maxAliasCount: 10_000 });
+        appBlocks = getAppBlocks(definition);
+      } catch {
+        // A partially typed page (a `flow` without `steps`, a `loop` without `foreach`, a
+        // `container` without `pages`) makes app iteration throw. Skip that document so one
+        // in-progress file does not abort block schema updates and validation for every open file.
+        continue;
+      }
       for (const block of appBlocks) {
         if (!this.isCompleteBlock(block)) {
           continue;
