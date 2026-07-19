@@ -138,6 +138,9 @@ async function configureRealms(): Promise<void> {
 test.describe('App Keycloak brokered Entra OIDC login', () => {
   test.skip(!KEYCLOAK_BASE_URL, 'Keycloak brokered login requires KEYCLOAK_BASE_URL');
 
+  // The scenarios share two fixed Keycloak realms, so their setup and login flows must not race.
+  test.describe.configure({ mode: 'serial' });
+
   test.beforeAll(async ({ createApp, createOrganization, randomTestId, request }) => {
     await configureRealms();
 
@@ -246,12 +249,17 @@ test.describe('App Keycloak brokered Entra OIDC login', () => {
     visitApp,
   }) => {
     const appUrl = await visitApp(app.id!);
-    const verifyResponse = page.waitForResponse(
-      (response) =>
-        response.request().method() === 'POST' &&
-        new URL(response.url()).pathname ===
-          `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
-    );
+    const verifyResult = page
+      .waitForResponse(
+        (response) =>
+          response.request().method() === 'POST' &&
+          new URL(response.url()).pathname ===
+            `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      )
+      .then(async (response) => ({
+        body: (await response.json()) as { message?: string },
+        status: response.status(),
+      }));
 
     await page.goto(`${appUrl}/Login`);
     await page.getByRole('button', { name: `Login with ${secret.name}` }).click();
@@ -262,9 +270,9 @@ test.describe('App Keycloak brokered Entra OIDC login', () => {
     await page.getByRole('textbox', { exact: true, name: 'Password' }).fill(userPassword);
     await page.getByRole('button', { name: /sign in/i }).click();
 
-    const response = await verifyResponse;
-    expect(response.status()).toBe(403);
-    expect(await response.json()).toMatchObject({
+    const { body, status } = await verifyResult;
+    expect(status).toBe(403);
+    expect(body).toMatchObject({
       message: 'User is not allowed to login because no external group matched an app role.',
     });
 
