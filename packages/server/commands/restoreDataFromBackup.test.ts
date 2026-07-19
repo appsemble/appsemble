@@ -68,6 +68,8 @@ const baseOptions: RestoreDataFromBackupOptions = {
   backupsPort: 443,
   backupsSecretKey: 'backup-secret-key',
   backupsSecure: true,
+  databaseDirectHost: 'database.example.com',
+  databaseDirectPort: 5432,
   databaseHost: 'database.example.com',
   databaseName: 'appsemble',
   databasePassword: 'database-password',
@@ -222,6 +224,26 @@ describe('restoreDataFromBackup', () => {
       dbUser: baseOptions.databaseUser,
     });
     expect(encrypt).toHaveBeenCalledWith(baseOptions.databasePassword, baseOptions.aesSecret);
+  });
+
+  it('should restore through the direct database endpoint', async () => {
+    vi.mocked(buildPostgresUri).mockImplementation(
+      ({ dbHost, dbName, dbPort }) => `postgres://${dbHost}:${dbPort}/${dbName}`,
+    );
+    vi.mocked(spawn).mockImplementation((command, args) => {
+      const usesPooler = args?.some((arg) => String(arg).includes('pgbouncer'));
+      return createChildProcessMock(usesPooler ? 1 : 0) as unknown as SpawnReturn;
+    });
+
+    const failed = await restoreDataFromBackup({
+      ...baseOptions,
+      databaseDirectHost: 'postgres.example.com',
+      databaseDirectPort: 5432,
+      databaseHost: 'pgbouncer.example.com',
+      databasePort: 6432,
+    });
+
+    expect(failed).toBe(false);
   });
 
   it('should use local development aesSecret when missing in development', async () => {
