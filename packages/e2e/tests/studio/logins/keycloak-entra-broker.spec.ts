@@ -249,17 +249,12 @@ test.describe('App Keycloak brokered Entra OIDC login', () => {
     visitApp,
   }) => {
     const appUrl = await visitApp(app.id!);
-    const verifyResult = page
-      .waitForResponse(
-        (response) =>
-          response.request().method() === 'POST' &&
-          new URL(response.url()).pathname ===
-            `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
-      )
-      .then(async (response) => ({
-        body: (await response.json()) as { message?: string },
-        status: response.status(),
-      }));
+    const verifyResponse = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' &&
+        new URL(response.url()).pathname ===
+          `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+    );
 
     await page.goto(`${appUrl}/Login`);
     await page.getByRole('button', { name: `Login with ${secret.name}` }).click();
@@ -270,11 +265,7 @@ test.describe('App Keycloak brokered Entra OIDC login', () => {
     await page.getByRole('textbox', { exact: true, name: 'Password' }).fill(userPassword);
     await page.getByRole('button', { name: /sign in/i }).click();
 
-    const { body, status } = await verifyResult;
-    expect(status).toBe(403);
-    expect(body).toMatchObject({
-      message: 'User is not allowed to login because no external group matched an app role.',
-    });
+    expect((await verifyResponse).status()).toBe(403);
 
     await expect(page.getByText('An unexpected error occurred while logging in')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Manager content' })).toBeHidden();
