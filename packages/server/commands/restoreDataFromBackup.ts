@@ -62,7 +62,14 @@ async function recreateDatabase(dbName: string, adminUri: string): Promise<void>
 
   const dropProc = spawn(
     'psql',
-    [`--dbname=${adminUri}`, '-v', 'ON_ERROR_STOP=1', '-c', `DROP DATABASE IF EXISTS "${dbName}";`],
+    [
+      `--dbname=${adminUri}`,
+      '-X',
+      '-v',
+      'ON_ERROR_STOP=1',
+      '-c',
+      `DROP DATABASE IF EXISTS "${dbName}";`,
+    ],
     {
       stdio: ['inherit', 'inherit', 'inherit'],
     },
@@ -75,7 +82,7 @@ async function recreateDatabase(dbName: string, adminUri: string): Promise<void>
 
   const createProc = spawn(
     'psql',
-    [`--dbname=${adminUri}`, '-v', 'ON_ERROR_STOP=1', '-c', `CREATE DATABASE "${dbName}";`],
+    [`--dbname=${adminUri}`, '-X', '-v', 'ON_ERROR_STOP=1', '-c', `CREATE DATABASE "${dbName}";`],
     {
       stdio: ['inherit', 'inherit', 'inherit'],
     },
@@ -95,7 +102,7 @@ async function restoreDatabaseFromS3(
   key: string,
 ): Promise<void> {
   const gunzip = createGunzip();
-  const restore = spawn('psql', [`--dbname=${connectionString}`], {
+  const restore = spawn('psql', [`--dbname=${connectionString}`, '-X', '-v', 'ON_ERROR_STOP=1'], {
     stdio: ['pipe', 'inherit', 'pipe'],
   });
 
