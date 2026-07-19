@@ -222,7 +222,7 @@ describe('restoreDataFromBackup', () => {
     const directHost = 'postgres.example.com';
     const directPort = 5432;
     const app = createFoundApp({
-      dbHost: 'pgbouncer.example.com',
+      dbHost: 'pooler.example.com',
       dbName: 'app-1',
       dbPort: 6432,
       dbUser: 'database-user',
@@ -255,7 +255,7 @@ describe('restoreDataFromBackup', () => {
       ...baseOptions,
       databaseDirectHost: directHost,
       databaseDirectPort: directPort,
-      databaseHost: 'pgbouncer.example.com',
+      databaseHost: 'pooler.example.com',
       databasePort: 6432,
     });
 

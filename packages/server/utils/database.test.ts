@@ -21,7 +21,7 @@ describe('getDirectPostgresConnection', () => {
     vi.stubEnv('DATABASE_DIRECT_PORT', '5432');
 
     expect(
-      getDirectPostgresConnection({ dbHost: 'pgbouncer.example.com', dbPort: 6432 }),
+      getDirectPostgresConnection({ dbHost: 'pooler.example.com', dbPort: 6432 }),
     ).toStrictEqual({ dbHost: 'postgres.example.com', dbPort: 5432 });
   });
 
@@ -32,7 +32,7 @@ describe('getDirectPostgresConnection', () => {
       vi.stubEnv('DATABASE_DIRECT_PORT', directPort);
 
       expect(() =>
-        getDirectPostgresConnection({ dbHost: 'pgbouncer.example.com', dbPort: 6432 }),
+        getDirectPostgresConnection({ dbHost: 'pooler.example.com', dbPort: 6432 }),
       ).toThrow('DATABASE_DIRECT_PORT must be a valid port when DATABASE_DIRECT_HOST is set.');
     },
   );

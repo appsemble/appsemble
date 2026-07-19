@@ -74,7 +74,7 @@ describe('backupProductionData', () => {
       backupsPort: 443,
       backupsSecretKey: 'backup-secret-key',
       backupsSecure: true,
-      databaseHost: 'pgbouncer.example.com',
+      databaseHost: 'pooler.example.com',
       databaseName: 'appsemble',
       databasePassword: 'database-password',
       databasePort: 6432,
@@ -86,7 +86,7 @@ describe('backupProductionData', () => {
     } as unknown as InitDbReturn);
     vi.mocked(App.findAll).mockResolvedValue([
       createApp({
-        dbHost: 'pgbouncer.example.com',
+        dbHost: 'pooler.example.com',
         dbName: 'app-1',
         dbPassword: Buffer.from('managed-password'),
         dbPort: 6432,
@@ -157,7 +157,7 @@ describe('backupProductionData', () => {
 
     expect(process.exit).toHaveBeenCalledWith(0);
     expect(uploadS3File).toHaveBeenCalledTimes(3);
-    expect(vi.mocked(uploadS3File).mock.calls.map(([, key]) => key)).toEqual(
+    expect(vi.mocked(uploadS3File).mock.calls.map(([, key]) => key)).toStrictEqual(
       expect.arrayContaining([
         expect.stringMatching(/^sql\/main\/appsemble_backup_\d{17}\.sql\.gz$/),
         expect.stringMatching(/^sql\/apps\/1\/appsemble_backup_\d{17}\.sql\.gz$/),
