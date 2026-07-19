@@ -159,7 +159,7 @@ test.describe('App Keycloak OIDC login', () => {
     await page.getByRole('button', { name: `Login with ${secret.name}` }).click();
 
     await page.getByRole('textbox', { name: /username or email/i }).fill(userEmail);
-    await page.getByLabel('Password').fill(userPassword);
+    await page.getByRole('textbox', { exact: true, name: 'Password' }).fill(userPassword);
     await page.getByRole('button', { name: /sign in/i }).click();
 
     await expect(page.getByRole('heading', { name: 'Manager content' })).toBeVisible();

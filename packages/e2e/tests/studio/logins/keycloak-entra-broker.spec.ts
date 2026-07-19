@@ -226,7 +226,7 @@ test.describe('App Keycloak brokered Entra OIDC login', () => {
 
     // Upstream realm login form.
     await page.getByRole('textbox', { name: /username or email/i }).fill(memberEmail);
-    await page.getByLabel('Password').fill(userPassword);
+    await page.getByRole('textbox', { exact: true, name: 'Password' }).fill(userPassword);
     await page.getByRole('button', { name: /sign in/i }).click();
 
     await expect(page.getByRole('heading', { name: 'Manager content' })).toBeVisible();
@@ -259,7 +259,7 @@ test.describe('App Keycloak brokered Entra OIDC login', () => {
     await page.getByRole('link', { name: idpDisplayName }).click();
 
     await page.getByRole('textbox', { name: /username or email/i }).fill(outsiderEmail);
-    await page.getByLabel('Password').fill(userPassword);
+    await page.getByRole('textbox', { exact: true, name: 'Password' }).fill(userPassword);
     await page.getByRole('button', { name: /sign in/i }).click();
 
     const response = await verifyResponse;
