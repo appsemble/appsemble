@@ -2,7 +2,7 @@ import { type Schema, type ValidationError } from 'jsonschema';
 
 declare module 'jsonschema' {
   interface Schema {
-    appsembleLanguageComponent?: SchemaTag;
+    'x-appsemble-language-component'?: SchemaTag;
   }
 }
 
@@ -31,7 +31,7 @@ export interface SchemaTag {
 
 // The schema keyword the analyzer reads identities from and the annotator writes,
 // declared on `Schema` by the module augmentation above.
-export const COMPONENT_KEY = 'appsembleLanguageComponent';
+export const COMPONENT_KEY = 'x-appsemble-language-component';
 
 // A schema known to carry the language component tag. Producers (e.g. `LanguageComponent.define`,
 // `withTag`) return this so the tag is guaranteed at the type level; `isTagged` narrows a plain

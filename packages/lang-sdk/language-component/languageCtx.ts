@@ -32,7 +32,11 @@ function collectHits(validator: Validator, data: unknown, rootSchema: Schema): S
   validator.attributes[COMPONENT_KEY] = (instance, currentSchema, options, context) => {
     const tag = schemaTag(currentSchema);
     if (instance !== undefined && tag) {
-      hits.push({ path: context.path, schema: currentSchema, tag });
+      hits.push({
+        path: (context as typeof context & { path: ScanHit['path'] }).path,
+        schema: currentSchema,
+        tag,
+      });
     }
     return undefined as never;
   };
@@ -81,6 +85,7 @@ export class LanguageCtx {
       resolveRef: (ref) => this.registry.resolveRef(ref),
       localShape: this.localShape,
       dynamicChild: options.dynamicChild,
+      draftChildSchemas: options.draftChildSchemas,
       validator: this.resolveValidator,
     };
   }

@@ -29,6 +29,7 @@ export type DynamicChild = (
 
 export interface ResolveOptions {
   dynamicChild?: DynamicChild;
+  draftChildSchemas?: boolean;
   // Override the registry's default jsonschema validator — e.g. an editor registering per-block
   // schemas under their own URLs so a large union validates without walking every branch.
   validatorFactory?: () => Validator;
@@ -41,6 +42,7 @@ export interface ResolveContext {
   validator: Validator;
   localShape: (schema: Schema) => Schema;
   dynamicChild?: DynamicChild;
+  draftChildSchemas?: boolean;
 }
 
 function single(name: string): Identity {
@@ -214,6 +216,95 @@ function resolveLeaf(
   };
 }
 
+// A normalized discriminator read off a union schema. Standard OpenAPI `discriminator` (one field)
+// and the Appsemble composite extension `x-appsemble-discriminator` (one or more fields) both reduce
+// to this: the field(s) whose values form a routing tag, so a discriminated union resolves by reading
+// the tag and validating ONE branch instead of walking every branch (O(branches) -> O(1)). See
+// `resolve()` below. Only the fast-path lives here; unknown/missing tags fall back to explicit
+// diagnostics or, for `required: false`, the ordinary walk.
+interface Discriminator {
+  propertyNames: string[];
+  mapping?: Record<string, string>;
+  separator: string;
+  required: boolean;
+}
+
+function readDiscriminator(schema: Schema): Discriminator | null {
+  const x = (
+    schema as {
+      'x-appsemble-discriminator'?: {
+        propertyNames?: string[];
+        mapping?: Record<string, string>;
+        separator?: string;
+        required?: boolean;
+      };
+    }
+  )['x-appsemble-discriminator'];
+  if (x?.propertyNames?.length) {
+    return {
+      propertyNames: x.propertyNames,
+      mapping: x.mapping,
+      separator: x.separator ?? '@',
+      required: x.required ?? true,
+    };
+  }
+  const std = (
+    schema as { discriminator?: { propertyName?: string; mapping?: Record<string, string> } }
+  ).discriminator;
+  if (std?.propertyName) {
+    return {
+      propertyNames: [std.propertyName],
+      mapping: std.mapping,
+      separator: '@',
+      required: true,
+    };
+  }
+  return null;
+}
+
+// The routing tag a value carries (its discriminant field values joined), or null when any is absent.
+function discriminantTag(disc: Discriminator, value: unknown): string | null {
+  if (value == null || typeof value !== 'object') {
+    return null;
+  }
+  const parts = disc.propertyNames.map((name) => (value as Record<string, unknown>)[name]);
+  return parts.some((part) => part == null) ? null : parts.map(String).join(disc.separator);
+}
+
+// The tag a *branch schema* declares, by reading each discriminant field's `const`/single-`enum`.
+// Used to match a value's tag to a branch when there is no explicit `mapping`.
+function branchTag(disc: Discriminator, schema: Schema): string | null {
+  const parts = disc.propertyNames.map((name) => {
+    const prop = schema.properties?.[name] as Schema | undefined;
+    if (prop?.const != null) {
+      return prop.const;
+    }
+    return Array.isArray(prop?.enum) && prop.enum.length === 1 ? prop.enum[0] : undefined;
+  });
+  return parts.some((part) => part == null) ? null : parts.map(String).join(disc.separator);
+}
+
+// The single branch a tag selects: explicit `mapping` (tag -> $ref) first, else the branch whose own
+// declared tag matches, else the branch whose `$ref` basename equals the tag (OpenAPI implicit
+// mapping). Null when nothing matches — an unknown tag.
+function pickBranch(
+  disc: Discriminator,
+  tag: string,
+  branches: Schema[],
+  ctx: ResolveContext,
+): Schema | null {
+  if (disc.mapping && Object.hasOwn(disc.mapping, tag)) {
+    return deref({ $ref: disc.mapping[tag] }, ctx.resolveRef);
+  }
+  for (const branch of branches) {
+    const target = deref(branch, ctx.resolveRef);
+    if (branchTag(disc, target) === tag || branch.$ref?.split('/').at(-1) === tag) {
+      return target;
+    }
+  }
+  return null;
+}
+
 export function resolve(
   schema: Schema,
   value: unknown,
@@ -241,6 +332,42 @@ export function resolve(
   for (const mode of ['oneOf', 'anyOf', 'allOf'] as const) {
     const branches = resolved[mode];
     if (branches) {
+      // Discriminator fast-path: for a tagged oneOf/anyOf, read the tag and resolve the ONE selected
+      // branch instead of every branch. Same result shape as the walk (via `resolveComposite` on a
+      // single branch), but O(1) and with precise diagnostics for a missing/unknown tag.
+      const disc = mode === 'allOf' ? null : readDiscriminator(resolved);
+      if (disc) {
+        const tagValue = discriminantTag(disc, value);
+        if (tagValue == null) {
+          // A discriminant field is absent. Tolerate it for drafts (`required: false`) by falling
+          // back to the ordinary walk; otherwise it's an explicit, locatable failure.
+          if (!disc.required) {
+            return resolveComposite(mode, resolved, branches.map(resolveBranch), tag);
+          }
+          return {
+            identity: unresolvedOrNull(
+              `missing discriminator ${disc.propertyNames.join('+')}`,
+              tag,
+              [],
+            ),
+            matched: false,
+            winners: [resolved],
+          };
+        }
+        const picked = pickBranch(disc, tagValue, branches, ctx);
+        if (!picked) {
+          return {
+            identity: unresolvedOrNull(
+              `unknown ${disc.propertyNames.join('+')}: ${tagValue}`,
+              tag,
+              [],
+            ),
+            matched: false,
+            winners: [resolved],
+          };
+        }
+        return resolveComposite(mode, resolved, [resolveBranch(picked)], tag);
+      }
       return resolveComposite(mode, resolved, branches.map(resolveBranch), tag);
     }
   }
@@ -249,9 +376,22 @@ export function resolve(
 
 // The schema a winner contributes for `key` (a declared property, open `additionalProperties`, or
 // an `items` entry — single `items` owns every element, tuple `items` by position), or null.
-function ownedChild(schema: Schema, key: string): Schema | null {
+function ownedChild(
+  schema: Schema,
+  key: string,
+  resolveRef: (ref: string) => Schema,
+  draftChildSchemas = false,
+  seen = new Set<Schema>(),
+): Schema | null {
+  if (seen.has(schema)) {
+    return null;
+  }
+  seen.add(schema);
   if (schema.properties && Object.hasOwn(schema.properties, key)) {
     return schema.properties[key];
+  }
+  if (schema.additionalProperties === true) {
+    return {};
   }
   if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
     return schema.additionalProperties;
@@ -259,6 +399,23 @@ function ownedChild(schema: Schema, key: string): Schema | null {
   if (schema.items && typeof schema.items === 'object') {
     const item = Array.isArray(schema.items) ? schema.items[Number(key)] : schema.items;
     return item && typeof item === 'object' ? item : null;
+  }
+  const branches = schema.allOf ?? (draftChildSchemas ? (schema.anyOf ?? schema.oneOf) : undefined);
+  if (Array.isArray(branches)) {
+    const owners = branches
+      .map((branch) =>
+        ownedChild(
+          deref(branch as Schema, resolveRef),
+          key,
+          resolveRef,
+          draftChildSchemas,
+          new Set(seen),
+        ),
+      )
+      .filter((child): child is Schema => child != null);
+    if (owners.length) {
+      return owners.length === 1 ? owners[0] : { allOf: owners };
+    }
   }
   return null;
 }
@@ -270,9 +427,10 @@ export function childSchema(
   winners: Schema[],
   key: string,
   resolveRef: (ref: string) => Schema,
+  draftChildSchemas = false,
 ): Schema | null {
   const owners = winners
-    .map((winner) => ownedChild(deref(winner, resolveRef), key))
+    .map((winner) => ownedChild(deref(winner, resolveRef), key, resolveRef, draftChildSchemas))
     .filter((schema): schema is Schema => schema != null);
   if (owners.length === 0) {
     return null;
@@ -291,7 +449,7 @@ export function resolveAtKey(
 ): Schema | null {
   return (
     ctx.dynamicChild?.(resolution.identity?.name ?? null, parentValue, key) ??
-    childSchema(resolution.winners, key, ctx.resolveRef)
+    childSchema(resolution.winners, key, ctx.resolveRef, ctx.draftChildSchemas)
   );
 }
 
@@ -331,7 +489,7 @@ function rawOwnedChild(
   resolveRef: (ref: string) => Schema,
 ): Schema | null {
   for (const winner of winners) {
-    const owned = ownedChild(deref(winner, resolveRef), key);
+    const owned = ownedChild(deref(winner, resolveRef), key, resolveRef);
     if (owned) {
       return owned;
     }

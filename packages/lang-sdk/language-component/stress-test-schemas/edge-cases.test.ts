@@ -25,13 +25,13 @@ describe('engine edge cases', () => {
         properties: { kind: { const: 'b' } },
       },
       RefCutPart: {
-        appsembleLanguageComponent: { name: 'RefCutPart', mode: 'single' },
+        'x-appsemble-language-component': { name: 'RefCutPart', mode: 'single' },
         type: 'object',
         required: ['choice'],
         properties: { choice: { type: 'object' } },
       },
       RefCutContainer: {
-        appsembleLanguageComponent: { name: 'RefCutContainer', mode: 'allOf' },
+        'x-appsemble-language-component': { name: 'RefCutContainer', mode: 'allOf' },
         allOf: [
           {
             type: 'object',
@@ -63,7 +63,7 @@ describe('engine edge cases', () => {
   it('enforces an inline anyOf property during local validation', () => {
     const schemas = {
       AnyOfHost: {
-        appsembleLanguageComponent: { name: 'AnyOfHost', mode: 'single' },
+        'x-appsemble-language-component': { name: 'AnyOfHost', mode: 'single' },
         type: 'object',
         required: ['choice'],
         properties: {
@@ -135,13 +135,13 @@ describe('engine edge cases', () => {
       UntaggedChoice: {
         oneOf: [
           {
-            appsembleLanguageComponent: { name: 'Alpha', mode: 'single' },
+            'x-appsemble-language-component': { name: 'Alpha', mode: 'single' },
             type: 'object',
             required: ['kind'],
             properties: { kind: { const: 'a' } },
           },
           {
-            appsembleLanguageComponent: { name: 'Beta', mode: 'single' },
+            'x-appsemble-language-component': { name: 'Beta', mode: 'single' },
             type: 'object',
             required: ['kind'],
             properties: { kind: { const: 'b' } },

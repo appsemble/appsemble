@@ -3,7 +3,7 @@ import { type Schema } from 'jsonschema';
 import { LanguageComponent } from '../index.js';
 
 // The obj/combinator builders delegate tagging to LanguageComponent.define rather than inlining an
-// `appsembleLanguageComponent` literal, so there is a single tagging path. The mode is inferred from
+// `x-appsemble-language-component` literal, so there is a single tagging path. The mode is inferred from
 // the shape each builder constructs (object vs a single oneOf/anyOf/allOf), which is
 // unambiguous; LanguageComponent.define's inference is covered directly in language-component/binding.test.ts.
 
@@ -184,7 +184,7 @@ export const Host = combinator('Host', 'anyOf', refs('TextWidget', 'BadgeHolder'
 // Array descent: a tagged array whose items are language components. Exercises the walk
 // descending numeric keys via `items`, and the ref-cutoff's items strip.
 export const Gallery = {
-  appsembleLanguageComponent: { name: 'Gallery', mode: 'single' },
+  'x-appsemble-language-component': { name: 'Gallery', mode: 'single' },
   type: 'array',
   items: ref('Badge'),
 } satisfies Schema;
@@ -192,7 +192,7 @@ export const Gallery = {
 // Map descent: an open object whose values are language components. Exercises the walk
 // descending arbitrary keys via `additionalProperties`, and its ref-cutoff strip.
 export const Registry = {
-  appsembleLanguageComponent: { name: 'Registry', mode: 'single' },
+  'x-appsemble-language-component': { name: 'Registry', mode: 'single' },
   type: 'object',
   additionalProperties: ref('Badge'),
 } satisfies Schema;

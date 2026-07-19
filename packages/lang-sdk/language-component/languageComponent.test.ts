@@ -18,7 +18,7 @@ describe('LanguageComponent.define', () => {
 
     for (const [schema, mode] of cases) {
       expect(
-        LanguageComponent.define('Tagged', schema, {}).schema.appsembleLanguageComponent,
+        LanguageComponent.define('Tagged', schema, {}).schema['x-appsemble-language-component'],
       ).toStrictEqual({
         name: 'Tagged',
         mode,
@@ -28,20 +28,22 @@ describe('LanguageComponent.define', () => {
 
   it('falls back to object mode for a shape it cannot classify', () => {
     expect(
-      LanguageComponent.define('Scalar', { type: 'string' }, {}).schema.appsembleLanguageComponent,
+      LanguageComponent.define('Scalar', { type: 'string' }, {}).schema[
+        'x-appsemble-language-component'
+      ],
     ).toStrictEqual({ name: 'Scalar', mode: 'single' });
   });
 
   it('preserves an existing tag untouched', () => {
     const tagged: Schema = {
       type: 'object',
-      appsembleLanguageComponent: { name: 'AlreadyTagged', mode: 'single' },
+      'x-appsemble-language-component': { name: 'AlreadyTagged', mode: 'single' },
     };
 
     const preserved = LanguageComponent.define('Ignored', tagged, {});
 
     expect(preserved.schema).toBe(tagged);
-    expect(preserved.schema.appsembleLanguageComponent).toStrictEqual({
+    expect(preserved.schema['x-appsemble-language-component']).toStrictEqual({
       name: 'AlreadyTagged',
       mode: 'single',
     });
@@ -80,7 +82,7 @@ describe('LanguageComponent.annotate', () => {
   it('tags objects and combinators by key while passing scalars and tagged schemas through', () => {
     const tagged: Schema = {
       type: 'object',
-      appsembleLanguageComponent: { name: 'Kept', mode: 'single' },
+      'x-appsemble-language-component': { name: 'Kept', mode: 'single' },
     };
     const annotated = LanguageComponent.annotate({
       Page: { type: 'object', properties: {} },
@@ -89,17 +91,17 @@ describe('LanguageComponent.annotate', () => {
       Existing: tagged,
     });
 
-    expect(annotated.Page.appsembleLanguageComponent).toStrictEqual({
+    expect(annotated.Page['x-appsemble-language-component']).toStrictEqual({
       name: 'Page',
       mode: 'single',
     });
-    expect(annotated.Widget.appsembleLanguageComponent).toStrictEqual({
+    expect(annotated.Widget['x-appsemble-language-component']).toStrictEqual({
       name: 'Widget',
       mode: 'oneOf',
     });
-    expect(annotated.Name.appsembleLanguageComponent).toBeUndefined();
+    expect(annotated.Name['x-appsemble-language-component']).toBeUndefined();
     // An already-tagged schema keeps its name, even when the registry key differs.
-    expect(annotated.Existing.appsembleLanguageComponent).toStrictEqual({
+    expect(annotated.Existing['x-appsemble-language-component']).toStrictEqual({
       name: 'Kept',
       mode: 'single',
     });
