@@ -222,12 +222,12 @@ test.describe('App Keycloak brokered Entra OIDC login', () => {
     await page.getByRole('button', { name: `Login with ${secret.name}` }).click();
 
     // Broker realm login page: follow the upstream identity provider.
-    await page.locator(`#social-${idpAlias}`).click();
+    await page.getByRole('link', { name: idpDisplayName }).click();
 
     // Upstream realm login form.
-    await page.locator('#username').fill(memberEmail);
-    await page.locator('#password').fill(userPassword);
-    await page.locator('#kc-login').click();
+    await page.getByRole('textbox', { name: /username or email/i }).fill(memberEmail);
+    await page.getByLabel('Password').fill(userPassword);
+    await page.getByRole('button', { name: /sign in/i }).click();
 
     await expect(page.getByRole('heading', { name: 'Manager content' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Manager Page' })).toBeVisible();
@@ -246,15 +246,27 @@ test.describe('App Keycloak brokered Entra OIDC login', () => {
     visitApp,
   }) => {
     const appUrl = await visitApp(app.id!);
+    const verifyResponse = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' &&
+        new URL(response.url()).pathname ===
+          `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+    );
 
     await page.goto(`${appUrl}/Login`);
     await page.getByRole('button', { name: `Login with ${secret.name}` }).click();
 
-    await page.locator(`#social-${idpAlias}`).click();
+    await page.getByRole('link', { name: idpDisplayName }).click();
 
-    await page.locator('#username').fill(outsiderEmail);
-    await page.locator('#password').fill(userPassword);
-    await page.locator('#kc-login').click();
+    await page.getByRole('textbox', { name: /username or email/i }).fill(outsiderEmail);
+    await page.getByLabel('Password').fill(userPassword);
+    await page.getByRole('button', { name: /sign in/i }).click();
+
+    const response = await verifyResponse;
+    expect(response.status()).toBe(403);
+    expect(await response.json()).toMatchObject({
+      message: 'User is not allowed to login because no external group matched an app role.',
+    });
 
     await expect(page.getByText('An unexpected error occurred while logging in')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Manager content' })).toBeHidden();
