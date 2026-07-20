@@ -13,6 +13,10 @@ import sharp from 'sharp';
 
 import { App, getAppDB } from '../../../../models/index.js';
 
+// Longest edge for the no-bounds ("full") derivative. Viewers are overwhelmingly mobile, so
+// re-encoding 12+ MP originals at native resolution is wasted CPU and a memory risk; cap it.
+const FULL_DERIVED_MAX_EDGE = 1024;
+
 function getAssetFilename(assetId: string, filename?: string | null, mime?: string | null): string {
   if (filename) {
     return filename;
@@ -182,14 +186,19 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       }
     }
 
-    let pipeline = image.rotate();
-    if (shouldDownscale) {
-      pipeline = pipeline.resize(parsedWidth, parsedHeight, {
-        kernel: sharp.kernel.lanczos3,
-        fit: 'cover',
-        withoutEnlargement: true,
-      });
-    }
+    // Downscale to the requested bounds, or, with no usable bounds, cap the longest edge instead
+    // of re-encoding at native resolution.
+    const pipeline = shouldDownscale
+      ? image.rotate().resize(parsedWidth, parsedHeight, {
+          kernel: sharp.kernel.lanczos3,
+          fit: 'cover',
+          withoutEnlargement: true,
+        })
+      : image.rotate().resize(FULL_DERIVED_MAX_EDGE, FULL_DERIVED_MAX_EDGE, {
+          kernel: sharp.kernel.lanczos3,
+          fit: 'inside',
+          withoutEnlargement: true,
+        });
     const derivedImage = await (alpha ? pipeline.webp() : pipeline.jpeg()).toBuffer();
 
     try {

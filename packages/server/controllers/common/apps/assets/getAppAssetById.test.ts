@@ -181,6 +181,78 @@ describe('getAppAssetById', () => {
     expect(metadata.height).toBe(80);
   });
 
+  it('should cap the no-bounds derivative to 1024px on the longest edge.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+    });
+    const image = await sharp({
+      create: {
+        width: 2000,
+        height: 1500,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/jpeg',
+      }),
+    });
+
+    const metadata = await sharp(response.data).metadata();
+
+    // Longest edge capped to 1024, aspect ratio preserved (2000x1500 -> 1024x768).
+    expect(metadata.width).toBe(1024);
+    expect(metadata.height).toBe(768);
+  });
+
+  it('should cap the no-bounds derivative on the longest edge for portrait sources.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+    });
+    const image = await sharp({
+      create: {
+        width: 1500,
+        height: 2000,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/jpeg',
+      }),
+    });
+
+    const metadata = await sharp(response.data).metadata();
+
+    // The tall edge (height) is capped, not the width (1500x2000 -> 768x1024).
+    expect(metadata.width).toBe(768);
+    expect(metadata.height).toBe(1024);
+  });
+
   it('should encode a transparent source as webp to preserve alpha.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
@@ -223,6 +295,19 @@ describe('getAppAssetById', () => {
     });
     expect(cachedAssets).toHaveLength(1);
     expect(cachedAssets[0].mime).toBe('image/webp');
+
+    // A second request serves the cached bytes and must read the webp codec back from the row.
+    const cachedResponse = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+    expect(cachedResponse).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/webp',
+        'content-disposition': `inline; filename="${asset.id}.webp"`,
+      }),
+    });
+    expect(Buffer.from(cachedResponse.data)).toStrictEqual(Buffer.from(response.data));
   });
 
   it('should cache and reuse the full-size jpeg derivative.', async () => {
