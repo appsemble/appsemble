@@ -1,3 +1,10 @@
+export {
+  analyzeDistinguishability,
+  type CollisionSeverity,
+  type DistinguishabilityResult,
+  formatCollision,
+  type UnionCollision,
+} from './distinguishability.js';
 export { LanguageComponent, type LanguageComponentBinding } from './languageComponent.js';
 export { type CompileOptions, LanguageCtx, type ScanValidation } from './languageCtx.js';
 export { Node } from './node.js';

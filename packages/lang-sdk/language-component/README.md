@@ -277,6 +277,12 @@ LanguageCtx.compile(schemas, rootName)   compile registry + validators + ref-cut
 - `validate` produces `documentValid` and `errors` independently of the walk, so a caller runs it on
   its own cadence (an LSP computes diagnostics on idle, not per keystroke). Its `hits` are kept for
   tooling but do not drive the tree.
+- Compile also runs a **distinguishability analysis**: per union, can ref-cut local matching always
+  pick the right branch (a discriminator, or branches separable by top-level shape)? A union it can't
+  prove sufficient escalates at runtime — `resolve` re-validates the colliding branches in full only
+  when ref-cut matches more than one, so the fast path is untouched and only genuine collisions pay.
+  The verdict doubles as a dialect-sanity lint (`ctx.distinguishabilityLint` / `distinguishabilityErrors`,
+  severity by component label): two distinct labeled components that share a ref-cut shape are an `error`.
 - The walk reaches everything Appsemble's OpenAPI 3.0 schemas can express. It cannot reach language
   components placed behind conditional/pattern applicators (`if`/`then`, `patternProperties`), which
   those schemas do not use; blocks are reached through the value-directed `dynamicChild` hook

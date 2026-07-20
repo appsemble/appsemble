@@ -43,6 +43,10 @@ export interface ResolveContext {
   localShape: (schema: Schema) => Schema;
   dynamicChild?: DynamicChild;
   draftChildSchemas?: boolean;
+  // Compile-time verdict: can ref-cut local matching always pick this union's branch correctly?
+  // A union it reports false for escalates to full validation when ref-cut matches more than one
+  // branch (see `escalateAmbiguous`). Absent ⇒ every union is trusted (no escalation).
+  refCutSufficient?: (schema: Schema) => boolean;
 }
 
 function single(name: string): Identity {
@@ -93,7 +97,7 @@ function identityParts(parts: Resolution[]): Identity[] {
     .filter((identity): identity is Identity => identity != null);
 }
 
-function deref(schema: Schema, resolveRef: (ref: string) => Schema): Schema {
+export function deref(schema: Schema, resolveRef: (ref: string) => Schema): Schema {
   return schema.$ref ? deref(resolveRef(schema.$ref), resolveRef) : schema;
 }
 
@@ -222,14 +226,14 @@ function resolveLeaf(
 // the tag and validating ONE branch instead of walking every branch (O(branches) -> O(1)). See
 // `resolve()` below. Only the fast-path lives here; unknown/missing tags fall back to explicit
 // diagnostics or, for `required: false`, the ordinary walk.
-interface Discriminator {
+export interface Discriminator {
   propertyNames: string[];
   mapping?: Record<string, string>;
   separator: string;
   required: boolean;
 }
 
-function readDiscriminator(schema: Schema): Discriminator | null {
+export function readDiscriminator(schema: Schema): Discriminator | null {
   const x = (
     schema as {
       'x-appsemble-discriminator'?: {
@@ -305,6 +309,46 @@ function pickBranch(
   return null;
 }
 
+/**
+ * Break a ref-cut tie. When a union the compile-time analysis flagged as not ref-cut-separable has
+ * more than one branch match locally (over-broad anyOf / ambiguous oneOf), re-validate just those
+ * branches with full, ref-following validation and keep only the ones the value actually satisfies —
+ * so the flagged node resolves as precisely as a whole-document validator would. Everything else (a
+ * sufficient union, an unflagged union, allOf, a single match) is returned untouched, so the fast path
+ * is unchanged and only genuine collisions pay. If nothing fully validates the value is incomplete, so
+ * the lenient ref-cut set is kept rather than degrade a mid-edit value.
+ */
+function escalateAmbiguous(
+  mode: 'allOf' | 'anyOf' | 'oneOf',
+  union: Schema,
+  branchSchemas: readonly Schema[],
+  resolutions: Resolution[],
+  value: unknown,
+  ctx: ResolveContext,
+): Resolution[] {
+  if (mode === 'allOf' || (ctx.refCutSufficient ? ctx.refCutSufficient(union) : true)) {
+    return resolutions;
+  }
+  const matchedIdx = resolutions.flatMap((resolution, index) =>
+    resolution.matched ? [index] : [],
+  );
+  if (matchedIdx.length <= 1) {
+    return resolutions;
+  }
+  const deepMatched = matchedIdx.filter(
+    (index) => ctx.validator.validate(value, branchSchemas[index], { base: '#' }).valid,
+  );
+  if (deepMatched.length === 0) {
+    return resolutions;
+  }
+  const keep = new Set(deepMatched);
+  return resolutions.map((resolution, index) =>
+    matchedIdx.includes(index) && !keep.has(index)
+      ? { ...resolution, matched: false }
+      : resolution,
+  );
+}
+
 export function resolve(
   schema: Schema,
   value: unknown,
@@ -342,7 +386,12 @@ export function resolve(
           // A discriminant field is absent. Tolerate it for drafts (`required: false`) by falling
           // back to the ordinary walk; otherwise it's an explicit, locatable failure.
           if (!disc.required) {
-            return resolveComposite(mode, resolved, branches.map(resolveBranch), tag);
+            return resolveComposite(
+              mode,
+              resolved,
+              escalateAmbiguous(mode, resolved, branches, branches.map(resolveBranch), value, ctx),
+              tag,
+            );
           }
           return {
             identity: unresolvedOrNull(
@@ -368,7 +417,12 @@ export function resolve(
         }
         return resolveComposite(mode, resolved, [resolveBranch(picked)], tag);
       }
-      return resolveComposite(mode, resolved, branches.map(resolveBranch), tag);
+      return resolveComposite(
+              mode,
+              resolved,
+              escalateAmbiguous(mode, resolved, branches, branches.map(resolveBranch), value, ctx),
+              tag,
+            );
     }
   }
   return resolveLeaf(resolved, tag, value, ctx);
