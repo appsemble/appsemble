@@ -5,15 +5,6 @@ import { Op } from 'sequelize';
 
 import { App, getAppDB } from '../../../../models/index.js';
 
-function getDerivedFilename(assetId: string, filename?: string | null): string {
-  if (!filename) {
-    return `${assetId}.avif`;
-  }
-
-  const dotIndex = filename.lastIndexOf('.');
-  return dotIndex === -1 ? `${filename}.avif` : `${filename.slice(0, dotIndex)}.avif`;
-}
-
 export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, assetId },
@@ -34,12 +25,13 @@ export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
 
   assertKoaCondition(asset != null, ctx, 404, 'Asset not found');
 
-  let { filename, mime } = asset;
+  // The derived GET codec depends on the source's alpha channel, which is unknown here without
+  // fetching the source. No consumer reads the derived codec from HEAD (blocks only branch
+  // image-vs-video), so advertise the source's own mime and filename.
+  let { filename } = asset;
+  const { mime } = asset;
 
-  if (mime?.startsWith('image')) {
-    mime = 'image/avif';
-    filename = getDerivedFilename(asset.id, filename);
-  } else if (!filename) {
+  if (!filename) {
     filename = asset.id;
     if (mime) {
       const ext = extension(mime);

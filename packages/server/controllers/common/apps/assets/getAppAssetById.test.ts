@@ -104,7 +104,7 @@ describe('getAppAssetById', () => {
     });
   });
 
-  it('should return a full-size avif derivative when larger size is specified.', async () => {
+  it('should return a full-size jpeg derivative when larger size is specified.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
       mime: 'image/png',
@@ -132,8 +132,8 @@ describe('getAppAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/jpeg',
+        'content-disposition': `inline; filename="${asset.id}.jpeg"`,
         'cache-control': 'max-age=31536000,immutable',
       }),
     });
@@ -144,7 +144,7 @@ describe('getAppAssetById', () => {
     expect(metadata.height).toBe(100);
   });
 
-  it('should return a full-size avif derivative when no size is specified.', async () => {
+  it('should return a full-size jpeg derivative when no size is specified.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
       mime: 'image/png',
@@ -169,8 +169,8 @@ describe('getAppAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/jpeg',
+        'content-disposition': `inline; filename="${asset.id}.jpeg"`,
         'cache-control': 'max-age=31536000,immutable',
       }),
     });
@@ -181,7 +181,51 @@ describe('getAppAssetById', () => {
     expect(metadata.height).toBe(80);
   });
 
-  it('should cache and reuse the full-size avif derivative.', async () => {
+  it('should encode a transparent source as webp to preserve alpha.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+    });
+    const image = await sharp({
+      create: {
+        width: 120,
+        height: 80,
+        channels: 4,
+        background: { r: 255, g: 0, b: 0, alpha: 0.5 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/webp',
+        'content-disposition': `inline; filename="${asset.id}.webp"`,
+      }),
+    });
+
+    const metadata = await sharp(response.data).metadata();
+
+    expect(metadata.format).toBe('webp');
+    expect(metadata.hasAlpha).toBe(true);
+
+    // The codec-neutral cache row records the real codec in its mime column.
+    const cachedAssets = await Asset.findAll({
+      where: { name: `${asset.id}-full` },
+      attributes: ['id', 'mime'],
+    });
+    expect(cachedAssets).toHaveLength(1);
+    expect(cachedAssets[0].mime).toBe('image/webp');
+  });
+
+  it('should cache and reuse the full-size jpeg derivative.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
       mime: 'image/png',
@@ -206,13 +250,13 @@ describe('getAppAssetById', () => {
     expect(firstResponse).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/jpeg',
+        'content-disposition': `inline; filename="${asset.id}.jpeg"`,
       }),
     });
 
     const cachedAssets = await Asset.findAll({
-      where: { name: `${asset.id}-full-avif` },
+      where: { name: `${asset.id}-full` },
       attributes: ['id'],
     });
     expect(cachedAssets).toHaveLength(1);
@@ -226,14 +270,14 @@ describe('getAppAssetById', () => {
     expect(secondResponse).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/jpeg',
+        'content-disposition': `inline; filename="${asset.id}.jpeg"`,
       }),
     });
     expect(Buffer.from(secondResponse.data)).toStrictEqual(cachedBuffer);
 
     const cachedAssetsAfter = await Asset.findAll({
-      where: { name: `${asset.id}-full-avif` },
+      where: { name: `${asset.id}-full` },
       attributes: ['id'],
     });
     expect(cachedAssetsAfter).toHaveLength(1);
@@ -270,13 +314,13 @@ describe('getAppAssetById', () => {
       expect(response).toMatchObject({
         status: 200,
         headers: expect.objectContaining({
-          'content-type': 'image/avif',
+          'content-type': 'image/jpeg',
         }),
       });
     }
 
     const cachedAssets = await Asset.findAll({
-      where: { name: `${asset.id}-full-avif` },
+      where: { name: `${asset.id}-full` },
       attributes: ['id'],
     });
     expect(cachedAssets).toHaveLength(1);
@@ -310,8 +354,8 @@ describe('getAppAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/jpeg',
+        'content-disposition': `inline; filename="${asset.id}.jpeg"`,
         'cache-control': 'max-age=31536000,immutable',
       }),
     });
@@ -376,8 +420,8 @@ describe('getAppAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/jpeg',
+        'content-disposition': `inline; filename="${asset.id}.jpeg"`,
         'cache-control': 'max-age=31536000,immutable',
       }),
     });
@@ -388,7 +432,7 @@ describe('getAppAssetById', () => {
     expect(metadata.height).toBe(10);
   });
 
-  it('should append an avif extension when resizing images without a filename extension', async () => {
+  it('should append an jpeg extension when resizing images without a filename extension', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
       mime: 'image/png',
@@ -417,8 +461,8 @@ describe('getAppAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': 'inline; filename="logo.avif"',
+        'content-type': 'image/jpeg',
+        'content-disposition': 'inline; filename="logo.jpeg"',
       }),
     });
   });
@@ -451,8 +495,8 @@ describe('getAppAssetById', () => {
     expect(firstResponse).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/jpeg',
+        'content-disposition': `inline; filename="${asset.id}.jpeg"`,
       }),
     });
 
@@ -474,8 +518,8 @@ describe('getAppAssetById', () => {
     expect(secondResponse).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/jpeg',
+        'content-disposition': `inline; filename="${asset.id}.jpeg"`,
       }),
     });
     expect(Buffer.from(secondResponse.data)).toStrictEqual(cachedBuffer);
@@ -495,7 +539,7 @@ describe('getAppAssetById', () => {
     });
     const staleResizedAsset = await Asset.create({
       name: `${asset.id}10x10`,
-      mime: 'image/avif',
+      mime: 'image/jpeg',
     });
     const image = await sharp({
       create: {
@@ -520,8 +564,8 @@ describe('getAppAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/jpeg',
+        'content-disposition': `inline; filename="${asset.id}.jpeg"`,
         'cache-control': 'max-age=31536000,immutable',
       }),
     });
@@ -546,14 +590,14 @@ describe('getAppAssetById', () => {
     expect(regeneratedCachedAsset?.deleted).toBeFalsy();
   });
 
-  it('should regenerate the full-size avif derivative when the cached image is missing from s3.', async () => {
+  it('should regenerate the full-size jpeg derivative when the cached image is missing from s3.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
       mime: 'image/png',
     });
     const staleFullAsset = await Asset.create({
-      name: `${asset.id}-full-avif`,
-      mime: 'image/avif',
+      name: `${asset.id}-full`,
+      mime: 'image/jpeg',
     });
     const image = await sharp({
       create: {
@@ -575,8 +619,8 @@ describe('getAppAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': `inline; filename="${asset.id}.avif"`,
+        'content-type': 'image/jpeg',
+        'content-disposition': `inline; filename="${asset.id}.jpeg"`,
         'cache-control': 'max-age=31536000,immutable',
       }),
     });
@@ -593,7 +637,7 @@ describe('getAppAssetById', () => {
     expect(deletedCachedAsset?.deleted).toBeTruthy();
 
     const regeneratedCachedAsset = await Asset.findOne({
-      where: { name: `${asset.id}-full-avif` },
+      where: { name: `${asset.id}-full` },
       attributes: ['id', 'deleted'],
     });
     expect(regeneratedCachedAsset).toBeTruthy();
