@@ -28,36 +28,44 @@ function getAssetFilename(assetId: string, filename?: string | null, mime?: stri
   return assetId;
 }
 
+// Cache names are codec-independent because they are resolved before the source is decoded; the
+// actual codec of each derivative is recorded in its `mime` column and read back when serving.
 function getDerivedAssetName(assetId: string, width: number, height: number): string {
   return `${assetId}${width}x${height}`;
 }
 
 function getFullDerivedAssetName(assetId: string): string {
-  return `${assetId}-full-avif`;
+  return `${assetId}-full`;
 }
 
-function getDerivedFilename(assetId: string, filename?: string | null): string {
+function getDerivedFilename(
+  assetId: string,
+  filename: string | null | undefined,
+  mime: string,
+): string {
+  const ext = extension(mime) || 'bin';
   if (!filename) {
-    return `${assetId}.avif`;
+    return `${assetId}.${ext}`;
   }
 
   const dotIndex = filename.lastIndexOf('.');
-  return dotIndex === -1 ? `${filename}.avif` : `${filename.slice(0, dotIndex)}.avif`;
+  return dotIndex === -1 ? `${filename}.${ext}` : `${filename.slice(0, dotIndex)}.${ext}`;
 }
 
 async function serveCachedDerivedAsset(
   ctx: Context,
   bucketName: string,
   sourceAsset: { id: string; filename?: string | null },
-  cachedAsset: { id: string; destroy: () => Promise<unknown> },
+  cachedAsset: { id: string; mime?: string | null; destroy: () => Promise<unknown> },
 ): Promise<boolean> {
   try {
     const stats = await getS3FileStats(bucketName, cachedAsset.id);
     const stream = await getS3File(bucketName, cachedAsset.id);
+    const mime = cachedAsset.mime ?? 'application/octet-stream';
     setAssetHeaders(
       ctx,
-      'image/avif',
-      getDerivedFilename(sourceAsset.id, sourceAsset.filename),
+      mime,
+      getDerivedFilename(sourceAsset.id, sourceAsset.filename, mime),
       stats,
     );
     ctx.body = stream;
@@ -152,6 +160,11 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       ? getDerivedAssetName(sourceAsset.id, parsedWidth, parsedHeight)
       : fullDerivedAssetName;
 
+    // Keep alpha-capable WebP for transparent sources (map markers, logos); JPEG is far faster to
+    // encode for the common opaque photo case. hasAlpha is read from the header metadata above.
+    const alpha = metadata.hasAlpha === true;
+    const derivedMime = alpha ? 'image/webp' : 'image/jpeg';
+
     if (!shouldDownscale && shouldResize) {
       const cachedAsset = await Asset.findOne({
         where: {
@@ -169,22 +182,20 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       }
     }
 
-    const derivedImage = shouldDownscale
-      ? await image
-          .rotate()
-          .resize(parsedWidth, parsedHeight, {
-            kernel: sharp.kernel.lanczos3,
-            fit: 'cover',
-            withoutEnlargement: true,
-          })
-          .avif()
-          .toBuffer()
-      : await image.rotate().avif().toBuffer();
+    let pipeline = image.rotate();
+    if (shouldDownscale) {
+      pipeline = pipeline.resize(parsedWidth, parsedHeight, {
+        kernel: sharp.kernel.lanczos3,
+        fit: 'cover',
+        withoutEnlargement: true,
+      });
+    }
+    const derivedImage = await (alpha ? pipeline.webp() : pipeline.jpeg()).toBuffer();
 
     try {
       const newAsset = await Asset.create({
         name: derivedAssetName,
-        mime: 'image/avif',
+        mime: derivedMime,
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       });
 
@@ -197,7 +208,11 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       }
     }
 
-    setAssetHeaders(ctx, 'image/avif', getDerivedFilename(sourceAsset.id, sourceAsset.filename));
+    setAssetHeaders(
+      ctx,
+      derivedMime,
+      getDerivedFilename(sourceAsset.id, sourceAsset.filename, derivedMime),
+    );
     ctx.body = derivedImage;
     return;
   }
