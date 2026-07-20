@@ -181,6 +181,42 @@ describe('getAppAssetById', () => {
     expect(metadata.height).toBe(80);
   });
 
+  it('should cap the no-bounds derivative to 1024px on the longest edge.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+    });
+    const image = await sharp({
+      create: {
+        width: 2000,
+        height: 1500,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/jpeg',
+      }),
+    });
+
+    const metadata = await sharp(response.data).metadata();
+
+    // Longest edge capped to 1024, aspect ratio preserved (2000x1500 -> 1024x768).
+    expect(metadata.width).toBe(1024);
+    expect(metadata.height).toBe(768);
+  });
+
   it('should encode a transparent source as webp to preserve alpha.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
