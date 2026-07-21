@@ -164,6 +164,12 @@ kubectl create secret generic pgbouncer-userlist --from-file=userlist.txt
 The secret must exist before enabling PgBouncer, otherwise the PgBouncer pod cannot start and the
 database becomes unreachable.
 
+Transaction pooling is the default when PgBouncer is enabled. `pgbouncer.maxUserConnections` limits
+server connections per database user across all database pools. The default of `80` is sized for the
+bundled PostgreSQL `max_connections=100`. Override it below the non-reserved connection budget
+remaining after direct and other clients when PostgreSQL uses a different limit or is shared with
+other services.
+
 Enabling PgBouncer repoints the stored hosts of server-managed app databases (`App.dbHost`) at the
 pooler through a one-time migration. Disabling PgBouncer afterwards does not repoint them back:
 those apps keep connecting to the removed PgBouncer service and their databases are treated as
@@ -270,11 +276,12 @@ allows TLS 1.2 and TLS 1.3.
 | `pgbouncer.tls.client.protocols`          | `secure`                      | PgBouncer TLS protocols for Appsemble-to-PgBouncer connections. `secure` allows TLS 1.2 and TLS 1.3.                                      |
 | `pgbouncer.tls.server.sslmode`            | `require`                     | PgBouncer TLS mode for PgBouncer-to-PostgreSQL connections.                                                                               |
 | `pgbouncer.tls.server.protocols`          | `secure`                      | PgBouncer TLS protocols for PgBouncer-to-PostgreSQL connections. `secure` allows TLS 1.2 and TLS 1.3.                                     |
-| `pgbouncer.poolMode`                      | `session`                     | PgBouncer pooling mode.                                                                                                                   |
+| `pgbouncer.poolMode`                      | `transaction`                 | PgBouncer pooling mode.                                                                                                                   |
 | `pgbouncer.maxClientConn`                 | 500                           | Maximum number of client connections PgBouncer accepts.                                                                                   |
 | `pgbouncer.mainPoolSize`                  | 10                            | Number of server connections for the main Appsemble database pool.                                                                        |
 | `pgbouncer.defaultPoolSize`               | 3                             | Number of server connections per app database pool.                                                                                       |
 | `pgbouncer.maxDbConnections`              | 10                            | Maximum number of server connections PgBouncer opens per database.                                                                        |
+| `pgbouncer.maxUserConnections`            | 80                            | Maximum number of server connections PgBouncer opens per database user across all database pools.                                         |
 | `valkey`                                  |                               | Values passed into the bundled Valkey dependency chart.                                                                                   |
 | `valkey.enabled`                          | `true`                        | Set this to false explicitly to use `externalValkey` instead of bundled Valkey.                                                           |
 | `valkey.fullnameOverride`                 | `appsemble-valkey`            | The name used for the bundled Valkey service.                                                                                             |
