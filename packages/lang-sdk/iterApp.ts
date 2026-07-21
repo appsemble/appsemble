@@ -164,23 +164,28 @@ export function iterPage(
       );
     }
 
-    return (
-      result ||
-      (page.type === 'flow'
-        ? page.steps.some((step, index) =>
-            iterBlockList(step.blocks, callbacks, [...prefix, 'steps', index, 'blocks']),
-          )
-        : page.tabs
-          ? page.tabs.some((tab, index) =>
-              iterBlockList(tab.blocks, callbacks, [...prefix, 'tabs', index, 'blocks']),
-            )
-          : iterBlockList(page.definition?.foreach.blocks ?? [], callbacks, [
-              ...prefix,
-              'tabs',
-              0,
-              'blocks',
-            ]))
-    );
+    if (result) {
+      return true;
+    }
+
+    if (page.type === 'flow') {
+      const { steps = [] } = page as { steps?: { blocks?: BlockDefinition[] }[] };
+
+      return steps.some((step, index) =>
+        iterBlockList(step.blocks ?? [], callbacks, [...prefix, 'steps', index, 'blocks']),
+      );
+    }
+
+    return page.tabs
+      ? page.tabs.some((tab, index) =>
+          iterBlockList(tab.blocks, callbacks, [...prefix, 'tabs', index, 'blocks']),
+        )
+      : iterBlockList(page.definition?.foreach.blocks ?? [], callbacks, [
+          ...prefix,
+          'tabs',
+          0,
+          'blocks',
+        ]);
   }
 
   if (page.type === 'loop') {
@@ -190,23 +195,30 @@ export function iterPage(
         iterAction(action, callbacks, [...prefix, 'actions', key]),
       );
     }
-    return (
-      result ||
-      ['steps.first', 'steps', 'steps.last'].some((suffix) =>
-        iterBlockList(page.foreach.blocks, callbacks, [...prefix, suffix, 'blocks']),
-      )
+    if (result) {
+      return true;
+    }
+
+    const { foreach } = page as { foreach?: { blocks?: BlockDefinition[] } };
+
+    return ['steps.first', 'steps', 'steps.last'].some((suffix) =>
+      iterBlockList(foreach?.blocks ?? [], callbacks, [...prefix, suffix, 'blocks']),
     );
   }
 
   if (page.type === 'container') {
     let result = false;
-    for (const containerPage of page.pages) {
+    const { pages = [] } = page as { pages?: PageDefinition[] };
+
+    for (const containerPage of pages) {
       result = iterPage(containerPage, callbacks, prefix);
     }
     return result;
   }
 
-  return iterBlockList(page.blocks, callbacks, [...prefix, 'blocks']);
+  const { blocks = [] } = page as { blocks?: BlockDefinition[] };
+
+  return iterBlockList(blocks, callbacks, [...prefix, 'blocks']);
 }
 
 /**
