@@ -186,7 +186,12 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
       logger.error(`Failed to cleanup resources and assets for app ${app.id}.`);
       logger.error(error);
     } finally {
-      await sequelize.close();
+      try {
+        await sequelize.close();
+      } catch (error) {
+        logger.error(`Failed to close database connection for app ${app.id}.`);
+        logger.error(error);
+      }
     }
   }
 }
