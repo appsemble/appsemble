@@ -32,7 +32,7 @@ function isUsable(storage: Storage | null): boolean {
      * empty shim, dropping persisted keys for the session. Rare; split
      * block-vs-full handling only if it shows up.
      */
-    const key = '__appsemble_storage_test__';
+    const key = `__appsemble_storage_test__${Math.random()}`;
     storage.setItem(key, key);
     storage.removeItem(key);
     return true;
