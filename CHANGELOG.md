@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.37.2](https://gitlab.com/appsemble/appsemble/-/releases/0.37.2)] - 2026-07-22
+
+### Fixed
+
+- Server: Route PostgreSQL backup and restore commands around PgBouncer and stop restores on SQL
+  errors.
+
 ## \[[0.37.1](https://gitlab.com/appsemble/appsemble/-/releases/0.37.1)] - 2026-07-18
 
 ### Added

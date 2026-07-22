@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/e2e",
-  "version": "0.37.1",
+  "version": "0.37.2",
   "description": "End-to-end tests used for testing Appsemble apps in an existing environment.",
   "keywords": [
     "app",
@@ -41,9 +41,9 @@
     "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tag of the `e2e node` job in .gitlab-ci.yml; Renovate bumps both together (see renovate.json)."
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.37.1",
-    "@appsemble/node-utils": "0.37.1",
-    "@appsemble/types": "0.37.1",
+    "@appsemble/lang-sdk": "0.37.2",
+    "@appsemble/node-utils": "0.37.2",
+    "@appsemble/types": "0.37.2",
     "@playwright/test": "1.58.2",
     "strip-indent": "^4.0.0"
   },
