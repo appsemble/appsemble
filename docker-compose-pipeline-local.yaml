@@ -17,7 +17,7 @@ services:
 
   valkey:
     container_name: valkey
-    image: valkey/valkey:9.0.3
+    image: valkey/valkey:9.1.0
     networks: [pipeline]
     command: valkey-server --requirepass password
     ports:

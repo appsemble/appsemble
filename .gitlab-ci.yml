@@ -429,7 +429,7 @@ test node:
   services:
     - name: postgres:17
       alias: postgres
-    - name: valkey/valkey:9.0.3
+    - name: valkey/valkey:9.1.0
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: minio/minio:latest
@@ -643,7 +643,7 @@ e2e node:
       variables:
         MINIO_ROOT_USER: admin
         MINIO_ROOT_PASSWORD: password
-    - name: valkey/valkey:9.0.3
+    - name: valkey/valkey:9.1.0
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
