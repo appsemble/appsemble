@@ -44,7 +44,7 @@
     "@appsemble/lang-sdk": "0.37.2",
     "@appsemble/node-utils": "0.37.2",
     "@appsemble/types": "0.37.2",
-    "@playwright/test": "1.58.2",
+    "@playwright/test": "1.61.1",
     "strip-indent": "^4.0.0"
   },
   "engines": {

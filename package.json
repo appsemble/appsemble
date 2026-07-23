@@ -126,7 +126,7 @@
     "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tag of the `mermaid svgs` job in .gitlab-ci.yml; Renovate bumps both together (see renovate.json)."
   },
   "dependencies": {
-    "@playwright/test": "1.61.0",
+    "@playwright/test": "1.61.1",
     "gitleaks-secret-scanner": "^1.2.2",
     "i18n-iso-countries": "^7.14.0",
     "tslib": "^2.8.1",
