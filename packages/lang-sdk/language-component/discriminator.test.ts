@@ -98,6 +98,41 @@ const blockCtx = LanguageCtx.compile(
   'BlockDefinition',
 );
 
+// A union with one untagged branch (a basic page has no `type`), resolved via a `default` tag.
+const BasicPage = LanguageComponent.define(
+  'BasicPage',
+  { type: 'object', required: ['blocks'], properties: { blocks: { type: 'array' } } },
+  {},
+);
+const TabsPage = LanguageComponent.define(
+  'TabsPage',
+  {
+    type: 'object',
+    required: ['type', 'tabs'],
+    properties: { type: { enum: ['tabs'] }, tabs: {} },
+  },
+  {},
+);
+const PageDefinition = LanguageComponent.define(
+  'PageDefinition',
+  {
+    anyOf: [{ $ref: '#/components/schemas/BasicPage' }, { $ref: '#/components/schemas/TabsPage' }],
+    'x-appsemble-discriminator': {
+      propertyNames: ['type'],
+      default: 'basic',
+      // Only the untagged branch needs a mapping: BasicPage has no `type`, so the tag 'basic' can't be
+      // read off it. TabsPage is inferred from its own `type: ['tabs']` enum — declaring it would be
+      // redundant (pickBranch tries mapping, then the branch's own tag, then the ref name).
+      mapping: { basic: '#/components/schemas/BasicPage' },
+    },
+  } as Schema,
+  {},
+);
+const pageCtx = LanguageCtx.compile(
+  LanguageComponent.schemas([BasicPage, TabsPage, PageDefinition]),
+  'PageDefinition',
+);
+
 describe('discriminated-union resolution', () => {
   it('resolves the branch its single-field tag selects', () => {
     const { identity } = actionCtx.root({ type: 'link', to: 'Home' });
@@ -124,5 +159,19 @@ describe('discriminated-union resolution', () => {
     const { identity } = blockCtx.root({ type: 'button', version: '9.9.9' });
     expect(identity?.kind).toBe('unresolved');
     expect(identity?.kind === 'unresolved' && identity.reason).toMatch(/button@9\.9\.9/);
+  });
+
+  it('resolves a tagged branch when the discriminant is present', () => {
+    const { identity } = pageCtx.root({ type: 'tabs', tabs: [] });
+    expect(identity?.kind === 'composite' && identity.parts.map((p) => p.name)).toContain(
+      'TabsPage',
+    );
+  });
+
+  it('resolves the untagged branch via `default` when the discriminant is absent', () => {
+    const { identity } = pageCtx.root({ blocks: [] });
+    expect(identity?.kind === 'composite' && identity.parts.map((p) => p.name)).toContain(
+      'BasicPage',
+    );
   });
 });

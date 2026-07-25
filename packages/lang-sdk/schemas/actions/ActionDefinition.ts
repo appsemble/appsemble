@@ -30,6 +30,10 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
       },
     },
     {
+      // Every branch is tagged by a single-valued `type` enum, so the analyzer can resolve the one
+      // selected action instead of trying all ~68 (O(branches) -> O(1)). The win compounds through
+      // `onSuccess`/`onError`, which recurse into this same union.
+      discriminator: { propertyName: 'type' },
       anyOf: [
         { $ref: '#/components/schemas/AnalyticsActionDefinition' },
         { $ref: '#/components/schemas/ControllerActionDefinition' },

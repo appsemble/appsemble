@@ -18,9 +18,11 @@ const AppPermissions = LanguageComponent.define(
     validate(node) {
       const app = node.nearest('AppDefinition')?.val as AppDefinition;
       const valid = new Set<string>(getAppPossiblePermissions(app));
-      return ((node.val as string[]) ?? [])
-        .filter((permission) => !valid.has(permission))
-        .map((permission) => `unknown permission: ${permission}`);
+      return ((node.val as string[]) ?? []).flatMap((permission, index) =>
+        valid.has(permission)
+          ? []
+          : [{ message: `unknown permission: ${permission}`, path: [index] }],
+      );
     },
     complete(node) {
       const app = node.nearest('AppDefinition')?.val as AppDefinition;
@@ -93,12 +95,17 @@ describe('language component binding: app permissions', () => {
   });
 
   it('should flag a permission the app cannot grant', () => {
-    const problems = AppPermissions.binding.validate!(permissionsNode());
-    expect(problems).toStrictEqual(['unknown permission: $resource:bogus:get']);
+    // eslint-disable-next-line unicorn/no-useless-undefined -- the binding requires an explicit ctx argument
+    const problems = AppPermissions.binding.validate!(permissionsNode(), undefined);
+    // The bad permission is at index 1 of the array; the diagnostic pins it there, not on the node.
+    expect(problems).toStrictEqual([
+      { message: 'unknown permission: $resource:bogus:get', path: [1] },
+    ]);
   });
 
   it('should complete with valid permissions not yet present', () => {
-    const completions = AppPermissions.binding.complete!(permissionsNode());
+    // eslint-disable-next-line unicorn/no-useless-undefined -- the binding requires an explicit ctx argument
+    const completions = AppPermissions.binding.complete!(permissionsNode(), undefined);
     // Resource/view/webhook permissions derived from THIS app's definition.
     expect(completions).toContain('$webhook:sync:invoke');
     expect(completions).toContain('$resource:note:get:public');
@@ -136,7 +143,7 @@ describe('language component binding dispatched through the engine at a path', (
 
   it('dispatches validate and complete by path, matching the direct-call results', () => {
     expect(tree.callBindingAt(permissionsPath, 'validate')).toStrictEqual([
-      'unknown permission: $resource:bogus:get',
+      { message: 'unknown permission: $resource:bogus:get', path: [1] },
     ]);
     expect(tree.callBindingAt(permissionsPath, 'complete')).toContain('$webhook:sync:invoke');
   });

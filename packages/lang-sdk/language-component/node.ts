@@ -40,9 +40,33 @@ export class Node {
     this.parentNode = parentNode;
   }
 
-  // Resolve this node once, memoized for its lifetime.
+  // Resolve this node, memoized for its lifetime and — via the ctx's value-keyed cache — across cursor
+  // instances too. A fresh cursor minted over an unchanged value (re-render, or an edit that structurally
+  // shares this subtree) reuses the prior `Resolution` instead of paying resolve() again; the cache
+  // self-invalidates because an edit mints a new value object for the changed path.
   resolve(): Resolution {
-    this.cachedResolution ??= resolve(this.comp, this.val, this.ctx);
+    if (this.cachedResolution) {
+      return this.cachedResolution;
+    }
+    const cache = this.ctx.resolutionCache;
+    if (cache && this.val != null && typeof this.val === 'object') {
+      const key = this.val as object;
+      let bySchema = cache.get(key);
+      const hit = bySchema?.get(this.comp);
+      if (hit) {
+        this.cachedResolution = hit;
+        return hit;
+      }
+      const result = resolve(this.comp, this.val, this.ctx);
+      if (!bySchema) {
+        bySchema = new Map();
+        cache.set(key, bySchema);
+      }
+      bySchema.set(this.comp, result);
+      this.cachedResolution = result;
+      return result;
+    }
+    this.cachedResolution = resolve(this.comp, this.val, this.ctx);
     return this.cachedResolution;
   }
 
@@ -71,6 +95,16 @@ export class Node {
       return null;
     }
     return new Node(this.ctx, child.schema, child.value, child.path, this);
+  }
+
+  // `child`, but first `await`s the value-directed load for `key` (if the context supplies one), so a
+  // `dynamicChild` backed by an async source (e.g. a block manifest) can answer. The load runs inline
+  // right before the sync step — no prime-everything pass; a context without `loadDynamicChild` just
+  // resolves to `child(key)`.
+  async childAsync(key: number | string): Promise<Node | null> {
+    const identity = this.resolve().identity?.name ?? null;
+    await this.ctx.loadDynamicChild?.(identity, this.val, String(key));
+    return this.child(key);
   }
 
   parent(): Node | null {

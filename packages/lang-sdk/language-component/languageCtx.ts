@@ -5,7 +5,7 @@ import {
   type DistinguishabilityResult,
   type UnionCollision,
 } from './distinguishability.js';
-import { type LanguageComponentBinding } from './languageComponent.js';
+import { findPrimitiveComponents, type LanguageComponentBinding } from './languageComponent.js';
 import { Node } from './node.js';
 import { localShapeFactory, type ResolveContext, type ResolveOptions } from './resolve.js';
 import { SchemaRegistry } from './schemaRegistry.js';
@@ -29,6 +29,11 @@ export interface ScanValidation {
 // `ResolveOptions`, so the resolve core stays binding-unaware).
 export interface CompileOptions extends ResolveOptions {
   binds?: Map<string, LanguageComponentBinding>;
+  // The dialect's environment bag, threaded to every binding hook (`validate`/`complete`/`describe`) so
+  // the semantic layer can reach what the document doesn't hold — a block registry, resource catalog,
+  // feature config. Held opaque here (`unknown`); a dialect that declared a `Ctx` on its bindings passes
+  // the matching value and narrows at the authoring site.
+  context?: unknown;
 }
 
 function collectHits(validator: Validator, data: unknown, rootSchema: Schema): ScanValidation {
@@ -73,9 +78,17 @@ export class LanguageCtx {
   // Per-component bindings dispatched by identity name (see `MountIndex.callBindingAt`).
   readonly binds: Map<string, LanguageComponentBinding>;
 
+  // The dialect environment bag passed to every binding hook. Opaque to the engine; the dialect owns
+  // its shape. `undefined` when a plain DSL declared no environment.
+  readonly context: unknown;
+
   // Compile-time verdict per union: can ref-cut local matching always pick correctly? Gates the
   // runtime escalation and surfaces the authoring lint via `distinguishabilityLint`.
   private readonly distinguishability: DistinguishabilityResult;
+
+  // Tagged components that are bare primitives — the dialect-sanity violation set (see
+  // `findPrimitiveComponents`). Computed once at compile from the schema set.
+  private readonly primitiveComponentNames: readonly string[];
 
   private constructor(schemas: Record<string, Schema>, rootName: string, options: CompileOptions) {
     const rootSchema = schemas[rootName];
@@ -90,15 +103,19 @@ export class LanguageCtx {
     this.rootName = rootName;
     this.rootSchema = rootSchema;
     this.binds = options.binds ?? new Map();
+    this.context = options.context;
     const resolveRef = (ref: string): Schema => this.registry.resolveRef(ref);
     this.distinguishability = analyzeDistinguishability([rootSchema], resolveRef, this.localShape);
+    this.primitiveComponentNames = findPrimitiveComponents(schemas);
     this.cachedResolveContext = {
       resolveRef,
       localShape: this.localShape,
       dynamicChild: options.dynamicChild,
+      loadDynamicChild: options.loadDynamicChild,
       draftChildSchemas: options.draftChildSchemas,
       validator: this.resolveValidator,
       refCutSufficient: (schema) => this.distinguishability.refCutSufficient.get(schema) ?? true,
+      resolutionCache: new WeakMap(),
     };
   }
 
@@ -115,6 +132,12 @@ export class LanguageCtx {
   // leaves indistinguishable. The high-signal dialect-sanity failures worth blocking on.
   get distinguishabilityErrors(): readonly UnionCollision[] {
     return this.distinguishability.collisions.filter((collision) => collision.severity === 'error');
+  }
+
+  // Tagged components that are bare primitives — a dialect-authoring violation (a primitive belongs as a
+  // controlled property, never a standalone identity). A dialect-sanity test asserts this is empty.
+  get primitiveComponents(): readonly string[] {
+    return this.primitiveComponentNames;
   }
 
   // Compile a schema set, pinning `rootName` (a registry key) as the document root. Reuse the
@@ -137,6 +160,12 @@ export class LanguageCtx {
   // `MountIndex.nodeAt`); the walk doesn't go through here.
   root(data: unknown, path: NodePath = []): Node {
     return new Node(this.cachedResolveContext, this.rootSchema, data, path, null);
+  }
+
+  // The binding declared for a component identity, if any — so a consumer (e.g. the GUI editor) can read
+  // its behaviors or `getExtraAnnotations`. Dispatched by the same identity name as the walk's hooks.
+  bindingFor(name: string): LanguageComponentBinding | undefined {
+    return this.binds.get(name);
   }
 
   // Whole-document validation — the single ref-following pass that answers the cross-`$ref` question.

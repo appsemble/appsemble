@@ -231,6 +231,11 @@
     "CREATEDB",
     "Voss",
     "dockercompose",
-    "languageservice"
+    "languageservice",
+    "distinguishability",
+    "componentized",
+    "componentizes",
+    "derefs",
+    "dispatchable"
   ]
 }

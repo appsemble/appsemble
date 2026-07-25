@@ -16,6 +16,33 @@ export interface Resolution {
   matched: boolean;
   // A leaf's own ref-cut errors; a combinator has none (its validity is whether branches matched).
   localErrors?: ValidationError[];
+  // The discriminated (or plain) union this node resolves through, surfaced so a consumer (the GUI
+  // editor's kind switcher) can enumerate every branch and switch kind — even when `comp` merged the
+  // union into a nested `allOf` (the `draftChildSchemas` case), which structural inspection can't see.
+  // Carried up from wherever the union was decided: the discriminator fast-path, a plain oneOf/anyOf,
+  // or the nearest enclosing branch that had one. Absent for a node that resolves through no union.
+  union?: ResolvedUnion;
+}
+
+// One branch of a union: its schema verbatim (a `$ref` stays a `$ref` so the consumer derefs lazily)
+// paired with the component name it declares — the branch's own schema tag, read with no value. This is
+// deliberately NOT an `Identity`: that is the value-directed resolution OUTCOME (which branch a node
+// collapsed to, and how), and it lives on `Resolution.identity`. A branch has only a declared name, so a
+// consumer can label the option and hand `name` straight to the typed cursor's `as(name)` without
+// `$ref`-basename string-matching. Null for an untagged/anonymous branch (e.g. an undeclared basic page).
+export interface UnionBranch {
+  schema: Schema;
+  name: string | null;
+}
+
+// A union a node resolves through, as declared: its combinator mode, the declared discriminator (null
+// for a plain/undeclared union), and its branches (schema + resolved identity each). This is the
+// schema-level shape of the union, independent of which branch the current value happens to select — the
+// value-directed choice lives on `Resolution.identity`; this is the whole option space at the slot.
+export interface ResolvedUnion {
+  mode: 'anyOf' | 'oneOf';
+  discriminator: Discriminator | null;
+  branches: UnionBranch[];
 }
 
 // Value-directed child resolver (BLOCKS.md): return a child schema directly from the parent's
@@ -27,8 +54,19 @@ export type DynamicChild = (
   key: string,
 ) => Schema | null;
 
+// The async load half of a value-directed child: fetch whatever the sync `dynamicChild` will then read
+// (e.g. a block manifest), so it can answer synchronously afterwards. Awaited inline by the async
+// descent (`childAsync`/`scanAsync`) right before the sync step — never a prime-everything-first pass.
+// Resolving stays sync (`dynamicChild`); only loading is async, and only this hook is.
+export type LoadDynamicChild = (
+  parentIdentity: string | null,
+  parentValue: unknown,
+  key: string,
+) => Promise<void>;
+
 export interface ResolveOptions {
   dynamicChild?: DynamicChild;
+  loadDynamicChild?: LoadDynamicChild;
   draftChildSchemas?: boolean;
   // Override the registry's default jsonschema validator — e.g. an editor registering per-block
   // schemas under their own URLs so a large union validates without walking every branch.
@@ -42,15 +80,31 @@ export interface ResolveContext {
   validator: Validator;
   localShape: (schema: Schema) => Schema;
   dynamicChild?: DynamicChild;
+  loadDynamicChild?: LoadDynamicChild;
   draftChildSchemas?: boolean;
   // Compile-time verdict: can ref-cut local matching always pick this union's branch correctly?
   // A union it reports false for escalates to full validation when ref-cut matches more than one
   // branch (see `escalateAmbiguous`). Absent ⇒ every union is trusted (no escalation).
   refCutSufficient?: (schema: Schema) => boolean;
+  // Optional resolution memo shared across cursors, keyed by value-object identity → schema. `Node`
+  // consults it so a fresh cursor over an unchanged value (a re-render, or an edit elsewhere that
+  // structurally shares this subtree) reuses the prior `Resolution` instead of re-resolving. Keyed by
+  // value identity, so it self-invalidates: an edit mints new value objects for the changed path only.
+  resolutionCache?: WeakMap<object, Map<Schema, Resolution>>;
+}
+
+export function deref(schema: Schema, resolveRef: (ref: string) => Schema): Schema {
+  return schema.$ref ? deref(resolveRef(schema.$ref), resolveRef) : schema;
 }
 
 function single(name: string): Identity {
   return { kind: 'single', name };
+}
+
+// The component name a union branch declares: its own schema tag, read value-independently (not which
+// branch a value selects). Null for an untagged/anonymous branch.
+function branchName(branch: Schema, ctx: ResolveContext): string | null {
+  return schemaTag(deref(branch, ctx.resolveRef))?.name ?? null;
 }
 
 function unresolved(reason: string, parts: Identity[] = []): Identity {
@@ -95,10 +149,6 @@ function identityParts(parts: Resolution[]): Identity[] {
   return parts
     .map((part) => part.identity)
     .filter((identity): identity is Identity => identity != null);
-}
-
-export function deref(schema: Schema, resolveRef: (ref: string) => Schema): Schema {
-  return schema.$ref ? deref(resolveRef(schema.$ref), resolveRef) : schema;
 }
 
 // Does `value` match `schema`'s own (ref-cut) local shape? Never recurses into $ref'd subtrees —
@@ -179,13 +229,21 @@ function resolveComposite(
     allOf: matched.length === branches.length,
     anyOf: matched.length > 0,
   }[mode];
+  // Bubble a union decided deeper up to this node, so a union merged into a nested `allOf` still
+  // surfaces on the enclosing node's resolution (the `draftChildSchemas` case).
+  const union = branches.map((branch) => branch.union).find(Boolean);
 
   if (satisfied) {
     const governing = mode === 'allOf' ? branches : matched;
     const parts = identityParts(governing);
     const identity =
       mode === 'oneOf' && !tag ? governing[0].identity : compositeOrNull(mode, tag, parts);
-    return { identity, matched: true, winners: [schema, ...governing.flatMap((b) => b.winners)] };
+    return {
+      identity,
+      matched: true,
+      winners: [schema, ...governing.flatMap((b) => b.winners)],
+      union,
+    };
   }
 
   const reason = {
@@ -199,6 +257,7 @@ function resolveComposite(
     identity: unresolvedOrNull(reason, tag, identityParts(considered)),
     matched: false,
     winners: [schema],
+    union,
   };
 }
 
@@ -231,6 +290,10 @@ export interface Discriminator {
   mapping?: Record<string, string>;
   separator: string;
   required: boolean;
+  // The tag to assume when the discriminant field is absent, so an untagged branch still resolves in
+  // O(1) instead of falling back to the walk — e.g. a basic page (no `type`) via `default: 'basic'`
+  // mapped to its branch. Absent ⇒ no default (honour `required` / draft-tolerant walk).
+  default?: string;
 }
 
 export function readDiscriminator(schema: Schema): Discriminator | null {
@@ -241,6 +304,7 @@ export function readDiscriminator(schema: Schema): Discriminator | null {
         mapping?: Record<string, string>;
         separator?: string;
         required?: boolean;
+        default?: string;
       };
     }
   )['x-appsemble-discriminator'];
@@ -250,6 +314,7 @@ export function readDiscriminator(schema: Schema): Discriminator | null {
       mapping: x.mapping,
       separator: x.separator ?? '@',
       required: x.required ?? true,
+      default: x.default,
     };
   }
   const std = (
@@ -317,6 +382,14 @@ function pickBranch(
  * sufficient union, an unflagged union, allOf, a single match) is returned untouched, so the fast path
  * is unchanged and only genuine collisions pay. If nothing fully validates the value is incomplete, so
  * the lenient ref-cut set is kept rather than degrade a mid-edit value.
+ *
+ * @param mode The composite mode of the union (`allOf`/`anyOf`/`oneOf`).
+ * @param union The union schema being resolved.
+ * @param branchSchemas The union's branch schemas, index-aligned with `resolutions`.
+ * @param resolutions The ref-cut resolutions to disambiguate.
+ * @param value The value being resolved against the union.
+ * @param ctx The resolve context, carrying the validator and ref-cut oracle.
+ * @returns The disambiguated resolutions, or the input untouched when no escalation applies.
  */
 function escalateAmbiguous(
   mode: 'allOf' | 'anyOf' | 'oneOf',
@@ -343,9 +416,7 @@ function escalateAmbiguous(
   }
   const keep = new Set(deepMatched);
   return resolutions.map((resolution, index) =>
-    matchedIdx.includes(index) && !keep.has(index)
-      ? { ...resolution, matched: false }
-      : resolution,
+    matchedIdx.includes(index) && !keep.has(index) ? { ...resolution, matched: false } : resolution,
   );
 }
 
@@ -380,18 +451,43 @@ export function resolve(
       // branch instead of every branch. Same result shape as the walk (via `resolveComposite` on a
       // single branch), but O(1) and with precise diagnostics for a missing/unknown tag.
       const disc = mode === 'allOf' ? null : readDiscriminator(resolved);
-      if (disc) {
-        const tagValue = discriminantTag(disc, value);
-        if (tagValue == null) {
-          // A discriminant field is absent. Tolerate it for drafts (`required: false`) by falling
-          // back to the ordinary walk; otherwise it's an explicit, locatable failure.
-          if (!disc.required) {
-            return resolveComposite(
+      // The union this node itself is, surfaced on the resolution so a consumer can enumerate branches
+      // and switch kind. Overrides any deeper union bubbled up from a branch — this direct one governs.
+      const thisUnion: ResolvedUnion | undefined =
+        mode !== 'allOf' && branches.length >= 2
+          ? {
               mode,
-              resolved,
-              escalateAmbiguous(mode, resolved, branches, branches.map(resolveBranch), value, ctx),
-              tag,
-            );
+              discriminator: disc,
+              branches: branches.map((branch) => ({
+                schema: branch,
+                name: branchName(branch, ctx),
+              })),
+            }
+          : undefined;
+      if (disc) {
+        // An absent tag falls back to the declared `default` (e.g. a basic page ⇒ 'basic'), keeping the
+        // untagged branch O(1); with no default it's absent as before.
+        const tagValue = discriminantTag(disc, value) ?? disc.default ?? null;
+        if (tagValue == null) {
+          // A discriminant field is absent (and no default). Tolerate it for drafts (`required: false`)
+          // by falling back to the ordinary walk; otherwise it's an explicit, locatable failure.
+          if (!disc.required) {
+            return {
+              ...resolveComposite(
+                mode,
+                resolved,
+                escalateAmbiguous(
+                  mode,
+                  resolved,
+                  branches,
+                  branches.map(resolveBranch),
+                  value,
+                  ctx,
+                ),
+                tag,
+              ),
+              union: thisUnion,
+            };
           }
           return {
             identity: unresolvedOrNull(
@@ -401,6 +497,7 @@ export function resolve(
             ),
             matched: false,
             winners: [resolved],
+            union: thisUnion,
           };
         }
         const picked = pickBranch(disc, tagValue, branches, ctx);
@@ -413,16 +510,21 @@ export function resolve(
             ),
             matched: false,
             winners: [resolved],
+            union: thisUnion,
           };
         }
-        return resolveComposite(mode, resolved, [resolveBranch(picked)], tag);
+        return {
+          ...resolveComposite(mode, resolved, [resolveBranch(picked)], tag),
+          union: thisUnion,
+        };
       }
-      return resolveComposite(
-              mode,
-              resolved,
-              escalateAmbiguous(mode, resolved, branches, branches.map(resolveBranch), value, ctx),
-              tag,
-            );
+      const composed = resolveComposite(
+        mode,
+        resolved,
+        escalateAmbiguous(mode, resolved, branches, branches.map(resolveBranch), value, ctx),
+        tag,
+      );
+      return thisUnion ? { ...composed, union: thisUnion } : composed;
     }
   }
   return resolveLeaf(resolved, tag, value, ctx);

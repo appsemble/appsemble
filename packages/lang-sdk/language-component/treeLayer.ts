@@ -32,6 +32,10 @@ export interface IncrementalOptions {
   changed?: NodePath[];
 }
 
+// Binding hooks that take the resolved `Node` (dispatched by the walk) — excludes `getExtraAnnotations`,
+// which is keyed by scope, not node, and read via `LanguageCtx.bindingFor`.
+type NodeBindingHook = 'validate' | 'complete' | 'describe';
+
 // A re-walk root: the subtree (schema at a path) to re-analyze after an edit at or below it.
 // Boundaries sit at `$ref` cutoffs (see `Node.boundaryAt`).
 interface Boundary {
@@ -112,15 +116,18 @@ export class MountIndex {
   }
 
   // Dispatch one hook of the nearest enclosing component's binding at `path`. Undefined when no
-  // bound component encloses `path` or that binding does not define the hook.
-  callBindingAt<Hook extends keyof LanguageComponentBinding>(
+  // bound component encloses `path` or that binding does not define the hook. Only the hooks that take
+  // the resolved `Node` are dispatchable here; `getExtraAnnotations` is read by scope, not by node.
+  callBindingAt<Hook extends NodeBindingHook>(
     path: NodePath,
     hook: Hook,
   ): ReturnType<NonNullable<LanguageComponentBinding[Hook]>> | undefined {
     const context = this.bindingContextAt(path);
     const fn = context?.binding[hook];
     return fn
-      ? (fn(context!.node) as ReturnType<NonNullable<LanguageComponentBinding[Hook]>>)
+      ? (fn(context!.node, this.ctx.context) as ReturnType<
+          NonNullable<LanguageComponentBinding[Hook]>
+        >)
       : undefined;
   }
 }
@@ -159,6 +166,33 @@ function walk(schema: Schema, value: unknown, path: NodePath, ctx: WalkContext):
       const child = childNode(value, path, resolution, key, ctx);
       if (child) {
         walk(child.schema, child.value, child.path, ctx);
+      }
+    }
+  }
+}
+
+// The async twin of `walk`: identical descent, but before each child step it `await`s the context's
+// `loadDynamicChild` so a value-directed child backed by an async source (a block manifest) is loaded
+// inline, then resolved synchronously by the same `childNode`. The load happens per child right before
+// the sync step — never a prime-everything-first pass (which is what we deliberately avoid). A context
+// without `loadDynamicChild` degrades to `walk` with extra awaits on resolved promises.
+async function walkAsync(
+  schema: Schema,
+  value: unknown,
+  path: NodePath,
+  ctx: WalkContext,
+): Promise<void> {
+  const resolution = resolve(schema, value, ctx);
+  const { identity, matched, localErrors } = resolution;
+  if (identity) {
+    ctx.emit(path, identity, matched, localErrors ?? []);
+  }
+  if (value && typeof value === 'object') {
+    for (const key of Object.keys(value)) {
+      await ctx.loadDynamicChild?.(identity?.name ?? null, value, key);
+      const child = childNode(value, path, resolution, key, ctx);
+      if (child) {
+        await walkAsync(child.schema, child.value, child.path, ctx);
       }
     }
   }
@@ -226,10 +260,9 @@ export function buildTree(
   return new MountIndex(ctx, byPath, data);
 }
 
-// Combined analysis: the identity tree plus whole-document validity, each mount's errors scoped at or
-// below its path.
-export function scan(ctx: LanguageCtx, data: unknown, options?: IncrementalOptions): ScanResult {
-  const tree = buildTree(ctx, data, options);
+// Attach whole-document validity to a built tree: each mount keeps the errors at or below its path.
+// Shared by the sync and async scans so they scope identically.
+function scoped(ctx: LanguageCtx, tree: MountIndex, data: unknown): ScanResult {
   const { documentValid, errors, hits } = ctx.validate(data);
   const mounts = new Map(
     [...tree.mounts].map(([key, mount]) => [
@@ -238,4 +271,28 @@ export function scan(ctx: LanguageCtx, data: unknown, options?: IncrementalOptio
     ]),
   );
   return new ScanResult(ctx, mounts, data, documentValid, hits);
+}
+
+// Combined analysis: the identity tree plus whole-document validity, each mount's errors scoped at or
+// below its path.
+export function scan(ctx: LanguageCtx, data: unknown, options?: IncrementalOptions): ScanResult {
+  const tree = buildTree(ctx, data, options);
+  return scoped(ctx, tree, data);
+}
+
+// The full-walk identity tree via the async descent (`walkAsync`), awaiting each value-directed child
+// load inline. No incremental path — the async walk is the whole-document pass (validation, vAD), not
+// the per-edit rebuild, which stays sync through `buildTree`.
+export async function buildTreeAsync(ctx: LanguageCtx, data: unknown): Promise<MountIndex> {
+  const byPath = new Map<string, Mount>();
+  await walkAsync(ctx.rootSchema, data, [], walkContext(ctx, byPath));
+  return new MountIndex(ctx, byPath, data);
+}
+
+// The async twin of `scan`: builds the tree via `buildTreeAsync` (so async-loaded dynamic children are
+// mounted), then attaches the same whole-document validity. For a consumer that must await block
+// manifests before the document is fully known (e.g. the ported `validateAppDefinition`).
+export async function scanAsync(ctx: LanguageCtx, data: unknown): Promise<ScanResult> {
+  const tree = await buildTreeAsync(ctx, data);
+  return scoped(ctx, tree, data);
 }
