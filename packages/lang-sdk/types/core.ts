@@ -103,7 +103,9 @@ export interface AppDefinition {
     /**
      * The navigation type to use.
      *
-     * If this is omitted, a collapsible side navigation menu will be rendered on the left.
+     * If this is omitted, a collapsible side navigation menu is rendered on the left.
+     * Top navigation is rendered in the title bar. When the title bar is hidden,
+     * top navigation is rendered as side navigation.
      *
      * @default 'left-menu'
      */
@@ -129,6 +131,13 @@ export interface AppDefinition {
      * Whether to hide the title bar from all pages in the app.
      */
     hideTitleBar?: boolean;
+
+    /**
+     * Whether to render the app logo on its own centered row above the top navigation.
+     *
+     * Only applies when `navigation` is set to `top`.
+     */
+    stackedHeader?: boolean;
 
     /**
      * Whether to hide the group dropdown.
@@ -240,7 +249,8 @@ export interface BasePageDefinition {
   /**
    * The navigation type to use for the page.
    * Setting this will override the default navigation for the app.
-   * if this is set to `navbar`, navigation link is rendered in the profile dropdown.
+   * Top navigation is rendered in the title bar. When the title bar is hidden,
+   * top navigation is rendered as side navigation.
    */
   navigation?: Navigation | 'profileDropdown';
 

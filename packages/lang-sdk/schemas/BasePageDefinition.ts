@@ -37,14 +37,15 @@ have two pages with the same name. The name of the page is displayed at the *app
       default: false,
     },
     navigation: {
-      enum: ['bottom', 'left-menu', 'hidden', 'dropdown', 'profileDropdown'],
+      enum: ['bottom', 'left-menu', 'hidden', 'dropdown', 'profileDropdown', 'top'],
       description: `The type of navigation displayed on the page.
 
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 `,
     },
     icon: {

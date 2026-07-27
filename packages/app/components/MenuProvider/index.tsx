@@ -15,8 +15,7 @@ import { FormattedMessage } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import { checkPagePermissions } from '../../utils/authorization.js';
-import { shouldShowMenu } from '../../utils/layout.js';
+import { getNavPages, shouldShowMenu } from '../../utils/layout.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -77,23 +76,17 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
     [page],
   );
 
-  const pages = appDefinition.pages.filter(
-    (pageDefinition) =>
-      !pageDefinition.parameters &&
-      !pageDefinition.hideNavTitle &&
-      !(
-        pageDefinition.navigation === 'hidden' || pageDefinition.navigation === 'profileDropdown'
-      ) &&
-      checkPagePermissions(pageDefinition, appDefinition, appMemberRoles, appMemberSelectedGroup),
-  );
+  const pages = getNavPages(appDefinition, appMemberRoles, appMemberSelectedGroup);
 
   let navigationElement: ReactNode;
   const showMenu = shouldShowMenu(appDefinition, appMemberRoles, appMemberSelectedGroup, pathname);
 
   if (showMenu) {
     const navigation = page?.navigation || appDefinition.layout?.navigation;
+    const effectiveNavigation =
+      navigation === 'top' && appDefinition.layout?.hideTitleBar ? 'left-menu' : navigation;
 
-    switch (navigation) {
+    switch (effectiveNavigation) {
       case 'bottom':
         navigationElement = (
           <>
@@ -102,6 +95,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
           </>
         );
         break;
+      case 'top':
       case 'hidden':
       case 'profileDropdown':
         navigationElement = children;

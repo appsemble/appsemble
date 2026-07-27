@@ -1,9 +1,39 @@
-.dropdowns {
-  display: flex;
-}
-
 .logo {
   cursor: pointer;
   height: 48px;
   padding: 4px;
+}
+
+.brandColumn {
+  width: 100%;
+}
+
+.brandRow .logo {
+  height: unset;
+}
+
+.navRow {
+  width: 100%;
+}
+
+/* The stacked header is taller than Bulma's default navbar. Let the fixed bar grow to fit both
+   rows and keep it in flow so page content is not hidden behind it. */
+:global(.navbar.is-fixed-top):has(.brandColumn) {
+  height: auto;
+  position: sticky;
+}
+
+:global(body.has-navbar-fixed-top):has(.brandColumn) {
+  padding-top: 0;
+}
+
+@media screen and (width < 1024px) {
+  .navEnd {
+    margin-left: auto;
+  }
+
+  .navEnd :global(.navbar-burger) {
+    display: block;
+    flex-shrink: 0;
+  }
 }
