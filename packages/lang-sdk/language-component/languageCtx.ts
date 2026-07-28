@@ -156,6 +156,23 @@ export class LanguageCtx {
     return this.cachedResolveContext;
   }
 
+  // Register schemas that arrive after compile — a block's parameter schema, fetched at runtime, carries
+  // its own `definitions` and refers to them as `#/definitions/{name}`. Keyed by full ref so `resolveRef`
+  // finds them; an already-registered key is kept, so a type one block registers isn't clobbered by
+  // another registering the same name. Both validators learn them too, so validation resolves the same
+  // refs. (A shared global namespace: two blocks defining the same name with different shapes would
+  // collide — acceptable while block-scoped resolution isn't modelled.)
+  registerSchemas(schemas: Record<string, Schema>): void {
+    for (const [ref, schema] of Object.entries(schemas)) {
+      if (this.registry.schemas[ref]) {
+        continue;
+      }
+      this.registry.schemas[ref] = schema;
+      this.resolveValidator.addSchema(schema, ref);
+      this.documentValidator.addSchema(schema, ref);
+    }
+  }
+
   // A navigable root node over `data` (for interactive navigation, boundary-finding,
   // `MountIndex.nodeAt`); the walk doesn't go through here.
   root(data: unknown, path: NodePath = []): Node {

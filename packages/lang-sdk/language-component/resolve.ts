@@ -190,8 +190,9 @@ export function localShapeFactory(): (schema: Schema) => Schema {
       copy.additionalProperties = stripRefs(copy.additionalProperties);
     }
     for (const keyword of ['allOf', 'anyOf', 'oneOf'] as const) {
-      if (copy[keyword]) {
-        copy[keyword] = copy[keyword].map(stripRefs);
+      const branch = copy[keyword];
+      if (branch) {
+        copy[keyword] = branch.map(stripRefs);
       }
     }
     if (copy.oneOf) {
