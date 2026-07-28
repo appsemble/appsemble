@@ -340,7 +340,16 @@ function processParameters(
       getChildren: () => [],
     });
   });
-  const parser = createParser(program, { expose: 'all', topRef: false });
+  // `extraTags` whitelists custom JSDoc tags so they survive into the schema; without it
+  // ts-json-schema-generator drops unknown tags. Both are authored as `@tag {…json…}` block comments:
+  // `x-appsemble-gui` carries consumer metadata (read by the GUI editor, ignored by the engine);
+  // `x-appsemble-language-component` lets a block field declare itself a language component so the engine
+  // mounts an identity for it — the same tag `LanguageComponent.define` writes, but authored in TypeScript.
+  const parser = createParser(program, {
+    expose: 'all',
+    topRef: false,
+    extraTags: ['x-appsemble-gui', 'x-appsemble-language-component'],
+  });
   const generator = new SchemaGenerator(program, parser, formatter);
   const schema = generator.createSchemaFromNodes([iface]) as Schema;
   if (schema.definitions && !Object.keys(schema.definitions).length) {

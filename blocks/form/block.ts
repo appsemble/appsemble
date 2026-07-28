@@ -294,13 +294,19 @@ export type SelectionRequirement = CountRequirement;
  * All requirements applicable to string fields.
  */
 export type StringRequirement =
-  LengthRequirement | ProhibitedRequirement | RegexRequirement | RequiredRequirement;
+  | LengthRequirement
+  | ProhibitedRequirement
+  | RegexRequirement
+  | RequiredRequirement;
 
 /**
  * All requirements applicable to number fields.
  */
 export type NumberRequirement =
-  MinMaxRequirement | ProhibitedRequirement | RequiredRequirement | StepRequirement;
+  | MinMaxRequirement
+  | ProhibitedRequirement
+  | RequiredRequirement
+  | StepRequirement;
 
 /**
  * All requirements applicable to boolean fields.
@@ -1494,6 +1500,13 @@ export interface MarkdownField extends AbstractField {
   requirements?: MarkdownRequirement[];
 }
 
+/**
+ * Any of the form field types.
+ *
+ * The GUI editor identifies a field by its `label`, falling back to its `name` when no label is set.
+ *
+ * @x-appsemble-gui {"labelFromProperties":[{"keys":["label"]},{"keys":["name"]}]}
+ */
 export type Field =
   | BooleanField
   | DateField
