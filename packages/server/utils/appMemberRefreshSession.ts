@@ -15,11 +15,19 @@ import {
 } from './appCookies.js';
 
 const ABSOLUTE_SESSION_TTL_SECONDS = 60 * 60 * 24 * 30;
+const REFRESH_TOKEN_REPLAY_GRACE_MS = 30_000;
 
 interface SessionRecord {
   aud: string;
   scope?: string;
   sub: string;
+}
+
+interface RefreshToken {
+  expires: Date;
+  iat: number;
+  rti: string;
+  token: string;
 }
 
 interface CreateOptions {
@@ -49,11 +57,14 @@ function normalizeSessionRecord(record: SessionRecord): SessionRecord {
   };
 }
 
-function generateRefreshToken(record: SessionRecord): {
-  expires: Date;
-  token: string;
-} {
-  const iat = Math.floor(Date.now() / 1000);
+function getSessionRecord({ aud, scope, sub }: SessionRecord): SessionRecord {
+  return normalizeSessionRecord({ aud, scope, sub });
+}
+
+function generateRefreshToken(
+  record: SessionRecord,
+  { iat = Math.floor(Date.now() / 1000), rti = randomUUID() }: { iat?: number; rti?: string } = {},
+): RefreshToken {
   const exp = iat + REFRESH_TOKEN_TTL_SECONDS;
 
   const token = jwt.sign(
@@ -62,7 +73,7 @@ function generateRefreshToken(record: SessionRecord): {
       exp,
       iat,
       iss: argv.host,
-      rti: randomUUID(),
+      rti,
       scope: record.scope,
       sub: record.sub,
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -73,6 +84,8 @@ function generateRefreshToken(record: SessionRecord): {
 
   return {
     expires: new Date(exp * 1000),
+    iat,
+    rti,
     token,
   };
 }
@@ -86,12 +99,36 @@ function getRefreshTokenFromRequest(ctx: Context): string | null {
   return null;
 }
 
+function reuseStoredRefreshToken(
+  ctx: Context,
+  appId: number,
+  record: SessionRecord,
+  tokenId?: string,
+  tokenIssuedAt?: Date,
+): SessionRecord & { refreshToken: string } {
+  if (!tokenId || !tokenIssuedAt) {
+    throw new Error('Invalid refresh token');
+  }
+
+  const refreshToken = generateRefreshToken(record, {
+    iat: Math.floor(tokenIssuedAt.getTime() / 1000),
+    rti: tokenId,
+  }).token;
+
+  setAppRefreshTokenCookie(ctx, appId, refreshToken);
+
+  return {
+    ...record,
+    refreshToken,
+  };
+}
+
 export async function createAppMemberRefreshSession(
   ctx: Context,
   { appId, aud, scope, sub, transaction }: CreateOptions,
 ): Promise<string> {
   const record = normalizeSessionRecord({ aud, scope, sub });
-  const { expires, token } = generateRefreshToken(record);
+  const { expires, iat, rti, token } = generateRefreshToken(record);
   const tokenHash = hashToken(token);
 
   const { AppMemberRefreshSession } = await getAppDB(appId);
@@ -102,6 +139,8 @@ export async function createAppMemberRefreshSession(
       scope: record.scope,
       sub: record.sub,
       tokenHash,
+      tokenId: rti,
+      tokenIssuedAt: new Date(iat * 1000),
     },
     { transaction },
   );
@@ -116,22 +155,36 @@ export async function rotateAppMemberRefreshSession(
   appId: number,
   { token: providedToken }: SessionOptions = {},
 ): Promise<SessionRecord & { refreshToken: string }> {
+  const allowCookieReplayGrace = !providedToken;
   const token = providedToken || getRefreshTokenFromRequest(ctx);
   if (!token) {
     throw new Error('Missing refresh token');
   }
 
   const currentTokenHash = hashToken(token);
+  const nowMs = Date.now();
+  const now = new Date(nowMs);
+  const replayExpires = new Date(nowMs + REFRESH_TOKEN_REPLAY_GRACE_MS);
 
   const { AppMemberRefreshSession } = await getAppDB(appId);
   const session = await AppMemberRefreshSession.findOne({
-    attributes: ['id', 'aud', 'scope', 'sub', 'created'],
+    attributes: ['id', 'aud', 'scope', 'sub', 'created', 'tokenHash', 'tokenId', 'tokenIssuedAt'],
     where: {
       aud: `app:${appId}`,
       expires: {
-        [Op.gt]: new Date(),
+        [Op.gt]: now,
       },
-      tokenHash: currentTokenHash,
+      [Op.or]: allowCookieReplayGrace
+        ? [
+            { tokenHash: currentTokenHash },
+            {
+              previousTokenExpires: {
+                [Op.gt]: now,
+              },
+              previousTokenHash: currentTokenHash,
+            },
+          ]
+        : [{ tokenHash: currentTokenHash }],
     },
   });
 
@@ -139,18 +192,27 @@ export async function rotateAppMemberRefreshSession(
     throw new Error('Invalid refresh token');
   }
 
-  if (Date.now() - session.created.getTime() > ABSOLUTE_SESSION_TTL_SECONDS * 1000) {
+  if (nowMs - session.created.getTime() > ABSOLUTE_SESSION_TTL_SECONDS * 1000) {
     throw new Error('Invalid refresh token');
   }
 
-  const record = normalizeSessionRecord(session.toJSON() as SessionRecord);
-  const { expires, token: nextToken } = generateRefreshToken(record);
+  const record = getSessionRecord(session);
+
+  if (session.tokenHash !== currentTokenHash) {
+    return reuseStoredRefreshToken(ctx, appId, record, session.tokenId, session.tokenIssuedAt);
+  }
+
+  const { expires, iat, rti, token: nextToken } = generateRefreshToken(record);
 
   const [updatedRows] = await AppMemberRefreshSession.update(
     {
       expires,
+      previousTokenExpires: replayExpires,
+      previousTokenHash: currentTokenHash,
       scope: record.scope,
       tokenHash: hashToken(nextToken),
+      tokenId: rti,
+      tokenIssuedAt: new Date(iat * 1000),
     },
     {
       where: {
@@ -159,6 +221,36 @@ export async function rotateAppMemberRefreshSession(
       },
     },
   );
+
+  if (updatedRows !== 1 && allowCookieReplayGrace) {
+    const replaySession = await AppMemberRefreshSession.findOne({
+      attributes: ['aud', 'scope', 'sub', 'tokenId', 'tokenIssuedAt'],
+      where: {
+        aud: `app:${appId}`,
+        expires: {
+          [Op.gt]: now,
+        },
+        id: session.id,
+        previousTokenExpires: {
+          [Op.gt]: now,
+        },
+        previousTokenHash: currentTokenHash,
+      },
+    });
+
+    if (!replaySession) {
+      throw new Error('Invalid refresh token');
+    }
+
+    const replayRecord = getSessionRecord(replaySession);
+    return reuseStoredRefreshToken(
+      ctx,
+      appId,
+      replayRecord,
+      replaySession.tokenId,
+      replaySession.tokenIssuedAt,
+    );
+  }
 
   if (updatedRows !== 1) {
     throw new Error('Invalid refresh token');
@@ -177,6 +269,7 @@ export async function revokeAppMemberRefreshSession(
   appId: number,
   { token: providedToken }: SessionOptions = {},
 ): Promise<void> {
+  const allowCookieReplayGrace = !providedToken;
   const token = providedToken || getRefreshTokenFromRequest(ctx);
   if (!token) {
     clearAppCookies(ctx, appId);
@@ -184,10 +277,22 @@ export async function revokeAppMemberRefreshSession(
   }
 
   const { AppMemberRefreshSession } = await getAppDB(appId);
+  const tokenHash = hashToken(token);
+  const now = new Date();
   await AppMemberRefreshSession.destroy({
     where: {
       aud: `app:${appId}`,
-      tokenHash: hashToken(token),
+      [Op.or]: allowCookieReplayGrace
+        ? [
+            { tokenHash },
+            {
+              previousTokenExpires: {
+                [Op.gt]: now,
+              },
+              previousTokenHash: tokenHash,
+            },
+          ]
+        : [{ tokenHash }],
     },
   });
 
