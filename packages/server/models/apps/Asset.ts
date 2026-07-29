@@ -44,6 +44,8 @@ export class AssetGlobal extends Model {
 
   declare ResourceId?: number;
 
+  declare ResourceType?: string;
+
   declare Group?: Awaited<Group>;
 
   declare AppMember?: Awaited<AppMember>;
@@ -137,6 +139,9 @@ export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
     @Column(DataType.INTEGER)
     declare ResourceId?: number;
 
+    @Column(DataType.STRING)
+    declare ResourceType?: string;
+
     static associate(models: AppModels): void {
       Asset.belongsTo(models.Group, {
         foreignKey: 'GroupId',
@@ -152,6 +157,7 @@ export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
         foreignKey: 'ResourceId',
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
+        constraints: false,
       });
     }
 

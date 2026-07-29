@@ -23,6 +23,8 @@ export class ResourceVersionGlobal extends Model {
 
   declare ResourceId: number;
 
+  declare ResourceType?: string;
+
   declare Resource?: Awaited<Resource>;
 
   declare AppMemberId?: string;
@@ -57,6 +59,9 @@ export function createResourceVersionModel(sequelize: Sequelize): typeof Resourc
     @Column(DataType.INTEGER)
     declare ResourceId: number;
 
+    @Column(DataType.STRING)
+    declare ResourceType?: string;
+
     @Column(DataType.UUID)
     declare AppMemberId?: string;
 
@@ -65,6 +70,7 @@ export function createResourceVersionModel(sequelize: Sequelize): typeof Resourc
         foreignKey: 'ResourceId',
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
+        constraints: false,
       });
       ResourceVersion.belongsTo(models.AppMember, {
         foreignKey: 'AppMemberId',

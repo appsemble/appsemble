@@ -149,6 +149,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
           ResourceVersion.create(
             {
               ResourceId: resourceId,
+              ResourceType: resourceType,
               AppMemberId: previousEditorId,
               data: definition.history === true || definition.history.data ? oldData : undefined,
             },

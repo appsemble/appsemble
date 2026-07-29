@@ -96,6 +96,7 @@ export async function updateAppResource({
         await ResourceVersion.create(
           {
             ResourceId: id,
+            ResourceType: type,
             AppMemberId: previousEditorId,
             data:
               resourceDefinition.history === true || resourceDefinition.history.data

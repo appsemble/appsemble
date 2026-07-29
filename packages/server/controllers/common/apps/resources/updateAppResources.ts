@@ -126,6 +126,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
         await ResourceVersion.bulkCreate(
           existingResources.map((resource) => ({
             ResourceId: resource.id,
+            ResourceType: resourceType,
             AppMemberId: resource.EditorId,
             data: historyDefinition === true || historyDefinition.data ? resource.data : undefined,
           })),

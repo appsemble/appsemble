@@ -293,6 +293,7 @@ export function createResourceModel(sequelize: Sequelize): typeof ResourceGlobal
     @Column(DataType.INTEGER)
     declare id: number;
 
+    @PrimaryKey
     @AllowNull(false)
     @Index({ name: 'resourceTypeComposite' })
     @Column(DataType.STRING)
@@ -373,9 +374,9 @@ export function createResourceModel(sequelize: Sequelize): typeof ResourceGlobal
         onDelete: 'CASCADE',
         as: 'Editor',
       });
-      Resource.hasMany(models.Asset, { onDelete: 'CASCADE' });
-      Resource.hasMany(models.ResourceSubscription, { onDelete: 'CASCADE' });
-      Resource.hasMany(models.ResourceVersion, { onDelete: 'CASCADE' });
+      Resource.hasMany(models.Asset, { onDelete: 'CASCADE', constraints: false });
+      Resource.hasMany(models.ResourceSubscription, { onDelete: 'CASCADE', constraints: false });
+      Resource.hasMany(models.ResourceVersion, { onDelete: 'CASCADE', constraints: false });
     }
 
     static addHooks(models: AppModels, app: App): void {

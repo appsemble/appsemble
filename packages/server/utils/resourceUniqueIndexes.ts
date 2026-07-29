@@ -9,12 +9,31 @@ import {
 import { AppsembleError, throwKoaError } from '@appsemble/node-utils';
 import { type Schema, Validator } from 'jsonschema';
 import { type Context } from 'koa';
-import { UniqueConstraintError, type Transaction } from 'sequelize';
+import { type Sequelize, UniqueConstraintError, type Transaction } from 'sequelize';
 
 import { getAppDB } from '../models/index.js';
+import { resourcePartitionName } from './resourcePartition.js';
 
 const schemaValidator = new Validator();
 type SqlLiteralValue = boolean | Date | number | string;
+
+/**
+ * Ensure the dedicated partition for a resource type exists.
+ *
+ * Created before any of the type's rows are written, so resources route to their own partition and
+ * per-partition unique indexes carry predictable, resolvable names. Idempotent.
+ */
+async function ensureResourcePartition(
+  sequelize: Sequelize,
+  resourceType: string,
+  transaction?: Transaction,
+): Promise<void> {
+  await sequelize.query(
+    `CREATE TABLE IF NOT EXISTS "${resourcePartitionName(resourceType)}"
+       PARTITION OF "Resource" FOR VALUES IN (:type)`,
+    { replacements: { type: resourceType }, transaction },
+  );
+}
 
 function formatFields(fields: string[]): string {
   return fields.map((field) => `“${field}”`).join(', ');
@@ -365,8 +384,8 @@ async function createResourceUniqueIndex(
     await sequelize.query(
       `
         CREATE UNIQUE INDEX IF NOT EXISTS "${specification.name}"
-        ON "Resource" (${indexExpressions.join(', ')})
-        WHERE type = ${sequelize.escape(specification.resourceType)} AND deleted IS NULL;
+        ON "${resourcePartitionName(specification.resourceType)}" (${indexExpressions.join(', ')})
+        WHERE deleted IS NULL;
       `,
       { transaction },
     );
@@ -409,8 +428,8 @@ async function recreateResourceUniqueIndex(
     await sequelize.query(
       `
         CREATE UNIQUE INDEX "${specification.name}"
-        ON "Resource" (${indexExpressions.join(', ')})
-        WHERE type = ${sequelize.escape(specification.resourceType)} AND deleted IS NULL;
+        ON "${resourcePartitionName(specification.resourceType)}" (${indexExpressions.join(', ')})
+        WHERE deleted IS NULL;
       `,
       { transaction },
     );
@@ -460,6 +479,11 @@ export async function syncResourceUniqueIndexes(
   transaction?: Transaction,
 ): Promise<void> {
   const { sequelize } = await getAppDB(appId);
+
+  for (const resourceType of Object.keys(nextDefinitions ?? {})) {
+    await ensureResourcePartition(sequelize, resourceType, transaction);
+  }
+
   const escapeValue = (value: SqlLiteralValue): string =>
     typeof value === 'boolean' ? String(value) : sequelize.escape(value);
   const previousIndexes = getDesiredResourceUniqueIndexes(escapeValue, previousDefinitions);

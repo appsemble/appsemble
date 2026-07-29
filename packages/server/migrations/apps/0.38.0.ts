@@ -11,6 +11,15 @@ export const key = '0.38.0';
  *   type partition; the global id sequence is preserved.
  */
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
+  const [existing] = await db.query<{ relkind: string }>(
+    `SELECT relkind FROM pg_class WHERE relname = 'Resource'`,
+    { type: QueryTypes.SELECT, transaction },
+  );
+  // Already partitioned: nothing to do (idempotent re-run).
+  if (existing?.relkind === 'p') {
+    return;
+  }
+
   const types = (
     await db.query<{ type: string }>('SELECT DISTINCT type FROM "Resource"', {
       type: QueryTypes.SELECT,
@@ -32,6 +41,10 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       { replacements: { type }, transaction },
     );
   }
+
+  // Catch-all partition so resources of a type without a dedicated partition are still storable.
+  // Dedicated per-type partitions are created ahead of their data when the app definition is synced.
+  await db.query('CREATE TABLE "resource_default" PARTITION OF "Resource" DEFAULT', { transaction });
 
   await db.query('INSERT INTO "Resource" SELECT * FROM "Resource_old"', { transaction });
 
@@ -61,6 +74,10 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
   // Dropping the old table removes the single-column foreign keys that referenced it.
   await db.query('DROP TABLE "Resource_old" CASCADE', { transaction });
+
+  // A GIN index on the JSONB payload, on the parent so every partition inherits it. Created after
+  // dropping the old table so the reused index name is free.
+  await db.query('CREATE INDEX "resourceDataIndex" ON "Resource" USING GIN (data)', { transaction });
 
   await db.query(
     `ALTER TABLE "Asset" ADD CONSTRAINT "Asset_Resource_fkey"

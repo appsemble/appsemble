@@ -1202,6 +1202,7 @@ describe('updateAppResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: resource.type,
       AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
@@ -1239,6 +1240,7 @@ describe('updateAppResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: resource.type,
       AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
@@ -1276,6 +1278,7 @@ describe('updateAppResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: resource.type,
       AppMemberId: null,
       created: new Date(),
       data: null,

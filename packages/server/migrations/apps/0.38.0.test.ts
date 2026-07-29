@@ -1,4 +1,4 @@
-import { QueryTypes } from 'sequelize';
+import { QueryTypes, type Sequelize } from 'sequelize';
 import { describe, expect, it } from 'vitest';
 
 import { up } from './0.38.0.js';
@@ -16,10 +16,30 @@ async function seedApp(): Promise<number> {
   return app.id;
 }
 
+/**
+ * Revert an app database to the pre-0.38.0 single-table shape.
+ *
+ * The migration is registered, so `getAppDB` already partitions the database; dropping it back to a
+ * plain `Resource` table lets these tests exercise the actual data-migration path a production backup
+ * will hit. `up()` recreates the table with `LIKE`, so only the columns it copies need to exist here.
+ */
+async function regressToSingleTable(sequelize: Sequelize): Promise<void> {
+  await sequelize.query('DROP TABLE IF EXISTS "Resource" CASCADE');
+  // The registered migration detaches this sequence (OWNED BY NONE), so it survives the drop above.
+  await sequelize.query('DROP SEQUENCE IF EXISTS "Resource_id_seq" CASCADE');
+  await sequelize.query(`CREATE TABLE "Resource" (
+    id serial PRIMARY KEY,
+    type text NOT NULL,
+    data jsonb NOT NULL,
+    created timestamptz NOT NULL DEFAULT now(),
+    updated timestamptz NOT NULL DEFAULT now())`);
+}
+
 describe('migration 0.38.0', () => {
   it('converts Resource into a LIST-partitioned table, preserving and routing existing rows', async () => {
     const appId = await seedApp();
     const { sequelize } = await getAppDB(appId);
+    await regressToSingleTable(sequelize);
 
     // Seed old-shape rows in the single Resource table (as it exists pre-0.38.0).
     await sequelize.query(`
@@ -61,6 +81,7 @@ describe('migration 0.38.0', () => {
   it('backfills ResourceType on aux tables, wires composite FKs that cascade, and drops Resource_old', async () => {
     const appId = await seedApp();
     const { sequelize } = await getAppDB(appId);
+    await regressToSingleTable(sequelize);
 
     await sequelize.query(`
       INSERT INTO "Resource" (type, data, created, updated) VALUES
