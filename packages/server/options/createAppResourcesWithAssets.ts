@@ -127,6 +127,7 @@ export async function createAppResourcesWithAssets({
             ...getCompressedFileMeta(asset),
             GroupId: groupId ?? null,
             ResourceId,
+            ResourceType: resourceType,
             AppMemberId: appMember?.sub,
             seed,
             clonable,

@@ -134,6 +134,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
               ...getCompressedFileMeta(asset),
               GroupId: groupId,
               ResourceId: patchedResource.id,
+              ResourceType: resourceType,
               AppMemberId: appMember?.sub,
               seed: patchedResource.seed,
               clonable: patchedResource.clonable,
