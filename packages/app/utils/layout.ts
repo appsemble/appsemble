@@ -82,9 +82,18 @@ export function getNavPages(
   appMemberRoles: AppRole[],
   appMemberSelectedGroup: AppMemberGroup,
 ): PageDefinition[] {
-  return appDefinition.pages.filter((page) =>
-    shouldShowPage(appDefinition, page, appMemberRoles, appMemberSelectedGroup),
-  );
+  return appDefinition.pages.filter((page) => {
+    if (!shouldShowPage(appDefinition, page, appMemberRoles, appMemberSelectedGroup)) {
+      return false;
+    }
+
+    return (
+      page.type !== 'container' ||
+      page.pages.some((child) =>
+        shouldShowPage(appDefinition, child, appMemberRoles, appMemberSelectedGroup),
+      )
+    );
+  });
 }
 
 export function shouldShowMenu(
