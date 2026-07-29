@@ -73,6 +73,7 @@ function sanitizeAppDefinitionForPublicSettings(
           logo: definition.layout.logo,
           navigation: definition.layout.navigation,
           settings: definition.layout.settings,
+          stackedHeader: definition.layout.stackedHeader,
           titleBarText: definition.layout.titleBarText,
           hideGroupDropdown: definition.layout.hideGroupDropdown,
         }

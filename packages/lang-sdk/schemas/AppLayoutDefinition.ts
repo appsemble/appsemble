@@ -51,11 +51,13 @@ If set to \`navigation\`, it will only be visible if \`login\` is also visible i
 `,
     },
     navigation: {
-      enum: ['bottom', 'left-menu', 'hidden'],
+      enum: ['bottom', 'left-menu', 'hidden', 'top'],
       default: 'left-menu',
       description: `The navigation type to use.
 
 If this is omitted, a collapsable side navigation menu will be rendered on the left.
+Top navigation is rendered in the title bar. When the title bar is hidden, top navigation is
+rendered as side navigation.
 `,
     },
     logo: {
@@ -94,6 +96,14 @@ If this is omitted, a collapsable side navigation menu will be rendered on the l
     },
     hideTitleBar: {
       description: 'Whether to hide the title bar',
+      type: 'boolean',
+      default: false,
+    },
+    stackedHeader: {
+      description: `Whether to render the app logo on its own centered row above the navigation.
+
+Only applies when \`navigation\` is set to \`top\`.
+`,
       type: 'boolean',
       default: false,
     },

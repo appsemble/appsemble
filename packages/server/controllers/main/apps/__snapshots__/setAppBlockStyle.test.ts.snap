@@ -242,8 +242,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -251,6 +252,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -378,8 +380,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -387,6 +390,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -531,8 +535,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -540,6 +545,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -684,8 +690,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -693,6 +700,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -840,8 +848,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -849,6 +858,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -989,8 +999,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -998,6 +1009,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -1138,8 +1150,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -1147,6 +1160,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -1287,8 +1301,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -1296,6 +1311,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -1458,8 +1474,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -1467,6 +1484,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "pages": {
@@ -1637,8 +1655,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -1646,6 +1665,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "pages": {
@@ -1816,8 +1836,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -1825,6 +1846,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "pages": {

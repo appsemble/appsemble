@@ -16,6 +16,7 @@ import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { GroupDropdown } from '../GroupDropdown/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
+import { TopNavigation } from '../TopNavigation/index.js';
 
 interface AppBarProps {
   readonly children?: ReactNode;
@@ -69,11 +70,94 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
   const displayAppName = (definition?.layout?.titleBarText || 'pageName') === 'appName';
 
-  return definition.layout?.hideTitleBar ? null : (
-    <Portal element={document.getElementsByClassName('navbar')[0]}>
+  if (definition.layout?.hideTitleBar) {
+    return null;
+  }
+
+  const showMenu = shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname);
+  const topNavigation = navigation === 'top' && showMenu;
+  const logoInNavbar = (definition.layout?.logo?.position || 'hidden') === 'navbar';
+
+  // `layout.stackedHeader` gives the logo its own centered row above the top navigation.
+  const stackedTopHeader = topNavigation && definition.layout?.stackedHeader === true;
+
+  const logoNode = logoInNavbar ? (
+    <Link to={`/${locale}/${normalize(defaultPageName)}`}>
+      <img
+        alt="app-logo"
+        className={styles.logo}
+        src={`${apiUrl}/api/apps/${appId}/assets/${definition.layout?.logo?.asset || 'logo'}`}
+      />
+    </Link>
+  ) : null;
+
+  const nameNode = (
+    <h2 className="navbar-item title is-4 mb-0">
+      {displayAppName ? appName : !hideName && (children || appName)}
+    </h2>
+  );
+
+  const headerTagNode =
+    headerTagHide || !headerTagText ? null : (
+      <span className="tag is-warning is-rounded">{headerTagText}</span>
+    );
+
+  const demoNode = demoMode ? (
+    <div className="tag is-rounded is-warning mx-1 my-1">
+      <FormattedMessage {...messages.demo} />
+    </div>
+  ) : null;
+
+  const dropdownsNode = (
+    <div className="is-flex">
+      {appMemberGroups.length && !hideGroupDropdownForMember ? (
+        <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
+          <GroupDropdown />
+        </div>
+      ) : null}
+      {definition.layout?.login == null || definition.layout?.login === 'navbar' ? (
+        <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
+          <ProfileDropdown />
+        </div>
+      ) : null}
+    </div>
+  );
+
+  const navbar = document.getElementsByClassName('navbar')[0];
+
+  if (stackedTopHeader) {
+    return (
+      <Portal element={navbar}>
+        <div className={`${styles.brandColumn} is-flex is-flex-direction-column is-flex-grow-1`}>
+          {logoNode ? (
+            <div
+              className={`${styles.brandRow} is-flex is-align-items-center is-justify-content-center py-2`}
+            >
+              {logoNode}
+            </div>
+          ) : null}
+          <div
+            className={`${styles.navRow} is-flex is-align-items-center is-justify-content-space-between`}
+          >
+            <div className="is-flex is-align-items-center">
+              {nameNode}
+              {headerTagNode}
+            </div>
+            <div className={`${styles.navEnd} is-flex is-align-items-center`}>
+              <TopNavigation />
+              {demoNode}
+              {dropdownsNode}
+            </div>
+          </div>
+        </div>
+      </Portal>
+    );
+  }
+
+  return (
+    <Portal element={navbar}>
       <div className="is-flex is-justify-content-space-between is-flex-grow-1">
-        {navigation === 'left-menu' &&
-        shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname) ? (
+        {navigation === 'left-menu' && showMenu ? (
           <div className="navbar-brand">
             <span>
               <SideMenuButton />
@@ -81,39 +165,13 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
           </div>
         ) : null}
         <div className="navbar-brand is-inline-flex is-flex-grow-1">
-          {(definition.layout?.logo?.position || 'hidden') === 'navbar' ? (
-            <Link to={`/${locale}/${normalize(defaultPageName)}`}>
-              <img
-                alt="app-logo"
-                className={styles.logo}
-                src={`${apiUrl}/api/apps/${appId}/assets/${definition.layout?.logo?.asset || 'logo'}`}
-              />
-            </Link>
-          ) : null}
-          <h2 className="navbar-item title is-4 mb-0">
-            {displayAppName ? appName : !hideName && (children || appName)}
-          </h2>
-          {headerTagHide || !headerTagText ? null : (
-            <span className="tag is-warning is-rounded">{headerTagText}</span>
-          )}
+          {logoNode}
+          {nameNode}
+          {headerTagNode}
         </div>
-        {demoMode ? (
-          <div className="tag is-rounded is-warning mx-1 my-1">
-            <FormattedMessage {...messages.demo} />
-          </div>
-        ) : null}
-        <div className={styles.dropdowns}>
-          {appMemberGroups.length && !hideGroupDropdownForMember ? (
-            <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
-              <GroupDropdown />
-            </div>
-          ) : null}
-          {definition.layout?.login == null || definition.layout?.login === 'navbar' ? (
-            <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
-              <ProfileDropdown />
-            </div>
-          ) : null}
-        </div>
+        {topNavigation ? <TopNavigation /> : null}
+        {demoNode}
+        {dropdownsNode}
       </div>
     </Portal>
   );

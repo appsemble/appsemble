@@ -3,7 +3,7 @@ import { type AppMemberGroup } from '@appsemble/types';
 
 import { checkPagePermissions } from './authorization.js';
 
-function shouldShowPage(
+export function shouldShowPage(
   appDefinition: AppDefinition,
   pageDefinition: PageDefinition,
   appMemberRoles: AppRole[],
@@ -67,6 +67,33 @@ export function shouldHideGroupDropdown(
     return appMemberRoles.some((role) => hideGroupDropdown.includes(role));
   }
   return false;
+}
+
+/**
+ * Get the top-level pages that should be rendered in the app navigation.
+ *
+ * @param appDefinition The app definition to read the pages from.
+ * @param appMemberRoles The roles of the current app member.
+ * @param appMemberSelectedGroup The group the current app member has selected.
+ * @returns The pages that are visible in the navigation.
+ */
+export function getNavPages(
+  appDefinition: AppDefinition,
+  appMemberRoles: AppRole[],
+  appMemberSelectedGroup: AppMemberGroup,
+): PageDefinition[] {
+  return appDefinition.pages.filter((page) => {
+    if (!shouldShowPage(appDefinition, page, appMemberRoles, appMemberSelectedGroup)) {
+      return false;
+    }
+
+    return (
+      page.type !== 'container' ||
+      page.pages.some((child) =>
+        shouldShowPage(appDefinition, child, appMemberRoles, appMemberSelectedGroup),
+      )
+    );
+  });
 }
 
 export function shouldShowMenu(
