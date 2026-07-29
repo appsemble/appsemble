@@ -34,6 +34,49 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   }
 
   await db.query('INSERT INTO "Resource" SELECT * FROM "Resource_old"', { transaction });
+
+  // Aux tables need the resource type to form a composite foreign key to the partitioned parent.
+  // Asset and ResourceVersion gain a ResourceType column, backfilled from the owning resource;
+  // ResourceSubscription already carries the type in its `type` column.
+  for (const table of ['Asset', 'ResourceVersion']) {
+    await db.query(`ALTER TABLE "${table}" ADD COLUMN IF NOT EXISTS "ResourceType" text`, {
+      transaction,
+    });
+    await db.query(
+      `UPDATE "${table}" AS child SET "ResourceType" = old.type
+         FROM "Resource_old" AS old WHERE child."ResourceId" = old.id`,
+      { transaction },
+    );
+  }
+
+  // Detach the id sequence so dropping Resource_old does not drop it; the partitioned Resource keeps
+  // drawing ids from the same global sequence.
+  const [{ seq }] = await db.query<{ seq: string | null }>(
+    `SELECT pg_get_serial_sequence('"Resource_old"', 'id') AS seq`,
+    { type: QueryTypes.SELECT, transaction },
+  );
+  if (seq) {
+    await db.query(`ALTER SEQUENCE ${seq} OWNED BY NONE`, { transaction });
+  }
+
+  // Dropping the old table removes the single-column foreign keys that referenced it.
+  await db.query('DROP TABLE "Resource_old" CASCADE', { transaction });
+
+  await db.query(
+    `ALTER TABLE "Asset" ADD CONSTRAINT "Asset_Resource_fkey"
+       FOREIGN KEY ("ResourceId", "ResourceType") REFERENCES "Resource" (id, type) ON DELETE CASCADE`,
+    { transaction },
+  );
+  await db.query(
+    `ALTER TABLE "ResourceVersion" ADD CONSTRAINT "ResourceVersion_Resource_fkey"
+       FOREIGN KEY ("ResourceId", "ResourceType") REFERENCES "Resource" (id, type) ON DELETE CASCADE`,
+    { transaction },
+  );
+  await db.query(
+    `ALTER TABLE "ResourceSubscription" ADD CONSTRAINT "ResourceSubscription_Resource_fkey"
+       FOREIGN KEY ("ResourceId", "type") REFERENCES "Resource" (id, type) ON DELETE CASCADE`,
+    { transaction },
+  );
 }
 
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
