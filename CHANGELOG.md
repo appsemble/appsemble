@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.37.3](https://gitlab.com/appsemble/appsemble/-/releases/0.37.3)] - 2026-07-29
+
 ## \[[0.37.2](https://gitlab.com/appsemble/appsemble/-/releases/0.37.2)] - 2026-07-22
 
 ### Fixed
