@@ -120,12 +120,11 @@ export async function patchAppResource(ctx: Context): Promise<void> {
       const oldData = lockedResource.data;
       const data = { ...oldData, ...patchData };
       const previousEditorId = lockedResource.EditorId;
-      const promises: Promise<unknown>[] = [
-        lockedResource.update(
-          { data, clonable, expires, EditorId: appMember?.sub },
-          { transaction },
-        ),
-      ];
+      const patchedResource = await lockedResource.update(
+        { data, clonable, expires, EditorId: appMember?.sub },
+        { transaction },
+      );
+      const promises: Promise<unknown>[] = [];
 
       if (preparedAssets.length) {
         promises.push(
@@ -134,8 +133,11 @@ export async function patchAppResource(ctx: Context): Promise<void> {
               ...asset,
               ...getCompressedFileMeta(asset),
               GroupId: groupId,
-              ResourceId: lockedResource.id,
+              ResourceId: patchedResource.id,
               AppMemberId: appMember?.sub,
+              seed: patchedResource.seed,
+              clonable: patchedResource.clonable,
+              ephemeral: patchedResource.ephemeral,
             })),
             { logging: false, transaction },
           ),
