@@ -212,6 +212,7 @@
     "Ftraining",
     "regclass",
     "relkind",
-    "tableoid"
+    "tableoid",
+    "pkey"
   ]
 }
