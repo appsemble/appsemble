@@ -116,7 +116,67 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   await addResourceCompositeForeignKeys(db, transaction);
 }
 
+/**
+ * Summary:
+ * - Convert the partitioned `Resource` table back into a single table with a single-column primary
+ * key, restoring the single-column aux foreign keys and dropping the `ResourceType` columns.
+ *
+ * @param transaction Sequelize transaction
+ * @param db The Sequelize Database.
+ */
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
-  await db.query('DROP TABLE IF EXISTS "Resource" CASCADE', { transaction });
-  await db.query('ALTER TABLE "Resource_old" RENAME TO "Resource"', { transaction });
+  await db.query('ALTER TABLE "Resource" RENAME TO "Resource_partitioned"', { transaction });
+  await db.query(
+    'ALTER TABLE "Resource_partitioned" RENAME CONSTRAINT "Resource_pkey" TO "Resource_partitioned_pkey"',
+    { transaction },
+  );
+  await db.query(
+    'CREATE TABLE "Resource" (LIKE "Resource_partitioned" INCLUDING DEFAULTS, PRIMARY KEY (id))',
+    { transaction },
+  );
+  await db.query('INSERT INTO "Resource" SELECT * FROM "Resource_partitioned"', { transaction });
+  // Dropping the partitioned table also drops its partitions and the composite foreign keys.
+  await db.query('DROP TABLE "Resource_partitioned" CASCADE', { transaction });
+
+  await db.query('CREATE INDEX "resourceDataIndex" ON "Resource" USING GIN (data)', {
+    transaction,
+  });
+  await db.query('CREATE INDEX "resourceTypeComposite" ON "Resource" (type, expires, "GroupId")', {
+    transaction,
+  });
+  await db.query(
+    `ALTER TABLE "Resource" ADD CONSTRAINT "Resource_GroupId_fkey"
+       FOREIGN KEY ("GroupId") REFERENCES "Group" (id) ON UPDATE CASCADE ON DELETE CASCADE`,
+    { transaction },
+  );
+  await db.query(
+    `ALTER TABLE "Resource" ADD CONSTRAINT "Resource_AuthorId_fkey"
+       FOREIGN KEY ("AuthorId") REFERENCES "AppMember" (id) ON UPDATE CASCADE ON DELETE CASCADE`,
+    { transaction },
+  );
+  await db.query(
+    `ALTER TABLE "Resource" ADD CONSTRAINT "Resource_EditorId_fkey"
+       FOREIGN KEY ("EditorId") REFERENCES "AppMember" (id) ON UPDATE CASCADE ON DELETE CASCADE`,
+    { transaction },
+  );
+
+  await db.query('ALTER TABLE "Asset" DROP COLUMN IF EXISTS "ResourceType"', { transaction });
+  await db.query('ALTER TABLE "ResourceVersion" DROP COLUMN IF EXISTS "ResourceType"', {
+    transaction,
+  });
+  await db.query(
+    `ALTER TABLE "Asset" ADD CONSTRAINT "Asset_ResourceId_fkey"
+       FOREIGN KEY ("ResourceId") REFERENCES "Resource" (id) ON UPDATE CASCADE ON DELETE CASCADE`,
+    { transaction },
+  );
+  await db.query(
+    `ALTER TABLE "ResourceVersion" ADD CONSTRAINT "ResourceVersion_ResourceId_fkey"
+       FOREIGN KEY ("ResourceId") REFERENCES "Resource" (id) ON UPDATE CASCADE ON DELETE CASCADE`,
+    { transaction },
+  );
+  await db.query(
+    `ALTER TABLE "ResourceSubscription" ADD CONSTRAINT "ResourceSubscription_ResourceId_fkey"
+       FOREIGN KEY ("ResourceId") REFERENCES "Resource" (id) ON UPDATE CASCADE ON DELETE CASCADE`,
+    { transaction },
+  );
 }
