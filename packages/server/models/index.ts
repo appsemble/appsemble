@@ -464,7 +464,7 @@ export async function initAppDB(
     }
   }
 
-  let appDB;
+  let appDB!: Sequelize;
   try {
     appDB = new Sequelize({
       database: appDBName,
