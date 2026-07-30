@@ -170,6 +170,18 @@ export interface Utils {
   isActionError: (input: unknown) => input is ActionError;
 
   /**
+   * Test if the input is an error caused by the action's owner being aborted.
+   *
+   * An action chain rejects with this when the block, page, or flow page that owns it is unmounted
+   * while the chain is in flight, e.g. by navigating away or switching tabs. It signals a
+   * cancellation, not a failure, so blocks should treat it as a benign stop rather than an error.
+   *
+   * @param input The input to test
+   * @returns Whether or not the input is an action owner abort error.
+   */
+  isActionOwnerAbortError: (input: unknown) => boolean;
+
+  /**
    * Remap data based in a user defined remapper function.
    *
    * @param remapper The user defined remapper function.

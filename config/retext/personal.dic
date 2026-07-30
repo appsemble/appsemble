@@ -106,6 +106,7 @@ PEM
 Preact
 prerelease/release
 PWA
+pooler
 proxied
 remapper/mapper
 Redux
@@ -126,6 +127,7 @@ TLS
 TTL
 testid
 util/kitten
+unstub
 UUID
 Valkey
 valkey

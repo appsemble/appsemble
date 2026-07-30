@@ -5,7 +5,13 @@ import {
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, getAppDB, Organization, OrganizationMember } from '../../../../../models/index.js';
+import {
+  App,
+  getAppDB,
+  getDB,
+  Organization,
+  OrganizationMember,
+} from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
@@ -61,6 +67,11 @@ describe('updateAppSamlSecret', () => {
       spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
+    await getDB().query('UPDATE "App" SET "updated" = :updated WHERE "id" = :appId', {
+      replacements: { appId: app.id, updated: new Date(-1000) },
+    });
+    await app.reload();
+    const previousUpdated = app.updated;
     const response = await request.put<AppSamlSecretType>(
       `/api/apps/${app.id}/secrets/saml/${secret.id}`,
       {
@@ -98,8 +109,10 @@ describe('updateAppSamlSecret', () => {
     `,
     );
     await secret.reload();
+    await app.reload();
     const { updated, ...data } = response.data;
     expect(secret).toMatchObject(data);
+    expect(app.updated.getTime()).toBeGreaterThan(previousUpdated.getTime());
   });
 
   it('should clear SAML group attribute and role mappings when empty values are submitted', async () => {

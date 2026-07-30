@@ -23,43 +23,23 @@ export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs);
 }
 
-export async function handler(): Promise<void> {
-  let db;
-
-  try {
-    db = initDB({
-      host: argv.databaseHost,
-      port: argv.databasePort,
-      username: argv.databaseUser,
-      password: argv.databasePassword,
-      database: argv.databaseName,
-      ssl: argv.databaseSsl,
-      uri: argv.databaseUrl,
-    });
-  } catch (error: unknown) {
-    handleDBError(error as Error);
-  }
-
-  try {
-    initS3Client({
-      endPoint: argv.s3Host,
-      port: argv.s3Port,
-      useSSL: argv.s3Secure,
-      accessKey: argv.s3AccessKey,
-      secretKey: argv.s3SecretKey,
-    });
-  } catch (error: unknown) {
-    logger.warn(`S3Error: ${error}`);
-    logger.warn('Features related to file uploads will not work correctly!');
-  }
-
+export async function cleanupResourcesAndAssets(): Promise<void> {
   const date = new Date();
 
   const demoApps = await App.findAll({ attributes: ['id'], where: { demoMode: true } });
-  await Promise.all(
-    demoApps.map(async (demoApp) => {
-      const { Asset, Resource, sequelize } = await getAppDB(demoApp.id);
+  for (const demoApp of demoApps) {
+    let appDB: Awaited<ReturnType<typeof getAppDB>>;
 
+    try {
+      appDB = await getAppDB(demoApp.id);
+    } catch (error) {
+      logger.warn(`Failed to connect to database for app ${demoApp.id}, skipping cleanup.`);
+      logger.error(error);
+      continue;
+    }
+
+    const { Asset, Resource, sequelize } = appDB;
+    try {
       logger.info(`Cleaning up ephemeral assets from demo app ${demoApp.id}.`);
 
       const demoAssetsToDestroy = await Asset.findAll({
@@ -138,14 +118,28 @@ export async function handler(): Promise<void> {
       logger.info(
         `Reseeded ${demoResourcesToReseed.length} ephemeral resources into demo app ${demoApp.id}.`,
       );
+    } catch (error) {
+      logger.error(`Failed to cleanup resources and assets for demo app ${demoApp.id}.`);
+      logger.error(error);
+    } finally {
       await sequelize.close();
-    }),
-  );
+    }
+  }
 
   const apps = await App.findAll({ attributes: ['id'], where: { demoMode: false } });
-  await Promise.all(
-    apps.map(async (app) => {
-      const { Asset, Resource, sequelize } = await getAppDB(app.id);
+  for (const app of apps) {
+    let appDB: Awaited<ReturnType<typeof getAppDB>>;
+
+    try {
+      appDB = await getAppDB(app.id);
+    } catch (error) {
+      logger.warn(`Failed to connect to database for app ${app.id}, skipping cleanup.`);
+      logger.error(error);
+      continue;
+    }
+
+    const { Asset, Resource, sequelize } = appDB;
+    try {
       const assetsToDestroy = await Asset.findAll({
         attributes: ['id', 'name'],
         where: { ephemeral: true },
@@ -188,9 +182,51 @@ export async function handler(): Promise<void> {
       });
 
       logger.info(`Removed ${resourcesDeletionResult} resources.`);
-      await sequelize.close();
-    }),
-  );
+    } catch (error) {
+      logger.error(`Failed to cleanup resources and assets for app ${app.id}.`);
+      logger.error(error);
+    } finally {
+      try {
+        await sequelize.close();
+      } catch (error) {
+        logger.error(`Failed to close database connection for app ${app.id}.`);
+        logger.error(error);
+      }
+    }
+  }
+}
+
+export async function handler(): Promise<void> {
+  let db;
+
+  try {
+    db = initDB({
+      host: argv.databaseHost,
+      port: argv.databasePort,
+      username: argv.databaseUser,
+      password: argv.databasePassword,
+      database: argv.databaseName,
+      ssl: argv.databaseSsl,
+      uri: argv.databaseUrl,
+    });
+  } catch (error: unknown) {
+    handleDBError(error as Error);
+  }
+
+  try {
+    initS3Client({
+      endPoint: argv.s3Host,
+      port: argv.s3Port,
+      useSSL: argv.s3Secure,
+      accessKey: argv.s3AccessKey,
+      secretKey: argv.s3SecretKey,
+    });
+  } catch (error: unknown) {
+    logger.warn(`S3Error: ${error}`);
+    logger.warn('Features related to file uploads will not work correctly!');
+  }
+
+  await cleanupResourcesAndAssets();
 
   await db.close();
   process.exit();

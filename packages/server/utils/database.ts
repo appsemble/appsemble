@@ -46,3 +46,23 @@ export function buildPostgresUri({
   const base = `postgresql://${encodeURIComponent(dbUser)}:${encodeURIComponent(dbPassword)}@${dbHost}:${dbPort}/${dbName}`;
   return ssl ? `${base}?sslmode=require` : base;
 }
+
+export function getDirectPostgresConnection({
+  dbHost,
+  dbPort,
+}: {
+  dbHost: string;
+  dbPort: number;
+}): { dbHost: string; dbPort: number } {
+  const directHost = process.env.DATABASE_DIRECT_HOST;
+  if (!directHost) {
+    return { dbHost, dbPort };
+  }
+
+  const directPort = Number(process.env.DATABASE_DIRECT_PORT);
+  if (!Number.isInteger(directPort) || directPort < 1 || directPort > 65_535) {
+    throw new Error('DATABASE_DIRECT_PORT must be a valid port when DATABASE_DIRECT_HOST is set.');
+  }
+
+  return { dbHost: directHost, dbPort: directPort };
+}

@@ -13,18 +13,21 @@ interface Setup {
   emitted: unknown[];
   refresh: () => Promise<void>;
   resolvers: ((value: unknown) => void)[];
+  rejecters: ((reason: unknown) => void)[];
 }
 
 function setup(): Setup {
   const result = {
     emitted: [] as unknown[],
     resolvers: [] as ((value: unknown) => void)[],
+    rejecters: [] as ((reason: unknown) => void)[],
   } as Setup;
 
   const onLoad = Object.assign(
     <R,>(): Promise<R> =>
-      new Promise<R>((resolve) => {
+      new Promise<R>((resolve, reject) => {
         result.resolvers.push(resolve as (value: unknown) => void);
+        result.rejecters.push(reject);
       }),
     { type: 'resource.query' as const },
   );
@@ -86,4 +89,15 @@ it('should drop a stale load when a newer load started meanwhile', async () => {
   resolvers[0]('stale');
   await Promise.resolve();
   expect(emitted).toStrictEqual([['refreshed', 'newest', undefined]]);
+});
+
+it('should not emit an error when the load is aborted by owner unmount', async () => {
+  const { emitted, rejecters } = setup();
+  // The initial load starts on render; the block is unmounted before it resolves.
+  const abortError = new Error('Action owner was aborted');
+  abortError.name = 'ActionOwnerAbortError';
+  rejecters[0](abortError);
+  await Promise.resolve();
+  await Promise.resolve();
+  expect(emitted).toStrictEqual([]);
 });

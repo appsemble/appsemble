@@ -1,3 +1,4 @@
+import { serializeResource } from '@appsemble/utils';
 import axios from 'axios';
 
 import { type ActionCreator } from './index.js';
@@ -10,7 +11,7 @@ export const webhook: ActionCreator<'webhook'> = ({ definition, remap }) => [
 
     // Call the webhook endpoint directly
     const url = `${apiUrl}/api/apps/${appId}/webhooks/${definition.name}`;
-    const response = await axios.post(url, body || {});
+    const response = await axios.post(url, serializeResource(body || {}));
 
     // Return the response data from the webhook execution
     return response.data;

@@ -8,10 +8,14 @@ import {
 } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { extension } from 'mime-types';
-import { Op } from 'sequelize';
+import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 
 import { App, getAppDB } from '../../../../models/index.js';
+
+// Longest edge for the no-bounds ("full") derivative. Viewers are overwhelmingly mobile, so
+// re-encoding 12+ MP originals at native resolution is wasted CPU and a memory risk; cap it.
+const FULL_DERIVED_MAX_EDGE = 1024;
 
 function getAssetFilename(assetId: string, filename?: string | null, mime?: string | null): string {
   if (filename) {
@@ -28,36 +32,44 @@ function getAssetFilename(assetId: string, filename?: string | null, mime?: stri
   return assetId;
 }
 
+// Cache names are codec-independent because they are resolved before the source is decoded; the
+// actual codec of each derivative is recorded in its `mime` column and read back when serving.
 function getDerivedAssetName(assetId: string, width: number, height: number): string {
   return `${assetId}${width}x${height}`;
 }
 
 function getFullDerivedAssetName(assetId: string): string {
-  return `${assetId}-full-avif`;
+  return `${assetId}-full`;
 }
 
-function getDerivedFilename(assetId: string, filename?: string | null): string {
+function getDerivedFilename(
+  assetId: string,
+  filename: string | null | undefined,
+  mime: string,
+): string {
+  const ext = extension(mime) || 'bin';
   if (!filename) {
-    return `${assetId}.avif`;
+    return `${assetId}.${ext}`;
   }
 
   const dotIndex = filename.lastIndexOf('.');
-  return dotIndex === -1 ? `${filename}.avif` : `${filename.slice(0, dotIndex)}.avif`;
+  return dotIndex === -1 ? `${filename}.${ext}` : `${filename.slice(0, dotIndex)}.${ext}`;
 }
 
 async function serveCachedDerivedAsset(
   ctx: Context,
   bucketName: string,
   sourceAsset: { id: string; filename?: string | null },
-  cachedAsset: { id: string; destroy: () => Promise<unknown> },
+  cachedAsset: { id: string; mime?: string | null; destroy: () => Promise<unknown> },
 ): Promise<boolean> {
   try {
     const stats = await getS3FileStats(bucketName, cachedAsset.id);
     const stream = await getS3File(bucketName, cachedAsset.id);
+    const mime = cachedAsset.mime ?? 'application/octet-stream';
     setAssetHeaders(
       ctx,
-      'image/avif',
-      getDerivedFilename(sourceAsset.id, sourceAsset.filename),
+      mime,
+      getDerivedFilename(sourceAsset.id, sourceAsset.filename, mime),
       stats,
     );
     ctx.body = stream;
@@ -152,6 +164,11 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       ? getDerivedAssetName(sourceAsset.id, parsedWidth, parsedHeight)
       : fullDerivedAssetName;
 
+    // Keep alpha-capable WebP for transparent sources (map markers, logos); JPEG is far faster to
+    // encode for the common opaque photo case. hasAlpha is read from the header metadata above.
+    const alpha = metadata.hasAlpha === true;
+    const derivedMime = alpha ? 'image/webp' : 'image/jpeg';
+
     if (!shouldDownscale && shouldResize) {
       const cachedAsset = await Asset.findOne({
         where: {
@@ -169,27 +186,42 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       }
     }
 
-    const derivedImage = shouldDownscale
-      ? await image
-          .rotate()
-          .resize(parsedWidth, parsedHeight, {
-            kernel: sharp.kernel.lanczos3,
-            fit: 'cover',
-            withoutEnlargement: true,
-          })
-          .avif()
-          .toBuffer()
-      : await image.rotate().avif().toBuffer();
+    // Downscale to the requested bounds, or, with no usable bounds, cap the longest edge instead
+    // of re-encoding at native resolution.
+    const pipeline = shouldDownscale
+      ? image.rotate().resize(parsedWidth, parsedHeight, {
+          kernel: sharp.kernel.lanczos3,
+          fit: 'cover',
+          withoutEnlargement: true,
+        })
+      : image.rotate().resize(FULL_DERIVED_MAX_EDGE, FULL_DERIVED_MAX_EDGE, {
+          kernel: sharp.kernel.lanczos3,
+          fit: 'inside',
+          withoutEnlargement: true,
+        });
+    const derivedImage = await (alpha ? pipeline.webp() : pipeline.jpeg()).toBuffer();
 
-    const newAsset = await Asset.create({
-      name: derivedAssetName,
-      mime: 'image/avif',
-      ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
-    });
+    try {
+      const newAsset = await Asset.create({
+        name: derivedAssetName,
+        mime: derivedMime,
+        ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+      });
 
-    await uploadS3File(bucketName, newAsset.id, derivedImage);
+      await uploadS3File(bucketName, newAsset.id, derivedImage);
+    } catch (error) {
+      // A concurrent request already cached this derived asset. The name is deterministic, so a
+      // unique-constraint clash just means the other request won the race; serve our in-memory copy.
+      if (!(error instanceof UniqueConstraintError)) {
+        throw error;
+      }
+    }
 
-    setAssetHeaders(ctx, 'image/avif', getDerivedFilename(sourceAsset.id, sourceAsset.filename));
+    setAssetHeaders(
+      ctx,
+      derivedMime,
+      getDerivedFilename(sourceAsset.id, sourceAsset.filename, derivedMime),
+    );
     ctx.body = derivedImage;
     return;
   }

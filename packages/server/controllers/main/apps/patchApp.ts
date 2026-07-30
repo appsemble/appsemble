@@ -156,6 +156,8 @@ export async function patchApp(ctx: Context): Promise<void> {
     if (yaml) {
       permissionsToCheck.push(OrganizationPermission.UpdateApps);
 
+      assertKoaCondition(typeof yaml === 'string', ctx, 400, 'The yaml field must be a string');
+
       const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
 
       const appValidator = new AppValidator();

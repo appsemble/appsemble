@@ -15,7 +15,8 @@ COPY package.json package.json
 # this statement requires experimental syntax, declared at the top of the file
 COPY --parents packages/**/package.json .
 
-RUN --mount=type=cache,target=/root/.npm npm ci
+# ponytail: retry to survive transient prebuild-install/registry download timeouts (e.g. keytar)
+RUN --mount=type=cache,target=/root/.npm npm ci || npm ci || npm ci
 
 RUN npx playwright install --with-deps chromium
 
@@ -74,7 +75,7 @@ ENTRYPOINT ["appsemble-server"]
 CMD ["start"]
 HEALTHCHECK CMD ["appsemble-server", "health"]
 EXPOSE 9999
-ARG version=0.37.0
+ARG version=0.37.3
 ARG date
 LABEL io.artifacthub.package.alternative-locations="registry.gitlab.com/appsemble/appsemble:${version}"
 LABEL io.artifacthub.package.keywords="app,apps,appsemble,framework,low-code,lowcode"

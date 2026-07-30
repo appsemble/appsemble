@@ -10,7 +10,7 @@ import { databaseBuilder } from './builder/database.js';
 import { App, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { encrypt } from '../utils/crypto.js';
-import { buildPostgresUri } from '../utils/database.js';
+import { buildPostgresUri, getDirectPostgresConnection } from '../utils/database.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
 export const command = 'restore-data-from-backup';
@@ -37,6 +37,8 @@ export interface RestoreDataFromBackupOptions {
   backupsSecretKey: string;
   backupsSecure: boolean;
   databaseHost: string;
+  databaseDirectHost: string;
+  databaseDirectPort: number;
   databaseName: string;
   databasePassword: string;
   databasePort: number;
@@ -60,7 +62,14 @@ async function recreateDatabase(dbName: string, adminUri: string): Promise<void>
 
   const dropProc = spawn(
     'psql',
-    [`--dbname=${adminUri}`, '-v', 'ON_ERROR_STOP=1', '-c', `DROP DATABASE IF EXISTS "${dbName}";`],
+    [
+      `--dbname=${adminUri}`,
+      '-X',
+      '-v',
+      'ON_ERROR_STOP=1',
+      '-c',
+      `DROP DATABASE IF EXISTS "${dbName}";`,
+    ],
     {
       stdio: ['inherit', 'inherit', 'inherit'],
     },
@@ -73,7 +82,7 @@ async function recreateDatabase(dbName: string, adminUri: string): Promise<void>
 
   const createProc = spawn(
     'psql',
-    [`--dbname=${adminUri}`, '-v', 'ON_ERROR_STOP=1', '-c', `CREATE DATABASE "${dbName}";`],
+    [`--dbname=${adminUri}`, '-X', '-v', 'ON_ERROR_STOP=1', '-c', `CREATE DATABASE "${dbName}";`],
     {
       stdio: ['inherit', 'inherit', 'inherit'],
     },
@@ -93,7 +102,7 @@ async function restoreDatabaseFromS3(
   key: string,
 ): Promise<void> {
   const gunzip = createGunzip();
-  const restore = spawn('psql', [`--dbname=${connectionString}`], {
+  const restore = spawn('psql', [`--dbname=${connectionString}`, '-X', '-v', 'ON_ERROR_STOP=1'], {
     stdio: ['pipe', 'inherit', 'pipe'],
   });
 
@@ -129,6 +138,8 @@ export async function restoreDataFromBackup({
   backupsSecretKey,
   backupsSecure,
   databaseHost,
+  databaseDirectHost,
+  databaseDirectPort,
   databaseName,
   databasePassword,
   databasePort,
@@ -145,8 +156,8 @@ export async function restoreDataFromBackup({
   const adminUri = buildPostgresUri({
     dbUser: databaseUser,
     dbPassword: databasePassword,
-    dbHost: databaseHost,
-    dbPort: databasePort,
+    dbHost: databaseDirectHost,
+    dbPort: databaseDirectPort,
     dbName: 'postgres',
     ssl: databaseSsl,
   });
@@ -154,13 +165,16 @@ export async function restoreDataFromBackup({
 
   try {
     db = initDB({
-      host: databaseHost,
-      port: databasePort,
+      host: databaseDirectHost,
+      port: databaseDirectPort,
       username: databaseUser,
       password: databasePassword,
       database: databaseName,
       ssl: databaseSsl,
-      uri: databaseUrl,
+      uri:
+        databaseDirectHost === databaseHost && databaseDirectPort === databasePort
+          ? databaseUrl
+          : undefined,
     });
   } catch (error: unknown) {
     handleDBError(error as Error);
@@ -188,8 +202,8 @@ export async function restoreDataFromBackup({
     const mainDbUrl = buildPostgresUri({
       dbUser: databaseUser,
       dbPassword: databasePassword,
-      dbHost: databaseHost,
-      dbPort: databasePort,
+      dbHost: databaseDirectHost,
+      dbPort: databaseDirectPort,
       dbName: databaseName,
       ssl: databaseSsl,
     });
@@ -217,11 +231,11 @@ export async function restoreDataFromBackup({
       const dbName = app.dbName ?? `app-${app.id}`;
 
       const appDbUrl = buildPostgresUri({
-        dbHost: app.dbHost,
+        dbHost: databaseDirectHost,
         dbName,
         dbPassword,
-        dbPort: app.dbPort,
-        dbUser: app.dbUser,
+        dbPort: databaseDirectPort,
+        dbUser: databaseUser,
         ssl: databaseSsl,
       });
 
@@ -241,6 +255,10 @@ export async function restoreDataFromBackup({
 }
 
 export async function handler(): Promise<void> {
+  const directDatabase = getDirectPostgresConnection({
+    dbHost: argv.databaseHost,
+    dbPort: argv.databasePort,
+  });
   const failed = await restoreDataFromBackup({
     aesSecret: argv.aesSecret,
     backupsAccessKey: argv.backupsAccessKey,
@@ -250,6 +268,8 @@ export async function handler(): Promise<void> {
     backupsSecretKey: argv.backupsSecretKey,
     backupsSecure: argv.backupsSecure ?? true,
     databaseHost: argv.databaseHost,
+    databaseDirectHost: directDatabase.dbHost,
+    databaseDirectPort: directDatabase.dbPort,
     databaseName: argv.databaseName,
     databasePassword: argv.databasePassword,
     databasePort: argv.databasePort,

@@ -117,7 +117,9 @@ describe('odataFilterToSequelize', () => {
     ),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Not
-    'not foo eq 12': { [Op.not]: where(col('Model.foo'), '=', 12) },
+    // Negation is covered behaviourally in queryAppResources.test.ts and
+    // queryAppResourcesFilterLaws.test.ts: the where-object shape alone does not reveal whether the
+    // NOT survives into the generated SQL, so it is verified against the returned rows instead.
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Has
     // XXX
@@ -230,9 +232,6 @@ describe('odataFilterToSequelize', () => {
       where(col('Model.foo'), '=', 12),
       or(where(col('Model.bar'), '=', 14), where(col('Model.baz'), '=', 8)),
     ),
-    'not (foo eq 12 and bar eq 14)': {
-      [Op.not]: and(where(col('Model.foo'), '=', 12), where(col('Model.bar'), '=', 14)),
-    },
   };
 
   it.each(Object.entries(cases))('%s', (filter, expected) => {

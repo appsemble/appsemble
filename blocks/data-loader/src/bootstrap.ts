@@ -28,6 +28,11 @@ export function DataLoader({
       if (currentLoad !== latestLoad) {
         return;
       }
+      // The block was unmounted mid-load, e.g. by switching tabs. The load did not fail; it was
+      // cancelled, so there is nothing to report.
+      if (utils.isActionOwnerAbortError(error)) {
+        return;
+      }
       events.emit.data(null, getDataLoadError(error));
       utils.showMessage(utils.formatMessage('loadErrorMessage'));
     }

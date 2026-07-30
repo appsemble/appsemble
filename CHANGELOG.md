@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.37.3](https://gitlab.com/appsemble/appsemble/-/releases/0.37.3)] - 2026-07-29
+
+## \[[0.37.2](https://gitlab.com/appsemble/appsemble/-/releases/0.37.2)] - 2026-07-22
+
+### Fixed
+
+- Server: Route PostgreSQL backup and restore commands around PgBouncer and stop restores on SQL
+  errors.
+
+## \[[0.37.1](https://gitlab.com/appsemble/appsemble/-/releases/0.37.1)] - 2026-07-18
+
+### Added
+
+- Server: Route database connections through PgBouncer when connection pooling is enabled in the
+  Helm chart.
+
 ## \[[0.37.0](https://gitlab.com/appsemble/appsemble/-/releases/0.37.0)] - 2026-07-14
 
 ### Added

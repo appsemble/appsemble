@@ -216,6 +216,26 @@ describe('createAppBuildManifest', () => {
     });
   });
 
+  it('should build a manifest for sparse page definitions', async () => {
+    const definition = {
+      name: 'Controller App',
+      defaultPage: 'Flow Page',
+      pages: [
+        { name: 'Flow Page', type: 'flow' },
+        { name: 'Loop Page', type: 'loop' },
+        { name: 'Container Page', type: 'container' },
+        { name: 'Basic Page' },
+      ],
+    } as unknown as AppDefinition;
+
+    const result = await createAppBuildManifest(definition);
+
+    expect(result).toStrictEqual({
+      version: 1,
+      blockManifests: [],
+    });
+  });
+
   it('should report missing block manifest identifiers', () => {
     const definition: AppDefinition = {
       name: 'Test App',

@@ -9,7 +9,8 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   ],
   get: {
     tags: ['common', 'app', 'asset'],
-    description: 'Get a single asset. Public image delivery uses AVIF derivatives by default.',
+    description:
+      'Get a single asset. Public image delivery returns JPEG (or WebP for transparent sources) derivatives, capped to 1024px on the longest edge when no width and height are given.',
     operationId: 'getAppAssetById',
     responses: {
       200: {
@@ -20,7 +21,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   head: {
     tags: ['common', 'app', 'asset'],
     description:
-      'Get the headers for a single asset. Public image delivery headers describe AVIF derivatives by default.',
+      'Get the headers for a single asset. Image asset headers describe the stored source, not the derived codec returned by GET.',
     operationId: 'getAppAssetHeadersById',
     responses: {
       200: {

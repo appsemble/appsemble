@@ -95,7 +95,6 @@ describe('manifestHandler', () => {
           },
         ],
         name: 'Test App',
-        orientation: 'any',
         scope: '/',
         short_name: 'Test App',
         start_url: '/test-page',
@@ -176,7 +175,6 @@ describe('manifestHandler', () => {
           },
         ],
         name: 'Test App',
-        orientation: 'any',
         scope: '/',
         short_name: 'Test App',
         start_url: '/test-page',
@@ -265,7 +263,6 @@ describe('manifestHandler', () => {
           },
         ],
         name: 'Test App',
-        orientation: 'any',
         scope: '/',
         screenshots: [
           {

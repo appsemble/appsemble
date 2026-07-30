@@ -49,6 +49,10 @@ spec:
               value: {{ .Values.postgresql.fullnameOverride }}
             - name: DATABASE_PORT
               value: {{ .Values.global.postgresql.service.ports.postgresql | quote }}
+            {{- if .Values.postgresSSL }}
+            - name: DATABASE_SSL
+              value: 'true'
+            {{- end }}
             - name: DATABASE_NAME
               value: {{ .Values.global.postgresql.auth.database }}
             - name: DATABASE_USER

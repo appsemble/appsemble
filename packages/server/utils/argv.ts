@@ -164,6 +164,17 @@ export interface Argv {
    */
   slowQueryThreshold: number;
 
+  /**
+   * The maximum number of app databases to keep cached.
+   *
+   * Each cached app database holds a Sequelize instance with its own connection pool and model
+   * definitions. The least recently used instance is closed and evicted when the limit is
+   * exceeded.
+   *
+   * @default 200
+   */
+  appDbCacheLimit: number;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Valkey                                                                                       //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -197,6 +208,13 @@ export interface Argv {
    * @default false
    */
   valkeyTls: boolean;
+
+  /**
+   * The TTL in seconds for cached app-serving metadata. Set to 0 to disable the cache.
+   *
+   * @default 300
+   */
+  appServingCacheTtl: number;
 
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // SSL                                                                                          //
@@ -632,6 +650,7 @@ const defaults: Argv = {
   migrateTo: undefined,
   databaseBenchmark: false,
   slowQueryThreshold: 100,
+  appDbCacheLimit: 200,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   valkeyHost: undefined,
   valkeyPort: 6379,
@@ -639,6 +658,7 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   valkeyPassword: undefined,
   valkeyTls: false,
+  appServingCacheTtl: 300,
   ssl: false,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sslKey: undefined,

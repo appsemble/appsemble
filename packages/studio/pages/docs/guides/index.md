@@ -35,6 +35,7 @@ continue on this basic app to add more advanced features.
 - [SAML2.0](saml.md)
 - [SCIM](scim.md)
 - [App screenshots](screenshots.md)
+- [SMTP](smtp.md)
 - [Services](service.md)
 - [Sharing resources](sharing-resources.md)
 - [Storage](storage.md)

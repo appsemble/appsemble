@@ -500,6 +500,18 @@ export interface ParsedQuery {
 
 export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
+export type AppServingCacheStatus = 'disabled' | 'error' | 'hit' | 'miss';
+
+export interface AppServingCacheResult<T> {
+  status: AppServingCacheStatus;
+  value?: T;
+}
+
+export interface AppServingCache {
+  get: <T>(key: string) => Promise<AppServingCacheResult<T>>;
+  set: <T>(key: string, value: T) => Promise<AppServingCacheStatus>;
+}
+
 export interface Options {
   getSecurityEmail: () => string;
   getCurrentAppMember: (params: GetCurrentAppMemberParams) => Promise<AppMemberInfo | null>;
@@ -521,11 +533,12 @@ export interface Options {
   getBlockMessages: (params: GetBlockMessagesParams) => Promise<BlockMessages[]>;
   getBlockAsset: (params: GetBlockAssetParams) => Promise<ProjectAsset>;
   getBlocksAssetsPaths: (params: GetBlocksAssetsPathsParams) => Promise<string[]>;
-  getTheme: (params: GetThemeParams) => Promise<Theme>;
+  getTheme: (params: GetThemeParams) => Promise<Theme | null>;
   createTheme: (params: CreateThemeParams) => Promise<Theme>;
   getHost: (params: GetHostParams) => string;
   getCsp: (params: GetCspParams) => ContentSecurityPolicy;
   createSettings: (params: CreateSettingsParams) => Promise<[digest: string, script: string]>;
+  appServingCache?: AppServingCache;
   applyAppServiceSecrets: (
     params: ApplyAppServiceSecretsParams,
   ) => Promise<RawAxiosRequestConfig<any>>;

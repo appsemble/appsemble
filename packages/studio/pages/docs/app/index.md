@@ -8,7 +8,7 @@ Apps are configured using an "App definition". This is the file that you access 
 of your app. The file is formatted using [YAML](../guides/yaml-syntax.mdx).
 
 An app is a collection of different systems combined into one whole app. Each system extends the
-default capabilites of an app with new features like security, a database or translations. Most of
+default capabilities of an app with new features like security, a database or translations. Most of
 these are configured directly from within the app definition.
 
 ```mermaid
@@ -86,7 +86,7 @@ we have the `Variables`, and `Secrets` menus. These allow you to define keys and
 a secure environment.
 
 Secrets also allow you to connect with third party services for authentication or user provisioning,
-provide your own SSL certificate or define email settings.
+provide your own SSL certificate or define [email settings](../guides/smtp.md).
 
 For further information, check the [documentation](config.md).
 

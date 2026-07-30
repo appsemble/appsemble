@@ -287,8 +287,10 @@ async function validateAppMemberProperties(
         }
 
         if (propertyType === 'object') {
+          // An open-map object property (only `additionalProperties`) has no fixed
+          // sub properties to default, so fall back to an empty set.
           for (const [subPropertyName, subPropertyDefinition] of Object.entries(
-            propertyDefinition.schema.properties as Record<string, OpenAPIV3.SchemaObject>,
+            (propertyDefinition.schema.properties ?? {}) as Record<string, OpenAPIV3.SchemaObject>,
           )) {
             if (propertyValue[subPropertyName]) {
               continue;

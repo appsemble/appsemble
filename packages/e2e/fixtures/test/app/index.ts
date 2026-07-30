@@ -106,7 +106,7 @@ export const test = base.extend<AppFixtures>({
       const response = await request.post('/api/apps', {
         multipart: formData,
       });
-      expect(response.status()).toBe(201);
+      expect(response.status(), await response.text()).toBe(201);
 
       const app = (await response.json()) as App;
 

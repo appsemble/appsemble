@@ -206,6 +206,16 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           options: {
             transpileOnly: true,
             configFile,
+            // In transpileOnly mode ts-loader compiles each file with ts.transpileModule, which
+            // cannot read package.json to detect the module format. Under the repo's `NodeNext`
+            // setting it then emits CommonJS `require()` calls, which webpack cannot tree-shake, so
+            // a single named import from a barrel package like @appsemble/utils drags in the whole
+            // dependency tree. Emitting ES modules keeps imports statically analysable and
+            // tree-shakable.
+            compilerOptions: {
+              module: 'esnext',
+              moduleResolution: 'bundler',
+            },
           },
         },
         {

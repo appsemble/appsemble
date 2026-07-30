@@ -3,6 +3,7 @@ import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../../models/index.js';
+import { touchApp } from '../../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 
 export async function deleteAppOAuth2Secret(ctx: Context): Promise<void> {
@@ -23,4 +24,5 @@ export async function deleteAppOAuth2Secret(ctx: Context): Promise<void> {
   });
 
   await appOAuth2Secret.destroy();
+  await touchApp(appId);
 }

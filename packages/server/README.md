@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.37.0/config/assets/logo.svg) Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.37.3/config/assets/logo.svg) Appsemble Server
 
 > The official Appsemble Docker image
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.37.0/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.37.0)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.37.3/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.37.3)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -54,6 +54,7 @@ passed as a command line parameter instead, if desired.
 | `VALKEY_USERNAME`               | `default`    | The username to use to login to the Valkey server.                                                                     |
 | `VALKEY_PASSWORD`               |              | The password to use to login to the Valkey server.                                                                     |
 | `VALKEY_TLS`                    | `false`      | Use TLS when connecting to the Valkey server.                                                                          |
+| `APP_SERVING_CACHE_TTL`         | `300`        | The TTL in seconds for cached app-serving metadata. Set to `0` to disable the cache.                                   |
 | `SENTRY_DSN`                    |              | The Sentry DSN to use for error reporting. See [Sentry](https://sentry.io) for details.                                |
 | `SENTRY_ENVIRONMENT`            |              | The Sentry environment to send with captured events.                                                                   |
 | `SENTRY_TRACES_SAMPLE_RATE`     | `0.2`        | The Sentry trace sampling rate between 0 and 1.                                                                        |
@@ -201,5 +202,5 @@ With the Stripe CLI you can expose an endpoint on your machine that will receive
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.37.0/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.37.3/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

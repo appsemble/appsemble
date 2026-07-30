@@ -8,7 +8,7 @@
     {
       "description": "Track the 'mermaid svgs' job's mcr.microsoft.com/playwright image tag against the root @playwright/test npm version (the e2e job's image is pinned separately to @appsemble/e2e and kept in sync manually)",
       "customType": "regex",
-      "fileMatch": ["^\\.gitlab-ci\\.yml$"],
+      "managerFilePatterns": ["/^\\.gitlab-ci\\.yml$/"],
       "matchStrings": [
         "mermaid svgs:[\\s\\S]*?mcr\\.microsoft\\.com/playwright:v(?<currentValue>\\d+\\.\\d+\\.\\d+)-noble"
       ],

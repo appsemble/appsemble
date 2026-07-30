@@ -18,9 +18,24 @@ const replaysSessionSampleRate = 0.02;
 const replaysOnErrorSampleRate = 1;
 
 /**
- * Drop requests the browser never managed to send, such as those cancelled by going offline, by
- * closing the tab, or by a content blocker. They carry no response and no server involvement, so
- * they say nothing about the application.
+ * A request the browser never completed: cancelled by going offline, by navigating away or closing
+ * the tab, or by a content blocker. It carries no response and no server involvement, so it says
+ * nothing about the application.
+ *
+ * @param error The error to inspect.
+ * @returns Whether the error is a transient, non-actionable request failure.
+ */
+function isTransientRequestError(error: unknown): boolean {
+  return (
+    isAxiosError(error) &&
+    (error.code === AxiosError.ERR_NETWORK || error.code === AxiosError.ERR_CANCELED)
+  );
+}
+
+/**
+ * Drop events that do not point at an application fault: transient request failures (see
+ * {@link isTransientRequestError}) and dialogs the user closed. Actions rethrow their failure
+ * wrapped in an `ActionError`, so the underlying cause is unwrapped as well.
  *
  * @param event The Sentry event about to be sent.
  * @param hint Metadata about the event, including the error that caused it.
@@ -28,7 +43,22 @@ const replaysOnErrorSampleRate = 1;
  */
 export function discardNetworkErrors(event: ErrorEvent, hint: EventHint): ErrorEvent | null {
   const error = hint.originalException;
-  return isAxiosError(error) && error.code === AxiosError.ERR_NETWORK ? null : event;
+  const cause = (error as { cause?: unknown } | null | undefined)?.cause;
+  if (isTransientRequestError(error) || isTransientRequestError(cause)) {
+    return null;
+  }
+  // Closing a dialog rejects its action with no underlying cause; that is a user cancellation, not
+  // a fault. The action layer wraps it in an ActionError. Scope this to dialog actions so a
+  // non-dialog action that rejects without a value is still reported. (web-utils cannot import
+  // ActionError, so match by its name convention.)
+  if (
+    error instanceof Error &&
+    error.name.startsWith('ActionError(dialog') &&
+    error.cause == null
+  ) {
+    return null;
+  }
+  return event;
 }
 
 export function setupSentry(dsn?: string, environment?: string): void {

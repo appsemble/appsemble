@@ -1,7 +1,7 @@
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import { useEffect, useState } from 'preact/hooks';
 
-bootstrap(({ actions, events, pageParameters, parameters: { height, width }, ready }) => {
+bootstrap(({ actions, events, pageParameters, parameters: { height, width }, ready, utils }) => {
   const [fileSrc, setFileSrc] = useState<string>('');
   const [error, setError] = useState(false);
 
@@ -22,13 +22,18 @@ bootstrap(({ actions, events, pageParameters, parameters: { height, width }, rea
       try {
         const result = await actions.onLoad({ ...pageParameters, ...d });
         createBlobUrl(result);
-      } catch {
+      } catch (caughtError) {
+        // The block was unmounted mid-load, e.g. by switching tabs. The load was cancelled, not
+        // failed, so there is nothing to report.
+        if (utils.isActionOwnerAbortError(caughtError)) {
+          return;
+        }
         setError(true);
         setFileSrc('');
       }
     }
     loadData();
-  }, [actions]);
+  }, [actions, utils]);
 
   useEffect(() => {
     const onData = (newData: any, newError: unknown): void => {

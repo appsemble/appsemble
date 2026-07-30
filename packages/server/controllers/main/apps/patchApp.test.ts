@@ -1,5 +1,5 @@
 import { type ResourceDefinition } from '@appsemble/lang-sdk';
-import { createFormData } from '@appsemble/node-utils';
+import { createFixtureStream, createFormData } from '@appsemble/node-utils';
 import {
   type App as AppType,
   PredefinedOrganizationRole,
@@ -215,6 +215,34 @@ describe('patchApp', () => {
         },
       ],
     });
+  });
+
+  it('should reject a non-string yaml field with a 400', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    authorizeStudio();
+    // A yaml part uploaded as a file arrives as a non-string in the request body.
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ yaml: createFixtureStream('10x50.png') }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "The yaml field must be a string",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should update the supportedLanguages of an app', async () => {

@@ -1,7 +1,7 @@
 # Page
 
 An app is made up of one or more pages, which contain blocks that make up the content of the actual
-app. There are more options that you can use for a page definition to further customise the user's
+app. There are more options that you can use for a page definition to further customize the user's
 experience, however.
 
 As an example, here is a diagram of how the [Person app](https://appsemble.app/en/apps/3/person) is
@@ -42,7 +42,7 @@ graph TD
   order of the blocks defined in the page definition determine in which order the blocks get
   rendered on the page.
 
-This is esentially a summary of the
+This is essentially a summary of the
 [page definition reference](../reference/app.mdx#-page-definition). If any of this does not make
 sense, you can look at the reference for more information.
 
@@ -68,7 +68,8 @@ There are a couple of options available to change how the page is shown in the n
 - **hideNavTitle**: Whether or not the page should be displayed in navigational menus. False by
   default
 - **navigation**: The type of navigation menu displayed on the page. Overrides the app default. This
-  can be `left-menu`, `bottom` or `hidden`.
+  can be `left-menu`, `bottom`, `top` or `hidden`. Top navigation is displayed in the title bar.
+  When the title bar is hidden, top navigation is displayed as side navigation.
 
 ## Security
 

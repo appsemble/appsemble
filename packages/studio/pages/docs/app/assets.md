@@ -29,10 +29,10 @@ Assets can typically be used for 2 use cases:
 
 ## Image delivery
 
-Uploaded asset binaries remain unchanged in storage. Public image requests return cached AVIF
-derivatives: a resized AVIF when a smaller width and height are requested, otherwise a full-size
-AVIF. The original upload stays available for Studio downloads, export and future reprocessing when
-that is needed.
+Uploaded asset binaries remain unchanged in storage. Public image requests return cached derivatives
+encoded as JPEG, or WebP when the source has transparency: a resized derivative when a smaller width
+and height are requested, otherwise the image capped to 1024px on its longest edge. The original
+upload stays available for Studio downloads, export and future reprocessing when that is needed.
 
 ## Resources
 

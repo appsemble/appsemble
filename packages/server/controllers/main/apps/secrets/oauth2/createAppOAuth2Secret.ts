@@ -4,6 +4,7 @@ import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../../models/index.js';
+import { touchApp } from '../../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
 import {
@@ -48,5 +49,6 @@ export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
 
   const { AppOAuth2Secret } = await getAppDB(appId);
   const { id } = await AppOAuth2Secret.create(normalizedBody);
+  await touchApp(appId);
   ctx.body = { ...normalizedBody, id };
 }

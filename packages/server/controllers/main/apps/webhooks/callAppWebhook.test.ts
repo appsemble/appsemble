@@ -154,6 +154,31 @@ describe('callAppWebhook', () => {
               },
             },
           },
+          submitNestedFiles: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['itemId', 'metadata'],
+              properties: {
+                itemId: { type: 'number' },
+                metadata: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['attachment', 'category', 'count', 'image', 'reference'],
+                  properties: {
+                    attachment: { type: 'string', format: 'binary' },
+                    category: { type: 'string' },
+                    count: { type: 'number' },
+                    image: { type: 'string', format: 'binary' },
+                    reference: { type: 'string' },
+                  },
+                },
+              },
+            },
+            action: {
+              type: 'noop',
+            },
+          },
         },
       },
     });
@@ -265,32 +290,12 @@ describe('callAppWebhook', () => {
                     "type": "string",
                   },
                   "pdf": {
-                    "properties": {
-                      "filename": {
-                        "type": "string",
-                      },
-                      "mime": {
-                        "type": "string",
-                      },
-                      "path": {
-                        "type": "string",
-                      },
-                    },
-                    "type": "object",
+                    "format": "binary",
+                    "type": "string",
                   },
                   "xml": {
-                    "properties": {
-                      "filename": {
-                        "type": "string",
-                      },
-                      "mime": {
-                        "type": "string",
-                      },
-                      "path": {
-                        "type": "string",
-                      },
-                    },
-                    "type": "object",
+                    "format": "binary",
+                    "type": "string",
                   },
                 },
                 "required": [
@@ -327,31 +332,19 @@ describe('callAppWebhook', () => {
         "data": {
           "errors": [
             {
-              "argument": [
-                "object",
-              ],
+              "argument": "binary",
               "instance": "sample.pdf",
-              "message": "is not of a type(s) object",
-              "name": "type",
+              "message": "does not conform to the "binary" format",
+              "name": "format",
               "path": [
                 "pdf",
               ],
               "property": "instance.pdf",
               "schema": {
-                "properties": {
-                  "filename": {
-                    "type": "string",
-                  },
-                  "mime": {
-                    "type": "string",
-                  },
-                  "path": {
-                    "type": "string",
-                  },
-                },
-                "type": "object",
+                "format": "binary",
+                "type": "string",
               },
-              "stack": "instance.pdf is not of a type(s) object",
+              "stack": "instance.pdf does not conform to the "binary" format",
             },
           ],
         },
@@ -468,6 +461,45 @@ describe('callAppWebhook', () => {
         xml: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
       }),
     );
+  });
+
+  it('should handle webhook calls with nested files', async () => {
+    const res = await request.post(
+      `/api/apps/${app.id}/webhooks/submitNestedFiles`,
+      createFormData({
+        assets: [createFixtureStream('sample.pdf'), createFixtureStream('10x50.png')],
+        resource: {
+          itemId: 123,
+          metadata: {
+            attachment: '0',
+            category: 'Example category',
+            count: 10,
+            image: '1',
+            reference: '0',
+          },
+        },
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.data).toStrictEqual({
+      itemId: 123,
+      metadata: {
+        attachment: expect.objectContaining({
+          filename: expect.any(String),
+          mime: expect.any(String),
+          path: expect.any(String),
+        }),
+        category: 'Example category',
+        count: 10,
+        image: expect.objectContaining({
+          filename: expect.any(String),
+          mime: expect.any(String),
+          path: expect.any(String),
+        }),
+        reference: '0',
+      },
+    });
   });
 });
 

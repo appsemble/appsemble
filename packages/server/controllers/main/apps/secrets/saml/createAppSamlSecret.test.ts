@@ -2,7 +2,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, Organization, OrganizationMember } from '../../../../../models/index.js';
+import { App, getDB, Organization, OrganizationMember } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
@@ -55,6 +55,11 @@ describe('createAppSamlSecret', () => {
 
   it('should generate SAML parameters', async () => {
     authorizeStudio();
+    await getDB().query('UPDATE "App" SET "updated" = :updated WHERE "id" = :appId', {
+      replacements: { appId: app.id, updated: new Date(-1000) },
+    });
+    await app.reload();
+    const previousUpdated = app.updated;
     const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
@@ -81,6 +86,8 @@ describe('createAppSamlSecret', () => {
       }
     `,
     );
+    await app.reload();
+    expect(app.updated.getTime()).toBeGreaterThan(previousUpdated.getTime());
   });
 
   it('should not throw status 404 for unknown apps', async () => {

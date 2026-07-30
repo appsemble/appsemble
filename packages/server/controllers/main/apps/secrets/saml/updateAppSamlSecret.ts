@@ -5,6 +5,7 @@ import { type Context } from 'koa';
 
 import { DEFAULT_SAML_EMAIL_ATTRIBUTE } from '../../../../../models/apps/AppSamlSecret.js';
 import { App, getAppDB } from '../../../../../models/index.js';
+import { touchApp } from '../../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
 import {
@@ -59,4 +60,5 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
     groupAttribute: groupAttribute ?? null,
     roleMappings: roleMappings ?? null,
   });
+  await touchApp(appId);
 }

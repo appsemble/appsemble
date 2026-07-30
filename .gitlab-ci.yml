@@ -1,5 +1,11 @@
 default:
   image: node:24-trixie-slim
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - scheduler_failure
+      - api_failure
 
 stages:
   - security
@@ -181,7 +187,8 @@ npm_ci:
       - '**/node_modules'
     expire_in: 1 day
   script:
-    - npm ci
+    # ponytail: retry to survive transient prebuild-install/registry download timeouts (e.g. keytar)
+    - npm ci || npm ci || npm ci
 
 # Build the Docker image.
 build docker image:
@@ -422,7 +429,7 @@ test node:
   services:
     - name: postgres:17
       alias: postgres
-    - name: valkey/valkey:9.0.2
+    - name: valkey/valkey:9.1.1
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: minio/minio:latest
@@ -636,7 +643,7 @@ e2e node:
       variables:
         MINIO_ROOT_USER: admin
         MINIO_ROOT_PASSWORD: password
-    - name: valkey/valkey:9.0.2
+    - name: valkey/valkey:9.1.1
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
@@ -1106,6 +1113,8 @@ update dependencies:
     on_stop: stop review
   variables:
     GIT_STRATEGY: fetch
+    # Matches the chart default global.postgresql.auth.username.
+    POSTGRES_APP_USER: appsemble
   retry:
     max: 1
     when:
@@ -1122,6 +1131,13 @@ update dependencies:
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-valkey --from-literal "password=$(openssl rand -base64 30)"
+    # PgBouncer setup, auth file generation
+    - |
+      POSTGRES_PASSWORD="$(kubectl get secret postgresql-secret -o jsonpath='{.data.password}' | base64 -d)"
+
+      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
+    - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt
+    - rm pgbouncer-userlist.txt
     # Stripe webhook setup
     - |
       STRIPE_RELEASE_URL=$(curl -fsSL -H 'User-Agent: appsemble-ci' \
@@ -1205,6 +1221,8 @@ update dependencies:
       --set "valkey.resources.limits.cpu=250m"
       --set "valkey.resources.limits.memory=128Mi"
       --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
+      --set "pgbouncer.enabled=true"
+      --set "pgbouncer.auth.existingSecret=review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist"
       --set "backups.enabled=false"
 
 review:
@@ -1256,6 +1274,8 @@ staging:
     url: https://appsemble.eu
   variables:
     GIT_STRATEGY: none
+    # Matches the chart default global.postgresql.auth.username.
+    POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
     # This is the only way to make sure staging can be overwritten
@@ -1272,6 +1292,13 @@ staging:
     - '[ -n "$STAGING_BACKUPS_HOST" ] || { echo "Please set STAGING_BACKUPS_HOST for staging backup destination" >&2; exit 1; }'
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
+    # PgBouncer auth file, generated from the PostgreSQL user password
+    - |
+      POSTGRES_PASSWORD="$(kubectl get secret postgresql-secret -o jsonpath='{.data.password}' | base64 -d)"
+
+      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
+    - kubectl create secret generic staging-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
+    - rm pgbouncer-userlist.txt
     - helm install staging ./public/appsemble-*.tgz
       --atomic
       --timeout 30m0s
@@ -1329,6 +1356,8 @@ staging:
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "valkey.fullnameOverride=staging-valkey"
       --set "valkey.auth.usersExistingSecret=valkey"
+      --set "pgbouncer.enabled=true"
+      --set "pgbouncer.auth.existingSecret=staging-pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=50m"
       --set "valkey.resources.requests.memory=64Mi"
       --set "valkey.resources.limits.cpu=500m"
@@ -1357,6 +1386,8 @@ production:
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
+    # Matches the chart default global.postgresql.auth.username.
+    POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:production"
     - kubectl config set-context --current --namespace default
@@ -1390,7 +1421,31 @@ production:
     - rm mailpit.key mailpit.crt
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
+    # PgBouncer auth file, generated from the PostgreSQL user password
+    - |
+      POSTGRES_PASSWORD="$(kubectl get secret "$POSTGRESQL_SECRET" -o jsonpath='{.data.password}' | base64 -d)"
+
+      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
+    - kubectl create secret generic pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
+    - rm pgbouncer-userlist.txt
     - kubectl rollout restart deployment appsemble-mailpit || true
+    # PostgreSQL performance tuning for the 2Gi production container, applied
+    # through the bitnami subchart's extendedConfiguration (override.conf).
+    # shared_buffers is ~25% of the container limit; work_mem is raised to cut
+    # temp-file spilling on sorts/hashes across the many per-app databases; and
+    # effective_cache_size reflects the real cgroup budget rather than the
+    # subchart default of 4GB. The shared_preload_libraries and pg_stat_statements
+    # settings match the chart default so pgaudit and pg_stat_statements keep
+    # working; extendedConfiguration is a single value, so it is set in full here.
+    - |
+      cat > postgresql-tuning.conf <<'EOF'
+      shared_preload_libraries = 'pgaudit,pg_stat_statements'
+      pg_stat_statements.max = 10000
+      pg_stat_statements.track = all
+      shared_buffers = 512MB
+      effective_cache_size = 1536MB
+      work_mem = 16MB
+      EOF
     - helm upgrade appsemble appsemble/appsemble
       --debug
       --timeout 30m
@@ -1421,8 +1476,11 @@ production:
       --set "postgresql.primary.resources.requests.memory=1Gi"
       --set "postgresql.primary.resources.limits.cpu=1"
       --set "postgresql.primary.resources.limits.memory=2Gi"
+      --set-file "postgresql.primary.extendedConfiguration=postgresql-tuning.conf"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
+      --set "replicaCount=2"
+      --set "prometheusRule.enabled=true"
       --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
       --set "sentry.environment=production"
       --set "sentry.secret=sentry"
@@ -1437,6 +1495,8 @@ production:
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "valkey.fullnameOverride=appsemble-valkey"
       --set "valkey.auth.usersExistingSecret=valkey"
+      --set "pgbouncer.enabled=true"
+      --set "pgbouncer.auth.existingSecret=pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=100m"
       --set "valkey.resources.requests.memory=128Mi"
       --set "valkey.resources.limits.cpu=1"

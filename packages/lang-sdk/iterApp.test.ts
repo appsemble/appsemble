@@ -373,6 +373,26 @@ describe('iterPage', () => {
     expect(result).toBe(false);
   });
 
+  it('should tolerate sparse typed pages when iterating blocks', () => {
+    const onBlockList = vi.fn();
+    const onPage = vi.fn();
+
+    for (const page of [
+      { name: 'Flow Page', type: 'flow' },
+      { name: 'Loop Page', type: 'loop' },
+      { name: 'Container Page', type: 'container' },
+      { name: 'Basic Page' },
+    ] as unknown as PageDefinition[]) {
+      expect(() => iterPage(page, { onBlockList, onPage })).not.toThrow();
+    }
+
+    expect(onPage).toHaveBeenCalledTimes(4);
+    expect(onBlockList).toHaveBeenCalledWith([], ['steps.first', 'blocks']);
+    expect(onBlockList).toHaveBeenCalledWith([], ['steps', 'blocks']);
+    expect(onBlockList).toHaveBeenCalledWith([], ['steps.last', 'blocks']);
+    expect(onBlockList).toHaveBeenCalledWith([], ['blocks']);
+  });
+
   it('should iterate a tabs page', () => {
     const onBlockList = vi.fn();
     const onPage = vi.fn();

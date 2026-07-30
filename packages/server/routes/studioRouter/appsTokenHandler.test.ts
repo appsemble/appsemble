@@ -785,10 +785,10 @@ describe('appsTokenHandler', () => {
       });
     });
 
-    it('should invalidate a refresh token after use', async () => {
+    it('should reject duplicate body-provided refresh token use', async () => {
       const token = await createStoredRefreshToken(appId);
 
-      const firstResponse = await request.post(
+      const firstResponse = await request.post<TokenResponse>(
         tokenEndpoint,
         new URLSearchParams({
           grant_type: 'refresh_token',
@@ -798,6 +798,9 @@ describe('appsTokenHandler', () => {
       );
       expect(firstResponse).toMatchObject({
         status: 200,
+        data: {
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
       });
 
       const secondResponse = await request.post(
@@ -807,6 +810,71 @@ describe('appsTokenHandler', () => {
           refresh_token: token,
           scope: 'resources:manage',
         }),
+      );
+      expect(secondResponse).toMatchObject({
+        status: 400,
+        data: {
+          error: 'invalid_grant',
+        },
+      });
+    });
+
+    it('should tolerate immediate duplicate signed cookie refresh token use', async () => {
+      const { app, response: loginResponse } = await createAuthorizationCodeTokenResponse();
+      const cookie = getCookieHeader(loginResponse);
+
+      const firstResponse = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+        }),
+        { headers: { cookie } },
+      );
+      expect(firstResponse).toMatchObject({
+        status: 200,
+        data: {
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      });
+
+      const secondResponse = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+        }),
+        { headers: { cookie } },
+      );
+      expect(secondResponse).toMatchObject({
+        status: 200,
+        data: {
+          refresh_token: firstResponse.data.refresh_token,
+        },
+      });
+    });
+
+    it('should reject a used signed cookie refresh token after the replay grace period', async () => {
+      const { app, response: loginResponse } = await createAuthorizationCodeTokenResponse();
+      const cookie = getCookieHeader(loginResponse);
+
+      const firstResponse = await request.post(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+        }),
+        { headers: { cookie } },
+      );
+      expect(firstResponse).toMatchObject({
+        status: 200,
+      });
+
+      vi.setSystemTime(new Date('2000-01-01T00:00:31Z'));
+
+      const secondResponse = await request.post(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+        }),
+        { headers: { cookie } },
       );
       expect(secondResponse).toMatchObject({
         status: 400,
@@ -918,6 +986,106 @@ describe('appsTokenHandler', () => {
         }),
       );
       expect(refreshResponse).toMatchObject({
+        status: 400,
+        data: {
+          error: 'invalid_grant',
+        },
+      });
+    });
+
+    it('should not revoke the current session using a previously used refresh token', async () => {
+      const token = await createStoredRefreshToken(appId);
+
+      const firstRefreshResponse = await request.post<TokenResponse>(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: token,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(firstRefreshResponse).toMatchObject({
+        status: 200,
+        data: {
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      });
+      const nextToken = firstRefreshResponse.data.refresh_token;
+      if (!nextToken) {
+        throw new Error('Missing refresh token');
+      }
+
+      const revokeResponse = await request.post(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'revoke_token',
+          refresh_token: token,
+        }),
+      );
+      expect(revokeResponse).toMatchObject({
+        status: 200,
+        data: {},
+      });
+
+      const secondRefreshResponse = await request.post<TokenResponse>(
+        tokenEndpoint,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: nextToken,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(secondRefreshResponse).toMatchObject({
+        status: 200,
+        data: {
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      });
+    });
+
+    it('should revoke the current session using a recently used signed refresh token cookie', async () => {
+      const { app, response: loginResponse } = await createAuthorizationCodeTokenResponse();
+      const cookie = getCookieHeader(loginResponse);
+
+      const refreshResponse = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+        }),
+        { headers: { cookie } },
+      );
+      expect(refreshResponse).toMatchObject({
+        status: 200,
+        data: {
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      });
+      const nextToken = refreshResponse.data.refresh_token;
+      if (!nextToken) {
+        throw new Error('Missing refresh token');
+      }
+
+      const revokeResponse = await request.post(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          grant_type: 'revoke_token',
+        }),
+        { headers: { cookie } },
+      );
+      expect(revokeResponse).toMatchObject({
+        status: 200,
+        data: {},
+      });
+
+      const secondRefreshResponse = await request.post(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: nextToken,
+          scope: 'resources:manage',
+        }),
+      );
+      expect(secondRefreshResponse).toMatchObject({
         status: 400,
         data: {
           error: 'invalid_grant',
