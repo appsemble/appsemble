@@ -9,7 +9,7 @@ import {
 import { AppsembleError, throwKoaError } from '@appsemble/node-utils';
 import { type Schema, Validator } from 'jsonschema';
 import { type Context } from 'koa';
-import { type Sequelize, UniqueConstraintError, type Transaction } from 'sequelize';
+import { QueryTypes, type Sequelize, UniqueConstraintError, type Transaction } from 'sequelize';
 
 import { getAppDB } from '../models/index.js';
 import { resourcePartitionName } from './resourcePartition.js';
@@ -32,11 +32,51 @@ async function ensureResourcePartition(
   resourceType: string,
   transaction?: Transaction,
 ): Promise<void> {
+  const partition = resourcePartitionName(resourceType);
+  const [{ exists }] = await sequelize.query<{ exists: boolean }>(
+    `SELECT to_regclass('"${partition}"') IS NOT NULL AS exists`,
+    { type: QueryTypes.SELECT, transaction },
+  );
+  if (exists) {
+    return;
+  }
+
+  const [{ hasDefaultRows }] = await sequelize.query<{ hasDefaultRows: boolean }>(
+    `SELECT EXISTS (SELECT 1 FROM "resource_default" WHERE type = :type) AS "hasDefaultRows"`,
+    { replacements: { type: resourceType }, type: QueryTypes.SELECT, transaction },
+  );
+
+  if (!hasDefaultRows) {
+    await sequelize.query(
+      `CREATE TABLE "${partition}" PARTITION OF "Resource" FOR VALUES IN (:type)`,
+      { replacements: { type: resourceType }, transaction },
+    );
+    return;
+  }
+
+  // The default partition already holds rows of this type (created before this partition existed);
+  // detach it, claim the type's rows into a dedicated partition, then reattach the default.
+  await sequelize.query('ALTER TABLE "Resource" DETACH PARTITION "resource_default"', {
+    transaction,
+  });
   await sequelize.query(
-    `CREATE TABLE IF NOT EXISTS "${resourcePartitionName(resourceType)}"
-       PARTITION OF "Resource" FOR VALUES IN (:type)`,
+    `CREATE TABLE "${partition}" PARTITION OF "Resource" FOR VALUES IN (:type)`,
+    {
+      replacements: { type: resourceType },
+      transaction,
+    },
+  );
+  await sequelize.query(
+    `INSERT INTO "${partition}" SELECT * FROM "resource_default" WHERE type = :type`,
     { replacements: { type: resourceType }, transaction },
   );
+  await sequelize.query('DELETE FROM "resource_default" WHERE type = :type', {
+    replacements: { type: resourceType },
+    transaction,
+  });
+  await sequelize.query('ALTER TABLE "Resource" ATTACH PARTITION "resource_default" DEFAULT', {
+    transaction,
+  });
 }
 
 function formatFields(fields: string[]): string {
