@@ -12,12 +12,15 @@ const SLUG_MAX = 63 - PREFIX.length - 1 - HASH_LEN;
  * original type is always appended so distinct types never collide — even when their sanitized slugs
  * are equal (e.g. `my-type` and `my_type`) or empty (non-ASCII types) — and so a generated partition
  * never shadows a fixed table such as `Resource` or `ResourceTable`.
+ *
+ * @param type The resource type.
+ * @returns The physical partition table name.
  */
 export function resourcePartitionName(type: string): string {
   const slug = type
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')
+    .replaceAll(/[^\da-z]+/g, '_')
+    .replaceAll(/^_+|_+$/g, '')
     .slice(0, SLUG_MAX);
   const hash = createHash('sha1').update(type, 'utf8').digest('hex').slice(0, HASH_LEN);
   return `${PREFIX}${slug}_${hash}`;

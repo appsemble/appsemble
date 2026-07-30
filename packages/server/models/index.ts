@@ -112,6 +112,7 @@ import { User } from './main/User.js';
 import { migrations } from '../migrations/apps/index.js';
 import { argv } from '../utils/argv.js';
 import { decrypt } from '../utils/crypto.js';
+import { dropAllTablesWithPartitions } from '../utils/dropAllTablesWithPartitions.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError, logSQL } from '../utils/sqlUtils.js';
 
@@ -631,7 +632,7 @@ export async function dropAndCloseAllAppDBs(): Promise<void> {
     await Promise.all(
       appDBsToClose.map(async ({ sequelize }) => {
         try {
-          await sequelize.getQueryInterface().dropAllTables();
+          await dropAllTablesWithPartitions(sequelize);
           await sequelize.close();
         } catch (error) {
           logger.error(error as Error);

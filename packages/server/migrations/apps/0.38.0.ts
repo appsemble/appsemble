@@ -7,8 +7,11 @@ export const key = '0.38.0';
 /**
  * Summary:
  * - Convert the single `Resource` table into a LIST-partitioned table on `type` (one partition per
- *   resource type), with a composite primary key `(id, type)`. Existing rows are copied into their
- *   type partition; the global id sequence is preserved.
+ * resource type), with a composite primary key `(id, type)`. Existing rows are copied into their
+ * type partition; the global id sequence is preserved.
+ *
+ * @param transaction Sequelize transaction
+ * @param db The Sequelize Database.
  */
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const [existing] = await db.query<{ relkind: string }>(
@@ -44,7 +47,9 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
   // Catch-all partition so resources of a type without a dedicated partition are still storable.
   // Dedicated per-type partitions are created ahead of their data when the app definition is synced.
-  await db.query('CREATE TABLE "resource_default" PARTITION OF "Resource" DEFAULT', { transaction });
+  await db.query('CREATE TABLE "resource_default" PARTITION OF "Resource" DEFAULT', {
+    transaction,
+  });
 
   await db.query('INSERT INTO "Resource" SELECT * FROM "Resource_old"', { transaction });
 
@@ -77,7 +82,9 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
   // A GIN index on the JSONB payload, on the parent so every partition inherits it. Created after
   // dropping the old table so the reused index name is free.
-  await db.query('CREATE INDEX "resourceDataIndex" ON "Resource" USING GIN (data)', { transaction });
+  await db.query('CREATE INDEX "resourceDataIndex" ON "Resource" USING GIN (data)', {
+    transaction,
+  });
 
   await db.query(
     `ALTER TABLE "Asset" ADD CONSTRAINT "Asset_Resource_fkey"

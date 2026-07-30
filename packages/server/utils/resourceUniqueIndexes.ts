@@ -22,6 +22,10 @@ type SqlLiteralValue = boolean | Date | number | string;
  *
  * Created before any of the type's rows are written, so resources route to their own partition and
  * per-partition unique indexes carry predictable, resolvable names. Idempotent.
+ *
+ * @param sequelize The app database connection.
+ * @param resourceType The resource type whose partition to ensure.
+ * @param transaction The surrounding transaction, if any.
  */
 async function ensureResourcePartition(
   sequelize: Sequelize,
@@ -235,7 +239,8 @@ export function getResourceUniqueIndexName(
       `${resourceType}:${normalizedFields
         .map((field) => {
           const propertySchema = resourceDefinition?.schema.properties?.[field] as
-            Record<string, any> | undefined;
+            | Record<string, any>
+            | undefined;
 
           return `${field}:${inferResourceUniqueFieldType(propertySchema) || 'unknown'}`;
         })
@@ -330,7 +335,8 @@ function getDatabaseErrorField(error: unknown, field: 'code' | 'detail'): string
 
 function isResourceUniqueConstraintValueErrorLike(error: unknown): boolean {
   const candidate = error as
-    { message?: string; original?: { code?: string }; parent?: { code?: string } } | undefined;
+    | { message?: string; original?: { code?: string }; parent?: { code?: string } }
+    | undefined;
   const originalCode = getDatabaseErrorField(candidate?.original, 'code');
   const parentCode = getDatabaseErrorField(candidate?.parent, 'code');
 
@@ -356,7 +362,8 @@ function getResourceUniqueConstraintValueError(
       (candidateField) =>
         inferResourceUniqueFieldType(
           getUniqueFieldSchema(resourceDefinition, candidateField) as
-            Record<string, any> | undefined,
+            | Record<string, any>
+            | undefined,
         ) !== 'string',
     ) ?? fields[0];
 

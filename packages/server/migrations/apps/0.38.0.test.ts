@@ -22,6 +22,8 @@ async function seedApp(): Promise<number> {
  * The migration is registered, so `getAppDB` already partitions the database; dropping it back to a
  * plain `Resource` table lets these tests exercise the actual data-migration path a production backup
  * will hit. `up()` recreates the table with `LIKE`, so only the columns it copies need to exist here.
+ *
+ * @param sequelize The app database connection.
  */
 async function regressToSingleTable(sequelize: Sequelize): Promise<void> {
   await sequelize.query('DROP TABLE IF EXISTS "Resource" CASCADE');

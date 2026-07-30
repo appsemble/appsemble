@@ -42,23 +42,6 @@ expect.extend({ toMatchImageSnapshot });
 
 let testDB: Sequelize;
 
-/**
- * Drop every per-app database from the server.
- *
- * `dropAndCloseAllAppDBs` clears tables through Sequelize, which cannot tear down a partitioned
- * resource schema (the composite foreign keys to the partitioned parent are inherited constraints).
- * Dropping the databases outright — with FORCE, in case a failed table teardown left a connection
- * open — guarantees a clean slate; `initAppDB` recreates each one from the template on demand.
- */
-async function dropAllAppDatabases(): Promise<void> {
-  const [rows] = (await testDB.query(
-    `SELECT datname FROM pg_database WHERE datname LIKE 'app-%'`,
-  )) as [{ datname: string }[], unknown];
-  for (const { datname } of rows) {
-    await testDB.query(`DROP DATABASE IF EXISTS "${datname}" WITH (FORCE)`);
-  }
-}
-
 beforeAll(async () => {
   [testDB] = await setupTestDatabase(randomUUID());
   await testDB.sync();
@@ -80,7 +63,6 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await dropAndCloseAllAppDBs();
-  await dropAllAppDatabases();
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
   vi.useRealTimers();
   await clearAllS3Buckets();

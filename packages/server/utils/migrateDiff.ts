@@ -5,6 +5,8 @@ import { diffString } from 'json-diff';
 import { isEqual as deepEquals } from 'lodash-es';
 import { type Sequelize } from 'sequelize';
 
+import { dropAllTablesWithPartitions } from './dropAllTablesWithPartitions.js';
+
 const { extractSchemas } = extractPgSchema;
 
 interface Schema {
@@ -14,7 +16,7 @@ interface Schema {
 
 export async function apply(db: Sequelize, name: string, fn: () => Promise<void>): Promise<Schema> {
   logger.info('Dropping database');
-  await db.getQueryInterface().dropAllTables();
+  await dropAllTablesWithPartitions(db);
   logger.info(`Creating database using ${name}`);
   await fn();
   logger.info('Taking schema from database');

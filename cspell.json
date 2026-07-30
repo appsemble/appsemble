@@ -209,6 +209,9 @@
     "xffyo",
     "synthesised",
     "capabilities",
-    "Ftraining"
+    "Ftraining",
+    "regclass",
+    "relkind",
+    "tableoid"
   ]
 }

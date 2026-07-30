@@ -29,6 +29,7 @@ import {
   getResourceUniqueIndexName,
   syncResourceUniqueIndexes,
 } from '../../../utils/resourceUniqueIndexes.js';
+import { resourcePartitionName } from '../../../utils/resourcePartition.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
 import { createTestDBWithUser } from '../../../utils/test/testSchema.js';
 
@@ -596,7 +597,9 @@ describe('patchApp', () => {
     expect(status).toBe(200);
 
     const { sequelize } = await getAppDB(app.id);
-    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+    const indexes = (await sequelize
+      .getQueryInterface()
+      .showIndex(resourcePartitionName('testResource'))) as {
       name: string;
     }[];
 
@@ -652,7 +655,9 @@ describe('patchApp', () => {
     expect(status).toBe(200);
 
     const { sequelize } = await getAppDB(app.id);
-    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+    const indexes = (await sequelize
+      .getQueryInterface()
+      .showIndex(resourcePartitionName('testResource'))) as {
       name: string;
     }[];
 

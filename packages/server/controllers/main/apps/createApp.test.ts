@@ -30,6 +30,7 @@ import { setArgv } from '../../../utils/argv.js';
 import { findAppMemberByRole } from '../../../utils/appMember.js';
 import { createServer } from '../../../utils/createServer.js';
 import { decrypt } from '../../../utils/crypto.js';
+import { resourcePartitionName } from '../../../utils/resourcePartition.js';
 import { getResourceUniqueIndexName } from '../../../utils/resourceUniqueIndexes.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
 import { createTestDBWithUser } from '../../../utils/test/testSchema.js';
@@ -239,7 +240,9 @@ describe('createApp', () => {
     expect(response.status).toBe(201);
 
     const { sequelize } = await getAppDB(response.data.id!);
-    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+    const indexes = (await sequelize
+      .getQueryInterface()
+      .showIndex(resourcePartitionName('testResource'))) as {
       name: string;
     }[];
 
