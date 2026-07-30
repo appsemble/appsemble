@@ -65,7 +65,7 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
       logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
 
       const demoAssetsToReseed = await Asset.findAll({
-        attributes: ['id', 'mime', 'filename', 'data', 'name', 'ResourceId'],
+        attributes: ['id', 'mime', 'filename', 'data', 'name', 'ResourceId', 'ResourceType'],
         where: { OriginalId: null, seed: true },
       });
 

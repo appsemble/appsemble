@@ -156,6 +156,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
               ...getCompressedFileMeta(asset),
               GroupId: groupId,
               ResourceId,
+              ResourceType: resourceType,
               AppMemberId: appMember?.sub,
             };
           }),
