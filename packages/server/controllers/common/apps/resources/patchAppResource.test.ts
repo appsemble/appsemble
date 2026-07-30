@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+
 import { PredefinedAppRole } from '@appsemble/lang-sdk';
 import * as nodeUtils from '@appsemble/node-utils';
 import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
@@ -710,6 +712,53 @@ describe('patchAppResource', () => {
       assets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
     );
     expect(Buffer.from('Test resource a').equals(assetsData[0])).toBe(true);
+  });
+
+  it('should create reachable ephemeral assets in demo apps', async () => {
+    vi.useRealTimers();
+    await app.update({ demoMode: true });
+
+    const image = await readFile(new URL('../../../../__fixtures__/10x50.png', import.meta.url));
+    const { Asset, Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testAssets',
+      data: {},
+      seed: false,
+      ephemeral: true,
+    });
+    authorizeStudio();
+
+    const response = await request.patch<ResourceType>(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      createFormData({
+        resource: { file: '0', $clonable: true },
+        assets: image,
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    const assetId = String(response.data.file);
+    const asset = await Asset.findByPk(assetId);
+    expect(asset?.toJSON()).toStrictEqual(
+      expect.objectContaining({
+        ResourceId: resource.id,
+        clonable: true,
+        ephemeral: true,
+        mime: 'image/png',
+        seed: false,
+      }),
+    );
+
+    const assetResponse = await request.get(`/api/apps/${app.id}/assets/${assetId}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(assetResponse).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': expect.stringMatching(/^image\/(jpeg|webp)$/),
+      }),
+    });
   });
 
   it('should disallow unused assets', async () => {
