@@ -33,8 +33,17 @@ async function regressToSingleTable(sequelize: Sequelize): Promise<void> {
     id serial PRIMARY KEY,
     type text NOT NULL,
     data jsonb NOT NULL,
+    clonable boolean NOT NULL DEFAULT false,
+    seed boolean NOT NULL DEFAULT false,
+    ephemeral boolean NOT NULL DEFAULT false,
+    expires timestamptz,
+    "Position" numeric,
     created timestamptz NOT NULL DEFAULT now(),
-    updated timestamptz NOT NULL DEFAULT now())`);
+    updated timestamptz NOT NULL DEFAULT now(),
+    deleted timestamptz,
+    "GroupId" integer,
+    "AuthorId" uuid,
+    "EditorId" uuid)`);
 }
 
 describe('migration 0.38.0', () => {

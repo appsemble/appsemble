@@ -1,5 +1,6 @@
 import { QueryTypes, type Sequelize, type Transaction } from 'sequelize';
 
+import { addResourceCompositeForeignKeys } from '../../utils/resourceForeignKeys.js';
 import { resourcePartitionName } from '../../utils/resourcePartition.js';
 
 export const key = '0.38.0';
@@ -31,6 +32,11 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   ).map((row) => row.type);
 
   await db.query('ALTER TABLE "Resource" RENAME TO "Resource_old"', { transaction });
+  // Free the `Resource_pkey` constraint name so the new partitioned table's primary key reuses it.
+  await db.query(
+    'ALTER TABLE "Resource_old" RENAME CONSTRAINT "Resource_pkey" TO "Resource_old_pkey"',
+    { transaction },
+  );
 
   await db.query(
     `CREATE TABLE "Resource" (LIKE "Resource_old" INCLUDING DEFAULTS, PRIMARY KEY (id, type))
@@ -57,7 +63,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   // Asset and ResourceVersion gain a ResourceType column, backfilled from the owning resource;
   // ResourceSubscription already carries the type in its `type` column.
   for (const table of ['Asset', 'ResourceVersion']) {
-    await db.query(`ALTER TABLE "${table}" ADD COLUMN IF NOT EXISTS "ResourceType" text`, {
+    await db.query(`ALTER TABLE "${table}" ADD COLUMN IF NOT EXISTS "ResourceType" VARCHAR(255)`, {
       transaction,
     });
     await db.query(
@@ -85,22 +91,29 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   await db.query('CREATE INDEX "resourceDataIndex" ON "Resource" USING GIN (data)', {
     transaction,
   });
+  await db.query('CREATE INDEX "resourceTypeComposite" ON "Resource" (type, expires, "GroupId")', {
+    transaction,
+  });
 
+  // LIKE does not copy foreign keys, so recreate the Resource-owned references dropped with the old
+  // table (these match what syncing the models produces).
   await db.query(
-    `ALTER TABLE "Asset" ADD CONSTRAINT "Asset_Resource_fkey"
-       FOREIGN KEY ("ResourceId", "ResourceType") REFERENCES "Resource" (id, type) ON DELETE CASCADE`,
+    `ALTER TABLE "Resource" ADD CONSTRAINT "Resource_GroupId_fkey"
+       FOREIGN KEY ("GroupId") REFERENCES "Group" (id) ON UPDATE CASCADE ON DELETE CASCADE`,
     { transaction },
   );
   await db.query(
-    `ALTER TABLE "ResourceVersion" ADD CONSTRAINT "ResourceVersion_Resource_fkey"
-       FOREIGN KEY ("ResourceId", "ResourceType") REFERENCES "Resource" (id, type) ON DELETE CASCADE`,
+    `ALTER TABLE "Resource" ADD CONSTRAINT "Resource_AuthorId_fkey"
+       FOREIGN KEY ("AuthorId") REFERENCES "AppMember" (id) ON UPDATE CASCADE ON DELETE CASCADE`,
     { transaction },
   );
   await db.query(
-    `ALTER TABLE "ResourceSubscription" ADD CONSTRAINT "ResourceSubscription_Resource_fkey"
-       FOREIGN KEY ("ResourceId", "type") REFERENCES "Resource" (id, type) ON DELETE CASCADE`,
+    `ALTER TABLE "Resource" ADD CONSTRAINT "Resource_EditorId_fkey"
+       FOREIGN KEY ("EditorId") REFERENCES "AppMember" (id) ON UPDATE CASCADE ON DELETE CASCADE`,
     { transaction },
   );
+
+  await addResourceCompositeForeignKeys(db, transaction);
 }
 
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
