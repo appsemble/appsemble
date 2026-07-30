@@ -36,7 +36,6 @@ export function createManifestHandler({ getApp, getAppScreenshots }: Options): M
         },
       ]),
       name,
-      orientation: 'any',
       scope: '/',
       screenshots: appScreenshots.map(({ height, id, mime, width }) => ({
         sizes: `${width}x${height}`,
