@@ -1,3 +1,4 @@
+import { type ImageSizeSteps } from '@appsemble/preact-components';
 import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
 import { type MutableRef } from 'preact/hooks';
 
@@ -407,11 +408,13 @@ export interface Image {
   alignment?: 'default' | 'header';
 
   /**
-   * The image is scaled with bulma sizes.
+   * Base size of the image.
+   *
+   * The displayed dimensions are calculated based on the aspect ratio.
    *
    * @default 48
    */
-  size?: 16 | 24 | 32 | 48 | 64 | 96 | 128;
+  size?: 'auto' | number | ImageSizeSteps;
 }
 
 /**

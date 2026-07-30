@@ -24,11 +24,13 @@ function getDevicePixelRatio(): number {
 
 interface ImageComponentProps {
   /**
-   * The image is scaled with bulma sizes.
+   * Base size of the image.
+   *
+   * The displayed dimensions are calculated based on the aspect ratio.
    *
    * @default 48
    */
-  readonly size: 16 | 24 | 32 | 48 | 64 | 96 | 128;
+  readonly size: 'auto' | number | ImageSizeSteps;
 
   /**
    * The aspect ratio the image should be displayed in.
@@ -69,6 +71,8 @@ interface ImageComponentProps {
   readonly openPreview?: boolean;
 }
 
+export type ImageSizeSteps = 16 | 24 | 32 | 48 | 64 | 96 | 128 | 256 | 512;
+
 export function ImageComponent({
   alt,
   aspectRatio = 'square',
@@ -84,9 +88,9 @@ export function ImageComponent({
 
   const imgRef = useRef<HTMLImageElement>();
 
-  let width = size;
-  let height = size;
-  if (aspectRatio !== 'square') {
+  let width = size === 'auto' ? null : size;
+  let height = size === 'auto' ? null : size;
+  if (aspectRatio !== 'square' && size !== 'auto') {
     const [w, h] = aspectRatio.split(':').map(Number);
     if (w > h) {
       width = (w / h) * size;
@@ -94,9 +98,6 @@ export function ImageComponent({
       height = (h / w) * size;
     }
   }
-
-  const requestedWidth = Math.ceil(width * getDevicePixelRatio());
-  const requestedHeight = Math.ceil(height * getDevicePixelRatio());
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -154,7 +155,9 @@ export function ImageComponent({
                 src={
                   isVisible
                     ? /\/api\/apps\/\d+\/assets\//.test(src)
-                      ? `${src}${src.includes('?') ? '&' : '?'}width=${requestedWidth}&height=${requestedHeight}`
+                      ? size === 'auto'
+                        ? ''
+                        : `${src}${src.includes('?') ? '&' : '?'}width=${Math.ceil(width! * getDevicePixelRatio())}&height=${Math.ceil(height! * getDevicePixelRatio())}`
                       : src
                     : undefined
                 }
