@@ -2,6 +2,8 @@ import { type Remapper } from '@appsemble/sdk';
 
 import { type FileField, type FileRequirement, Requirement, type Values } from '../../../block.js';
 
+type FileValue = Blob | string;
+
 function testType(acceptedType: string, type: string): boolean {
   return new RegExp(/^[^/]+\/\*$/).test(acceptedType)
     ? acceptedType.slice(0, acceptedType.indexOf('/')) === type?.slice(0, type?.indexOf('/'))
@@ -10,7 +12,7 @@ function testType(acceptedType: string, type: string): boolean {
 
 export function validateFile(
   field: FileField,
-  value: File | File[],
+  value: FileValue | FileValue[],
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
   values?: Values,
 ): FileRequirement {
@@ -21,10 +23,14 @@ export function validateFile(
     }
 
     if (field.repeated) {
+      const files = Array.isArray(value)
+        ? value.filter((entry): entry is Blob => typeof entry !== 'string')
+        : [];
+
       if (
         Requirement.Prohibited in requirement &&
         Boolean(remap(requirement.prohibited, values)) &&
-        (value as File[]).length
+        (value as FileValue[]).length
       ) {
         return true;
       }
@@ -40,34 +46,34 @@ export function validateFile(
 
       if (
         Requirement.MinLength in requirement &&
-        remap(requirement.minLength!, values) > (value as File[]).length
+        remap(requirement.minLength!, values) > (value as FileValue[]).length
       ) {
         return true;
       }
 
       if (
         Requirement.MaxLength in requirement &&
-        remap(requirement.maxLength!, values) < (value as File[]).length
+        remap(requirement.maxLength!, values) < (value as FileValue[]).length
       ) {
         return true;
       }
 
       if (
         Requirement.MinSize in requirement &&
-        (value as File[]).some((file) => requirement.minSize! > file.size)
+        files.some((file) => requirement.minSize! > file.size)
       ) {
         return true;
       }
 
       if (
         Requirement.MaxSize in requirement &&
-        (value as File[]).some((file) => requirement.maxSize! < file.size)
+        files.some((file) => requirement.maxSize! < file.size)
       ) {
         return true;
       }
 
       if (Requirement.Accept in requirement) {
-        return (value as File[]).some((file) =>
+        return files.some((file) =>
           requirement.accept.every((type) => !testType(type, file?.type)),
         );
       }
