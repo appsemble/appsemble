@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.37.3
-appVersion: 0.37.3
+version: 0.37.4
+appVersion: 0.37.4
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -35,8 +35,27 @@ dependencies:
     repository: https://valkey.io/valkey-helm
     condition: valkey.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: changed
+      description: "Block(form): Add more size options to the image size parameter:
+        auto, number and more steps (256, 512)."
+    - kind: changed
+      description: "Block(list): Add more size options to the image size parameter:
+        auto, number and more steps (256, 512)."
+    - kind: changed
+      description: "Preact-components: Add more size options to ImageComponent: auto,
+        number and more steps (256, 512)."
+    - kind: changed
+      description: "Server: Cascade delete app email quota logs when deleting an app."
+    - kind: fixed
+      description: "Block(form): Allow appending files to repeated file fields with
+        existing assets."
+    - kind: fixed
+      description: "Node-utils: Follow system screen orientation settings in web app manifests."
+    - kind: fixed
+      description: "Server: Fix app member session loss during concurrent refreshes."
+    - kind: fixed
+      description: "Server: Keep patched demo resource assets reachable."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
