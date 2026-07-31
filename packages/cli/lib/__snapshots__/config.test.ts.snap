@@ -3934,34 +3934,19 @@ image can either be url or uploaded image",
               {
                 "type": "number",
               },
-              {
-                "$ref": "#/definitions/ImageSizeSteps",
-              },
             ],
             "default": 48,
             "description": "Base size of the image.
 
-The displayed dimensions are calculated based on the aspect ratio.",
+The displayed dimensions are calculated based on the aspect ratio.
+
+When set to \`auto\`, no fixed image dimensions are applied",
           },
         },
         "required": [
           "file",
         ],
         "type": "object",
-      },
-      "ImageSizeSteps": {
-        "enum": [
-          16,
-          24,
-          32,
-          48,
-          64,
-          96,
-          128,
-          256,
-          512,
-        ],
-        "type": "number",
       },
       "JsonValue": {
         "anyOf": [
@@ -6822,34 +6807,19 @@ When false, clicking the image triggers the list item's \`onClick\` action inste
               {
                 "type": "number",
               },
-              {
-                "$ref": "#/definitions/ImageSizeSteps",
-              },
             ],
             "default": 48,
             "description": "Base size of the image.
 
-The displayed dimensions are calculated based on the aspect ratio.",
+The displayed dimensions are calculated based on the aspect ratio.
+
+When set to \`auto\`, no fixed image dimensions are applied",
           },
         },
         "required": [
           "file",
         ],
         "type": "object",
-      },
-      "ImageSizeSteps": {
-        "enum": [
-          16,
-          24,
-          32,
-          48,
-          64,
-          96,
-          128,
-          256,
-          512,
-        ],
-        "type": "number",
       },
       "ItemDefinition": {
         "additionalProperties": false,

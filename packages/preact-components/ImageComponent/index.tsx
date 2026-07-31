@@ -28,9 +28,11 @@ interface ImageComponentProps {
    *
    * The displayed dimensions are calculated based on the aspect ratio.
    *
+   * When set to `auto`, no fixed image dimensions are applied
+   *
    * @default 48
    */
-  readonly size: 'auto' | number | ImageSizeSteps;
+  readonly size: 'auto' | number;
 
   /**
    * The aspect ratio the image should be displayed in.
@@ -70,8 +72,6 @@ interface ImageComponentProps {
    */
   readonly openPreview?: boolean;
 }
-
-export type ImageSizeSteps = 16 | 24 | 32 | 48 | 64 | 96 | 128 | 256 | 512;
 
 export function ImageComponent({
   alt,
