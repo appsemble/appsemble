@@ -341,4 +341,22 @@ describe('validateFile', () => {
     // @ts-expect-error strictNullChecks not assignable to type
     expect(validateFile(field, ['asset-1', 'asset-2'] as unknown as File[], remap)).toBeUndefined();
   });
+
+  it('should allow appending an accepted upload to existing asset ids', () => {
+    const field: FileField = {
+      type: 'file',
+      name: 'test',
+      repeated: true,
+      requirements: [{ accept: ['image/*'] }],
+    };
+
+    expect(
+      validateFile(
+        field,
+        ['asset-1', new Blob(['image'], { type: 'image/png' })] as unknown as File[],
+        // @ts-expect-error strictNullChecks not assignable to type
+        remap,
+      ),
+    ).toBeUndefined();
+  });
 });
