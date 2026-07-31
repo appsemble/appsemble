@@ -23,6 +23,7 @@ import {
 import sharp from 'sharp';
 
 import { argv } from './argv.js';
+import { ResourceSchemaConflictError } from './resourceSchemaCompatibility.js';
 import {
   getResourceUniqueConstraintViolationErrorForDefinition,
   isUniqueConstraintErrorLike,
@@ -354,6 +355,13 @@ export async function createAppReadmes(
 }
 
 export function handleAppValidationError(ctx: Context, error: Error, app: Partial<App>): never {
+  if (error instanceof ResourceSchemaConflictError) {
+    throwKoaError(ctx, 409, error.message, {
+      code: 'RESOURCE_SCHEMA_CONFLICT',
+      resourceType: error.resourceType,
+    });
+  }
+
   if (error instanceof ResourceUniqueConstraintConflictError) {
     throwKoaError(ctx, 409, error.message, {
       code: 'RESOURCE_UNIQUE_CONSTRAINT_CONFLICT',

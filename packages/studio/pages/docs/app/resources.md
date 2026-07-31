@@ -161,6 +161,17 @@ that app. Publishing, importing, or cloning can fail if:
 
 When that happens, fix the conflicting or invalid resource values first, then try again.
 
+### Changing a resource schema
+
+When you update an app and change the schema of a resource that already has data, Appsemble checks
+the existing resources against the new schema. The update is rejected if a stored resource would no
+longer be valid, for example when a field is retyped, an `enum` is narrowed to exclude a stored
+value, or a property becomes required that existing resources lack. Fix or delete the conflicting
+resources first, then update the app again.
+
+The check only looks at declared properties. Leftover data for properties you removed from the
+schema, or extra data allowed by loosening `additionalProperties`, never blocks the update.
+
 ## Resource actions
 
 In order to make the usage of resources more convenient, Appsemble supports the usage of

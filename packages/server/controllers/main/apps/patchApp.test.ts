@@ -553,6 +553,153 @@ describe('patchApp', () => {
     `);
   });
 
+  it('should reject a schema change that existing resources violate', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: { schema: { type: 'object', properties: { foo: { type: 'string' } } } },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'not a number' } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: integer
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(409);
+
+    // The rejected definition must not be applied: the stored schema stays as it was.
+    const unchanged = await App.findByPk(app.id, { attributes: ['definition'] });
+    expect(unchanged?.definition.resources?.testResource.schema.properties?.foo).toStrictEqual({
+      type: 'string',
+    });
+  });
+
+  it('should reject adding a required property that existing resources lack', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: { schema: { type: 'object', properties: { foo: { type: 'string' } } } },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'bar' } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                required:
+                  - bar
+                properties:
+                  foo:
+                    type: string
+                  bar:
+                    type: string
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(409);
+  });
+
+  it('should allow a schema change that existing resources still satisfy', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: { schema: { type: 'object', properties: { foo: { type: 'string' } } } },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'bar' } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: string
+                  extra:
+                    type: number
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(200);
+  });
+
   it('should create unique indexes for resources when added to the app definition', async () => {
     const app = await App.create({
       definition: {
