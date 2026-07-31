@@ -23,7 +23,10 @@ import {
 import sharp from 'sharp';
 
 import { argv } from './argv.js';
-import { ResourceSchemaConflictError } from './resourceSchemaCompatibility.js';
+import {
+  ResourceRemovalConflictError,
+  ResourceSchemaConflictError,
+} from './resourceSchemaCompatibility.js';
 import {
   getResourceUniqueConstraintViolationErrorForDefinition,
   isUniqueConstraintErrorLike,
@@ -358,6 +361,13 @@ export function handleAppValidationError(ctx: Context, error: Error, app: Partia
   if (error instanceof ResourceSchemaConflictError) {
     throwKoaError(ctx, 409, error.message, {
       code: 'RESOURCE_SCHEMA_CONFLICT',
+      resourceType: error.resourceType,
+    });
+  }
+
+  if (error instanceof ResourceRemovalConflictError) {
+    throwKoaError(ctx, 409, error.message, {
+      code: 'RESOURCE_REMOVAL_CONFLICT',
       resourceType: error.resourceType,
     });
   }

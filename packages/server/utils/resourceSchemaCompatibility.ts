@@ -19,6 +19,18 @@ export class ResourceSchemaConflictError extends AppsembleError {
   }
 }
 
+export class ResourceRemovalConflictError extends AppsembleError {
+  readonly resourceType: string;
+
+  constructor(resourceType: string) {
+    super(
+      `Can’t remove resource “${resourceType}” from the app because it still has resources. Delete its resources before removing it from the app.`,
+    );
+    this.name = 'ResourceRemovalConflictError';
+    this.resourceType = resourceType;
+  }
+}
+
 /**
  * Return a copy of a JSON schema that permits undeclared properties.
  *
@@ -53,14 +65,20 @@ function allowAdditionalProperties(schema: unknown): unknown {
 }
 
 /**
- * Reject a resource definition change whose new schema existing resources can’t satisfy.
+ * Reject a resource definition change that would strand or invalidate existing resource data.
  *
- * For every resource type whose schema actually changed, the live rows (`deleted IS NULL`, including
- * rows still in the default partition) are validated against the new schema. If any declared field
- * of an existing resource would become invalid — a retyped value, a narrowed enum, a newly required
- * property that is missing — the change is rejected with a {@link ResourceSchemaConflictError}, the
- * same way {@link ../utils/resourceUniqueIndexes.assertResourceUniqueConstraintValues} prevalidates
- * data before applying a unique constraint.
+ * For every resource type in the previous definition, its live rows (`deleted IS NULL`, including
+ * rows still in the default partition) are checked against the incoming definition.
+ *
+ * When the type is removed from the definition and live rows remain, the change is rejected with a
+ * {@link ResourceRemovalConflictError}, because the resource API resolves definitions from the new
+ * app definition and the rows would become unreachable.
+ *
+ * When the type’s schema changed and a declared field of an existing resource would become invalid —
+ * a retyped value, a narrowed enum, a newly required property that is missing — the change is
+ * rejected with a {@link ResourceSchemaConflictError}, the same way
+ * {@link ../utils/resourceUniqueIndexes.assertResourceUniqueConstraintValues} prevalidates data
+ * before applying a unique constraint.
  *
  * Undeclared/extra data is ignored (see {@link allowAdditionalProperties}): tightening
  * `additionalProperties` or dropping a property never rejects existing resources. Asset references
@@ -82,18 +100,30 @@ export async function assertResourceSchemaCompatibility(
   nextDefinitions?: Record<string, ResourceDefinition>,
   transaction?: Transaction,
 ): Promise<void> {
-  if (!previousDefinitions || !nextDefinitions) {
+  if (!previousDefinitions) {
     return;
   }
 
   const { sequelize } = await getAppDB(appId);
   const validator = new Validator();
   validator.customFormats.binary = () => true;
+  const nextDefinitionsByType = nextDefinitions ?? {};
 
-  for (const [resourceType, nextDefinition] of Object.entries(nextDefinitions)) {
-    const previousDefinition = previousDefinitions[resourceType];
+  const hasLiveRows = async (resourceType: string): Promise<boolean> => {
+    const [row] = await sequelize.query<{ exists: boolean }>(
+      'SELECT EXISTS (SELECT 1 FROM "Resource" WHERE type = :type AND deleted IS NULL) AS exists',
+      { replacements: { type: resourceType }, transaction, type: QueryTypes.SELECT },
+    );
+    return row.exists;
+  };
 
-    if (!previousDefinition) {
+  for (const [resourceType, previousDefinition] of Object.entries(previousDefinitions)) {
+    const nextDefinition = nextDefinitionsByType[resourceType];
+
+    if (!nextDefinition) {
+      if (await hasLiveRows(resourceType)) {
+        throw new ResourceRemovalConflictError(resourceType);
+      }
       continue;
     }
 

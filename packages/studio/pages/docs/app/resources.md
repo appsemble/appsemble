@@ -172,6 +172,10 @@ resources first, then update the app again.
 The check only looks at declared properties. Leftover data for properties you removed from the
 schema, or extra data allowed by loosening `additionalProperties`, never blocks the update.
 
+Removing a resource type from the app entirely is rejected the same way while that type still has
+resources, because the data would otherwise stay in the database with no way to reach it. Delete the
+resources first, then remove the type.
+
 ## Resource actions
 
 In order to make the usage of resources more convenient, Appsemble supports the usage of
