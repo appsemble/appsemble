@@ -156,7 +156,7 @@ export function ImageComponent({
                   isVisible
                     ? /\/api\/apps\/\d+\/assets\//.test(src)
                       ? size === 'auto'
-                        ? ''
+                        ? src
                         : `${src}${src.includes('?') ? '&' : '?'}width=${Math.ceil(width! * getDevicePixelRatio())}&height=${Math.ceil(height! * getDevicePixelRatio())}`
                       : src
                     : undefined
