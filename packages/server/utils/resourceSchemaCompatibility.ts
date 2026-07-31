@@ -22,14 +22,16 @@ export class ResourceSchemaConflictError extends AppsembleError {
 /**
  * Return a copy of a JSON schema that permits undeclared properties.
  *
- * Every `additionalProperties: false` in the schema tree is dropped, restoring the permissive
+ * Every `additionalProperties` constraint in the schema tree is dropped, restoring the permissive
  * default. This scopes the compatibility guard to declared fields: removing a property from a
  * resource schema, or leaving unrelated data behind, never rejects existing resources, matching how
- * Appsemble tolerates undeclared resource data elsewhere. Constraints on declared properties (type,
- * format, required, enum, numeric and length bounds) stay intact.
+ * Appsemble tolerates undeclared resource data elsewhere. Both `additionalProperties: false` and a
+ * schema-object `additionalProperties` are dropped, so orphaned data for a removed property is
+ * ignored rather than validated against a leftover constraint. Constraints on declared properties
+ * (type, format, required, enum, numeric and length bounds) stay intact.
  *
  * @param schema The schema to relax.
- * @returns A deep copy with `additionalProperties: false` removed at every level.
+ * @returns A deep copy with every `additionalProperties` constraint removed.
  */
 function allowAdditionalProperties(schema: unknown): unknown {
   if (Array.isArray(schema)) {
@@ -39,7 +41,7 @@ function allowAdditionalProperties(schema: unknown): unknown {
   if (schema && typeof schema === 'object') {
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(schema as Record<string, unknown>)) {
-      if (key === 'additionalProperties' && value === false) {
+      if (key === 'additionalProperties') {
         continue;
       }
       result[key] = allowAdditionalProperties(value);

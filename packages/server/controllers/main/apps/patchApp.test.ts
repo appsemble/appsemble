@@ -700,6 +700,58 @@ describe('patchApp', () => {
     expect(response.status).toBe(200);
   });
 
+  it('should allow removing a property even when additionalProperties constrains extra data', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            schema: {
+              additionalProperties: false,
+              type: 'object',
+              properties: { foo: { type: 'number' } },
+            },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 1 } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                type: object
+                properties: {}
+                additionalProperties:
+                  type: string
+        `),
+      }),
+    );
+
+    // The removed "foo" is now undeclared data; it must not be validated against the
+    // schema-object additionalProperties, so the update is allowed.
+    expect(response.status).toBe(200);
+  });
+
   it('should create unique indexes for resources when added to the app definition', async () => {
     const app = await App.create({
       definition: {

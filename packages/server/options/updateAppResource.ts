@@ -83,6 +83,7 @@ export async function updateAppResource({
             ...asset,
             ...getCompressedFileMeta(asset),
             ResourceId: id,
+            ResourceType: type,
             AppMemberId: member?.sub,
             seed: newResource.seed,
             clonable: newResource.clonable,
