@@ -117,7 +117,6 @@ auto-merge-weblate:
   image: alpine:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble' && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^weblate($|[-\/])/ && $GITLAB_ACCESS_TOKEN
-  allow_failure: true
   script:
     - apk add --no-cache curl jq
     - |
