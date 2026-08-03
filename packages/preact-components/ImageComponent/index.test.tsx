@@ -89,6 +89,23 @@ it('should request higher resolution Appsemble assets on high-DPR screens', asyn
   });
 });
 
+it('should preserve Appsemble asset URLs when using automatic sizing', async () => {
+  render(
+    <ImageComponent
+      alt="Auto-sized asset"
+      id="auto-sized"
+      size="auto"
+      src="http://localhost/api/apps/1/assets/course-image"
+    />,
+  );
+
+  const image = screen.getByAltText('Auto-sized asset');
+
+  await waitFor(() => {
+    expect(image.getAttribute('src')).toBe('http://localhost/api/apps/1/assets/course-image');
+  });
+});
+
 it('should append dimensions to existing Appsemble asset query parameters', async () => {
   Object.defineProperty(window, 'devicePixelRatio', {
     configurable: true,
