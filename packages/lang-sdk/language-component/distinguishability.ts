@@ -197,6 +197,18 @@ function hasKeyForbiddenBy(x: Schema, y: Schema, resolveRef: ResolveRef): boolea
   return false;
 }
 
+// Two property schemas no single value satisfies both: disjoint pinned values, or disjoint types.
+function propsSeparable(a: Schema, b: Schema): boolean {
+  const va = valueSet(a);
+  const vb = valueSet(b);
+  if (va && vb && disjoint(va, vb)) {
+    return true;
+  }
+  const ta = typeSet(a);
+  const tb = typeSet(b);
+  return Boolean(ta && tb && typesDisjoint(ta, tb));
+}
+
 // Can no single value match both local shapes? Sound: returns true only on a proven separator, so an
 // unprovable pair reads as non-separable (⇒ the union is flagged, ⇒ the resolver escalates).
 function separable(a: Schema, b: Schema, resolveRef: ResolveRef): boolean {
@@ -205,10 +217,9 @@ function separable(a: Schema, b: Schema, resolveRef: ResolveRef): boolean {
   if (ta && tb && typesDisjoint(ta, tb)) {
     return true;
   }
-  // A shared property that a value must carry (guaranteed in at least one branch) whose two shapes are
-  // disjoint — by const/enum value (`type: tabs` vs `type: flow`) OR by type (a string `type` vs an
-  // array `type`, telling JSONSchemaInteger from JSONSchemaMultiType). Guaranteed-in-one is what makes
-  // it sound: if the property were optional in both, a value omitting it would match both branches.
+  // A shared property both branches must carry (guaranteed in at least one) whose shapes are disjoint.
+  // Guaranteed-in-one is what makes it sound: if the property were optional in both, a value omitting
+  // it would match both branches.
   const guaranteedA = guaranteedKeys(a, resolveRef);
   const guaranteedB = guaranteedKeys(b, resolveRef);
   const aProps = (a.properties ?? {}) as Record<string, Schema>;
@@ -218,14 +229,7 @@ function separable(a: Schema, b: Schema, resolveRef: ResolveRef): boolean {
     if (!bProp || (!guaranteedA.has(key) && !guaranteedB.has(key))) {
       continue;
     }
-    const va = valueSet(aProp);
-    const vb = valueSet(bProp);
-    if (va && vb && disjoint(va, vb)) {
-      return true;
-    }
-    const pa = typeSet(aProp);
-    const pb = typeSet(bProp);
-    if (pa && pb && typesDisjoint(pa, pb)) {
+    if (propsSeparable(aProp, bProp)) {
       return true;
     }
   }

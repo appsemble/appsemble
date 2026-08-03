@@ -213,11 +213,10 @@ export function localShapeFactory(): (schema: Schema) => Schema {
   };
 }
 
-// A oneOf/anyOf/allOf node. One skeleton over three rules:
-//   oneOf: exactly one branch matches and governs; an untagged oneOf is transparent (the winner's
-//          identity passes through).
+// A oneOf/anyOf/allOf node:
+//   oneOf: exactly one branch matches and governs; an untagged oneOf passes the winner through.
 //   anyOf: at least one matches; every matched branch governs.
-//   allOf: all match; all branches govern, and their identities are kept even on failure.
+//   allOf: all match; all branches govern.
 function resolveComposite(
   mode: 'allOf' | 'anyOf' | 'oneOf',
   schema: Schema,
@@ -225,20 +224,40 @@ function resolveComposite(
   tag: SchemaTag | undefined,
 ): Resolution {
   const matched = branches.filter((branch) => branch.matched);
-  const satisfied = {
-    oneOf: matched.length === 1,
-    allOf: matched.length === branches.length,
-    anyOf: matched.length > 0,
-  }[mode];
-  // Bubble a union decided deeper up to this node, so a union merged into a nested `allOf` still
-  // surfaces on the enclosing node's resolution (the `draftChildSchemas` case).
+  // A union decided in a nested branch still surfaces here (a union merged into an allOf).
   const union = branches.map((branch) => branch.union).find(Boolean);
 
+  let satisfied: boolean;
+  let governing: Resolution[];
+  // On failure, the branches to name as considered: all of them for allOf, the matched ones for oneOf.
+  let considered: Resolution[];
+  let reason: string;
+  switch (mode) {
+    case 'oneOf':
+      satisfied = matched.length === 1;
+      governing = matched;
+      considered = matched;
+      reason = `oneOf expected exactly one match, got ${matched.length}`;
+      break;
+    case 'anyOf':
+      satisfied = matched.length > 0;
+      governing = matched;
+      considered = [];
+      reason = 'anyOf matched nothing';
+      break;
+    case 'allOf':
+      satisfied = matched.length === branches.length;
+      governing = branches;
+      considered = branches;
+      reason = 'allOf did not fully match';
+      break;
+  }
+
   if (satisfied) {
-    const governing = mode === 'allOf' ? branches : matched;
-    const parts = identityParts(governing);
     const identity =
-      mode === 'oneOf' && !tag ? governing[0].identity : compositeOrNull(mode, tag, parts);
+      mode === 'oneOf' && !tag
+        ? governing[0].identity
+        : compositeOrNull(mode, tag, identityParts(governing));
     return {
       identity,
       matched: true,
@@ -246,14 +265,6 @@ function resolveComposite(
       union,
     };
   }
-
-  const reason = {
-    oneOf: `oneOf expected exactly one match, got ${matched.length}`,
-    allOf: 'allOf did not fully match',
-    anyOf: 'anyOf matched nothing',
-  }[mode];
-  // Failure still names what was considered: allOf every branch, oneOf the ones that matched.
-  const considered = { allOf: branches, oneOf: matched, anyOf: [] as Resolution[] }[mode];
   return {
     identity: unresolvedOrNull(reason, tag, identityParts(considered)),
     matched: false,
