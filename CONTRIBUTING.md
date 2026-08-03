@@ -10,6 +10,11 @@ project on Weblate can be found [here](https://hosted.weblate.org/engage/appsemb
 
 New languages can be added [here](https://hosted.weblate.org/projects/appsemble/appsemble/).
 
+Weblate pushes finished translations to the `weblate` branch and opens a
+`Translations update from Hosted Weblate` merge request against `main`. A daily scheduled pipeline
+enables auto-merge on it, so it merges on its own once its pipeline passes. A merge request with
+conflicts is skipped and needs a maintainer.
+
 ## Development
 
 ### Apps

@@ -111,40 +111,46 @@ auto-approve-renovate:
         --header "PRIVATE-TOKEN: $GITLAB_APPROVAL_TOKEN" \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/approve"
 
-# Automatically enable auto-merge for Weblate merge requests.
+# Enable auto-merge on the open Weblate merge requests. This runs from a scheduled pipeline on
+# main, where the protected GITLAB_ACCESS_TOKEN is available; set AUTO_MERGE_WEBLATE on that
+# schedule so the other schedules skip this job.
 auto-merge-weblate:
   stage: test
   image: alpine:latest
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble' && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^weblate($|[-\/])/ && $GITLAB_ACCESS_TOKEN
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $AUTO_MERGE_WEBLATE && $GITLAB_ACCESS_TOKEN
   script:
     - apk add --no-cache curl jq
     - |
-      merge_request="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID"
+      merge_requests="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests"
 
       curl --fail --silent --show-error \
         --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-        "$merge_request" \
-        | tee /tmp/merge-request.json \
-        | jq '{iid, source_branch, detailed_merge_status, merge_when_pipeline_succeeds}'
+        --get "$merge_requests" \
+        --data-urlencode 'state=opened' \
+        --data-urlencode 'source_branch=weblate' \
+        --data-urlencode 'target_branch=main' \
+        --output /tmp/merge-requests.json
 
-      if jq -e '.merge_when_pipeline_succeeds' /tmp/merge-request.json > /dev/null; then
-        echo 'Auto-merge already enabled.'
-        exit 0
-      fi
+      jq '[.[] | {iid, detailed_merge_status, merge_when_pipeline_succeeds}]' /tmp/merge-requests.json
 
-      if [ "$(jq -r '.detailed_merge_status' /tmp/merge-request.json)" = 'conflict' ]; then
-        echo 'Merge request has conflicts.'
-        exit 0
-      fi
+      jq -r '.[]
+             | select(.merge_when_pipeline_succeeds | not)
+             | select(.detailed_merge_status != "conflict")
+             | "\(.iid) \(.sha)"' /tmp/merge-requests.json > /tmp/mergeable.txt
 
-      curl --fail --request PUT \
-        --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-        --url "$merge_request/merge" \
-        --data-urlencode "auto_merge=true" \
-        --data-urlencode "sha=$CI_COMMIT_SHA" \
-        --data-urlencode "should_remove_source_branch=true" \
-        | jq '{iid, detailed_merge_status, merge_when_pipeline_succeeds, should_remove_source_branch}'
+      while read -r iid sha; do
+        curl --fail --silent --show-error --request PUT \
+          --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+          --url "$merge_requests/$iid/merge" \
+          --data-urlencode "auto_merge=true" \
+          --data-urlencode "sha=$sha" \
+          --data-urlencode "should_remove_source_branch=true" \
+          --output /tmp/merge-result.json
+
+        jq '{iid, detailed_merge_status, merge_when_pipeline_succeeds, should_remove_source_branch}' \
+          /tmp/merge-result.json
+      done < /tmp/mergeable.txt
 
 ###################################################################################################
 #  Security Stage                                                                                 #
