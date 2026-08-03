@@ -25,7 +25,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   const oldResource = await Resource.findOne({
     where: { id: resourceId, type: resourceType, GroupId: groupId },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
-    attributes: ['Position', 'id', 'created', 'updated', 'data'],
+    attributes: ['Position', 'id', 'type', 'created', 'updated', 'data'],
   });
 
   assertKoaCondition(oldResource != null, ctx, 404, 'Resource not found');
@@ -137,7 +137,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     updatedPosition <= (prevResourcePosition ?? 0)
   ) {
     const resetPositionResources = await Resource.findAll({
-      attributes: ['id', 'Position'],
+      attributes: ['id', 'type', 'Position'],
       where: commonFindOptions,
       order: [['Position', 'ASC']],
     });

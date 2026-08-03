@@ -83,6 +83,7 @@ export async function updateAppResource({
             ...asset,
             ...getCompressedFileMeta(asset),
             ResourceId: id,
+            ResourceType: type,
             AppMemberId: member?.sub,
             seed: newResource.seed,
             clonable: newResource.clonable,
@@ -96,6 +97,7 @@ export async function updateAppResource({
         await ResourceVersion.create(
           {
             ResourceId: id,
+            ResourceType: type,
             AppMemberId: previousEditorId,
             data:
               resourceDefinition.history === true || resourceDefinition.history.data

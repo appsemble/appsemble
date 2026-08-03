@@ -42,6 +42,7 @@ import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
 import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
+import { assertResourceSchemaCompatibility } from '../../../utils/resourceSchemaCompatibility.js';
 import { syncResourceUniqueIndexes } from '../../../utils/resourceUniqueIndexes.js';
 import { createAppBuildManifest, pruneAppBuildSnapshots } from '../../../utils/appBuildManifest.js';
 import { isValidSentryDsn } from '../../../utils/sentry.js';
@@ -427,7 +428,17 @@ export async function patchApp(ctx: Context): Promise<void> {
         await appDB.transaction(async (appTransaction) => {
           const { resources: nextResources } = result.definition!;
 
+          // Run the unique-index sync first: its field-specific value error is a more precise
+          // message than the general schema-compatibility conflict for the overlapping case where a
+          // retyped, newly-unique field also fails to cast.
           await syncResourceUniqueIndexes(
+            appId,
+            previousResourceDefinitions,
+            nextResources as Record<string, ResourceDefinition> | undefined,
+            appTransaction,
+          );
+
+          await assertResourceSchemaCompatibility(
             appId,
             previousResourceDefinitions,
             nextResources as Record<string, ResourceDefinition> | undefined,

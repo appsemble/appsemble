@@ -165,6 +165,7 @@ describe('updateAppResources', () => {
     expect(assets).toStrictEqual([
       expect.objectContaining({
         ResourceId: 1,
+        ResourceType: 'testAssets',
         GroupId: null,
         AppMemberId: null,
         clonable: false,
@@ -341,6 +342,7 @@ describe('updateAppResources', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: resource.type,
       AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
@@ -378,6 +380,7 @@ describe('updateAppResources', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: resource.type,
       AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
@@ -415,6 +418,7 @@ describe('updateAppResources', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: resource.type,
       AppMemberId: null,
       created: new Date(),
       data: null,

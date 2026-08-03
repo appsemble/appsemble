@@ -9,12 +9,75 @@ import {
 import { AppsembleError, throwKoaError } from '@appsemble/node-utils';
 import { type Schema, Validator } from 'jsonschema';
 import { type Context } from 'koa';
-import { UniqueConstraintError, type Transaction } from 'sequelize';
+import { QueryTypes, type Sequelize, UniqueConstraintError, type Transaction } from 'sequelize';
 
 import { getAppDB } from '../models/index.js';
+import { resourcePartitionName } from './resourcePartition.js';
 
 const schemaValidator = new Validator();
 type SqlLiteralValue = boolean | Date | number | string;
+
+/**
+ * Ensure the dedicated partition for a resource type exists.
+ *
+ * Created before any of the type's rows are written, so resources route to their own partition and
+ * per-partition unique indexes carry predictable, resolvable names. Idempotent.
+ *
+ * @param sequelize The app database connection.
+ * @param resourceType The resource type whose partition to ensure.
+ * @param transaction The surrounding transaction, if any.
+ */
+async function ensureResourcePartition(
+  sequelize: Sequelize,
+  resourceType: string,
+  transaction?: Transaction,
+): Promise<void> {
+  const partition = resourcePartitionName(resourceType);
+  const [{ exists }] = await sequelize.query<{ exists: boolean }>(
+    `SELECT to_regclass('"${partition}"') IS NOT NULL AS exists`,
+    { type: QueryTypes.SELECT, transaction },
+  );
+  if (exists) {
+    return;
+  }
+
+  const [{ hasDefaultRows }] = await sequelize.query<{ hasDefaultRows: boolean }>(
+    `SELECT EXISTS (SELECT 1 FROM "resource_default" WHERE type = :type) AS "hasDefaultRows"`,
+    { replacements: { type: resourceType }, type: QueryTypes.SELECT, transaction },
+  );
+
+  if (!hasDefaultRows) {
+    await sequelize.query(
+      `CREATE TABLE "${partition}" PARTITION OF "Resource" FOR VALUES IN (:type)`,
+      { replacements: { type: resourceType }, transaction },
+    );
+    return;
+  }
+
+  // The default partition already holds rows of this type (created before this partition existed);
+  // detach it, claim the type's rows into a dedicated partition, then reattach the default.
+  await sequelize.query('ALTER TABLE "Resource" DETACH PARTITION "resource_default"', {
+    transaction,
+  });
+  await sequelize.query(
+    `CREATE TABLE "${partition}" PARTITION OF "Resource" FOR VALUES IN (:type)`,
+    {
+      replacements: { type: resourceType },
+      transaction,
+    },
+  );
+  await sequelize.query(
+    `INSERT INTO "${partition}" SELECT * FROM "resource_default" WHERE type = :type`,
+    { replacements: { type: resourceType }, transaction },
+  );
+  await sequelize.query('DELETE FROM "resource_default" WHERE type = :type', {
+    replacements: { type: resourceType },
+    transaction,
+  });
+  await sequelize.query('ALTER TABLE "Resource" ATTACH PARTITION "resource_default" DEFAULT', {
+    transaction,
+  });
+}
 
 function formatFields(fields: string[]): string {
   return fields.map((field) => `“${field}”`).join(', ');
@@ -365,8 +428,8 @@ async function createResourceUniqueIndex(
     await sequelize.query(
       `
         CREATE UNIQUE INDEX IF NOT EXISTS "${specification.name}"
-        ON "Resource" (${indexExpressions.join(', ')})
-        WHERE type = ${sequelize.escape(specification.resourceType)} AND deleted IS NULL;
+        ON "${resourcePartitionName(specification.resourceType)}" (${indexExpressions.join(', ')})
+        WHERE deleted IS NULL;
       `,
       { transaction },
     );
@@ -409,8 +472,8 @@ async function recreateResourceUniqueIndex(
     await sequelize.query(
       `
         CREATE UNIQUE INDEX "${specification.name}"
-        ON "Resource" (${indexExpressions.join(', ')})
-        WHERE type = ${sequelize.escape(specification.resourceType)} AND deleted IS NULL;
+        ON "${resourcePartitionName(specification.resourceType)}" (${indexExpressions.join(', ')})
+        WHERE deleted IS NULL;
       `,
       { transaction },
     );
@@ -460,6 +523,11 @@ export async function syncResourceUniqueIndexes(
   transaction?: Transaction,
 ): Promise<void> {
   const { sequelize } = await getAppDB(appId);
+
+  for (const resourceType of Object.keys(nextDefinitions ?? {})) {
+    await ensureResourcePartition(sequelize, resourceType, transaction);
+  }
+
   const escapeValue = (value: SqlLiteralValue): string =>
     typeof value === 'boolean' ? String(value) : sequelize.escape(value);
   const previousIndexes = getDesiredResourceUniqueIndexes(escapeValue, previousDefinitions);

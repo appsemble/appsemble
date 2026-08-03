@@ -572,6 +572,7 @@ describe('createAppResource', () => {
     expect(assets).toStrictEqual([
       expect.objectContaining({
         ResourceId: 1,
+        ResourceType: 'testAssets',
         clonable: false,
         AppMemberId: null,
         GroupId: null,
