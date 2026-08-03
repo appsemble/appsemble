@@ -66,6 +66,7 @@ bootstrap(
     const [submitErrorResult, setSubmitErrorResult] = useState<string | null>(null);
     const [dataLoading, setDataLoading] = useState(!skipInitialLoad);
     const [fieldsLoading, setFieldsLoading] = useState(false);
+    const [requirementsLoading, setRequirementsLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [values, setValues] = useState(defaultValues);
     const [lastChanged, setLastChanged] = useState<string | null>(null);
@@ -173,6 +174,7 @@ bootstrap(
 
       const token = Symbol('Async requirements lock');
       lock.current = token;
+      setRequirementsLoading(true);
 
       const requirementErrors = new Map<number, string | null>();
       Promise.all(
@@ -201,22 +203,34 @@ bootstrap(
             },
           ),
         ),
-      ).then((patchedValues) => {
-        if (lock.current !== token) {
-          return;
-        }
-        setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
-        setLastChanged(null);
-        setFormErrors((oldErrors) =>
-          oldErrors.map((old, index) =>
-            requirementErrors.has(index) ? requirementErrors.get(index) : old,
-          ),
-        );
-      });
+      )
+        .then((patchedValues) => {
+          if (lock.current !== token) {
+            return;
+          }
+          setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
+          setLastChanged(null);
+          setFormErrors((oldErrors) =>
+            oldErrors.map((old, index) =>
+              requirementErrors.has(index) ? requirementErrors.get(index) : old,
+            ),
+          );
+        })
+        .finally(() => {
+          if (lock.current === token) {
+            setRequirementsLoading(false);
+          }
+        });
     }, [actions, errors, events, lastChanged, requirements, utils, values]);
 
+    const loading =
+      dataLoading ||
+      fieldsLoading ||
+      requirementsLoading ||
+      Object.values(fieldsReady).includes(false);
+
     const onSubmit = useCallback(async () => {
-      if (!submitting) {
+      if (!loading && !submitting) {
         setSubmitting(true);
         setSubmitErrorResult(null);
 
@@ -324,6 +338,7 @@ bootstrap(
         }
       }
     }, [
+      loading,
       submitting,
       fields,
       errors,
@@ -457,8 +472,6 @@ bootstrap(
       }
       ready();
     }, [actions, events, ready, receiveData, skipInitialLoad, pageParameters]);
-
-    const loading = dataLoading || fieldsLoading || Object.values(fieldsReady).includes(false);
 
     const disableSubmit = useMemo((): boolean => {
       if (loading || submitting || utils.remap(disabled, values)) {
