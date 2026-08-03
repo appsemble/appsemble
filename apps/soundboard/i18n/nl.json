@@ -1,6 +1,6 @@
 {
   "app": {
-    "description": "Deze app laat knoppen zien die geluiden afspelen wanneer je er op klikt.",
+    "description": "Deze app toont knoppen die geluiden afspelen wanneer je erop klikt.",
     "name": "Soundboard",
     "pages.soundboard": "Soundboard"
   }

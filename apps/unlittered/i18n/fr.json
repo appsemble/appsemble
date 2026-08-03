@@ -1,18 +1,18 @@
 {
   "app": {
-    "description": "Une application dans laquelle les déchets peuvent être signalés et affichés sur une carte interactive.",
+    "description": "Une application permettant de signaler des déchets et de les afficher sur une carte interactive.",
     "name": "Unlittered",
-    "pages.litter-details": "Détails des déchets",
+    "pages.litter-details": "Détails sur Litter",
     "pages.litter-list": "Liste des déchets",
-    "pages.litter-overview": "Aperçu des déchets",
-    "pages.report-litter": "Signaler des déchets"
+    "pages.litter-overview": "Présentation de Litter",
+    "pages.report-litter": "Signaler un contenu inapproprié"
   },
   "messageIds": {
     "date": "Date",
     "location": "Localisation",
-    "notes": "Notes",
+    "notes": "Remarques",
     "notesExample": "Exemple : il y a un vélo dans les buissons",
     "photos": "Photos",
-    "process": "Traitement"
+    "process": "Processus"
   }
 }

@@ -1,17 +1,17 @@
 {
   "app": {
-    "description": "Приложение, в котором можно сообщать о мусоре и отображать его на интерактивной карте.",
+    "description": "Приложение, с помощью которого можно сообщать о мусоре и отображать его расположение на интерактивной карте.",
     "name": "Unlittered",
-    "pages.litter-details": "Подробная информация",
-    "pages.litter-list": "Список мусора",
-    "pages.litter-overview": "Обзор мест",
+    "pages.litter-details": "Подробная информация о Litter",
+    "pages.litter-list": "Список отходов",
+    "pages.litter-overview": "Обзор Litter",
     "pages.report-litter": "Сообщить о мусоре"
   },
   "messageIds": {
     "date": "Дата",
-    "location": "Расположение",
+    "location": "Местоположение",
     "notes": "Примечания",
-    "notesExample": "Пример: в кустах стоит велосипед",
+    "notesExample": "Пример: В кустах стоит велосипед.",
     "photos": "Фотографии",
     "process": "Процесс"
   }

@@ -3,17 +3,17 @@
     "description": "Demonstration der Ressourcenauslöser",
     "name": "Auslöser",
     "pages.owners-pets": "Haustiere der Besitzer",
-    "pages.owners-pets.tabs.0": "Besitzer",
+    "pages.owners-pets.tabs.0": "Eigentümer",
     "pages.owners-pets.tabs.1": "Haustiere",
-    "pages.owners-pets.tabs.2": "Bauernhof Haustiere",
-    "pages.owners-pets.tabs.3": "Wilde Haustiere"
+    "pages.owners-pets.tabs.2": "Farm Pets",
+    "pages.owners-pets.tabs.3": "Wild Pets"
   },
   "messageIds": {
     "cancel": "Abbrechen",
     "configDelete": "Löschen",
-    "confirmDeleteFarmPet": "Sind Sie sicher, dass Sie das folgende Farmtier löschen möchten?",
-    "confirmDeleteHousePet": "Sind Sie sicher, dass Sie das folgende Haustier löschen möchten?",
-    "confirmDeleteOwner": "Sind Sie sicher, dass Sie den folgenden Eigentümer löschen möchten?",
-    "confirmDeleteWildPet": "Sind Sie sicher, dass Sie das folgende wilde Tier löschen wollen?"
+    "confirmDeleteFarmPet": "Möchten Sie das folgende Farmtier wirklich löschen?",
+    "confirmDeleteHousePet": "Möchten Sie das folgende Haustier wirklich löschen?",
+    "confirmDeleteOwner": "Möchten Sie den folgenden Eigentümer wirklich löschen?",
+    "confirmDeleteWildPet": "Möchten Sie das folgende wilde Haustier wirklich löschen?"
   }
 }

@@ -1,6 +1,6 @@
 {
   "empty": "Nema podataka za prikaz",
-  "error": "Dogodila se greška tijekom učitavanja podataka.",
-  "loading": "Učitavanje …",
-  "unsupported": "Tvoj preglednik ne podržava blok wordcloud!"
+  "error": "Došlo je do problema pri učitavanju podataka.",
+  "loading": "Učitavanje…",
+  "unsupported": "Vaš preglednik ne podržava blok oblaka riječi!"
 }

@@ -1,16 +1,16 @@
 {
   "app": {
-    "description": "Jednostavan program za obrasce i pregled podataka korištenjem API resursa",
+    "description": "Jednostavna aplikacija za obrasce i pregled podataka koja koristi API resursa",
     "name": "Osoba",
-    "pages.person-details": "Detalji osobe",
+    "pages.person-details": "Podaci o osobi",
     "pages.person-list": "Popis osoba",
-    "pages.person-registration-form": "Obrazac za registriranje osobe"
+    "pages.person-registration-form": "Obrazac za registraciju osobe"
   },
   "messageIds": {
     "description": "Opis",
-    "email": "E-mail",
-    "firstName": "Ime",
+    "email": "E-pošta",
+    "firstName": "Prvo ime",
     "lastName": "Prezime",
-    "picture": "Slika"
+    "picture": "Zamisli"
   }
 }
