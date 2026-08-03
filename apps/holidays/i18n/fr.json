@@ -1,8 +1,8 @@
 {
   "app": {
-    "description": "Une application simple qui récupère des informations sur les vacances pour différents pays.",
-    "name": "Vacances",
-    "pages.holidays-in-america": "Vacances en Amérique",
+    "description": "Une application simple qui permet de consulter les informations relatives aux jours fériés dans différents pays.",
+    "name": "Jours fériés",
+    "pages.holidays-in-america": "Les vacances aux États-Unis",
     "pages.holidays-in-america.tabs.0": "États-Unis",
     "pages.holidays-in-america.tabs.1": "Canada",
     "pages.holidays-in-america.tabs.2": "Mexique",

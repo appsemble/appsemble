@@ -2,14 +2,14 @@
   "confirmLabel": "Confirmer",
   "fieldErrorLabel": "L'une des exigences de ce champ n'est pas valide.",
   "fixErrors": "Veuillez corriger les erreurs suivantes :",
-  "formRequirementError": "L'une des exigences de ce formulaire n'est pas valide.",
+  "formRequirementError": "L'une des données saisies dans ce formulaire n'est pas valide.",
   "invalidLabel": "Cette valeur n'est pas valide",
-  "longSubmissionWarning": "Le formulaire est en cours de soumission, veuillez patienter.",
-  "optionalLabel": "(Optionnel)",
+  "longSubmissionWarning": "Le formulaire est en cours d'envoi, veuillez patienter.",
+  "optionalLabel": "(Facultatif)",
   "previousLabel": "Précédent",
-  "search": "Recherche",
-  "selectionNoOptions": "Plus d'options disponibles",
-  "selectionOptionsError": "Il y a eu une erreur de chargement des options",
-  "submitError": "Un problème est survenu lors de l'envoi de ce formulaire",
-  "submitLabel": "Signaler"
+  "search": "Rechercher",
+  "selectionNoOptions": "Il n'y a plus d'options disponibles",
+  "selectionOptionsError": "Une erreur s'est produite lors du chargement des options.",
+  "submitError": "Une erreur s'est produite lors de l'envoi de ce formulaire",
+  "submitLabel": "Envoyer"
 }

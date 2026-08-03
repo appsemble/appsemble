@@ -1,33 +1,33 @@
 {
   "app": {
-    "description": "Program koji zahtijeva da korisnik odgovori na neka pitanja.",
+    "description": "Aplikacija koja korisnika traži da ispuni nekoliko pitanja.",
     "name": "Anketa",
     "pages.finished": "Završeno",
     "pages.survey": "Anketa",
     "pages.survey.steps.0": "Uvod",
-    "pages.survey.steps.1": "Familijarnost",
-    "pages.survey.steps.2": "Appsemble – ocjene",
-    "pages.survey.steps.3": "Appsemble – povratne informacije",
-    "pages.survey.steps.4": "Funkcije – ocjene"
+    "pages.survey.steps.1": "Poznavanje",
+    "pages.survey.steps.2": "Ocjene za Appsemble",
+    "pages.survey.steps.3": "Appsemble povratne informacije",
+    "pages.survey.steps.4": "Ocjene značajki"
   },
   "blocks": {
     "@appsemble/form": {
       "0.37.4": {
-        "submitLabel": "Dalje"
+        "submitLabel": "Sljedeće"
       }
     }
   },
   "messageIds": {
-    "anythingElse": "Želiš li nam još nešto reći?",
-    "appsembleRating": "Kako ocjenjuješ svoje iskustvo s Appsembleom?",
-    "backToHome": "Natrag na početak",
-    "betterExperience": "Reci nam kako možemo poboljšati tvoje iskustvo",
-    "finished": "Hvala na sudjelovanju u našoj anketi. Za stvaranje vlastitog programa koristi [Appsemble](https://appsemble.app). Ovaj se program može duplicirati s [naše stranice trgovine](https://appsemble.app/apps/{appId}).",
-    "introText": "# Appsemble anketa\nOvaj program je predložak za programe i koristi se za demonstraciju kako stvoriti program za ankete pomoću [Appsemble](https://appsemble.app).",
+    "anythingElse": "Ima li još nešto što biste nam željeli reći?",
+    "appsembleRating": "Kako ocjenjujete svoje iskustvo s Appsembleom?",
+    "backToHome": "Povratak na početnu stranicu",
+    "betterExperience": "Molimo vas, recite nam kako možemo poboljšati vaše iskustvo",
+    "finished": "Hvala vam što ste ispunili našu anketu. Možete sami isprobati [Appsemble](https://appsemble.app) i stvoriti vlastitu aplikaciju. Ovu aplikaciju možete klonirati s [naše stranice trgovine](https://appsemble.app/apps/{appId}).",
+    "introText": "# Anketa u Appsembleu\nOva aplikacija je predložak koji se koristi za demonstraciju kako se pomoću [Appsemblea](https://appsemble.app) može izraditi aplikacija za anketiranje.",
     "no": "Ne",
-    "notTriedReason": "Reci nam razloge zašto još nisi probao/la?",
-    "start": "Pokreni",
-    "triedAppsemble": "Jesi li već prije pokušao/la graditi program u Appsembleu?",
+    "notTriedReason": "Molimo vas, recite nam svoje razloge zašto još niste isprobali?",
+    "start": "Početak",
+    "triedAppsemble": "Jeste li već pokušali izraditi aplikaciju u Appsembleu?",
     "yes": "Da"
   }
 }

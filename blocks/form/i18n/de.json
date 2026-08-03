@@ -1,15 +1,15 @@
 {
   "confirmLabel": "Bestätigen",
-  "fieldErrorLabel": "Eine der Anforderungen dieses Feldes ist ungültig.",
+  "fieldErrorLabel": "Eine der Anforderungen in diesem Bereich ist ungültig.",
   "fixErrors": "Bitte beheben Sie die folgenden Fehler:",
-  "formRequirementError": "Eine der Anforderungen dieses Formulars ist ungültig.",
+  "formRequirementError": "Eine der Angaben in diesem Formular ist ungültig.",
   "invalidLabel": "Dieser Wert ist ungültig",
-  "longSubmissionWarning": "Das Formular wird noch eingereicht, bitte warten Sie.",
-  "optionalLabel": "(optional)",
-  "previousLabel": "Vorherige",
+  "longSubmissionWarning": "Das Formular wird gerade übermittelt, bitte haben Sie einen Moment Geduld.",
+  "optionalLabel": "(Optional)",
+  "previousLabel": "Zurück",
   "search": "Suche",
   "selectionNoOptions": "Keine weiteren Optionen verfügbar",
-  "selectionOptionsError": "Es gab einen Fehler beim Laden der Optionen",
-  "submitError": "Beim Senden dieses Formulars ist ein Problem aufgetreten",
-  "submitLabel": "Übermitteln"
+  "selectionOptionsError": "Beim Laden der Optionen ist ein Fehler aufgetreten.",
+  "submitError": "Beim Absenden dieses Formulars ist ein Problem aufgetreten.",
+  "submitLabel": "Absenden"
 }

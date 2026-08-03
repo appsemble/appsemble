@@ -1,10 +1,10 @@
 {
   "app": {
-    "description": "Demonstrira upotrebu OpenAI-jevog ChatGPT-a u Appsemble.",
+    "description": "Pokazuje upotrebu OpenAI-jevog ChatGPT-a u Appsembleu.",
     "name": "ChatGPT",
-    "pages.chat": "Razgovor"
+    "pages.chat": "Chat"
   },
   "messageIds": {
-    "message": "AI model koji može odgovoriti na gotovo svako pitanje s tekstualnim poticajem."
+    "message": "AI model koji može odgovoriti na gotovo svako pitanje putem tekstualnog upita."
   }
 }
