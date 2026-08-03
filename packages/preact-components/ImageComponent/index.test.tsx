@@ -147,6 +147,27 @@ it('should open the preview and not propagate the click by default', async () =>
   expect(document.querySelector('.modal')).not.toBeNull();
 });
 
+it('should render a HD download link for Appsemble asset previews', async () => {
+  render(
+    <ImageComponent
+      alt="Preview image"
+      id="preview"
+      size={48}
+      src="http://localhost/api/apps/1/assets/course-image"
+    />,
+  );
+
+  const button = screen.getByAltText('Preview image').closest('button') as HTMLButtonElement;
+  await userEvent.click(button);
+
+  const download = screen.getByTitle('Download in HD');
+
+  expect(download.getAttribute('download')).toBe('');
+  expect(download.getAttribute('href')).toBe(
+    'http://localhost/api/apps/1/assets/course-image?download=true',
+  );
+});
+
 it('should let the click propagate and not open the preview when openPreview is false', async () => {
   const parentClick = vi.fn();
 

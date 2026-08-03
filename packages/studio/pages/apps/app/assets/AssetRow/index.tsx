@@ -25,7 +25,7 @@ interface AssetRowProps {
 export function AssetRow({ asset, isSelected, onSelect }: AssetRowProps): ReactNode {
   const { app } = useApp();
   const preview = useToggle();
-  const downloadUrl = `/api/apps/${app.id}/assets/${asset.id}/download`;
+  const downloadUrl = `/api/apps/${app.id}/assets/${asset.id}?download=true`;
 
   return (
     <tr key={asset.id}>
@@ -36,7 +36,14 @@ export function AssetRow({ asset, isSelected, onSelect }: AssetRowProps): ReactN
           onChange={onSelect}
           value={isSelected}
         />
-        <Button color="primary" component="a" download href={downloadUrl} icon="download" />
+        <Button
+          color="primary"
+          component="a"
+          download
+          href={downloadUrl}
+          icon="download"
+          title="Download in HD"
+        />
       </td>
       <td>{asset.name || asset.id}</td>
       <td>

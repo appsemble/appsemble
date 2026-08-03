@@ -104,6 +104,39 @@ describe('getAppAssetById', () => {
     });
   });
 
+  it('should download the original image when requested.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+    });
+    const image = await sharp({
+      create: {
+        width: 120,
+        height: 80,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}?download=true`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/png',
+        'content-disposition': `inline; filename="${asset.id}.png"`,
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+    });
+    expect(Buffer.from(response.data)).toStrictEqual(image);
+  });
+
   it('should return a full-size jpeg derivative when larger size is specified.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
@@ -515,6 +548,7 @@ describe('getAppAssetById', () => {
 
     expect(metadata.width).toBe(10);
     expect(metadata.height).toBe(10);
+    expect(metadata.chromaSubsampling).toBe('4:4:4');
   });
 
   it('should append an jpeg extension when resizing images without a filename extension', async () => {

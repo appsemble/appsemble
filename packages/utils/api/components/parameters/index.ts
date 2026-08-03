@@ -31,5 +31,6 @@ export * from './webhookName.js';
 export * from './webhookSecretId.js';
 export * from './organizationSubscriptionId.js';
 export * from './delimiter.js';
+export * from './download.js';
 export * from './width.js';
 export * from './height.js';

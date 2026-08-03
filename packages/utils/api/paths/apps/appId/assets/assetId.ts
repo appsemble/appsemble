@@ -6,11 +6,12 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     { $ref: '#/components/parameters/assetId' },
     { $ref: '#/components/parameters/width' },
     { $ref: '#/components/parameters/height' },
+    { $ref: '#/components/parameters/download' },
   ],
   get: {
     tags: ['common', 'app', 'asset'],
     description:
-      'Get a single asset. Public image delivery returns JPEG (or WebP for transparent sources) derivatives, capped to 1024px on the longest edge when no width and height are given.',
+      'Get a single asset. Public image delivery returns JPEG (or WebP for transparent sources) derivatives, capped to 1024px on the longest edge when no width and height are given. Set download=true to receive the original binary.',
     operationId: 'getAppAssetById',
     responses: {
       200: {

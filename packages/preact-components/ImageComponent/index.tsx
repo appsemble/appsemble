@@ -4,6 +4,13 @@ import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preac
 
 import styles from './index.module.css';
 
+const appAssetPattern = /\/api\/apps\/\d+\/assets\//;
+const downloadTitle = 'Download in HD';
+
+function appendQueryParameter(url: string, parameter: string): string {
+  return `${url}${url.includes('?') ? '&' : '?'}${parameter}`;
+}
+
 function getDevicePixelRatio(): number {
   if (typeof window === 'undefined') {
     return 1;
@@ -99,6 +106,9 @@ export function ImageComponent({
     }
   }
 
+  const isAppAsset = appAssetPattern.test(src);
+  const downloadUrl = isAppAsset ? appendQueryParameter(src, 'download=true') : src;
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -138,6 +148,10 @@ export function ImageComponent({
     [modal, openPreview],
   );
 
+  const handleDownloadClick = useCallback((e: MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
   return (
     <Fragment key={id}>
       {src ? (
@@ -154,10 +168,13 @@ export function ImageComponent({
                 ref={imgRef as MutableRef<HTMLImageElement>}
                 src={
                   isVisible
-                    ? /\/api\/apps\/\d+\/assets\//.test(src)
+                    ? isAppAsset
                       ? size === 'auto'
                         ? src
-                        : `${src}${src.includes('?') ? '&' : '?'}width=${Math.ceil(width! * getDevicePixelRatio())}&height=${Math.ceil(height! * getDevicePixelRatio())}`
+                        : appendQueryParameter(
+                            src,
+                            `width=${Math.ceil(width! * getDevicePixelRatio())}&height=${Math.ceil(height! * getDevicePixelRatio())}`,
+                          )
                       : src
                     : undefined
                 }
@@ -165,6 +182,18 @@ export function ImageComponent({
             </figure>
           </button>
           <Modal isActive={modal.enabled} onClose={modal.disable}>
+            {isAppAsset ? (
+              <a
+                aria-label={downloadTitle}
+                className={styles.download}
+                download
+                href={downloadUrl}
+                onClick={handleDownloadClick}
+                title={downloadTitle}
+              >
+                <i className="fas fa-download" />
+              </a>
+            ) : null}
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions */}
             <figure
               className="image"
