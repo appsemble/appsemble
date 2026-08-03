@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.37.4](https://gitlab.com/appsemble/appsemble/-/releases/0.37.4)] - 2026-07-31
+
+### Changed
+
+- Block(`form`): Add more size options to the image `size` parameter: `auto`, `number` and more
+  steps (`256`, `512`).
+- Block(`list`): Add more size options to the image `size` parameter: `auto`, `number` and more
+  steps (`256`, `512`).
+- Preact-components: Add more size options to `ImageComponent`: `auto`, `number` and more steps
+  (`256`, `512`).
+- Server: Cascade delete app email quota logs when deleting an app.
+
+### Fixed
+
+- Block(`form`): Allow appending files to repeated file fields with existing assets.
+- Node-utils: Follow system screen orientation settings in web app manifests.
+- Server: Fix app member session loss during concurrent refreshes.
+- Server: Keep patched demo resource assets reachable.
+
 ## \[[0.37.3](https://gitlab.com/appsemble/appsemble/-/releases/0.37.3)] - 2026-07-29
 
 ## \[[0.37.2](https://gitlab.com/appsemble/appsemble/-/releases/0.37.2)] - 2026-07-22

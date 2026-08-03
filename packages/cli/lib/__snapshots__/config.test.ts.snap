@@ -3926,18 +3926,21 @@ image can either be url or uploaded image",
             "type": "boolean",
           },
           "size": {
-            "default": 48,
-            "description": "The image is scaled with bulma sizes.",
-            "enum": [
-              16,
-              24,
-              32,
-              48,
-              64,
-              96,
-              128,
+            "anyOf": [
+              {
+                "const": "auto",
+                "type": "string",
+              },
+              {
+                "type": "number",
+              },
             ],
-            "type": "number",
+            "default": 48,
+            "description": "Base size of the image.
+
+The displayed dimensions are calculated based on the aspect ratio.
+
+When set to \`auto\`, no fixed image dimensions are applied",
           },
         },
         "required": [
@@ -6796,18 +6799,21 @@ When false, clicking the image triggers the list item's \`onClick\` action inste
             "type": "boolean",
           },
           "size": {
-            "default": 48,
-            "description": "The image is scaled with bulma sizes.",
-            "enum": [
-              16,
-              24,
-              32,
-              48,
-              64,
-              96,
-              128,
+            "anyOf": [
+              {
+                "const": "auto",
+                "type": "string",
+              },
+              {
+                "type": "number",
+              },
             ],
-            "type": "number",
+            "default": 48,
+            "description": "Base size of the image.
+
+The displayed dimensions are calculated based on the aspect ratio.
+
+When set to \`auto\`, no fixed image dimensions are applied",
           },
         },
         "required": [

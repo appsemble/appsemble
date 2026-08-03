@@ -187,11 +187,15 @@ export interface Image {
   rounded?: boolean;
 
   /**
-   * The image is scaled with bulma sizes.
+   * Base size of the image.
+   *
+   * The displayed dimensions are calculated based on the aspect ratio.
+   *
+   * When set to `auto`, no fixed image dimensions are applied
    *
    * @default 48
    */
-  size?: 16 | 24 | 32 | 48 | 64 | 96 | 128;
+  size?: 'auto' | number;
 
   /**
    * The aspect ratio the image should be displayed in.
