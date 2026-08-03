@@ -61,25 +61,8 @@ export interface DistinguishabilityResult {
 
 type ResolveRef = (ref: string) => Schema;
 
-// The JSON type(s) a schema admits, including the type implied by a `const`/`enum` when `type` is
-// absent (so `{ enum: [null] }` reads as `null`, `{ const: 'x' }` as `string`). Undefined = unconstrained.
-function typeSet(schema: Schema): Set<string> | undefined {
-  if (schema.type) {
-    return new Set(Array.isArray(schema.type) ? schema.type : [schema.type]);
-  }
-  // Infer the type from a `const`/`enum` — read the RAW values, not the stringified `valueSet`, or
-  // every scalar would look like a string (`jsonType('null') === 'string'`).
-  const raw =
-    schema.const !== undefined
-      ? [schema.const]
-      : Array.isArray(schema.enum)
-        ? schema.enum
-        : undefined;
-  return raw ? new Set(raw.map((value) => jsonType(value))) : undefined;
-}
-
 function jsonType(value: unknown): string {
-  if (value === null) {
+  if (value == null) {
     return 'null';
   }
   if (Array.isArray(value)) {
@@ -89,6 +72,23 @@ function jsonType(value: unknown): string {
   // An integer-valued number reads as `integer` so it lines up with an explicit `type: 'integer'`;
   // `typesDisjoint` then handles that `integer` still overlaps `number`.
   return t === 'number' && Number.isInteger(value) ? 'integer' : t;
+}
+
+// The JSON type(s) a schema admits, including the type implied by a `const`/`enum` when `type` is
+// absent (so `{ enum: [null] }` reads as `null`, `{ const: 'x' }` as `string`). Undefined = unconstrained.
+function typeSet(schema: Schema): Set<string> | undefined {
+  if (schema.type) {
+    return new Set(Array.isArray(schema.type) ? schema.type : [schema.type]);
+  }
+  // Infer the type from a `const`/`enum` — read the RAW values, not the stringified `valueSet`, or
+  // every scalar would look like a string (`jsonType('null') === 'string'`).
+  const raw =
+    schema.const === undefined
+      ? Array.isArray(schema.enum)
+        ? schema.enum
+        : undefined
+      : [schema.const];
+  return raw ? new Set(raw.map((value) => jsonType(value))) : undefined;
 }
 
 // The finite value set a schema pins via `const` or `enum`, stringified; undefined when open.
@@ -144,7 +144,11 @@ function sameTypes(a: Schema, b: Schema): boolean {
 // all allOf members, plus keys required by every branch of a oneOf/anyOf (intersection — a union only
 // guarantees what all its arms do). `seen` guards recursive schemas. Operates on local shapes, where
 // oneOf is already relaxed to anyOf, so both are handled the same way.
-function guaranteedKeys(schema: Schema, resolveRef: ResolveRef, seen = new Set<Schema>()): Set<string> {
+function guaranteedKeys(
+  schema: Schema,
+  resolveRef: ResolveRef,
+  seen = new Set<Schema>(),
+): Set<string> {
   if (seen.has(schema)) {
     return new Set();
   }
@@ -178,7 +182,10 @@ function guaranteedKeys(schema: Schema, resolveRef: ResolveRef, seen = new Set<S
 function hasKeyForbiddenBy(x: Schema, y: Schema, resolveRef: ResolveRef): boolean {
   // `patternProperties` can admit a key that isn't listed in `properties`, so a closed schema with
   // patterns can't be assumed to forbid anything — stay sound and claim nothing.
-  if (y.additionalProperties !== false || (y as { patternProperties?: unknown }).patternProperties != null) {
+  if (
+    y.additionalProperties !== false ||
+    (y as { patternProperties?: unknown }).patternProperties != null
+  ) {
     return false;
   }
   const allowed = new Set(Object.keys(y.properties ?? {}));
@@ -232,10 +239,39 @@ function hasDiscriminator(schema: Schema): boolean {
   return disc != null;
 }
 
+// Every immediate subschema of `schema` the resolver can descend into: properties, array items,
+// object additionalProperties, and combinator branches. Refs are yielded as-is; `visit` derefs them.
+function* subschemas(schema: Schema): Iterable<Schema> {
+  for (const property of Object.values(schema.properties ?? {})) {
+    yield property as Schema;
+  }
+  if (schema.items && typeof schema.items === 'object') {
+    if (Array.isArray(schema.items)) {
+      yield* schema.items as Schema[];
+    } else {
+      yield schema.items as Schema;
+    }
+  }
+  if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+    yield schema.additionalProperties as Schema;
+  }
+  for (const combinator of ['allOf', 'anyOf', 'oneOf'] as const) {
+    const branches = schema[combinator] as Schema[] | undefined;
+    if (Array.isArray(branches)) {
+      yield* branches;
+    }
+  }
+}
+
 /**
  * Walk every schema reachable from `roots`, and for each oneOf/anyOf union decide `refCutSufficient`
  * on the branches' local (ref-cut) shapes. `localShape` is the resolver's own ref-cut, so the verdict
  * reflects exactly what the resolver will see at runtime.
+ *
+ * @param roots The schemas to walk, each a language root.
+ * @param resolveRef Resolves a `$ref` to its target schema.
+ * @param localShape The resolver's ref-cut of a schema, used to compare branch shapes.
+ * @returns The per-union `refCutSufficient` verdicts and the collisions found.
  */
 export function analyzeDistinguishability(
   roots: Schema[],
@@ -261,7 +297,8 @@ export function analyzeDistinguishability(
           ok = false;
           const componentA = names[i];
           const componentB = names[j];
-          const distinctComponents = componentA != null && componentB != null && componentA !== componentB;
+          const distinctComponents =
+            componentA != null && componentB != null && componentA !== componentB;
           // A labeling-vs-shape contradiction — two distinct labeled components with the SAME local
           // shape, indistinguishable in either direction — is the strongest signal. When one merely
           // subsumes the other by type (an intentional broader form), the overlap is structural (info).
@@ -311,28 +348,4 @@ export function analyzeDistinguishability(
     visit(root);
   }
   return { refCutSufficient, collisions };
-}
-
-// Every immediate subschema of `schema` the resolver can descend into: properties, array items,
-// object additionalProperties, and combinator branches. Refs are yielded as-is; `visit` derefs them.
-function* subschemas(schema: Schema): Iterable<Schema> {
-  for (const property of Object.values(schema.properties ?? {})) {
-    yield property as Schema;
-  }
-  if (schema.items && typeof schema.items === 'object') {
-    if (Array.isArray(schema.items)) {
-      yield* schema.items as Schema[];
-    } else {
-      yield schema.items as Schema;
-    }
-  }
-  if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
-    yield schema.additionalProperties as Schema;
-  }
-  for (const combinator of ['allOf', 'anyOf', 'oneOf'] as const) {
-    const branches = schema[combinator] as Schema[] | undefined;
-    if (Array.isArray(branches)) {
-      yield* branches;
-    }
-  }
 }
