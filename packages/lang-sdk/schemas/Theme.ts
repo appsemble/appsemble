@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 import { baseTheme } from '../constants/baseTheme.js';
-import { hexColor, themeVariableValue } from '../constants/patterns.js';
+import { hexColor, normalized, themeVariableValue } from '../constants/patterns.js';
 
 export const Theme: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
@@ -100,11 +100,16 @@ These can be referenced in custom CSS as \`var(--night)\` and \`var(--font-displ
 `,
       minProperties: 1,
       maxProperties: 32,
+      // The validator supports propertyNames, but the OpenAPI schema object type does not know it.
+      propertyNames: {
+        pattern: normalized.source,
+        maxLength: 40,
+      },
       additionalProperties: {
         type: 'string',
         pattern: themeVariableValue.source,
         maxLength: 128,
       },
-    },
+    } as OpenAPIV3.NonArraySchemaObject,
   },
 };
