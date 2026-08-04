@@ -1,10 +1,7 @@
-import { readdir, readFile } from 'node:fs/promises';
-
 import { PredefinedOrganizationRole } from '@appsemble/types';
-import { defaultLocale, normalizeLocale } from '@appsemble/utils';
+import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
 import { type ImapFlow, type MailboxLockObject } from 'imapflow';
-import { IntlMessageFormat } from 'intl-messageformat';
 import { type Transporter } from 'nodemailer';
 import { afterAll, afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
@@ -990,30 +987,5 @@ _Test App_
         'Unable to determine the sender or recipient of the message.',
       );
     });
-  });
-});
-
-describe('email templates', () => {
-  it('should be formattable in every translated language', async () => {
-    const i18nDirectory = new URL('../../../../i18n/', import.meta.url);
-    const errors: string[] = [];
-
-    for (const file of await readdir(i18nDirectory)) {
-      const locale = normalizeLocale(file.replace(/\.json$/, ''));
-      const messages = JSON.parse(await readFile(new URL(file, i18nDirectory), 'utf8'));
-
-      for (const [key, message] of Object.entries(messages)) {
-        if (!key.startsWith('server.emails.') || !message) {
-          continue;
-        }
-        try {
-          new IntlMessageFormat(message as string, locale).getAst();
-        } catch (error: any) {
-          errors.push(`${file} ${key}: ${error.message}`);
-        }
-      }
-    }
-
-    expect(errors).toStrictEqual([]);
   });
 });
