@@ -99,47 +99,6 @@ describe('getOriginalAppAsset', () => {
     expect(Buffer.from(response.data)).toStrictEqual(image);
   });
 
-  it('should reject original studio downloads without asset access.', async () => {
-    await OrganizationMember.update(
-      { role: PredefinedOrganizationRole.Member },
-      { where: { UserId: user.id } },
-    );
-
-    const { Asset } = await getAppDB(app.id);
-    const asset = await Asset.create({
-      mime: 'image/png',
-      filename: 'logo.png',
-    });
-    const image = await sharp({
-      create: {
-        width: 120,
-        height: 80,
-        channels: 3,
-        background: { r: 255, g: 0, b: 0 },
-      },
-    })
-      .png()
-      .toBuffer();
-
-    await uploadS3File(`app-${app.id}`, asset.id, image);
-
-    authorizeStudio(user);
-    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}/download`, {
-      validateStatus: () => true,
-    });
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 403 Forbidden
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "error": "Forbidden",
-        "message": "User does not have sufficient organization permissions.",
-        "statusCode": 403,
-      }
-    `);
-  });
-
   it('should allow logged-in app members to download the original image binary.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({

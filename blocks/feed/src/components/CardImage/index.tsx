@@ -1,28 +1,7 @@
-import { Modal, useToggle } from '@appsemble/preact-components';
+import { AppAssetDownloadButton, Modal, useToggle } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
-
-const downloadTitle = 'Download in HD';
-
-function getOriginalAssetURL(url: string): string {
-  return `${url.split('?')[0]}/download`;
-}
-
-async function downloadAsset(url: string): Promise<void> {
-  const response = await fetch(url);
-  const blob = await response.blob();
-  const objectURL = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-
-  link.download = '';
-  link.href = objectURL;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(objectURL);
-}
 
 interface CardImageProps {
   /**
@@ -43,30 +22,20 @@ interface CardImageProps {
 
 export function CardImage({ alt, className, src }: CardImageProps): VNode {
   const modal = useToggle();
-  const isAppAsset = /\/api\/apps\/\d+\/assets\//.test(src);
-  const downloadUrl = isAppAsset ? getOriginalAssetURL(src) : null;
-  const handleDownloadClick = useCallback(
-    (event: MouseEvent) => {
-      event.stopPropagation();
 
-      if (downloadUrl) {
-        downloadAsset(downloadUrl);
-      }
-    },
-    [downloadUrl],
-  );
-  ...
-          {downloadUrl ? (
-            <button
-              aria-label={downloadTitle}
-              className={styles.download}
-              onClick={handleDownloadClick}
-              title={downloadTitle}
-              type="button"
-            >
-              <i className="fas fa-download" />
-            </button>
-          ) : null}
+  return (
+    <>
+      <button
+        className={`${styles.figure} ${styles.button} ${className}`}
+        onClick={modal.enable}
+        type="button"
+      >
+        <figure className={styles.figure}>
+          <img alt={alt} className={styles.image} src={src} />
+        </figure>
+      </button>
+      <Modal isActive={modal.enabled} onClose={modal.disable}>
+        <AppAssetDownloadButton src={src} />
         <figure className="image">
           <img alt={alt} src={src} />
         </figure>

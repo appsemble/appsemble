@@ -1,3 +1,4 @@
+import { AppAssetDownloadButton } from '../AppAssetDownloadButton/index.js';
 import { Modal, useToggle } from '../index.js';
 import { Fragment, type VNode } from 'preact';
 import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
@@ -5,25 +6,6 @@ import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preac
 import styles from './index.module.css';
 
 const appAssetPattern = /\/api\/apps\/\d+\/assets\//;
-const downloadTitle = 'Download in HD';
-
-function getOriginalAssetURL(url: string): string {
-  return `${url.split('?')[0]}/download`;
-}
-
-async function downloadAsset(url: string): Promise<void> {
-  const response = await fetch(url);
-  const blob = await response.blob();
-  const objectURL = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-
-  link.download = '';
-  link.href = objectURL;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(objectURL);
-}
 
 function getDevicePixelRatio(): number {
   if (typeof window === 'undefined') {
@@ -121,7 +103,6 @@ export function ImageComponent({
   }
 
   const isAppAsset = appAssetPattern.test(src);
-  const downloadUrl = isAppAsset ? getOriginalAssetURL(src) : src;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -162,14 +143,6 @@ export function ImageComponent({
     [modal, openPreview],
   );
 
-  const handleDownloadClick = useCallback(
-    (e: MouseEvent) => {
-      e.stopPropagation();
-      downloadAsset(downloadUrl);
-    },
-    [downloadUrl],
-  );
-
   return (
     <Fragment key={id}>
       {src ? (
@@ -197,17 +170,7 @@ export function ImageComponent({
             </figure>
           </button>
           <Modal isActive={modal.enabled} onClose={modal.disable}>
-            {isAppAsset ? (
-              <button
-                aria-label={downloadTitle}
-                className={styles.download}
-                onClick={handleDownloadClick}
-                title={downloadTitle}
-                type="button"
-              >
-                <i className="fas fa-download" />
-              </button>
-            ) : null}
+            <AppAssetDownloadButton src={src} />
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions */}
             <figure
               className="image"

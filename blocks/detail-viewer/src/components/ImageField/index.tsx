@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Modal, useToggle } from '@appsemble/preact-components';
+import { AppAssetDownloadButton, Modal, useToggle } from '@appsemble/preact-components';
 import { type Remapper } from '@appsemble/sdk';
 import { type VNode } from 'preact';
 
@@ -22,6 +22,7 @@ export function ImageField({
   const { utils } = useBlock();
   const modal = useToggle();
   const img = source as string;
+  const src = /^(https?:)?\/\//.test(img) ? img : utils.asset(img);
 
   const alt = (label || utils.remap(name, source)) as string;
   const hide = utils.remap(conceal, source);
@@ -30,16 +31,13 @@ export function ImageField({
     <>
       <button className={`${styles.button} ${styles.root}`} onClick={modal.enable} type="button">
         <figure className={`image mr-3 is-${size}x${size} ${styles.root}`}>
-          <img
-            alt={alt}
-            className={`${styles.img} ${rounded && 'is-rounded'}`}
-            src={/^(https?:)?\/\//.test(img) ? img : utils.asset(img)}
-          />
+          <img alt={alt} className={`${styles.img} ${rounded && 'is-rounded'}`} src={src} />
         </figure>
       </button>
       <Modal isActive={modal.enabled} onClose={modal.disable}>
+        <AppAssetDownloadButton src={src} />
         <figure className="image">
-          <img alt={alt} src={/^(https?:)?\/\//.test(img) ? img : utils.asset(img)} />
+          <img alt={alt} src={src} />
         </figure>
       </Modal>
     </>
