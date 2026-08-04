@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 import { baseTheme } from '../constants/baseTheme.js';
-import { hexColor } from '../constants/patterns.js';
+import { hexColor, themeVariableValue } from '../constants/patterns.js';
 
 export const Theme: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
@@ -78,6 +78,33 @@ This is used in various elements like the navbar.
         { $ref: '#/components/schemas/CustomFontDefinition' },
         { $ref: '#/components/schemas/GoogleFontDefinition' },
       ],
+    },
+    variables: {
+      type: 'object',
+      description: `Custom CSS properties (design tokens) exposed on \`:root\` in the theme CSS.
+
+Each entry is emitted as a \`--<name>\` custom property. Names must be lower case and hyphen
+separated. Custom properties inherit into every block's shadow DOM, so tokens defined once are
+usable in core, shared, and block styles.
+
+For example:
+
+\`\`\`yaml
+theme:
+  variables:
+    night: '#0e1220'
+    font-display: "'Baloo 2', sans-serif"
+\`\`\`
+
+These can be referenced in custom CSS as \`var(--night)\` and \`var(--font-display)\`.
+`,
+      minProperties: 1,
+      maxProperties: 32,
+      additionalProperties: {
+        type: 'string',
+        pattern: themeVariableValue.source,
+        maxLength: 128,
+      },
     },
   },
 };

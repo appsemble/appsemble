@@ -224,10 +224,15 @@ export interface GetBlocksAssetsPathsParams {
   identifiableBlocks: IdentifiableBlock[];
 }
 
-export type ExtendedTheme = Omit<Partial<ThemeType>, 'font'> & {
+export type ExtendedTheme = Omit<Partial<ThemeType>, 'font' | 'variables'> & {
   bulmaVersion: string;
   fontFamily: string;
   fontSource: string;
+
+  /**
+   * Theme variables as canonical JSON with sorted keys, so equal maps hit the same cached theme.
+   */
+  variables: string;
 };
 
 export interface GetHostParams {

@@ -1,6 +1,11 @@
 import { createRequire } from 'node:module';
 
-import { baseTheme, type Theme as ThemeType } from '@appsemble/lang-sdk';
+import {
+  baseTheme,
+  normalized,
+  themeVariableValue,
+  type Theme as ThemeType,
+} from '@appsemble/lang-sdk';
 import { bulmaVersion, logger, type Options } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 import { renderSync } from 'sass';
@@ -16,13 +21,51 @@ const checkRadioPath = require
 const bulmaSliderPath = require.resolve('bulma-slider/src/sass/index.sass').replaceAll('\\', '/');
 const bulmaSwitchPath = require.resolve('bulma-switch/src/sass/index.sass').replaceAll('\\', '/');
 
-interface QueryParamTheme extends Omit<Partial<ThemeType>, 'font'> {
+interface QueryParamTheme extends Omit<Partial<ThemeType>, 'font' | 'variables'> {
   fontFamily?: string;
   fontSource?: string;
 }
 
 function getQueryParameter<T>(value: T | T[]): T {
   return Array.isArray(value) ? value[0] : value;
+}
+
+/**
+ * Parse and validate the `variables` query parameter into canonical JSON with sorted keys.
+ *
+ * The canonical form makes equal variable maps hit the same cached theme.
+ *
+ * @param raw The raw query parameter value.
+ * @returns The canonical JSON string, or `null` when the parameter is invalid.
+ */
+function parseVariables(raw: string | undefined): string | null {
+  if (!raw) {
+    return '{}';
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (typeof parsed !== 'object' || parsed == null || Array.isArray(parsed)) {
+    return null;
+  }
+  const entries = Object.entries(parsed);
+  if (
+    entries.length > 32 ||
+    entries.some(
+      ([name, value]) =>
+        name.length > 40 ||
+        !normalized.test(name) ||
+        typeof value !== 'string' ||
+        value.length > 128 ||
+        !themeVariableValue.test(value),
+    )
+  ) {
+    return null;
+  }
+  return JSON.stringify(parsed, Object.keys(parsed).sort());
 }
 
 /**
@@ -88,12 +131,20 @@ export function createBulmaHandler({ createTheme, getTheme }: Options): Middlewa
   return async (ctx: Context) => {
     const { query } = ctx;
 
-    const theme: Omit<Partial<ThemeType>, 'font'> & {
+    const variables = parseVariables(getQueryParameter(query.variables) as string | undefined);
+    if (variables == null) {
+      ctx.throw(400, 'Invalid theme variables');
+      return;
+    }
+
+    const theme: Omit<Partial<ThemeType>, 'font' | 'variables'> & {
       bulmaVersion: string;
       fontFamily: string;
       fontSource: string;
+      variables: string;
     } = {
       bulmaVersion,
+      variables,
       primaryColor: (getQueryParameter(query.primaryColor) || baseTheme.primaryColor).toLowerCase(),
       linkColor: (getQueryParameter(query.linkColor) || baseTheme.linkColor).toLowerCase(),
       successColor: (getQueryParameter(query.successColor) || baseTheme.successColor).toLowerCase(),
@@ -130,6 +181,11 @@ export function createBulmaHandler({ createTheme, getTheme }: Options): Middlewa
           }).css,
         ),
       );
+      const variableEntries = Object.entries(JSON.parse(variables) as Record<string, string>);
+      if (variableEntries.length) {
+        // Emitted after the SASS compile, so values are never parsed as SASS.
+        css += `:root{${variableEntries.map(([name, value]) => `--${name}:${value}`).join(';')}}`;
+      }
     }
 
     ctx.body = css;
