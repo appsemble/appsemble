@@ -1,7 +1,28 @@
 import { Modal, useToggle } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
+
+const downloadTitle = 'Download in HD';
+
+function getOriginalAssetURL(url: string): string {
+  return `${url.split('?')[0]}/download`;
+}
+
+async function downloadAsset(url: string): Promise<void> {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const objectURL = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.download = '';
+  link.href = objectURL;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(objectURL);
+}
 
 interface CardImageProps {
   /**
@@ -22,6 +43,14 @@ interface CardImageProps {
 
 export function CardImage({ alt, className, src }: CardImageProps): VNode {
   const modal = useToggle();
+  const downloadUrl = getOriginalAssetURL(src);
+  const handleDownloadClick = useCallback(
+    (event: MouseEvent) => {
+      event.stopPropagation();
+      downloadAsset(downloadUrl);
+    },
+    [downloadUrl],
+  );
 
   return (
     <>
@@ -35,6 +64,15 @@ export function CardImage({ alt, className, src }: CardImageProps): VNode {
         </figure>
       </button>
       <Modal isActive={modal.enabled} onClose={modal.disable}>
+        <button
+          aria-label={downloadTitle}
+          className={styles.download}
+          onClick={handleDownloadClick}
+          title={downloadTitle}
+          type="button"
+        >
+          <i className="fas fa-download" />
+        </button>
         <figure className="image">
           <img alt={alt} src={src} />
         </figure>

@@ -36,11 +36,13 @@ export async function getOriginalAppAsset(ctx: Context): Promise<void> {
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  await checkUserOrganizationPermissions({
-    context: ctx,
-    organizationId: app.OrganizationId,
-    requiredPermissions: [OrganizationPermission.QueryAppAssets],
-  });
+  if (ctx.user && !(ctx.client && 'app' in ctx.client)) {
+    await checkUserOrganizationPermissions({
+      context: ctx,
+      organizationId: app.OrganizationId,
+      requiredPermissions: [OrganizationPermission.QueryAppAssets],
+    });
+  }
 
   const { Asset } = await getAppDB(appId);
   const asset = await Asset.findOne({

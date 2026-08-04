@@ -90,7 +90,7 @@ async function serveCachedDerivedAsset(
 export async function getAppAssetById(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, assetId },
-    queryParams: { download, height, width },
+    queryParams: { height, width },
   } = ctx;
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId', 'demoMode'],
@@ -104,7 +104,6 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     Number.isFinite(parsedHeight) &&
     parsedWidth > 0 &&
     parsedHeight > 0;
-  const shouldDownload = download === true || download === 'true';
   const sourceAsset = await Asset.findOne({
     where: {
       [Op.or]: [{ id: assetId }, { name: assetId }],
@@ -115,15 +114,6 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   assertKoaCondition(sourceAsset != null, ctx, 404, 'Asset not found');
 
   const bucketName = `app-${appId}`;
-  const sourceFilename = getAssetFilename(sourceAsset.id, sourceAsset.filename, sourceAsset.mime);
-  if (shouldDownload) {
-    const stats = await getS3FileStats(bucketName, sourceAsset.id);
-    const stream = await getS3File(bucketName, sourceAsset.id);
-
-    setAssetHeaders(ctx, sourceAsset.mime ?? 'application/octet-stream', sourceFilename, stats);
-    ctx.body = stream;
-    return;
-  }
 
   if (sourceAsset.mime?.startsWith('image')) {
     const fullDerivedAssetName = getFullDerivedAssetName(sourceAsset.id);
@@ -240,6 +230,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     return;
   }
 
+  const sourceFilename = getAssetFilename(sourceAsset.id, sourceAsset.filename, sourceAsset.mime);
   const stats = await getS3FileStats(bucketName, sourceAsset.id);
   const stream = await getS3File(bucketName, sourceAsset.id);
 

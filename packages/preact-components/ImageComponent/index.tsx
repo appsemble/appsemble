@@ -7,8 +7,22 @@ import styles from './index.module.css';
 const appAssetPattern = /\/api\/apps\/\d+\/assets\//;
 const downloadTitle = 'Download in HD';
 
-function appendQueryParameter(url: string, parameter: string): string {
-  return `${url}${url.includes('?') ? '&' : '?'}${parameter}`;
+function getOriginalAssetURL(url: string): string {
+  return `${url.split('?')[0]}/download`;
+}
+
+async function downloadAsset(url: string): Promise<void> {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const objectURL = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.download = '';
+  link.href = objectURL;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(objectURL);
 }
 
 function getDevicePixelRatio(): number {
@@ -107,7 +121,7 @@ export function ImageComponent({
   }
 
   const isAppAsset = appAssetPattern.test(src);
-  const downloadUrl = isAppAsset ? appendQueryParameter(src, 'download=true') : src;
+  const downloadUrl = isAppAsset ? getOriginalAssetURL(src) : src;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -148,9 +162,13 @@ export function ImageComponent({
     [modal, openPreview],
   );
 
-  const handleDownloadClick = useCallback((e: MouseEvent) => {
-    e.stopPropagation();
-  }, []);
+  const handleDownloadClick = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
+      downloadAsset(downloadUrl);
+    },
+    [downloadUrl],
+  );
 
   return (
     <Fragment key={id}>
@@ -171,10 +189,7 @@ export function ImageComponent({
                     ? isAppAsset
                       ? size === 'auto'
                         ? src
-                        : appendQueryParameter(
-                            src,
-                            `width=${Math.ceil(width! * getDevicePixelRatio())}&height=${Math.ceil(height! * getDevicePixelRatio())}`,
-                          )
+                        : `${src}?width=${Math.ceil(width! * getDevicePixelRatio())}&height=${Math.ceil(height! * getDevicePixelRatio())}`
                       : src
                     : undefined
                 }
@@ -183,16 +198,15 @@ export function ImageComponent({
           </button>
           <Modal isActive={modal.enabled} onClose={modal.disable}>
             {isAppAsset ? (
-              <a
+              <button
                 aria-label={downloadTitle}
                 className={styles.download}
-                download
-                href={downloadUrl}
                 onClick={handleDownloadClick}
                 title={downloadTitle}
+                type="button"
               >
                 <i className="fas fa-download" />
-              </a>
+              </button>
             ) : null}
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions */}
             <figure

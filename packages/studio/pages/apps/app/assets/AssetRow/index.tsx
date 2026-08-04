@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { downloadAsset } from '../downloadAsset.js';
 import { useApp } from '../../index.js';
 import { AssetPreview } from '../AssetPreview/index.js';
 
@@ -25,7 +26,7 @@ interface AssetRowProps {
 export function AssetRow({ asset, isSelected, onSelect }: AssetRowProps): ReactNode {
   const { app } = useApp();
   const preview = useToggle();
-  const downloadUrl = `/api/apps/${app.id}/assets/${asset.id}?download=true`;
+  const downloadUrl = `/api/apps/${app.id}/assets/${asset.id}/download`;
 
   return (
     <tr key={asset.id}>
@@ -38,11 +39,10 @@ export function AssetRow({ asset, isSelected, onSelect }: AssetRowProps): ReactN
         />
         <Button
           color="primary"
-          component="a"
-          download
-          href={downloadUrl}
           icon="download"
-          title="Download in HD"
+          onClick={() => {
+            downloadAsset(downloadUrl, asset.filename || asset.name || asset.id);
+          }}
         />
       </td>
       <td>{asset.name || asset.id}</td>

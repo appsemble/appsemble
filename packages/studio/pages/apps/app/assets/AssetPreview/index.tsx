@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { downloadAsset } from '../downloadAsset.js';
 import { useApp } from '../../index.js';
 
 export function AssetPreview({ asset }: { readonly asset: Asset }): ReactNode {
@@ -15,7 +16,7 @@ export function AssetPreview({ asset }: { readonly asset: Asset }): ReactNode {
   }
 
   const url = `/api/apps/${app.id}/assets/${asset.id}`;
-  const downloadUrl = `${url}?download=true`;
+  const downloadUrl = `${url}/download`;
   const isImage = asset.mime.startsWith('image/');
   const isAudio = asset.mime.startsWith('audio/');
   const isVideo = asset.mime.startsWith('video/');
@@ -23,12 +24,11 @@ export function AssetPreview({ asset }: { readonly asset: Asset }): ReactNode {
   return (
     <Content className={styles.preview}>
       <Button
-        className="mb-2"
-        component="a"
-        download
-        href={downloadUrl}
+        className="is-fullwidth mb-2"
         icon="download"
-        title="Download in HD"
+        onClick={() => {
+          downloadAsset(downloadUrl, asset.filename || asset.name || asset.id);
+        }}
       >
         <FormattedMessage {...messages.download} />
       </Button>
