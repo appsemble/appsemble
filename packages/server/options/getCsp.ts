@@ -21,7 +21,10 @@ export function getCsp({
   );
 
   const hasStrictContentSecurityPolicy = Boolean(app.definition.contentSecurityPolicy);
-  const fontSource = app.definition.theme?.font?.source ?? baseTheme.font.source;
+  const displayFont = app.definition.theme?.displayFont;
+  const usesGoogleFonts =
+    (app.definition.theme?.font?.source ?? baseTheme.font.source) === 'google' ||
+    (displayFont != null && (displayFont.source ?? baseTheme.font.source) === 'google');
   const objectSrc = getCustomDirectiveSources(app, 'object-src');
   const requiresDynamicScripts = Boolean(app.msClarityID) || Boolean(app.metaPixelID);
 
@@ -99,14 +102,14 @@ export function getCsp({
     'style-src': [
       "'self'",
       "'unsafe-inline'",
-      fontSource === 'google' ? 'https://fonts.googleapis.com' : false,
+      usesGoogleFonts ? 'https://fonts.googleapis.com' : false,
       ...getCustomDirectiveSources(app, 'style-src'),
     ],
     'font-src': hasStrictContentSecurityPolicy
       ? [
           "'self'",
           'data:',
-          fontSource === 'google' ? 'https://fonts.gstatic.com' : false,
+          usesGoogleFonts ? 'https://fonts.gstatic.com' : false,
           ...getCustomDirectiveSources(app, 'font-src'),
         ]
       : ['*', 'data:'],

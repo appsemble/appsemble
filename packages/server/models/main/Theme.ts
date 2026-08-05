@@ -1,8 +1,16 @@
 import { type Theme as ThemeType } from '@appsemble/lang-sdk';
-import { AllowNull, Column, CreatedAt, DataType, Model, Table } from 'sequelize-typescript';
+import {
+  AllowNull,
+  Column,
+  CreatedAt,
+  DataType,
+  Default,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 
 @Table({ tableName: 'Theme', paranoid: false, updatedAt: false })
-export class Theme extends Model implements Omit<ThemeType, 'font' | 'tileLayer'> {
+export class Theme extends Model implements Omit<ThemeType, 'displayFont' | 'font' | 'tileLayer'> {
   @AllowNull(false)
   @Column(DataType.STRING)
   declare bulmaVersion: string;
@@ -46,6 +54,16 @@ export class Theme extends Model implements Omit<ThemeType, 'font' | 'tileLayer'
   @AllowNull(false)
   @Column(DataType.STRING)
   declare fontSource: string;
+
+  @AllowNull(false)
+  @Default('')
+  @Column(DataType.STRING)
+  declare displayFontFamily: string;
+
+  @AllowNull(false)
+  @Default('')
+  @Column(DataType.STRING)
+  declare displayFontSource: string;
 
   @AllowNull(false)
   @Column(DataType.TEXT)

@@ -42,6 +42,11 @@ describe('mergeThemes', () => {
     });
   });
 
+  it('should fill in the default display font source', () => {
+    const result = mergeThemes({ displayFont: { family: 'Baloo 2' } });
+    expect(result.displayFont).toStrictEqual({ family: 'Baloo 2', source: 'google' });
+  });
+
   it('should combine multiple themes', () => {
     const result = mergeThemes(
       { primaryColor: '#123456', successColor: '#789abc' },
@@ -85,6 +90,44 @@ describe('createThemeURL', () => {
     expect(result).toBe(
       `/bulma/${bulmaPkg.version}/bulma.min.css` +
         '?dangerColor=%23ff2800' +
+        '&fontFamily=Open+Sans' +
+        '&fontSource=google' +
+        '&infoColor=%23a7d0ff' +
+        '&linkColor=%230440ad' +
+        '&primaryColor=%23123456' +
+        '&splashColor=%23ffffff' +
+        '&successColor=%23abcdef' +
+        '&themeColor=%23ffffff' +
+        '&tileLayer=https%3A%2F%2Fexample.com' +
+        '&warningColor=%23fed719',
+    );
+  });
+
+  it('should include the display font when it is set', () => {
+    const result = createThemeURL({
+      dangerColor: '#ff2800',
+      displayFont: {
+        family: 'Baloo 2',
+        source: 'google',
+      },
+      font: {
+        family: 'Open Sans',
+        source: 'google',
+      },
+      infoColor: '#a7d0ff',
+      linkColor: '#0440ad',
+      primaryColor: '#123456',
+      splashColor: '#ffffff',
+      successColor: '#abcdef',
+      themeColor: '#ffffff',
+      tileLayer: 'https://example.com',
+      warningColor: '#fed719',
+    });
+    expect(result).toBe(
+      `/bulma/${bulmaPkg.version}/bulma.min.css` +
+        '?dangerColor=%23ff2800' +
+        '&displayFontFamily=Baloo+2' +
+        '&displayFontSource=google' +
         '&fontFamily=Open+Sans' +
         '&fontSource=google' +
         '&infoColor=%23a7d0ff' +

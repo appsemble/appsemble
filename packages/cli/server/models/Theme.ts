@@ -39,6 +39,12 @@ export class Theme {
   fontSource: string;
 
   // @ts-expect-error 2567 No initializer and not assigned in constructor
+  displayFontFamily: string;
+
+  // @ts-expect-error 2567 No initializer and not assigned in constructor
+  displayFontSource: string;
+
+  // @ts-expect-error 2567 No initializer and not assigned in constructor
   css: string;
 
   static create(values: Record<string, unknown>): Promise<Theme | null> {

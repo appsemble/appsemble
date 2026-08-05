@@ -73,7 +73,20 @@ This is used in various elements like the navbar.
       description: 'The tileLayer to use for Leaflet maps.',
     },
     font: {
-      description: 'The font to use in the app.',
+      description: `The body font of the app.
+
+This is the font used for regular text.
+`,
+      anyOf: [
+        { $ref: '#/components/schemas/CustomFontDefinition' },
+        { $ref: '#/components/schemas/GoogleFontDefinition' },
+      ],
+    },
+    displayFont: {
+      description: `The display font of the app.
+
+This is the font used for headings and other display text. It falls back to the body font.
+`,
       anyOf: [
         { $ref: '#/components/schemas/CustomFontDefinition' },
         { $ref: '#/components/schemas/GoogleFontDefinition' },

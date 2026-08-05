@@ -16,9 +16,18 @@ const checkRadioPath = require
 const bulmaSliderPath = require.resolve('bulma-slider/src/sass/index.sass').replaceAll('\\', '/');
 const bulmaSwitchPath = require.resolve('bulma-switch/src/sass/index.sass').replaceAll('\\', '/');
 
-interface QueryParamTheme extends Omit<Partial<ThemeType>, 'font'> {
+interface QueryParamTheme extends Omit<Partial<ThemeType>, 'displayFont' | 'font'> {
   fontFamily?: string;
   fontSource?: string;
+  displayFontFamily?: string;
+  displayFontSource?: string;
+}
+
+function createGoogleFontsImport(family: string): string {
+  const url = new URL('https://fonts.googleapis.com/css');
+  url.searchParams.set('display', 'swap');
+  url.searchParams.set('family', family);
+  return `@import url(${url});`;
 }
 
 function getQueryParameter<T>(value: T | T[]): T {
@@ -34,17 +43,20 @@ function getQueryParameter<T>(value: T | T[]): T {
 function processStyle(theme: QueryParamTheme): string {
   const fontSource = theme.fontSource || baseTheme.font.source;
   const fontFamily = theme.fontFamily || baseTheme.font.family;
-  let googleFontsImport = '';
+  const displayFontFamily = theme.displayFontFamily || fontFamily;
+  const displayFontSource = theme.displayFontSource || baseTheme.font.source;
+  const googleFontFamilies = new Set<string>();
   if (fontSource === 'google') {
-    const googleFontsUrl = new URL('https://fonts.googleapis.com/css');
-    googleFontsUrl.searchParams.set('display', 'swap');
-    googleFontsUrl.searchParams.set('family', fontFamily);
-    googleFontsImport = `@import url(${googleFontsUrl});`;
+    googleFontFamilies.add(fontFamily);
   }
+  if (theme.displayFontFamily && displayFontSource === 'google') {
+    googleFontFamilies.add(theme.displayFontFamily);
+  }
+  const googleFontsImports = [...googleFontFamilies].map(createGoogleFontsImport).join('\n    ');
 
   return `
     @charset "utf-8";
-    ${googleFontsImport}
+    ${googleFontsImports}
     $family-sans-serif: '${fontFamily}', sans-serif !default;
     $primary: ${theme.primaryColor || baseTheme.primaryColor};
     $link: ${theme.linkColor || baseTheme.linkColor};
@@ -81,6 +93,8 @@ function processStyle(theme: QueryParamTheme): string {
       --danger-color-invert: #{$danger-invert};
       --theme-color-invert: #{$themeColor-invert};
       --splash-color-invert: #{$splashColor-invert};
+      --font-family: '${fontFamily}', sans-serif;
+      --font-family-display: '${displayFontFamily}', sans-serif;
     }`;
 }
 
@@ -88,8 +102,10 @@ export function createBulmaHandler({ createTheme, getTheme }: Options): Middlewa
   return async (ctx: Context) => {
     const { query } = ctx;
 
-    const theme: Omit<Partial<ThemeType>, 'font'> & {
+    const theme: Omit<Partial<ThemeType>, 'displayFont' | 'font'> & {
       bulmaVersion: string;
+      displayFontFamily: string;
+      displayFontSource: string;
       fontFamily: string;
       fontSource: string;
     } = {
@@ -105,6 +121,8 @@ export function createBulmaHandler({ createTheme, getTheme }: Options): Middlewa
       fontFamily: getQueryParameter(query.fontFamily) || baseTheme.font.family,
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       fontSource: getQueryParameter(query.fontSource) || baseTheme.font.source,
+      displayFontFamily: getQueryParameter(query.displayFontFamily) || '',
+      displayFontSource: getQueryParameter(query.displayFontSource) || '',
     };
 
     const result = await getTheme({ theme });

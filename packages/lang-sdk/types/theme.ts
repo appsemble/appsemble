@@ -62,4 +62,11 @@ export interface Theme {
    * The name of a font available on Google fonts.
    */
   font: FontDefinition;
+
+  /**
+   * The font used for headings and other display text.
+   *
+   * This falls back to the body font.
+   */
+  displayFont?: FontDefinition;
 }
