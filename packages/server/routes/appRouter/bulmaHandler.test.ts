@@ -76,6 +76,21 @@ describe('bulmaHandler', () => {
     expect(theme!.displayFontSource).toBe('google');
   });
 
+  it('should persist a display font without a source as a google font', async () => {
+    const response = await request.get(`${bulmaUrl}&displayFontFamily=Baloo+2`);
+    expect(response.status).toBe(200);
+    expect(response.data).toContain(
+      '@import"https://fonts.googleapis.com/css?display=swap&family=Baloo+2"',
+    );
+
+    const theme = await vi.waitFor(async () => {
+      const persisted = await Theme.findOne();
+      expect(persisted).not.toBeNull();
+      return persisted;
+    });
+    expect(theme!.displayFontSource).toBe('google');
+  });
+
   it('should persist themes with different display fonts separately', async () => {
     await request.get(`${bulmaUrl}&displayFontFamily=Baloo+2&displayFontSource=google`);
     await vi.waitFor(async () => expect(await Theme.count()).toBe(1));

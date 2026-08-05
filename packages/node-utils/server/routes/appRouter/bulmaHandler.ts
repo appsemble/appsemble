@@ -122,7 +122,11 @@ export function createBulmaHandler({ createTheme, getTheme }: Options): Middlewa
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       fontSource: getQueryParameter(query.fontSource) || baseTheme.font.source,
       displayFontFamily: getQueryParameter(query.displayFontFamily) || '',
-      displayFontSource: getQueryParameter(query.displayFontSource) || '',
+      // A display family without a source is a google font, the same default `mergeThemes` applies,
+      // so both spellings of the same theme resolve to one cache entry.
+      displayFontSource:
+        getQueryParameter(query.displayFontSource) ||
+        (getQueryParameter(query.displayFontFamily) ? baseTheme.font.source : ''),
     };
 
     const result = await getTheme({ theme });
