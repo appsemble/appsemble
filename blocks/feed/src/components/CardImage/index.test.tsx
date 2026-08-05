@@ -35,6 +35,7 @@ it('should download original feed images from previews', async () => {
   const blob = new Blob(['image'], { type: 'image/png' });
   const fetch = vi.fn().mockResolvedValue({
     blob: vi.fn().mockResolvedValue(blob),
+    headers: new Headers({ 'Content-Disposition': 'inline; filename="feed-image.png"' }),
   });
   const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(vi.fn());
   const createObjectURL = vi.fn().mockReturnValue('blob:http://localhost/feed-image');

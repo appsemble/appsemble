@@ -148,6 +148,7 @@ it('should download original Appsemble assets from previews', async () => {
   const blob = new Blob(['image'], { type: 'image/png' });
   const fetch = vi.fn().mockResolvedValue({
     blob: vi.fn().mockResolvedValue(blob),
+    headers: new Headers({ 'Content-Disposition': 'inline; filename="course-image.png"' }),
   });
   const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(vi.fn());
   const createObjectURL = vi.fn().mockReturnValue('blob:http://localhost/course-image');
