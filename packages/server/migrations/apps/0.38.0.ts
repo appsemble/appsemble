@@ -5,6 +5,26 @@ import { resourcePartitionName } from '../../utils/resourcePartition.js';
 
 export const key = '0.38.0';
 
+async function alignResourceIdSequence(db: Sequelize, transaction: Transaction): Promise<void> {
+  await db.query(
+    `WITH resource_state AS (
+       SELECT COALESCE(MAX(id), 0) AS max_id FROM "Resource"
+     ), sequence_state AS (
+       SELECT last_value, is_called FROM "Resource_id_seq"
+     )
+     SELECT setval(
+       '"Resource_id_seq"',
+       CASE
+         WHEN resource_state.max_id = 0 AND NOT sequence_state.is_called THEN sequence_state.last_value
+         ELSE GREATEST(resource_state.max_id, sequence_state.last_value, 1)
+       END,
+       resource_state.max_id > 0 OR sequence_state.is_called
+     )
+     FROM resource_state, sequence_state`,
+    { transaction },
+  );
+}
+
 /**
  * Summary:
  * - Convert the single `Resource` table into a LIST-partitioned table on `type` (one partition per
@@ -83,6 +103,8 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     await db.query(`ALTER SEQUENCE ${seq} OWNED BY NONE`, { transaction });
   }
 
+  await alignResourceIdSequence(db, transaction);
+
   // Dropping the old table removes the single-column foreign keys that referenced it.
   await db.query('DROP TABLE "Resource_old" CASCADE', { transaction });
 
@@ -135,6 +157,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     { transaction },
   );
   await db.query('INSERT INTO "Resource" SELECT * FROM "Resource_partitioned"', { transaction });
+  await alignResourceIdSequence(db, transaction);
   // Dropping the partitioned table also drops its partitions and the composite foreign keys.
   await db.query('DROP TABLE "Resource_partitioned" CASCADE', { transaction });
 
