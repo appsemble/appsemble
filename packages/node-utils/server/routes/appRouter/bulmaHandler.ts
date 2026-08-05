@@ -124,6 +124,7 @@ export function createBulmaHandler({ createTheme, getTheme }: Options): Middlewa
       displayFontFamily: getQueryParameter(query.displayFontFamily) || '',
       // A display family without a source is a google font, the same default `mergeThemes` applies,
       // so both spellings of the same theme resolve to one cache entry.
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       displayFontSource:
         getQueryParameter(query.displayFontSource) ||
         (getQueryParameter(query.displayFontFamily) ? baseTheme.font.source : ''),
