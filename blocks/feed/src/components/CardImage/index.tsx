@@ -43,36 +43,30 @@ interface CardImageProps {
 
 export function CardImage({ alt, className, src }: CardImageProps): VNode {
   const modal = useToggle();
-  const downloadUrl = getOriginalAssetURL(src);
+  const isAppAsset = /\/api\/apps\/\d+\/assets\//.test(src);
+  const downloadUrl = isAppAsset ? getOriginalAssetURL(src) : null;
   const handleDownloadClick = useCallback(
     (event: MouseEvent) => {
       event.stopPropagation();
-      downloadAsset(downloadUrl);
+
+      if (downloadUrl) {
+        downloadAsset(downloadUrl);
+      }
     },
     [downloadUrl],
   );
-
-  return (
-    <>
-      <button
-        className={`${styles.figure} ${styles.button} ${className}`}
-        onClick={modal.enable}
-        type="button"
-      >
-        <figure className={styles.figure}>
-          <img alt={alt} className={styles.image} src={src} />
-        </figure>
-      </button>
-      <Modal isActive={modal.enabled} onClose={modal.disable}>
-        <button
-          aria-label={downloadTitle}
-          className={styles.download}
-          onClick={handleDownloadClick}
-          title={downloadTitle}
-          type="button"
-        >
-          <i className="fas fa-download" />
-        </button>
+  ...
+          {downloadUrl ? (
+            <button
+              aria-label={downloadTitle}
+              className={styles.download}
+              onClick={handleDownloadClick}
+              title={downloadTitle}
+              type="button"
+            >
+              <i className="fas fa-download" />
+            </button>
+          ) : null}
         <figure className="image">
           <img alt={alt} src={src} />
         </figure>

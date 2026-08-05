@@ -189,7 +189,7 @@ export function ImageComponent({
                     ? isAppAsset
                       ? size === 'auto'
                         ? src
-                        : `${src}?width=${Math.ceil(width! * getDevicePixelRatio())}&height=${Math.ceil(height! * getDevicePixelRatio())}`
+                        : `${src}${src.includes('?') ? '&' : '?'}width=${Math.ceil(width! * getDevicePixelRatio())}&height=${Math.ceil(height! * getDevicePixelRatio())}`
                       : src
                     : undefined
                 }
