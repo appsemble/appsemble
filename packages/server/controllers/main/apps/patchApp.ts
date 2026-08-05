@@ -9,6 +9,7 @@ import {
   assertKoaCondition,
   handleValidatorResult,
   logger,
+  replaceAssetFunctions,
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
@@ -33,7 +34,6 @@ import {
   createAppScreenshots,
   handleAppValidationError,
 } from '../../../utils/app.js';
-import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { findAppMemberByRole } from '../../../utils/appMember.js';
@@ -302,7 +302,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.coreStyle =
         validatedCoreStyle == null
           ? validatedCoreStyle
-          : replaceAssetFunctions(validatedCoreStyle, dbApp.id);
+          : replaceAssetFunctions(validatedCoreStyle, dbApp.id, argv.host);
     }
 
     if (sharedStyle !== undefined) {
@@ -310,7 +310,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.sharedStyle =
         validatedSharedStyle == null
           ? validatedSharedStyle
-          : replaceAssetFunctions(validatedSharedStyle, dbApp.id);
+          : replaceAssetFunctions(validatedSharedStyle, dbApp.id, argv.host);
     }
 
     if (icon) {

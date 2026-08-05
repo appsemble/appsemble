@@ -2,6 +2,7 @@ import {
   assertKoaCondition,
   getS3File,
   getS3FileStats,
+  replaceAssetFunctions,
   updateCompanionContainers,
   uploadS3File,
 } from '@appsemble/node-utils';
@@ -21,7 +22,7 @@ import {
   getAppDB,
 } from '../../../models/index.js';
 import { handleAppValidationError, setAppPath } from '../../../utils/app.js';
-import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
+import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { createAppBuildManifest } from '../../../utils/appBuildManifest.js';
@@ -141,14 +142,14 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     const appStyleUpdates: Partial<App> = {};
 
     if (record.coreStyle != null) {
-      const replacedCoreStyle = replaceAssetFunctions(record.coreStyle, record.id);
+      const replacedCoreStyle = replaceAssetFunctions(record.coreStyle, record.id, argv.host);
       if (replacedCoreStyle !== record.coreStyle) {
         appStyleUpdates.coreStyle = replacedCoreStyle;
       }
     }
 
     if (record.sharedStyle != null) {
-      const replacedSharedStyle = replaceAssetFunctions(record.sharedStyle, record.id);
+      const replacedSharedStyle = replaceAssetFunctions(record.sharedStyle, record.id, argv.host);
       if (replacedSharedStyle !== record.sharedStyle) {
         appStyleUpdates.sharedStyle = replacedSharedStyle;
       }
@@ -177,7 +178,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
           style:
             blockStyle.style == null
               ? blockStyle.style
-              : replaceAssetFunctions(blockStyle.style, record.id),
+              : replaceAssetFunctions(blockStyle.style, record.id, argv.host),
         })),
       );
     }

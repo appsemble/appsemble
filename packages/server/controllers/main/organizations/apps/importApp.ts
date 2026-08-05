@@ -10,6 +10,7 @@ import {
   assertKoaCondition,
   getSupportedLanguages,
   handleValidatorResult,
+  replaceAssetFunctions,
   type TempFile,
   uploadS3File,
 } from '@appsemble/node-utils';
@@ -36,7 +37,7 @@ import {
   handleAppValidationError,
   setAppPath,
 } from '../../../../utils/app.js';
-import { replaceAssetFunctions } from '../../../../utils/assetCssURL.js';
+import { argv } from '../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { getBlockVersions } from '../../../../utils/block.js';
 import { createDynamicIndexes } from '../../../../utils/dynamicIndexes.js';
@@ -122,14 +123,18 @@ export async function importApp(ctx: Context): Promise<void> {
         const appStyleUpdates: Partial<App> = {};
 
         if (record.coreStyle != null) {
-          const replacedCoreStyle = replaceAssetFunctions(record.coreStyle, record.id);
+          const replacedCoreStyle = replaceAssetFunctions(record.coreStyle, record.id, argv.host);
           if (replacedCoreStyle !== record.coreStyle) {
             appStyleUpdates.coreStyle = replacedCoreStyle;
           }
         }
 
         if (record.sharedStyle != null) {
-          const replacedSharedStyle = replaceAssetFunctions(record.sharedStyle, record.id);
+          const replacedSharedStyle = replaceAssetFunctions(
+            record.sharedStyle,
+            record.id,
+            argv.host,
+          );
           if (replacedSharedStyle !== record.sharedStyle) {
             appStyleUpdates.sharedStyle = replacedSharedStyle;
           }
@@ -269,7 +274,7 @@ export async function importApp(ctx: Context): Promise<void> {
               const style = validateStyle(await block.async('text'));
               await AppBlockStyle.create(
                 {
-                  style: replaceAssetFunctions(style, appId),
+                  style: replaceAssetFunctions(style, appId, argv.host),
                   block: `${orgName}/${blockName}`,
                 },
                 { transaction: appTransaction },
