@@ -1282,9 +1282,7 @@ staging:
     - helm delete staging --no-hooks || true
     # Replaces the skipped pre-delete cleanup hook: remove server-created app ingresses and TLS secrets
     - kubectl delete ingress,secret -l app.kubernetes.io/managed-by=staging-appsemble || true
-    # TEMPORARY (#1731 migration test): PVC deletion disabled so a restored prod backup survives the
-    # staging redeploy and migration 0.38.0 runs against real data. Revert this line before merging.
-    # - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
+    - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
     - kubectl delete namespace "companion-containers-staging" || true
     - kubectl delete secret staging-mailpit-tls || true
     - apk add --no-cache openssl
