@@ -43,6 +43,7 @@ export * from './container/index.js';
 export * from './s3.js';
 export * from './uploads.js';
 export * from './assets.js';
+export * from './assetCssURL.js';
 export * from './getValidTrainings.js';
 export * from './PhoneNumberValidationError.js';
 export * from './createUser.js';

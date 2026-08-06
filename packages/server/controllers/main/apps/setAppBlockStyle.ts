@@ -1,10 +1,10 @@
-import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, replaceAssetFunctions, throwKoaError } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { StyleValidationError, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, BlockVersion, getAppDB } from '../../../models/index.js';
-import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
+import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 
@@ -39,7 +39,7 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
     const { AppBlockStyle } = await getAppDB(appId);
     await (css.length
       ? AppBlockStyle.upsert({
-          style: replaceAssetFunctions(css, appId),
+          style: replaceAssetFunctions(css, appId, argv.host),
           block: `@${block.OrganizationId}/${block.name}`,
         })
       : AppBlockStyle.destroy({

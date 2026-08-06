@@ -1,5 +1,3 @@
-import { argv } from './argv.js';
-
 const assetUrlMatcher = /url\(\s*asset\(\s*(?:("|')(.*?)\1|([^\s"'()][^)]*))\s*\)\s*\)/g;
 const standaloneAssetMatcher = /asset\(\s*(?:("|')(.*?)\1|([^\s"'()][^)]*))\s*\)/g;
 const urlMatcher = /url\(\s*(?:("|')(.*?)\1|([^\s"'()][^)]*))\s*\)/g;
@@ -37,7 +35,7 @@ function hasRejectedTokens(value: string): boolean {
   return false;
 }
 
-function rewriteAppAssetURL(url: string, appId: number): string {
+function rewriteAppAssetURL(url: string, appId: number, host: string): string {
   const trimmedUrl = url.trim();
 
   if (trimmedUrl.startsWith('/')) {
@@ -51,11 +49,11 @@ function rewriteAppAssetURL(url: string, appId: number): string {
       return trimmedUrl;
     }
 
-    return String(new URL(`/api/apps/${appId}/assets/${appAssetPath}`, argv.host));
+    return String(new URL(`/api/apps/${appId}/assets/${appAssetPath}`, host));
   }
 
   try {
-    const parsedUrl = new URL(trimmedUrl, argv.host);
+    const parsedUrl = new URL(trimmedUrl, host);
     const appAssetPathMatch = appAssetPathMatcher.exec(parsedUrl.pathname);
     if (!appAssetPathMatch) {
       return trimmedUrl;
@@ -66,7 +64,7 @@ function rewriteAppAssetURL(url: string, appId: number): string {
       return trimmedUrl;
     }
 
-    const rewrittenUrl = new URL(`/api/apps/${appId}/assets/${appAssetPath}`, argv.host);
+    const rewrittenUrl = new URL(`/api/apps/${appId}/assets/${appAssetPath}`, host);
     rewrittenUrl.search = parsedUrl.search;
     rewrittenUrl.hash = parsedUrl.hash;
 
@@ -76,7 +74,7 @@ function rewriteAppAssetURL(url: string, appId: number): string {
   }
 }
 
-function resolveAssetURL(appId: number, assetId: string): string | null {
+function resolveAssetURL(appId: number, assetId: string, host: string): string | null {
   if (assetId.startsWith('data:')) {
     return assetId;
   }
@@ -87,13 +85,13 @@ function resolveAssetURL(appId: number, assetId: string): string | null {
       return null;
     }
 
-    return rewriteAppAssetURL(assetId, appId);
+    return rewriteAppAssetURL(assetId, appId, host);
   }
 
   if (/^https?:\/\//.test(assetId)) {
     const trimmedAssetId = assetId.trim();
     try {
-      const parsedUrl = new URL(trimmedAssetId, argv.host);
+      const parsedUrl = new URL(trimmedAssetId, host);
       const appAssetPathMatch = appAssetPathMatcher.exec(parsedUrl.pathname);
       if (appAssetPathMatch && hasRejectedTokens(appAssetPathMatch[1])) {
         return null;
@@ -102,17 +100,29 @@ function resolveAssetURL(appId: number, assetId: string): string | null {
       return null;
     }
 
-    return rewriteAppAssetURL(assetId, appId);
+    return rewriteAppAssetURL(assetId, appId, host);
   }
 
   if (hasRejectedTokens(assetId)) {
     return null;
   }
 
-  return String(new URL(`/api/apps/${appId}/assets/${assetId}`, argv.host));
+  return String(new URL(`/api/apps/${appId}/assets/${assetId}`, host));
 }
 
-export function replaceAssetFunctions(css: string, appId: number | undefined): string {
+/**
+ * Resolve `asset()` functions and app asset URLs in CSS to absolute app asset URLs.
+ *
+ * @param css The CSS to process.
+ * @param appId The id of the app the assets belong to.
+ * @param host The host on which the app asset endpoints are available.
+ * @returns The CSS with all app asset references resolved.
+ */
+export function replaceAssetFunctions(
+  css: string,
+  appId: number | undefined,
+  host: string,
+): string {
   if (!appId) {
     return css;
   }
@@ -126,7 +136,7 @@ export function replaceAssetFunctions(css: string, appId: number | undefined): s
       return match;
     }
 
-    const resolvedAssetUrl = resolveAssetURL(appId, assetId);
+    const resolvedAssetUrl = resolveAssetURL(appId, assetId, host);
 
     if (!resolvedAssetUrl) {
       return match;
@@ -148,7 +158,7 @@ export function replaceAssetFunctions(css: string, appId: number | undefined): s
       return match;
     }
 
-    const rewrittenUrl = rewriteAppAssetURL(url, appId);
+    const rewrittenUrl = rewriteAppAssetURL(url, appId, host);
     if (rewrittenUrl === url) {
       return match;
     }
