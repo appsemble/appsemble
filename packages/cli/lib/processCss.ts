@@ -10,7 +10,7 @@ import postcssUrl from 'postcss-url';
  * Load the PostCSS plugins to process app CSS with.
  *
  * The PostCSS config of the project is used if it has one. Otherwise the CSS is processed with the
- * plugins the Appsemble CLI ships with.
+ * Appsemble CLI's default PostCSS preset.
  *
  * @returns The PostCSS plugins to use.
  */
