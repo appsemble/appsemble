@@ -7,6 +7,8 @@ import { QueryTypes, type Transaction } from 'sequelize';
 
 import { getAppDB } from '../models/index.js';
 
+const resourceCompatibilityBatchSize = 100;
+
 export class ResourceSchemaConflictError extends AppsembleError {
   readonly resourceType: string;
 
@@ -133,17 +135,32 @@ export async function assertResourceSchemaCompatibility(
 
     const guardSchema = allowAdditionalProperties(nextDefinition.schema) as Schema;
 
-    const rows = await sequelize.query<{ data: unknown }>(
-      'SELECT data FROM "Resource" WHERE type = :type AND deleted IS NULL',
-      { replacements: { type: resourceType }, transaction, type: QueryTypes.SELECT },
-    );
+    let lastId = 0;
+    for (;;) {
+      const rows = await sequelize.query<{ data: unknown; id: number }>(
+        `SELECT id, data FROM "Resource"
+           WHERE type = :type AND deleted IS NULL AND id > :lastId
+           ORDER BY id LIMIT :limit`,
+        {
+          replacements: { lastId, limit: resourceCompatibilityBatchSize, type: resourceType },
+          transaction,
+          type: QueryTypes.SELECT,
+        },
+      );
 
-    const hasIncompatibleRow = rows.some(
-      (row) => !validator.validate(row.data, guardSchema, { nestedErrors: true }).valid,
-    );
+      if (rows.length === 0) {
+        break;
+      }
 
-    if (hasIncompatibleRow) {
-      throw new ResourceSchemaConflictError(resourceType);
+      const hasIncompatibleRow = rows.some(
+        (row) => !validator.validate(row.data, guardSchema, { nestedErrors: true }).valid,
+      );
+
+      if (hasIncompatibleRow) {
+        throw new ResourceSchemaConflictError(resourceType);
+      }
+
+      lastId = rows.at(-1)!.id;
     }
   }
 }
