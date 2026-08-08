@@ -63,11 +63,12 @@ export default function usePageGridCss({
         css += `
 @media (min-width: ${minWidth}px) {
   .${className} {
-    padding: calc(${padding} * ${unit});
+    --appsemble-page-grid-spacing-unit: ${unit};
+    padding: calc(${padding} * var(--appsemble-page-grid-spacing-unit));
     display: grid;
     grid-template-columns: repeat(${columns}, minmax(0, 1fr));
     grid-template-areas: ${templateString};
-    gap: calc(${gap} * ${unit});
+    gap: calc(${gap} * var(--appsemble-page-grid-spacing-unit));
   }
 }
 `;
