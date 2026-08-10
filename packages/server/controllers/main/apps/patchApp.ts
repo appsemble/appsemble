@@ -428,9 +428,6 @@ export async function patchApp(ctx: Context): Promise<void> {
         await appDB.transaction(async (appTransaction) => {
           const { resources: nextResources } = result.definition!;
 
-          // Run the unique-index sync first: its field-specific value error is a more precise
-          // message than the general schema-compatibility conflict for the overlapping case where a
-          // retyped, newly-unique field also fails to cast.
           await syncResourceUniqueIndexes(
             appId,
             previousResourceDefinitions,

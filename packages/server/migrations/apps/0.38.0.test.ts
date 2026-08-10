@@ -1,7 +1,7 @@
 import { QueryTypes, type Sequelize } from 'sequelize';
 import { describe, expect, it } from 'vitest';
 
-import { up } from './0.38.0.js';
+import { down, up } from './0.38.0.js';
 import { App, getAppDB, Organization } from '../../models/index.js';
 
 async function seedApp(): Promise<number> {
@@ -157,5 +157,58 @@ describe('migration 0.38.0', () => {
       { type: QueryTypes.SELECT },
     );
     expect(old).toBeNull();
+  });
+
+  it('converts the partitioned Resource table back to the single-table shape', async () => {
+    const appId = await seedApp();
+    const { sequelize } = await getAppDB(appId);
+    await regressToSingleTable(sequelize);
+
+    await sequelize.query(`
+      INSERT INTO "Resource" (type, data, created, updated) VALUES
+        ('training', '{"t":1}', now(), now()),
+        ('course',   '{"c":1}', now(), now())`);
+    await sequelize.transaction((transaction) => up(transaction, sequelize));
+    await sequelize.query(
+      `INSERT INTO "Resource" (type, data, created, updated)
+         VALUES ('lesson', '{"l":1}', now(), now())`,
+    );
+
+    await sequelize.transaction((transaction) => down(transaction, sequelize));
+
+    const [{ relkind }] = await sequelize.query<{ relkind: string }>(
+      `SELECT relkind FROM pg_class WHERE relname = 'Resource'`,
+      { type: QueryTypes.SELECT },
+    );
+    expect(relkind).toBe('r');
+
+    const [{ resourceTypeColumn }] = await sequelize.query<{ resourceTypeColumn: boolean }>(
+      `SELECT EXISTS (
+         SELECT 1 FROM information_schema.columns
+         WHERE table_name = 'Asset' AND column_name = 'ResourceType'
+       ) AS "resourceTypeColumn"`,
+      { type: QueryTypes.SELECT },
+    );
+    expect(resourceTypeColumn).toBe(false);
+
+    const [{ resources }] = await sequelize.query<{ resources: number }>(
+      `SELECT count(*)::int AS resources FROM "Resource"`,
+      { type: QueryTypes.SELECT },
+    );
+    expect(resources).toBe(3);
+
+    const [{ fks }] = await sequelize.query<{ fks: number }>(
+      `SELECT count(*)::int AS fks FROM pg_constraint
+         WHERE conrelid IN (
+           '"Asset"'::regclass,
+           '"ResourceVersion"'::regclass,
+           '"ResourceSubscription"'::regclass
+         )
+           AND contype = 'f'
+           AND confrelid = '"Resource"'::regclass
+           AND cardinality(conkey) = 1`,
+      { type: QueryTypes.SELECT },
+    );
+    expect(fks).toBe(3);
   });
 });

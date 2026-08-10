@@ -739,7 +739,7 @@ describe('reseedDemoApp', () => {
     expect(oldEphemeralMembers).toStrictEqual([]);
   });
 
-  it('should preserve the resource link on reseeded assets', async () => {
+  it('should keep reseeded resource assets linked to their resource', async () => {
     vi.useRealTimers();
     authorizeStudio();
     const { id: appId } = await App.create({
@@ -774,8 +774,6 @@ describe('reseedDemoApp', () => {
       },
     }))!;
 
-    // The composite FK to Resource(id, type) only holds when the reseeded asset keeps its
-    // ResourceType, so a linked seed asset must carry the type across a reseed.
     expect(newEphemeralAsset).toStrictEqual(
       expect.objectContaining({
         ResourceId: seedResourceId,

@@ -4,7 +4,7 @@ import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
 import { migrations } from '../migrations/main/index.js';
-import { initDB } from '../models/index.js';
+import { App, closeAppDB, getAppDB, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
@@ -53,6 +53,11 @@ export async function handler(): Promise<void> {
   }
 
   await migrate(db, migrateTo, migrations);
+  const apps = await App.findAll({ attributes: ['id'] });
+  for (const app of apps) {
+    await getAppDB(app.id, db);
+    await closeAppDB(app.id);
+  }
   await db.close();
   process.exit();
 }

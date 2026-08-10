@@ -700,6 +700,58 @@ describe('patchApp', () => {
     expect(response.status).toBe(200);
   });
 
+  it('should allow unchanged resource schemas without checking existing resources', async () => {
+    const resourceDefinition: ResourceDefinition = {
+      schema: {
+        additionalProperties: false,
+        type: 'object',
+        properties: { foo: { type: 'string' } },
+      },
+    };
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: resourceDefinition,
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 123 } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: string
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(200);
+  });
+
   it('should allow removing a property even when additionalProperties constrains extra data', async () => {
     const app = await App.create({
       definition: {
@@ -1052,6 +1104,71 @@ describe('patchApp', () => {
     expect(beforePatch[0].indexDefinition).not.toContain('::bigint');
     expect(afterPatch[0].indexDefinition).toContain('::bigint');
     expect(removedIndex).toStrictEqual([]);
+  });
+
+  it('should keep the existing unique index when recreating it fails', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            unique: ['foo'],
+            schema: { type: 'object', properties: { foo: { type: 'string' } } },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource, sequelize } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'not a number' } });
+    await syncResourceUniqueIndexes(app.id, undefined, app.definition.resources);
+
+    const previousIndexName = getResourceUniqueIndexName(
+      'testResource',
+      ['foo'],
+      app.definition.resources!.testResource,
+    );
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: integer
+              unique:
+                - foo
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.data.data.code).toBe('RESOURCE_UNIQUE_CONSTRAINT_VALUE_ERROR');
+
+    const indexes = (await sequelize
+      .getQueryInterface()
+      .showIndex(resourcePartitionName('testResource'))) as {
+      name: string;
+    }[];
+    expect(indexes.map(({ name }) => name)).toContain(previousIndexName);
   });
 
   it('should reject adding a unique constraint if duplicate resources already exist', async () => {
