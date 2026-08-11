@@ -150,8 +150,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     let Resource = OldResource;
     let appDB = oldAppDB;
     const previousResourceDefinitions = dbApp.definition.resources as
-      | Record<string, ResourceDefinition>
-      | undefined;
+      Record<string, ResourceDefinition> | undefined;
 
     const permissionsToCheck: OrganizationPermission[] = [];
     if (yaml) {
