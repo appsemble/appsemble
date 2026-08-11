@@ -398,7 +398,8 @@ describe('createAppResource', () => {
       },
     };
     await app.update({ definition });
-    await syncResourceUniqueIndexes(app.id, undefined, definition.resources);
+    const { sequelize } = await getAppDB(app.id);
+    await syncResourceUniqueIndexes(sequelize, undefined, definition.resources);
 
     authorizeStudio();
     const firstResponse = await request.post(`/api/apps/${app.id}/resources/testResource`, {

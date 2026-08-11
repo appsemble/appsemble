@@ -561,9 +561,9 @@ describe('updateAppResource', () => {
       },
     };
     await app.update({ definition });
-    await syncResourceUniqueIndexes(app.id, undefined, definition.resources);
 
-    const { Resource } = await getAppDB(app.id);
+    const { Resource, sequelize } = await getAppDB(app.id);
+    await syncResourceUniqueIndexes(sequelize, undefined, definition.resources);
     const [firstResource, secondResource] = await Promise.all([
       Resource.create({ type: 'testResource', data: { foo: 'first' } }),
       Resource.create({ type: 'testResource', data: { foo: 'second' } }),

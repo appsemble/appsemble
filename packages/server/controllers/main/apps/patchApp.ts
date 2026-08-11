@@ -41,9 +41,8 @@ import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
-import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
+import { syncAppDefinitionIndexes } from '../../../utils/appDefinitionIndexes.js';
 import { assertResourceSchemaCompatibility } from '../../../utils/resourceSchemaCompatibility.js';
-import { syncResourceUniqueIndexes } from '../../../utils/resourceUniqueIndexes.js';
 import { createAppBuildManifest, pruneAppBuildSnapshots } from '../../../utils/appBuildManifest.js';
 import { isValidSentryDsn } from '../../../utils/sentry.js';
 
@@ -428,12 +427,13 @@ export async function patchApp(ctx: Context): Promise<void> {
         await appDB.transaction(async (appTransaction) => {
           const { resources: nextResources } = result.definition!;
 
-          await syncResourceUniqueIndexes(
+          await syncAppDefinitionIndexes({
             appId,
-            previousResourceDefinitions,
-            nextResources as Record<string, ResourceDefinition> | undefined,
-            appTransaction,
-          );
+            previousResources: previousResourceDefinitions,
+            resources: nextResources as Record<string, ResourceDefinition> | undefined,
+            sequelize: appDB,
+            transaction: appTransaction,
+          });
 
           await assertResourceSchemaCompatibility(
             appId,
@@ -454,12 +454,6 @@ export async function patchApp(ctx: Context): Promise<void> {
             let group: string[] | undefined;
             try {
               if (enforceOrderingGroupByFields) {
-                await createDynamicIndexes(
-                  enforceOrderingGroupByFields,
-                  appId,
-                  key,
-                  appTransaction,
-                );
                 group = enforceOrderingGroupByFields.map((field) => `data.${field}`);
               }
               const resourcesToUpdate = await Resource.findAll({

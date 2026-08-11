@@ -11,7 +11,6 @@ import { type Schema, Validator } from 'jsonschema';
 import { type Context } from 'koa';
 import { QueryTypes, type Sequelize, UniqueConstraintError, type Transaction } from 'sequelize';
 
-import { getAppDB } from '../models/index.js';
 import { resourcePartitionName } from './resourcePartition.js';
 
 const schemaValidator = new Validator();
@@ -330,13 +329,12 @@ function getDesiredResourceUniqueIndexes(
 }
 
 async function assertNoDuplicateResourceConstraintValues(
+  sequelize: Sequelize,
   resourceType: string,
   fields: string[],
   expressions: string[],
-  appId: number,
   transaction?: Transaction,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
   const aliases = expressions.map((unused, index) => `value${index}`);
   const escapedResourceType = sequelize.escape(resourceType);
   const nonNullChecks = aliases.map((alias) => `"${alias}" IS NOT NULL`).join(' AND ');
@@ -408,20 +406,19 @@ function getResourceUniqueConstraintValueError(
 }
 
 async function createResourceUniqueIndex(
-  appId: number,
+  sequelize: Sequelize,
   specification: { expressions: string[]; fields: string[]; name: string; resourceType: string },
   resourceDefinition: ResourceDefinition,
   transaction?: Transaction,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
   const indexExpressions = specification.expressions.map((expression) => `(${expression})`);
 
   try {
     await assertNoDuplicateResourceConstraintValues(
+      sequelize,
       specification.resourceType,
       specification.fields,
       specification.expressions,
-      appId,
       transaction,
     );
 
@@ -446,21 +443,20 @@ async function createResourceUniqueIndex(
 }
 
 async function recreateResourceUniqueIndex(
-  appId: number,
+  sequelize: Sequelize,
   specification: { expressions: string[]; fields: string[]; name: string; resourceType: string },
   resourceDefinition: ResourceDefinition,
   transaction?: Transaction,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
   const previousIndexName = `${specification.name}_old`;
   const indexExpressions = specification.expressions.map((expression) => `(${expression})`);
 
   try {
     await assertNoDuplicateResourceConstraintValues(
+      sequelize,
       specification.resourceType,
       specification.fields,
       specification.expressions,
-      appId,
       transaction,
     );
 
@@ -491,12 +487,10 @@ async function recreateResourceUniqueIndex(
 }
 
 async function dropResourceUniqueIndex(
-  appId: number,
+  sequelize: Sequelize,
   indexName: string,
   transaction?: Transaction,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
-
   await sequelize.getQueryInterface().removeIndex('Resource', indexName, { transaction });
 }
 
@@ -511,19 +505,17 @@ async function dropResourceUniqueIndex(
  * cloning, prefer passing the surrounding app DB transaction so definition
  * changes and index changes stay atomic.
  *
- * @param appId The app whose per-app resource database should be updated.
+ * @param sequelize The app database connection.
  * @param previousDefinitions The resource definitions before the change.
  * @param nextDefinitions The resource definitions after the change.
  * @param transaction The surrounding app DB transaction, when available.
  */
 export async function syncResourceUniqueIndexes(
-  appId: number,
+  sequelize: Sequelize,
   previousDefinitions?: Record<string, ResourceDefinition>,
   nextDefinitions?: Record<string, ResourceDefinition>,
   transaction?: Transaction,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
-
   for (const resourceType of Object.keys(nextDefinitions ?? {})) {
     await ensureResourcePartition(sequelize, resourceType, transaction);
   }
@@ -542,18 +534,18 @@ export async function syncResourceUniqueIndexes(
     }
 
     if (!previousSpecification) {
-      await createResourceUniqueIndex(appId, specification, resourceDefinition, transaction);
+      await createResourceUniqueIndex(sequelize, specification, resourceDefinition, transaction);
       continue;
     }
 
     if (previousSpecification.expressions.join(',') !== specification.expressions.join(',')) {
-      await recreateResourceUniqueIndex(appId, specification, resourceDefinition, transaction);
+      await recreateResourceUniqueIndex(sequelize, specification, resourceDefinition, transaction);
     }
   }
 
   for (const indexName of previousIndexes.keys()) {
     if (!nextIndexes.has(indexName)) {
-      await dropResourceUniqueIndex(appId, indexName, transaction);
+      await dropResourceUniqueIndex(sequelize, indexName, transaction);
     }
   }
 }
@@ -572,7 +564,7 @@ export async function syncResourceUniqueIndexes(
  * transaction, prefer passing that same transaction here to keep the preflight
  * query aligned with the rest of that operation.
  *
- * @param appId The app whose per-app resource database should be checked.
+ * @param sequelize The app database connection.
  * @param resourceType The resource type being written.
  * @param resourceDefinition The resource definition that contains `unique`.
  * @param resources The resource payloads to validate.
@@ -580,14 +572,13 @@ export async function syncResourceUniqueIndexes(
  * @param excludeResourceId An optional resource id to ignore during updates.
  */
 export async function assertResourceUniqueConstraintValues(
-  appId: number,
+  sequelize: Sequelize,
   resourceType: string,
   resourceDefinition: ResourceDefinition,
   resources: Record<string, unknown>[],
   transaction?: Transaction,
   excludeResourceId?: number,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
   const escapeValue = (value: SqlLiteralValue): string =>
     typeof value === 'boolean' ? String(value) : sequelize.escape(value);
   const seenValues = new Set<string>();

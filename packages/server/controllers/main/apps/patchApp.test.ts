@@ -982,7 +982,8 @@ describe('patchApp', () => {
       OrganizationId: organization.id,
     });
 
-    await syncResourceUniqueIndexes(app.id, undefined, app.definition.resources);
+    const { sequelize } = await getAppDB(app.id);
+    await syncResourceUniqueIndexes(sequelize, undefined, app.definition.resources);
 
     authorizeStudio(user);
     const { status } = await request.patch(
@@ -1010,7 +1011,6 @@ describe('patchApp', () => {
 
     expect(status).toBe(200);
 
-    const { sequelize } = await getAppDB(app.id);
     const indexes = (await sequelize
       .getQueryInterface()
       .showIndex(resourcePartitionName('testResource'))) as {
@@ -1040,9 +1040,8 @@ describe('patchApp', () => {
       OrganizationId: organization.id,
     });
 
-    await syncResourceUniqueIndexes(app.id, undefined, app.definition.resources);
-
     const { sequelize } = await getAppDB(app.id);
+    await syncResourceUniqueIndexes(sequelize, undefined, app.definition.resources);
     const previousIndexName = getResourceUniqueIndexName(
       'testResource',
       ['foo'],
@@ -1126,7 +1125,7 @@ describe('patchApp', () => {
 
     const { Resource, sequelize } = await getAppDB(app.id);
     await Resource.create({ type: 'testResource', data: { foo: 'not a number' } });
-    await syncResourceUniqueIndexes(app.id, undefined, app.definition.resources);
+    await syncResourceUniqueIndexes(sequelize, undefined, app.definition.resources);
 
     const previousIndexName = getResourceUniqueIndexName(
       'testResource',

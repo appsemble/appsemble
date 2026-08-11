@@ -1,14 +1,21 @@
+import { type AppDefinition } from '@appsemble/lang-sdk';
 import { QueryTypes, type Sequelize } from 'sequelize';
 import { describe, expect, it } from 'vitest';
 
 import { down, up } from './0.38.0.js';
 import { App, getAppDB, Organization } from '../../models/index.js';
+import { syncAppDefinitionIndexes } from '../../utils/appDefinitionIndexes.js';
 
-async function seedApp(): Promise<number> {
+const defaultDefinition = {
+  name: 'Test App',
+  defaultPage: 'Test',
+} satisfies Partial<AppDefinition>;
+
+async function seedApp(definition: Partial<AppDefinition> = defaultDefinition): Promise<number> {
   await Organization.create({ id: 'testorganization', name: 'Test Organization' });
   const app = await App.create({
     OrganizationId: 'testorganization',
-    definition: { name: 'Test App', defaultPage: 'Test' },
+    definition,
     path: 'test-app',
     vapidPublicKey: 'a',
     vapidPrivateKey: 'b',
@@ -87,6 +94,48 @@ describe('migration 0.38.0', () => {
       { type: QueryTypes.SELECT },
     );
     expect(row.data.name).toBe('c1');
+  });
+
+  it('enforces definition unique indexes after migrating an existing app database', async () => {
+    const definition = {
+      defaultPage: 'Test',
+      name: 'Test App',
+      resources: {
+        customer: {
+          schema: {
+            type: 'object',
+            properties: { email: { type: 'string' } },
+          },
+          unique: ['email'],
+        },
+      },
+    } satisfies Partial<AppDefinition>;
+    const appId = await seedApp(definition);
+    const { sequelize } = await getAppDB(appId);
+    await regressToSingleTable(sequelize);
+
+    await sequelize.query(`
+      INSERT INTO "Resource" (type, data, created, updated)
+      VALUES ('customer', '{"email":"taken@example.com"}', now(), now())`);
+
+    await sequelize.transaction((transaction) => up(transaction, sequelize));
+    await sequelize.transaction((transaction) =>
+      syncAppDefinitionIndexes({
+        appId,
+        resources: definition.resources,
+        sequelize,
+        transaction,
+      }),
+    );
+
+    await expect(
+      sequelize.query(
+        `INSERT INTO "Resource" (type, data, created, updated)
+         VALUES ('customer', '{"email":"taken@example.com"}', now(), now())`,
+      ),
+    ).rejects.toMatchObject({
+      parent: { code: '23505' },
+    });
   });
 
   it('backfills ResourceType on aux tables, wires composite FKs that cascade, and drops Resource_old', async () => {
