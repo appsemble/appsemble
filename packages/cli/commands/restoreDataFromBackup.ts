@@ -44,7 +44,7 @@ export function builder(yargs: Argv): Argv<any> {
     .option('restoreBackupFilename', {
       type: 'string',
       describe:
-        'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz',
+        'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz, or latest',
       demandOption: true,
     });
 }

@@ -298,12 +298,15 @@ describe('restoreDataFromBackup', () => {
 
     expect(failed).toBe(false);
     expect(listS3Files).toHaveBeenCalledWith('backup-bucket', 'sql/main/appsemble_prod_backup_');
+    expect(vi.mocked(listS3Files).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(spawn).mock.invocationCallOrder[0],
+    );
     expect(getS3File).toHaveBeenCalledWith(
       'backup-bucket',
       'sql/main/appsemble_prod_backup_20250102000000000.sql.gz',
     );
     expect(spawn).toHaveBeenNthCalledWith(
-      1,
+      2,
       'psql',
       [
         '--dbname=postgres://postgres',
@@ -352,10 +355,10 @@ describe('restoreDataFromBackup', () => {
     });
     vi.mocked(App.findAll).mockResolvedValue([app]);
 
-    let spawnCallCount = 0;
-    vi.mocked(spawn).mockImplementation(() => {
-      spawnCallCount += 1;
-      return createChildProcessMock(spawnCallCount === 3 ? 1 : 0) as unknown as SpawnReturn;
+    // Restoring is the only psql invocation without a `-c` statement.
+    vi.mocked(spawn).mockImplementation((...args) => {
+      const psqlArgs = args[1] as readonly string[];
+      return createChildProcessMock(psqlArgs.includes('-c') ? 0 : 1) as unknown as SpawnReturn;
     });
 
     const failed = await restoreDataFromBackup(baseOptions);

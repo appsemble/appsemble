@@ -97,6 +97,29 @@ async function resolveRestoreBackupFilename({
 async function recreateDatabase(dbName: string, adminUri: string): Promise<void> {
   logger.info(`Dropping and recreating database: ${dbName}`);
 
+  // The Appsemble deployment keeps sessions open on the database, which makes PostgreSQL refuse to
+  // drop it.
+  const terminateProc = spawn(
+    'psql',
+    [
+      `--dbname=${adminUri}`,
+      '-v',
+      'ON_ERROR_STOP=1',
+      '-c',
+      `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${dbName}' AND pid <> pg_backend_pid();`,
+    ],
+    {
+      stdio: ['inherit', 'inherit', 'inherit'],
+    },
+  );
+
+  const [terminateCode] = await once(terminateProc, 'close');
+  if (terminateCode !== 0) {
+    throw new Error(
+      `Failed to terminate connections to database ${dbName} (exit code ${terminateCode})`,
+    );
+  }
+
   const dropProc = spawn(
     'psql',
     [
