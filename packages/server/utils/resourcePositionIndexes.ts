@@ -5,24 +5,28 @@ export async function syncResourcePositionIndex(
   sequelize: Sequelize,
   appId: number,
   resourceType: string,
-  enforceOrderingGroupByFields: string[],
+  enforceOrderingGroupByFields: string[] = [],
   transaction?: Transaction,
 ): Promise<void> {
-  const orderingFields = enforceOrderingGroupByFields
-    .map((field) => `(data->>${sequelize.escape(field)})`)
-    .join(', ');
+  const orderingFields = enforceOrderingGroupByFields.map(
+    (field) => `(data->>${sequelize.escape(field)})`,
+  );
+  const groupedColumns = ['type', '"Position"', ...orderingFields, '"GroupId"', 'ephemeral'].join(
+    ', ',
+  );
+  const ungroupedColumns = ['type', '"Position"', ...orderingFields, 'ephemeral'].join(', ');
 
   await sequelize.query(
     `
 CREATE UNIQUE INDEX IF NOT EXISTS
 "UniquePosition${resourceType}WithGroupIDAppID${appId}"
-on "Resource"(type, "Position", ${orderingFields}, "GroupId", ephemeral, deleted)
-WHERE "GroupId" IS NOT NULL;
+on "Resource"(${groupedColumns})
+WHERE "GroupId" IS NOT NULL AND deleted IS NULL;
 
 CREATE UNIQUE INDEX IF NOT EXISTS
 "UniquePosition${resourceType}WithNULLGroupIDAppID${appId}"
-on "Resource"(type, "Position", ${orderingFields}, ephemeral, deleted)
-WHERE "GroupId" IS NULL;`,
+on "Resource"(${ungroupedColumns})
+WHERE "GroupId" IS NULL AND deleted IS NULL;`,
     { transaction },
   );
 }
@@ -36,12 +40,12 @@ export async function syncResourcePositionIndexes(
   for (const [resourceType, { enforceOrderingGroupByFields, positioning }] of Object.entries(
     resourceDefinitions,
   )) {
-    if (positioning && enforceOrderingGroupByFields) {
+    if (positioning) {
       await syncResourcePositionIndex(
         sequelize,
         appId,
         resourceType,
-        enforceOrderingGroupByFields,
+        enforceOrderingGroupByFields ?? [],
         transaction,
       );
     }

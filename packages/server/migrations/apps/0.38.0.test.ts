@@ -108,6 +108,13 @@ describe('migration 0.38.0', () => {
           },
           unique: ['email'],
         },
+        task: {
+          positioning: true,
+          schema: {
+            type: 'object',
+            properties: { title: { type: 'string' } },
+          },
+        },
       },
     } satisfies Partial<AppDefinition>;
     const appId = await seedApp(definition);
@@ -117,6 +124,9 @@ describe('migration 0.38.0', () => {
     await sequelize.query(`
       INSERT INTO "Resource" (type, data, created, updated)
       VALUES ('customer', '{"email":"taken@example.com"}', now(), now())`);
+    await sequelize.query(`
+      INSERT INTO "Resource" (type, data, "Position", created, updated)
+      VALUES ('task', '{"title":"first"}', 10, now(), now())`);
 
     await sequelize.transaction((transaction) => up(transaction, sequelize));
     await sequelize.transaction((transaction) =>
@@ -132,6 +142,14 @@ describe('migration 0.38.0', () => {
       sequelize.query(
         `INSERT INTO "Resource" (type, data, created, updated)
          VALUES ('customer', '{"email":"taken@example.com"}', now(), now())`,
+      ),
+    ).rejects.toMatchObject({
+      parent: { code: '23505' },
+    });
+    await expect(
+      sequelize.query(
+        `INSERT INTO "Resource" (type, data, "Position", created, updated)
+         VALUES ('task', '{"title":"duplicate position"}', 10, now(), now())`,
       ),
     ).rejects.toMatchObject({
       parent: { code: '23505' },

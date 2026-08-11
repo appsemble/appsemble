@@ -389,6 +389,14 @@ describe('patchApp', () => {
         type: 'testResource',
       })),
     );
+
+    await expect(
+      Resource.create({
+        type: 'testResource',
+        data: { foo: 'duplicate position' },
+        Position: 10,
+      }),
+    ).rejects.toMatchObject({ parent: { code: '23505' } });
   });
 
   it('should reset the positions and respect enforceOrderingGroupByFields if the resources already have positions', async () => {
