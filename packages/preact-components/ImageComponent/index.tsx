@@ -1,8 +1,11 @@
+import { AppAssetDownloadButton } from '../AppAssetDownloadButton/index.js';
 import { Modal, useToggle } from '../index.js';
 import { Fragment, type VNode } from 'preact';
 import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
+
+const appAssetPattern = /\/api\/apps\/\d+\/assets\//;
 
 function getDevicePixelRatio(): number {
   if (typeof window === 'undefined') {
@@ -99,6 +102,8 @@ export function ImageComponent({
     }
   }
 
+  const isAppAsset = appAssetPattern.test(src);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -154,7 +159,7 @@ export function ImageComponent({
                 ref={imgRef as MutableRef<HTMLImageElement>}
                 src={
                   isVisible
-                    ? /\/api\/apps\/\d+\/assets\//.test(src)
+                    ? isAppAsset
                       ? size === 'auto'
                         ? src
                         : `${src}${src.includes('?') ? '&' : '?'}width=${Math.ceil(width! * getDevicePixelRatio())}&height=${Math.ceil(height! * getDevicePixelRatio())}`
@@ -165,6 +170,7 @@ export function ImageComponent({
             </figure>
           </button>
           <Modal isActive={modal.enabled} onClose={modal.disable}>
+            <AppAssetDownloadButton src={src} />
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions */}
             <figure
               className="image"

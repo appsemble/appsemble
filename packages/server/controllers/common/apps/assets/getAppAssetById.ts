@@ -16,6 +16,9 @@ import { App, getAppDB } from '../../../../models/index.js';
 // Longest edge for the no-bounds ("full") derivative. Viewers are overwhelmingly mobile, so
 // re-encoding 12+ MP originals at native resolution is wasted CPU and a memory risk; cap it.
 const FULL_DERIVED_MAX_EDGE = 1024;
+const JPEG_DERIVATIVE_OPTIONS = {
+  chromaSubsampling: '4:4:4',
+} as const;
 
 function getAssetFilename(assetId: string, filename?: string | null, mime?: string | null): string {
   if (filename) {
@@ -111,7 +114,6 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   assertKoaCondition(sourceAsset != null, ctx, 404, 'Asset not found');
 
   const bucketName = `app-${appId}`;
-  const sourceFilename = getAssetFilename(sourceAsset.id, sourceAsset.filename, sourceAsset.mime);
 
   if (sourceAsset.mime?.startsWith('image')) {
     const fullDerivedAssetName = getFullDerivedAssetName(sourceAsset.id);
@@ -199,7 +201,9 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
           fit: 'inside',
           withoutEnlargement: true,
         });
-    const derivedImage = await (alpha ? pipeline.webp() : pipeline.jpeg()).toBuffer();
+    const derivedImage = await (
+      alpha ? pipeline.webp() : pipeline.jpeg(JPEG_DERIVATIVE_OPTIONS)
+    ).toBuffer();
 
     try {
       const newAsset = await Asset.create({
@@ -226,6 +230,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     return;
   }
 
+  const sourceFilename = getAssetFilename(sourceAsset.id, sourceAsset.filename, sourceAsset.mime);
   const stats = await getS3FileStats(bucketName, sourceAsset.id);
   const stream = await getS3File(bucketName, sourceAsset.id);
 

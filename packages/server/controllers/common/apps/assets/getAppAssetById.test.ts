@@ -515,6 +515,7 @@ describe('getAppAssetById', () => {
 
     expect(metadata.width).toBe(10);
     expect(metadata.height).toBe(10);
+    expect(metadata.chromaSubsampling).toBe('4:4:4');
   });
 
   it('should append an jpeg extension when resizing images without a filename extension', async () => {
