@@ -1,0 +1,101 @@
+import { type PageLayoutDefinition } from '@appsemble/lang-sdk';
+import { renderHook, waitFor } from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'vitest';
+
+import usePageGridCss from './index.js';
+
+afterEach(() => {
+  for (const element of document.head.querySelectorAll('[data-page-grid-css]')) {
+    element.remove();
+  }
+});
+
+describe('usePageGridCss', () => {
+  it('should expose the default spacing unit', async () => {
+    const { result } = renderHook(() =>
+      usePageGridCss({
+        BREAKPOINTS: {
+          desktop: 1024,
+          mobile: 0,
+          tablet: 768,
+        },
+        pageLayout: {
+          mobile: {
+            layout: {
+              columns: 1,
+              template: ['main'],
+            },
+          },
+        } as PageLayoutDefinition,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(document.head.querySelector(`[data-page-grid-css="${result.current}"]`)).toBeTruthy();
+    });
+
+    const css = document.head.querySelector<HTMLStyleElement>(
+      `[data-page-grid-css="${result.current}"]`,
+    )?.textContent;
+
+    expect(css).toContain('--appsemble-page-grid-spacing-unit: 1rem;');
+    expect(css).toContain('padding: calc(1 * var(--appsemble-page-grid-spacing-unit));');
+    expect(css).toContain('gap: calc(1 * var(--appsemble-page-grid-spacing-unit));');
+  });
+
+  it('should expose the resolved spacing unit and use it for grid spacing at every breakpoint', async () => {
+    const pageLayout = {
+      mobile: {
+        spacing: {
+          unit: '4px',
+        },
+      },
+      desktop: {
+        spacing: {
+          unit: '0.5rem',
+        },
+      },
+    } as PageLayoutDefinition;
+
+    const { result } = renderHook(() =>
+      usePageGridCss({
+        BREAKPOINTS: {
+          desktop: 1024,
+          mobile: 0,
+          tablet: 768,
+        },
+        pageLayout,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(document.head.querySelector(`[data-page-grid-css="${result.current}"]`)).toBeTruthy();
+    });
+
+    const css = document.head.querySelector<HTMLStyleElement>(
+      `[data-page-grid-css="${result.current}"]`,
+    )?.textContent;
+
+    expect(css).toContain(`
+@media (min-width: 0px) {
+  .${result.current} {
+    --appsemble-page-grid-spacing-unit: 4px;
+    padding: calc(1 * var(--appsemble-page-grid-spacing-unit));
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    grid-template-areas: "main";
+    gap: calc(1 * var(--appsemble-page-grid-spacing-unit));
+  }
+}`);
+    expect(css).toContain(`
+@media (min-width: 768px) {
+  .${result.current} {
+    --appsemble-page-grid-spacing-unit: 4px;
+    padding: calc(1 * var(--appsemble-page-grid-spacing-unit));`);
+    expect(css).toContain(`
+@media (min-width: 1024px) {
+  .${result.current} {
+    --appsemble-page-grid-spacing-unit: 0.5rem;
+    padding: calc(1 * var(--appsemble-page-grid-spacing-unit));`);
+  });
+});
