@@ -15,9 +15,9 @@ const mock = new MockAdapter(axios);
 const ca = `-----BEGIN CERTIFICATE-----
 -----END CERTIFICATE-----`;
 
-describe('kubernetes', () => {
-  vi.mock('node:fs/promises', () => fs.promises);
+vi.mock('node:fs/promises', () => fs.promises);
 
+describe('kubernetes', () => {
   beforeAll(async () => {
     kubernetes = await import('./kubernetes.js');
   });
