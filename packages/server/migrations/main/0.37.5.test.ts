@@ -1,7 +1,7 @@
 import { QueryTypes, type Sequelize, type Transaction } from 'sequelize';
 import { describe, expect, it } from 'vitest';
 
-import { down } from './0.37.2.js';
+import { down } from './0.37.5.js';
 import { BlockAsset, BlockVersion, getDB, Organization } from '../../models/index.js';
 
 async function isContentNullable(db: Sequelize, transaction: Transaction): Promise<boolean> {
@@ -30,7 +30,7 @@ async function columnExists(
   return rows.length > 0;
 }
 
-describe('migration 0.37.2', () => {
+describe('migration 0.37.5', () => {
   it('should preserve database content when removing the S3 metadata columns', async () => {
     const db = getDB();
     const transaction = await db.transaction();
