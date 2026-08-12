@@ -10,7 +10,7 @@
     "appsemble": "tsx packages/cli/index.ts",
     "create-appsemble": "tsx packages/create-appsemble/index.ts",
     "e2e": "npm --workspace @appsemble/e2e run e2e",
-    "prepare": "husky install || true",
+    "prepare": "husky || true",
     "prettier": "prettier --check",
     "scripts": "tsx packages/scripts/index.ts",
     "start": "tsx packages/cli/index.ts start --remote https://appsemble.app --database-port 6432",
@@ -40,6 +40,9 @@
   },
   "overrides": {
     "axios": "~1.12.0",
+    "gitleaks-secret-scanner": {
+      "tar": "7.5.19"
+    },
     "third-party-web": "0.29.2"
   },
   "devDependencies": {
@@ -51,7 +54,7 @@
     "dictionary-en": "4.0.0",
     "dictionary-nl": "2.0.0",
     "eslint-formatter-gitlab": "7.0.1",
-    "husky": "8.0.3",
+    "husky": "9.1.7",
     "identity-obj-proxy": "3.0.0",
     "jsdom": "22.1.0",
     "lint-staged": "15.5.2",
@@ -127,7 +130,7 @@
   },
   "dependencies": {
     "@playwright/test": "1.62.1",
-    "gitleaks-secret-scanner": "^1.2.2",
+    "gitleaks-secret-scanner": "^2.1.1",
     "i18n-iso-countries": "^7.14.0",
     "tslib": "^2.8.1",
     "vite-tsconfig-paths": "^5.0.0"
