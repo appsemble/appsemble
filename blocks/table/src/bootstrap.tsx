@@ -1,4 +1,4 @@
-import { bootstrap, useBlock } from '@appsemble/preact';
+import { type BlockProps, useBlock } from '@appsemble/preact';
 import { Icon, Loader } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
@@ -11,7 +11,12 @@ interface Item {
   id?: number;
 }
 
-bootstrap(({ events, parameters: { borders, caption, fields, scrollable }, ready, utils }) => {
+export function Table({
+  events,
+  parameters: { borders, caption, fields, scrollable },
+  ready,
+  utils,
+}: BlockProps): VNode {
   const [data, setData] = useState<Item[]>([]);
   const [selectedData, setSelectedData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
@@ -181,4 +186,4 @@ bootstrap(({ events, parameters: { borders, caption, fields, scrollable }, ready
       ) : null}
     </div>
   );
-});
+}
