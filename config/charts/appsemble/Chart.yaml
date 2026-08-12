@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.37.4
-appVersion: 0.37.4
+version: 0.37.5
+appVersion: 0.37.5
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -36,26 +36,49 @@ dependencies:
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "Block(detail-viewer): Add an HD download control to image previews."
+    - kind: added
+      description: "Block(feed): Add an HD download control to image previews."
+    - kind: added
+      description: "Block(footer): Add an HD download control to image previews."
+    - kind: added
+      description: "Block(form): Add an HD download control to image file previews."
+    - kind: added
+      description: "Block(image): Add an HD download control to fullscreen image previews."
+    - kind: added
+      description: "Block(table): Add an HD download control to image previews."
+    - kind: added
+      description: "App: Expose the page grid spacing unit as a CSS custom property."
+    - kind: added
+      description: "Preact-components: Add an HD download control to image previews."
+    - kind: added
+      description: "Server: Allow app members to download original app assets."
     - kind: changed
-      description: "Block(form): Add more size options to the image size parameter:
-        auto, number and more steps (256, 512)."
+      description: "Block(form): Remove ImageSizeSteps option from the Image parameter
+        in favor of the generic number option."
     - kind: changed
-      description: "Block(list): Add more size options to the image size parameter:
-        auto, number and more steps (256, 512)."
+      description: "Block(list): Remove ImageSizeSteps option from the Image parameter
+        in favor of the generic number option."
     - kind: changed
-      description: "Preact-components: Add more size options to ImageComponent: auto,
-        number and more steps (256, 512)."
-    - kind: changed
-      description: "Server: Cascade delete app email quota logs when deleting an app."
+      description: "Preact-components: Remove ImageSizeSteps option from
+        ImageComponent in favor of the generic number option."
     - kind: fixed
-      description: "Block(form): Allow appending files to repeated file fields with
-        existing assets."
+      description: "Block(form): Block form submission while validation actions are pending."
     - kind: fixed
-      description: "Node-utils: Follow system screen orientation settings in web app manifests."
+      description: "Cli: Resolve Webpack loaders and default PostCSS plugins from the
+        Appsemble CLI, making a PostCSS config in the served project optional."
     - kind: fixed
-      description: "Server: Fix app member session loss during concurrent refreshes."
+      description: "Cli: Resolve asset() functions in app styles served by appsemble
+        serve, like the Appsemble server does."
     - kind: fixed
-      description: "Server: Keep patched demo resource assets reachable."
+      description: "Cli: The development server (appsemble serve) reflects the request
+        origin in CORS responses, so credentialed app requests such as
+        /api/apps/:id/variables no longer fail against the wildcard."
+    - kind: fixed
+      description: "Studio: Download app assets through authenticated Studio requests."
+    - kind: fixed
+      description: "Studio: Hide organization billing tabs from non-members."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
