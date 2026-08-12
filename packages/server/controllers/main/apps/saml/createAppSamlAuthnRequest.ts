@@ -53,7 +53,7 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
   const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);
   const samlUrl = new URL(`/api/apps/${appId}/saml/${appSamlSecretId}`, argv.host);
 
-  const authnRequest = doc.documentElement;
+  const authnRequest = doc.documentElement!;
   authnRequest.setAttributeNS(NS.xmlns, 'xmlns:saml', NS.saml);
   authnRequest.setAttribute('AssertionConsumerServiceURL', `${samlUrl}/acs`);
   authnRequest.setAttribute('Destination', appSamlSecret.ssoUrl);
