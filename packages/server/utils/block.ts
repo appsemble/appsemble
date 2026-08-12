@@ -1,14 +1,33 @@
 import { getAppBlocks, type IdentifiableBlock, parseBlockName } from '@appsemble/lang-sdk';
-import { logger } from '@appsemble/node-utils';
+import {
+  getBlockAssetDownloadUrl,
+  getSSRFProtectedAgents,
+  isValidBlockAssetFilename,
+  logger,
+  uploadS3File,
+} from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 import { Op } from 'sequelize';
 
 import { argv } from './argv.js';
+import {
+  deleteBlockAssetObjects,
+  getBlockAssetFileUrls,
+  getBlockAssetsBucketName,
+  getBlockAssetStorageKey,
+} from './blockAssets.js';
 import { App, BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
 
-export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
+interface BlockVersionToJsonOptions {
+  includeFileUrls?: boolean;
+}
+
+export function blockVersionToJson(
+  blockVersion: BlockVersion,
+  { includeFileUrls = true }: BlockVersionToJsonOptions = {},
+): BlockManifest {
   const {
     BlockAssets,
     Organization,
@@ -35,12 +54,17 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
       updated: blockVersion.Organization?.updated.toISOString(),
     })}`;
   }
+
+  const files = BlockAssets?.map((f) => f.filename).sort(compareStrings);
+  const fileUrls = getBlockAssetFileUrls(BlockAssets);
+
   return {
     actions,
     description,
     events,
     examples,
-    files: BlockAssets?.map((f) => f.filename).sort(compareStrings),
+    files,
+    ...(includeFileUrls && Object.keys(fileUrls).length ? { fileUrls } : {}),
     iconUrl: iconUrl ?? null,
     layout,
     longDescription,
@@ -63,6 +87,8 @@ export async function syncBlock({
   const id = `@${OrganizationId}/${name}`;
   const blockUrl = String(new URL(`/api/blocks/${id}/versions/${version}`, argv.remote));
   logger.info(`Synchronizing block from ${blockUrl}`);
+  const uploadedKeys: string[] = [];
+
   try {
     const { data: block } = await axios.get<BlockManifest>(blockUrl);
     if (block.name !== id) {
@@ -72,19 +98,57 @@ export async function syncBlock({
       return;
     }
     await transactional(async (transaction) => {
+      const blockVersion = { ...block };
+      delete blockVersion.fileUrls;
       const { id: BlockVersionId } = await BlockVersion.create(
-        { ...block, OrganizationId, name, version },
+        { ...blockVersion, OrganizationId, name, version },
         { transaction },
       );
 
       // Use callbacks to defer firing the request and not overload the server
       const promises = block.files.map((filename) => async () => {
-        const { data: content, headers } = await axios.get(`${blockUrl}/asset`, {
-          params: { filename },
+        if (!isValidBlockAssetFilename(filename)) {
+          throw new Error(`Invalid block asset filename from ${blockUrl}: ${filename}`);
+        }
+
+        // `fileUrls` comes from the remote manifest body, so it may point at an internal host.
+        // Route the fetch through the same IP-based SSRF guard as the request proxy.
+        const downloadUrl = getBlockAssetDownloadUrl(blockUrl, block.fileUrls, filename);
+        const { httpAgent, httpsAgent } = await getSSRFProtectedAgents({
+          hostname: new URL(downloadUrl).hostname,
+        });
+        const { data: content, headers } = await axios.get(downloadUrl, {
+          httpAgent,
+          httpsAgent,
           responseType: 'arraybuffer',
         });
         const [mime] = headers['content-type'].split(';');
-        await BlockAsset.create({ BlockVersionId, content, mime, filename }, { transaction });
+        const buffer = Buffer.from(content);
+        const storageKey = getBlockAssetStorageKey({
+          blockName: name,
+          blockVersionId: BlockVersionId,
+          filename,
+          organizationId: OrganizationId,
+          version,
+        });
+
+        await uploadS3File(getBlockAssetsBucketName(), storageKey, buffer, buffer.byteLength, {
+          'Cache-Control': 'public,max-age=31536000,immutable',
+          'Content-Type': mime,
+        });
+        uploadedKeys.push(storageKey);
+
+        await BlockAsset.create(
+          {
+            BlockVersionId,
+            content: buffer,
+            filename,
+            mime,
+            size: buffer.byteLength,
+            storageKey,
+          },
+          { transaction },
+        );
       });
 
       if (block.languages) {
@@ -104,6 +168,10 @@ export async function syncBlock({
     logger.info(`Synchronized block from ${blockUrl}`);
     return block;
   } catch (error) {
+    if (uploadedKeys.length) {
+      await deleteBlockAssetObjects(uploadedKeys);
+    }
+
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       logger.warn(`Failed to synchronize block from ${blockUrl}`);
       return;
@@ -127,7 +195,9 @@ export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<Blo
     attributes: { exclude: ['id'] },
     where: { [Op.or]: uniqueBlocks },
   });
-  const result: BlockManifest[] = blockVersions.map(blockVersionToJson);
+  const result: BlockManifest[] = blockVersions.map((blockVersion) =>
+    blockVersionToJson(blockVersion),
+  );
 
   if (argv.remote) {
     const knownIdentifiers = new Set(

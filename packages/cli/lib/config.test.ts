@@ -74,6 +74,21 @@ describe('config', () => {
         },
       });
     });
+
+    it('should resolve production assets relative to the block entry URL', async () => {
+      const config = await getProjectWebpackConfig(
+        {
+          dir: resolveFixture('getProjectWebpackConfig/local'),
+          name: '@appsemble/test',
+          output: '',
+          version: '1.2.3',
+          webpack: 'webpack.config.js',
+        },
+        'production',
+      );
+
+      expect(config.output?.publicPath).toBe('auto');
+    });
   });
 
   describe('getProjectImplementations', () => {

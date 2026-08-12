@@ -30,6 +30,12 @@ ingress:
   tlsSecretName: ''
   tlsWildcardSecretName: ''
 
+blockAssets:
+  publicUrl: ''
+  migration:
+    enabled: true
+    batch: 100
+
 # OpenShift Route configuration (alternative to Ingress)
 route:
   enabled: false

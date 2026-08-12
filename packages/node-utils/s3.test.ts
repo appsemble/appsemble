@@ -1,10 +1,16 @@
+import { Readable } from 'node:stream';
+import { buffer as streamToBuffer } from 'node:stream/consumers';
+
 import { S3Error } from 'minio';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { logger } from './logger.js';
-import { deleteS3File, deleteS3Files, initS3Client } from './s3.js';
+import { deleteS3File, deleteS3Files, initS3Client, uploadS3File } from './s3.js';
 
-const { removeObjects } = vi.hoisted(() => ({
+const { bucketExists, makeBucket, putObject, removeObjects } = vi.hoisted(() => ({
+  bucketExists: vi.fn().mockResolvedValue(true),
+  makeBucket: vi.fn(),
+  putObject: vi.fn(),
   removeObjects: vi.fn(),
 }));
 
@@ -13,6 +19,12 @@ vi.mock('minio', async (importOriginal) => {
   return {
     ...actual,
     Client: class {
+      bucketExists = bucketExists;
+
+      makeBucket = makeBucket;
+
+      putObject = putObject;
+
       removeObjects = removeObjects;
     },
   };
@@ -57,5 +69,19 @@ describe('deleteS3File', () => {
     removeObjects.mockRejectedValueOnce(error);
 
     await expect(deleteS3File('app-1216', 'asset-id')).rejects.toBe(error);
+  });
+});
+
+describe('uploadS3File', () => {
+  it('fails if a stream upload loses its bucket after consuming the stream', async () => {
+    const error = s3Error('NoSuchBucket');
+    putObject.mockImplementationOnce(async (...parameters: [string, string, Readable]) => {
+      await streamToBuffer(parameters[2]);
+      throw error;
+    });
+
+    await expect(uploadS3File('app-1216', 'asset-id', Readable.from('payload'))).rejects.toBe(
+      error,
+    );
   });
 });

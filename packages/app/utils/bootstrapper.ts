@@ -133,6 +133,15 @@ function getBootstrapEntryFile(manifest: BlockManifest): string {
   return fallbackFile;
 }
 
+export function getBlockFileURL(manifest: BlockManifest, filename: string): string {
+  const fileUrl =
+    manifest.fileUrls && Object.hasOwn(manifest.fileUrls, filename)
+      ? manifest.fileUrls[filename]
+      : undefined;
+
+  return fileUrl ?? prefixBlockURL({ type: manifest.name, version: manifest.version }, filename);
+}
+
 export function getHandlerFunction(handler: string): HandlerFunction {
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return handlerFunctions.get(handler);
@@ -155,7 +164,7 @@ export async function callBootstrap(
     const entryFile = getBootstrapEntryFile(manifest);
     const script = document.createElement('script');
 
-    script.src = prefixBlockURL({ type: manifest.name, version: manifest.version }, entryFile);
+    script.src = getBlockFileURL(manifest, entryFile);
 
     // @ts-expect-error Not a default event
     script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {

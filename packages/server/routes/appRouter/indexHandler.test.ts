@@ -38,9 +38,11 @@ function parseCsp(csp: string): Record<string, string[]> {
 }
 
 function parseSettingsScript(settings: string): {
+  blockManifests: { name: string; version: string; fileUrls?: Record<string, string> }[];
   definition: AppDefinition & Record<string, unknown>;
 } {
   return JSON.parse(settings.slice('<script>window.settings='.length, -'</script>'.length)) as {
+    blockManifests: { name: string; version: string; fileUrls?: Record<string, string> }[];
     definition: AppDefinition & Record<string, unknown>;
   };
 }
@@ -87,104 +89,106 @@ describe('indexHandler', () => {
       { name: 'b', OrganizationId: 'appsemble', version: '0.1.0' },
       { name: 'b', OrganizationId: 'appsemble', version: '0.1.2' },
     ]);
-    await BlockAsset.bulkCreate([
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a00.id,
-        filename: 'a0.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a00.id,
-        filename: 'a0.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a01.id,
-        filename: 'a1.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a01.id,
-        filename: 'a1.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b00.id,
-        filename: 'b0.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b00.id,
-        filename: 'b0.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b02.id,
-        filename: 'b2.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b02.id,
-        filename: 'b2.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a10.id,
-        filename: 'a0.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a10.id,
-        filename: 'a0.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a11.id,
-        filename: 'a1.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a11.id,
-        filename: 'a1.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b10.id,
-        filename: 'b0.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b10.id,
-        filename: 'b0.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b12.id,
-        filename: 'b2.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b12.id,
-        filename: 'b2.css',
-        content: Buffer.from(''),
-      },
-    ]);
+    await BlockAsset.bulkCreate(
+      [
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a00.id,
+          filename: 'a0.js',
+          storageKey: 'test/a/0.0.0/hash/a0.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a00.id,
+          filename: 'a0.css',
+          storageKey: 'test/a/0.0.0/hash/a0.css',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a01.id,
+          filename: 'a1.js',
+          storageKey: 'test/a/0.0.1/hash/a1.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a01.id,
+          filename: 'a1.css',
+          storageKey: 'test/a/0.0.1/hash/a1.css',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b00.id,
+          filename: 'b0.js',
+          storageKey: 'test/b/0.0.0/hash/b0.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b00.id,
+          filename: 'b0.css',
+          storageKey: 'test/b/0.0.0/hash/b0.css',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b02.id,
+          filename: 'b2.js',
+          storageKey: 'test/b/0.0.2/hash/b2.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b02.id,
+          filename: 'b2.css',
+          storageKey: 'test/b/0.0.2/hash/b2.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a10.id,
+          filename: 'a0.js',
+          storageKey: 'appsemble/a/0.1.0/hash/a0.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a10.id,
+          filename: 'a0.css',
+          storageKey: 'appsemble/a/0.1.0/hash/a0.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a11.id,
+          filename: 'a1.js',
+          storageKey: 'appsemble/a/0.1.1/hash/a1.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a11.id,
+          filename: 'a1.css',
+          storageKey: 'appsemble/a/0.1.1/hash/a1.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b10.id,
+          filename: 'b0.js',
+          storageKey: 'appsemble/b/0.1.0/hash/b0.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b10.id,
+          filename: 'b0.css',
+          storageKey: 'appsemble/b/0.1.0/hash/b0.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b12.id,
+          filename: 'b2.js',
+          storageKey: 'appsemble/b/0.1.2/hash/b2.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b12.id,
+          filename: 'b2.css',
+          storageKey: 'appsemble/b/0.1.2/hash/b2.css',
+        },
+      ].map((asset) => ({ ...asset, content: Buffer.alloc(0) })),
+    );
     setArgv({ host: 'http://host.example', secret: 'test' });
     options.appServingCache = appServingCache;
     const server = new Koa()
@@ -964,7 +968,46 @@ describe('indexHandler', () => {
     `);
   });
 
+  it('should include public block asset file URLs in settings when blockAssetsBaseUrl is set', async () => {
+    setArgv({
+      blockAssetsBaseUrl: 'https://static.appsemble.example/minio',
+      host: 'http://host.example',
+      secret: 'test',
+    });
+    await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/a', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const response = await request.get('/');
+    const settings = parseSettingsScript(response.data.data.settings);
+    const manifest = settings.blockManifests.find(
+      ({ name, version }) => name === '@test/a' && version === '0.0.0',
+    );
+
+    expect(manifest?.fileUrls).toStrictEqual({
+      'a0.css':
+        'https://static.appsemble.example/minio/appsemble-block-assets/test/a/0.0.0/hash/a0.css',
+      'a0.js':
+        'https://static.appsemble.example/minio/appsemble-block-assets/test/a/0.0.0/hash/a0.js',
+    });
+  });
+
   it('should render a stricter published app CSP when contentSecurityPolicy is configured', async () => {
+    setArgv({
+      blockAssetsBaseUrl: 'https://static.appsemble.example/minio',
+      host: 'http://host.example',
+      secret: 'test',
+    });
     await App.create({
       OrganizationId: 'test',
       definition: {
@@ -1000,15 +1043,38 @@ describe('indexHandler', () => {
     );
     expect(csp['connect-src']).not.toContain('*');
     expect(csp['font-src']).toStrictEqual(
-      expect.arrayContaining(["'self'", 'data:', 'https://fonts.gstatic.com']),
+      expect.arrayContaining([
+        "'self'",
+        'data:',
+        'https://fonts.gstatic.com',
+        'https://static.appsemble.example',
+      ]),
     );
     expect(csp['font-src']).not.toContain('*');
     expect(csp['img-src']).toStrictEqual(
-      expect.arrayContaining(["'self'", 'blob:', 'data:', 'http://host.example']),
+      expect.arrayContaining([
+        "'self'",
+        'blob:',
+        'data:',
+        'http://host.example',
+        'https://static.appsemble.example',
+      ]),
     );
     expect(csp['img-src']).not.toContain('*');
+    expect(csp['script-src']).toStrictEqual(
+      expect.arrayContaining(['https://static.appsemble.example']),
+    );
+    expect(csp['style-src']).toStrictEqual(
+      expect.arrayContaining(['https://static.appsemble.example']),
+    );
     expect(csp['media-src']).toStrictEqual(
-      expect.arrayContaining(["'self'", 'blob:', 'data:', 'http://host.example']),
+      expect.arrayContaining([
+        "'self'",
+        'blob:',
+        'data:',
+        'http://host.example',
+        'https://static.appsemble.example',
+      ]),
     );
     expect(csp['media-src']).not.toContain('*');
     expect(csp['object-src']).toStrictEqual(["'none'"]);
