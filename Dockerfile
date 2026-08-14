@@ -3,12 +3,6 @@
 FROM node:24-trixie-slim AS build
 WORKDIR /app
 
-# Get the system dependencies installed regardless of any package.json or lockfile changes
-# (those dependencies should be versioned by the container's distro repos anyways, debian updates
-# packages roughly once every two months, and if playwright needs new packages we run that command
-# below again anyways)
-RUN --mount=type=bind,rw,target=/root/.npm npx playwright@1.61.0 install-deps
-
 COPY package-lock.json package-lock.json
 COPY package.json package.json
 
@@ -16,8 +10,6 @@ COPY package.json package.json
 COPY --parents packages/**/package.json .
 
 RUN --mount=type=cache,target=/root/.npm npm ci
-
-RUN PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT=120000 npx playwright install --with-deps chromium
 
 COPY . .
 

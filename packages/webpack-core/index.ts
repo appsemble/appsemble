@@ -11,7 +11,6 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeMdxCodeProps from 'rehype-mdx-code-props';
 import rehypeMdxImportMedia from 'rehype-mdx-import-media';
 import rehypeMdxTitle from 'rehype-mdx-title';
-import rehypeMermaid from 'rehype-mermaid';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
@@ -21,6 +20,7 @@ import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { type Configuration } from 'webpack';
 import { GenerateSW, InjectManifest } from 'workbox-webpack-plugin';
 
+import { rehypeMermaid } from './rehype/mermaid.js';
 import { rehypeSearchIndex } from './rehype/searchIndex.js';
 import { remarkRewriteLinks } from './remark/rewriteLinks.js';
 
