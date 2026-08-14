@@ -12,6 +12,7 @@
     "e2e": "npm --workspace @appsemble/e2e run e2e",
     "prepare": "husky || true",
     "prettier": "prettier --check",
+    "render-mermaid": "tsx packages/scripts/index.ts render-mermaid",
     "scripts": "tsx packages/scripts/index.ts",
     "start": "tsx packages/cli/index.ts start --remote https://appsemble.app --database-port 6432",
     "stylelint": "stylelint .",

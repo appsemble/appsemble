@@ -21,6 +21,11 @@ interface SetupOptions {
 
 interface Setup {
   /**
+   * The callback registered for `data` events.
+   */
+  dataCallback: (data: Item[], error?: string) => void;
+
+  /**
    * Delivers a `data` event to the block.
    */
   emitData: (data: Item[], error?: string) => Promise<void>;
@@ -41,6 +46,11 @@ interface Setup {
   offReset: ReturnType<typeof vi.fn>;
 
   /**
+   * The callback registered for `reset` events.
+   */
+  resetCallback: () => void;
+
+  /**
    * Records the calls to `ready`.
    */
   ready: ReturnType<typeof vi.fn>;
@@ -55,8 +65,8 @@ function setup({ hideOnNoData = false }: SetupOptions = {}): Setup {
   const offData = vi.fn();
   const offReset = vi.fn();
   const ready = vi.fn();
-  let dataCallback: (data: Item[], error?: string) => void;
-  let resetCallback: () => void;
+  let dataCallback: ((data: Item[], error?: string) => void) | undefined;
+  let resetCallback: (() => void) | undefined;
 
   const props = {
     actions: {
@@ -98,20 +108,28 @@ function setup({ hideOnNoData = false }: SetupOptions = {}): Setup {
     </Context.Provider>,
   );
 
+  if (!dataCallback || !resetCallback) {
+    throw new Error('Cards did not register its event listeners');
+  }
+  const registeredDataCallback = dataCallback;
+  const registeredResetCallback = resetCallback;
+
   return {
+    dataCallback: registeredDataCallback,
     async emitData(data, error) {
       await act(() => {
-        dataCallback(data, error);
+        registeredDataCallback(data, error);
       });
     },
     async emitReset() {
       await act(() => {
-        resetCallback();
+        registeredResetCallback();
       });
     },
     offData,
     offReset,
     ready,
+    resetCallback: registeredResetCallback,
     unmount,
   };
 }
@@ -181,10 +199,10 @@ it('should clear the cards when reset', async () => {
 });
 
 it('should stop listening for data and reset when unmounted', () => {
-  const { offData, offReset, unmount } = setup();
+  const { dataCallback, offData, offReset, resetCallback, unmount } = setup();
 
   unmount();
 
-  expect(offData).toHaveBeenCalledOnce();
-  expect(offReset).toHaveBeenCalledOnce();
+  expect(offData).toHaveBeenCalledExactlyOnceWith(dataCallback);
+  expect(offReset).toHaveBeenCalledExactlyOnceWith(resetCallback);
 });

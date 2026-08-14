@@ -11,6 +11,7 @@ import * as getReleaseNotes from './commands/get-release-notes.js';
 import * as githubRelease from './commands/github-release.js';
 import * as gitlabRelease from './commands/gitlab-release.js';
 import * as release from './commands/release.js';
+import * as renderMermaid from './commands/render-mermaid.js';
 import * as rewriteMessages from './commands/rewrite-messages.js';
 import * as syncObjectStorageBucket from './commands/sync-object-storage-bucket.js';
 import * as updateSubscription from './commands/update-subscription.js';
@@ -40,6 +41,7 @@ yargs()
   .command(githubRelease)
   .command(gitlabRelease)
   .command(release as unknown as CommandModule)
+  .command(renderMermaid)
   .command(rewriteMessages)
   .command(syncObjectStorageBucket as unknown as CommandModule)
   .command(createUser as unknown as CommandModule)

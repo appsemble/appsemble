@@ -419,6 +419,21 @@ prettier:
   script:
     - npx -- prettier .
 
+# Verify the committed Mermaid SVGs are in sync with the diagrams in the docs.
+mermaid svgs:
+  extends: .npm
+  image: mcr.microsoft.com/playwright:v1.62.1-noble
+  stage: test
+  script:
+    - npm run render-mermaid
+    - |
+      if [ -n "$(git status --porcelain -- packages/webpack-core/mermaid/assets)" ]; then
+        echo 'Committed Mermaid SVGs are out of date. Run `npm run render-mermaid` and commit the result.'
+        git status --porcelain -- packages/webpack-core/mermaid/assets
+        git --no-pager diff -- packages/webpack-core/mermaid/assets
+        exit 1
+      fi
+
 # Lint Markdown using remark.
 remark lint:
   extends: .npm
