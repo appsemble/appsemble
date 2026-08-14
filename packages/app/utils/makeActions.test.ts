@@ -172,9 +172,11 @@ describe('makeActions', () => {
       actions: { onClick: {} },
       context: { actions: { onClick: { type: 'throw' } } },
     });
-    await expect(actions.onClick('input')).rejects.toThrow(
-      new ActionError({ cause: null, data: null, definition: { type: 'throw' } }),
-    );
+    await expect(actions.onClick('input')).rejects.toMatchObject({
+      cause: 'input',
+      data: 'input',
+      definition: { type: 'throw' },
+    });
   });
 
   it('should call onSuccess on success if it’s defined', async () => {
