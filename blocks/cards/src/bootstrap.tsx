@@ -1,10 +1,17 @@
-import { bootstrap, FormattedMessage } from '@appsemble/preact';
+import { FormattedMessage, type BlockProps } from '@appsemble/preact';
 import { Loader, Message } from '@appsemble/preact-components';
+import { type VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { CardContent } from './components/Card/index.js';
 
-bootstrap(({ data: blockData, events, parameters: { hideOnNoData }, ready, utils }) => {
+export function Cards({
+  data: blockData,
+  events,
+  parameters: { hideOnNoData },
+  ready,
+  utils,
+}: BlockProps): VNode | null {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -27,7 +34,7 @@ bootstrap(({ data: blockData, events, parameters: { hideOnNoData }, ready, utils
   useEffect(() => {
     const callback = (): void => setData([]);
     events.on.reset(callback);
-    return () => events.off.data(callback);
+    return () => events.off.reset(callback);
   }, [events]);
 
   useEffect(() => {
@@ -78,4 +85,4 @@ bootstrap(({ data: blockData, events, parameters: { hideOnNoData }, ready, utils
       </div>
     </div>
   );
-});
+}

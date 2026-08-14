@@ -23,5 +23,9 @@
     "@appsemble/preact-components": "0.37.5",
     "classnames": "^2.0.0",
     "preact": "^10.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/preact": "3.2.4",
+    "vitest": "4.1.10"
   }
 }
