@@ -61,5 +61,5 @@ it('should render a dropdown component', async () => {
 
   await userEvent.click(testDropdown.getElementsByClassName('dropdown-trigger')[0]);
   await userEvent.click(testDropdown.getElementsByClassName('dropdown-item')[0]);
-  expect(onClickMock).toHaveBeenCalledOnce();
+  expect(onClickMock.mock.calls).toHaveLength(1);
 });

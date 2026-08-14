@@ -100,7 +100,7 @@ it('should render a list item component', async () => {
     .getElementsByClassName('div')[0];
   await userEvent.click(dropdown);
 
-  expect(onClickMock).toHaveBeenCalledOnce();
+  expect(onClickMock.mock.calls).toHaveLength(1);
 });
 
 it('should trigger onClick when the image is clicked and openPreview is false', async () => {
@@ -144,5 +144,5 @@ it('should trigger onClick when the image is clicked and openPreview is false', 
     await userEvent.click(image);
   });
 
-  expect(onClickMock).toHaveBeenCalledOnce();
+  expect(onClickMock.mock.calls).toHaveLength(1);
 });

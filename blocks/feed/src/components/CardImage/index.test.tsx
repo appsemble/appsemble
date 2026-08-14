@@ -62,7 +62,7 @@ it('should download original feed images from previews', async () => {
   await waitFor(() => {
     expect(fetch).toHaveBeenCalledWith('http://localhost/api/apps/1/assets/feed-image/download');
     expect(createObjectURL).toHaveBeenCalledWith(blob);
-    expect(click).toHaveBeenCalledOnce();
+    expect(click.mock.calls).toHaveLength(1);
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:http://localhost/feed-image');
   });
 });

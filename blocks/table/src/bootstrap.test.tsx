@@ -302,5 +302,5 @@ it('should stop listening for data when unmounted', async () => {
   await emitData([{ id: 1, title: 'Listening' }]);
   unmount();
 
-  expect(offData).toHaveBeenCalledOnce();
+  expect(offData.mock.calls).toHaveLength(1);
 });

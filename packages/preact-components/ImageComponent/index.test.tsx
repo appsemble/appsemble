@@ -183,7 +183,7 @@ it('should download original Appsemble assets from previews', async () => {
   await waitFor(() => {
     expect(fetch).toHaveBeenCalledWith('http://localhost/api/apps/1/assets/course-image/download');
     expect(createObjectURL).toHaveBeenCalledWith(blob);
-    expect(click).toHaveBeenCalledOnce();
+    expect(click.mock.calls).toHaveLength(1);
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:http://localhost/course-image');
   });
 });
@@ -207,7 +207,7 @@ it('should let the click propagate and not open the preview when openPreview is 
   const button = screen.getByAltText('Passthrough image').closest('button') as HTMLButtonElement;
   await userEvent.click(button);
 
-  expect(parentClick).toHaveBeenCalledOnce();
+  expect(parentClick.mock.calls).toHaveLength(1);
   expect(document.querySelector('.modal')).toBeNull();
 });
 

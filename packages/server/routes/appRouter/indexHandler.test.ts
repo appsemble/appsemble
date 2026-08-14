@@ -1498,7 +1498,7 @@ describe('indexHandler', () => {
     expect(response.data.data.settings).toContain('"blockManifests":[');
     expect(response.data.data.settings).toContain('"name":"@test/a"');
     expect(response.data.data.settings).not.toContain('"blockManifests":[]');
-    expect(findOrCreateSpy).toHaveBeenCalledOnce();
+    expect(findOrCreateSpy.mock.calls).toHaveLength(1);
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       `Failed to persist a build manifest for app snapshot ${snapshot.id}.`,
     );
