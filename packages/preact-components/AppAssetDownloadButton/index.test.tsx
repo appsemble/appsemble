@@ -61,7 +61,7 @@ it('should download the original asset for Appsemble asset URLs', async () => {
   await waitFor(() => {
     expect(fetch).toHaveBeenCalledWith('/api/apps/1/assets/course-image/download');
     expect(createObjectURL).toHaveBeenCalledWith(blob);
-    expect(click).toHaveBeenCalledOnce();
+    expect(click.mock.calls).toHaveLength(1);
     expect(click.mock.instances[0]).toHaveProperty('download', 'course-image.png');
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:http://localhost/course-image');
   });
