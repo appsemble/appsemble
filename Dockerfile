@@ -15,8 +15,7 @@ COPY package.json package.json
 # this statement requires experimental syntax, declared at the top of the file
 COPY --parents packages/**/package.json .
 
-# ponytail: retry to survive transient prebuild-install/registry download timeouts (e.g. keytar)
-RUN --mount=type=cache,target=/root/.npm npm ci || npm ci || npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 RUN PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT=120000 npx playwright install --with-deps chromium
 
