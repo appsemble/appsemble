@@ -18,7 +18,7 @@ COPY --parents packages/**/package.json .
 # ponytail: retry to survive transient prebuild-install/registry download timeouts (e.g. keytar)
 RUN --mount=type=cache,target=/root/.npm npm ci || npm ci || npm ci
 
-RUN npx playwright install --with-deps chromium
+RUN PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT=120000 npx playwright install --with-deps chromium
 
 COPY . .
 
