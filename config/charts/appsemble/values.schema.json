@@ -737,7 +737,7 @@
       "type": "object",
       "description": "Configuration for restoring Appsemble database backups during Helm install or upgrade.",
       "additionalProperties": false,
-      "required": ["enabled", "bucket", "filenamePrefix", "backupFilename"],
+      "required": ["enabled", "backupFilename"],
       "properties": {
         "enabled": {
           "type": "boolean",
