@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -10,7 +11,6 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeMdxCodeProps from 'rehype-mdx-code-props';
 import rehypeMdxImportMedia from 'rehype-mdx-import-media';
 import rehypeMdxTitle from 'rehype-mdx-title';
-import rehypeMermaid from 'rehype-mermaid';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
@@ -20,8 +20,20 @@ import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { type Configuration } from 'webpack';
 import { GenerateSW, InjectManifest } from 'workbox-webpack-plugin';
 
+import { rehypeMermaid } from './rehype/mermaid.js';
 import { rehypeSearchIndex } from './rehype/searchIndex.js';
 import { remarkRewriteLinks } from './remark/rewriteLinks.js';
+
+const require = createRequire(import.meta.url);
+
+const loaders = {
+  css: require.resolve('css-loader'),
+  mdx: require.resolve('@mdx-js/loader'),
+  postcss: require.resolve('postcss-loader'),
+  sass: require.resolve('sass-loader'),
+  svgo: require.resolve('svgo-loader'),
+  ts: require.resolve('ts-loader'),
+};
 
 interface CliConfigOptions {
   mode: 'development' | 'production';
@@ -127,7 +139,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           use: [
             MiniCssExtractPlugin.loader,
             {
-              loader: 'css-loader',
+              loader: loaders.css,
               options: {
                 importLoaders: 1,
                 modules: {
@@ -136,16 +148,16 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                 },
               },
             },
-            'postcss-loader',
+            loaders.postcss,
           ],
         },
         {
           test: /\.s[ac]ss/,
           use: [
             MiniCssExtractPlugin.loader,
-            { loader: 'css-loader', options: { importLoaders: 1 } },
+            { loader: loaders.css, options: { importLoaders: 1 } },
             {
-              loader: 'sass-loader',
+              loader: loaders.sass,
               options: {
                 sassOptions: {
                   logger: {
@@ -167,7 +179,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           test: /\.mdx?$/,
           use: [
             {
-              loader: '@mdx-js/loader',
+              loader: loaders.mdx,
               options: {
                 providerImportSource: '@mdx-js/react',
                 remarkPlugins: [
@@ -202,7 +214,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
         },
         {
           test: /\.tsx?$/,
-          loader: 'ts-loader',
+          loader: loaders.ts,
           options: {
             transpileOnly: true,
             configFile,
@@ -224,7 +236,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
         },
         {
           test: /\.svg$/,
-          loader: 'svgo-loader',
+          loader: loaders.svgo,
         },
         {
           test: /\/esm\/.*\.js$/,

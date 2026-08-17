@@ -99,6 +99,11 @@ export interface ProjectManifest extends ProjectConfig, ProjectImplementations {
    * Array of urls associated to the files of the project.
    */
   files: string[];
+
+  /**
+   * Public URLs for project files, keyed by filename.
+   */
+  fileUrls?: Record<string, string>;
 }
 
 export interface BlockManifest extends ProjectManifest {

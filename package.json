@@ -10,12 +10,13 @@
     "appsemble": "tsx packages/cli/index.ts",
     "create-appsemble": "tsx packages/create-appsemble/index.ts",
     "e2e": "npm --workspace @appsemble/e2e run e2e",
-    "prepare": "husky install || true",
+    "prepare": "husky || true",
     "prettier": "prettier --check",
+    "render-mermaid": "tsx packages/scripts/index.ts render-mermaid",
     "scripts": "tsx packages/scripts/index.ts",
     "start": "tsx packages/cli/index.ts start --remote https://appsemble.app --database-port 6432",
     "stylelint": "stylelint .",
-    "test": "vitest"
+    "test": "vitest --configLoader runner"
   },
   "lint-staged": {
     "*.css": [
@@ -40,22 +41,25 @@
   },
   "overrides": {
     "axios": "~1.12.0",
+    "gitleaks-secret-scanner": {
+      "tar": "7.5.19"
+    },
     "third-party-web": "0.29.2"
   },
   "devDependencies": {
-    "@appsemble/eslint-config": "0.37.4",
+    "@appsemble/eslint-config": "0.37.5",
     "@lhci/cli": "0.15.1",
-    "@vitest/coverage-v8": "2.1.9",
-    "@vitest/ui": "2.1.9",
+    "@vitest/coverage-v8": "4.1.10",
+    "@vitest/ui": "4.1.10",
     "cspell": "8.19.4",
     "dictionary-en": "4.0.0",
     "dictionary-nl": "2.0.0",
     "eslint-formatter-gitlab": "7.0.1",
-    "husky": "8.0.3",
+    "husky": "9.1.7",
     "identity-obj-proxy": "3.0.0",
     "jsdom": "22.1.0",
     "lint-staged": "15.5.2",
-    "postcss": "8.5.25",
+    "postcss": "8.5.26",
     "postcss-preset-env": "9.6.0",
     "prettier": "3.9.6",
     "prettier-plugin-packagejson": "2.5.22",
@@ -91,12 +95,12 @@
     "stylelint-order": "6.0.4",
     "stylelint-prettier": "5.0.3",
     "ts-json-schema-generator": "1.5.1",
-    "tsx": "4.23.1",
+    "tsx": "4.23.12",
     "typescript": "5.9.3",
     "unified": "11.0.5",
     "unified-consistency": "2.0.0",
     "unified-prettier": "2.0.1",
-    "vitest": "2.1.9"
+    "vitest": "4.1.10"
   },
   "engines": {
     "node": ">=24"
@@ -126,8 +130,8 @@
     "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tag of the `mermaid svgs` job in .gitlab-ci.yml; Renovate bumps both together (see renovate.json)."
   },
   "dependencies": {
-    "@playwright/test": "1.62.0",
-    "gitleaks-secret-scanner": "^1.2.2",
+    "@playwright/test": "1.62.1",
+    "gitleaks-secret-scanner": "^2.1.1",
     "i18n-iso-countries": "^7.14.0",
     "tslib": "^2.8.1",
     "vite-tsconfig-paths": "^5.0.0"

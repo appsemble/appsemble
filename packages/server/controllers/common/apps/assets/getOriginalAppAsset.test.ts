@@ -13,7 +13,12 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
+import {
+  authorizeAppMember,
+  authorizeStudio,
+  createTestAppMember,
+  createTestUser,
+} from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
 let user: User;
@@ -94,7 +99,43 @@ describe('getOriginalAppAsset', () => {
     expect(Buffer.from(response.data)).toStrictEqual(image);
   });
 
-  it('should reject original downloads without studio asset access.', async () => {
+  it('should allow logged-in app members to download the original image binary.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+      filename: 'logo.png',
+    });
+    const image = await sharp({
+      create: {
+        width: 120,
+        height: 80,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await uploadS3File(`app-${app.id}`, asset.id, image);
+
+    const appMember = await createTestAppMember(app.id, user.primaryEmail);
+    authorizeAppMember(app, appMember);
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}/download`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/png',
+        'content-disposition': 'inline; filename="logo.png"',
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+    });
+    expect(Buffer.from(response.data)).toStrictEqual(image);
+  });
+
+  it('should allow public original downloads.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
       mime: 'image/png',
@@ -114,14 +155,17 @@ describe('getOriginalAppAsset', () => {
     await uploadS3File(`app-${app.id}`, asset.id, image);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}/download`, {
-      validateStatus: () => true,
+      responseType: 'arraybuffer',
     });
 
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 401 Unauthorized
-      Content-Type: text/plain; charset=utf-8
-
-      Unauthorized
-    `);
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/png',
+        'content-disposition': 'inline; filename="logo.png"',
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+    });
+    expect(Buffer.from(response.data)).toStrictEqual(image);
   });
 });

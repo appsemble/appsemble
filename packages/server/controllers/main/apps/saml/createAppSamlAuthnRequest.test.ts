@@ -100,7 +100,7 @@ describe('createAuthnRequest', () => {
     const samlRequest = new DOMParser().parseFromString(
       inflated.toString('utf8'),
       'application/xml',
-    ).documentElement;
+    ).documentElement!;
 
     const { SamlLoginRequest } = await getAppDB(app.id);
     const loginRequest = (await SamlLoginRequest.findOne())!;

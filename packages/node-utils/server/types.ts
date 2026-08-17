@@ -482,7 +482,11 @@ export interface AppAsset extends Asset {
 export interface ProjectAsset {
   filename: string;
   mime: string;
-  content: Buffer;
+  content?: Buffer;
+  stream?: Readable;
+  size?: number;
+  etag?: string;
+  lastModified?: Date;
 }
 
 export interface Block extends BlockDefinition {

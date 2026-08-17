@@ -1,4 +1,3 @@
-import { ActionError } from '@appsemble/lang-sdk';
 import { describe, expect, it, vi } from 'vitest';
 
 import { createTestAction } from '../makeActions.js';
@@ -45,13 +44,11 @@ describe('group.selected.update', () => {
       definition: { type: 'group.selected.update', groupId: '15' },
     });
 
-    await expect(action({})).rejects.toStrictEqual(
-      new ActionError({
-        cause: 'Expected groupId to be a number or null, got: "15"',
-        data: {},
-        definition: { type: 'group.selected.update', groupId: '15' },
-      }),
-    );
+    await expect(action({})).rejects.toMatchObject({
+      cause: { message: 'Expected groupId to be a number or null, got: "15"' },
+      data: {},
+      definition: { type: 'group.selected.update', groupId: '15' },
+    });
   });
 
   it('should throw if group does not exist in app member groups', async () => {
@@ -60,12 +57,10 @@ describe('group.selected.update', () => {
       appMemberGroups: [{ id: 15, name: 'Test Group', role: 'Member' }],
     });
 
-    await expect(action({})).rejects.toStrictEqual(
-      new ActionError({
-        cause: 'Group with id 99 was not found.',
-        data: {},
-        definition: { type: 'group.selected.update', groupId: 99 },
-      }),
-    );
+    await expect(action({})).rejects.toMatchObject({
+      cause: { message: 'Group with id 99 was not found.' },
+      data: {},
+      definition: { type: 'group.selected.update', groupId: 99 },
+    });
   });
 });

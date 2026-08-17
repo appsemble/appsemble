@@ -1,33 +1,33 @@
 {
   "app": {
-    "description": "Een app waarin een gebruiker een vragenlijst kan invullen",
-    "name": "Vragenlijst",
-    "pages.finished": "Klaar",
-    "pages.survey": "Vragenlijst",
-    "pages.survey.steps.0": "Introductie",
+    "description": "Een app waarin de gebruiker wordt gevraagd enkele vragen in te vullen.",
+    "name": "Enquête",
+    "pages.finished": "Voltooid",
+    "pages.survey": "Enquête",
+    "pages.survey.steps.0": "Inleiding",
     "pages.survey.steps.1": "Bekendheid",
-    "pages.survey.steps.2": "Appsemble-beoordelingen",
-    "pages.survey.steps.3": "Appsemble-feedback",
-    "pages.survey.steps.4": "Feature-beoordelingen"
+    "pages.survey.steps.2": "Beoordelingen van Appsemble",
+    "pages.survey.steps.3": "Feedback over Appsemble",
+    "pages.survey.steps.4": "Beoordelingen van functies"
   },
   "blocks": {
     "@appsemble/form": {
-      "0.37.4": {
+      "0.37.5": {
         "submitLabel": "Volgende"
       }
     }
   },
   "messageIds": {
-    "anythingElse": "Is er nog iets dat je ons wilt vertellen?",
-    "appsembleRating": "Hoe beoordeel je jouw ervaring met Appsemble?",
-    "backToHome": "Terug naar begin",
-    "betterExperience": "Vertel ons alsjeblieft hoe we jouw ervaring kunnen verbeteren",
-    "finished": "Bedankt voor het beantwoorden van onze vragenlijst. Je kunt [Appsemble](https://appsemble.app) zelf proberen om een eigen app te maken. Deze app kan worden gecloond vanuit onze [store page](https://appsemble.app/apps/130).",
-    "introText": "# Appsemble vragenlijst\nDit is een template app die laat zien hoe een vragenlijst gebouwd zou kunnen worden met [Appsemble](https://appsemble.app).",
+    "anythingElse": "Is er nog iets anders dat u ons wilt vertellen?",
+    "appsembleRating": "Hoe beoordeelt u uw ervaring met Appsemble?",
+    "backToHome": "Terug naar de startpagina",
+    "betterExperience": "Laat ons weten hoe we uw ervaring kunnen verbeteren",
+    "finished": "Bedankt voor het invullen van onze enquête. U kunt [Appsemble](https://appsemble.app) zelf uitproberen om uw eigen app te maken. Deze app kunt u klonen vanaf [onze winkelpagina](https://appsemble.app/apps/{appId}).",
+    "introText": "# Appsemble-enquête\nDeze app is een sjabloonapp die wordt gebruikt om te laten zien hoe een enquête-app kan worden gemaakt met [Appsemble](https://appsemble.app).",
     "no": "Nee",
-    "notTriedReason": "Vertel ons alsjeblieft waarom je het nog niet hebt geprobeerd?",
-    "start": "Starten",
-    "triedAppsemble": "Heb je al geprobeerd een app in Appsemble te bouwen?",
+    "notTriedReason": "Kunt u ons vertellen waarom u het nog niet hebt geprobeerd?",
+    "start": "Start",
+    "triedAppsemble": "Heb je al eens geprobeerd een app te bouwen in Appsemble?",
     "yes": "Ja"
   }
 }

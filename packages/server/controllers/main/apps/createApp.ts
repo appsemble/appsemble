@@ -9,6 +9,7 @@ import {
   AppsembleError,
   assertKoaCondition,
   handleValidatorResult,
+  replaceAssetFunctions,
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
@@ -33,7 +34,6 @@ import {
   handleAppValidationError,
   setAppPath,
 } from '../../../utils/app.js';
-import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
@@ -196,14 +196,14 @@ export async function createApp(ctx: Context): Promise<void> {
         const styleUpdates: Partial<App> = {};
 
         if (app.coreStyle != null) {
-          const replacedCoreStyle = replaceAssetFunctions(app.coreStyle, app.id);
+          const replacedCoreStyle = replaceAssetFunctions(app.coreStyle, app.id, argv.host);
           if (replacedCoreStyle !== app.coreStyle) {
             styleUpdates.coreStyle = replacedCoreStyle;
           }
         }
 
         if (app.sharedStyle != null) {
-          const replacedSharedStyle = replaceAssetFunctions(app.sharedStyle, app.id);
+          const replacedSharedStyle = replaceAssetFunctions(app.sharedStyle, app.id, argv.host);
           if (replacedSharedStyle !== app.sharedStyle) {
             styleUpdates.sharedStyle = replacedSharedStyle;
           }

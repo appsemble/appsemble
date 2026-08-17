@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.37.5](https://gitlab.com/appsemble/appsemble/-/releases/0.37.5)] - 2026-08-12
+
+### Added
+
+- Block(`detail-viewer`): Add an HD download control to image previews.
+- Block(`feed`): Add an HD download control to image previews.
+- Block(`footer`): Add an HD download control to image previews.
+- Block(`form`): Add an HD download control to image file previews.
+- Block(`image`): Add an HD download control to fullscreen image previews.
+- Block(`table`): Add an HD download control to image previews.
+- App: Expose the page grid spacing unit as a CSS custom property.
+- Preact-components: Add an HD download control to image previews.
+- Server: Allow app members to download original app assets.
+
+### Changed
+
+- Block(`form`): Remove `ImageSizeSteps` option from the `Image` parameter in favor of the generic
+  `number` option.
+- Block(`list`): Remove `ImageSizeSteps` option from the `Image` parameter in favor of the generic
+  `number` option.
+- Preact-components: Remove `ImageSizeSteps` option from `ImageComponent` in favor of the generic
+  `number` option.
+
+### Fixed
+
+- Block(`form`): Block form submission while validation actions are pending.
+- Cli: Resolve Webpack loaders and default PostCSS plugins from the Appsemble CLI, making a PostCSS
+  config in the served project optional.
+- Cli: Resolve `asset()` functions in app styles served by `appsemble serve`, like the Appsemble
+  server does.
+- Cli: The development server (`appsemble serve`) reflects the request origin in CORS responses, so
+  credentialed app requests such as `/api/apps/:id/variables` no longer fail against the wildcard.
+- Studio: Download app assets through authenticated Studio requests.
+- Studio: Hide organization billing tabs from non-members.
+
 ## \[[0.37.4](https://gitlab.com/appsemble/appsemble/-/releases/0.37.4)] - 2026-07-31
 
 ### Changed

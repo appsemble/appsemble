@@ -4,13 +4,11 @@ import {
   getS3FileStats,
   setAssetHeaders,
 } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { extension } from 'mime-types';
 import { Op } from 'sequelize';
 
 import { App, getAppDB } from '../../../../models/index.js';
-import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 function getAssetFilename(assetId: string, filename?: string | null, mime?: string | null): string {
   if (filename) {
@@ -35,12 +33,6 @@ export async function getOriginalAppAsset(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'demoMode'],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
-
-  await checkUserOrganizationPermissions({
-    context: ctx,
-    organizationId: app.OrganizationId,
-    requiredPermissions: [OrganizationPermission.QueryAppAssets],
-  });
 
   const { Asset } = await getAppDB(appId);
   const asset = await Asset.findOne({

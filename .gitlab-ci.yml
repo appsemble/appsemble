@@ -111,41 +111,46 @@ auto-approve-renovate:
         --header "PRIVATE-TOKEN: $GITLAB_APPROVAL_TOKEN" \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/approve"
 
-# Automatically enable auto-merge for Weblate merge requests.
+# Enable auto-merge on the open Weblate merge requests. This runs from a scheduled pipeline on
+# main, where the protected GITLAB_ACCESS_TOKEN is available; set AUTO_MERGE_WEBLATE on that
+# schedule so the other schedules skip this job.
 auto-merge-weblate:
   stage: test
   image: alpine:latest
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble' && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^weblate($|[-\/])/ && $GITLAB_ACCESS_TOKEN
-  allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $AUTO_MERGE_WEBLATE && $GITLAB_ACCESS_TOKEN
   script:
     - apk add --no-cache curl jq
     - |
-      merge_request="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID"
+      merge_requests="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests"
 
       curl --fail --silent --show-error \
         --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-        "$merge_request" \
-        | tee /tmp/merge-request.json \
-        | jq '{iid, source_branch, detailed_merge_status, merge_when_pipeline_succeeds}'
+        --get "$merge_requests" \
+        --data-urlencode 'state=opened' \
+        --data-urlencode 'source_branch=weblate' \
+        --data-urlencode 'target_branch=main' \
+        --output /tmp/merge-requests.json
 
-      if jq -e '.merge_when_pipeline_succeeds' /tmp/merge-request.json > /dev/null; then
-        echo 'Auto-merge already enabled.'
-        exit 0
-      fi
+      jq '[.[] | {iid, detailed_merge_status, merge_when_pipeline_succeeds}]' /tmp/merge-requests.json
 
-      if [ "$(jq -r '.detailed_merge_status' /tmp/merge-request.json)" = 'conflict' ]; then
-        echo 'Merge request has conflicts.'
-        exit 0
-      fi
+      jq -r '.[]
+             | select(.merge_when_pipeline_succeeds | not)
+             | select(.detailed_merge_status != "conflict")
+             | "\(.iid) \(.sha)"' /tmp/merge-requests.json > /tmp/mergeable.txt
 
-      curl --fail --request PUT \
-        --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-        --url "$merge_request/merge" \
-        --data-urlencode "auto_merge=true" \
-        --data-urlencode "sha=$CI_COMMIT_SHA" \
-        --data-urlencode "should_remove_source_branch=true" \
-        | jq '{iid, detailed_merge_status, merge_when_pipeline_succeeds, should_remove_source_branch}'
+      while read -r iid sha; do
+        curl --fail --silent --show-error --request PUT \
+          --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+          --url "$merge_requests/$iid/merge" \
+          --data-urlencode "auto_merge=true" \
+          --data-urlencode "sha=$sha" \
+          --data-urlencode "should_remove_source_branch=true" \
+          --output /tmp/merge-result.json
+
+        jq '{iid, detailed_merge_status, merge_when_pipeline_succeeds, should_remove_source_branch}' \
+          /tmp/merge-result.json
+      done < /tmp/mergeable.txt
 
 ###################################################################################################
 #  Security Stage                                                                                 #
@@ -187,8 +192,7 @@ npm_ci:
       - '**/node_modules'
     expire_in: 1 day
   script:
-    # ponytail: retry to survive transient prebuild-install/registry download timeouts (e.g. keytar)
-    - npm ci || npm ci || npm ci
+    - npm ci
 
 # Build the Docker image.
 build docker image:
@@ -279,6 +283,11 @@ seed database:
       --name Appsemble
       --website https://appsemble.com
     - npm run appsemble -- block publish 'blocks/*'
+    - npm run scripts -- sync-object-storage-bucket export seeded-object-storage
+      --s3-host minio
+      --s3-secure=false
+      --s3-access-key admin
+      --s3-secret-key password
   after_script:
     - apt-get update && apt-get install -y postgresql-client
     - PGPASSWORD="password" pg_dump -h database -U admin --no-owner --no-acl appsemble > seededDb.sql
@@ -287,6 +296,7 @@ seed database:
     expose_as: Default database dump
     paths:
       - seededDb.sql
+      - seeded-object-storage/
     expire_in: 2 hours
 
 # Build the database into a docker image for use in other jobs
@@ -408,6 +418,21 @@ prettier:
   stage: test
   script:
     - npx -- prettier .
+
+# Verify the committed Mermaid SVGs are in sync with the diagrams in the docs.
+mermaid svgs:
+  extends: .npm
+  image: mcr.microsoft.com/playwright:v1.62.1-noble
+  stage: test
+  script:
+    - npm run render-mermaid
+    - |
+      if [ -n "$(git status --porcelain -- packages/webpack-core/mermaid/assets)" ]; then
+        echo 'Committed Mermaid SVGs are out of date. Run `npm run render-mermaid` and commit the result.'
+        git status --porcelain -- packages/webpack-core/mermaid/assets
+        git --no-pager diff -- packages/webpack-core/mermaid/assets
+        exit 1
+      fi
 
 # Lint Markdown using remark.
 remark lint:
@@ -550,6 +575,8 @@ validate snippets:
     - build docker image
     - npm_ci
     - build seeded db image
+    - job: seed database
+      artifacts: true
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_COMMIT_TAG
@@ -599,6 +626,12 @@ validate snippets:
         migrateTo: next
   script:
     - npm run appsemble -- config set remote 'http://appsemble:9999'
+    - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
+      --s3-host minio
+      --s3-secure=false
+      --s3-access-key admin
+      --s3-secret-key password
+      --public-read
     - npm run scripts -- validate-docs --organization appsemble --remote 'http://appsemble:9999' --clientCredentials $APPSEMBLE_CLIENT_CREDENTIALS -vv
 
 ###################################################################################################
@@ -607,12 +640,14 @@ validate snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.58.2-noble
+  image: mcr.microsoft.com/playwright:v1.62.1-noble
   interruptible: true
   needs:
     - build docker image
     - npm_ci
     - build seeded db image
+    - job: seed database
+      artifacts: true
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_COMMIT_TAG
@@ -687,6 +722,12 @@ e2e node:
     - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/utils run prepack
     - npm --workspace @appsemble/node-utils run prepack
+    - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
+      --s3-host minio
+      --s3-secure=false
+      --s3-access-key admin
+      --s3-secret-key password
+      --public-read
     - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
   parallel: 6
   artifacts:
@@ -699,12 +740,14 @@ e2e node:
 
 e2e keycloak:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.58.2-noble
+  image: mcr.microsoft.com/playwright:v1.62.1-noble
   interruptible: true
   needs:
     - build docker image
     - npm_ci
     - build seeded db image
+    - job: seed database
+      artifacts: true
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_COMMIT_TAG
@@ -776,6 +819,12 @@ e2e keycloak:
     - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/utils run prepack
     - npm --workspace @appsemble/node-utils run prepack
+    - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
+      --s3-host minio
+      --s3-secure=false
+      --s3-access-key admin
+      --s3-secret-key password
+      --public-read
     - npm --workspace @appsemble/e2e run e2e -- --project=chromium tests/studio/logins/keycloak-${KEYCLOAK_PROTOCOL}.spec.ts
   artifacts:
     expose_as: Playwright videos
@@ -1488,6 +1537,7 @@ production:
       --set "quotas.appEmail.dailyLimit=10"
       --set "quotas.appEmail.alertOrganizationOwner=true"
       --set "mailpit.mailpit.smtp.tls.secretName=appsemble-mailpit-tls"
+      --set "blockAssets.publicUrl=https://api.minio.appsemble.app"
       --set "minio.ingress.hostname=console.minio.appsemble.app"
       --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
       --set "minio.apiIngress.hostname=api.minio.appsemble.app"

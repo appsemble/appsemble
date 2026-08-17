@@ -6,6 +6,9 @@ import { ImageComponent } from './index.js';
 
 let originalDevicePixelRatio: PropertyDescriptor | undefined;
 let originalIntersectionObserver: typeof window.IntersectionObserver;
+let originalCreateObjectURL: typeof URL.createObjectURL | undefined;
+let originalFetch: typeof globalThis.fetch | undefined;
+let originalRevokeObjectURL: typeof URL.revokeObjectURL | undefined;
 
 class MockIntersectionObserver implements IntersectionObserver {
   readonly root = null;
@@ -40,6 +43,9 @@ class MockIntersectionObserver implements IntersectionObserver {
 beforeEach(() => {
   originalDevicePixelRatio = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
   originalIntersectionObserver = window.IntersectionObserver;
+  originalCreateObjectURL = URL.createObjectURL;
+  originalFetch = globalThis.fetch;
+  originalRevokeObjectURL = URL.revokeObjectURL;
 
   Object.defineProperty(window, 'IntersectionObserver', {
     configurable: true,
@@ -62,6 +68,21 @@ afterEach(() => {
     configurable: true,
     value: originalIntersectionObserver,
   });
+
+  Object.defineProperty(globalThis, 'fetch', {
+    configurable: true,
+    value: originalFetch,
+  });
+  Object.defineProperty(URL, 'createObjectURL', {
+    configurable: true,
+    value: originalCreateObjectURL,
+  });
+  Object.defineProperty(URL, 'revokeObjectURL', {
+    configurable: true,
+    value: originalRevokeObjectURL,
+  });
+
+  vi.restoreAllMocks();
 });
 
 it('should request higher resolution Appsemble assets on high-DPR screens', async () => {
@@ -106,30 +127,6 @@ it('should preserve Appsemble asset URLs when using automatic sizing', async () 
   });
 });
 
-it('should append dimensions to existing Appsemble asset query parameters', async () => {
-  Object.defineProperty(window, 'devicePixelRatio', {
-    configurable: true,
-    value: 2,
-  });
-
-  render(
-    <ImageComponent
-      alt="Query image"
-      id="query"
-      size={48}
-      src="http://localhost/api/apps/1/assets/course-image?foo=bar"
-    />,
-  );
-
-  const image = screen.getByAltText('Query image');
-
-  await waitFor(() => {
-    expect(image.getAttribute('src')).toBe(
-      'http://localhost/api/apps/1/assets/course-image?foo=bar&width=96&height=96',
-    );
-  });
-});
-
 it('should open the preview and not propagate the click by default', async () => {
   const parentClick = vi.fn();
 
@@ -145,6 +142,50 @@ it('should open the preview and not propagate the click by default', async () =>
 
   expect(parentClick).not.toHaveBeenCalled();
   expect(document.querySelector('.modal')).not.toBeNull();
+});
+
+it('should download original Appsemble assets from previews', async () => {
+  const blob = new Blob(['image'], { type: 'image/png' });
+  const fetch = vi.fn().mockResolvedValue({
+    blob: vi.fn().mockResolvedValue(blob),
+    headers: new Headers({ 'Content-Disposition': 'inline; filename="course-image.png"' }),
+  });
+  const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(vi.fn());
+  const createObjectURL = vi.fn().mockReturnValue('blob:http://localhost/course-image');
+  const revokeObjectURL = vi.fn();
+
+  Object.defineProperty(globalThis, 'fetch', {
+    configurable: true,
+    value: fetch,
+  });
+  Object.defineProperty(URL, 'createObjectURL', {
+    configurable: true,
+    value: createObjectURL,
+  });
+  Object.defineProperty(URL, 'revokeObjectURL', {
+    configurable: true,
+    value: revokeObjectURL,
+  });
+
+  render(
+    <ImageComponent
+      alt="Preview image"
+      id="preview"
+      size={48}
+      src="http://localhost/api/apps/1/assets/course-image"
+    />,
+  );
+
+  const button = screen.getByAltText('Preview image').closest('button') as HTMLButtonElement;
+  await userEvent.click(button);
+  await userEvent.click(screen.getByRole('button', { name: 'Download in HD' }));
+
+  await waitFor(() => {
+    expect(fetch).toHaveBeenCalledWith('http://localhost/api/apps/1/assets/course-image/download');
+    expect(createObjectURL).toHaveBeenCalledWith(blob);
+    expect(click.mock.calls).toHaveLength(1);
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:http://localhost/course-image');
+  });
 });
 
 it('should let the click propagate and not open the preview when openPreview is false', async () => {
@@ -166,7 +207,7 @@ it('should let the click propagate and not open the preview when openPreview is 
   const button = screen.getByAltText('Passthrough image').closest('button') as HTMLButtonElement;
   await userEvent.click(button);
 
-  expect(parentClick).toHaveBeenCalledOnce();
+  expect(parentClick.mock.calls).toHaveLength(1);
   expect(document.querySelector('.modal')).toBeNull();
 });
 

@@ -1,10 +1,10 @@
 {
   "app": {
-    "description": "Démontre l'utilisation de ChatGPT d'OpenAI dans Appsemble.",
+    "description": "Cette vidéo présente l'utilisation de ChatGPT d'OpenAI dans Appsemble.",
     "name": "ChatGPT",
     "pages.chat": "Chat"
   },
   "messageIds": {
-    "message": "Un modèle d'IA qui peut répondre à presque toutes les questions avec une invite de texte."
+    "message": "Un modèle d'IA capable de répondre à presque toutes les questions à partir d'une invite textuelle."
   }
 }

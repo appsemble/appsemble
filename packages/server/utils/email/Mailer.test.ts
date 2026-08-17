@@ -272,41 +272,13 @@ _Test App_
         },
       });
 
-      expect(mailer.transport.sendMail).toHaveBeenCalledWith({
-        attachments: [],
-        from: 'Appsemble <test@example.com>',
-        headers: {
-          from: 'Appsemble <test@example.com>',
-          replyTo: 'Appsemble <test@example.com>',
-        },
-        html: `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1" name="viewport">
-</head>
-<body>
-<p>Beste John Doe,</p>
-<p>Bedankt voor het registeren van jouw account. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.</p>
-<p>Klik <a href="http://example.com/token=abcdefg">hier</a> om jouw e-mailadres te verifiëren.</p>
-<p>Met vriendelijke groet,</p>
-<p><em>Test App</em></p>
-</body>
-</html>
-`,
-        subject: 'Welkom bij Test App',
-        text: `Beste John Doe,
-
-Bedankt voor het registeren van jouw account. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.
-
-Klik [hier](http://example.com/token=abcdefg) om jouw e-mailadres te verifiëren.
-
-Met vriendelijke groet,
-
-_Test App_
-`,
-        to: 'John Doe <test@example.com>',
-      });
+      // The Dutch wording is maintained externally, so only assert it isn’t the English fallback.
+      const email = (mailer.transport.sendMail as Mock).mock.calls[0][0];
+      expect(email.to).toBe('John Doe <test@example.com>');
+      expect(email.subject).not.toBe('Welcome to Test App');
+      expect(email.text).toContain('John Doe');
+      expect(email.text).toContain('(http://example.com/token=abcdefg)');
+      expect(email.html).toContain('href="http://example.com/token=abcdefg"');
     });
 
     it('should use fall back to the english translations if an app’s email translations don’t exist', async () => {
@@ -580,10 +552,20 @@ _Test App_
           });
 
           expect(mailer.transport.sendMail).toHaveBeenCalledTimes(1);
-          // The subject
-          expect((mailer.transport.sendMail as Mock).mock.calls[0][2]).toMatchSnapshot();
-          // The body
-          expect((mailer.transport.sendMail as Mock).mock.calls[0][0]).toMatchSnapshot();
+          const email = (mailer.transport.sendMail as Mock).mock.calls[0][0];
+
+          // Translations are maintained externally, so assert the rendered structure, not the
+          // wording.
+          expect(email.to).toBe(
+            values.name === 'null' ? 'test@example.com' : `${values.name} <test@example.com>`,
+          );
+          expect(email.subject).toBeTruthy();
+          expect(email.html).toMatch(/^<!doctype html>\n<html /);
+          expect(email.html).toContain('</html>');
+          expect(email.text.trim()).not.toBe('');
+          // An unsubstituted placeholder means the message failed to format.
+          expect(email.subject).not.toMatch(/[{}]/);
+          expect(email.text).not.toMatch(/[{}]/);
         });
       });
     });
@@ -622,7 +604,7 @@ _Test App_
         logout: vi.fn(),
       };
       vi.spyOn(mailer, 'createImapFlow').mockReturnValue(mockedFlow as ImapFlow);
-      vi.spyOn(mailer, 'copyToSentFolder');
+      const copyToSentFolderSpy = vi.spyOn(mailer, 'copyToSentFolder');
       vi.setSystemTime(0);
       await mailer.sendEmail({
         to: 'Me <test@example.com>',
@@ -648,7 +630,7 @@ _Test App_
         html: '<p>Test</p>',
         attachments: [],
       });
-      expect(mailer.copyToSentFolder).toHaveBeenCalledOnce();
+      expect(copyToSentFolderSpy.mock.calls).toHaveLength(1);
     });
 
     it('should copy the email to the sent folder', async () => {
@@ -669,7 +651,7 @@ _Test App_
       };
       const appendMock = mockedFlow.append as ReturnType<typeof vi.fn>;
       vi.spyOn(mailer, 'createImapFlow').mockReturnValue(mockedFlow as ImapFlow);
-      vi.spyOn(mailer, 'copyToSentFolder');
+      const copyToSentFolderSpy = vi.spyOn(mailer, 'copyToSentFolder');
       vi.setSystemTime(0);
       await mailer.sendEmail({
         to: 'Me <test@example.com>',
@@ -691,8 +673,8 @@ _Test App_
         html: '<p>Test</p>',
         attachments: [],
       });
-      expect(mailer.copyToSentFolder).toHaveBeenCalledOnce();
-      expect(mockedFlow.append).toHaveBeenCalledOnce();
+      expect(copyToSentFolderSpy.mock.calls).toHaveLength(1);
+      expect(appendMock.mock.calls).toHaveLength(1);
       expect(appendMock.mock.calls[0][0]).toBe('Sent');
       const appendCallBody = appendMock.mock.calls[0][1]
         .replaceAll(/^\s*boundary=.*$/gm, '')

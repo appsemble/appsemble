@@ -1,16 +1,16 @@
 {
   "app": {
     "app.roles.User": "Korisnik",
-    "app.roles.User.description": "Korisnik koji zapisuje svoje bilješke.",
-    "description": "Zapiši osobne bilješke",
+    "app.roles.User.description": "Korisnik koji vodi vlastite bilješke.",
+    "description": "Vodite osobne bilješke",
     "name": "Bilješke",
     "pages.notes": "Bilješke"
   },
   "messageIds": {
-    "body": "Sadržaj",
-    "cancel": "Odustani",
+    "body": "Tijelo",
+    "cancel": "Otkaži",
     "configDelete": "Izbriši",
-    "confirmDelete": "Stvarno želiš izbrisati sljedeću bilješku?",
+    "confirmDelete": "Jeste li sigurni da želite izbrisati sljedeću bilješku?",
     "title": "Naslov"
   }
 }

@@ -1,6 +1,6 @@
 {
   "app": {
-    "description": "Een app die de functie app webhooks demonstreert",
+    "description": "Een app die de webhooks-functie van de app demonstreert",
     "name": "Webhooks",
     "pages.test": "Test"
   }

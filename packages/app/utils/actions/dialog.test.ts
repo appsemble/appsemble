@@ -1,4 +1,3 @@
-import { ActionError } from '@appsemble/lang-sdk';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
 import { type ShowDialogParams } from '../../types.js';
@@ -38,13 +37,10 @@ describe('dialog', () => {
       prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     options.close();
-    await expect(promise).rejects.toThrow(
-      new ActionError({
-        data: 'closed',
-        cause: 'closed',
-        definition: { type: 'dialog', blocks: [] },
-      }),
-    );
+    await expect(promise).rejects.toMatchObject({
+      data: { test: 'input' },
+      definition: { type: 'dialog', blocks: [] },
+    });
     expect(close).toHaveBeenCalledWith();
   });
 
@@ -76,19 +72,16 @@ describe('dialog', () => {
       title: 'Hello dialog',
     });
     options.close();
-    await expect(promise).rejects.toThrow(
-      new ActionError({
-        data: '',
-        cause: '',
-        definition: {
-          type: 'dialog',
-          blocks: [],
-          closable: false,
-          fullscreen: true,
-          title: 'Hello dialog',
-        },
-      }),
-    );
+    await expect(promise).rejects.toMatchObject({
+      data: { test: 'input' },
+      definition: {
+        type: 'dialog',
+        blocks: [],
+        closable: false,
+        fullscreen: true,
+        title: 'Hello dialog',
+      },
+    });
     expect(close).toHaveBeenCalledWith();
   });
 
@@ -142,12 +135,10 @@ describe('dialog', () => {
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     await options.actionCreators['dialog.error']?.(null)[0]({ value: 'fail' }, null);
-    await expect(promise).rejects.toThrow(
-      new ActionError({
-        data: '',
-        cause: '',
-        definition: { type: 'dialog', blocks: [] },
-      }),
-    );
+    await expect(promise).rejects.toMatchObject({
+      cause: { value: 'fail' },
+      data: { test: 'input' },
+      definition: { type: 'dialog', blocks: [] },
+    });
   });
 });

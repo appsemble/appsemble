@@ -1,13 +1,13 @@
 {
   "app": {
-    "description": "Een eenvoudige app voor het beheren van personen via formulieren en gegevens met behulp van de resource-API",
-    "name": "Personen",
-    "pages.person-details": "Persoongegevens",
-    "pages.person-list": "Personenlijst",
-    "pages.person-registration-form": "Persoonregistratieformulier"
+    "description": "Een eenvoudige app voor het invullen van formulieren en het bekijken van gegevens met behulp van de resource-API",
+    "name": "Persoon",
+    "pages.person-details": "Persoonsgegevens",
+    "pages.person-list": "Lijst met personen",
+    "pages.person-registration-form": "Registratieformulier voor personen"
   },
   "messageIds": {
-    "description": "Omschrijving",
+    "description": "Beschrijving",
     "email": "E-mail",
     "firstName": "Voornaam",
     "lastName": "Achternaam",

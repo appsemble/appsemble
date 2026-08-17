@@ -1,33 +1,33 @@
 {
   "app": {
     "description": "Une application qui demande à l'utilisateur de répondre à quelques questions.",
-    "name": "Sondage",
+    "name": "Enquête",
     "pages.finished": "Terminé",
-    "pages.survey": "Sondage",
+    "pages.survey": "Enquête",
     "pages.survey.steps.0": "Introduction",
-    "pages.survey.steps.1": "Familiarité",
-    "pages.survey.steps.2": "Évaluations de Appsemble",
-    "pages.survey.steps.3": "Commentaires sur Appsemble",
+    "pages.survey.steps.1": "Connaissance",
+    "pages.survey.steps.2": "Avis sur Appsemble",
+    "pages.survey.steps.3": "Avis sur Appsemble",
     "pages.survey.steps.4": "Évaluations des fonctionnalités"
   },
   "blocks": {
     "@appsemble/form": {
-      "0.37.4": {
+      "0.37.5": {
         "submitLabel": "Suivant"
       }
     }
   },
   "messageIds": {
-    "anythingElse": "Y a-t-il autre chose que vous voudriez nous dire ?",
-    "appsembleRating": "Comment évaluez-vous votre expérience avec Appsemble ?",
-    "backToHome": "Retour à l’accueil",
-    "betterExperience": "Veuillez nous dire comment nous pouvons améliorer votre expérience",
-    "finished": "Merci pour votre participation dans notre sondage. Vous pouvez essayer vous-même [Appsemble](https://appsemble.app) pour créer votre propre application. Cette application peut être clonée à partir de [notre page de magasin] (https://appsemble.app/apps/{appId}).",
-    "introText": "# Sondage Appsemble\nCette application est une application modèle utilisée pour démontrer comment une application de sondage peut être créée à l’aide de [Appsemble] (https://appsemble.app).",
+    "anythingElse": "Y a-t-il autre chose que vous aimeriez nous dire ?",
+    "appsembleRating": "Comment évaluez-vous votre expérience avec Appsemble ?",
+    "backToHome": "Retour à la page d'accueil",
+    "betterExperience": "Dites-nous comment nous pouvons améliorer votre expérience",
+    "finished": "Merci d'avoir répondu à notre enquête. Vous pouvez essayer [Appsemble](https://appsemble.app) par vous-même pour créer votre propre application. Cette application peut être clonée depuis [notre page de boutique](https://appsemble.app/apps/{appId}).",
+    "introText": "# Sondage Appsemble\nCette application est un modèle permettant de montrer comment créer une application de sondage à l'aide d'[Appsemble](https://appsemble.app).",
     "no": "Non",
-    "notTriedReason": "Veuillez nous dire les raisons pour lesquelles vous n’avez pas encore essayé ?",
+    "notTriedReason": "Pouvez-vous nous expliquer pourquoi vous ne l'avez pas encore essayée ?",
     "start": "Démarrer",
-    "triedAppsemble": "Avez-vous déjà essayé de créer une application dans Appsemble  ?",
+    "triedAppsemble": "Avez-vous déjà essayé de créer une application avec Appsemble ?",
     "yes": "Oui"
   }
 }

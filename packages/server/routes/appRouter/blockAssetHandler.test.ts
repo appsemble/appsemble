@@ -1,10 +1,11 @@
-import { errorMiddleware, readFixture } from '@appsemble/node-utils';
+import { errorMiddleware, readFixture, uploadS3File } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { appRouter } from './index.js';
 import { BlockAsset, BlockVersion, Organization } from '../../models/index.js';
+import { getBlockAssetsBucketName } from '../../utils/blockAssets.js';
 
 describe('blockAssetHandler', () => {
   beforeAll(async () => {
@@ -18,10 +19,16 @@ describe('blockAssetHandler', () => {
       version: '3.1.4',
       name: 'tux',
     });
+    const content = await readFixture('tux.png');
+    const storageKey = 'linux/tux/3.1.4/hash/tux.png';
+
+    await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength);
     await BlockAsset.create({
+      content,
       filename: 'tux.png',
-      content: await readFixture('tux.png'),
       mime: 'image/png',
+      size: content.byteLength,
+      storageKey,
       BlockVersionId: id,
     });
     const response = await request.get('/api/blocks/@linux/tux/versions/3.1.4/tux.png', {
@@ -29,7 +36,7 @@ describe('blockAssetHandler', () => {
     });
     expect(response.status).toBe(200);
     expect(response.headers['content-type']).toBe('image/png');
-    expect(response.headers['cache-control']).toBe('max-age=31536000,immutable');
+    expect(response.headers['cache-control']).toBe('public,max-age=31536000,immutable');
     expect(response.data).toMatchImageSnapshot();
   });
 

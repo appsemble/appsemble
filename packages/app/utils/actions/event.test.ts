@@ -53,7 +53,7 @@ describe('event', () => {
     await expect(result).rejects.toThrow(
       new ActionError({
         cause: 'Boo!',
-        data: null,
+        data: undefined,
         definition: { type: 'event', event: 'foo', waitFor: 'bar' },
       }),
     );

@@ -1,5 +1,5 @@
 {
-  "emptyMessage": "Nema podataka.",
-  "error": "Dogodila se greška tijekom dohvaćanja podataka",
-  "submitChecked": ""
+  "emptyMessage": "Nema dostupnih podataka.",
+  "error": "Došlo je do pogreške pri dohvaćanju podataka",
+  "submitChecked": "Pošalji"
 }

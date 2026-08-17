@@ -2,9 +2,15 @@ import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { BlockAsset, BlockMessages, BlockVersion } from '../../../../models/index.js';
+import {
+  BlockAsset,
+  BlockMessages,
+  BlockVersion,
+  transactional,
+} from '../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { findBlockInApps } from '../../../../utils/block.js';
+import { deleteBlockAssetObjects } from '../../../../utils/blockAssets.js';
 
 export async function deleteBlockVersion(ctx: Context): Promise<void> {
   const {
@@ -27,13 +33,27 @@ export async function deleteBlockVersion(ctx: Context): Promise<void> {
 
   assertKoaCondition(!usedBlocks, ctx, 403, 'Cannot delete blocks that are used by apps.');
 
-  await BlockAsset.destroy({
+  const blockAssets = await BlockAsset.findAll({
+    attributes: ['storageKey'],
     where: { BlockVersionId: version.id },
   });
 
-  await BlockMessages.destroy({
-    where: { BlockVersionId: version.id },
+  await transactional(async (transaction) => {
+    await BlockAsset.destroy({
+      transaction,
+      where: { BlockVersionId: version.id },
+    });
+
+    await BlockMessages.destroy({
+      transaction,
+      where: { BlockVersionId: version.id },
+    });
+    await version.destroy({ transaction });
   });
-  await version.destroy();
+
+  await deleteBlockAssetObjects(
+    blockAssets.flatMap(({ storageKey }) => (storageKey ? [storageKey] : [])),
+  );
+
   ctx.status = 204;
 }

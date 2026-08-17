@@ -9,6 +9,7 @@ import {
   assertKoaCondition,
   handleValidatorResult,
   logger,
+  replaceAssetFunctions,
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
@@ -33,7 +34,6 @@ import {
   createAppScreenshots,
   handleAppValidationError,
 } from '../../../utils/app.js';
-import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { findAppMemberByRole } from '../../../utils/appMember.js';
@@ -302,7 +302,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.coreStyle =
         validatedCoreStyle == null
           ? validatedCoreStyle
-          : replaceAssetFunctions(validatedCoreStyle, dbApp.id);
+          : replaceAssetFunctions(validatedCoreStyle, dbApp.id, argv.host);
     }
 
     if (sharedStyle !== undefined) {
@@ -310,7 +310,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.sharedStyle =
         validatedSharedStyle == null
           ? validatedSharedStyle
-          : replaceAssetFunctions(validatedSharedStyle, dbApp.id);
+          : replaceAssetFunctions(validatedSharedStyle, dbApp.id, argv.host);
     }
 
     if (icon) {
@@ -451,27 +451,38 @@ export async function patchApp(ctx: Context): Promise<void> {
             if (!positioning) {
               continue;
             }
-            let group: string[] | undefined;
             try {
-              if (enforceOrderingGroupByFields) {
-                group = enforceOrderingGroupByFields.map((field) => `data.${field}`);
+              const orderingGroupFields: string[] = [];
+              for (const field of enforceOrderingGroupByFields ?? []) {
+                orderingGroupFields.push(`(data->>${appDB.escape(field)})`);
               }
-              const resourcesToUpdate = await Resource.findAll({
-                where: { type: key },
-                // Reset positions every time the app is updated
-                order: [...(group ?? []), ['Position', 'ASC'], ['updated', 'DESC']],
-                transaction: appTransaction,
-              });
+              await appDB.query(
+                `CREATE TEMPORARY TABLE "ResourcePositionReset" ON COMMIT DROP AS
+SELECT
+  id,
+  ROW_NUMBER() OVER (
+    ORDER BY ${[...orderingGroupFields, '"Position" ASC', 'updated DESC'].join(', ')}
+  ) * 10 AS position
+FROM "Resource"
+WHERE type = :resourceType`,
+                { replacements: { resourceType: key }, transaction: appTransaction },
+              );
+
               await Resource.update(
                 { Position: null },
                 { where: { type: key }, transaction: appTransaction },
               );
-
-              for (const [i, element] of resourcesToUpdate.entries()) {
-                // If we start with 0, insertion at top becomes impossible unless we move the
-                // first item.
-                await element.update({ Position: (i + 1) * 10 }, { transaction: appTransaction });
-              }
+              await appDB.query(
+                `UPDATE "Resource" AS resource
+SET "Position" = positions.position,
+    updated = NOW()
+FROM "ResourcePositionReset" AS positions
+WHERE resource.id = positions.id`,
+                { transaction: appTransaction },
+              );
+              await appDB.query('DROP TABLE "ResourcePositionReset"', {
+                transaction: appTransaction,
+              });
             } catch (error) {
               logger.error(error);
               await appTransaction.rollback();

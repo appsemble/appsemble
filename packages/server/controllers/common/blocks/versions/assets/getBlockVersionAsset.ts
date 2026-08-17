@@ -1,7 +1,8 @@
-import { assertKoaCondition } from '@appsemble/node-utils';
+import { assertKoaCondition, getS3File, getS3FileStats, logger } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { BlockAsset, BlockVersion } from '../../../../../models/index.js';
+import { getBlockAssetsBucketName } from '../../../../../utils/blockAssets.js';
 
 export async function getBlockVersionAsset(ctx: Context): Promise<void> {
   const {
@@ -12,21 +13,43 @@ export async function getBlockVersionAsset(ctx: Context): Promise<void> {
   const block = await BlockVersion.findOne({
     attributes: ['id'],
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
-    include: [
-      { model: BlockAsset, where: { filename }, attributes: ['content', 'mime'], required: false },
-    ],
   });
 
   assertKoaCondition(block != null, ctx, 404, 'Block version not found');
-  assertKoaCondition(
-    block.BlockAssets?.length === 1,
-    ctx,
-    404,
-    `Block has no asset named "${filename}"`,
-  );
 
-  ctx.set('Cache-Control', 'max-age=31536000,immutable');
-  ctx.body = block.BlockAssets[0].content;
-  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-  ctx.type = block.BlockAssets[0].mime;
+  const asset = await BlockAsset.findOne({
+    attributes: ['content', 'mime', 'storageKey'],
+    where: { filename, BlockVersionId: block.id },
+  });
+
+  assertKoaCondition(asset != null, ctx, 404, `Block has no asset named "${filename}"`);
+
+  if (asset.storageKey) {
+    try {
+      const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
+      const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
+
+      if (stream) {
+        ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
+        ctx.set('Content-Length', String(stats.size));
+        ctx.set('ETag', stats.etag);
+        ctx.set('Last-Modified', stats.lastModified.toUTCString());
+        ctx.body = stream;
+        ctx.type = asset.mime ?? 'application/octet-stream';
+        return;
+      }
+    } catch (error) {
+      logger.warn(error);
+    }
+  }
+
+  // Fall back to database-backed content for assets that have not been migrated to S3 yet.
+  if (asset.content) {
+    ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
+    ctx.body = asset.content;
+    ctx.type = asset.mime ?? 'application/octet-stream';
+    return;
+  }
+
+  assertKoaCondition(false, ctx, 404, `Block has no asset named "${filename}"`);
 }

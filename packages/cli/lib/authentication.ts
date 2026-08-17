@@ -4,7 +4,7 @@ import { hostname } from 'node:os';
 import {
   AppsembleError,
   assertKoaCondition,
-  getKeytar,
+  getKeyring,
   getService,
   logger,
   throwKoaError,
@@ -64,7 +64,7 @@ function waitForCredentials(url: URL): Promise<string> {
 }
 
 export async function login({ clientCredentials, remote }: BaseArguments): Promise<void> {
-  const { setPassword } = await getKeytar();
+  const { setPassword } = await getKeyring();
   const url = new URL('/settings/client-credentials', remote);
   let credentials = clientCredentials!;
   if (credentials) {
@@ -84,7 +84,7 @@ export async function login({ clientCredentials, remote }: BaseArguments): Promi
 }
 
 export async function remove({ remote }: BaseArguments): Promise<void> {
-  const { deletePassword, findCredentials } = await getKeytar();
+  const { deletePassword, findCredentials } = await getKeyring();
   const choices = await findCredentials(getService(remote));
   if (choices.length === 0) {
     logger.warn('No client credentials are currently in use.');
