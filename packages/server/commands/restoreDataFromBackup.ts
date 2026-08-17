@@ -280,6 +280,11 @@ export async function restoreDataFromBackup({
     logger.error('Failed to restore main database:', err);
   }
 
+  if (failed) {
+    await db.close();
+    return true;
+  }
+
   // Restore app databases
   const apps = await App.findAll({
     attributes: ['id', 'dbName', 'dbUser', 'dbPassword', 'dbHost', 'dbPort'],
@@ -310,7 +315,6 @@ export async function restoreDataFromBackup({
       await recreateDatabase(dbName, adminUri);
       await restoreDatabaseFromS3(appDbUrl, backupsBucket, key);
     } catch (err) {
-      failed = true;
       logger.error(`Failed to restore app ${app.id} database:`);
       logger.error(err);
     }
@@ -334,10 +338,7 @@ export async function handler(): Promise<void> {
     backupsHost: argv.backupsHost,
     backupsPort: argv.backupsPort,
     backupsSecretKey: argv.backupsSecretKey,
-    backupsSecure:
-      (typeof argv.backupsSecure === 'string'
-        ? argv.backupsSecure === 'true'
-        : argv.backupsSecure) ?? true,
+    backupsSecure: argv.backupsSecure,
     databaseHost: argv.databaseHost,
     databaseDirectHost: directDatabase.dbHost,
     databaseDirectPort: directDatabase.dbPort,

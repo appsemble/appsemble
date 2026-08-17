@@ -292,6 +292,8 @@ backups:
 
 restoreDataFromBackup:
   enabled: false
+  bucket: null
+  filenamePrefix: null
   backupFilename: latest
 
 assetsBackups:

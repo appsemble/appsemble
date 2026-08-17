@@ -9,6 +9,7 @@ metadata:
     helm.sh/hook: post-install,post-upgrade
     helm.sh/hook-weight: '0'
 spec:
+  backoffLimit: 0
   template:
     metadata:
       annotations:
@@ -26,6 +27,10 @@ spec:
           args:
             - restore-data-from-backup
             - -vv
+            - --backups-bucket
+            - {{ required "restoreDataFromBackup.bucket is required" .Values.restoreDataFromBackup.bucket | quote }}
+            - --backups-filename
+            - {{ required "restoreDataFromBackup.filenamePrefix is required" .Values.restoreDataFromBackup.filenamePrefix | quote }}
             - --restore-backup-filename
             - {{ .Values.restoreDataFromBackup.backupFilename | quote }}
           env:

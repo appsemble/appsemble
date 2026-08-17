@@ -737,15 +737,23 @@
       "type": "object",
       "description": "Configuration for restoring Appsemble database backups during Helm install or upgrade.",
       "additionalProperties": false,
-      "required": ["enabled", "backupFilename"],
+      "required": ["enabled", "bucket", "filenamePrefix", "backupFilename"],
       "properties": {
         "enabled": {
           "type": "boolean",
-          "description": "Enable a Helm hook job that restores database data from the configured backups bucket before migrations run."
+          "description": "Enable a Helm hook job that restores database data before migrations run."
+        },
+        "bucket": {
+          "type": ["string", "null"],
+          "description": "The bucket containing the database backups to restore."
+        },
+        "filenamePrefix": {
+          "type": ["string", "null"],
+          "description": "The filename prefix used to find the latest database backup."
         },
         "backupFilename": {
           "type": "string",
-          "description": "The backup filename to restore. Use latest to restore the newest object matching backups.filename."
+          "description": "The backup filename to restore. Use latest to restore the newest object matching filenamePrefix."
         }
       }
     },

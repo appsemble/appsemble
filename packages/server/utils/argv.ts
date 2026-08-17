@@ -545,7 +545,7 @@ export interface Argv {
    *
    * default true
    */
-  backupsSecure?: boolean;
+  backupsSecure: boolean;
 
   /**
    * The access key of the Amazon S3 compatible object storage server for the backups

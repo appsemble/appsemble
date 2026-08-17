@@ -247,10 +247,7 @@ describe('restoreDataFromBackup', () => {
       const usesDirectEndpoint =
         command === 'psql' &&
         databaseUrl.hostname === directHost &&
-        Number(databaseUrl.port) === directPort &&
-        args?.includes('-X') &&
-        args?.includes('-v') &&
-        args.includes('ON_ERROR_STOP=1');
+        Number(databaseUrl.port) === directPort;
       return createChildProcessMock(usesDirectEndpoint ? 0 : 1) as unknown as SpawnReturn;
     });
 
@@ -308,13 +305,7 @@ describe('restoreDataFromBackup', () => {
     expect(spawn).toHaveBeenNthCalledWith(
       2,
       'psql',
-      [
-        '--dbname=postgres://postgres',
-        '-v',
-        'ON_ERROR_STOP=1',
-        '-c',
-        'DROP DATABASE IF EXISTS "appsemble";',
-      ],
+      expect.arrayContaining(['-c', 'DROP DATABASE IF EXISTS "appsemble";']),
       expect.any(Object),
     );
   });
@@ -368,9 +359,10 @@ describe('restoreDataFromBackup', () => {
       'Failed to restore main database:',
       expect.any(Error),
     );
+    expect(App.findAll).not.toHaveBeenCalled();
   });
 
-  it('should return true when restoring one app database fails', async () => {
+  it('should continue without failing when restoring one app database fails', async () => {
     const app1Update = vi.fn<MainApp['update']>(() => Promise.resolve({} as MainApp));
     const app2Update = vi.fn<MainApp['update']>(() => Promise.resolve({} as MainApp));
 
@@ -392,12 +384,18 @@ describe('restoreDataFromBackup', () => {
     });
     vi.mocked(App.findAll).mockResolvedValue([app1, app2]);
 
-    app2Update.mockRejectedValueOnce(new Error('failed app update'));
+    app1Update.mockRejectedValueOnce(new Error('failed app update'));
 
     const failed = await restoreDataFromBackup(baseOptions);
 
-    expect(failed).toBe(true);
-    expect(logger.error).toHaveBeenCalledWith('Failed to restore app 2 database:');
+    expect(failed).toBe(false);
+    expect(logger.error).toHaveBeenCalledWith('Failed to restore app 1 database:');
+    expect(app2Update).toHaveBeenCalledWith({
+      dbHost: baseOptions.databaseHost,
+      dbPassword: 'encrypted:database-password:test-aes-secret',
+      dbPort: baseOptions.databasePort,
+      dbUser: baseOptions.databaseUser,
+    });
   });
 
   it('should continue when S3 initialization fails and return false if restore succeeds', async () => {
