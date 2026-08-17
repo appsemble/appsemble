@@ -3,6 +3,8 @@ import { createHash } from 'node:crypto';
 import { normalize, type ResourceDefinition } from '@appsemble/lang-sdk';
 import { QueryTypes, type Sequelize, type Transaction } from 'sequelize';
 
+import { resourcePartitionName } from './resourcePartition.js';
+
 const indexPrefix = 'UniquePosition_';
 
 /**
@@ -40,21 +42,23 @@ export async function syncResourcePositionIndex(
   const orderingFields = enforceOrderingGroupByFields.map(
     (field) => `(data->>${sequelize.escape(field)})`,
   );
-  const groupedColumns = ['type', '"Position"', ...orderingFields, '"GroupId"', 'ephemeral'].join(
-    ', ',
-  );
-  const ungroupedColumns = ['type', '"Position"', ...orderingFields, 'ephemeral'].join(', ');
+  const groupedColumns = ['"Position"', ...orderingFields, '"GroupId"', 'ephemeral'].join(', ');
+  const ungroupedColumns = ['"Position"', ...orderingFields, 'ephemeral'].join(', ');
+  // On the type's own partition rather than on "Resource": an index on the partitioned parent
+  // applies to the rows of every type, so the narrowest ordering group in the app would decide
+  // which positions all other types may use.
+  const partition = resourcePartitionName(resourceType);
 
   await sequelize.query(
     `
 CREATE UNIQUE INDEX IF NOT EXISTS
 "${getResourcePositionIndexName(resourceType, enforceOrderingGroupByFields, 'grouped')}"
-on "Resource"(${groupedColumns})
+on "${partition}"(${groupedColumns})
 WHERE "GroupId" IS NOT NULL AND deleted IS NULL;
 
 CREATE UNIQUE INDEX IF NOT EXISTS
 "${getResourcePositionIndexName(resourceType, enforceOrderingGroupByFields, 'ungrouped')}"
-on "Resource"(${ungroupedColumns})
+on "${partition}"(${ungroupedColumns})
 WHERE "GroupId" IS NULL AND deleted IS NULL;`,
     { transaction },
   );
@@ -90,7 +94,7 @@ export async function syncResourcePositionIndexes(
   }
 
   const existingIndexes = await sequelize.query<{ indexname: string }>(
-    `SELECT indexname FROM pg_indexes WHERE tablename = 'Resource' AND indexname LIKE 'UniquePosition%'`,
+    `SELECT indexname FROM pg_indexes WHERE indexname LIKE 'UniquePosition%'`,
     { type: QueryTypes.SELECT, transaction },
   );
 

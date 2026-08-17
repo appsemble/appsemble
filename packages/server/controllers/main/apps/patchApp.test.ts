@@ -574,27 +574,37 @@ describe('patchApp', () => {
       OrganizationId: organization.id,
     });
 
-    const ungroupedYaml = stripIndent(`
-      name: Test App
-      defaultPage: Test Page
-      pages:
-        - name: Test Page
-          blocks:
-            - type: test
-              version: 0.0.0
-      resources:
-        testResource:
-          schema:
-            additionalProperties: false
-            type: object
-            properties:
-              foo:
-                type: string
-              groupField:
-                type: string
-          positioning: true
-    `);
-    const groupedYaml = `${ungroupedYaml.trimEnd()}\n    enforceOrderingGroupByFields: [groupField]\n`;
+    const definitionYaml = (orderingGroup: string): string =>
+      stripIndent(`
+        name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+        resources:
+          testResource:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                foo:
+                  type: string
+                groupField:
+                  type: string
+            positioning: true${orderingGroup}
+          ungroupedResource:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                foo:
+                  type: string
+            positioning: true
+      `);
+    const ungroupedYaml = definitionYaml('');
+    const groupedYaml = definitionYaml('\n            enforceOrderingGroupByFields: [groupField]');
 
     authorizeStudio(user);
     // The type is first published without an ordering group, then gains one.
