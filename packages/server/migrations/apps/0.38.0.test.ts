@@ -131,7 +131,6 @@ describe('migration 0.38.0', () => {
     await sequelize.transaction((transaction) => up(transaction, sequelize));
     await sequelize.transaction((transaction) =>
       syncAppDefinitionIndexes({
-        appId,
         resources: definition.resources,
         sequelize,
         transaction,

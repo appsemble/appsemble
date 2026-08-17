@@ -65,7 +65,6 @@ export async function handler(): Promise<void> {
     if (relkind === 'p') {
       await appDB.transaction((transaction) =>
         syncAppDefinitionIndexes({
-          appId: app.id,
           resources: app.definition.resources,
           sequelize: appDB,
           transaction,

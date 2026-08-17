@@ -561,6 +561,68 @@ describe('patchApp', () => {
     `);
   });
 
+  it('should scope positions to the ordering group after enforceOrderingGroupByFields is added', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {},
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const ungroupedYaml = stripIndent(`
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+      resources:
+        testResource:
+          schema:
+            additionalProperties: false
+            type: object
+            properties:
+              foo:
+                type: string
+              groupField:
+                type: string
+          positioning: true
+    `);
+    const groupedYaml = `${ungroupedYaml.trimEnd()}\n    enforceOrderingGroupByFields: [groupField]\n`;
+
+    authorizeStudio(user);
+    // The type is first published without an ordering group, then gains one.
+    const { status: firstStatus } = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ yaml: ungroupedYaml }),
+    );
+    expect(firstStatus).toBe(200);
+    const { status } = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ yaml: groupedYaml }),
+    );
+    expect(status).toBe(200);
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { groupField: 'a' }, Position: 10 });
+
+    // A different ordering group numbers its own positions from the start.
+    expect(
+      await Resource.create({ type: 'testResource', data: { groupField: 'b' }, Position: 10 }),
+    ).toMatchObject({ Position: '10' });
+
+    // The same ordering group still may not reuse a position.
+    await expect(
+      Resource.create({ type: 'testResource', data: { groupField: 'a' }, Position: 10 }),
+    ).rejects.toMatchObject({ parent: { code: '23505' } });
+  });
+
   it('should reject a schema change that existing resources violate', async () => {
     const app = await App.create({
       definition: {

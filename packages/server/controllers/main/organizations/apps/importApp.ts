@@ -166,7 +166,6 @@ export async function importApp(ctx: Context): Promise<void> {
             zip.folder('resources')?.filter((filename) => filename.endsWith('json')) ?? [];
 
           await syncAppDefinitionIndexes({
-            appId: record!.id,
             resources: record!.definition.resources,
             sequelize: appDB,
             transaction: appTransaction,

@@ -1,9 +1,38 @@
-import { type ResourceDefinition } from '@appsemble/lang-sdk';
-import { type Sequelize, type Transaction } from 'sequelize';
+import { createHash } from 'node:crypto';
+
+import { normalize, type ResourceDefinition } from '@appsemble/lang-sdk';
+import { QueryTypes, type Sequelize, type Transaction } from 'sequelize';
+
+const indexPrefix = 'UniquePosition_';
+
+/**
+ * Build a deterministic name for a resource position index.
+ *
+ * The ordering fields are part of the hash, so a definition change yields a different name. That
+ * keeps `CREATE UNIQUE INDEX IF NOT EXISTS` honest: an index whose columns no longer match the
+ * definition can never be mistaken for the desired one, and is dropped as stale instead.
+ *
+ * @param resourceType The resource type the index belongs to.
+ * @param enforceOrderingGroupByFields The fields the type's positions are scoped by.
+ * @param scope Whether the index covers grouped or ungrouped resources.
+ * @returns A stable index name derived from the resource type, ordering fields, and scope.
+ */
+export function getResourcePositionIndexName(
+  resourceType: string,
+  enforceOrderingGroupByFields: string[],
+  scope: 'grouped' | 'ungrouped',
+): string {
+  const hash = createHash('sha1')
+    .update(`${resourceType}:${enforceOrderingGroupByFields.join('\0')}:${scope}`)
+    .digest('hex')
+    .slice(0, 16);
+  const normalizedType = normalize(resourceType).replaceAll('-', '_').slice(0, 20) || 'resource';
+
+  return `${indexPrefix}${normalizedType}_${hash}_${scope}`;
+}
 
 export async function syncResourcePositionIndex(
   sequelize: Sequelize,
-  appId: number,
   resourceType: string,
   enforceOrderingGroupByFields: string[] = [],
   transaction?: Transaction,
@@ -19,35 +48,55 @@ export async function syncResourcePositionIndex(
   await sequelize.query(
     `
 CREATE UNIQUE INDEX IF NOT EXISTS
-"UniquePosition${resourceType}WithGroupIDAppID${appId}"
+"${getResourcePositionIndexName(resourceType, enforceOrderingGroupByFields, 'grouped')}"
 on "Resource"(${groupedColumns})
 WHERE "GroupId" IS NOT NULL AND deleted IS NULL;
 
 CREATE UNIQUE INDEX IF NOT EXISTS
-"UniquePosition${resourceType}WithNULLGroupIDAppID${appId}"
+"${getResourcePositionIndexName(resourceType, enforceOrderingGroupByFields, 'ungrouped')}"
 on "Resource"(${ungroupedColumns})
 WHERE "GroupId" IS NULL AND deleted IS NULL;`,
     { transaction },
   );
 }
 
+/**
+ * Synchronize DB position indexes for the resource definitions of an app.
+ *
+ * Creates the indexes the definitions call for and drops every other position index, so a type that
+ * changed its ordering fields, stopped using positioning, or was removed does not keep enforcing
+ * uniqueness on a stale set of columns.
+ *
+ * @param sequelize The app database connection.
+ * @param resourceDefinitions The resource definitions to synchronize against.
+ * @param transaction The surrounding app DB transaction, when available.
+ */
 export async function syncResourcePositionIndexes(
   sequelize: Sequelize,
-  appId: number,
   resourceDefinitions: Record<string, ResourceDefinition> = {},
   transaction?: Transaction,
 ): Promise<void> {
+  const desiredIndexes = new Set<string>();
+
   for (const [resourceType, { enforceOrderingGroupByFields, positioning }] of Object.entries(
     resourceDefinitions,
   )) {
     if (positioning) {
-      await syncResourcePositionIndex(
-        sequelize,
-        appId,
-        resourceType,
-        enforceOrderingGroupByFields ?? [],
-        transaction,
-      );
+      const orderingFields = enforceOrderingGroupByFields ?? [];
+      desiredIndexes.add(getResourcePositionIndexName(resourceType, orderingFields, 'grouped'));
+      desiredIndexes.add(getResourcePositionIndexName(resourceType, orderingFields, 'ungrouped'));
+      await syncResourcePositionIndex(sequelize, resourceType, orderingFields, transaction);
+    }
+  }
+
+  const existingIndexes = await sequelize.query<{ indexname: string }>(
+    `SELECT indexname FROM pg_indexes WHERE tablename = 'Resource' AND indexname LIKE 'UniquePosition%'`,
+    { type: QueryTypes.SELECT, transaction },
+  );
+
+  for (const { indexname } of existingIndexes) {
+    if (!desiredIndexes.has(indexname)) {
+      await sequelize.query(`DROP INDEX IF EXISTS "${indexname}"`, { transaction });
     }
   }
 }

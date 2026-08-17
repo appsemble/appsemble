@@ -428,7 +428,6 @@ export async function patchApp(ctx: Context): Promise<void> {
           const { resources: nextResources } = result.definition!;
 
           await syncAppDefinitionIndexes({
-            appId,
             previousResources: previousResourceDefinitions,
             resources: nextResources as Record<string, ResourceDefinition> | undefined,
             sequelize: appDB,

@@ -252,7 +252,6 @@ export async function createApp(ctx: Context): Promise<void> {
     try {
       await appDB.transaction(async (appTransaction) => {
         await syncAppDefinitionIndexes({
-          appId: createdApp.id,
           resources: createdApp.definition.resources,
           sequelize: appDB,
           transaction: appTransaction,

@@ -202,7 +202,6 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     }
 
     await syncAppDefinitionIndexes({
-      appId: record.id,
       resources: record.definition.resources,
       sequelize: recordDB,
     });

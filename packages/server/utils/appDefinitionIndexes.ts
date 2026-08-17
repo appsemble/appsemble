@@ -5,18 +5,16 @@ import { syncResourcePositionIndexes } from './resourcePositionIndexes.js';
 import { syncResourceUniqueIndexes } from './resourceUniqueIndexes.js';
 
 export async function syncAppDefinitionIndexes({
-  appId,
   previousResources,
   resources,
   sequelize,
   transaction,
 }: {
-  appId: number;
   previousResources?: Record<string, ResourceDefinition>;
   resources?: Record<string, ResourceDefinition>;
   sequelize: Sequelize;
   transaction?: Transaction;
 }): Promise<void> {
   await syncResourceUniqueIndexes(sequelize, previousResources, resources, transaction);
-  await syncResourcePositionIndexes(sequelize, appId, resources, transaction);
+  await syncResourcePositionIndexes(sequelize, resources, transaction);
 }
