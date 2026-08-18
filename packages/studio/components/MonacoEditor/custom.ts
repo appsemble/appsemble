@@ -13,7 +13,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js';
 import 'monaco-editor/esm/vs/language/css/monaco.contribution.js';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
-import { configureMonacoYaml } from 'monaco-yaml';
+import { configureMonacoYaml, type JSONSchema } from 'monaco-yaml';
 
 import { appValidationLabel } from './appValidation/index.js';
 import './languages.js';
@@ -91,43 +91,44 @@ window.MonacoEnvironment = {
 };
 
 /**
- * Create a deep clone of a JSON schema with `markdownDescriptions` set to the description.
+ * Normalize an OpenAPI schema for the Monaco YAML JSON Schema validator.
  *
  * @param schema The schema to process.
- * @returns The schema with a markdown description.
+ * @returns The normalized schema with markdown descriptions.
  */
-function addMarkdownDescriptions(schema: Schema): Schema {
-  const result = { ...schema } as Schema & { markdownDescription?: string };
-  if (result.properties) {
-    result.properties = mapValues(result.properties, addMarkdownDescriptions);
+function normalizeSchema(schema: Schema): JSONSchema {
+  function normalizeValue(value: unknown): unknown {
+    if (Array.isArray(value)) {
+      return value.map(normalizeValue);
+    }
+    if (value && typeof value === 'object') {
+      const result = mapValues(value as Record<string, unknown>, normalizeValue);
+      if (typeof result.$ref === 'string' && result.$ref.startsWith('#/components/schemas/')) {
+        result.$ref = result.$ref.replace('#/components/schemas/', '#/definitions/');
+      }
+      if (typeof result.description === 'string') {
+        result.markdownDescription = result.description;
+      }
+      return result;
+    }
+    return value;
   }
-  if (result.patternProperties) {
-    result.patternProperties = mapValues(result.patternProperties, addMarkdownDescriptions);
-  }
-  if (typeof result.additionalProperties === 'object') {
-    result.additionalProperties = addMarkdownDescriptions(result.additionalProperties);
-  }
-  if (Array.isArray(result.items)) {
-    result.items = result.items.map(addMarkdownDescriptions);
-  }
-  result.markdownDescription = result.description;
-  return result;
+
+  return normalizeValue(schema) as JSONSchema;
 }
 
 configureMonacoYaml(monaco, {
   completion: true,
   validate: true,
-  format: true,
+  format: { enable: true },
   enableSchemaRequest: false,
   schemas: [
     {
       uri: String(new URL('/docs/reference', window.location.origin)),
       fileMatch: ['app.yaml'],
       schema: {
-        $ref: '#/components/schemas/AppDefinition',
-        components: {
-          schemas: mapValues(schemas, addMarkdownDescriptions),
-        },
+        $ref: '#/definitions/AppDefinition',
+        definitions: mapValues(schemas, normalizeSchema),
       },
     },
   ],
