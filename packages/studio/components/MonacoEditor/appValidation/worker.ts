@@ -11,7 +11,8 @@ import {
 } from '@appsemble/lang-sdk';
 import { type ActionType, type BlockManifest, type EventType } from '@appsemble/types';
 import { type editor, type IRange, type languages, type worker } from 'monaco-editor/editor';
-import { initialize } from 'monaco-worker-manager/worker';
+// @ts-expect-error Monaco doesn't publish declarations for its worker entry point.
+import { initialize as initializeMonacoWorker } from 'monaco-editor/editor/editor.worker';
 import {
   type Document,
   isMap,
@@ -167,147 +168,160 @@ function* processEventsOrActions(
   }
 }
 
-initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
-  getCachedBlockVersions,
+type WorkerImplementation<T> = {
+  [K in keyof T]: T[K] extends (...args: infer A) => infer R
+    ? (...args: A) => Awaited<R> | PromiseLike<Awaited<R>>
+    : never;
+};
 
-  doDocumentColors(uri) {
-    const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
-    if (!doc) {
-      return;
-    }
-    const result: languages.IColorInformation[] = [];
-
-    function handleKey(prefix: Prefix, key: keyof Theme): void {
-      const node = doc.getIn([...prefix, 'theme', key], true);
-      if (!isScalar(node)) {
-        return;
-      }
-
-      result.push({ color: parseColor(node.value), range: getNodeRange(node, lineCounter) });
-    }
-
-    function processTheme(prefix: Prefix): void {
-      handleKey(prefix, 'dangerColor');
-      handleKey(prefix, 'infoColor');
-      handleKey(prefix, 'linkColor');
-      handleKey(prefix, 'primaryColor');
-      handleKey(prefix, 'splashColor');
-      handleKey(prefix, 'successColor');
-      handleKey(prefix, 'themeColor');
-      handleKey(prefix, 'warningColor');
-    }
-
-    processTheme([]);
-    iterApp(definition, {
-      onBlock(block, prefix) {
-        processTheme(prefix);
-      },
-      onPage(page, prefix) {
-        processTheme(prefix);
-      },
-    });
-    return result;
-  },
-
-  async doValidation(uri) {
-    const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
-    if (!doc || !definition) {
-      return [];
-    }
-    const validatorResult = appValidator.validateApp(definition);
-    const { errors } = await validateAppDefinition(
-      definition,
+self.onmessage = () => {
+  const initializeWorker = initializeMonacoWorker as (
+    factory: (ctx: worker.IWorkerContext) => WorkerImplementation<AppValidationWorker>,
+  ) => void;
+  initializeWorker((ctx) =>
+    Object.create({
       getCachedBlockVersions,
-      undefined,
-      validatorResult,
-    );
 
-    return errors.map((error) => {
-      const node = doc.getIn(error.path, true);
-      const range: IRange = isNode(node)
-        ? getNodeRange(node, lineCounter)
-        : { startColumn: 1, startLineNumber: 1, endColumn: 1, endLineNumber: 1 };
+      doDocumentColors(uri) {
+        const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
+        if (!doc) {
+          return;
+        }
+        const result: languages.IColorInformation[] = [];
 
-      return {
-        // The severity matches MarkerSeverity.Warning, but since this runs in a web worker and
-        // `monaco-editor` uses DOM APIs, it may not be imported.
-        severity: 4,
-        message: error.message,
-        ...range,
-      };
-    });
-  },
+        function handleKey(prefix: Prefix, key: keyof Theme): void {
+          const node = doc.getIn([...prefix, 'theme', key], true);
+          if (!isScalar(node)) {
+            return;
+          }
 
-  async getDecorations(uri) {
-    const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
-    if (!doc || !definition) {
-      return [];
-    }
-    const decorationsPromises: Promise<editor.IModelDeltaDecoration[]>[] = [];
-    iterApp(definition, {
-      onBlock(block, prefix) {
-        decorationsPromises.push(
-          Promise.resolve().then(async () => {
-            const blockNode = doc.getIn(prefix, true);
-            if (!isMap(blockNode)) {
-              return;
-            }
+          result.push({ color: parseColor(node.value), range: getNodeRange(node, lineCounter) });
+        }
 
-            const type = blockNode.get('type', true);
+        function processTheme(prefix: Prefix): void {
+          handleKey(prefix, 'dangerColor');
+          handleKey(prefix, 'infoColor');
+          handleKey(prefix, 'linkColor');
+          handleKey(prefix, 'primaryColor');
+          handleKey(prefix, 'splashColor');
+          handleKey(prefix, 'successColor');
+          handleKey(prefix, 'themeColor');
+          handleKey(prefix, 'warningColor');
+        }
 
-            if (!isScalar(type) || typeof type.value !== 'string') {
-              return;
-            }
-            let href = `/blocks/${normalizeBlockName(type.value)}`;
-            const version = blockNode.get('version');
-            let manifest: BlockManifest | undefined;
-            if (typeof version === 'string') {
-              href += `/${version}`;
-              [manifest] = await getCachedBlockVersions([block]);
-            }
-
-            if (!manifest) {
-              return;
-            }
-
-            const description = manifest?.longDescription || manifest?.description || '';
-            const url = new URL(href, self.location.origin);
-
-            return [
-              {
-                range: getNodeRange(type, lineCounter),
-                options: {
-                  afterContentClassName: 'ml-1 fas fa-circle-info has-text-info is-clickable',
-                  hoverMessage: {
-                    value: `**${stripBlockName(
-                      block.type,
-                    )}**\n\n${description}\n\n[Full documentation](${url})`,
-                    isTrusted: true,
-                  },
-                },
-              },
-              ...processEventsOrActions(
-                manifest.actions,
-                blockNode.get('actions', true),
-                lineCounter,
-              ),
-              ...processEventsOrActions(
-                manifest.events?.listen,
-                blockNode.getIn(['events', 'listen'], true),
-                lineCounter,
-              ),
-              ...processEventsOrActions(
-                manifest.events?.emit,
-                blockNode.getIn(['events', 'emit'], true),
-                lineCounter,
-              ),
-            ];
-          }),
-        );
+        processTheme([]);
+        iterApp(definition, {
+          onBlock(block, prefix) {
+            processTheme(prefix);
+          },
+          onPage(page, prefix) {
+            processTheme(prefix);
+          },
+        });
+        return result;
       },
-    });
-    const decorations = await Promise.all(decorationsPromises);
-    // Filter out undefined values from blocks that don't have a valid manifest
-    return decorations.flat().filter(Boolean);
-  },
-}));
+
+      async doValidation(uri) {
+        const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
+        if (!doc || !definition) {
+          return [];
+        }
+        const validatorResult = appValidator.validateApp(definition);
+        const { errors } = await validateAppDefinition(
+          definition,
+          getCachedBlockVersions,
+          undefined,
+          validatorResult,
+        );
+
+        return errors.map((error) => {
+          const node = doc.getIn(error.path, true);
+          const range: IRange = isNode(node)
+            ? getNodeRange(node, lineCounter)
+            : { startColumn: 1, startLineNumber: 1, endColumn: 1, endLineNumber: 1 };
+
+          return {
+            // The severity matches MarkerSeverity.Warning, but since this runs in a web worker and
+            // `monaco-editor` uses DOM APIs, it may not be imported.
+            severity: 4,
+            message: error.message,
+            ...range,
+          };
+        });
+      },
+
+      async getDecorations(uri) {
+        const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
+        if (!doc || !definition) {
+          return [];
+        }
+        const decorationsPromises: Promise<editor.IModelDeltaDecoration[]>[] = [];
+        iterApp(definition, {
+          onBlock(block, prefix) {
+            decorationsPromises.push(
+              Promise.resolve().then(async () => {
+                const blockNode = doc.getIn(prefix, true);
+                if (!isMap(blockNode)) {
+                  return;
+                }
+
+                const type = blockNode.get('type', true);
+
+                if (!isScalar(type) || typeof type.value !== 'string') {
+                  return;
+                }
+                let href = `/blocks/${normalizeBlockName(type.value)}`;
+                const version = blockNode.get('version');
+                let manifest: BlockManifest | undefined;
+                if (typeof version === 'string') {
+                  href += `/${version}`;
+                  [manifest] = await getCachedBlockVersions([block]);
+                }
+
+                if (!manifest) {
+                  return;
+                }
+
+                const description = manifest?.longDescription || manifest?.description || '';
+                const url = new URL(href, self.location.origin);
+
+                return [
+                  {
+                    range: getNodeRange(type, lineCounter),
+                    options: {
+                      afterContentClassName: 'ml-1 fas fa-circle-info has-text-info is-clickable',
+                      hoverMessage: {
+                        value: `**${stripBlockName(
+                          block.type,
+                        )}**\n\n${description}\n\n[Full documentation](${url})`,
+                        isTrusted: true,
+                      },
+                    },
+                  },
+                  ...processEventsOrActions(
+                    manifest.actions,
+                    blockNode.get('actions', true),
+                    lineCounter,
+                  ),
+                  ...processEventsOrActions(
+                    manifest.events?.listen,
+                    blockNode.getIn(['events', 'listen'], true),
+                    lineCounter,
+                  ),
+                  ...processEventsOrActions(
+                    manifest.events?.emit,
+                    blockNode.getIn(['events', 'emit'], true),
+                    lineCounter,
+                  ),
+                ];
+              }),
+            );
+          },
+        });
+        const decorations = await Promise.all(decorationsPromises);
+        // Filter out undefined values from blocks that don't have a valid manifest
+        return decorations.flat().filter(Boolean);
+      },
+    } satisfies WorkerImplementation<AppValidationWorker>),
+  );
+};
