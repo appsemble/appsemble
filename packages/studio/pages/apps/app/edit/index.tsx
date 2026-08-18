@@ -19,7 +19,7 @@ import { type App } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import equal from 'fast-deep-equal';
-import { editor, MarkerSeverity } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { editor, MarkerSeverity } from 'monaco-editor/editor';
 import {
   type ReactNode,
   type SyntheticEvent,

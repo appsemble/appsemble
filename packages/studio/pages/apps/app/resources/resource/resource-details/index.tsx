@@ -4,7 +4,7 @@ import { serializeResource } from '@appsemble/utils';
 import { download, type NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
-import { type editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { type editor } from 'monaco-editor/editor';
 import {
   lazy,
   type ReactNode,

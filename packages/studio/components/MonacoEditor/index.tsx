@@ -7,7 +7,7 @@ import {
   KeyMod,
   MarkerSeverity,
   Uri,
-} from 'monaco-editor/esm/vs/editor/editor.api.js';
+} from 'monaco-editor/editor';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 
 import './custom.js';

@@ -10,12 +10,7 @@ import {
   validateAppDefinition,
 } from '@appsemble/lang-sdk';
 import { type ActionType, type BlockManifest, type EventType } from '@appsemble/types';
-import {
-  type editor,
-  type IRange,
-  type languages,
-  type worker,
-} from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { type editor, type IRange, type languages, type worker } from 'monaco-editor/editor';
 import { initialize } from 'monaco-worker-manager/worker';
 import {
   type Document,

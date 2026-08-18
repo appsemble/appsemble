@@ -1,24 +1,29 @@
 import { schemas } from '@appsemble/lang-sdk';
 import { mapValues } from '@appsemble/utils';
 import { type Schema } from 'jsonschema';
-import 'monaco-editor/esm/vs/editor/contrib/colorPicker/browser/colorContributions.js';
-import 'monaco-editor/esm/vs/editor/contrib/comment/browser/comment.js';
-import 'monaco-editor/esm/vs/editor/contrib/contextmenu/browser/contextmenu.js';
-import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController.js';
-import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding.js';
-import 'monaco-editor/esm/vs/editor/contrib/format/browser/formatActions.js';
-import 'monaco-editor/esm/vs/editor/contrib/hover/browser/hover.js';
-import 'monaco-editor/esm/vs/editor/contrib/inlineCompletions/browser/inlineCompletions.contribution.js';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
-import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js';
-import 'monaco-editor/esm/vs/language/css/monaco.contribution.js';
-import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
+import * as monaco from 'monaco-editor/editor';
+import 'monaco-editor/features/colorPicker/register';
+import 'monaco-editor/features/comment/register';
+import 'monaco-editor/features/contextmenu/register';
+import 'monaco-editor/features/find/register';
+import 'monaco-editor/features/folding/register';
+import 'monaco-editor/features/format/register';
+import 'monaco-editor/features/hover/register';
+import 'monaco-editor/features/inlineCompletions/register';
+import 'monaco-editor/features/quickCommand/register';
+import {
+  cssDefaults,
+  lessDefaults,
+  type Options as CSSOptions,
+  scssDefaults,
+} from 'monaco-editor/languages/features/css/register';
+import 'monaco-editor/languages/features/json/register';
 import { configureMonacoYaml, type JSONSchema } from 'monaco-yaml';
 
 import { appValidationLabel } from './appValidation/index.js';
 import './languages.js';
 
-const cssData: monaco.languages.css.Options = {
+const cssData: CSSOptions = {
   validate: true,
   lint: {
     compatibleVendorPrefixes: 'ignore',
@@ -65,9 +70,9 @@ const cssData: monaco.languages.css.Options = {
   },
 };
 
-monaco.languages.css.cssDefaults.setOptions(cssData);
-monaco.languages.css.scssDefaults.setOptions(cssData);
-monaco.languages.css.lessDefaults.setOptions(cssData);
+cssDefaults.setOptions(cssData);
+scssDefaults.setOptions(cssData);
+lessDefaults.setOptions(cssData);
 
 window.MonacoEnvironment = {
   getWorker(workerId, label) {
@@ -75,12 +80,14 @@ window.MonacoEnvironment = {
       case appValidationLabel:
         return new Worker(new URL('appValidation/worker', import.meta.url));
       case 'css':
-        return new Worker(new URL('monaco-editor/esm/vs/language/css/css.worker', import.meta.url));
+        return new Worker(
+          new URL('monaco-editor/languages/features/css/css.worker', import.meta.url),
+        );
       case 'editorWorkerService':
-        return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url));
+        return new Worker(new URL('monaco-editor/editor/editor.worker', import.meta.url));
       case 'json':
         return new Worker(
-          new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url),
+          new URL('monaco-editor/languages/features/json/json.worker', import.meta.url),
         );
       case 'yaml':
         return new Worker(new URL('monaco-yaml/yaml.worker', import.meta.url));
@@ -117,7 +124,7 @@ function normalizeSchema(schema: Schema): JSONSchema {
   return normalizeValue(schema) as JSONSchema;
 }
 
-configureMonacoYaml(monaco, {
+configureMonacoYaml(monaco as unknown as Parameters<typeof configureMonacoYaml>[0], {
   completion: true,
   validate: true,
   format: { enable: true },
