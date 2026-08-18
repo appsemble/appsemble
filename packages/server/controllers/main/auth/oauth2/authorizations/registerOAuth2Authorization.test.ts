@@ -9,7 +9,7 @@ import { argv, setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
 
-const mock = new MockAdapter(axios);
+const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
 let user: User;
 
 describe('registerOAuth2Authorization', () => {

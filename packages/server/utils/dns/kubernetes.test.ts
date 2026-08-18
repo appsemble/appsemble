@@ -11,7 +11,7 @@ import { App, AppCollection, Organization } from '../../models/index.js';
 import { setArgv } from '../argv.js';
 
 let kubernetes: typeof import('./kubernetes.js');
-const mock = new MockAdapter(axios);
+const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
 const ca = `-----BEGIN CERTIFICATE-----
 -----END CERTIFICATE-----`;
 

@@ -23,7 +23,7 @@ describe('formData', () => {
   beforeAll(() => {
     instance = axios.create();
     instance.interceptors.request.use(formData);
-    mock = new MockAdapter(instance);
+    mock = new MockAdapter(instance as ConstructorParameters<typeof MockAdapter>[0]);
   });
 
   it('should add headers for form-data requests', async () => {
@@ -55,7 +55,7 @@ describe('requestLogger', () => {
   beforeAll(() => {
     instance = axios.create();
     instance.interceptors.request.use(requestLogger);
-    mock = new MockAdapter(instance);
+    mock = new MockAdapter(instance as ConstructorParameters<typeof MockAdapter>[0]);
     mock.onAny().reply(200);
   });
 
@@ -70,7 +70,7 @@ describe('responseLogger', () => {
   beforeAll(() => {
     instance = axios.create();
     instance.interceptors.response.use(responseLogger);
-    mock = new MockAdapter(instance);
+    mock = new MockAdapter(instance as ConstructorParameters<typeof MockAdapter>[0]);
     mock.onAny().reply(200);
   });
 

@@ -2271,7 +2271,7 @@ describe('createApp', () => {
 
     beforeEach(() => {
       setArgv({ ...argv, remote: 'https://appsemble.example' });
-      mock = new MockAdapter(axios);
+      mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
     });
 
     afterEach(() => {
