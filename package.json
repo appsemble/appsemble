@@ -40,7 +40,7 @@
     ]
   },
   "overrides": {
-    "axios": "~1.12.0",
+    "axios": "~1.13.0",
     "gitleaks-secret-scanner": {
       "tar": "7.5.19"
     },

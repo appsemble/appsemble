@@ -42,7 +42,7 @@ describe('request action', () => {
     vi.setSystemTime(0);
     setArgv({ host: 'https://example.com' });
     mailer = new Mailer(argv);
-    mock = new MockAdapter(axios);
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
     await Organization.create({ id: 'testorg' });
   });
 

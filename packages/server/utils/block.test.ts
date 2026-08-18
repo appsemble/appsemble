@@ -60,7 +60,9 @@ describe('syncBlock', () => {
       remote,
       secret: 'test',
     });
-    mock = new MockAdapter(axios, { onNoMatch: 'passthrough' });
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0], {
+      onNoMatch: 'passthrough',
+    });
     await Organization.create({ id: organizationId, name: 'Test' });
   });
 

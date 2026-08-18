@@ -14,7 +14,7 @@ describe('app.member.register', () => {
   let refetchDemoAppMembers: Mock;
 
   beforeEach(() => {
-    mock = new MockAdapter(axios);
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
     passwordLogin = vi.fn();
     refetchDemoAppMembers = vi.fn();
   });
@@ -79,7 +79,7 @@ describe('app.member.invite', () => {
   let mock: MockAdapter;
 
   beforeEach(() => {
-    mock = new MockAdapter(axios);
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
   });
 
   it('should call the API to invite a new app member', async () => {
@@ -201,7 +201,7 @@ describe('app.member.query', () => {
   let setAppMemberInfo: Mock;
 
   beforeEach(() => {
-    mock = new MockAdapter(axios);
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
     setAppMemberInfo = vi.fn();
   });
 
@@ -500,7 +500,7 @@ describe('app.member.current.patch', () => {
   let refetchDemoAppMembers: Mock;
 
   beforeEach(() => {
-    mock = new MockAdapter(axios);
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
     setAppMemberInfo = vi.fn();
     refetchDemoAppMembers = vi.fn();
   });
@@ -644,7 +644,7 @@ describe('app.member.role.update', () => {
   let refetchDemoAppMembers: Mock;
 
   beforeEach(() => {
-    mock = new MockAdapter(axios);
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
     refetchDemoAppMembers = vi.fn();
   });
 
@@ -780,7 +780,7 @@ describe('app.member.properties.patch', () => {
   const currentEmail = 'test@gmail.com';
 
   beforeEach(() => {
-    mock = new MockAdapter(axios);
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
     refetchDemoAppMembers = vi.fn();
   });
 
@@ -864,7 +864,7 @@ describe('app.member.delete', () => {
   const memberEmail = 'test@gmail.com';
 
   beforeEach(() => {
-    mock = new MockAdapter(axios);
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
     refetchDemoAppMembers = vi.fn();
   });
 

@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { getAccessToken, getUserInfo, hasScope } from './oauth2.js';
 
-const mock = new MockAdapter(axios);
+const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
 
 describe('oauth2', () => {
   afterEach(() => {
