@@ -2,6 +2,8 @@ import { execSync } from 'node:child_process';
 import { appendFile } from 'node:fs/promises';
 
 import {
+  type AppMemberInfo,
+  type UserInfo,
   type App,
   type AppMessages,
   type AppsembleMessages,
@@ -41,7 +43,7 @@ export interface AppFixtures {
   /**
    * Set the role of the user.
    *
-   * Note that this requires the user to be logged in to the studio.
+   * Note that this requires the user to be logged in to the studio and added to the app.
    *
    * @param appId The ID of the app to set the role for.
    * @param role The role to set.
@@ -148,15 +150,27 @@ export const test = base.extend<AppFixtures>({
     });
   },
 
-  async changeAppMemberRole({ browser }, use) {
+  async changeAppMemberRole({ request }, use) {
     await use(async (appId, role) => {
-      const page = await browser.newPage();
+      const currentUser = (await (await request.get('/api/users/current')).json()) as UserInfo;
 
-      await page.goto(`/en/apps/${appId}/-/members`);
-      const select = page.locator('tr', { hasText: 'It’s you!' }).locator('select[class=""]');
-      await select.selectOption(role);
+      const filter = encodeURIComponent(`email eq '${currentUser.email.replaceAll("'", "''")}'`);
+      const currentAppMember = (
+        (await (
+          await request.get(`/api/apps/${appId}/members?$filter=${filter}`)
+        ).json()) as AppMemberInfo[]
+      )[0];
 
-      await page.close();
+      const response = await request.put(
+        `/api/apps/${appId}/app-members/${currentAppMember.sub}/role`,
+        {
+          data: {
+            roles: [role],
+          },
+        },
+      );
+
+      await expect(response).toBeOK();
     });
   },
 
