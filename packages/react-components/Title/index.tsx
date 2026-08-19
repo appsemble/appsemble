@@ -55,11 +55,15 @@ export function Title({
       {...props}
     >
       {id && anchor ? (
-        <a className={styles.anchor} href={`#${id}`}>
-          <span className="fas fa-link fa-xs has-text-grey-lighter" />
-        </a>
-      ) : null}
-      {children}
+        <span className={styles.content}>
+          <a className={styles.anchor} href={`#${id}`}>
+            <span className="fas fa-link fa-xs has-text-grey-lighter" />
+          </a>
+          {children}
+        </span>
+      ) : (
+        children
+      )}
     </Component>
   );
 }
