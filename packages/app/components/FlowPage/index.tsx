@@ -6,7 +6,6 @@ import {
   type LoopPageDefinition,
   type Remapper,
   type RemapperContext,
-  type SubPageDefinition,
 } from '@appsemble/lang-sdk';
 import { applyRefs, Loader, useMessages, useMeta } from '@appsemble/react-components';
 import { type BootstrapParams } from '@appsemble/sdk';
@@ -32,6 +31,7 @@ import { BlockList } from '../BlockList/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { DotProgressBar } from '../DotProgressBar/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
+import { createLoopSteps } from './createLoopSteps.js';
 
 interface FlowPageProps {
   readonly data: unknown;
@@ -89,30 +89,20 @@ export function FlowPage({
     pageDefinition.type === 'flow' ? pageDefinition.steps : undefined,
   );
   const [error, setError] = useState(false);
-  const [loopData, setLoopData] = useState<Object[]>();
+  const [loopData, setLoopData] = useState<(object | undefined)[]>();
   const [stepsData, setStepsData] = useState<Object[]>();
-  const remapperContext: RemapperContext = useMemo(
-    () => ({
-      appId,
-      appUrl: window.location.origin,
-      url: window.location.href,
-      group: appMemberSelectedGroup,
-      getMessage,
-      getVariable,
-      appMemberInfo,
-      context: { name: pageDefinition.name },
-      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-      locale: params.lang,
-    }),
-    [
-      appMemberInfo,
-      appMemberSelectedGroup,
-      getMessage,
-      getVariable,
-      pageDefinition.name,
-      params.lang,
-    ],
-  );
+  const remapperContext: RemapperContext = {
+    appId,
+    appUrl: window.location.origin,
+    url: window.location.href,
+    group: appMemberSelectedGroup,
+    getMessage,
+    getVariable,
+    appMemberInfo,
+    context: { name: pageDefinition.name },
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+    locale: params.lang,
+  };
 
   const generateLoopPrefix = (loopPrefix: string): string => {
     if (!currentStep) {
@@ -154,7 +144,6 @@ export function FlowPage({
 
   // XXX Something weird is going on here.
   let actions: BootstrapParams['actions'];
-  const startConsumedRef = useRef(false);
 
   const finish = useCallback(
     async (d: any): Promise<any> => {
@@ -361,45 +350,14 @@ export function FlowPage({
       actions
         .onLoad()
         .then((results: any) => {
-          const { blocks } = pageDefinition.foreach;
-
-          function createSteps(): [Object[], SubPageDefinition[]] {
-            const newLoopData: Object[] = [];
-            const newSteps: SubPageDefinition[] = [];
-            for (const resourceData of results) {
-              if (pageDefinition.start && !startConsumedRef.current) {
-                startConsumedRef.current = Boolean(
-                  remap(pageDefinition.start, resourceData, remapperContext),
-                );
-                if (!startConsumedRef.current) {
-                  continue;
-                }
-              }
-
-              if (resourceData) {
-                const newStep: SubPageDefinition = {
-                  name: 'New loop page',
-                  blocks,
-                };
-                newLoopData.push(resourceData);
-                newSteps.push(newStep);
-              }
-
-              if (
-                pageDefinition.end &&
-                remap(pageDefinition.end, resourceData, remapperContext)
-              ) {
-                break;
-              }
-            }
-            return [newLoopData, newSteps];
-          }
-          const [newLoopData, newSteps] = createSteps();
-          setSteps(newSteps);
-          applyRefs(newLoopData[0], stepRef);
-          setLoopData(newLoopData);
+          const { loopData: generatedLoopData, steps: generatedSteps } = createLoopSteps(
+            pageDefinition,
+            results,
+          );
+          setSteps(generatedSteps);
+          applyRefs(generatedLoopData[0], stepRef);
+          setLoopData(generatedLoopData);
           setStepsData([]);
-          startConsumedRef.current = false;
         })
         .catch((caughtError: unknown) => {
           if (!isActionOwnerAbortError(caughtError)) {
@@ -407,7 +365,7 @@ export function FlowPage({
           }
         });
     }
-  }, [actions, pageDefinition, remap, remapperContext, setData, stepRef, steps]);
+  }, [actions, pageDefinition, setData, stepRef, steps]);
 
   if (error) {
     return <p>Error loading steps</p>;

@@ -375,14 +375,14 @@ export interface LoopPageDefinition extends BasePageDefinition {
   retainFlowData?: boolean;
 
   /**
-   * A remapper to mark the first loop item.
+   * A page to display before the generated loop pages.
    */
-  start?: Remapper;
+  start?: SubPageDefinition;
 
   /**
-   * A remapper to mark the last loop item.
+   * A page to display after the generated loop pages.
    */
-  end?: Remapper;
+  end?: SubPageDefinition;
 }
 
 export interface AlternateTabsDefinition {

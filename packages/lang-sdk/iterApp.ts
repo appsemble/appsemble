@@ -199,10 +199,15 @@ export function iterPage(
       return true;
     }
 
-    const { foreach } = page as { foreach?: { blocks?: BlockDefinition[] } };
+    const { end, foreach, start } = page;
+    const subPages = [
+      ['steps.first', start ?? foreach],
+      ['steps', foreach],
+      ['steps.last', end ?? foreach],
+    ] as const;
 
-    return ['steps.first', 'steps', 'steps.last'].some((suffix) =>
-      iterBlockList(foreach?.blocks ?? [], callbacks, [...prefix, suffix, 'blocks']),
+    return subPages.some(([suffix, subPage]) =>
+      iterBlockList(subPage.blocks, callbacks, [...prefix, suffix, 'blocks']),
     );
   }
 

@@ -1,1 +1,1 @@
-Add `start` and `end` remappers for selecting a range of loop items
+Add `start` and `end` pages to loop pages
