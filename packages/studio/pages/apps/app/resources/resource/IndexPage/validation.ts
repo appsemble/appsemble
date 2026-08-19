@@ -15,14 +15,23 @@ function formatValidationMessage(message: string): string {
 
 export function normalizeResourceValidationErrors(
   errors: ResourceValidationError[],
+  assetPaths?: Map<number, (number | string)[]>,
 ): JSONSchemaEditorError[] {
-  return errors.map((error) => ({
-    message: formatValidationMessage(error.message),
-    path:
-      error.name === 'required' && typeof error.argument === 'string'
-        ? [...error.path, error.argument]
-        : error.path,
-  }));
+  return errors.map((error) => {
+    const [root, assetIndex] = error.path;
+    const path =
+      root === 'assets' && typeof assetIndex === 'number'
+        ? (assetPaths?.get(assetIndex) ?? [])
+        : error.path;
+
+    return {
+      message: formatValidationMessage(error.message),
+      path:
+        error.name === 'required' && typeof error.argument === 'string'
+          ? [...path, error.argument]
+          : path,
+    };
+  });
 }
 
 export function validateResourceValue(

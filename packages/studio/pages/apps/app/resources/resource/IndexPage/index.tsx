@@ -110,9 +110,16 @@ export function IndexPage({
   const [hiddenProperties, setHiddenProperties] = useState(defaultHiddenProperties);
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
   const [advancedOptions, setAdvancedOptions] = useState(defaultAdvancedOptions);
-  const [createErrors, setCreateErrors] = useState<
+  const [createClientErrors, setCreateClientErrors] = useState<
     ReturnType<typeof normalizeResourceValidationErrors>
   >([]);
+  const [createServerErrors, setCreateServerErrors] = useState<
+    ReturnType<typeof normalizeResourceValidationErrors>
+  >([]);
+  const createErrors = useMemo(
+    () => [...createClientErrors, ...createServerErrors],
+    [createClientErrors, createServerErrors],
+  );
 
   const orderBy = searchParams.get('order') || 'id';
   const orderDirection: 'ASC' | 'DESC' =
@@ -333,19 +340,21 @@ export function IndexPage({
     async (values: Record<string, Resource>) => {
       const errors = validateResourceValue(values[resourceName], schema);
       if (errors.length) {
-        setCreateErrors(errors);
+        setCreateClientErrors(errors);
         return;
       }
+      setCreateClientErrors([]);
+      const assetPaths = new Map<number, (number | string)[]>();
       try {
         const { data } = await axios.post<Resource>(
           resourceURL,
-          serializeResource(values[resourceName]),
+          serializeResource(values[resourceName], (index, path) => assetPaths.set(index, path)),
         );
 
         setResources((resources) => [...resources, data]);
         updatePagination(count + 1);
 
-        setCreateErrors([]);
+        setCreateServerErrors([]);
         createModal.disable();
         push({
           body: formatMessage(messages.createSuccess, { id: data.id }),
@@ -357,9 +366,11 @@ export function IndexPage({
           : undefined;
 
         if (data?.errors?.length) {
-          setCreateErrors(normalizeResourceValidationErrors(data.errors));
+          setCreateServerErrors(normalizeResourceValidationErrors(data.errors, assetPaths));
           return;
         }
+
+        setCreateServerErrors([]);
 
         if (
           data?.code === 'RESOURCE_UNIQUE_CONSTRAINT_VIOLATION' &&
@@ -399,19 +410,21 @@ export function IndexPage({
   const onCreateChange = useCallback(
     (_event: ChangeEvent, value: Resource) => {
       if (createErrors.length) {
-        setCreateErrors(validateResourceValue(value, schema));
+        setCreateClientErrors(validateResourceValue(value, schema));
       }
     },
     [createErrors.length, schema],
   );
 
   const onCreateOpen = useCallback(() => {
-    setCreateErrors([]);
+    setCreateClientErrors([]);
+    setCreateServerErrors([]);
     createModal.enable();
   }, [createModal]);
 
   const onCreateClose = useCallback(() => {
-    setCreateErrors([]);
+    setCreateClientErrors([]);
+    setCreateServerErrors([]);
     createModal.disable();
   }, [createModal]);
 

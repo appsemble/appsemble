@@ -37,6 +37,43 @@ describe('normalizeResourceValidationErrors', () => {
       },
     ]);
   });
+
+  it('routes uploaded asset errors back to their resource field', () => {
+    expect(
+      normalizeResourceValidationErrors(
+        [
+          {
+            message: 'does not contain valid file content',
+            name: 'content',
+            path: ['assets', 1],
+          },
+        ],
+        new Map([[1, ['groups', 0, 'attachment']]]),
+      ),
+    ).toStrictEqual([
+      {
+        message: 'Does not contain valid file content.',
+        path: ['groups', 0, 'attachment'],
+      },
+    ]);
+  });
+
+  it('routes an unmatched uploaded asset error to the resource form', () => {
+    expect(
+      normalizeResourceValidationErrors([
+        {
+          message: 'does not contain valid file content',
+          name: 'content',
+          path: ['assets', 1],
+        },
+      ]),
+    ).toStrictEqual([
+      {
+        message: 'Does not contain valid file content.',
+        path: [],
+      },
+    ]);
+  });
 });
 
 describe('validateResourceValue', () => {
