@@ -207,7 +207,7 @@ export function iterPage(
     ] as const;
 
     return subPages.some(([suffix, subPage]) =>
-      iterBlockList(subPage.blocks, callbacks, [...prefix, suffix, 'blocks']),
+      iterBlockList(subPage?.blocks ?? [], callbacks, [...prefix, suffix, 'blocks']),
     );
   }
 

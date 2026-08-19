@@ -31,7 +31,7 @@ import { BlockList } from '../BlockList/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { DotProgressBar } from '../DotProgressBar/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
-import { createLoopSteps } from './createLoopSteps.js';
+import { appendLoopResult, createLoopSteps, getLoopStepPrefix } from './createLoopSteps.js';
 
 interface FlowPageProps {
   readonly data: unknown;
@@ -105,23 +105,33 @@ export function FlowPage({
   };
 
   const generateLoopPrefix = (loopPrefix: string): string => {
-    if (!currentStep) {
-      return `${loopPrefix}.steps.first`;
-    }
-    if (steps?.length === currentStep + 1) {
-      return `${loopPrefix}.steps.last`;
-    }
-    return `${loopPrefix}.steps`;
+    const suffix =
+      pageDefinition.type === 'loop'
+        ? getLoopStepPrefix(pageDefinition, currentStep, steps?.length)
+        : 'steps';
+    return `${loopPrefix}.${suffix}`;
   };
 
   const id =
     pageDefinition.type === 'loop' ? generateLoopPrefix(prefix) : `${prefix}.steps.${currentStep}`;
 
+  const boundaryName =
+    pageDefinition.type === 'loop'
+      ? currentStep === 0 && pageDefinition.start
+        ? pageDefinition.start.name
+        : steps?.length === currentStep + 1 && pageDefinition.end
+          ? pageDefinition.end.name
+          : undefined
+      : undefined;
   const name = getAppMessage({
     id,
     defaultMessage:
       pageDefinition.type === 'loop'
-        ? generateLoopPrefix(prefix)
+        ? boundaryName == null
+          ? generateLoopPrefix(prefix)
+          : typeof boundaryName === 'string'
+            ? boundaryName
+            : remap(boundaryName, stepsData, remapperContext)
         : typeof steps?.[currentStep]?.name === 'string'
           ? steps?.[currentStep]?.name
           : remap(steps?.[currentStep]?.name ?? null, stepsData, remapperContext),
@@ -149,13 +159,7 @@ export function FlowPage({
     async (d: any): Promise<any> => {
       if (pageDefinition.type === 'loop') {
         applyRefs(null, stepRef);
-        const newData = { ...loopData?.[currentStep], ...d };
-        let stepData = stepsData;
-        if (Array.isArray(stepData) && stepData.length > 0) {
-          stepData.push(newData);
-        } else {
-          stepData = newData;
-        }
+        const stepData = appendLoopResult(stepsData ?? [], loopData?.[currentStep], d);
         await actions.onFlowFinish(stepData);
         return stepData;
       }
@@ -175,13 +179,10 @@ export function FlowPage({
       }
 
       if (pageDefinition.type === 'loop') {
-        applyRefs((loopData as Record<string, any>)[currentStep + 1], stepRef);
-        const newData = { ...loopData?.[currentStep], ...d };
-        if (Array.isArray(stepsData) && stepsData.length > 0) {
-          setStepsData((previous: Object[] | undefined) => [...(previous ?? []), newData]);
-        } else {
-          setStepsData([newData]);
-        }
+        applyRefs(loopData?.[currentStep + 1], stepRef);
+        setStepsData((previous: Object[] | undefined) =>
+          appendLoopResult(previous ?? [], loopData?.[currentStep], d),
+        );
         setCurrentStep(currentStep + 1);
       }
 
@@ -189,7 +190,7 @@ export function FlowPage({
       setCurrentStep(currentStep + 1);
       return d;
     },
-    [currentStep, steps, pageDefinition, stepsData, loopData, finish, stepRef, setData],
+    [currentStep, steps, pageDefinition, loopData, finish, stepRef, setData],
   );
 
   const back = useCallback(
@@ -201,15 +202,15 @@ export function FlowPage({
       }
 
       if (pageDefinition.type === 'loop') {
-        stepsData?.pop();
-        applyRefs((loopData as Record<string, any>)[currentStep - 1], stepRef);
+        setStepsData((previous) => previous?.slice(0, -1));
+        applyRefs(loopData?.[currentStep - 1], stepRef);
       } else {
         setData(d);
       }
       setCurrentStep(currentStep - 1);
       return d;
     },
-    [currentStep, pageDefinition, stepsData, loopData, stepRef, setData],
+    [currentStep, pageDefinition, loopData, stepRef, setData],
   );
 
   const cancel = useCallback(
@@ -248,12 +249,15 @@ export function FlowPage({
       }
 
       setCurrentStep(found);
-      applyRefs((data as Record<string, any>)[found], stepRef);
+      applyRefs(
+        pageDefinition.type === 'loop' ? loopData?.[found] : (data as Record<string, any>)[found],
+        stepRef,
+      );
       setData(d);
 
       return d;
     },
-    [steps, setData, data, stepRef],
+    [steps, setData, data, stepRef, pageDefinition.type, loopData],
   );
 
   const flowActions = useMemo(

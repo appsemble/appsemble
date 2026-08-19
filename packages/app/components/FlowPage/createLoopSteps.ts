@@ -5,10 +5,35 @@ export interface LoopSteps {
   steps: SubPageDefinition[];
 }
 
-export function createLoopSteps(
-  pageDefinition: LoopPageDefinition,
+export function appendLoopResult(
   results: object[],
-): LoopSteps {
+  loopItem: object | undefined,
+  data: object,
+): object[] {
+  return loopItem ? [...results, { ...loopItem, ...data }] : results;
+}
+
+export function getLoopStepPrefix(
+  pageDefinition: LoopPageDefinition,
+  currentStep: number,
+  stepCount: number | undefined,
+): 'steps' | 'steps.first' | 'steps.last' {
+  if (pageDefinition.start && currentStep === 0) {
+    return 'steps.first';
+  }
+  if (pageDefinition.end && stepCount === currentStep + 1) {
+    return 'steps.last';
+  }
+  if (currentStep === 0) {
+    return 'steps.first';
+  }
+  if (stepCount === currentStep + 1) {
+    return 'steps.last';
+  }
+  return 'steps';
+}
+
+export function createLoopSteps(pageDefinition: LoopPageDefinition, results: object[]): LoopSteps {
   const loopData: (object | undefined)[] = [];
   const steps: SubPageDefinition[] = [];
 

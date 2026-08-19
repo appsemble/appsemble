@@ -440,7 +440,7 @@ describe('extractAppMessages', () => {
           name: 'Survey',
           type: 'loop',
           actions: { onLoad: { type: 'noop' } },
-          start: { name: 'Introduction', blocks: [] },
+          start: { name: { translate: 'introduction' }, blocks: [] },
           foreach: { name: 'Question', blocks: [] },
           end: { name: 'Complete', blocks: [] },
         },
@@ -450,10 +450,11 @@ describe('extractAppMessages', () => {
     expect(result).toMatchObject({
       app: {
         'pages.survey': 'Survey',
-        'pages.survey.steps.first': 'Introduction',
+        'pages.survey.steps.first': 'first',
         'pages.survey.steps': 'step',
         'pages.survey.steps.last': 'Complete',
       },
+      messageIds: { introduction: '' },
     });
   });
 

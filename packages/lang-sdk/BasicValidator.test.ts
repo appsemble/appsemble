@@ -63,7 +63,7 @@ describe('loop page boundaries', () => {
     foreach: { blocks: [{ type: 'test', version: '0.0.0' }] },
   };
 
-  it('accepts start and end subpages', () => {
+  it('accepts start and end sub pages', () => {
     const app = {
       ...baseApp,
       pages: [

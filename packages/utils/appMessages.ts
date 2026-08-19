@@ -150,6 +150,11 @@ export function extractAppMessages(
       }
 
       if (page.type === 'loop') {
+        Object.assign(
+          messages.messageIds,
+          findMessageIds(page.start?.name),
+          findMessageIds(page.end?.name),
+        );
         messages.app[`${prefix}.steps.first`] =
           (typeof page.start?.name === 'string' ? page.start.name : '') || 'first';
         messages.app[`${prefix}.steps`] = 'step';

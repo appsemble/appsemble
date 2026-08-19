@@ -681,10 +681,7 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
           'foreach',
         ]);
         if (loopPage.end) {
-          validateSubPageLayout(loopPage.end.layout, loopPage.end.blocks, report, [
-            ...path,
-            'end',
-          ]);
+          validateSubPageLayout(loopPage.end.layout, loopPage.end.blocks, report, [...path, 'end']);
         }
       }
     },
