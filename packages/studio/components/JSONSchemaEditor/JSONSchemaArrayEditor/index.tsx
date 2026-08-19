@@ -14,8 +14,11 @@ import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function JSONSchemaArrayEditor({
   disabled,
+  error,
+  errors,
   name,
   onChange,
+  path,
   prefix,
   schema,
   value = [],
@@ -104,10 +107,11 @@ export function JSONSchemaArrayEditor({
             <div className="my-1" key={index}>
               <RecursiveJSONSchemaEditor
                 disabled={disabled}
-                error={required ? !val : null}
+                errors={errors}
                 name={`${name}.${index}`}
                 nested
                 onChange={onPropertyChange}
+                path={[...path, index]}
                 prefix={prefix}
                 required={required}
                 schema={items}
@@ -151,6 +155,7 @@ export function JSONSchemaArrayEditor({
           );
         })}
       </Collapsible>
+      {error ? <div className="help is-danger">{error}</div> : null}
       <ModalCard
         footer={
           <>

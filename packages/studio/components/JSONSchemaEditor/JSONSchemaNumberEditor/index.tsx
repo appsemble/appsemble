@@ -8,6 +8,7 @@ import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function JSONSchemaNumberEditor({
   disabled,
+  error,
   name,
   onChange,
   prefix,
@@ -18,7 +19,7 @@ export function JSONSchemaNumberEditor({
   return (
     <InputField
       disabled={disabled}
-      error={required ? !value : null}
+      error={error}
       help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       max={schema.maximum}

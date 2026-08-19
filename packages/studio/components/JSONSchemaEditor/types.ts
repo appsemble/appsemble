@@ -1,5 +1,11 @@
 import { type NamedEvent } from '@appsemble/web-utils';
 import { type Schema } from 'jsonschema';
+import { type ReactNode } from 'react';
+
+export interface JSONSchemaEditorError {
+  message: string;
+  path: (number | string)[];
+}
 
 export interface CommonJSONSchemaEditorProps<T = never> {
   /**
@@ -8,6 +14,16 @@ export interface CommonJSONSchemaEditorProps<T = never> {
    * This value is recursively passed down to all child inputs.
    */
   disabled?: boolean;
+
+  /**
+   * Validation errors for this field.
+   */
+  error?: ReactNode;
+
+  /**
+   * Validation errors for the edited value.
+   */
+  errors?: JSONSchemaEditorError[];
 
   /**
    * The name of the property that is being rendered.
@@ -32,6 +48,11 @@ export interface CommonJSONSchemaEditorProps<T = never> {
   prefix: string;
 
   /**
+   * The path of this field in the edited value.
+   */
+  path: (number | string)[];
+
+  /**
    * Whether or not the property is required.
    *
    * This is determined by the parent schema. It is used for recursion.
@@ -48,8 +69,4 @@ export interface CommonJSONSchemaEditorProps<T = never> {
    */
   value: T;
 
-  /**
-   * If there are any errors in the field, Only requirement errors are supported for now.
-   */
-  error?: Boolean;
 }

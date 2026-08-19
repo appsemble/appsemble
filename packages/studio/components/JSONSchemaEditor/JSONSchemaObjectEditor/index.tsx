@@ -10,9 +10,12 @@ import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function JSONSchemaObjectEditor({
   disabled,
+  error,
+  errors,
   name,
   nested,
   onChange,
+  path,
   prefix,
   schema,
   value = {},
@@ -32,11 +35,12 @@ export function JSONSchemaObjectEditor({
     return (
       <RecursiveJSONSchemaEditor
         disabled={disabled}
-        error={required ? !value?.propName : null}
+        errors={errors}
         key={propName}
         name={name ? `${name}.${propName}` : propName}
         nested
         onChange={onPropertyChange}
+        path={[...path, propName]}
         prefix={prefix}
         required={required}
         schema={subSchema}
@@ -63,6 +67,7 @@ export function JSONSchemaObjectEditor({
           {content}
         </>
       )}
+      {error ? <div className="help is-danger">{error}</div> : null}
     </div>
   );
 }

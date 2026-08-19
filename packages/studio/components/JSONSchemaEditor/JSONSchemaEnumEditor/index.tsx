@@ -9,6 +9,7 @@ import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function JSONSchemaEnumEditor({
   disabled,
+  error,
   name,
   onChange,
   prefix,
@@ -21,7 +22,7 @@ export function JSONSchemaEnumEditor({
   return (
     <SelectField
       disabled={disabled}
-      error={required ? !value : null}
+      error={error}
       help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       name={name}

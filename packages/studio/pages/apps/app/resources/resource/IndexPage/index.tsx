@@ -21,7 +21,6 @@ import { has, serializeResource } from '@appsemble/utils';
 import { download } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
-import { validate } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
 import {
   type ChangeEvent,
@@ -38,6 +37,10 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { ResourceRow } from './ResourceRow/index.js';
+import {
+  normalizeResourceValidationErrors,
+  validateResourceValue,
+} from './validation.js';
 import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../../components/HeaderControl/index.js';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor/index.js';
@@ -45,8 +48,14 @@ import { useApp } from '../../../index.js';
 
 const defaultHiddenProperties = new Set(['$created', '$updated', '$editor']);
 
-interface ResourceUniqueConstraintViolationData {
+interface ResourceErrorData {
   code?: string;
+  errors?: {
+    argument?: unknown;
+    message: string;
+    name?: string;
+    path: (number | string)[];
+  }[];
   fields?: string[];
   resourceType?: string;
 }
@@ -101,6 +110,9 @@ export function IndexPage({
   const [hiddenProperties, setHiddenProperties] = useState(defaultHiddenProperties);
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
   const [advancedOptions, setAdvancedOptions] = useState(defaultAdvancedOptions);
+  const [createErrors, setCreateErrors] = useState<
+    ReturnType<typeof normalizeResourceValidationErrors>
+  >([]);
 
   const orderBy = searchParams.get('order') || 'id';
   const orderDirection: 'ASC' | 'DESC' =
@@ -319,22 +331,9 @@ export function IndexPage({
 
   const submitCreate = useCallback(
     async (values: Record<string, Resource>) => {
-      const { errors } = validate(values[resourceName], schema, {
-        skipAttributes: ['type', 'format'],
-      });
+      const errors = validateResourceValue(values[resourceName], schema);
       if (errors.length) {
-        for (const error of errors) {
-          const prefix =
-            error.path.length === 2
-              ? `Item ${error.path[1]} of property ${error.path[0]} `
-              : error.path.length
-                ? `Property ${error.path[0]} `
-                : '';
-          push({
-            body: `${prefix}${error.message}`,
-            color: 'danger',
-          });
-        }
+        setCreateErrors(errors);
         return;
       }
       try {
@@ -346,15 +345,21 @@ export function IndexPage({
         setResources((resources) => [...resources, data]);
         updatePagination(count + 1);
 
+        setCreateErrors([]);
         createModal.disable();
         push({
           body: formatMessage(messages.createSuccess, { id: data.id }),
           color: 'primary',
         });
       } catch (error) {
-        const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintViolationData }>(error)
+        const data = axios.isAxiosError<{ data?: ResourceErrorData }>(error)
           ? error.response?.data?.data
           : undefined;
+
+        if (data?.errors?.length) {
+          setCreateErrors(normalizeResourceValidationErrors(data.errors));
+          return;
+        }
 
         if (
           data?.code === 'RESOURCE_UNIQUE_CONSTRAINT_VIOLATION' &&
@@ -390,6 +395,25 @@ export function IndexPage({
       updatePagination,
     ],
   );
+
+  const onCreateChange = useCallback(
+    (_event: ChangeEvent, value: Resource) => {
+      if (createErrors.length) {
+        setCreateErrors(validateResourceValue(value, schema));
+      }
+    },
+    [createErrors.length, schema],
+  );
+
+  const onCreateOpen = useCallback(() => {
+    setCreateErrors([]);
+    createModal.enable();
+  }, [createModal]);
+
+  const onCreateClose = useCallback(() => {
+    setCreateErrors([]);
+    createModal.disable();
+  }, [createModal]);
 
   const downloadCsv = useCallback(async () => {
     const newSearchParams = new URLSearchParams({
@@ -467,7 +491,7 @@ export function IndexPage({
         <FormattedMessage {...messages.header} values={{ resourceName }} />
       </HeaderControl>
       <div className={classNames('buttons mb-1 pt-3', styles.buttons)}>
-        <Button className="is-primary" icon="plus-square" onClick={createModal.enable}>
+        <Button className="is-primary" icon="plus-square" onClick={onCreateOpen}>
           <FormattedMessage {...messages.createButton} />
         </Button>
         <Button icon="eye-slash" onClick={hideModal.enable}>
@@ -620,16 +644,22 @@ export function IndexPage({
         footer={
           <SimpleModalFooter
             cancelLabel={<FormattedMessage {...messages.cancelButton} />}
-            onClose={createModal.disable}
+            onClose={onCreateClose}
             submitLabel={<FormattedMessage {...messages.createButton} />}
           />
         }
         isActive={createModal.enabled}
-        onClose={createModal.disable}
+        onClose={onCreateClose}
         onSubmit={submitCreate}
         title={<FormattedMessage {...messages.newTitle} values={{ resource: resourceName }} />}
       >
-        <SimpleFormField component={JSONSchemaEditor} name={resourceName} schema={schema} />
+        <SimpleFormField
+          component={JSONSchemaEditor}
+          errors={createErrors}
+          name={resourceName}
+          onChange={onCreateChange}
+          schema={schema}
+        />
       </ModalCard>
       <ModalCard
         component={SimpleForm}

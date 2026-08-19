@@ -10,25 +10,40 @@ import { JSONSchemaUnknownEditor } from '../JSONSchemaUnknownEditor/index.js';
 import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function RecursiveJSONSchemaEditor(props: CommonJSONSchemaEditorProps<any>): ReactNode {
-  const { schema } = props;
+  const { errors, path, schema } = props;
+  const messages = errors
+    ?.filter((error) =>
+      error.path.every((segment, index) => segment === path[index]) && error.path.length === path.length,
+    )
+    .map((error) => error.message);
+  const error = messages?.length ? (
+    <>
+      {messages.map((message) => (
+        <span className="is-block" key={message}>
+          {message}
+        </span>
+      ))}
+    </>
+  ) : undefined;
+  const editorProps = { ...props, error };
 
   if (schema.enum) {
-    return <JSONSchemaEnumEditor {...props} />;
+    return <JSONSchemaEnumEditor {...editorProps} />;
   }
 
   switch (schema.type) {
     case 'array':
-      return <JSONSchemaArrayEditor {...props} />;
+      return <JSONSchemaArrayEditor {...editorProps} />;
     case 'boolean':
-      return <JSONSchemaBooleanEditor {...props} />;
+      return <JSONSchemaBooleanEditor {...editorProps} />;
     case 'object':
-      return <JSONSchemaObjectEditor {...props} />;
+      return <JSONSchemaObjectEditor {...editorProps} />;
     case 'integer':
     case 'number':
-      return <JSONSchemaNumberEditor {...props} />;
+      return <JSONSchemaNumberEditor {...editorProps} />;
     case 'string':
-      return <JSONSchemaStringEditor {...props} />;
+      return <JSONSchemaStringEditor {...editorProps} />;
     default:
-      return <JSONSchemaUnknownEditor {...props} />;
+      return <JSONSchemaUnknownEditor {...editorProps} />;
   }
 }

@@ -9,10 +9,13 @@ import { type CommonJSONSchemaEditorProps } from './types.js';
  */
 export const JSONSchemaEditor = forwardRef<
   never,
-  Pick<CommonJSONSchemaEditorProps<any>, 'disabled' | 'name' | 'onChange' | 'schema' | 'value'>
+  Pick<
+    CommonJSONSchemaEditorProps<any>,
+    'disabled' | 'errors' | 'name' | 'onChange' | 'schema' | 'value'
+  >
   // The ref is defined to suppress a React warning.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
->(({ disabled, name, onChange, schema, value }, ref): ReactNode => {
+>(({ disabled, errors, name, onChange, schema, value }, ref): ReactNode => {
   const handleChange = useCallback(
     (event: NamedEvent, val: string) => {
       onChange({ currentTarget: { name } }, val);
@@ -23,9 +26,11 @@ export const JSONSchemaEditor = forwardRef<
   return (
     <RecursiveJSONSchemaEditor
       disabled={disabled}
+      errors={errors}
       name={name}
       nested={false}
       onChange={handleChange}
+      path={[]}
       prefix={name}
       schema={schema}
       value={value}
