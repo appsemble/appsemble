@@ -12,6 +12,7 @@ import { type Context } from 'koa';
 import { QueryTypes, type Sequelize, UniqueConstraintError, type Transaction } from 'sequelize';
 
 import { resourcePartitionName } from './resourcePartition.js';
+import { isResourcePositionIndexName } from './resourcePositionIndexes.js';
 
 const schemaValidator = new Validator();
 type SqlLiteralValue = boolean | Date | number | string;
@@ -798,6 +799,34 @@ export function getResourceUniqueConstraintViolationError(
 }
 
 /**
+ * Throw a Koa `409` when an error is a resource position index violation.
+ *
+ * Position indexes are not declared by the app definition, so they never resolve against a
+ * `unique` constraint and would otherwise surface as an unhandled database error. Two writes
+ * competing for the same position in one ordering group is a conflict the caller can retry.
+ *
+ * @param ctx The Koa context used to throw the HTTP error.
+ * @param resourceType The resource type being written.
+ * @param error The error thrown by Sequelize/PostgreSQL.
+ */
+export function throwResourcePositionConflictKoaError(
+  ctx: Context,
+  resourceType: string,
+  error: unknown,
+): void {
+  if (!isResourcePositionIndexName(getConstraintName(error as UniqueConstraintError))) {
+    return;
+  }
+
+  throwKoaError(
+    ctx,
+    409,
+    `Another resource of type “${resourceType}” already occupies this position in the same ordering group`,
+    { code: 'RESOURCE_POSITION_CONFLICT', resourceType },
+  );
+}
+
+/**
  * Throw a Koa `409` for a unique constraint error in a known single-resource
  * write path.
  *
@@ -829,6 +858,8 @@ export function throwResourceUniqueConstraintKoaErrorForResource(
       resourceType: violationError.resourceType,
     });
   }
+
+  throwResourcePositionConflictKoaError(ctx, resourceType, error);
 
   throw error;
 }
