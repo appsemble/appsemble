@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import { type editor, MarkerSeverity } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { type editor, MarkerSeverity } from 'monaco-editor/editor';
 import { type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';

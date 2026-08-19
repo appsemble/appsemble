@@ -28,32 +28,31 @@ export function HighlightedCode({ children, className }: HighlightedCodeProps): 
 
   useEffect(() => {
     if (language) {
-      Promise.all([
-        import('monaco-editor/esm/vs/editor/editor.api.js'),
-        import('../MonacoEditor/languages.js'),
-      ]).then(([MonacoEditor]) => {
-        const isLanguageSupported = MonacoEditor.languages
-          .getLanguages()
-          .some((lang) => (lang.id === language && language !== 'json') || !language);
-        const languageName = `custom-${language}`;
-        const isCustomThemeAdded = MonacoEditor.languages
-          .getLanguages()
-          .some((lang) => lang.id === languageName);
-        if (!isLanguageSupported && !isCustomThemeAdded) {
-          const languageConfig = new LanguageConfiguration(language);
-          const tokensProvider = languageConfig.getTokensProvider();
-          const languageConfiguration = languageConfig.getLanguageConfig();
-          const theme = languageConfig.getTheme();
-          MonacoEditor.languages.register({ id: languageName });
-          MonacoEditor.languages.setMonarchTokensProvider(languageName, tokensProvider);
-          MonacoEditor.languages.setLanguageConfiguration(languageName, languageConfiguration);
-          MonacoEditor.editor.defineTheme('custom-theme', theme);
-        }
-        MonacoEditor.editor.colorizeElement(ref.current, {
-          mimeType: isLanguageSupported ? language : languageName,
-          theme: 'custom-theme',
-        });
-      });
+      Promise.all([import('monaco-editor/editor'), import('../MonacoEditor/languages.js')]).then(
+        ([MonacoEditor]) => {
+          const isLanguageSupported = MonacoEditor.languages
+            .getLanguages()
+            .some((lang) => (lang.id === language && language !== 'json') || !language);
+          const languageName = `custom-${language}`;
+          const isCustomThemeAdded = MonacoEditor.languages
+            .getLanguages()
+            .some((lang) => lang.id === languageName);
+          if (!isLanguageSupported && !isCustomThemeAdded) {
+            const languageConfig = new LanguageConfiguration(language);
+            const tokensProvider = languageConfig.getTokensProvider();
+            const languageConfiguration = languageConfig.getLanguageConfig();
+            const theme = languageConfig.getTheme();
+            MonacoEditor.languages.register({ id: languageName });
+            MonacoEditor.languages.setMonarchTokensProvider(languageName, tokensProvider);
+            MonacoEditor.languages.setLanguageConfiguration(languageName, languageConfiguration);
+            MonacoEditor.editor.defineTheme('custom-theme', theme);
+          }
+          MonacoEditor.editor.colorizeElement(ref.current, {
+            mimeType: isLanguageSupported ? language : languageName,
+            theme: 'custom-theme',
+          });
+        },
+      );
     }
   }, [language]);
 

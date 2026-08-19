@@ -16,9 +16,9 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { editor, type IDisposable } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { editor, type IDisposable } from 'monaco-editor/editor';
 // Required for syntax highlighting in the Playground input and output editors
-import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
+import 'monaco-editor/languages/features/json/register';
 import { type ChangeEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -34,7 +34,7 @@ window.MonacoEnvironment = {
     switch (label) {
       case 'json':
         return new Worker(
-          new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url),
+          new URL('monaco-editor/languages/features/json/json.worker', import.meta.url),
         );
       default:
         throw new Error(`Unknown label ${label}`);
