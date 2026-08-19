@@ -122,7 +122,11 @@ export async function syncBlock({
           httpsAgent,
           responseType: 'arraybuffer',
         });
-        const [mime] = headers['content-type'].split(';');
+        const contentType = headers['content-type'];
+        if (typeof contentType !== 'string') {
+          throw new TypeError(`Invalid content type for block asset ${downloadUrl}`);
+        }
+        const [mime] = contentType.split(';');
         const buffer = Buffer.from(content);
         const storageKey = getBlockAssetStorageKey({
           blockName: name,
