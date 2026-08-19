@@ -7,6 +7,10 @@ export interface JSONSchemaEditorError {
   path: (number | string)[];
 }
 
+export interface JSONSchemaEditorEvent extends NamedEvent {
+  path?: (number | string)[];
+}
+
 export interface CommonJSONSchemaEditorProps<T = never> {
   /**
    * Whether or not the editor is disabled.
@@ -40,7 +44,12 @@ export interface CommonJSONSchemaEditorProps<T = never> {
   /**
    * The handler that is called whenever a value changes.
    */
-  onChange: (event: NamedEvent, value?: T) => void;
+  onChange: (event: JSONSchemaEditorEvent, value?: T) => void;
+
+  /**
+   * The handler that is called with the path of a changed field.
+   */
+  onFieldChange?: (path: (number | string)[]) => void;
 
   /**
    * The prefix to remove from labels.
@@ -68,5 +77,4 @@ export interface CommonJSONSchemaEditorProps<T = never> {
    * The value used to populate the editor.
    */
   value: T;
-
 }

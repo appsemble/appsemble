@@ -1,6 +1,5 @@
 import { generateDataFromSchema } from '@appsemble/lang-sdk';
 import { Button, CardFooterButton, ModalCard } from '@appsemble/react-components';
-import { type NamedEvent } from '@appsemble/web-utils';
 import { type OpenAPIV3 } from 'openapi-types';
 import { type MouseEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -10,7 +9,7 @@ import { messages } from './messages.js';
 import { Collapsible } from '../../Collapsible/index.js';
 import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor/index.js';
-import { type CommonJSONSchemaEditorProps } from '../types.js';
+import { type CommonJSONSchemaEditorProps, type JSONSchemaEditorEvent } from '../types.js';
 
 export function JSONSchemaArrayEditor({
   disabled,
@@ -28,10 +27,10 @@ export function JSONSchemaArrayEditor({
   const [removingItem, setRemovingItem] = useState<number>();
 
   const onPropertyChange = useCallback(
-    ({ currentTarget }: NamedEvent, val: string) => {
+    ({ currentTarget, path: changedPath }: JSONSchemaEditorEvent, val: string) => {
       const index = Number(currentTarget.name.slice(name.length + 1));
       onChange(
-        { currentTarget: { name } },
+        { currentTarget: { name }, path: changedPath },
         value.map((v, i) => (i === index ? val : v)),
       );
     },

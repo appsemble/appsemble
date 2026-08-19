@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
+import { type Schema } from 'jsonschema';
 
-import { normalizeResourceValidationErrors, validateResourceValue } from './validation.js';
+import {
+  clearValidationErrorsAtPath,
+  normalizeResourceValidationErrors,
+  validateResourceValue,
+} from './validation.js';
 
 describe('normalizeResourceValidationErrors', () => {
   it('routes a missing required property to that property', () => {
@@ -78,13 +83,13 @@ describe('normalizeResourceValidationErrors', () => {
 
 describe('validateResourceValue', () => {
   it('clears a required field error when the value is corrected', () => {
-    const schema = {
+    const schema: Schema = {
       properties: {
         name: { type: 'string' },
       },
       required: ['name'],
       type: 'object',
-    } as const;
+    };
 
     expect(validateResourceValue({}, schema)).toStrictEqual([
       {
@@ -96,15 +101,36 @@ describe('validateResourceValue', () => {
   });
 
   it('accepts valid falsy values', () => {
-    const schema = {
+    const schema: Schema = {
       properties: {
         active: { type: 'boolean' },
         count: { type: 'number' },
       },
       required: ['active', 'count'],
       type: 'object',
-    } as const;
+    };
 
     expect(validateResourceValue({ active: false, count: 0 }, schema)).toStrictEqual([]);
+  });
+});
+
+describe('clearValidationErrorsAtPath', () => {
+  const errors = [
+    { message: 'Replace this file.', path: ['attachment'] },
+    { message: 'Enter a name.', path: ['profile', 'name'] },
+    { message: 'Add another member.', path: ['profile', 'members'] },
+  ];
+
+  it('clears errors for the changed field and its descendants', () => {
+    expect(clearValidationErrorsAtPath(errors, ['profile'])).toStrictEqual([
+      { message: 'Replace this file.', path: ['attachment'] },
+    ]);
+  });
+
+  it('preserves errors for unrelated fields', () => {
+    expect(clearValidationErrorsAtPath(errors, ['profile', 'name'])).toStrictEqual([
+      { message: 'Replace this file.', path: ['attachment'] },
+      { message: 'Add another member.', path: ['profile', 'members'] },
+    ]);
   });
 });

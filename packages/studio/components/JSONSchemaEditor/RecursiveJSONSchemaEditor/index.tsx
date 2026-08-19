@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useCallback } from 'react';
 
 import { JSONSchemaArrayEditor } from '../JSONSchemaArrayEditor/index.js';
 import { JSONSchemaBooleanEditor } from '../JSONSchemaBooleanEditor/index.js';
@@ -7,13 +7,15 @@ import { JSONSchemaNumberEditor } from '../JSONSchemaNumberEditor/index.js';
 import { JSONSchemaObjectEditor } from '../JSONSchemaObjectEditor/index.js';
 import { JSONSchemaStringEditor } from '../JSONSchemaStringEditor/index.js';
 import { JSONSchemaUnknownEditor } from '../JSONSchemaUnknownEditor/index.js';
-import { type CommonJSONSchemaEditorProps } from '../types.js';
+import { type CommonJSONSchemaEditorProps, type JSONSchemaEditorEvent } from '../types.js';
 
 export function RecursiveJSONSchemaEditor(props: CommonJSONSchemaEditorProps<any>): ReactNode {
-  const { errors, path, schema } = props;
+  const { errors, onChange, path, schema } = props;
   const messages = errors
-    ?.filter((error) =>
-      error.path.every((segment, index) => segment === path[index]) && error.path.length === path.length,
+    ?.filter(
+      (error) =>
+        error.path.every((segment, index) => segment === path[index]) &&
+        error.path.length === path.length,
     )
     .map((error) => error.message);
   const error = messages?.length ? (
@@ -25,7 +27,13 @@ export function RecursiveJSONSchemaEditor(props: CommonJSONSchemaEditorProps<any
       ))}
     </>
   ) : undefined;
-  const editorProps = { ...props, error };
+  const handleChange = useCallback(
+    (event: JSONSchemaEditorEvent, value: any) => {
+      onChange({ ...event, path: event.path ?? path }, value);
+    },
+    [onChange, path],
+  );
+  const editorProps = { ...props, error, onChange: handleChange };
 
   if (schema.enum) {
     return <JSONSchemaEnumEditor {...editorProps} />;

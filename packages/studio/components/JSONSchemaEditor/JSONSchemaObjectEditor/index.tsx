@@ -1,12 +1,11 @@
 import { Title } from '@appsemble/react-components';
-import { type NamedEvent } from '@appsemble/web-utils';
 import { type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
 import { Collapsible } from '../../Collapsible/index.js';
 import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor/index.js';
-import { type CommonJSONSchemaEditorProps } from '../types.js';
+import { type CommonJSONSchemaEditorProps, type JSONSchemaEditorEvent } from '../types.js';
 
 export function JSONSchemaObjectEditor({
   disabled,
@@ -21,9 +20,9 @@ export function JSONSchemaObjectEditor({
   value = {},
 }: CommonJSONSchemaEditorProps<Record<string, string>>): ReactNode {
   const onPropertyChange = useCallback(
-    ({ currentTarget }: NamedEvent, val: string) => {
+    ({ currentTarget, path: changedPath }: JSONSchemaEditorEvent, val: string) => {
       const id = currentTarget.name.slice(name.length + 1);
-      onChange({ currentTarget: { name } }, { ...value, [id]: val });
+      onChange({ currentTarget: { name }, path: changedPath }, { ...value, [id]: val });
     },
     [name, onChange, value],
   );

@@ -5,6 +5,7 @@ import {
   FileUpload,
   Icon,
   ModalCard,
+  type MinimalHTMLElement,
   PaginationNavigator,
   SimpleForm,
   SimpleFormError,
@@ -38,6 +39,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { ResourceRow } from './ResourceRow/index.js';
 import {
+  clearValidationErrorsAtPath,
   normalizeResourceValidationErrors,
   validateResourceValue,
 } from './validation.js';
@@ -408,13 +410,17 @@ export function IndexPage({
   );
 
   const onCreateChange = useCallback(
-    (_event: ChangeEvent, value: Resource) => {
-      if (createErrors.length) {
+    (event: ChangeEvent<MinimalHTMLElement>, value: Resource) => {
+      if (event.currentTarget && createErrors.length) {
         setCreateClientErrors(validateResourceValue(value, schema));
       }
     },
     [createErrors.length, schema],
   );
+
+  const onCreateFieldChange = useCallback((path: (number | string)[]) => {
+    setCreateServerErrors((errors) => clearValidationErrorsAtPath(errors, path));
+  }, []);
 
   const onCreateOpen = useCallback(() => {
     setCreateClientErrors([]);
@@ -671,6 +677,7 @@ export function IndexPage({
           errors={createErrors}
           name={resourceName}
           onChange={onCreateChange}
+          onFieldChange={onCreateFieldChange}
           schema={schema}
         />
       </ModalCard>
