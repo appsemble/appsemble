@@ -101,7 +101,7 @@
     "remark-stringify": "^11.0.0",
     "request-filtering-agent": "^3.2.0",
     "sales-tax": "^2.18.0",
-    "scim2-parse-filter": "^0.2.8",
+    "scim2-parse-filter": "^0.3.0",
     "semver": "^7.0.0",
     "sequelize": "^6.0.0",
     "sequelize-typescript": "^2.0.0",
