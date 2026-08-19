@@ -550,6 +550,13 @@ describe('patchApp', () => {
     await expect(
       Resource.create({ type: 'testResource', data: { groupField: 'a' }, Position: 10 }),
     ).rejects.toMatchObject({ parent: { code: '23505' } });
+
+    // Resources without an ordering group field value share one ordering group, whether the field
+    // is absent or explicitly null.
+    await Resource.create({ type: 'testResource', data: {}, Position: 10 });
+    await expect(
+      Resource.create({ type: 'testResource', data: { groupField: null }, Position: 10 }),
+    ).rejects.toMatchObject({ parent: { code: '23505' } });
   });
 
   it('should reject a schema change that existing resources violate', async () => {

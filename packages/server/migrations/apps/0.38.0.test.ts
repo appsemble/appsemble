@@ -155,6 +155,76 @@ describe('migration 0.38.0', () => {
     });
   });
 
+  it('renumbers ordering groups that already hold duplicate positions', async () => {
+    const definition = {
+      ...defaultDefinition,
+      resources: {
+        task: {
+          positioning: true,
+          enforceOrderingGroupByFields: ['courseTypeId'],
+          schema: {
+            type: 'object',
+            properties: { title: { type: 'string' }, courseTypeId: { type: 'string' } },
+          },
+        },
+      },
+    } satisfies Partial<AppDefinition>;
+    const appId = await seedApp(definition);
+    const { sequelize } = await getAppDB(appId);
+    await regressToSingleTable(sequelize);
+
+    // Positions were never enforced, so these duplicates are the state a restored production
+    // database can be in. Both a missing and an explicitly null ordering field are one group.
+    await sequelize.query(`
+      INSERT INTO "Resource" (type, data, "Position", created, updated)
+      VALUES
+        ('task', '{"title":"x-first","courseTypeId":"x"}', 10, now(), now()),
+        ('task', '{"title":"x-also-first","courseTypeId":"x"}', 10, now(), now()),
+        ('task', '{"title":"x-last","courseTypeId":"x"}', 30, now(), now()),
+        ('task', '{"title":"missing"}', 10, now(), now()),
+        ('task', '{"title":"null","courseTypeId":null}', 10, now(), now()),
+        ('task', '{"title":"y-only","courseTypeId":"y"}', 10, now(), now())`);
+
+    await sequelize.transaction((transaction) => up(transaction, sequelize));
+    await sequelize.transaction((transaction) =>
+      syncAppDefinitionIndexes({
+        resources: definition.resources,
+        sequelize,
+        transaction,
+      }),
+    );
+
+    const rows = await sequelize.query<{ position: string; title: string }>(
+      `SELECT data->>'title' AS title, "Position"::text AS position FROM "Resource"`,
+      { type: QueryTypes.SELECT },
+    );
+    const positionByTitle = Object.fromEntries(
+      rows.map(({ position, title }) => [title, position]),
+    );
+
+    // The duplicated group is renumbered, and the resource that was already last stays last.
+    expect(new Set([positionByTitle['x-first'], positionByTitle['x-also-first']])).toStrictEqual(
+      new Set(['10', '20']),
+    );
+    expect(positionByTitle['x-last']).toBe('30');
+
+    // Missing and null share a group, so one of them moves.
+    expect(new Set([positionByTitle.missing, positionByTitle.null])).toStrictEqual(
+      new Set(['10', '20']),
+    );
+
+    // A group without duplicates keeps its positions.
+    expect(positionByTitle['y-only']).toBe('10');
+
+    // The index the renumbering made possible is in place.
+    await expect(
+      sequelize.query(
+        `INSERT INTO "Resource" (type, data, "Position", created, updated)
+         VALUES ('task', '{"title":"clash","courseTypeId":"y"}', 10, now(), now())`,
+      ),
+    ).rejects.toMatchObject({ parent: { code: '23505' } });
+  });
+
   it('backfills ResourceType on aux tables, wires composite FKs that cascade, and drops Resource_old', async () => {
     const appId = await seedApp();
     const { sequelize } = await getAppDB(appId);
