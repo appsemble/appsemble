@@ -667,7 +667,10 @@ The identifier must only contain letters, numbers, and hyphens (`[0-9A-Za-z-]`).
 Examples:
 
 - `test` -> `0.36.5-test.6`
-- `openshift` -> `0.36.5-openshift.0`
+- `my-fix` -> `0.36.6-my-fix.0`
+
+Only stable tags (`x.y.z`) and `test` prerelease tags deploy to production; other prerelease tags
+skip the production jobs.
 
 > **Note**: Migrations are still added manually. Make sure the release matches any new migrations.
 > For example, if you’re releasing version `1.2.3`, make sure existing migrations in

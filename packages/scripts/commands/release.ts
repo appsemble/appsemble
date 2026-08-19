@@ -266,7 +266,7 @@ export function builder(yargs: Argv): Argv<any> {
     .option('identifier', {
       description: `The identifier to use for the pre-release version:
         - test: Internal testing or testing with clients (e.g., test.3).
-        - openshift: OpenShift specific backports (e.g., openshift.0).`,
+        - any other identifier: hotfix pre-releases (e.g., my-fix.0).`,
       default: undefined,
     })
     .check((argv) => {
@@ -291,8 +291,6 @@ export function builder(yargs: Argv): Argv<any> {
       'Examples:\n' +
         '  Increment to the next test version:\n' +
         '    npm run scripts -- release prerelease --identifier test\n' +
-        '  Increment to the next openshift version:\n' +
-        '    npm run scripts -- release prerelease --identifier openshift\n' +
         '  Increment the minor version:\n' +
         '    npm run scripts -- release minor\n' +
         '  Increment the patch version:\n' +
@@ -303,13 +301,10 @@ export function builder(yargs: Argv): Argv<any> {
 export async function handler({ identifier, increment }: Args): Promise<void> {
   const workspaces = await getWorkspaces(process.cwd());
   logger.info(`Old version: ${version}`);
-  const newVersion =
-    increment === 'prerelease' && identifier
-      ? identifier !== 'test' && semver.prerelease(version) == null
-        ? `${version}-${identifier}.0`
-        : semver.inc(version, increment, identifier)
-      : semver.inc(version, increment);
-  if (newVersion == null || semver.valid(newVersion) == null) {
+  const newVersion = identifier
+    ? semver.inc(version, increment, identifier)
+    : semver.inc(version, increment);
+  if (newVersion == null) {
     throw new Error(`Invalid version increment: ${increment}, semver.inc returned ${newVersion}`);
   }
   logger.info(`New version: ${newVersion}`);
