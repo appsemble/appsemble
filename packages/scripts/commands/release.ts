@@ -268,6 +268,7 @@ export function builder(yargs: Argv): Argv<any> {
         - test: Internal testing or testing with clients (e.g., test.3).
         - any other identifier: hotfix pre-releases (e.g., my-fix.0).`,
       default: undefined,
+      type: 'string',
     })
     .check((argv) => {
       if (argv.identifier && !/^[\dA-Za-z-]+$/.test(argv.identifier)) {

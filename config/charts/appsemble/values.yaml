@@ -135,6 +135,9 @@ global:
       ports:
         postgresql: 5432
 postgresql:
+  global:
+    security:
+      allowInsecureImages: true
   fullnameOverride: appsemble-postgresql
   tls:
     enabled: true
