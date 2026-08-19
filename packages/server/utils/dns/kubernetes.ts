@@ -243,7 +243,9 @@ async function requestKubernetes<T>(description: string, request: () => Promise<
  *
  * @returns A partial Axios request configuration for making ingress related requests.
  */
-async function getAxiosConfig(): Promise<RawAxiosRequestConfig> {
+async function getAxiosConfig(): Promise<
+  Omit<RawAxiosRequestConfig, 'params' | 'paramsSerializer'>
+> {
   const K8S_HOST = `https://${argv.kubernetesServiceHost}:${argv.kubernetesServicePort}`;
   const ca = await readK8sSecret('ca.crt');
   const token = await readK8sSecret('token');
