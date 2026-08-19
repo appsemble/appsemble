@@ -458,107 +458,26 @@ describe('patchApp', () => {
 
     const resources = (
       await Resource.findAll({
-        attributes: ['id', 'data', 'Position', 'type'],
+        attributes: ['data', 'Position'],
         where: {
           type: 'testResource',
         },
-        order: [['Position', 'ASC']],
       })
     ).map((resource) => resource.dataValues);
-    expect(resources).toMatchInlineSnapshot(`
-      [
-        {
-          "Position": "10",
-          "data": {
-            "foo": "bar 0",
-            "numericFoo": 0,
-          },
-          "id": 1,
-          "type": "testResource",
-        },
-        {
-          "Position": "20",
-          "data": {
-            "foo": "bar 2",
-            "numericFoo": 0,
-          },
-          "id": 3,
-          "type": "testResource",
-        },
-        {
-          "Position": "30",
-          "data": {
-            "foo": "bar 4",
-            "numericFoo": 0,
-          },
-          "id": 5,
-          "type": "testResource",
-        },
-        {
-          "Position": "40",
-          "data": {
-            "foo": "bar 6",
-            "numericFoo": 0,
-          },
-          "id": 7,
-          "type": "testResource",
-        },
-        {
-          "Position": "50",
-          "data": {
-            "foo": "bar 8",
-            "numericFoo": 0,
-          },
-          "id": 9,
-          "type": "testResource",
-        },
-        {
-          "Position": "60",
-          "data": {
-            "foo": "bar 1",
-            "numericFoo": 1,
-          },
-          "id": 2,
-          "type": "testResource",
-        },
-        {
-          "Position": "70",
-          "data": {
-            "foo": "bar 3",
-            "numericFoo": 3,
-          },
-          "id": 4,
-          "type": "testResource",
-        },
-        {
-          "Position": "80",
-          "data": {
-            "foo": "bar 5",
-            "numericFoo": 5,
-          },
-          "id": 6,
-          "type": "testResource",
-        },
-        {
-          "Position": "90",
-          "data": {
-            "foo": "bar 7",
-            "numericFoo": 7,
-          },
-          "id": 8,
-          "type": "testResource",
-        },
-        {
-          "Position": "100",
-          "data": {
-            "foo": "bar 9",
-            "numericFoo": 9,
-          },
-          "id": 10,
-          "type": "testResource",
-        },
-      ]
-    `);
+
+    const positionsByOrderingGroup = new Map<number, string[]>();
+    for (const { data, Position } of resources) {
+      positionsByOrderingGroup.set(data.numericFoo, [
+        ...(positionsByOrderingGroup.get(data.numericFoo) ?? []),
+        Position,
+      ]);
+    }
+    expect(
+      (positionsByOrderingGroup.get(0) ?? []).sort((a, b) => Number(a) - Number(b)),
+    ).toStrictEqual(['10', '20', '30', '40', '50']);
+    for (const orderingGroup of [1, 3, 5, 7, 9]) {
+      expect(positionsByOrderingGroup.get(orderingGroup)).toStrictEqual(['10']);
+    }
   });
 
   it('should scope positions to the ordering group after enforceOrderingGroupByFields is added', async () => {

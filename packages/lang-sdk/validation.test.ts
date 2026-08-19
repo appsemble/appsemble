@@ -1723,6 +1723,21 @@ describe('validateAppDefinition', () => {
     );
   });
 
+  it('should reject invalid ordering group field names in schema validation', () => {
+    const app = createTestApp();
+    app.resources!.person.positioning = true;
+    app.resources!.person.enforceOrderingGroupByFields = ['not.valid'];
+
+    const result = new AppValidator().validateApp(app);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        path: ['resources', 'person', 'enforceOrderingGroupByFields', 0],
+      }),
+    );
+  });
+
   it('should not crash if not resources exist', async () => {
     const result = await validateAppDefinition(
       { ...createTestApp(), resources: undefined },

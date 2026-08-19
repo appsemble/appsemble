@@ -455,12 +455,16 @@ export async function patchApp(ctx: Context): Promise<void> {
               for (const field of enforceOrderingGroupByFields ?? []) {
                 orderingGroupFields.push(`(data->>${appDB.escape(field)})`);
               }
+              const partitionByOrderingGroup = orderingGroupFields.length
+                ? `PARTITION BY ${orderingGroupFields.join(', ')}`
+                : '';
               await appDB.query(
                 `CREATE TEMPORARY TABLE "ResourcePositionReset" ON COMMIT DROP AS
 SELECT
   id,
   ROW_NUMBER() OVER (
-    ORDER BY ${[...orderingGroupFields, '"Position" ASC', 'updated DESC'].join(', ')}
+    ${partitionByOrderingGroup}
+    ORDER BY "Position" ASC, updated DESC
   ) * 10 AS position
 FROM "Resource"
 WHERE type = :resourceType`,
