@@ -47,7 +47,7 @@
     "third-party-web": "0.29.2"
   },
   "devDependencies": {
-    "@appsemble/eslint-config": "0.37.5",
+    "@appsemble/eslint-config": "0.37.6",
     "@lhci/cli": "0.15.1",
     "@vitest/coverage-v8": "4.1.10",
     "@vitest/ui": "4.1.10",

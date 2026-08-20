@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.37.5
-appVersion: 0.37.5
+version: 0.37.6
+appVersion: 0.37.6
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -37,48 +37,26 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(detail-viewer): Add an HD download control to image previews."
-    - kind: added
-      description: "Block(feed): Add an HD download control to image previews."
-    - kind: added
-      description: "Block(footer): Add an HD download control to image previews."
-    - kind: added
-      description: "Block(form): Add an HD download control to image file previews."
-    - kind: added
-      description: "Block(image): Add an HD download control to fullscreen image previews."
-    - kind: added
-      description: "Block(table): Add an HD download control to image previews."
-    - kind: added
-      description: "App: Expose the page grid spacing unit as a CSS custom property."
-    - kind: added
-      description: "Preact-components: Add an HD download control to image previews."
-    - kind: added
-      description: "Server: Allow app members to download original app assets."
+      description: "Utils: Support reporting resource paths for serialized assets."
     - kind: changed
-      description: "Block(form): Remove ImageSizeSteps option from the Image parameter
-        in favor of the generic number option."
+      description: "Block(table): Set scrollable to true by default."
     - kind: changed
-      description: "Block(list): Remove ImageSizeSteps option from the Image parameter
-        in favor of the generic number option."
+      description: "Server: Stop cleaning up unresolved custom domains during deployments."
     - kind: changed
-      description: "Preact-components: Remove ImageSizeSteps option from
-        ImageComponent in favor of the generic number option."
+      description: "Studio: In the app editor, turn the Publish button into a loader
+        while it's busy publishing."
     - kind: fixed
-      description: "Block(form): Block form submission while validation actions are pending."
+      description: "Block(cards): Remove the reset event listener when the cards block
+        unmounts."
     - kind: fixed
-      description: "Cli: Resolve Webpack loaders and default PostCSS plugins from the
-        Appsemble CLI, making a PostCSS config in the served project optional."
+      description: "React-components: Render validation errors for file upload fields."
     - kind: fixed
-      description: "Cli: Resolve asset() functions in app styles served by appsemble
-        serve, like the Appsemble server does."
+      description: "Studio: Align documentation anchors consistently before headings."
     - kind: fixed
-      description: "Cli: The development server (appsemble serve) reflects the request
-        origin in CORS responses, so credentialed app requests such as
-        /api/apps/:id/variables no longer fail against the wildcard."
+      description: "Studio: Show resource validation errors below their corresponding fields."
     - kind: fixed
-      description: "Studio: Download app assets through authenticated Studio requests."
-    - kind: fixed
-      description: "Studio: Hide organization billing tabs from non-members."
+      description: "Webpack-core: Stop Sass from emitting a byte order mark that
+        invalidates a bundled CSS rule."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

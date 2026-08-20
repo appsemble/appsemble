@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.37.6](https://gitlab.com/appsemble/appsemble/-/releases/0.37.6)] - 2026-08-20
+
+### Added
+
+- Utils: Support reporting resource paths for serialized assets.
+
+### Changed
+
+- Block(`table`): Set `scrollable` to true by default.
+- Server: Stop cleaning up unresolved custom domains during deployments.
+- Studio: In the app editor, turn the `Publish` button into a loader while it's busy publishing.
+
+### Fixed
+
+- Block(`cards`): Remove the reset event listener when the cards block unmounts.
+- React-components: Render validation errors for file upload fields.
+- Studio: Align documentation anchors consistently before headings.
+- Studio: Show resource validation errors below their corresponding fields.
+- Webpack-core: Stop Sass from emitting a byte order mark that invalidates a bundled CSS rule.
+
 ## \[[0.37.5](https://gitlab.com/appsemble/appsemble/-/releases/0.37.5)] - 2026-08-12
 
 ### Added
