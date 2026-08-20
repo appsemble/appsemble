@@ -41,8 +41,8 @@ import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
-import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
-import { syncResourceUniqueIndexes } from '../../../utils/resourceUniqueIndexes.js';
+import { syncAppDefinitionIndexes } from '../../../utils/appDefinitionIndexes.js';
+import { assertResourceSchemaCompatibility } from '../../../utils/resourceSchemaCompatibility.js';
 import { createAppBuildManifest, pruneAppBuildSnapshots } from '../../../utils/appBuildManifest.js';
 import { isValidSentryDsn } from '../../../utils/sentry.js';
 
@@ -427,7 +427,14 @@ export async function patchApp(ctx: Context): Promise<void> {
         await appDB.transaction(async (appTransaction) => {
           const { resources: nextResources } = result.definition!;
 
-          await syncResourceUniqueIndexes(
+          await syncAppDefinitionIndexes({
+            previousResources: previousResourceDefinitions,
+            resources: nextResources as Record<string, ResourceDefinition> | undefined,
+            sequelize: appDB,
+            transaction: appTransaction,
+          });
+
+          await assertResourceSchemaCompatibility(
             appId,
             previousResourceDefinitions,
             nextResources as Record<string, ResourceDefinition> | undefined,
@@ -448,21 +455,16 @@ export async function patchApp(ctx: Context): Promise<void> {
               for (const field of enforceOrderingGroupByFields ?? []) {
                 orderingGroupFields.push(`(data->>${appDB.escape(field)})`);
               }
-              if (enforceOrderingGroupByFields) {
-                await createDynamicIndexes(
-                  enforceOrderingGroupByFields,
-                  appId,
-                  key,
-                  appTransaction,
-                );
-              }
-
+              const partitionByOrderingGroup = orderingGroupFields.length
+                ? `PARTITION BY ${orderingGroupFields.join(', ')}`
+                : '';
               await appDB.query(
                 `CREATE TEMPORARY TABLE "ResourcePositionReset" ON COMMIT DROP AS
 SELECT
   id,
   ROW_NUMBER() OVER (
-    ORDER BY ${[...orderingGroupFields, '"Position" ASC', 'updated DESC'].join(', ')}
+    ${partitionByOrderingGroup}
+    ORDER BY "Position" ASC, updated DESC
   ) * 10 AS position
 FROM "Resource"
 WHERE type = :resourceType`,

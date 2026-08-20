@@ -134,6 +134,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
               ...getCompressedFileMeta(asset),
               GroupId: groupId,
               ResourceId: patchedResource.id,
+              ResourceType: resourceType,
               AppMemberId: appMember?.sub,
               seed: patchedResource.seed,
               clonable: patchedResource.clonable,
@@ -149,6 +150,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
           ResourceVersion.create(
             {
               ResourceId: resourceId,
+              ResourceType: resourceType,
               AppMemberId: previousEditorId,
               data: definition.history === true || definition.history.data ? oldData : undefined,
             },

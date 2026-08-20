@@ -26,11 +26,8 @@ import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { createAppBuildManifest } from '../../../utils/appBuildManifest.js';
-import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
-import {
-  assertResourceUniqueConstraintSchemaValues,
-  syncResourceUniqueIndexes,
-} from '../../../utils/resourceUniqueIndexes.js';
+import { syncAppDefinitionIndexes } from '../../../utils/appDefinitionIndexes.js';
+import { assertResourceUniqueConstraintSchemaValues } from '../../../utils/resourceUniqueIndexes.js';
 
 export async function createAppFromTemplate(ctx: Context): Promise<void> {
   const {
@@ -167,6 +164,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       AppVariable: RecordAppVariables,
       Asset: RecordAsset,
       Resource: RecordResource,
+      sequelize: recordDB,
     } = await getAppDB(record.id);
 
     const templateAppBlockStyles = await TemplateAppBlockStyle.findAll();
@@ -203,14 +201,10 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       }
     }
 
-    if (
-      record.definition.resources &&
-      Object.entries(record.definition.resources).some(
-        ([, definition]) => (definition.unique ?? []).length !== 0,
-      )
-    ) {
-      await syncResourceUniqueIndexes(record.id, undefined, record.definition.resources);
-    }
+    await syncAppDefinitionIndexes({
+      resources: record.definition.resources,
+      sequelize: recordDB,
+    });
 
     if (resources) {
       const templateResources = await TemplateResource.findAll({ where: { clonable: true } });
@@ -234,13 +228,6 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
           seed,
         })),
       );
-      for (const [resourceType, { enforceOrderingGroupByFields, positioning }] of Object.entries(
-        template.definition.resources ?? {},
-      )) {
-        if (positioning && enforceOrderingGroupByFields) {
-          await createDynamicIndexes(enforceOrderingGroupByFields, record.id, resourceType);
-        }
-      }
     }
 
     if (variables) {

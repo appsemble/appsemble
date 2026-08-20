@@ -109,10 +109,10 @@ name of the resource and how it should behave.
     },
     enforceOrderingGroupByFields: {
       type: 'array',
-      pattern: '^[a-zA-Z0-9]*$',
       description: 'Group resources by fields when handling resource positions',
       items: {
         type: 'string',
+        pattern: '^[a-zA-Z0-9]*$',
       },
       minItems: 1,
     },

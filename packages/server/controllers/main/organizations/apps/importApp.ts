@@ -40,12 +40,9 @@ import {
 import { argv } from '../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { getBlockVersions } from '../../../../utils/block.js';
-import { createDynamicIndexes } from '../../../../utils/dynamicIndexes.js';
+import { syncAppDefinitionIndexes } from '../../../../utils/appDefinitionIndexes.js';
 import { processHooks, processReferenceHooks } from '../../../../utils/resource.js';
-import {
-  assertResourceUniqueConstraintSchemaValues,
-  syncResourceUniqueIndexes,
-} from '../../../../utils/resourceUniqueIndexes.js';
+import { assertResourceUniqueConstraintSchemaValues } from '../../../../utils/resourceUniqueIndexes.js';
 
 export async function importApp(ctx: Context): Promise<void> {
   const {
@@ -168,30 +165,11 @@ export async function importApp(ctx: Context): Promise<void> {
           const resourcesFolder =
             zip.folder('resources')?.filter((filename) => filename.endsWith('json')) ?? [];
 
-          if (record!.definition.resources) {
-            await syncResourceUniqueIndexes(
-              record!.id,
-              undefined,
-              record!.definition.resources,
-              appTransaction,
-            );
-          }
-
-          if (resourcesFolder.length) {
-            for (const [
-              resourceType,
-              { enforceOrderingGroupByFields, positioning },
-            ] of Object.entries(record!.definition.resources ?? {})) {
-              if (positioning && enforceOrderingGroupByFields) {
-                await createDynamicIndexes(
-                  enforceOrderingGroupByFields,
-                  record!.id,
-                  resourceType,
-                  appTransaction,
-                );
-              }
-            }
-          }
+          await syncAppDefinitionIndexes({
+            resources: record!.definition.resources,
+            sequelize: appDB,
+            transaction: appTransaction,
+          });
 
           for (const file of resourcesFolder) {
             const [, resourceJsonName] = file.name.split('/');

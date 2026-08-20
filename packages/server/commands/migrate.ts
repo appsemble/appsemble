@@ -1,11 +1,13 @@
 import { AppsembleError, initS3Client, logger, version } from '@appsemble/node-utils';
 import semver from 'semver';
+import { QueryTypes } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
 import { migrations } from '../migrations/main/index.js';
-import { initDB } from '../models/index.js';
+import { App, closeAppDB, getAppDB, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
+import { syncAppDefinitionIndexes } from '../utils/appDefinitionIndexes.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
@@ -53,6 +55,24 @@ export async function handler(): Promise<void> {
   }
 
   await migrate(db, migrateTo, migrations);
+  const apps = await App.findAll({ attributes: ['definition', 'id'] });
+  for (const app of apps) {
+    const { sequelize: appDB } = await getAppDB(app.id, db);
+    const [{ relkind }] = await appDB.query<{ relkind: string }>(
+      `SELECT relkind FROM pg_class WHERE relname = 'Resource'`,
+      { type: QueryTypes.SELECT },
+    );
+    if (relkind === 'p') {
+      await appDB.transaction((transaction) =>
+        syncAppDefinitionIndexes({
+          resources: app.definition.resources,
+          sequelize: appDB,
+          transaction,
+        }),
+      );
+    }
+    await closeAppDB(app.id);
+  }
   await db.close();
   process.exit();
 }

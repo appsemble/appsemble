@@ -5,6 +5,7 @@ import { Op } from 'sequelize';
 import { App, getAppDB } from '../../../models/index.js';
 import { checkAppPermissions } from '../../../utils/authorization.js';
 import { parseQuery } from '../../../utils/resource.js';
+import { throwResourcePositionConflictKoaError } from '../../../utils/resourceUniqueIndexes.js';
 
 export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   const {
@@ -16,7 +17,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
   const groupId = getSingleGroupId(selectedGroupId);
-  const { Resource } = await getAppDB(appId);
+  const { Resource, sequelize } = await getAppDB(appId);
   const app = await App.findByPk(appId, { attributes: ['definition', 'demoMode'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
   const resourceDefinition = getResourceDefinition(app.definition, resourceType);
@@ -25,7 +26,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   const oldResource = await Resource.findOne({
     where: { id: resourceId, type: resourceType, GroupId: groupId },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
-    attributes: ['Position', 'id', 'created', 'updated', 'data'],
+    attributes: ['Position', 'id', 'type', 'created', 'updated', 'data'],
   });
 
   assertKoaCondition(oldResource != null, ctx, 404, 'Resource not found');
@@ -137,7 +138,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     updatedPosition <= (prevResourcePosition ?? 0)
   ) {
     const resetPositionResources = await Resource.findAll({
-      attributes: ['id', 'Position'],
+      attributes: ['id', 'type', 'Position'],
       where: commonFindOptions,
       order: [['Position', 'ASC']],
     });
@@ -155,14 +156,34 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
       );
       updatedIndex = previousResourceIndex + 1;
     }
-    await Promise.all(
-      otherResources.map((resource, index) =>
-        resource.update({ Position: (index < updatedIndex ? index + 1 : index + 2) * 10 }),
-      ),
-    );
+    const renumbered = [
+      ...otherResources.slice(0, updatedIndex),
+      oldResource,
+      ...otherResources.slice(updatedIndex),
+    ].map((resource, index) => ({ id: resource.id, Position: (index + 1) * 10 }));
+
+    // Clear the positions of the whole group before assigning the new ones. The new numbering
+    // overlaps the current one, and the unique position index is not deferrable, so assigning
+    // directly would write a position another resource in the group still holds. Its NULL entries
+    // are distinct, so a group with no positions is a state the index allows to pass through.
+    await sequelize.transaction(async (transaction) => {
+      await Resource.update(
+        { Position: null },
+        { where: { id: renumbered.map(({ id }) => id), type: resourceType }, transaction },
+      );
+
+      for (const { Position, id } of renumbered) {
+        await Resource.update({ Position }, { where: { id, type: resourceType }, transaction });
+      }
+    });
     updatedPosition = (updatedIndex + 1) * 10;
   }
-  await oldResource.update({ Position: updatedPosition });
+  try {
+    await oldResource.update({ Position: updatedPosition });
+  } catch (error) {
+    throwResourcePositionConflictKoaError(ctx, resourceType, error);
+    throw error;
+  }
   ctx.status = 200;
   ctx.body = (await oldResource.reload()).toJSON();
 }

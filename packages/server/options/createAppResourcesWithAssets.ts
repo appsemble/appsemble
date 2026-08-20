@@ -9,11 +9,11 @@ import {
   uploadAssets,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
-import { Op, type UniqueConstraintError } from 'sequelize';
+import { literal, Op, type UniqueConstraintError } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { App, getAppDB, type Resource } from '../models/index.js';
-import { parseQuery, processHooks, processReferenceHooks } from '../utils/resource.js';
+import { processHooks, processReferenceHooks } from '../utils/resource.js';
 import {
   isUniqueConstraintErrorLike,
   throwResourceUniqueConstraintKoaErrorForResource,
@@ -47,15 +47,17 @@ export async function createAppResourcesWithAssets({
           resources.map(
             // Exclude id from body
             async ({ $clonable, $ephemeral, $expires, $seed, $thumbnails, id, ...data }, idx) => {
-              const { query } = parseQuery({
-                $filter: enforceOrderingGroupByFields
-                  ?.map((item) => `${item} eq ${data[item] ? `'${data[item]}'` : null}`)
-                  .join(' and '),
-                resourceDefinition,
-                tableName: 'Resource',
-              });
-              logger.verbose('Resource query');
-              logger.verbose(query);
+              // The scope of this read has to be the scope the unique position index enforces, or
+              // the position it derives is free to collide. That means comparing the ordering
+              // fields as jsonb the way the index does, and matching seed and ephemeral exactly
+              // rather than only when they are set.
+              const orderingGroup = (enforceOrderingGroupByFields ?? []).map((field) =>
+                literal(
+                  `COALESCE(data->${sequelize.escape(field)}, 'null'::jsonb) = ${sequelize.escape(
+                    JSON.stringify(data[field] ?? null),
+                  )}::jsonb`,
+                ),
+              );
 
               const lastPositionResource = await Resource.findOne({
                 attributes: ['Position'],
@@ -63,9 +65,9 @@ export async function createAppResourcesWithAssets({
                   type: resourceType,
                   GroupId: groupId ?? null,
                   Position: { [Op.not]: null },
-                  ...(query ? { query } : {}),
-                  ...($seed ? { seed: $seed } : {}),
-                  ...($ephemeral ? { ephemeral: $ephemeral } : {}),
+                  seed: $seed ?? false,
+                  ephemeral: $ephemeral ?? false,
+                  ...(orderingGroup.length ? { [Op.and]: orderingGroup } : {}),
                 },
                 order: [['Position', 'DESC']],
                 transaction,
@@ -127,6 +129,7 @@ export async function createAppResourcesWithAssets({
             ...getCompressedFileMeta(asset),
             GroupId: groupId ?? null,
             ResourceId,
+            ResourceType: resourceType,
             AppMemberId: appMember?.sub,
             seed,
             clonable,

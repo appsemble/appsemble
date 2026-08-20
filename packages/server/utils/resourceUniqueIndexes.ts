@@ -9,12 +9,75 @@ import {
 import { AppsembleError, throwKoaError } from '@appsemble/node-utils';
 import { type Schema, Validator } from 'jsonschema';
 import { type Context } from 'koa';
-import { UniqueConstraintError, type Transaction } from 'sequelize';
+import { QueryTypes, type Sequelize, UniqueConstraintError, type Transaction } from 'sequelize';
 
-import { getAppDB } from '../models/index.js';
+import { resourcePartitionName } from './resourcePartition.js';
+import { isResourcePositionIndexName } from './resourcePositionIndexes.js';
 
 const schemaValidator = new Validator();
 type SqlLiteralValue = boolean | Date | number | string;
+
+/**
+ * Ensure the dedicated partition for a resource type exists.
+ *
+ * Created before any of the type's rows are written, so resources route to their own partition and
+ * per-partition unique indexes carry predictable, resolvable names. Idempotent.
+ *
+ * @param sequelize The app database connection.
+ * @param resourceType The resource type whose partition to ensure.
+ * @param transaction The surrounding transaction, if any.
+ */
+async function ensureResourcePartition(
+  sequelize: Sequelize,
+  resourceType: string,
+  transaction?: Transaction,
+): Promise<void> {
+  const partition = resourcePartitionName(resourceType);
+  const [{ exists }] = await sequelize.query<{ exists: boolean }>(
+    `SELECT to_regclass('"${partition}"') IS NOT NULL AS exists`,
+    { type: QueryTypes.SELECT, transaction },
+  );
+  if (exists) {
+    return;
+  }
+
+  const [{ hasDefaultRows }] = await sequelize.query<{ hasDefaultRows: boolean }>(
+    `SELECT EXISTS (SELECT 1 FROM "resource_default" WHERE type = :type) AS "hasDefaultRows"`,
+    { replacements: { type: resourceType }, type: QueryTypes.SELECT, transaction },
+  );
+
+  if (!hasDefaultRows) {
+    await sequelize.query(
+      `CREATE TABLE "${partition}" PARTITION OF "Resource" FOR VALUES IN (:type)`,
+      { replacements: { type: resourceType }, transaction },
+    );
+    return;
+  }
+
+  // The default partition already holds rows of this type (created before this partition existed);
+  // detach it, claim the type's rows into a dedicated partition, then reattach the default.
+  await sequelize.query('ALTER TABLE "Resource" DETACH PARTITION "resource_default"', {
+    transaction,
+  });
+  await sequelize.query(
+    `CREATE TABLE "${partition}" PARTITION OF "Resource" FOR VALUES IN (:type)`,
+    {
+      replacements: { type: resourceType },
+      transaction,
+    },
+  );
+  await sequelize.query(
+    `INSERT INTO "${partition}" SELECT * FROM "resource_default" WHERE type = :type`,
+    { replacements: { type: resourceType }, transaction },
+  );
+  await sequelize.query('DELETE FROM "resource_default" WHERE type = :type', {
+    replacements: { type: resourceType },
+    transaction,
+  });
+  await sequelize.query('ALTER TABLE "Resource" ATTACH PARTITION "resource_default" DEFAULT', {
+    transaction,
+  });
+}
 
 function formatFields(fields: string[]): string {
   return fields.map((field) => `“${field}”`).join(', ');
@@ -267,13 +330,12 @@ function getDesiredResourceUniqueIndexes(
 }
 
 async function assertNoDuplicateResourceConstraintValues(
+  sequelize: Sequelize,
   resourceType: string,
   fields: string[],
   expressions: string[],
-  appId: number,
   transaction?: Transaction,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
   const aliases = expressions.map((unused, index) => `value${index}`);
   const escapedResourceType = sequelize.escape(resourceType);
   const nonNullChecks = aliases.map((alias) => `"${alias}" IS NOT NULL`).join(' AND ');
@@ -345,28 +407,27 @@ function getResourceUniqueConstraintValueError(
 }
 
 async function createResourceUniqueIndex(
-  appId: number,
+  sequelize: Sequelize,
   specification: { expressions: string[]; fields: string[]; name: string; resourceType: string },
   resourceDefinition: ResourceDefinition,
   transaction?: Transaction,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
   const indexExpressions = specification.expressions.map((expression) => `(${expression})`);
 
   try {
     await assertNoDuplicateResourceConstraintValues(
+      sequelize,
       specification.resourceType,
       specification.fields,
       specification.expressions,
-      appId,
       transaction,
     );
 
     await sequelize.query(
       `
         CREATE UNIQUE INDEX IF NOT EXISTS "${specification.name}"
-        ON "Resource" (${indexExpressions.join(', ')})
-        WHERE type = ${sequelize.escape(specification.resourceType)} AND deleted IS NULL;
+        ON "${resourcePartitionName(specification.resourceType)}" (${indexExpressions.join(', ')})
+        WHERE deleted IS NULL;
       `,
       { transaction },
     );
@@ -383,21 +444,20 @@ async function createResourceUniqueIndex(
 }
 
 async function recreateResourceUniqueIndex(
-  appId: number,
+  sequelize: Sequelize,
   specification: { expressions: string[]; fields: string[]; name: string; resourceType: string },
   resourceDefinition: ResourceDefinition,
   transaction?: Transaction,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
   const previousIndexName = `${specification.name}_old`;
   const indexExpressions = specification.expressions.map((expression) => `(${expression})`);
 
   try {
     await assertNoDuplicateResourceConstraintValues(
+      sequelize,
       specification.resourceType,
       specification.fields,
       specification.expressions,
-      appId,
       transaction,
     );
 
@@ -409,8 +469,8 @@ async function recreateResourceUniqueIndex(
     await sequelize.query(
       `
         CREATE UNIQUE INDEX "${specification.name}"
-        ON "Resource" (${indexExpressions.join(', ')})
-        WHERE type = ${sequelize.escape(specification.resourceType)} AND deleted IS NULL;
+        ON "${resourcePartitionName(specification.resourceType)}" (${indexExpressions.join(', ')})
+        WHERE deleted IS NULL;
       `,
       { transaction },
     );
@@ -428,12 +488,10 @@ async function recreateResourceUniqueIndex(
 }
 
 async function dropResourceUniqueIndex(
-  appId: number,
+  sequelize: Sequelize,
   indexName: string,
   transaction?: Transaction,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
-
   await sequelize.getQueryInterface().removeIndex('Resource', indexName, { transaction });
 }
 
@@ -448,18 +506,21 @@ async function dropResourceUniqueIndex(
  * cloning, prefer passing the surrounding app DB transaction so definition
  * changes and index changes stay atomic.
  *
- * @param appId The app whose per-app resource database should be updated.
+ * @param sequelize The app database connection.
  * @param previousDefinitions The resource definitions before the change.
  * @param nextDefinitions The resource definitions after the change.
  * @param transaction The surrounding app DB transaction, when available.
  */
 export async function syncResourceUniqueIndexes(
-  appId: number,
+  sequelize: Sequelize,
   previousDefinitions?: Record<string, ResourceDefinition>,
   nextDefinitions?: Record<string, ResourceDefinition>,
   transaction?: Transaction,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
+  for (const resourceType of Object.keys(nextDefinitions ?? {})) {
+    await ensureResourcePartition(sequelize, resourceType, transaction);
+  }
+
   const escapeValue = (value: SqlLiteralValue): string =>
     typeof value === 'boolean' ? String(value) : sequelize.escape(value);
   const previousIndexes = getDesiredResourceUniqueIndexes(escapeValue, previousDefinitions);
@@ -474,18 +535,18 @@ export async function syncResourceUniqueIndexes(
     }
 
     if (!previousSpecification) {
-      await createResourceUniqueIndex(appId, specification, resourceDefinition, transaction);
+      await createResourceUniqueIndex(sequelize, specification, resourceDefinition, transaction);
       continue;
     }
 
     if (previousSpecification.expressions.join(',') !== specification.expressions.join(',')) {
-      await recreateResourceUniqueIndex(appId, specification, resourceDefinition, transaction);
+      await recreateResourceUniqueIndex(sequelize, specification, resourceDefinition, transaction);
     }
   }
 
   for (const indexName of previousIndexes.keys()) {
     if (!nextIndexes.has(indexName)) {
-      await dropResourceUniqueIndex(appId, indexName, transaction);
+      await dropResourceUniqueIndex(sequelize, indexName, transaction);
     }
   }
 }
@@ -504,7 +565,7 @@ export async function syncResourceUniqueIndexes(
  * transaction, prefer passing that same transaction here to keep the preflight
  * query aligned with the rest of that operation.
  *
- * @param appId The app whose per-app resource database should be checked.
+ * @param sequelize The app database connection.
  * @param resourceType The resource type being written.
  * @param resourceDefinition The resource definition that contains `unique`.
  * @param resources The resource payloads to validate.
@@ -512,14 +573,13 @@ export async function syncResourceUniqueIndexes(
  * @param excludeResourceId An optional resource id to ignore during updates.
  */
 export async function assertResourceUniqueConstraintValues(
-  appId: number,
+  sequelize: Sequelize,
   resourceType: string,
   resourceDefinition: ResourceDefinition,
   resources: Record<string, unknown>[],
   transaction?: Transaction,
   excludeResourceId?: number,
 ): Promise<void> {
-  const { sequelize } = await getAppDB(appId);
   const escapeValue = (value: SqlLiteralValue): string =>
     typeof value === 'boolean' ? String(value) : sequelize.escape(value);
   const seenValues = new Set<string>();
@@ -739,6 +799,34 @@ export function getResourceUniqueConstraintViolationError(
 }
 
 /**
+ * Throw a Koa `409` when an error is a resource position index violation.
+ *
+ * Position indexes are not declared by the app definition, so they never resolve against a
+ * `unique` constraint and would otherwise surface as an unhandled database error. Two writes
+ * competing for the same position in one ordering group is a conflict the caller can retry.
+ *
+ * @param ctx The Koa context used to throw the HTTP error.
+ * @param resourceType The resource type being written.
+ * @param error The error thrown by Sequelize/PostgreSQL.
+ */
+export function throwResourcePositionConflictKoaError(
+  ctx: Context,
+  resourceType: string,
+  error: unknown,
+): void {
+  if (!isResourcePositionIndexName(getConstraintName(error as UniqueConstraintError))) {
+    return;
+  }
+
+  throwKoaError(
+    ctx,
+    409,
+    `Another resource of type “${resourceType}” already occupies this position in the same ordering group`,
+    { code: 'RESOURCE_POSITION_CONFLICT', resourceType },
+  );
+}
+
+/**
  * Throw a Koa `409` for a unique constraint error in a known single-resource
  * write path.
  *
@@ -770,6 +858,8 @@ export function throwResourceUniqueConstraintKoaErrorForResource(
       resourceType: violationError.resourceType,
     });
   }
+
+  throwResourcePositionConflictKoaError(ctx, resourceType, error);
 
   throw error;
 }
