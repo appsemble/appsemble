@@ -24,6 +24,24 @@ describe('serializeResource', () => {
       expect.objectContaining({ size: image.size, type: image.type }),
     ]);
   });
+
+  it('should report the resource path for each serialized asset', () => {
+    const paths = new Map<number, (number | string)[]>();
+
+    serializeResource(
+      {
+        groups: [{ attachments: [new Blob(['first']), new Blob(['second'])] }],
+      },
+      (index, path) => paths.set(index, path),
+    );
+
+    expect(paths).toStrictEqual(
+      new Map([
+        [0, ['groups', 0, 'attachments', 0]],
+        [1, ['groups', 0, 'attachments', 1]],
+      ]),
+    );
+  });
 });
 
 describe('deserializeResource', () => {

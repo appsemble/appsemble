@@ -1,5 +1,15 @@
 import { type NamedEvent } from '@appsemble/web-utils';
 import { type Schema } from 'jsonschema';
+import { type ReactNode } from 'react';
+
+export interface JSONSchemaEditorError {
+  message: string;
+  path: (number | string)[];
+}
+
+export interface JSONSchemaEditorEvent extends NamedEvent {
+  path?: (number | string)[];
+}
 
 export interface CommonJSONSchemaEditorProps<T = never> {
   /**
@@ -8,6 +18,16 @@ export interface CommonJSONSchemaEditorProps<T = never> {
    * This value is recursively passed down to all child inputs.
    */
   disabled?: boolean;
+
+  /**
+   * Validation errors for this field.
+   */
+  error?: ReactNode;
+
+  /**
+   * Validation errors for the edited value.
+   */
+  errors?: JSONSchemaEditorError[];
 
   /**
    * The name of the property that is being rendered.
@@ -24,12 +44,22 @@ export interface CommonJSONSchemaEditorProps<T = never> {
   /**
    * The handler that is called whenever a value changes.
    */
-  onChange: (event: NamedEvent, value?: T) => void;
+  onChange: (event: JSONSchemaEditorEvent, value?: T) => void;
+
+  /**
+   * The handler that is called with the path of a changed field.
+   */
+  onFieldChange?: (path: (number | string)[]) => void;
 
   /**
    * The prefix to remove from labels.
    */
   prefix: string;
+
+  /**
+   * The path of this field in the edited value.
+   */
+  path: (number | string)[];
 
   /**
    * Whether or not the property is required.

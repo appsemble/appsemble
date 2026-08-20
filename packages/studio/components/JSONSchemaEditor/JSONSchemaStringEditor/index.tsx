@@ -14,6 +14,7 @@ import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function JSONSchemaStringEditor({
   disabled,
+  error,
   name,
   onChange,
   prefix,
@@ -26,6 +27,7 @@ export function JSONSchemaStringEditor({
 
   const commonProps = {
     disabled,
+    error,
     help: <MarkdownContent content={description} />,
     label: <JSONSchemaLabel name={name} prefix={prefix} schema={schema} />,
     maxLength,

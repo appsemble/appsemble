@@ -1,6 +1,5 @@
 import { generateDataFromSchema } from '@appsemble/lang-sdk';
 import { Button, CardFooterButton, ModalCard } from '@appsemble/react-components';
-import { type NamedEvent } from '@appsemble/web-utils';
 import { type OpenAPIV3 } from 'openapi-types';
 import { type MouseEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -10,12 +9,15 @@ import { messages } from './messages.js';
 import { Collapsible } from '../../Collapsible/index.js';
 import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor/index.js';
-import { type CommonJSONSchemaEditorProps } from '../types.js';
+import { type CommonJSONSchemaEditorProps, type JSONSchemaEditorEvent } from '../types.js';
 
 export function JSONSchemaArrayEditor({
   disabled,
+  error,
+  errors,
   name,
   onChange,
+  path,
   prefix,
   schema,
   value = [],
@@ -25,10 +27,10 @@ export function JSONSchemaArrayEditor({
   const [removingItem, setRemovingItem] = useState<number>();
 
   const onPropertyChange = useCallback(
-    ({ currentTarget }: NamedEvent, val: string) => {
+    ({ currentTarget, path: changedPath }: JSONSchemaEditorEvent, val: string) => {
       const index = Number(currentTarget.name.slice(name.length + 1));
       onChange(
-        { currentTarget: { name } },
+        { currentTarget: { name }, path: changedPath },
         value.map((v, i) => (i === index ? val : v)),
       );
     },
@@ -97,56 +99,62 @@ export function JSONSchemaArrayEditor({
         size={3}
         title={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       >
-        {value.map((val, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <div className="my-1" key={index}>
-            <RecursiveJSONSchemaEditor
-              disabled={disabled}
-              name={`${name}.${index}`}
-              nested
-              onChange={onPropertyChange}
-              prefix={prefix}
-              required={schema.minItems != null && index < schema.minItems}
-              schema={items}
-              value={val}
-            />
-            <div className="is-pulled-right">
-              {value.length && index !== value.length - 1 ? (
-                <Button
-                  className="mr-1"
-                  color="info"
-                  icon="arrows-alt-v"
-                  name={`${name}.${index}`}
-                  onClick={onItemSwapped}
-                  title={formatMessage(messages.swap)}
-                />
-              ) : null}
-              {schema.minItems == null || value.length > schema.minItems ? (
-                <Button
-                  color="danger"
-                  icon="minus"
-                  name={`${name}.${index}`}
-                  onClick={onClickRemoveItem}
-                  title={formatMessage(messages.removeAbove, {
-                    name: `${name.replace(`${prefix}.`, '')}.${index}`,
-                  })}
-                />
-              ) : null}
-              {schema.maxItems == null || value.length < schema.maxItems ? (
-                <Button
-                  className="ml-1"
-                  color="success"
-                  icon="plus"
-                  name={`${name}.${index}`}
-                  onClick={onItemAdded}
-                  title={formatMessage(messages.addBelow, { index: index + 1 })}
-                />
-              ) : null}
+        {value.map((val, index) => {
+          const required = schema.minItems != null && index < schema.minItems;
+          return (
+            // eslint-disable-next-line react/no-array-index-key
+            <div className="my-1" key={index}>
+              <RecursiveJSONSchemaEditor
+                disabled={disabled}
+                errors={errors}
+                name={`${name}.${index}`}
+                nested
+                onChange={onPropertyChange}
+                path={[...path, index]}
+                prefix={prefix}
+                required={required}
+                schema={items}
+                value={val}
+              />
+              <div className="is-pulled-right">
+                {value.length && index !== value.length - 1 ? (
+                  <Button
+                    className="mr-1"
+                    color="info"
+                    icon="arrows-alt-v"
+                    name={`${name}.${index}`}
+                    onClick={onItemSwapped}
+                    title={formatMessage(messages.swap)}
+                  />
+                ) : null}
+                {schema.minItems == null || value.length > schema.minItems ? (
+                  <Button
+                    color="danger"
+                    icon="minus"
+                    name={`${name}.${index}`}
+                    onClick={onClickRemoveItem}
+                    title={formatMessage(messages.removeAbove, {
+                      name: `${name.replace(`${prefix}.`, '')}.${index}`,
+                    })}
+                  />
+                ) : null}
+                {schema.maxItems == null || value.length < schema.maxItems ? (
+                  <Button
+                    className="ml-1"
+                    color="success"
+                    icon="plus"
+                    name={`${name}.${index}`}
+                    onClick={onItemAdded}
+                    title={formatMessage(messages.addBelow, { index: index + 1 })}
+                  />
+                ) : null}
+              </div>
+              <hr />
             </div>
-            <hr />
-          </div>
-        ))}
+          );
+        })}
       </Collapsible>
+      {error ? <div className="help is-danger">{error}</div> : null}
       <ModalCard
         footer={
           <>

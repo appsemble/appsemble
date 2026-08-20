@@ -34,6 +34,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       id = name,
       accept,
       className,
+      error,
       fileButtonLabel,
       fileLabel,
       formComponentClassName,
@@ -107,7 +108,8 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             />
           ) : null}
         </div>
-        {help ? <p className="help">{help}</p> : null}
+        {error ? <p className="help is-danger">{error}</p> : null}
+        {!error && help ? <p className="help">{help}</p> : null}
       </FormComponent>
     );
   },
