@@ -1,4 +1,4 @@
-{{- if .Values.cronjob.platform.enabled -}}
+{{- if and .Values.cronjob.platform.enabled .Values.backups.enabled -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -11,6 +11,7 @@ spec:
   failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
       template:
         metadata:
           annotations:

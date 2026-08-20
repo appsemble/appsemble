@@ -328,6 +328,11 @@
         "jobsHistoryLimit": {
           "type": "integer",
           "description": "How long to keep logs for cronjobs in days."
+        },
+        "ttlSecondsAfterFinished": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Seconds after a cronjob's Job finishes before Kubernetes automatically deletes it."
         }
       }
     },

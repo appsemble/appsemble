@@ -105,6 +105,9 @@ cronjob:
     # Deploy the SaaS-only CronJobs (subscription billing, production backup, container scaling).
     enabled: true
   jobsHistoryLimit: 3
+  # Delete finished (Complete or Failed) Job objects this many seconds after they finish, so
+  # cronjob runs do not accumulate indefinitely across releases. 86400 = 1 day.
+  ttlSecondsAfterFinished: 86400
 
 gitlab:
   app: null
