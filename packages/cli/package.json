@@ -81,7 +81,7 @@
     "prettier": "^3.0.0",
     "raw-body": "^2.0.0",
     "read-package-up": "^11.0.0",
-    "sharp": "0.34.5",
+    "sharp": "0.35.3",
     "ts-json-schema-generator": "^1.0.0",
     "type-fest": "^4.0.0",
     "url": "0.11.4",
