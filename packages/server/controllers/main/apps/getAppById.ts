@@ -119,7 +119,22 @@ export async function getAppById(ctx: Context): Promise<void> {
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const propertyFilters: (keyof AppType)[] = [];
-  if (!ctx.user && app.visibility === 'unlisted') {
+  let hasQueryPermission = false;
+  if (app.visibility !== 'public' || !app.showAppDefinition) {
+    try {
+      await checkUserOrganizationPermissions({
+        context: ctx,
+        organizationId: app.OrganizationId,
+        requiredPermissions: [OrganizationPermission.QueryApps],
+      });
+      hasQueryPermission = true;
+    } catch (error) {
+      if (app.visibility === 'private') {
+        throw error;
+      }
+    }
+  }
+  if (!hasQueryPermission && app.visibility === 'unlisted') {
     propertyFilters.push(
       '$created',
       '$updated',
@@ -150,19 +165,8 @@ export async function getAppById(ctx: Context): Promise<void> {
       'locked',
     );
   }
-  if (app.visibility === 'private' || !app.showAppDefinition) {
-    try {
-      await checkUserOrganizationPermissions({
-        context: ctx,
-        organizationId: app.OrganizationId,
-        requiredPermissions: [OrganizationPermission.QueryApps],
-      });
-    } catch (error) {
-      if (app.visibility === 'private') {
-        throw error;
-      }
-      propertyFilters.push('yaml', 'definition');
-    }
+  if (!hasQueryPermission && !app.showAppDefinition) {
+    propertyFilters.push('yaml', 'definition');
   }
 
   const rating = await AppRating.findOne({

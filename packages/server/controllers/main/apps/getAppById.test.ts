@@ -96,7 +96,7 @@ describe('getAppById', () => {
     `);
   });
 
-  it('should fetch an app even if the app definition visibility is false and user is not a member of the organization', async () => {
+  it('should minimize unlisted app metadata for users without organization permissions', async () => {
     const organization2 = await Organization.create({
       id: 'test-org',
       name: 'Test Organization 2',
@@ -109,6 +109,7 @@ describe('getAppById', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization2.id,
         showAppDefinition: false,
+        controllerCode: 'export default {}',
       },
       { raw: true },
     );
@@ -119,8 +120,34 @@ describe('getAppById', () => {
       data: {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
-        OrganizationId: organization2.id,
-        showAppDefinition: false,
+      },
+    });
+    expect(response.data).not.toHaveProperty('OrganizationId');
+    expect(response.data).not.toHaveProperty('controllerCode');
+    expect(response.data).not.toHaveProperty('showAppDefinition');
+  });
+
+  it('should deny private apps to users without organization permissions', async () => {
+    const organization2 = await Organization.create({
+      id: 'test-org',
+      name: 'Test Organization 2',
+    });
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization2.id,
+      visibility: 'private',
+    });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}`);
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        message: 'User is not a member of this organization.',
       },
     });
   });
