@@ -163,6 +163,10 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
               loader: loaders.sass,
               options: {
                 sassOptions: {
+                  // Sass prepends a byte order mark to output containing non-ASCII characters.
+                  // Bundled after another stylesheet it lands mid-file, where it is parsed as part
+                  // of the next selector and invalidates that rule.
+                  charset: false,
                   logger: {
                     debug(message) {
                       logger.silly(message);
