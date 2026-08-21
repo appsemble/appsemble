@@ -31,7 +31,7 @@
   "devDependencies": {
     "@appsemble/eslint-plugin": "0.37.6",
     "@eslint/js": "9.39.5",
-    "@eslint/markdown": "7.5.1",
+    "@eslint/markdown": "8.0.3",
     "@remcohaszing/eslint": "12.0.1",
     "@typescript-eslint/eslint-plugin": "8.67.0",
     "@typescript-eslint/parser": "8.67.0",
