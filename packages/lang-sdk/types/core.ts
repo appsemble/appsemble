@@ -375,12 +375,12 @@ export interface LoopPageDefinition extends BasePageDefinition {
   retainFlowData?: boolean;
 
   /**
-   * A page to display before the generated loop pages.
+   * The page to display before the generated loop pages.
    */
   start?: SubPageDefinition;
 
   /**
-   * A page to display after the generated loop pages.
+   * The page to display after the generated loop pages.
    */
   end?: SubPageDefinition;
 }

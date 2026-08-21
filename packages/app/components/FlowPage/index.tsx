@@ -115,27 +115,33 @@ export function FlowPage({
   const id =
     pageDefinition.type === 'loop' ? generateLoopPrefix(prefix) : `${prefix}.steps.${currentStep}`;
 
-  const boundaryName =
-    pageDefinition.type === 'loop'
-      ? currentStep === 0 && pageDefinition.start
-        ? pageDefinition.start.name
-        : steps?.length === currentStep + 1 && pageDefinition.end
-          ? pageDefinition.end.name
-          : undefined
-      : undefined;
-  const name = getAppMessage({
-    id,
-    defaultMessage:
-      pageDefinition.type === 'loop'
-        ? boundaryName == null
-          ? generateLoopPrefix(prefix)
-          : typeof boundaryName === 'string'
-            ? boundaryName
-            : remap(boundaryName, stepsData, remapperContext)
-        : typeof steps?.[currentStep]?.name === 'string'
-          ? steps?.[currentStep]?.name
-          : remap(steps?.[currentStep]?.name ?? null, stepsData, remapperContext),
-  }).format() as string;
+  let boundaryName: Remapper | string | undefined;
+  if (pageDefinition.type === 'loop') {
+    if (currentStep === 0 && pageDefinition.start) {
+      boundaryName = pageDefinition.start.name;
+    } else if (steps?.length === currentStep + 1 && pageDefinition.end) {
+      boundaryName = pageDefinition.end.name;
+    }
+  }
+
+  let name: string;
+  if (pageDefinition.type === 'loop' && boundaryName != null) {
+    name =
+      typeof boundaryName === 'string'
+        ? (getAppMessage({ id, defaultMessage: boundaryName }).format() as string)
+        : remap(boundaryName, stepsData, remapperContext);
+  } else {
+    const stepName = steps?.[currentStep]?.name;
+    let defaultMessage: string;
+    if (pageDefinition.type === 'loop') {
+      defaultMessage = generateLoopPrefix(prefix);
+    } else if (typeof stepName === 'string') {
+      defaultMessage = stepName;
+    } else {
+      defaultMessage = remap(stepName ?? null, stepsData, remapperContext);
+    }
+    name = getAppMessage({ id, defaultMessage }).format() as string;
+  }
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   useMeta(name === `{${id}}` ? null : name);

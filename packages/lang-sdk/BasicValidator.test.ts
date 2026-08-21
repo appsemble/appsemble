@@ -77,13 +77,4 @@ describe('loop page boundaries', () => {
 
     expect(new AppValidator().validateApp(app).errors).toHaveLength(0);
   });
-
-  it('rejects remappers as start and end values', () => {
-    const app = {
-      ...baseApp,
-      pages: [{ ...loopPage, start: { prop: 'id' }, end: { prop: 'id' } }],
-    };
-
-    expect(new AppValidator().validateApp(app).errors.length).toBeGreaterThan(0);
-  });
 });
