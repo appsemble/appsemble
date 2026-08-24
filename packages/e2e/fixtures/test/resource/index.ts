@@ -1,7 +1,8 @@
 import { type Resource } from '@appsemble/types';
-import { test as base } from '@playwright/test';
+import { test as base, type Response } from '@playwright/test';
 
 import { expect } from '../../expect/index.js';
+import { type TrackedResource } from './types.js';
 
 export interface ResourceFixtures {
   /**
@@ -38,6 +39,45 @@ export interface ResourceFixtures {
    * @param id Id of the resource to delete.
    */
   deleteResource: (appId: number, resourceType: string, id: number) => Promise<void>;
+
+  /**
+   * Creates a resource for the given app.
+   *
+   * The resource is automatically deleted after the test by default.
+   *
+   * @param appId ID of the app which the resource belongs to
+   * @param type Resource type
+   * @param input Resource data
+   * @returns Created resource
+   */
+  createTestResource: (appId: number, type: string, input: unknown) => Promise<Resource>;
+
+  /**
+   * Waits until resources created by the browser have been added to `trackedResources`.
+   */
+  trackCreatedResources: () => Promise<void>;
+
+  /**
+   * Whether to track resources created through the browser during the current test.
+   */
+  trackBrowserResources: boolean;
+
+  /**
+   * Whether to delete tracked resources after the current test.
+   */
+  autoCleanupResources: boolean;
+
+  /**
+   * List of resources created during the current test
+   */
+  trackedResources: TrackedResource[];
+
+  /**
+   * Deletes all the resources that are being tracked in the `trackedResources` list.
+   *
+   * Runs automatically after the test completes if `autoCleanupResources` is enabled.
+   */
+  cleanupResources: null;
 }
 
 export const test = base.extend<ResourceFixtures>({
@@ -88,4 +128,100 @@ export const test = base.extend<ResourceFixtures>({
       expect(response.status()).toBe(204);
     });
   },
+
+  async trackedResources({}, use) {
+    await use([]);
+  },
+
+  async createTestResource({ createResource, trackedResources }, use) {
+    await use(async (appId, type, input) => {
+      const resource = await createResource(appId, type, input);
+
+      trackedResources.push({
+        appId,
+        type,
+        id: resource.id,
+      });
+
+      return resource;
+    });
+  },
+
+  trackBrowserResources: [false, { option: true }],
+
+  autoCleanupResources: [true, { option: true }],
+
+  trackCreatedResources: [
+    async ({ page, trackBrowserResources, trackedResources }, use) => {
+      if (!trackBrowserResources) {
+        await use(() => Promise.resolve());
+        return;
+      }
+
+      const pendingResponses: Promise<void>[] = [];
+
+      function onResponse(response: Response): void {
+        if (response.request().method() !== 'POST' || !response.ok()) {
+          return;
+        }
+
+        const url = new URL(response.url());
+        const match = /^\/api\/apps\/(\d+)\/resources\/([^/]+)$/.exec(url.pathname);
+        if (!match) {
+          return;
+        }
+
+        const [, appId, type] = match;
+        const pendingResponse = response.json().then((resource: Resource) => {
+          const trackedResource = {
+            appId: Number(appId),
+            id: resource.id,
+            type: decodeURIComponent(type),
+          };
+
+          if (
+            !trackedResources.some(
+              (entry) =>
+                entry.appId === trackedResource.appId &&
+                entry.id === trackedResource.id &&
+                entry.type === trackedResource.type,
+            )
+          ) {
+            trackedResources.push(trackedResource);
+          }
+        });
+
+        pendingResponses.push(pendingResponse);
+      }
+
+      async function waitForResponses(): Promise<void> {
+        await Promise.all(pendingResponses);
+      }
+
+      page.on('response', onResponse);
+      await use(waitForResponses);
+      page.off('response', onResponse);
+    },
+    { auto: true },
+  ],
+
+  cleanupResources: [
+    async (
+      { autoCleanupResources, deleteResource, trackCreatedResources, trackedResources },
+      use,
+    ) => {
+      await use(null);
+
+      if (!autoCleanupResources) {
+        return;
+      }
+
+      await trackCreatedResources();
+
+      for (const resource of trackedResources) {
+        await deleteResource(resource.appId, resource.type, resource.id);
+      }
+    },
+    { auto: true },
+  ],
 });
