@@ -58,7 +58,7 @@
   "devDependencies": {
     "@types/language-tags": "1.0.4",
     "@types/lcm": "0.0.2",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   },
   "engines": {
     "node": ">=24"

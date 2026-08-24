@@ -86,6 +86,6 @@
     "jsonc-parser": "3.3.1",
     "vscode-languageserver-types": "3.18.0",
     "path-browserify": "1.0.1",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   }
 }

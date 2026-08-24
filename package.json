@@ -49,8 +49,8 @@
   "devDependencies": {
     "@appsemble/eslint-config": "0.37.6",
     "@lhci/cli": "0.15.1",
-    "@vitest/coverage-v8": "4.1.10",
-    "@vitest/ui": "4.1.10",
+    "@vitest/coverage-v8": "4.1.11",
+    "@vitest/ui": "4.1.11",
     "cspell": "8.19.4",
     "dictionary-en": "4.0.0",
     "dictionary-nl": "2.0.0",
@@ -100,7 +100,7 @@
     "unified": "11.0.5",
     "unified-consistency": "2.0.0",
     "unified-prettier": "2.0.1",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   },
   "engines": {
     "node": ">=24"

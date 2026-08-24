@@ -52,7 +52,7 @@
     "@types/langmap": "0.0.3",
     "bulma": "=0.9.4",
     "koas-core": "0.7.0",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   },
   "engines": {
     "node": ">=24"

@@ -73,7 +73,7 @@
     "@types/mdast": "4.0.4",
     "@types/unused-webpack-plugin": "2.4.5",
     "url": "0.11.4",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   },
   "engines": {
     "node": ">=24"
