@@ -27,6 +27,6 @@
   "devDependencies": {
     "@appsemble/block-interaction-tests": "0.37.6",
     "@testing-library/preact": "3.2.4",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   }
 }

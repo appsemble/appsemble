@@ -145,7 +145,7 @@
     "memfs": "4.68.1",
     "strip-indent": "4.1.1",
     "validate-vat": "0.9.0",
-    "vitest": "4.1.10",
+    "vitest": "4.1.11",
     "xpath": "0.0.34"
   },
   "peerDependencies": {

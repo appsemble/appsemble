@@ -20,6 +20,6 @@
     "@appsemble/sdk": "0.37.6"
   },
   "devDependencies": {
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   }
 }
