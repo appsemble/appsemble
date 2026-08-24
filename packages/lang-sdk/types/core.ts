@@ -373,6 +373,16 @@ export interface LoopPageDefinition extends BasePageDefinition {
    * @default true
    */
   retainFlowData?: boolean;
+
+  /**
+   * The page to display before the generated loop pages.
+   */
+  start?: SubPageDefinition;
+
+  /**
+   * The page to display after the generated loop pages.
+   */
+  end?: SubPageDefinition;
 }
 
 export interface AlternateTabsDefinition {

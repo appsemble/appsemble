@@ -54,3 +54,27 @@ describe('stackedHeader flag', () => {
     );
   });
 });
+
+describe('loop page boundaries', () => {
+  const loopPage = {
+    name: 'Page A',
+    type: 'loop',
+    actions: { onLoad: { type: 'noop' } },
+    foreach: { blocks: [{ type: 'test', version: '0.0.0' }] },
+  };
+
+  it('accepts start and end sub pages', () => {
+    const app = {
+      ...baseApp,
+      pages: [
+        {
+          ...loopPage,
+          start: { name: 'Introduction', blocks: [{ type: 'test', version: '0.0.0' }] },
+          end: { name: 'Complete', blocks: [{ type: 'test', version: '0.0.0' }] },
+        },
+      ],
+    };
+
+    expect(new AppValidator().validateApp(app).errors).toHaveLength(0);
+  });
+});

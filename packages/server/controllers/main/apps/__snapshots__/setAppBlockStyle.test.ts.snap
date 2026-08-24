@@ -801,6 +801,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -903,6 +907,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -952,6 +960,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -1054,6 +1066,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -1103,6 +1119,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -1205,6 +1225,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -1254,6 +1278,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -1356,6 +1384,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",

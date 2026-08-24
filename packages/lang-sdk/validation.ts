@@ -670,10 +670,19 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
       // Loop page
       if (page.type === 'loop') {
         const loopPage = page as LoopPageDefinition;
+        if (loopPage.start) {
+          validateSubPageLayout(loopPage.start.layout, loopPage.start.blocks, report, [
+            ...path,
+            'start',
+          ]);
+        }
         validateSubPageLayout(loopPage.foreach.layout, loopPage.foreach.blocks, report, [
           ...path,
           'foreach',
         ]);
+        if (loopPage.end) {
+          validateSubPageLayout(loopPage.end.layout, loopPage.end.blocks, report, [...path, 'end']);
+        }
       }
     },
   });

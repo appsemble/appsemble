@@ -6,7 +6,6 @@ import {
   type LoopPageDefinition,
   type Remapper,
   type RemapperContext,
-  type SubPageDefinition,
 } from '@appsemble/lang-sdk';
 import { applyRefs, Loader, useMessages, useMeta } from '@appsemble/react-components';
 import { type BootstrapParams } from '@appsemble/sdk';
@@ -32,6 +31,7 @@ import { BlockList } from '../BlockList/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { DotProgressBar } from '../DotProgressBar/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
+import { appendLoopResult, createLoopSteps, getLoopStepPrefix } from './createLoopSteps.js';
 
 interface FlowPageProps {
   readonly data: unknown;
@@ -89,7 +89,7 @@ export function FlowPage({
     pageDefinition.type === 'flow' ? pageDefinition.steps : undefined,
   );
   const [error, setError] = useState(false);
-  const [loopData, setLoopData] = useState<Object[]>();
+  const [loopData, setLoopData] = useState<(object | undefined)[]>();
   const [stepsData, setStepsData] = useState<Object[]>();
   const remapperContext: RemapperContext = {
     appId,
@@ -105,27 +105,43 @@ export function FlowPage({
   };
 
   const generateLoopPrefix = (loopPrefix: string): string => {
-    if (!currentStep) {
-      return `${loopPrefix}.steps.first`;
-    }
-    if (steps?.length === currentStep + 1) {
-      return `${loopPrefix}.steps.last`;
-    }
-    return `${loopPrefix}.steps`;
+    const suffix =
+      pageDefinition.type === 'loop'
+        ? getLoopStepPrefix(pageDefinition, currentStep, steps?.length)
+        : 'steps';
+    return `${loopPrefix}.${suffix}`;
   };
 
   const id =
     pageDefinition.type === 'loop' ? generateLoopPrefix(prefix) : `${prefix}.steps.${currentStep}`;
 
-  const name = getAppMessage({
-    id,
-    defaultMessage:
-      pageDefinition.type === 'loop'
-        ? generateLoopPrefix(prefix)
-        : typeof steps?.[currentStep]?.name === 'string'
-          ? steps?.[currentStep]?.name
-          : remap(steps?.[currentStep]?.name ?? null, stepsData, remapperContext),
-  }).format() as string;
+  let boundaryName: Remapper | string | undefined;
+  if (pageDefinition.type === 'loop') {
+    if (currentStep === 0 && pageDefinition.start) {
+      boundaryName = pageDefinition.start.name;
+    } else if (steps?.length === currentStep + 1 && pageDefinition.end) {
+      boundaryName = pageDefinition.end.name;
+    }
+  }
+
+  let name: string;
+  if (pageDefinition.type === 'loop' && boundaryName != null) {
+    name =
+      typeof boundaryName === 'string'
+        ? (getAppMessage({ id, defaultMessage: boundaryName }).format() as string)
+        : remap(boundaryName, stepsData, remapperContext);
+  } else {
+    const stepName = steps?.[currentStep]?.name;
+    let defaultMessage: string;
+    if (pageDefinition.type === 'loop') {
+      defaultMessage = generateLoopPrefix(prefix);
+    } else if (typeof stepName === 'string') {
+      defaultMessage = stepName;
+    } else {
+      defaultMessage = remap(stepName ?? null, stepsData, remapperContext);
+    }
+    name = getAppMessage({ id, defaultMessage }).format() as string;
+  }
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   useMeta(name === `{${id}}` ? null : name);
@@ -149,13 +165,7 @@ export function FlowPage({
     async (d: any): Promise<any> => {
       if (pageDefinition.type === 'loop') {
         applyRefs(null, stepRef);
-        const newData = { ...loopData?.[currentStep], ...d };
-        let stepData = stepsData;
-        if (Array.isArray(stepData) && stepData.length > 0) {
-          stepData.push(newData);
-        } else {
-          stepData = newData;
-        }
+        const stepData = appendLoopResult(stepsData ?? [], loopData?.[currentStep], d);
         await actions.onFlowFinish(stepData);
         return stepData;
       }
@@ -175,13 +185,10 @@ export function FlowPage({
       }
 
       if (pageDefinition.type === 'loop') {
-        applyRefs((loopData as Record<string, any>)[currentStep + 1], stepRef);
-        const newData = { ...loopData?.[currentStep], ...d };
-        if (Array.isArray(stepsData) && stepsData.length > 0) {
-          setStepsData((previous: Object[] | undefined) => [...(previous ?? []), newData]);
-        } else {
-          setStepsData([newData]);
-        }
+        applyRefs(loopData?.[currentStep + 1], stepRef);
+        setStepsData((previous: Object[] | undefined) =>
+          appendLoopResult(previous ?? [], loopData?.[currentStep], d),
+        );
         setCurrentStep(currentStep + 1);
       }
 
@@ -189,7 +196,7 @@ export function FlowPage({
       setCurrentStep(currentStep + 1);
       return d;
     },
-    [currentStep, steps, pageDefinition, stepsData, loopData, finish, stepRef, setData],
+    [currentStep, steps, pageDefinition, loopData, finish, stepRef, setData],
   );
 
   const back = useCallback(
@@ -201,15 +208,15 @@ export function FlowPage({
       }
 
       if (pageDefinition.type === 'loop') {
-        stepsData?.pop();
-        applyRefs((loopData as Record<string, any>)[currentStep - 1], stepRef);
+        setStepsData((previous) => previous?.slice(0, -1));
+        applyRefs(loopData?.[currentStep - 1], stepRef);
       } else {
         setData(d);
       }
       setCurrentStep(currentStep - 1);
       return d;
     },
-    [currentStep, pageDefinition, stepsData, loopData, stepRef, setData],
+    [currentStep, pageDefinition, loopData, stepRef, setData],
   );
 
   const cancel = useCallback(
@@ -248,12 +255,15 @@ export function FlowPage({
       }
 
       setCurrentStep(found);
-      applyRefs((data as Record<string, any>)[found], stepRef);
+      applyRefs(
+        pageDefinition.type === 'loop' ? loopData?.[found] : (data as Record<string, any>)[found],
+        stepRef,
+      );
       setData(d);
 
       return d;
     },
-    [steps, setData, data, stepRef],
+    [steps, setData, data, stepRef, pageDefinition.type, loopData],
   );
 
   const flowActions = useMemo(
@@ -350,25 +360,13 @@ export function FlowPage({
       actions
         .onLoad()
         .then((results: any) => {
-          const { blocks } = pageDefinition.foreach;
-
-          function createSteps(): SubPageDefinition[] {
-            const newSteps: SubPageDefinition[] = [];
-            for (const resourceData of results) {
-              if (resourceData) {
-                const newStep: SubPageDefinition = {
-                  name: 'New loop page',
-                  blocks,
-                };
-                newSteps.push(newStep);
-              }
-            }
-            return newSteps;
-          }
-          const result = createSteps();
-          setSteps(result);
-          applyRefs(results[0], stepRef);
-          setLoopData(results);
+          const { loopData: generatedLoopData, steps: generatedSteps } = createLoopSteps(
+            pageDefinition,
+            results,
+          );
+          setSteps(generatedSteps);
+          applyRefs(generatedLoopData[0], stepRef);
+          setLoopData(generatedLoopData);
           setStepsData([]);
         })
         .catch((caughtError: unknown) => {
