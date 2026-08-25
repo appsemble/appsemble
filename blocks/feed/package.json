@@ -27,7 +27,7 @@
   "devDependencies": {
     "@appsemble/block-interaction-tests": "0.37.6",
     "@testing-library/preact": "3.2.4",
-    "@testing-library/user-event": "14.6.5",
+    "@testing-library/user-event": "14.6.6",
     "@appsemble/utils": "0.37.6",
     "vitest": "4.1.11"
   }
