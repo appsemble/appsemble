@@ -311,12 +311,18 @@ appsemble resource update --app-id 1 --context development --app path/to/my-app 
 The Appsemble CLI can be used to restore app and database data from a backup file created by
 `backup-production-data` (for example, `npm run appsemble -- backup-production-data`). Backup files
 use the format `<backupsFilename>_<YYYYMMDDHHmmssSSS>.sql.gz` (for example,
-`appsemble_prod_backup_20250101093045123.sql.gz`). Use the latest backup filename (for example by
-checking it with `rclone`) and your object storage credentials:
+`appsemble_prod_backup_20250101093045123.sql.gz`).
+
+Pass `--restoreBackupFilename latest` to restore the most recent backup automatically. Resolving
+`latest` lists the bucket by the backup filename prefix, so pass `--backupsBucket` and
+`--backupsFilename` alongside your object storage credentials:
 
 ```sh
-npm run appsemble -- restore-data-from-backup --restoreBackupFilename <backupsFilename_YYYYMMDDHHmmssSSS.sql.gz> --backupsHost <your-object-storage-host> --backupsAccessKey <your-backups-access-key> --backupsSecretKey <your-backups-secret-key>
+npm run appsemble -- restore-data-from-backup --restoreBackupFilename latest --backupsBucket <your-backups-bucket> --backupsFilename <your-backups-filename-prefix> --backupsHost <your-object-storage-host> --backupsAccessKey <your-backups-access-key> --backupsSecretKey <your-backups-secret-key>
 ```
+
+To restore a specific backup instead, pass its full filename to `--restoreBackupFilename` (for
+example `appsemble_prod_backup_20250101093045123.sql.gz`).
 
 After restoring the backup, run the re-encryption command:
 

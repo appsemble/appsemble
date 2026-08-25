@@ -5,6 +5,8 @@ import { type BaseArguments } from '../types.js';
 
 interface RestoreDataFromBackupArguments extends BaseArguments {
   restoreBackupFilename: string;
+  backupsBucket?: string;
+  backupsFilename?: string;
 }
 
 export const command = 'restore-data-from-backup';
@@ -46,6 +48,15 @@ export function builder(yargs: Argv): Argv<any> {
       describe:
         'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz, or latest',
       demandOption: true,
+    })
+    .option('backupsBucket', {
+      type: 'string',
+      describe: 'The object storage bucket to restore backups from.',
+    })
+    .option('backupsFilename', {
+      type: 'string',
+      describe:
+        'The backup filename prefix, used to resolve the newest object when --restoreBackupFilename is latest.',
     });
 }
 

@@ -247,7 +247,10 @@ describe('restoreDataFromBackup', () => {
       const usesDirectEndpoint =
         command === 'psql' &&
         databaseUrl.hostname === directHost &&
-        Number(databaseUrl.port) === directPort;
+        Number(databaseUrl.port) === directPort &&
+        args?.includes('-X') &&
+        args?.includes('-v') &&
+        args?.includes('ON_ERROR_STOP=1');
       return createChildProcessMock(usesDirectEndpoint ? 0 : 1) as unknown as SpawnReturn;
     });
 
@@ -384,7 +387,11 @@ describe('restoreDataFromBackup', () => {
     });
     vi.mocked(App.findAll).mockResolvedValue([app1, app2]);
 
-    app1Update.mockRejectedValueOnce(new Error('failed app update'));
+    vi.mocked(getS3File).mockImplementation((bucket, key) =>
+      String(key).startsWith('sql/apps/1/')
+        ? Promise.reject(new Error('missing app 1 backup'))
+        : Promise.resolve(Readable.from(['sql'])),
+    );
 
     const failed = await restoreDataFromBackup(baseOptions);
 
@@ -396,6 +403,25 @@ describe('restoreDataFromBackup', () => {
       dbPort: baseOptions.databasePort,
       dbUser: baseOptions.databaseUser,
     });
+    expect(getS3File).toHaveBeenCalledWith(
+      baseOptions.backupsBucket,
+      'sql/apps/2/appsemble_prod_backup_20250101.sql.gz',
+    );
+  });
+
+  it('should fail when pointing an app at the new database fails', async () => {
+    const update = vi.fn<MainApp['update']>(() => Promise.reject(new Error('failed app update')));
+    const app = createFoundApp({
+      dbHost: 'old-app-db-host',
+      dbName: 'app-1',
+      dbPort: 5433,
+      dbUser: 'app-user',
+      id: 1,
+      update,
+    });
+    vi.mocked(App.findAll).mockResolvedValue([app]);
+
+    await expect(restoreDataFromBackup(baseOptions)).rejects.toThrow('failed app update');
   });
 
   it('should continue when S3 initialization fails and return false if restore succeeds', async () => {

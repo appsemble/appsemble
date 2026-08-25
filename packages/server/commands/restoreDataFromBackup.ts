@@ -103,6 +103,7 @@ async function recreateDatabase(dbName: string, adminUri: string): Promise<void>
     'psql',
     [
       `--dbname=${adminUri}`,
+      '-X',
       '-v',
       'ON_ERROR_STOP=1',
       '-c',
@@ -292,14 +293,16 @@ export async function restoreDataFromBackup({
   const dbPassword = databasePassword;
 
   for (const app of apps) {
+    // Point the app at the new database. This is not a restore: until it lands the app row still
+    // holds the source database credentials, so a failure here must abort rather than be tolerated.
+    await app.update({
+      dbHost: databaseHost,
+      dbPort: databasePort,
+      dbUser: databaseUser,
+      dbPassword: encrypt(dbPassword, effectiveAesSecret),
+    });
+
     try {
-      // Migrating to a new database hence the settings from the new DB should be used.
-      await app.update({
-        dbHost: databaseHost,
-        dbPort: databasePort,
-        dbUser: databaseUser,
-        dbPassword: encrypt(dbPassword, effectiveAesSecret),
-      });
       const dbName = app.dbName ?? `app-${app.id}`;
 
       const appDbUrl = buildPostgresUri({
