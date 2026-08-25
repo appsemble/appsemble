@@ -68,11 +68,11 @@ server.
 
 ## Studio
 
-The studio component allows users to create and manage their apps via an interactive environment.
-Apps can be edited by making changes to the app definition defined in `YAML`, which in turn can be
-previewed before submitting it to the server. It does this by communicating directly with the app
-component. The studio itself does _not_ communicate with anything other than the Appsemble server on
-its own, though apps in the preview panel can.
+The studio allows users to create and manage their apps via an interactive environment. Apps can be
+edited in by making changes to the app definition defined in `YAML`, which in turn can be previewed
+before submitting it to the server. It does this by communicating directly with the app component.
+The studio itself does _not_ communicate with anything other than the Appsemble server on its own,
+though apps in the preview panel can.
 
 ## Server
 
