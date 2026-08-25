@@ -70,7 +70,12 @@ export async function cleanupSoftDeletedRecords(): Promise<void> {
     await transactional(async (transaction) => {
       try {
         logger.info(`Deleting apps soft deleted before ${deletedAtParsed}`);
-        const deletedApps = await App.destroy({ ...deleteQuery, transaction });
+        // Use individualHooks so App's afterDestroy hook drops each app's database.
+        const deletedApps = await App.destroy({
+          ...deleteQuery,
+          transaction,
+          individualHooks: true,
+        });
         logger.info(`Successfully deleted ${deletedApps} apps.`);
       } catch (error) {
         logger.error(`Failed to cleanup soft deleted apps.`);
