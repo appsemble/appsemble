@@ -174,6 +174,38 @@ describe('replaceAssetFunctions', () => {
     );
   });
 
+  it('should rewrite absolute app asset URLs on the same host', () => {
+    const result = replaceAssetFunctions(
+      "a{background:url('http://localhost/api/apps/999/assets/logo?width=10#mark')}",
+      42,
+      'http://localhost',
+    );
+
+    expect(result).toBe(
+      "a{background:url('http://localhost/api/apps/42/assets/logo?width=10#mark')}",
+    );
+  });
+
+  it('should not rewrite app asset URLs on the same host with another port', () => {
+    const result = replaceAssetFunctions(
+      "a{background:url('http://localhost:9191/api/apps/999/assets/logo')}",
+      42,
+      'http://localhost',
+    );
+
+    expect(result).toBe("a{background:url('http://localhost:9191/api/apps/999/assets/logo')}");
+  });
+
+  it('should not rewrite protocol relative app asset URLs', () => {
+    const result = replaceAssetFunctions(
+      "a{background:url('//localhost/api/apps/999/assets/logo')}",
+      42,
+      'http://localhost',
+    );
+
+    expect(result).toBe("a{background:url('//localhost/api/apps/999/assets/logo')}");
+  });
+
   it('should not rewrite absolute app asset URLs from another host', () => {
     const result = replaceAssetFunctions(
       "a{background:url('https://example.com/api/apps/999/assets/logo?width=10#mark')}",

@@ -128,17 +128,36 @@ function resolveAssetReference(value: string, appId: number, host: string): stri
 /**
  * Rewrite an app asset URL so it addresses the given app on the given host.
  *
+ * Stylesheets are stored with their asset references already resolved to absolute URLs, so a
+ * stylesheet copied from another app addresses that app on this host. Such URLs are rewritten as
+ * well, unlike URLs addressing another host.
+ *
  * @param value The URL to rewrite.
  * @param appId The id of the app the asset belongs to.
  * @param host The host on which the app asset endpoints are available.
  * @returns The rewritten URL, or `null` if the value does not address an app asset.
  */
 function rewriteAppAssetURL(value: string, appId: number, host: string): string | null {
-  if (!value.startsWith('/')) {
-    return null;
+  let path: string;
+  let suffix: string;
+
+  if (value.startsWith('/')) {
+    ({ path, suffix } = splitURLParts(value));
+  } else {
+    if (!URL.canParse(value)) {
+      return null;
+    }
+
+    const url = new URL(value);
+
+    if (url.origin !== new URL(host).origin) {
+      return null;
+    }
+
+    path = url.pathname;
+    suffix = `${url.search}${url.hash}`;
   }
 
-  const { path, suffix } = splitURLParts(value);
   const reference = getAppAssetPathReference(path);
 
   return reference ? createAppAssetURL(reference, suffix, appId, host) : null;
