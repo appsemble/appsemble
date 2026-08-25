@@ -110,6 +110,8 @@ You can refer to existing code snippets in the guide section of the documentatio
 
 #### Message validation
 
+Text can be marked as translatable by using the `<FormattedMessage />` component.
+
 To add new messages, follow the following format:
 
 ```

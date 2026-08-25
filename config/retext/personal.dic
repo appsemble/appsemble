@@ -42,6 +42,8 @@ IBAN
 KNAB
 RABO
 sepa
+predesigned
+codebase
 
 # Technical slang and libraries
 .editorconfig
@@ -235,3 +237,5 @@ sepa
 externalname
 exampleenv
 subsampling
+ORM
+Sequelize
