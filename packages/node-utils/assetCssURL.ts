@@ -83,10 +83,23 @@ function getAppAssetPathReference(path: string): string | null {
   return reference;
 }
 
+/**
+ * Create the app asset URL addressing an asset, to be embedded in a single quoted CSS string.
+ *
+ * The query and fragment are taken from the reference the asset was addressed with, so they may
+ * hold characters that end the CSS string. `URL` strips or encodes all of those except the quote
+ * and the backslash, which are percent encoded here.
+ *
+ * @param reference The reference of the asset to address.
+ * @param suffix The query and fragment to append to the URL.
+ * @param appId The id of the app the asset belongs to.
+ * @param host The host on which the app asset endpoints are available.
+ * @returns The app asset URL.
+ */
 function createAppAssetURL(reference: string, suffix: string, appId: number, host: string): string {
   const path = `/api/apps/${appId}/assets/${encodeURIComponent(reference)}${suffix}`;
 
-  return String(new URL(path, host));
+  return String(new URL(path, host)).replaceAll('\\', '%5C').replaceAll("'", '%27');
 }
 
 /**

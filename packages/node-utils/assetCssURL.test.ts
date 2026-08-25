@@ -128,6 +128,40 @@ describe('replaceAssetFunctions', () => {
     );
   });
 
+  it('should escape quotes in the fragment of an asset utility app asset path', () => {
+    const result = replaceAssetFunctions(
+      `a{background:asset("/api/apps/1/assets/logo#');}body{color:red}/*")}`,
+      42,
+      'http://localhost',
+    );
+
+    expect(result).toBe(
+      `a{background:url('http://localhost/api/apps/42/assets/logo#%27);}body{color:red}/*')}`,
+    );
+  });
+
+  it('should escape backslashes in the fragment of an asset utility app asset path', () => {
+    const result = replaceAssetFunctions(
+      `a{background:asset("/api/apps/1/assets/logo#a\\\\b")}`,
+      42,
+      'http://localhost',
+    );
+
+    expect(result).toBe("a{background:url('http://localhost/api/apps/42/assets/logo#a%5Cb')}");
+  });
+
+  it('should escape quotes in the fragment of an app asset URL', () => {
+    const result = replaceAssetFunctions(
+      `a{background:url("/api/apps/1/assets/logo#');}body{color:red}/*")}`,
+      42,
+      'http://localhost',
+    );
+
+    expect(result).toBe(
+      `a{background:url('http://localhost/api/apps/42/assets/logo#%27);}body{color:red}/*')}`,
+    );
+  });
+
   it('should rewrite app asset URLs to the given app and host', () => {
     const result = replaceAssetFunctions(
       "a{background:url('/api/apps/999/assets/logo?width=10#mark')}",
