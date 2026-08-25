@@ -1,2 +1,2 @@
-Reject invalid asset references in `asset()` CSS utilities instead of leaving them unresolved, and
-leave app asset URLs on other hosts untouched
+Reject custom CSS whose `asset()` utilities do not resolve to an app asset, instead of serving them
+unresolved. Publishing an app with such CSS fails with `Provided CSS was invalid.`
