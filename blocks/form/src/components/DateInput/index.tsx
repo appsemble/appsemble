@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import { type DateDecoration, type DateField, type InputProps } from '../../../block.js';
 import { useLocale } from '../../hooks/useLocale.js';
-import { extractDate } from '../../utils/extractDate.js';
+import { extractDate, extractDateBoundary } from '../../utils/extractDate.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import {
   getDisabledDates,
@@ -58,11 +58,11 @@ export function DateInput({
   );
 
   const maxDate = useMemo(
-    () => extractDate(getMaxDate(field, utils, formValues)),
+    () => extractDateBoundary(getMaxDate(field, utils, formValues), 'end'),
     [field, utils, formValues],
   );
   const minDate = useMemo(
-    () => extractDate(getMinDate(field, utils, formValues)),
+    () => extractDateBoundary(getMinDate(field, utils, formValues), 'start'),
     [field, utils, formValues],
   );
   const disable = useMemo(
