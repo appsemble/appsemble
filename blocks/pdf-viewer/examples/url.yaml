@@ -1,0 +1,6 @@
+type: pdf-viewer
+parameters:
+  # This will resolve to `https://appsemble.app/api/apps/{appId}/assets/my-pdf`
+  url: my-pdf
+  height: 800
+  width: 600
