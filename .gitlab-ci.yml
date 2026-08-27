@@ -152,6 +152,19 @@ secret-scan-mr:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
+trufflehog:
+  stage: security
+  image: alpine:latest
+  variables:
+    TRUFFLEHOG_VERSION: v3.97.0
+  before_script:
+    - apk add --no-cache curl git
+    - curl --fail --silent --show-error --location "https://raw.githubusercontent.com/trufflesecurity/trufflehog/$TRUFFLEHOG_VERSION/scripts/install.sh" | sh -s -- -b /usr/local/bin "$TRUFFLEHOG_VERSION"
+  script:
+    - trufflehog git file://. --results=verified --fail --since-commit "$CI_MERGE_REQUEST_DIFF_BASE_SHA" --branch "$CI_COMMIT_SHA"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
 ###################################################################################################
 #  Build Stage                                                                                    #
 ###################################################################################################
