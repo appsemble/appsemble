@@ -99,7 +99,7 @@
     "@types/normalize-path": "3.0.2",
     "@types/postcss-import": "14.0.3",
     "@types/postcss-url": "10.0.4",
-    "axios-test-instance": "7.0.0",
+    "axios-test-instance": "8.0.0",
     "bcrypt": "5.1.1",
     "big-integer": "1.6.52",
     "concat-stream": "2.0.0",
