@@ -4,12 +4,12 @@ dependencies:
   version: 16.7.27
 - name: mailpit
   repository: https://jouve.github.io/charts
-  version: 0.35.0
+  version: 0.36.0
 - name: minio
   repository: https://charts.bitnami.com/bitnami
   version: 14.10.5
 - name: valkey
   repository: https://valkey.io/valkey-helm
   version: 0.11.0
-digest: sha256:b3df694a072d8d23b52794e37205ae4c481a5093235d66550bdff6e8899148aa
-generated: "2026-08-08T04:25:21.641431811Z"
+digest: sha256:c274dc096e4c6c21a1667f11c4f0ab03ae3d163d784a71f9f4b76b8ba3ab87d5
+generated: "2026-08-27T04:30:38.175767178Z"
