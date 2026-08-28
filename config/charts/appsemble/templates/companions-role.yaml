@@ -28,8 +28,6 @@ rules:
   - verbs:
       - create
       - delete
-      - read
-      - replace
       - get
       - update
     apiGroups:
