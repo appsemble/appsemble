@@ -104,8 +104,14 @@ export function getDefaultBootstrapParams(): Pick<
   };
 }
 
+type EmitHandler = (data: unknown, error?: string) => Promise<boolean>;
+type ListenHandler = <T>(callback: (data: T, error?: string) => void) => boolean;
+
 /**
  * Create the events object that is passed to a block.
+ *
+ * The handler types are declared locally, because `Events` maps over `EventEmitters` and
+ * `EventListeners`, which are empty for blocks that don't augment them.
  *
  * FIXME This function is the same as @appsemble/app/utils/createEvents
  *
@@ -124,33 +130,27 @@ export function createEvents(
   function createProxy<
     E extends keyof Events,
     M extends keyof NonNullable<ProjectManifest['events']>,
-  >(
-    manifestKey: M,
-    createFn: (registered: boolean, key: string) => Events[E][keyof Events[E]],
-  ): Events[E] {
+    H extends EmitHandler | ListenHandler,
+  >(manifestKey: M, createFn: (registered: boolean, key: string) => H): Events[E] {
+    const handlers: Record<string, H> = {};
     return new Proxy<Events[E]>({} as Events[E], {
       get(target, key) {
         if (typeof key !== 'string') {
           return;
         }
-        if (has(target, key)) {
-          return target[key as keyof Events[E]];
+        if (has(handlers, key)) {
+          return handlers[key];
         }
         if (!has(manifest?.[manifestKey], key) && !has(manifest?.[manifestKey], '$any')) {
           return;
         }
-        const handler: Events[E][keyof Events[E]] = createFn(
-          has(definition?.[manifestKey], key),
-          key,
-        );
-        // eslint-disable-next-line no-param-reassign
-        target[key as keyof Events[E]] = handler;
-        return handler;
+        handlers[key] = createFn(has(definition?.[manifestKey], key), key);
+        return handlers[key];
       },
     });
   }
 
-  const emit = createProxy<'emit', 'emit'>('emit', (implemented, key) =>
+  const emit = createProxy<'emit', 'emit', EmitHandler>('emit', (implemented, key) =>
     implemented
       ? async (data, error) => {
           await ready;
@@ -163,7 +163,7 @@ export function createEvents(
         async () => false,
   );
 
-  const on = createProxy<'on', 'listen'>('listen', (implemented, key) =>
+  const on = createProxy<'on', 'listen', ListenHandler>('listen', (implemented, key) =>
     implemented
       ? (callback) => {
           // @ts-expect-error strictNullChecks not assignable to type
@@ -173,7 +173,7 @@ export function createEvents(
       : () => false,
   );
 
-  const off = createProxy<'off', 'listen'>('listen', (implemented, key) =>
+  const off = createProxy<'off', 'listen', ListenHandler>('listen', (implemented, key) =>
     implemented
       ? (callback) => {
           // @ts-expect-error strictNullChecks not assignable to type
