@@ -10,8 +10,8 @@ import * as ServiceWorkerRegistrationProviderModule from './index.js';
 const { ServiceWorkerRegistrationProvider, useServiceWorkerRegistration } =
   ServiceWorkerRegistrationProviderModule;
 
-const { axiosGet, requestUse, requestEject, getUri } = vi.hoisted(() => ({
-  axiosGet: vi.fn(),
+const { axiosHead, requestUse, requestEject, getUri } = vi.hoisted(() => ({
+  axiosHead: vi.fn(),
   requestUse: vi.fn(),
   requestEject: vi.fn(),
   getUri: vi.fn((config: { url: string }) => config.url),
@@ -19,7 +19,7 @@ const { axiosGet, requestUse, requestEject, getUri } = vi.hoisted(() => ({
 
 vi.mock('axios', () => ({
   default: {
-    get: axiosGet,
+    head: axiosHead,
     post: vi.fn(),
     patch: vi.fn(),
     getUri,
@@ -88,8 +88,8 @@ beforeEach(() => {
   serviceWorkerListeners = {};
   localStorage.clear();
 
-  axiosGet.mockReset();
-  axiosGet.mockResolvedValue({ headers: { 'x-appsemble-version': 'v1' } });
+  axiosHead.mockReset();
+  axiosHead.mockResolvedValue({ headers: { 'x-appsemble-version': 'v1' } });
   requestUse.mockImplementation((callback) => {
     requestInterceptor = callback;
     return 1;
@@ -140,14 +140,14 @@ describe('ServiceWorkerRegistrationProvider', () => {
     renderProvider(registration);
 
     await waitFor(() => expect(requestInterceptor).toBeTruthy());
-    axiosGet.mockClear();
+    axiosHead.mockClear();
 
     await act(async () => {
       await requestInterceptor?.({ url: 'https://appsemble.app/api/apps/42/resources/tasks' });
       await requestInterceptor?.({ url: 'https://appsemble.app/api/apps/42/resources/updates' });
     });
 
-    expect(axiosGet).not.toHaveBeenCalled();
+    expect(axiosHead).not.toHaveBeenCalled();
     expect(registration.update).toHaveBeenCalledTimes(1);
   });
 
@@ -195,15 +195,15 @@ describe('ServiceWorkerRegistrationProvider', () => {
     expect(localStorage.getItem('appsembleVersion')).toBe('v1');
 
     vi.mocked(waiting.postMessage).mockClear();
-    axiosGet.mockClear();
-    axiosGet.mockResolvedValueOnce({ headers: { 'x-appsemble-version': 'v2' } });
+    axiosHead.mockClear();
+    axiosHead.mockResolvedValueOnce({ headers: { 'x-appsemble-version': 'v2' } });
     nowSpy.mockReturnValue(60_001);
 
     await act(async () => {
       await requestInterceptor?.({ url: 'https://appsemble.app/api/apps/42/resources/tasks' });
     });
 
-    expect(axiosGet).toHaveBeenCalledTimes(1);
+    expect(axiosHead).toHaveBeenCalledTimes(1);
     expect(caches.keys).toHaveBeenCalledTimes(1);
     expect(caches.delete).toHaveBeenCalledWith('appsemble');
     expect(waiting.postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' });
@@ -220,15 +220,15 @@ describe('ServiceWorkerRegistrationProvider', () => {
     await waitFor(() => expect(requestInterceptor).toBeTruthy());
 
     vi.mocked(waiting.postMessage).mockClear();
-    axiosGet.mockClear();
-    axiosGet.mockResolvedValueOnce({ headers: { 'x-appsemble-version': 'v1' } });
+    axiosHead.mockClear();
+    axiosHead.mockResolvedValueOnce({ headers: { 'x-appsemble-version': 'v1' } });
     nowSpy.mockReturnValue(60_001);
 
     await act(async () => {
       await requestInterceptor?.({ url: 'https://appsemble.app/api/apps/42/resources/tasks' });
     });
 
-    expect(axiosGet).toHaveBeenCalledTimes(1);
+    expect(axiosHead).toHaveBeenCalledTimes(1);
     expect(caches.keys).not.toHaveBeenCalled();
     expect(caches.delete).not.toHaveBeenCalled();
     expect(waiting.postMessage).not.toHaveBeenCalled();
@@ -246,15 +246,15 @@ describe('ServiceWorkerRegistrationProvider', () => {
     await waitFor(() => expect(requestInterceptor).toBeTruthy());
 
     vi.mocked(waiting.postMessage).mockClear();
-    axiosGet.mockClear();
-    axiosGet.mockRejectedValueOnce(new Error('network error'));
+    axiosHead.mockClear();
+    axiosHead.mockRejectedValueOnce(new Error('network error'));
     nowSpy.mockReturnValue(60_001);
 
     await act(async () => {
       await requestInterceptor?.({ url: 'https://appsemble.app/api/apps/42/resources/tasks' });
     });
 
-    expect(axiosGet).toHaveBeenCalledTimes(1);
+    expect(axiosHead).toHaveBeenCalledTimes(1);
     expect(caches.keys).not.toHaveBeenCalled();
     expect(caches.delete).not.toHaveBeenCalled();
     expect(waiting.postMessage).not.toHaveBeenCalled();

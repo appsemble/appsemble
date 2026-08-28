@@ -218,7 +218,7 @@ export function ServiceWorkerRegistrationProvider({
 
       lastVersionCheckAtRef.current = now;
       const request = axios
-        .get(apiVersionUrl)
+        .head(apiVersionUrl)
         .then((res) => {
           const version = res.headers['x-appsemble-version'] as string | undefined;
 
