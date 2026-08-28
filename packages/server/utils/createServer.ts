@@ -140,6 +140,12 @@ export async function createServer({
             exposeHeaders: ['ETag', 'X-Appsemble-Version'],
           }),
         ),
+        conditional(
+          (ctx) => ctx.path === '/api' && ctx.method === 'HEAD',
+          (ctx) => {
+            ctx.status = 200;
+          },
+        ),
         conditional((ctx) => ctx.path === '/api/payments/accept-payment', stripeMiddleware()),
         conditional((ctx) => /\/apps\/\d+\/accept-payment$/.test(ctx.path), stripeMiddleware()),
         koas(api(version, argv), [
