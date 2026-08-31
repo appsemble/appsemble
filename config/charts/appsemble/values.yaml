@@ -287,6 +287,12 @@ backups:
   secure: true
   existingSecret: backups-secret
 
+restoreDataFromBackup:
+  enabled: false
+  bucket: null
+  filenamePrefix: null
+  backupFilename: latest
+
 assetsBackups:
   enabled: false
   schedule: '20 2 * * *'

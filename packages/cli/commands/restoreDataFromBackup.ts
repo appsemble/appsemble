@@ -3,6 +3,12 @@ import { type Argv } from 'yargs';
 import { serverImport } from '../lib/serverImport.js';
 import { type BaseArguments } from '../types.js';
 
+interface RestoreDataFromBackupArguments extends BaseArguments {
+  restoreBackupFilename: string;
+  backupsBucket?: string;
+  backupsFilename?: string;
+}
+
 export const command = 'restore-data-from-backup';
 export const description =
   'Restore appsemble data from a specified backup for the main database and app databases';
@@ -40,12 +46,21 @@ export function builder(yargs: Argv): Argv<any> {
     .option('restoreBackupFilename', {
       type: 'string',
       describe:
-        'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz',
+        'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz, or latest',
       demandOption: true,
+    })
+    .option('backupsBucket', {
+      type: 'string',
+      describe: 'The object storage bucket to restore backups from.',
+    })
+    .option('backupsFilename', {
+      type: 'string',
+      describe:
+        'The backup filename prefix, used to resolve the newest object when --restoreBackupFilename is latest.',
     });
 }
 
-export async function handler(argv: BaseArguments): Promise<void> {
+export async function handler(argv: RestoreDataFromBackupArguments): Promise<void> {
   const { restoreDataFromBackup, setArgv } = await serverImport('setArgv', 'restoreDataFromBackup');
   setArgv(argv);
   return restoreDataFromBackup();

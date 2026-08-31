@@ -73,6 +73,11 @@ export function databaseBuilder(yargs: Argv): Argv {
     .option('block-assets-base-url', {
       desc: 'The base URL for block assets stored in S3 compatible object storage',
     })
+    .option('backups-secure', {
+      desc: 'Whether ssl should be used for the backups object storage server',
+      type: 'boolean',
+      default: true,
+    })
     .option('valkey-host', {
       desc: 'The host of the Valkey server to connect to.',
     })

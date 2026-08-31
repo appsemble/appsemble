@@ -4,7 +4,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { spawn } from 'node:child_process';
 
-import { getS3File, initS3Client, logger } from '@appsemble/node-utils';
+import { getS3File, initS3Client, listS3Files, logger } from '@appsemble/node-utils';
 
 import { App, initDB } from '../models/index.js';
 import { type App as MainApp } from '../models/main/App.js';
@@ -29,6 +29,7 @@ vi.mock('node:zlib', () => ({
 vi.mock('@appsemble/node-utils', () => ({
   getS3File: vi.fn(() => Promise.resolve(Readable.from(['sql']))),
   initS3Client: vi.fn(),
+  listS3Files: vi.fn(() => Promise.resolve([])),
   logger: {
     error: vi.fn(),
     info: vi.fn(),
@@ -59,6 +60,7 @@ const baseOptions: RestoreDataFromBackupOptions = {
   aesSecret: 'test-aes-secret',
   backupsAccessKey: 'backup-access-key',
   backupsBucket: 'backup-bucket',
+  backupsFilename: 'appsemble_prod_backup',
   backupsHost: 's3.example.com',
   backupsPort: 443,
   backupsSecretKey: 'backup-secret-key',
@@ -177,6 +179,7 @@ describe('restoreDataFromBackup', () => {
     vi.mocked(App.findAll).mockResolvedValue([]);
     vi.mocked(getS3File).mockResolvedValue(Readable.from(['sql']));
     vi.mocked(initS3Client).mockReset();
+    vi.mocked(listS3Files).mockResolvedValue([]);
   });
 
   afterAll(() => {
@@ -247,7 +250,7 @@ describe('restoreDataFromBackup', () => {
         Number(databaseUrl.port) === directPort &&
         args?.includes('-X') &&
         args?.includes('-v') &&
-        args.includes('ON_ERROR_STOP=1');
+        args?.includes('ON_ERROR_STOP=1');
       return createChildProcessMock(usesDirectEndpoint ? 0 : 1) as unknown as SpawnReturn;
     });
 
@@ -267,6 +270,46 @@ describe('restoreDataFromBackup', () => {
     expect(getS3File).toHaveBeenCalledWith(
       baseOptions.backupsBucket,
       `sql/apps/1/${baseOptions.restoreBackupFilename}`,
+    );
+  });
+
+  it('should resolve latest backup before recreating the main database', async () => {
+    vi.mocked(listS3Files).mockResolvedValue([
+      {
+        etag: 'old',
+        key: 'sql/main/appsemble_prod_backup_20250101000000000.sql.gz',
+        lastModified: new Date('2025-01-01T00:00:00Z'),
+        metadata: {},
+        size: 1,
+      },
+      {
+        etag: 'new',
+        key: 'sql/main/appsemble_prod_backup_20250102000000000.sql.gz',
+        lastModified: new Date('2025-01-02T00:00:00Z'),
+        metadata: {},
+        size: 1,
+      },
+    ]);
+
+    const failed = await restoreDataFromBackup({
+      ...baseOptions,
+      restoreBackupFilename: 'latest',
+    });
+
+    expect(failed).toBe(false);
+    expect(listS3Files).toHaveBeenCalledWith('backup-bucket', 'sql/main/appsemble_prod_backup_');
+    expect(vi.mocked(listS3Files).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(spawn).mock.invocationCallOrder[0],
+    );
+    expect(getS3File).toHaveBeenCalledWith(
+      'backup-bucket',
+      'sql/main/appsemble_prod_backup_20250102000000000.sql.gz',
+    );
+    expect(spawn).toHaveBeenNthCalledWith(
+      2,
+      'psql',
+      expect.arrayContaining(['-c', 'DROP DATABASE IF EXISTS "appsemble";']),
+      expect.any(Object),
     );
   });
 
@@ -306,10 +349,10 @@ describe('restoreDataFromBackup', () => {
     });
     vi.mocked(App.findAll).mockResolvedValue([app]);
 
-    let spawnCallCount = 0;
-    vi.mocked(spawn).mockImplementation(() => {
-      spawnCallCount += 1;
-      return createChildProcessMock(spawnCallCount === 3 ? 1 : 0) as unknown as SpawnReturn;
+    // Restoring is the only psql invocation without a `-c` statement.
+    vi.mocked(spawn).mockImplementation((...args) => {
+      const psqlArgs = args[1] as readonly string[];
+      return createChildProcessMock(psqlArgs.includes('-c') ? 0 : 1) as unknown as SpawnReturn;
     });
 
     const failed = await restoreDataFromBackup(baseOptions);
@@ -319,9 +362,10 @@ describe('restoreDataFromBackup', () => {
       'Failed to restore main database:',
       expect.any(Error),
     );
+    expect(App.findAll).not.toHaveBeenCalled();
   });
 
-  it('should return true when restoring one app database fails', async () => {
+  it('should continue without failing when restoring one app database fails', async () => {
     const app1Update = vi.fn<MainApp['update']>(() => Promise.resolve({} as MainApp));
     const app2Update = vi.fn<MainApp['update']>(() => Promise.resolve({} as MainApp));
 
@@ -343,12 +387,41 @@ describe('restoreDataFromBackup', () => {
     });
     vi.mocked(App.findAll).mockResolvedValue([app1, app2]);
 
-    app2Update.mockRejectedValueOnce(new Error('failed app update'));
+    vi.mocked(getS3File).mockImplementation((bucket, key) =>
+      String(key).startsWith('sql/apps/1/')
+        ? Promise.reject(new Error('missing app 1 backup'))
+        : Promise.resolve(Readable.from(['sql'])),
+    );
 
     const failed = await restoreDataFromBackup(baseOptions);
 
-    expect(failed).toBe(true);
-    expect(logger.error).toHaveBeenCalledWith('Failed to restore app 2 database:');
+    expect(failed).toBe(false);
+    expect(logger.error).toHaveBeenCalledWith('Failed to restore app 1 database:');
+    expect(app2Update).toHaveBeenCalledWith({
+      dbHost: baseOptions.databaseHost,
+      dbPassword: 'encrypted:database-password:test-aes-secret',
+      dbPort: baseOptions.databasePort,
+      dbUser: baseOptions.databaseUser,
+    });
+    expect(getS3File).toHaveBeenCalledWith(
+      baseOptions.backupsBucket,
+      'sql/apps/2/appsemble_prod_backup_20250101.sql.gz',
+    );
+  });
+
+  it('should fail when pointing an app at the new database fails', async () => {
+    const update = vi.fn<MainApp['update']>(() => Promise.reject(new Error('failed app update')));
+    const app = createFoundApp({
+      dbHost: 'old-app-db-host',
+      dbName: 'app-1',
+      dbPort: 5433,
+      dbUser: 'app-user',
+      id: 1,
+      update,
+    });
+    vi.mocked(App.findAll).mockResolvedValue([app]);
+
+    await expect(restoreDataFromBackup(baseOptions)).rejects.toThrow('failed app update');
   });
 
   it('should continue when S3 initialization fails and return false if restore succeeds', async () => {
