@@ -25,6 +25,11 @@
       "description": "Bump the npm @playwright/test pins and the matching playwright Docker image tags in a single PR",
       "matchPackageNames": ["@playwright/test"],
       "groupName": "playwright"
+    },
+    {
+      "description": "eslint-plugin-jsx-a11y has no released version supporting ESLint 10 yet; cap eslint below v10 until https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/issues/1075 (tracked by PR https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/pull/1081) ships a compatible release",
+      "matchPackageNames": ["eslint", "@eslint/js"],
+      "allowedVersions": "<10.0.0"
     }
   ]
 }
