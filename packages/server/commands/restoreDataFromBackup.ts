@@ -3,7 +3,13 @@ import { once } from 'node:events';
 import { pipeline } from 'node:stream/promises';
 import { createGunzip } from 'node:zlib';
 
-import { getS3File, initS3Client, listS3Files, logger } from '@appsemble/node-utils';
+import {
+  getS3File,
+  initS3Client,
+  listS3Files,
+  logger,
+  type S3FileReference,
+} from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
@@ -18,6 +24,7 @@ export const description =
   'Restore appsemble data from a specified backup for the main database and app databases';
 
 const localDevelopmentAesSecret = 'Local Appsemble development AES secret';
+const restoreBackupListAttempts = 3;
 
 export function assertRestoreDataFromBackupAesSecret(
   aesSecret: string | null | undefined,
@@ -58,6 +65,35 @@ export function builder(yargs: Argv): Argv {
   });
 }
 
+function sleep(timeout: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+}
+
+function isConnectionTimeout(error: unknown): boolean {
+  return (
+    typeof error === 'object' && error != null && 'code' in error && error.code === 'ETIMEDOUT'
+  );
+}
+
+async function listRestoreBackups(bucket: string, prefix: string): Promise<S3FileReference[]> {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await listS3Files(bucket, prefix);
+    } catch (error) {
+      if (attempt >= restoreBackupListAttempts || !isConnectionTimeout(error)) {
+        throw error;
+      }
+
+      logger.warn(
+        `S3 connection timed out while resolving the latest backup. Retrying ${attempt}/${restoreBackupListAttempts}`,
+      );
+      await sleep(attempt * 1000);
+    }
+  }
+}
+
 async function resolveRestoreBackupFilename({
   backupsBucket,
   backupsFilename,
@@ -75,7 +111,7 @@ async function resolveRestoreBackupFilename({
   }
 
   const prefix = `sql/main/${backupsFilename}_`;
-  const backups = (await listS3Files(backupsBucket, prefix)).flatMap((backup) =>
+  const backups = (await listRestoreBackups(backupsBucket, prefix)).flatMap((backup) =>
     backup.key && backup.lastModified && backup.key.endsWith('.sql.gz')
       ? [{ key: backup.key, lastModified: backup.lastModified }]
       : [],

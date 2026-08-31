@@ -313,6 +313,38 @@ describe('restoreDataFromBackup', () => {
     );
   });
 
+  it('should retry a timed out latest backup lookup before recreating the database', async () => {
+    vi.useFakeTimers();
+    try {
+      vi.mocked(listS3Files)
+        .mockRejectedValueOnce(Object.assign(new Error('connect timed out'), { code: 'ETIMEDOUT' }))
+        .mockResolvedValueOnce([
+          {
+            etag: 'latest',
+            key: 'sql/main/appsemble_prod_backup_20250102000000000.sql.gz',
+            lastModified: new Date('2025-01-02T00:00:00Z'),
+            metadata: {},
+            size: 1,
+          },
+        ]);
+
+      const restore = restoreDataFromBackup({
+        ...baseOptions,
+        restoreBackupFilename: 'latest',
+      });
+
+      await vi.runAllTimersAsync();
+
+      expect(await restore).toBe(false);
+      expect(listS3Files).toHaveBeenCalledTimes(2);
+      expect(vi.mocked(listS3Files).mock.invocationCallOrder[1]).toBeLessThan(
+        vi.mocked(spawn).mock.invocationCallOrder[0],
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('should use local development aesSecret when missing in development', async () => {
     process.env.NODE_ENV = 'development';
 
