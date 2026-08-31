@@ -8,9 +8,10 @@ import {
   type CustomAppGuestPermission,
   type CustomAppPermission,
   type FlowPageDefinition,
+  type NavbarLayoutDefinition,
+  type PageLayoutDefinition,
   predefinedAppRoles,
   type Security,
-  type PageLayoutDefinition,
 } from './types/index.js';
 import { validateAppDefinition } from './validation.js';
 
@@ -4354,6 +4355,249 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should validate navbar grid templates', async () => {
+    const app = createTestApp();
+    const navbar = {
+      desktop: {
+        layout: {
+          columns: 4,
+          template: ['logo name navigation controls controls'],
+        },
+        spacing: { gap: 0.5, padding: 0.25, unit: '1rem' },
+      },
+    } as NavbarLayoutDefinition;
+    app.layout = { navbar, navigation: 'top' };
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        'template needs to be the same length as number of columns',
+        navbar.desktop!.layout.template,
+        undefined,
+        ['layout', 'navbar', 'desktop', 'layout', 'template'],
+      ),
+    );
+  });
+
+  it('should reject navbar grids unless navigation is set to top', async () => {
+    const app = createTestApp();
+    app.layout = {
+      navigation: 'left-menu',
+      navbar: {
+        desktop: {
+          layout: {
+            columns: 3,
+            template: ['name navigation controls'],
+          },
+        },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        'only applies when navigation is set to top',
+        app.layout.navbar,
+        undefined,
+        ['layout', 'navbar'],
+      ),
+    );
+  });
+
+  it('should reject navbar grids combined with a stacked header', async () => {
+    const app = createTestApp();
+    app.layout = {
+      navigation: 'top',
+      stackedHeader: true,
+      navbar: {
+        desktop: {
+          layout: {
+            columns: 3,
+            template: ['name navigation controls'],
+          },
+        },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError('cannot be combined with stackedHeader', app.layout.navbar, undefined, [
+        'layout',
+        'navbar',
+      ]),
+    );
+  });
+
+  it('should reject unknown navbar grid areas', async () => {
+    const app = createTestApp();
+    app.layout = {
+      navbar: {
+        desktop: {
+          layout: {
+            columns: 5,
+            template: ['logo name navigation controls unknown'],
+          },
+          spacing: { gap: 0.5, padding: 0.25, unit: '1rem' },
+        },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        "unknown navbar grid area 'unknown'",
+        'logo name navigation controls unknown',
+        undefined,
+        ['layout', 'navbar', 'desktop', 'layout', 'template', 0],
+      ),
+    );
+  });
+
+  it('should reject navbar grids that omit rendered areas', async () => {
+    const app = createTestApp();
+    app.layout = {
+      navigation: 'top',
+      logo: { position: 'navbar' },
+      navbar: {
+        mobile: {
+          layout: {
+            columns: 2,
+            template: ['logo logo', 'name name'],
+          },
+          spacing: { gap: 0.5, padding: 0.25, unit: '1rem' },
+        },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        "navbar grid is missing required area 'navigation'",
+        app.layout.navbar!.mobile!.layout.template,
+        undefined,
+        ['layout', 'navbar', 'mobile', 'layout', 'template'],
+      ),
+    );
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        "navbar grid is missing required area 'controls'",
+        app.layout.navbar!.mobile!.layout.template,
+        undefined,
+        ['layout', 'navbar', 'mobile', 'layout', 'template'],
+      ),
+    );
+  });
+
+  it('should reject navbar grids whose visual order differs from the focus order', async () => {
+    const app = createTestApp();
+    app.layout = {
+      logo: { position: 'navbar' },
+      navbar: {
+        desktop: {
+          layout: {
+            columns: 4,
+            template: ['logo controls name navigation'],
+          },
+          spacing: { gap: 0.5, padding: 0.25, unit: '1rem' },
+        },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        'navbar grid areas must follow the accessible order: logo, name, navigation, controls',
+        app.layout.navbar!.desktop!.layout.template,
+        undefined,
+        ['layout', 'navbar', 'desktop', 'layout', 'template'],
+      ),
+    );
+  });
+
+  it('should accept navbar grids whose visual order matches the focus order', async () => {
+    const app = createTestApp();
+    app.layout = {
+      navigation: 'top',
+      logo: { position: 'navbar' },
+      navbar: {
+        mobile: {
+          layout: {
+            columns: 2,
+            template: ['logo logo', 'name name', 'navigation navigation', 'controls controls'],
+          },
+          spacing: { gap: 0.5, padding: 0.25, unit: '1rem' },
+        },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should reject grid breakpoints where tablet is not smaller than desktop', async () => {
+    const app = createTestApp();
+    app.layout = {
+      breakpoints: {
+        tablet: 1024,
+        desktop: 768,
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        'tablet breakpoint must be smaller than the desktop breakpoint',
+        app.layout.breakpoints,
+        undefined,
+        ['layout', 'breakpoints'],
+      ),
+    );
+  });
+
+  it('should accept grid breakpoints in ascending order', async () => {
+    const app = createTestApp();
+    app.layout = {
+      breakpoints: {
+        tablet: 768,
+        desktop: 992,
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should reject navbar breakpoints without a layout without aborting validation', async () => {
+    const app = createTestApp();
+    app.layout = {
+      navbar: {
+        desktop: {},
+      },
+    } as AppDefinition['layout'];
+    const schemaResult = new AppValidator().validateApp(app);
+
+    const result = await validateAppDefinition(app, () => [], undefined, schemaResult);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: 'requires property "layout"',
+        path: ['layout', 'navbar', 'desktop'],
+      }),
+    );
+    expect(result.errors).not.toContainEqual(
+      expect.objectContaining({ message: expect.stringContaining('Unexpected error') }),
+    );
+  });
+
   it('should throw if the page layout templates do not match with the number of columns', async () => {
     const app = createTestApp();
     const invalidPageLayoutDefinition = {
@@ -4375,7 +4619,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError(
         'template needs to be the same length as number of columns',
-        invalidPageLayoutDefinition.desktop!.layout.template,
+        invalidPageLayoutDefinition.desktop!.layout!.template,
         undefined,
         ['pages', 0, 'desktop', 'layout', 'template'],
       ),

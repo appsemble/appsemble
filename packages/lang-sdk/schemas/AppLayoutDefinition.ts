@@ -107,6 +107,20 @@ Only applies when \`navigation\` is set to \`top\`.
       type: 'boolean',
       default: false,
     },
+    navbar: {
+      $ref: '#/components/schemas/NavbarLayoutDefinition',
+      description: `Responsive grid layout for the top navigation header.
+
+Only applies when \`navigation\` is set to \`top\` and cannot be combined with \`stackedHeader\`.
+`,
+    },
+    breakpoints: {
+      $ref: '#/components/schemas/GridBreakpointsDefinition',
+      description: `Minimum viewport widths in pixels at which the tablet and desktop grid layouts apply.
+
+Applies to every responsive grid layout in the app, including pages and the navbar.
+`,
+    },
     hideGroupDropdown: {
       description: `Whether to hide the group dropdown.
 

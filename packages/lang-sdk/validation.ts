@@ -30,9 +30,10 @@ import {
   type DeviceGridLayoutDefinition,
   type FlowPageDefinition,
   type LoopPageDefinition,
-  type PageDefinition,
-  type TabsPageDefinition,
   type PageLayoutDefinition,
+  type PageDefinition,
+  type ResponsiveGridLayoutDefinition,
+  type TabsPageDefinition,
   PredefinedAppRole,
   predefinedAppRolePermissions,
   type ProjectImplementations,
@@ -480,7 +481,9 @@ function validateController(
   });
 }
 
-function getTemplateAreas(layoutDefinition: PageLayoutDefinition | undefined): Set<string> {
+function getTemplateAreas(
+  layoutDefinition: ResponsiveGridLayoutDefinition | undefined,
+): Set<string> {
   const areas = new Set<string>();
   if (!layoutDefinition) {
     return areas;
@@ -564,8 +567,8 @@ function validateTemplateAreasAreRectangular(
   }
 }
 
-function validatePageLayoutDefinition(
-  layoutDefinition: PageLayoutDefinition | undefined,
+function validateResponsiveGridLayoutDefinition(
+  layoutDefinition: ResponsiveGridLayoutDefinition | undefined,
   report: Report,
   path: Prefix,
 ): void {
@@ -579,19 +582,17 @@ function validatePageLayoutDefinition(
     if (!deviceDefinition?.layout?.template || !deviceDefinition?.layout?.columns) {
       continue;
     }
-    if (
-      deviceDefinition.layout.template.some(
-        (row) => row.split(' ').length !== deviceDefinition.layout.columns,
-      )
-    ) {
-      report(
-        deviceDefinition.layout.template,
-        'template needs to be the same length as number of columns',
-        [...path, deviceName, 'layout', 'template'],
-      );
+    const { layout } = deviceDefinition;
+    if (layout.template.some((row) => row.split(' ').length !== layout.columns)) {
+      report(layout.template, 'template needs to be the same length as number of columns', [
+        ...path,
+        deviceName,
+        'layout',
+        'template',
+      ]);
     }
 
-    validateTemplateAreasAreRectangular(deviceDefinition.layout.template, report, [
+    validateTemplateAreasAreRectangular(layout.template, report, [
       ...path,
       deviceName,
       'layout',
@@ -624,13 +625,82 @@ function validateSubPageLayout(
   report: Report,
   path: Prefix,
 ): void {
-  validatePageLayoutDefinition(layout, report, path);
+  validateResponsiveGridLayoutDefinition(layout, report, path);
   if (layout && blocks) {
     validateBlockGridAreas(blocks, layout, report, [...path, 'blocks']);
   }
 }
 
 function validateGridLayout(definition: AppDefinition, report: Report): void {
+  const breakpoints = definition.layout?.breakpoints;
+  if (
+    breakpoints?.tablet != null &&
+    breakpoints?.desktop != null &&
+    breakpoints.tablet >= breakpoints.desktop
+  ) {
+    report(breakpoints, 'tablet breakpoint must be smaller than the desktop breakpoint', [
+      'layout',
+      'breakpoints',
+    ]);
+  }
+
+  const navbarLayout = definition.layout?.navbar;
+  validateResponsiveGridLayoutDefinition(navbarLayout, report, ['layout', 'navbar']);
+
+  if (navbarLayout) {
+    if (definition.layout?.navigation !== 'top') {
+      report(navbarLayout, 'only applies when navigation is set to top', ['layout', 'navbar']);
+    }
+    if (definition.layout?.stackedHeader) {
+      report(navbarLayout, 'cannot be combined with stackedHeader', ['layout', 'navbar']);
+    }
+
+    const navbarAreaOrder = ['logo', 'name', 'navigation', 'controls'];
+    const allowedAreas = new Set(['.', ...navbarAreaOrder]);
+    const requiredAreas =
+      definition.layout?.logo?.position === 'navbar' ? navbarAreaOrder : navbarAreaOrder.slice(1);
+
+    for (const [deviceName, deviceDefinition] of Object.entries(navbarLayout)) {
+      if (!deviceDefinition?.layout?.template) {
+        continue;
+      }
+      const { template } = deviceDefinition.layout;
+      const templatePath = ['layout', 'navbar', deviceName, 'layout', 'template'] as Prefix;
+      const visualAreaOrder: string[] = [];
+      const visualAreas = new Set<string>();
+
+      for (const [rowIndex, row] of deviceDefinition.layout.template.entries()) {
+        for (const area of row.split(' ')) {
+          if (!allowedAreas.has(area)) {
+            report(row, `unknown navbar grid area '${area}'`, [...templatePath, rowIndex]);
+          } else if (area !== '.' && !visualAreas.has(area)) {
+            visualAreas.add(area);
+            visualAreaOrder.push(area);
+          }
+        }
+      }
+
+      let hasMissingArea = false;
+      for (const area of requiredAreas) {
+        if (!visualAreas.has(area)) {
+          hasMissingArea = true;
+          report(template, `navbar grid is missing required area '${area}'`, templatePath);
+        }
+      }
+
+      if (!hasMissingArea) {
+        const expectedAreaOrder = navbarAreaOrder.filter((area) => visualAreas.has(area));
+        if (visualAreaOrder.some((area, index) => area !== expectedAreaOrder[index])) {
+          report(
+            template,
+            `navbar grid areas must follow the accessible order: ${expectedAreaOrder.join(', ')}`,
+            templatePath,
+          );
+        }
+      }
+    }
+  }
+
   iterApp(definition, {
     onPage(page, path) {
       // Basic page

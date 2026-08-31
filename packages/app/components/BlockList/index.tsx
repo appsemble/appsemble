@@ -4,8 +4,8 @@ import {
   ActionError,
   type BlockDefinition,
   type PageDefinition,
-  type Remapper,
   type PageLayoutDefinition,
+  type Remapper,
 } from '@appsemble/lang-sdk';
 import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
 import { type ProjectImplementations } from '@appsemble/types';
@@ -25,7 +25,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { Block } from '../Block/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
-import usePageGridCss from '../PageGridProvider/index.js';
+import usePageGridCss, { DEFAULT_BREAKPOINTS } from '../PageGridProvider/index.js';
 
 interface BlockListProps {
   readonly blocks: BlockDefinition[];
@@ -42,12 +42,6 @@ interface BlockListProps {
   readonly showShareDialog: ShowShareDialog;
   readonly pageLayout?: PageLayoutDefinition;
 }
-
-const BREAKPOINTS = {
-  mobile: 0,
-  tablet: 640,
-  desktop: 1024,
-};
 
 export function BlockList({
   appStorage,
@@ -231,7 +225,10 @@ export function BlockList({
     appMemberInfoRef,
     appMemberSelectedGroup,
   ]);
-  const gridClassName = usePageGridCss({ pageLayout, BREAKPOINTS });
+  const gridClassName = usePageGridCss({
+    pageLayout,
+    BREAKPOINTS: { ...DEFAULT_BREAKPOINTS, ...appDefinition.layout?.breakpoints },
+  });
 
   if (!blockList.length) {
     if (!isLoggedIn) {

@@ -16,14 +16,49 @@
   width: 100%;
 }
 
-/* The stacked header is taller than Bulma's default navbar. Let the fixed bar grow to fit both
-   rows and keep it in flow so page content is not hidden behind it. */
-:global(.navbar.is-fixed-top):has(.brandColumn) {
+.navbarGrid {
+  width: 100%;
+}
+
+.logoArea {
+  justify-self: center;
+}
+
+.nameArea {
+  align-items: center;
+  display: flex;
+}
+
+.controlsArea {
+  align-items: center;
+  display: flex;
+  justify-self: end;
+}
+
+:global([data-grid-area='logo']) {
+  grid-area: logo;
+}
+
+:global([data-grid-area='name']) {
+  grid-area: name;
+}
+
+:global([data-grid-area='navigation']) {
+  grid-area: navigation;
+}
+
+:global([data-grid-area='controls']) {
+  grid-area: controls;
+}
+
+/* Custom header layouts can be taller than Bulma's default navbar. Let the fixed bar grow and keep
+   it in flow so page content is not hidden behind it. */
+:global(.navbar.is-fixed-top):has(.brandColumn, .navbarGrid) {
   height: auto;
   position: sticky;
 }
 
-:global(body.has-navbar-fixed-top):has(.brandColumn) {
+:global(body.has-navbar-fixed-top):has(.brandColumn, .navbarGrid) {
   padding-top: 0;
 }
 
