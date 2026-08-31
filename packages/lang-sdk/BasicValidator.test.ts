@@ -55,6 +55,36 @@ describe('stackedHeader flag', () => {
   });
 });
 
+describe('grid spacing unit', () => {
+  function createApp(unit: string): unknown {
+    return {
+      ...baseApp,
+      pages: [
+        {
+          ...baseApp.pages[0],
+          layout: {
+            mobile: {
+              layout: { columns: 1, template: ['main'] },
+              spacing: { gap: 0.5, padding: 0.5, unit },
+            },
+          },
+        },
+      ],
+    };
+  }
+
+  it('should accept a custom property', () => {
+    expect(layoutErrors(createApp('var(--ribbon-width)'))).toHaveLength(0);
+  });
+
+  it.each(['var(--ribbon-width, 40px)', 'calc(1rem + 1px)', 'var(--ribbon-width); color: red'])(
+    'should reject unsupported CSS expression %s',
+    (unit) => {
+      expect(layoutErrors(createApp(unit)).length).toBeGreaterThan(0);
+    },
+  );
+});
+
 describe('loop page boundaries', () => {
   const loopPage = {
     name: 'Page A',

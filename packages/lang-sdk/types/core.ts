@@ -10,7 +10,11 @@ import { type ResourceDefinition } from './resource.js';
 import { type AppRole, type ViewRole } from './roles.js';
 import { type Security } from './security.js';
 import { type Theme } from './theme.js';
-import { type PageLayoutDefinition } from './gridLayout.js';
+import {
+  type GridBreakpointsDefinition,
+  type NavbarLayoutDefinition,
+  type PageLayoutDefinition,
+} from './gridLayout.js';
 
 export type SettingName = 'email' | 'languages' | 'name' | 'password' | 'phoneNumber' | 'picture';
 
@@ -138,6 +142,26 @@ export interface AppDefinition {
      * Only applies when `navigation` is set to `top`.
      */
     stackedHeader?: boolean;
+
+    /**
+     * Responsive grid layout for the top navigation header.
+     *
+     * Only applies when `navigation` is set to `top`. This cannot be combined with
+     * `stackedHeader`.
+     *
+     * The available template areas are logo, name, navigation, and controls.
+     * Each rendered area must be included and their first visual occurrence must follow that order.
+     */
+    navbar?: NavbarLayoutDefinition;
+
+    /**
+     * Minimum viewport widths in pixels at which the tablet and desktop grid layouts apply.
+     *
+     * Applies to every responsive grid layout in the app, including pages and the navbar. The
+     * mobile layout always applies from a width of 0. Each breakpoint must be smaller than the
+     * next.
+     */
+    breakpoints?: GridBreakpointsDefinition;
 
     /**
      * Whether to hide the group dropdown.

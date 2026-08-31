@@ -1,7 +1,17 @@
-import { type PageLayoutDefinition } from '@appsemble/lang-sdk';
+import {
+  type GridLayoutDefinition,
+  type PageLayoutDefinition,
+  type ResponsiveGridLayoutDefinition,
+} from '@appsemble/lang-sdk';
 import { useEffect, useId, useRef } from 'react';
 
 type DeviceName = 'desktop' | 'mobile' | 'tablet';
+
+export const DEFAULT_BREAKPOINTS: Record<DeviceName, number> = {
+  mobile: 0,
+  tablet: 640,
+  desktop: 1024,
+};
 
 const DEFAULT_SPACING = {
   unit: '1rem',
@@ -16,15 +26,21 @@ const DEFAULT_LAYOUT = {
 
 const DEVICE_ORDER: DeviceName[] = ['mobile', 'tablet', 'desktop'];
 
-export default function usePageGridCss({
-  pageLayout,
+export function useGridCss({
   BREAKPOINTS,
+  classNamePrefix,
+  defaultLayout = DEFAULT_LAYOUT,
+  layout,
+  spacingProperty,
 }: {
-  pageLayout?: PageLayoutDefinition;
   BREAKPOINTS?: Record<DeviceName, number>;
+  classNamePrefix: string;
+  defaultLayout?: GridLayoutDefinition;
+  layout?: ResponsiveGridLayoutDefinition;
+  spacingProperty: `--${string}`;
 }): string | undefined {
   const id = useId();
-  const className = `page-grid${id.replaceAll(':', '-')}`;
+  const className = `${classNamePrefix}${id.replaceAll(':', '-')}`;
   const styleRef = useRef<HTMLStyleElement | null>(null);
 
   useEffect(() => {
@@ -36,9 +52,9 @@ export default function usePageGridCss({
     }
     const styleEl = styleRef.current;
 
-    if (pageLayout) {
+    if (layout) {
       let css = '';
-      let lastDefinedLayout = DEFAULT_LAYOUT;
+      let lastDefinedLayout = defaultLayout;
       let lastDefinedSpacing = DEFAULT_SPACING;
 
       for (const bpName of DEVICE_ORDER) {
@@ -47,7 +63,7 @@ export default function usePageGridCss({
           continue;
         }
 
-        const bpDef = pageLayout[bpName];
+        const bpDef = layout[bpName];
 
         if (bpDef?.layout) {
           lastDefinedLayout = { ...lastDefinedLayout, ...bpDef.layout };
@@ -63,12 +79,12 @@ export default function usePageGridCss({
         css += `
 @media (min-width: ${minWidth}px) {
   .${className} {
-    --appsemble-page-grid-spacing-unit: ${unit};
-    padding: calc(${padding} * var(--appsemble-page-grid-spacing-unit));
+    ${spacingProperty}: ${unit};
+    padding: calc(${padding} * var(${spacingProperty}));
     display: grid;
     grid-template-columns: repeat(${columns}, minmax(0, 1fr));
     grid-template-areas: ${templateString};
-    gap: calc(${gap} * var(--appsemble-page-grid-spacing-unit));
+    gap: calc(${gap} * var(${spacingProperty}));
   }
 }
 `;
@@ -85,7 +101,22 @@ export default function usePageGridCss({
         styleRef.current = null;
       }
     };
-  }, [pageLayout, BREAKPOINTS, className]);
+  }, [layout, BREAKPOINTS, className, defaultLayout, spacingProperty]);
 
-  return pageLayout ? className : undefined;
+  return layout ? className : undefined;
+}
+
+export default function usePageGridCss({
+  pageLayout,
+  BREAKPOINTS,
+}: {
+  pageLayout?: PageLayoutDefinition;
+  BREAKPOINTS?: Record<DeviceName, number>;
+}): string | undefined {
+  return useGridCss({
+    BREAKPOINTS,
+    classNamePrefix: 'page-grid',
+    layout: pageLayout,
+    spacingProperty: '--appsemble-page-grid-spacing-unit',
+  });
 }
