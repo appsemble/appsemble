@@ -6,6 +6,7 @@ import { type BucketItemStat, Client, S3Error } from 'minio';
 import { logger } from './logger.js';
 
 let s3Client: Client;
+const s3StatConcurrency = 10;
 
 export interface S3FileReference {
   etag: string;
@@ -161,19 +162,27 @@ export async function listS3Files(bucket: string, prefix = ''): Promise<S3FileRe
     stream.on('end', () => resolve(objects));
   });
 
-  return Promise.all(
-    keys.map(async (key) => {
-      const stats = await getS3FileStats(bucket, key);
+  const files: S3FileReference[] = [];
 
-      return {
-        etag: stats.etag,
-        key,
-        lastModified: stats.lastModified,
-        metadata: stats.metaData,
-        size: stats.size,
-      };
-    }),
-  );
+  for (let index = 0; index < keys.length; index += s3StatConcurrency) {
+    const batch = await Promise.all(
+      keys.slice(index, index + s3StatConcurrency).map(async (key) => {
+        const stats = await getS3FileStats(bucket, key);
+
+        return {
+          etag: stats.etag,
+          key,
+          lastModified: stats.lastModified,
+          metadata: stats.metaData,
+          size: stats.size,
+        };
+      }),
+    );
+
+    files.push(...batch);
+  }
+
+  return files;
 }
 
 export async function setS3BucketPolicy(bucket: string, policy: string): Promise<void> {

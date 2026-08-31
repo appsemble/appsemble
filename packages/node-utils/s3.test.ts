@@ -5,14 +5,17 @@ import { S3Error } from 'minio';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { logger } from './logger.js';
-import { deleteS3File, deleteS3Files, initS3Client, uploadS3File } from './s3.js';
+import { deleteS3File, deleteS3Files, initS3Client, listS3Files, uploadS3File } from './s3.js';
 
-const { bucketExists, makeBucket, putObject, removeObjects } = vi.hoisted(() => ({
-  bucketExists: vi.fn().mockResolvedValue(true),
-  makeBucket: vi.fn(),
-  putObject: vi.fn(),
-  removeObjects: vi.fn(),
-}));
+const { bucketExists, listObjectsV2, makeBucket, putObject, removeObjects, statObject } =
+  vi.hoisted(() => ({
+    bucketExists: vi.fn().mockResolvedValue(true),
+    listObjectsV2: vi.fn(),
+    makeBucket: vi.fn(),
+    putObject: vi.fn(),
+    removeObjects: vi.fn(),
+    statObject: vi.fn(),
+  }));
 
 vi.mock('minio', async (importOriginal) => {
   const actual = await importOriginal<typeof import('minio')>();
@@ -21,11 +24,15 @@ vi.mock('minio', async (importOriginal) => {
     Client: class {
       bucketExists = bucketExists;
 
+      listObjectsV2 = listObjectsV2;
+
       makeBucket = makeBucket;
 
       putObject = putObject;
 
       removeObjects = removeObjects;
+
+      statObject = statObject;
     },
   };
 });
@@ -83,5 +90,44 @@ describe('uploadS3File', () => {
     await expect(uploadS3File('app-1216', 'asset-id', Readable.from('payload'))).rejects.toBe(
       error,
     );
+  });
+});
+
+describe('listS3Files', () => {
+  it('limits concurrent metadata requests for large buckets', async () => {
+    const keys: string[] = [];
+    let activeRequests = 0;
+    let maximumActiveRequests = 0;
+
+    for (let index = 0; index < 25; index += 1) {
+      keys.push(`backup-${index}`);
+    }
+
+    listObjectsV2.mockReturnValueOnce(
+      Readable.from(
+        keys.map((name) => ({ name })),
+        { objectMode: true },
+      ),
+    );
+    statObject.mockImplementation(async (bucket: string, key: string) => {
+      activeRequests += 1;
+      maximumActiveRequests = Math.max(maximumActiveRequests, activeRequests);
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1);
+      });
+      activeRequests -= 1;
+
+      return {
+        etag: `${bucket}/${key}`,
+        lastModified: new Date('2026-08-31T00:00:00Z'),
+        metaData: {},
+        size: 1,
+      };
+    });
+
+    const files = await listS3Files('backups');
+
+    expect(files).toHaveLength(keys.length);
+    expect(maximumActiveRequests).toBeLessThanOrEqual(10);
   });
 });
