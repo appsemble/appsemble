@@ -5,7 +5,7 @@ import { S3Error } from 'minio';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { logger } from './logger.js';
-import { deleteS3File, deleteS3Files, initS3Client, listS3Files, uploadS3File } from './s3.js';
+import { deleteS3File, deleteS3Files, initS3Client, listS3Objects, uploadS3File } from './s3.js';
 
 const { bucketExists, listObjectsV2, makeBucket, putObject, removeObjects, statObject } =
   vi.hoisted(() => ({
@@ -93,41 +93,31 @@ describe('uploadS3File', () => {
   });
 });
 
-describe('listS3Files', () => {
-  it('limits concurrent metadata requests for large buckets', async () => {
-    const keys: string[] = [];
-    let activeRequests = 0;
-    let maximumActiveRequests = 0;
-
-    for (let index = 0; index < 25; index += 1) {
-      keys.push(`backup-${index}`);
-    }
-
+describe('listS3Objects', () => {
+  it('lists object details without requesting object metadata', async () => {
+    const lastModified = new Date('2026-08-31T00:00:00Z');
     listObjectsV2.mockReturnValueOnce(
       Readable.from(
-        keys.map((name) => ({ name })),
+        [
+          {
+            etag: 'backup-etag',
+            lastModified,
+            name: 'backup.sql.gz',
+            size: 42,
+          },
+        ],
         { objectMode: true },
       ),
     );
-    statObject.mockImplementation(async (bucket: string, key: string) => {
-      activeRequests += 1;
-      maximumActiveRequests = Math.max(maximumActiveRequests, activeRequests);
-      await new Promise((resolve) => {
-        setTimeout(resolve, 1);
-      });
-      activeRequests -= 1;
+    statObject.mockRejectedValue(new Error('Unexpected metadata request'));
 
-      return {
-        etag: `${bucket}/${key}`,
-        lastModified: new Date('2026-08-31T00:00:00Z'),
-        metaData: {},
-        size: 1,
-      };
-    });
-
-    const files = await listS3Files('backups');
-
-    expect(files).toHaveLength(keys.length);
-    expect(maximumActiveRequests).toBeLessThanOrEqual(10);
+    expect(await listS3Objects('backups', 'sql/main/')).toStrictEqual([
+      {
+        etag: 'backup-etag',
+        key: 'backup.sql.gz',
+        lastModified,
+        size: 42,
+      },
+    ]);
   });
 });

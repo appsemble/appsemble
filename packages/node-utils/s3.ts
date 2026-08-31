@@ -6,14 +6,16 @@ import { type BucketItemStat, Client, S3Error } from 'minio';
 import { logger } from './logger.js';
 
 let s3Client: Client;
-const s3StatConcurrency = 10;
 
-export interface S3FileReference {
+export interface S3ObjectReference {
   etag: string;
   key: string;
   lastModified: Date;
-  metadata: BucketItemStat['metaData'];
   size: number;
+}
+
+export interface S3FileReference extends S3ObjectReference {
+  metadata: BucketItemStat['metaData'];
 }
 
 export interface InitS3ClientParams {
@@ -148,41 +150,42 @@ export async function getS3FileStats(bucket: string, key: string): Promise<Bucke
   }
 }
 
-export async function listS3Files(bucket: string, prefix = ''): Promise<S3FileReference[]> {
-  const keys = await new Promise<string[]>((resolve, reject) => {
-    const objects: string[] = [];
+export function listS3Objects(bucket: string, prefix = ''): Promise<S3ObjectReference[]> {
+  return new Promise((resolve, reject) => {
+    const objects: S3ObjectReference[] = [];
     const stream = s3Client.listObjectsV2(bucket, prefix, true);
 
     stream.on('data', (item) => {
       if (item.name) {
-        objects.push(item.name);
+        objects.push({
+          etag: item.etag,
+          key: item.name,
+          lastModified: item.lastModified,
+          size: item.size,
+        });
       }
     });
     stream.on('error', reject);
     stream.on('end', () => resolve(objects));
   });
+}
 
-  const files: S3FileReference[] = [];
+export async function listS3Files(bucket: string, prefix = ''): Promise<S3FileReference[]> {
+  const objects = await listS3Objects(bucket, prefix);
 
-  for (let index = 0; index < keys.length; index += s3StatConcurrency) {
-    const batch = await Promise.all(
-      keys.slice(index, index + s3StatConcurrency).map(async (key) => {
-        const stats = await getS3FileStats(bucket, key);
+  return Promise.all(
+    objects.map(async ({ key }) => {
+      const stats = await getS3FileStats(bucket, key);
 
-        return {
-          etag: stats.etag,
-          key,
-          lastModified: stats.lastModified,
-          metadata: stats.metaData,
-          size: stats.size,
-        };
-      }),
-    );
-
-    files.push(...batch);
-  }
-
-  return files;
+      return {
+        etag: stats.etag,
+        key,
+        lastModified: stats.lastModified,
+        metadata: stats.metaData,
+        size: stats.size,
+      };
+    }),
+  );
 }
 
 export async function setS3BucketPolicy(bucket: string, policy: string): Promise<void> {

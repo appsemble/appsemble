@@ -4,7 +4,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { spawn } from 'node:child_process';
 
-import { getS3File, initS3Client, listS3Files, logger } from '@appsemble/node-utils';
+import { getS3File, initS3Client, listS3Objects, logger } from '@appsemble/node-utils';
 
 import { App, initDB } from '../models/index.js';
 import { type App as MainApp } from '../models/main/App.js';
@@ -29,7 +29,7 @@ vi.mock('node:zlib', () => ({
 vi.mock('@appsemble/node-utils', () => ({
   getS3File: vi.fn(() => Promise.resolve(Readable.from(['sql']))),
   initS3Client: vi.fn(),
-  listS3Files: vi.fn(() => Promise.resolve([])),
+  listS3Objects: vi.fn(() => Promise.resolve([])),
   logger: {
     error: vi.fn(),
     info: vi.fn(),
@@ -179,7 +179,7 @@ describe('restoreDataFromBackup', () => {
     vi.mocked(App.findAll).mockResolvedValue([]);
     vi.mocked(getS3File).mockResolvedValue(Readable.from(['sql']));
     vi.mocked(initS3Client).mockReset();
-    vi.mocked(listS3Files).mockResolvedValue([]);
+    vi.mocked(listS3Objects).mockResolvedValue([]);
   });
 
   afterAll(() => {
@@ -274,19 +274,17 @@ describe('restoreDataFromBackup', () => {
   });
 
   it('should resolve latest backup before recreating the main database', async () => {
-    vi.mocked(listS3Files).mockResolvedValue([
+    vi.mocked(listS3Objects).mockResolvedValue([
       {
         etag: 'old',
         key: 'sql/main/appsemble_prod_backup_20250101000000000.sql.gz',
         lastModified: new Date('2025-01-01T00:00:00Z'),
-        metadata: {},
         size: 1,
       },
       {
         etag: 'new',
         key: 'sql/main/appsemble_prod_backup_20250102000000000.sql.gz',
         lastModified: new Date('2025-01-02T00:00:00Z'),
-        metadata: {},
         size: 1,
       },
     ]);
@@ -297,8 +295,8 @@ describe('restoreDataFromBackup', () => {
     });
 
     expect(failed).toBe(false);
-    expect(listS3Files).toHaveBeenCalledWith('backup-bucket', 'sql/main/appsemble_prod_backup_');
-    expect(vi.mocked(listS3Files).mock.invocationCallOrder[0]).toBeLessThan(
+    expect(listS3Objects).toHaveBeenCalledWith('backup-bucket', 'sql/main/appsemble_prod_backup_');
+    expect(vi.mocked(listS3Objects).mock.invocationCallOrder[0]).toBeLessThan(
       vi.mocked(spawn).mock.invocationCallOrder[0],
     );
     expect(getS3File).toHaveBeenCalledWith(
@@ -316,14 +314,13 @@ describe('restoreDataFromBackup', () => {
   it('should retry a timed out latest backup lookup before recreating the database', async () => {
     vi.useFakeTimers();
     try {
-      vi.mocked(listS3Files)
+      vi.mocked(listS3Objects)
         .mockRejectedValueOnce(Object.assign(new Error('connect timed out'), { code: 'ETIMEDOUT' }))
         .mockResolvedValueOnce([
           {
             etag: 'latest',
             key: 'sql/main/appsemble_prod_backup_20250102000000000.sql.gz',
             lastModified: new Date('2025-01-02T00:00:00Z'),
-            metadata: {},
             size: 1,
           },
         ]);
@@ -336,8 +333,8 @@ describe('restoreDataFromBackup', () => {
       await vi.runAllTimersAsync();
 
       expect(await restore).toBe(false);
-      expect(listS3Files).toHaveBeenCalledTimes(2);
-      expect(vi.mocked(listS3Files).mock.invocationCallOrder[1]).toBeLessThan(
+      expect(listS3Objects).toHaveBeenCalledTimes(2);
+      expect(vi.mocked(listS3Objects).mock.invocationCallOrder[1]).toBeLessThan(
         vi.mocked(spawn).mock.invocationCallOrder[0],
       );
     } finally {
