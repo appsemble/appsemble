@@ -30,6 +30,11 @@
       "description": "eslint-plugin-jsx-a11y has no released version supporting ESLint 10 yet; cap eslint below v10 until https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/issues/1075 (tracked by PR https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/pull/1081) ships a compatible release",
       "matchPackageNames": ["eslint", "@eslint/js"],
       "allowedVersions": "<10.0.0"
+    },
+    {
+      "description": "@remcohaszing/eslint v13 requires migrating ~120 call sites across the repo to eslint-plugin-unicorn's stricter rules (e.g. no-array-sort, no-immediate-mutation), and v14 additionally requires ESLint 10, which is capped below v10 until https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/issues/1075 (tracked by PR https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/pull/1081) ships a compatible release; cap below v13 until the lint migration is done and that issue closes",
+      "matchPackageNames": ["@remcohaszing/eslint"],
+      "allowedVersions": "<13.0.0"
     }
   ]
 }
