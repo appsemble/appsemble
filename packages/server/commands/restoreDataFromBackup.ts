@@ -6,9 +6,9 @@ import { createGunzip } from 'node:zlib';
 import {
   getS3File,
   initS3Client,
-  listS3Files,
+  listS3Objects,
   logger,
-  type S3FileReference,
+  type S3ObjectReference,
 } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
@@ -77,10 +77,10 @@ function isConnectionTimeout(error: unknown): boolean {
   );
 }
 
-async function listRestoreBackups(bucket: string, prefix: string): Promise<S3FileReference[]> {
+async function listRestoreBackups(bucket: string, prefix: string): Promise<S3ObjectReference[]> {
   for (let attempt = 1; ; attempt += 1) {
     try {
-      return await listS3Files(bucket, prefix);
+      return await listS3Objects(bucket, prefix);
     } catch (error) {
       if (attempt >= restoreBackupListAttempts || !isConnectionTimeout(error)) {
         throw error;

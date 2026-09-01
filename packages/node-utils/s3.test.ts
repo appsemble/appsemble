@@ -5,14 +5,17 @@ import { S3Error } from 'minio';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { logger } from './logger.js';
-import { deleteS3File, deleteS3Files, initS3Client, uploadS3File } from './s3.js';
+import { deleteS3File, deleteS3Files, initS3Client, listS3Objects, uploadS3File } from './s3.js';
 
-const { bucketExists, makeBucket, putObject, removeObjects } = vi.hoisted(() => ({
-  bucketExists: vi.fn().mockResolvedValue(true),
-  makeBucket: vi.fn(),
-  putObject: vi.fn(),
-  removeObjects: vi.fn(),
-}));
+const { bucketExists, listObjectsV2, makeBucket, putObject, removeObjects, statObject } =
+  vi.hoisted(() => ({
+    bucketExists: vi.fn().mockResolvedValue(true),
+    listObjectsV2: vi.fn(),
+    makeBucket: vi.fn(),
+    putObject: vi.fn(),
+    removeObjects: vi.fn(),
+    statObject: vi.fn(),
+  }));
 
 vi.mock('minio', async (importOriginal) => {
   const actual = await importOriginal<typeof import('minio')>();
@@ -21,11 +24,15 @@ vi.mock('minio', async (importOriginal) => {
     Client: class {
       bucketExists = bucketExists;
 
+      listObjectsV2 = listObjectsV2;
+
       makeBucket = makeBucket;
 
       putObject = putObject;
 
       removeObjects = removeObjects;
+
+      statObject = statObject;
     },
   };
 });
@@ -83,5 +90,34 @@ describe('uploadS3File', () => {
     await expect(uploadS3File('app-1216', 'asset-id', Readable.from('payload'))).rejects.toBe(
       error,
     );
+  });
+});
+
+describe('listS3Objects', () => {
+  it('lists object details without requesting object metadata', async () => {
+    const lastModified = new Date('2026-08-31T00:00:00Z');
+    listObjectsV2.mockReturnValueOnce(
+      Readable.from(
+        [
+          {
+            etag: 'backup-etag',
+            lastModified,
+            name: 'backup.sql.gz',
+            size: 42,
+          },
+        ],
+        { objectMode: true },
+      ),
+    );
+    statObject.mockRejectedValue(new Error('Unexpected metadata request'));
+
+    expect(await listS3Objects('backups', 'sql/main/')).toStrictEqual([
+      {
+        etag: 'backup-etag',
+        key: 'backup.sql.gz',
+        lastModified,
+        size: 42,
+      },
+    ]);
   });
 });

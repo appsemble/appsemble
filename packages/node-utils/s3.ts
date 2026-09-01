@@ -7,12 +7,15 @@ import { logger } from './logger.js';
 
 let s3Client: Client;
 
-export interface S3FileReference {
+export interface S3ObjectReference {
   etag: string;
   key: string;
   lastModified: Date;
-  metadata: BucketItemStat['metaData'];
   size: number;
+}
+
+export interface S3FileReference extends S3ObjectReference {
+  metadata: BucketItemStat['metaData'];
 }
 
 export interface InitS3ClientParams {
@@ -147,22 +150,31 @@ export async function getS3FileStats(bucket: string, key: string): Promise<Bucke
   }
 }
 
-export async function listS3Files(bucket: string, prefix = ''): Promise<S3FileReference[]> {
-  const keys = await new Promise<string[]>((resolve, reject) => {
-    const objects: string[] = [];
+export function listS3Objects(bucket: string, prefix = ''): Promise<S3ObjectReference[]> {
+  return new Promise((resolve, reject) => {
+    const objects: S3ObjectReference[] = [];
     const stream = s3Client.listObjectsV2(bucket, prefix, true);
 
     stream.on('data', (item) => {
       if (item.name) {
-        objects.push(item.name);
+        objects.push({
+          etag: item.etag,
+          key: item.name,
+          lastModified: item.lastModified,
+          size: item.size,
+        });
       }
     });
     stream.on('error', reject);
     stream.on('end', () => resolve(objects));
   });
+}
+
+export async function listS3Files(bucket: string, prefix = ''): Promise<S3FileReference[]> {
+  const objects = await listS3Objects(bucket, prefix);
 
   return Promise.all(
-    keys.map(async (key) => {
+    objects.map(async ({ key }) => {
       const stats = await getS3FileStats(bucket, key);
 
       return {
