@@ -1260,6 +1260,8 @@ update dependencies:
       --set "postgresql.primary.persistence.enabled=false"
       --set "postgresql.primary.resources.requests.memory=256Mi"
       --set "postgresql.primary.resources.limits.memory=512Mi"
+      --set "resources.deployment.requests.cpu=250m"
+      --set "resources.deployment.requests.memory=1Gi"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
