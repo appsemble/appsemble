@@ -82,7 +82,11 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const showMenu = shouldShowMenu(appDefinition, appMemberRoles, appMemberSelectedGroup, pathname);
 
   if (showMenu) {
-    const navigation = page?.navigation || appDefinition.layout?.navigation;
+    // `profileDropdown` only lists a page under the profile dropdown; it does not describe the
+    // navigation layout. Fall back to the app navigation so such pages keep the app's menu instead
+    // of dropping it (which would leave the title bar's menu button without a provider).
+    const pageNavigation = page?.navigation === 'profileDropdown' ? undefined : page?.navigation;
+    const navigation = pageNavigation || appDefinition.layout?.navigation;
     const effectiveNavigation =
       navigation === 'top' && appDefinition.layout?.hideTitleBar ? 'left-menu' : navigation;
 
@@ -97,7 +101,6 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
         break;
       case 'top':
       case 'hidden':
-      case 'profileDropdown':
         navigationElement = children;
         break;
       default:
