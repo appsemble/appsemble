@@ -142,7 +142,7 @@
     "ein-validator": "1.0.1",
     "jest-image-snapshot": "6.5.2",
     "jsvat": "2.5.4",
-    "memfs": "4.68.1",
+    "memfs": "4.68.2",
     "strip-indent": "4.1.1",
     "validate-vat": "0.9.0",
     "vitest": "4.1.11",
