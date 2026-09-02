@@ -1179,6 +1179,7 @@ update dependencies:
     name: review/$CI_MERGE_REQUEST_IID
     url: https://$CI_MERGE_REQUEST_IID.appsemble.review
     on_stop: stop review
+    auto_stop_in: 1 week
   variables:
     GIT_STRATEGY: fetch
     # Matches the chart default global.postgresql.auth.username.
