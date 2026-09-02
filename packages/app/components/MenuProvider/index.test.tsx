@@ -1,11 +1,11 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { render, screen } from '@testing-library/react';
-import { type ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { MenuProvider } from './index.js';
+import { MenuProvider, usePage } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
@@ -42,7 +42,21 @@ const appDefinition = {
   ],
 } as unknown as AppDefinition;
 
-function renderMenu(definition = appDefinition): void {
+function SetPage({ navigation }: { readonly navigation?: string }): ReactNode {
+  const { setPage } = usePage();
+  useEffect(() => {
+    setPage({ name: 'Edit Profile', navigation, blocks: [] } as never);
+    // Run once on mount. The `setPage` reference and the page object both change on every page
+    // update, so listing them as dependencies would loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return <main>Page content</main>;
+}
+
+function renderMenu(
+  definition = appDefinition,
+  child: ReactNode = <main>Page content</main>,
+): void {
   vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
     definition,
     demoMode: false,
@@ -70,14 +84,7 @@ function renderMenu(definition = appDefinition): void {
     <IntlProvider locale="en" messages={{}}>
       <MemoryRouter initialEntries={['/en/Home']}>
         <Routes>
-          <Route
-            element={
-              <MenuProvider>
-                <main>Page content</main>
-              </MenuProvider>
-            }
-            path="/:lang/*"
-          />
+          <Route element={<MenuProvider>{child}</MenuProvider>} path="/:lang/*" />
         </Routes>
       </MemoryRouter>
     </IntlProvider>,
@@ -92,5 +99,15 @@ describe('MenuProvider', () => {
   it('should use side navigation when top navigation is configured without a title bar', () => {
     renderMenu();
     expect(screen.getByRole('link', { name: 'Reports' }).getAttribute('href')).toBe('/en/reports');
+  });
+
+  it('should keep the app menu on pages listed under the profile dropdown', async () => {
+    renderMenu(
+      { ...appDefinition, layout: { navigation: 'left-menu' } } as AppDefinition,
+      <SetPage navigation="profileDropdown" />,
+    );
+    expect((await screen.findByRole('link', { name: 'Reports' })).getAttribute('href')).toBe(
+      '/en/reports',
+    );
   });
 });
