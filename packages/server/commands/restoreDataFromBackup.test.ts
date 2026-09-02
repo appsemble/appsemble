@@ -12,6 +12,7 @@ import { encrypt } from '../utils/crypto.js';
 import {
   restoreDataFromBackup,
   type RestoreDataFromBackupOptions,
+  skipUnprivilegedStatements,
 } from './restoreDataFromBackup.js';
 
 vi.mock('node:child_process', () => ({
@@ -465,5 +466,45 @@ describe('restoreDataFromBackup', () => {
     expect(logger.warn).toHaveBeenCalledWith(
       'Features related to file uploads will not work correctly!',
     );
+  });
+});
+
+describe('skipUnprivilegedStatements', () => {
+  async function strip(chunks: string[]): Promise<string> {
+    const output: string[] = [];
+    for await (const chunk of Readable.from(chunks).pipe(skipUnprivilegedStatements())) {
+      output.push(String(chunk));
+    }
+    return output.join('');
+  }
+
+  it('should drop extension statements the application role may not run', async () => {
+    const dump = [
+      'ALTER SCHEMA public OWNER TO appsemble;',
+      'CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;',
+      "COMMENT ON EXTENSION pg_stat_statements IS 'track planning and execution statistics';",
+      'CREATE TABLE public."App" (id integer NOT NULL);',
+      '',
+    ].join('\n');
+
+    expect(await strip([dump])).toBe(
+      [
+        'ALTER SCHEMA public OWNER TO appsemble;',
+        'CREATE TABLE public."App" (id integer NOT NULL);',
+        '',
+      ].join('\n'),
+    );
+  });
+
+  it('should drop statements that are split across chunks', async () => {
+    const chunks = ['CREATE EXTENSION IF NOT ', 'EXISTS pg_stat_statements;\nSELECT 1;\n'];
+
+    expect(await strip(chunks)).toBe('SELECT 1;\n');
+  });
+
+  it('should keep column values that merely mention an extension', async () => {
+    const dump = 'INSERT INTO public."App" VALUES (\'CREATE EXTENSION nope\');\n';
+
+    expect(await strip([dump])).toBe(dump);
   });
 });
