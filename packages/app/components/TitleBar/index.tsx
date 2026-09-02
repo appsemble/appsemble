@@ -87,7 +87,11 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
     appMemberRoles,
   );
 
-  const navigation = (page?.navigation || definition?.layout?.navigation) ?? 'left-menu';
+  // `profileDropdown` only lists a page under the profile dropdown; it does not describe how the
+  // navbar renders. Fall back to the app navigation so such pages keep the app's navbar layout
+  // instead of collapsing into the default single-row bar.
+  const pageNavigation = page?.navigation === 'profileDropdown' ? undefined : page?.navigation;
+  const navigation = (pageNavigation || definition?.layout?.navigation) ?? 'left-menu';
   const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;
 
   const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);

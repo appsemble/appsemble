@@ -151,6 +151,57 @@ describe('AppBar top navigation', () => {
     });
   });
 
+  it('should keep the navbar grid on pages listed under the profile dropdown', () => {
+    vi.spyOn(menuProvider, 'usePage').mockReturnValue({
+      page: { name: 'Edit Profile', navigation: 'profileDropdown', blocks: [] },
+    } as never);
+    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+      definition: {
+        ...appDefinition,
+        layout: {
+          navigation: 'top',
+          login: 'hidden',
+          logo: { position: 'navbar' },
+          navbar: {
+            mobile: {
+              layout: {
+                columns: 3,
+                template: ['logo logo logo', 'name navigation controls'],
+              },
+            },
+          },
+          titleBarText: 'appName',
+        },
+      },
+      demoMode: false,
+      revision: 1,
+      blockManifests: [],
+    } as never);
+
+    render(
+      <IntlProvider locale="en" messages={{}}>
+        <MemoryRouter initialEntries={['/en/edit-profile']}>
+          <Routes>
+            <Route element={<AppBar />} path="/:lang/*" />
+          </Routes>
+        </MemoryRouter>
+      </IntlProvider>,
+    );
+
+    const logo = screen.getByAltText('app-logo');
+    const name = screen.getByRole('heading', { name: 'Test App' });
+    const navigation = screen.getByRole('link', { name: 'Reports' });
+    const navbarGrid = logo.parentElement?.parentElement?.parentElement;
+
+    expect(name.parentElement?.dataset.gridArea).toBe('name');
+    expect(navigation.closest<HTMLElement>('[data-grid-area]')?.dataset.gridArea).toBe(
+      'navigation',
+    );
+    expect(
+      Array.from(navbarGrid?.children ?? [], (child) => (child as HTMLElement).dataset.gridArea),
+    ).toStrictEqual(['logo', 'name', 'navigation', 'controls']);
+  });
+
   it('should emit the navbar grid at the author-configured breakpoints', async () => {
     vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
       definition: {
