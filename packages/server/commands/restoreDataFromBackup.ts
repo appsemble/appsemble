@@ -1,6 +1,8 @@
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+import { StringDecoder } from 'node:string_decoder';
 import { createGunzip } from 'node:zlib';
 
 import {
@@ -193,6 +195,47 @@ async function recreateDatabase(dbName: string, adminUri: string): Promise<void>
   logger.info(`Database ${dbName} recreated successfully`);
 }
 
+/**
+ * Drop the statements the application role is not allowed to run.
+ *
+ * @param text The dump fragment to filter, ending on a statement boundary.
+ * @returns The fragment without extension statements.
+ */
+function stripExtensionStatements(text: string): string {
+  return text
+    .split('\n')
+    .filter((line) => !/^(?:CREATE|COMMENT ON) EXTENSION\b/.test(line))
+    .join('\n');
+}
+
+/**
+ * Create a stream that drops statements the restore role is not allowed to run.
+ *
+ * `pg_dump` includes the server level `pg_stat_statements` extension and its comment.
+ * Creating or commenting on an extension requires superuser, while the restore connects as the
+ * application role, so `ON_ERROR_STOP` turns those statements into a failed restore.
+ *
+ * @returns A transform stream that forwards the dump without those statements.
+ */
+export function skipUnprivilegedStatements(): Transform {
+  const decoder = new StringDecoder('utf8');
+  let carry = '';
+
+  return new Transform({
+    transform(chunk, encoding, callback) {
+      const text = carry + decoder.write(chunk);
+      const lastNewline = text.lastIndexOf('\n');
+      carry = text.slice(lastNewline + 1);
+      const stripped = stripExtensionStatements(text.slice(0, lastNewline + 1));
+      callback(null, stripped === '' ? undefined : stripped);
+    },
+    flush(callback) {
+      const stripped = stripExtensionStatements(carry + decoder.end());
+      callback(null, stripped === '' ? undefined : stripped);
+    },
+  });
+}
+
 async function restoreDatabaseFromS3(
   connectionString: string,
   bucket: string,
@@ -220,7 +263,7 @@ async function restoreDatabaseFromS3(
   });
 
   const s3Stream = await getS3File(bucket, key);
-  await pipeline(s3Stream, gunzip, restore.stdin);
+  await pipeline(s3Stream, gunzip, skipUnprivilegedStatements(), restore.stdin);
 
   await restoreExited;
   logger.info(`Database restored from ${key}`);
