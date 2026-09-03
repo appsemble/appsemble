@@ -1,0 +1,26 @@
+{
+  "app": {
+    "description": "Sebuah aplikasi yang meminta pengguna untuk mengisi beberapa pertanyaan.",
+    "name": "Survei",
+    "pages.finished": "Selesai",
+    "pages.survey": "Survei",
+    "pages.survey.steps.0": "Pendahuluan",
+    "pages.survey.steps.1": "Keakraban",
+    "pages.survey.steps.2": "Peringkat Appsemble",
+    "pages.survey.steps.3": "Umpan Balik Appsemble",
+    "pages.survey.steps.4": "Peringkat Fitur"
+  },
+  "messageIds": {
+    "anythingElse": "Apakah ada hal lain yang ingin Anda sampaikan kepada kami?",
+    "appsembleRating": "Bagaimana Anda menilai pengalaman Anda dengan Appsemble?",
+    "backToHome": "Kembali ke beranda",
+    "betterExperience": "Mohon beritahu kami bagaimana kami dapat membuat pengalaman Anda lebih baik",
+    "finished": "Terima kasih telah mengikuti survei kami. Anda dapat mencoba [Appsemble](https://appsemble.app) sendiri untuk membuat aplikasi Anda sendiri. Aplikasi ini dapat dikloning dari [halaman toko kami](https://appsemble.app/apps/{appId}).",
+    "introText": "# Survei Appsemble\nAplikasi ini adalah aplikasi templat yang digunakan untuk mendemonstrasikan bagaimana aplikasi survei dapat dibuat menggunakan [Appsemble](https://appsemble.app).",
+    "no": "Tidak",
+    "notTriedReason": "Mohon beritahu kami alasan Anda belum mencoba?",
+    "start": "Mulai",
+    "triedAppsemble": "Apakah Anda sudah pernah mencoba membuat aplikasi di Appsemble?",
+    "yes": "Ya"
+  }
+}

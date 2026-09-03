@@ -1,0 +1,13 @@
+{
+  "app": {
+    "app.roles.employee": "",
+    "app.roles.employee.description": "",
+    "app.roles.manager": "",
+    "app.roles.manager.description": "",
+    "description": "",
+    "name": "",
+    "pages.inventory": "",
+    "pages.sale-history": "",
+    "pages.sell-bicycle": ""
+  }
+}

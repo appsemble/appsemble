@@ -1,0 +1,16 @@
+{
+  "app": {
+    "description": "",
+    "name": "",
+    "pages.person-details": "",
+    "pages.person-list": "",
+    "pages.person-registration-form": ""
+  },
+  "messageIds": {
+    "description": "",
+    "email": "",
+    "firstName": "",
+    "lastName": "",
+    "picture": ""
+  }
+}
