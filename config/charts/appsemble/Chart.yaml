@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.37.6
-appVersion: 0.37.6
+version: 0.38.0
+appVersion: 0.38.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -37,26 +37,46 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Utils: Support reporting resource paths for serialized assets."
+      description: "Block(pdf-viewer): Add url property to load files from assets or
+        directly from a source."
+    - kind: added
+      description: "App: Add start and end pages to loop pages."
+    - kind: added
+      description: "App: Add configurable grid breakpoints via layout.breakpoints."
+    - kind: added
+      description: "App: Add responsive navbar grid layouts."
+    - kind: added
+      description: "App: Use CSS custom properties as responsive grid spacing units."
+    - kind: added
+      description: "Cli: Warn when the server version does not match the CLI version."
+    - kind: added
+      description: "Lang-sdk: Add layout.breakpoints to configure responsive grid breakpoints."
+    - kind: added
+      description: "Lang-sdk: Add responsive navbar grid layout definitions."
+    - kind: added
+      description: "Lang-sdk: Allow CSS custom properties as responsive grid spacing units."
+    - kind: added
+      description: "Server: Reject an app update when existing resources would no
+        longer satisfy a changed resource schema, or when a resource type with data
+        is removed from the app."
+    - kind: added
+      description: "Server: Support HEAD requests to the API root."
     - kind: changed
-      description: "Block(table): Set scrollable to true by default."
+      description: "Block(form): Load the markdown editor only when a form contains a
+        markdown field."
     - kind: changed
-      description: "Server: Stop cleaning up unresolved custom domains during deployments."
-    - kind: changed
-      description: "Studio: In the app editor, turn the Publish button into a loader
-        while it's busy publishing."
+      description: "App: Check the Appsemble version using a HEAD request."
     - kind: fixed
-      description: "Block(cards): Remove the reset event listener when the cards block
-        unmounts."
+      description: "Block(form): Allow selecting the exact minimum and maximum dates
+        in date fields."
     - kind: fixed
-      description: "React-components: Render validation errors for file upload fields."
+      description: "App: Keep the app navigation layout on pages listed under the
+        profile dropdown."
     - kind: fixed
-      description: "Studio: Align documentation anchors consistently before headings."
+      description: "App: Prevent session restoration while logging out."
     - kind: fixed
-      description: "Studio: Show resource validation errors below their corresponding fields."
-    - kind: fixed
-      description: "Webpack-core: Stop Sass from emitting a byte order mark that
-        invalidates a bundled CSS rule."
+      description: "Cli: Bound server version checks and fall back to GET for servers
+        without HEAD support."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

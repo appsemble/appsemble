@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.38.0](https://gitlab.com/appsemble/appsemble/-/releases/0.38.0)] - 2026-09-03
+
+### Added
+
+- Block(`pdf-viewer`): Add `url` property to load files from assets or directly from a source.
+- App: Add `start` and `end` pages to loop pages.
+- App: Add configurable grid breakpoints via `layout.breakpoints`.
+- App: Add responsive navbar grid layouts.
+- App: Use CSS custom properties as responsive grid spacing units.
+- Cli: Warn when the server version does not match the CLI version.
+- Lang-sdk: Add `layout.breakpoints` to configure responsive grid breakpoints.
+- Lang-sdk: Add responsive navbar grid layout definitions.
+- Lang-sdk: Allow CSS custom properties as responsive grid spacing units.
+- Server: Reject an app update when existing resources would no longer satisfy a changed resource
+  schema, or when a resource type with data is removed from the app.
+- Server: Support HEAD requests to the API root.
+
+### Changed
+
+- Block(`form`): Load the markdown editor only when a form contains a markdown field.
+- App: Check the Appsemble version using a HEAD request.
+
+### Fixed
+
+- Block(`form`): Allow selecting the exact minimum and maximum dates in date fields.
+- App: Keep the app navigation layout on pages listed under the profile dropdown.
+- App: Prevent session restoration while logging out.
+- Cli: Bound server version checks and fall back to GET for servers without HEAD support.
+
 ## \[[0.37.6](https://gitlab.com/appsemble/appsemble/-/releases/0.37.6)] - 2026-08-20
 
 ### Added

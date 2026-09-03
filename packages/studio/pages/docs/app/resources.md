@@ -241,7 +241,7 @@ return all entries from the `answers` resource:
 
 ```yaml validate block-snippet
 - type: data-loader
-  version: 0.37.6
+  version: 0.38.0
   actions:
     onLoad:
       type: resource.query
