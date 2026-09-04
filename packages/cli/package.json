@@ -100,7 +100,7 @@
     "@types/postcss-import": "14.0.3",
     "@types/postcss-url": "10.0.4",
     "axios-test-instance": "8.0.0",
-    "bcrypt": "5.1.1",
+    "bcrypt": "6.0.0",
     "big-integer": "1.6.52",
     "concat-stream": "2.0.0",
     "default-browser": "5.5.1",

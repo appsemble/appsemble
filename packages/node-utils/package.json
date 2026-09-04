@@ -51,7 +51,7 @@
     "@odata/parser": "^0.2.0",
     "@types/koa": "^2.0.0",
     "axios": "^1.0.0",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "bulma": "=0.9.4",
     "bulma-checkradio": "=2.1.1",
     "bulma-slider": "=2.0.4",
