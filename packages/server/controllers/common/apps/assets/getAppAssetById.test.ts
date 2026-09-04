@@ -477,6 +477,65 @@ describe('getAppAssetById', () => {
     });
   });
 
+  it('should return an SVG unmodified and sandbox it against embedded scripts.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/svg+xml',
+      filename: 'logo.svg',
+    });
+
+    const svg = Buffer.from(
+      '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>',
+    );
+    await uploadS3File(`app-${app.id}`, asset.id, svg);
+
+    const response = await request.get(
+      `/api/apps/${app.id}/assets/${asset.id}?width=10&height=10`,
+      { responseType: 'arraybuffer' },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/svg+xml',
+        'content-disposition': 'inline; filename="logo.svg"',
+        'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+    });
+    // The bytes are streamed through untouched, including the resize params being ignored.
+    expect(Buffer.from(response.data)).toStrictEqual(svg);
+
+    const cachedAssets = await Asset.findAll();
+    expect(cachedAssets).toHaveLength(1);
+  });
+
+  it('should treat a parameterized SVG mime as SVG and serve it unmodified.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/svg+xml; charset=utf-8',
+      filename: 'logo.svg',
+    });
+
+    const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+    await uploadS3File(`app-${app.id}`, asset.id, svg);
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/svg+xml; charset=utf-8',
+        'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+      }),
+    });
+    // Not rasterized: the original bytes stream through and no derivative row is created.
+    expect(Buffer.from(response.data)).toStrictEqual(svg);
+    expect(await Asset.findAll()).toHaveLength(1);
+  });
+
   it('should resize the image, store it in s3 and return it.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
