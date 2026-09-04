@@ -52,7 +52,7 @@
     "@types/mdast": "^4.0.0",
     "@xmldom/xmldom": "^0.9.0",
     "axios": "^1.0.0",
-    "bcrypt": "^5.0.0",
+    "bcrypt": "^6.0.0",
     "chalk": "^5.0.0",
     "cli-highlight": "^2.0.0",
     "cron-parser": "^4.0.0",
@@ -118,7 +118,7 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@types/bcrypt": "5.0.2",
+    "@types/bcrypt": "6.0.0",
     "@types/imapflow": "1.0.189",
     "@types/json-diff": "1.0.3",
     "@types/jsonwebtoken": "9.0.10",
