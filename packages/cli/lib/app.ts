@@ -1,4 +1,4 @@
-import { cpSync, createReadStream, createWriteStream, existsSync, type ReadStream } from 'node:fs';
+import { createReadStream, createWriteStream, existsSync, type ReadStream } from 'node:fs';
 import { mkdir, readdir, readFile, rm, stat } from 'node:fs/promises';
 import { basename, dirname, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
@@ -156,15 +156,11 @@ export async function traverseAppDirectory(
                 ? screenshotDirectoryName
                 : 'unspecified';
 
-              const tmpFilePath = join(screenshotDirectoryPath, `${language}-${screenshotName}`);
-
-              cpSync(screenshotPath, tmpFilePath);
-
-              logger.info(`Adding screenshot ${tmpFilePath} 🖼️`);
-              formData.append('screenshots', createReadStream(tmpFilePath));
+              logger.info(`Adding screenshot ${screenshotPath} 🖼️`);
+              formData.append('screenshots', createReadStream(screenshotPath), {
+                filename: `${language}-${screenshotName}`,
+              });
               gatheredData.screenshotUrls.push(basename(screenshotPath));
-
-              rm(tmpFilePath);
             }
           },
           { allowMissing: true, recursive: true },
