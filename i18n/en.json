@@ -1227,6 +1227,7 @@
   "studio.kM6XaM": "Export to CSV",
   "studio.kS1xTp": "Delete {amount} {amount, plural, one {asset} other {assets}}",
   "studio.kVS9rT": "Include example resources",
+  "studio.kdMZ78": "Delete organizations.",
   "studio.kfTLvf": "The permission to delete organizations.",
   "studio.kg2p7g": "Resource warning",
   "studio.kiTtTY": "Hide columns ({count}/{total})",
