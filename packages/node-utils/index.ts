@@ -1,5 +1,6 @@
 export * from './AppsembleError.js';
 export * from './basicAuth.js';
+export * from './csv.js';
 export * from './formData.js';
 export * from './fs.js';
 export * from './getWorkspaces.js';
