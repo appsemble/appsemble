@@ -94,6 +94,14 @@ rendered as side navigation.
       type: 'string',
       enum: ['appName', 'pageName'],
     },
+    breadcrumbs: {
+      type: 'boolean',
+      default: false,
+      description: `Whether to display a breadcrumb trail below the title bar.
+
+The trail is built from the \`parent\` of each page.
+`,
+    },
     hideTitleBar: {
       description: 'Whether to hide the title bar',
       type: 'boolean',

@@ -132,6 +132,11 @@ export interface AppDefinition {
     titleBarText?: 'appName' | 'pageName';
 
     /**
+     * Whether to display a breadcrumb trail below the title bar.
+     */
+    breadcrumbs?: boolean;
+
+    /**
      * Whether to hide the title bar from all pages in the app.
      */
     hideTitleBar?: boolean;
@@ -240,6 +245,11 @@ export interface AppDefinition {
 }
 
 /**
+ * A candidate parent page, optionally scoped to a set of roles.
+ */
+export type PageParentDefinition = string | { page: string; roles?: string[] };
+
+/**
  * This describes what a page will look like in the app.
  */
 export interface BasePageDefinition {
@@ -277,6 +287,15 @@ export interface BasePageDefinition {
    * top navigation is rendered as side navigation.
    */
   navigation?: Navigation | 'profileDropdown';
+
+  /**
+   * The page this page sits under in the breadcrumb hierarchy.
+   *
+   * A page name applies to every member. An entry carrying `roles` applies only to members holding
+   * one of them. A list is resolved in order, so the first matching entry wins and an entry without
+   * `roles` acts as the fallback.
+   */
+  parent?: PageParentDefinition | PageParentDefinition[];
 
   /**
    * A list of roles that may view the page.

@@ -4711,4 +4711,136 @@ describe('validateAppDefinition', () => {
       expect(rectangularErrors).toHaveLength(2);
     });
   });
+
+  it('should report a parent that refers to a page that doesn’t exist', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = 'Missing Page';
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a page that doesn’t exist', 'Missing Page', undefined, [
+        'pages',
+        0,
+        'parent',
+      ]),
+    ]);
+  });
+
+  it('should report a page that is its own parent', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = 'Test Page';
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('cyclically references itself', 'Test Page', undefined, [
+        'pages',
+        0,
+        'parent',
+      ]),
+    ]);
+  });
+
+  it('should report a parent that requires URL parameters', async () => {
+    const app = createTestApp();
+    (app.pages[1] as BasicPageDefinition).parameters = ['id'];
+    app.pages[0].parent = 'Page with parameters';
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'refers to a page with parameters, which cannot be used as a parent',
+        'Page with parameters',
+        undefined,
+        ['pages', 0, 'parent'],
+      ),
+    ]);
+  });
+
+  it('should accept a parent declaring an empty parameter list', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = 'Page with parameters';
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should report a role-scoped parent using a role the app does not define', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = [{ page: 'Page with tabs', roles: ['Ghost'] }];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not exist in this app’s roles', 'Ghost', undefined, [
+        'pages',
+        0,
+        'parent',
+        0,
+        'roles',
+        0,
+      ]),
+    ]);
+  });
+
+  it('should report a cycle that exists only across role-scoped parents', async () => {
+    const app = createTestApp();
+    app.security!.roles = { User: {}, Admin: {} };
+    app.pages[0].parent = [{ page: 'Page with tabs', roles: ['User'] }];
+    app.pages[2].parent = [{ page: 'Test Page', roles: ['Admin'] }];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('cyclically references itself', 'Page with tabs', undefined, [
+        'pages',
+        0,
+        'parent',
+        0,
+      ]),
+      new ValidationError('cyclically references itself', 'Test Page', undefined, [
+        'pages',
+        2,
+        'parent',
+        0,
+      ]),
+    ]);
+  });
+
+  it('should report an unknown page name in a fallback parent entry', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = [{ page: 'Page with tabs', roles: ['User'] }, 'Missing Page'];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a page that doesn’t exist', 'Missing Page', undefined, [
+        'pages',
+        0,
+        'parent',
+        1,
+      ]),
+    ]);
+  });
+
+  it('should accept a multi-level hierarchy ending at a page inside a container', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = 'Contained Page';
+    app.pages[2].parent = 'Test Page';
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
 });

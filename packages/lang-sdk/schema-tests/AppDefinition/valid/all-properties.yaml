@@ -10,6 +10,7 @@ layout:
   settings: navbar
   feedback: navigation
   navigation: left-menu
+  breadcrumbs: true
 
 theme:
   dangerColor: '#ff0000'

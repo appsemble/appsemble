@@ -32,6 +32,7 @@ import {
   type LoopPageDefinition,
   type PageLayoutDefinition,
   type PageDefinition,
+  type PageParentDefinition,
   type ResponsiveGridLayoutDefinition,
   type TabsPageDefinition,
   PredefinedAppRole,
@@ -176,6 +177,78 @@ function validateUniquePageNames(definition: AppDefinition, report: Report): voi
     }
   }
   checkPages(definition.pages);
+}
+
+function validatePageParents(definition: AppDefinition, report: Report): void {
+  if (!definition.pages) {
+    return;
+  }
+
+  // Every declared edge counts, whatever roles it is scoped to: roles overlap, so a cycle reachable
+  // under any role assignment is an authoring mistake.
+  function referencesItself(pageName: string, parentName: string): boolean {
+    const visited = new Set<string>();
+    const queue = [parentName];
+
+    while (queue.length) {
+      const name = queue.shift()!;
+
+      if (name === pageName) {
+        return true;
+      }
+
+      if (visited.has(name)) {
+        continue;
+      }
+
+      visited.add(name);
+      const parent = findPageByName(definition.pages, name);
+
+      for (const entry of ([] as PageParentDefinition[]).concat(parent?.parent ?? [])) {
+        queue.push(typeof entry === 'string' ? entry : entry.page);
+      }
+    }
+
+    return false;
+  }
+
+  function checkPages(pages: PageDefinition[], prefix: Prefix): void {
+    for (const [index, page] of pages.entries()) {
+      const pagePath = [...prefix, index];
+      const entries = ([] as PageParentDefinition[]).concat(page.parent ?? []);
+
+      for (const [entryIndex, entry] of entries.entries()) {
+        const parentName = typeof entry === 'string' ? entry : entry.page;
+        const parentPath = Array.isArray(page.parent)
+          ? [...pagePath, 'parent', entryIndex]
+          : [...pagePath, 'parent'];
+
+        if (!findPageByName(definition.pages, parentName)) {
+          report(parentName, 'refers to a page that doesn’t exist', parentPath);
+          continue;
+        }
+
+        if (referencesItself(page.name, parentName)) {
+          report(parentName, 'cyclically references itself', parentPath);
+          continue;
+        }
+
+        if (findPageByName(definition.pages, parentName)?.parameters?.length) {
+          report(
+            parentName,
+            'refers to a page with parameters, which cannot be used as a parent',
+            parentPath,
+          );
+        }
+      }
+
+      if (page.type === 'container') {
+        checkPages(page.pages, [...pagePath, 'pages']);
+      }
+    }
+  }
+
+  checkPages(definition.pages, ['pages']);
 }
 
 function validateMembersSchema(definition: AppDefinition, report: Report): void {
@@ -1492,7 +1565,23 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
     }
   }
 
-  iterApp(definition, { onBlock: checkRoles, onPage: checkRoles });
+  iterApp(definition, {
+    onBlock: checkRoles,
+    onPage(page, path) {
+      checkRoles(page, path);
+
+      for (const [index, entry] of ([] as PageParentDefinition[])
+        .concat(page.parent ?? [])
+        .entries()) {
+        if (typeof entry !== 'string') {
+          checkRoles(
+            entry,
+            Array.isArray(page.parent) ? [...path, 'parent', index] : [...path, 'parent'],
+          );
+        }
+      }
+    },
+  });
 
   const { hideGroupDropdown } = definition.layout ?? {};
   if (Array.isArray(hideGroupDropdown)) {
@@ -2186,6 +2275,7 @@ export async function validateAppDefinition(
     validateLanguage(clonedDefinition, report);
     validateResourceReferences(clonedDefinition, report);
     validateMembersSchema(clonedDefinition, report);
+    validatePageParents(clonedDefinition, report);
     validatePhoneNumberDefinition(clonedDefinition, report);
     validateResourceSchemas(clonedDefinition, report);
     validateSecurity(clonedDefinition, report);
