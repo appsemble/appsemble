@@ -61,6 +61,7 @@ export async function replaceAppSeedResources(ctx: Context): Promise<void> {
     });
     const appAssets = await Asset.findAll({
       attributes: ['id', 'name', 'ResourceId', 'ResourceType'],
+      where: app.demoMode ? { seed: false, ephemeral: true } : {},
       transaction,
     });
     const assets = appAssets.filter(

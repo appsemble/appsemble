@@ -318,6 +318,49 @@ describe('deleteAppSeedResources', () => {
   });
 
   it.each(['id', 'name'])(
+    'preserves the demo when replacement references a hidden asset by %s',
+    async (reference) => {
+      authorizeStudio();
+      const definition = structuredClone(app.definition);
+      definition.resources!.testResource.schema.properties!.photo = {
+        type: 'string',
+        format: 'binary',
+      };
+      await app.update({ definition, demoMode: true });
+      const { Asset, Resource } = await getAppDB(app.id);
+      const product = await Resource.create({
+        type: 'testResource',
+        data: { foo: 'Visible product' },
+        ephemeral: true,
+      });
+      const asset = await Asset.create({ name: 'product-photo', seed: true });
+
+      const response = await request.put(`/api/apps/${app.id}/resources`, {
+        testResource: [{ foo: 'Replacement', photo: reference === 'id' ? asset.id : asset.name }],
+      });
+
+      expect(response.status).toBe(400);
+      expect((await Resource.findByPk(product.id))?.data.foo).toBe('Visible product');
+      expect(await Resource.count()).toBe(1);
+
+      const visibleAsset = await Asset.create({ name: asset.name, ephemeral: true });
+      const replacement = await request.put(`/api/apps/${app.id}/resources`, {
+        testResource: [
+          {
+            foo: 'Replacement',
+            photo: reference === 'id' ? visibleAsset.id : visibleAsset.name,
+          },
+        ],
+      });
+
+      expect(replacement.status).toBe(200);
+      expect((await Resource.findByPk(replacement.data.testResource[0]))?.data.photo).toBe(
+        reference === 'id' ? visibleAsset.id : visibleAsset.name,
+      );
+    },
+  );
+
+  it.each(['id', 'name'])(
     'rejects an asset %s whose owning demo resource will be deleted',
     async (reference) => {
       authorizeStudio();
