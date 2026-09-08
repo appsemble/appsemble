@@ -50,5 +50,12 @@ export async function getOriginalAppAsset(ctx: Context): Promise<void> {
   const stream = await getS3File(bucketName, asset.id);
 
   setAssetHeaders(ctx, asset.mime ?? 'application/octet-stream', filename, stats);
+
+  if (asset.mime?.toLowerCase().split(';', 1)[0].trim() === 'image/svg+xml') {
+    // An inline SVG renders as a document on this origin; sandbox it and block all resource loading
+    // to neutralize scripts and external references in user-uploaded SVGs.
+    ctx.set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; sandbox");
+  }
+
   ctx.body = stream;
 }
