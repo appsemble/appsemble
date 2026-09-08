@@ -264,23 +264,27 @@ async function beforeBulkDestroyHook(
 
     for (const [propertyName, propertyDefinition] of Object.entries(userPropertiesDefinition)) {
       if (!propertyDefinition.reference) {
-        return;
+        continue;
       }
 
+      const deletedIds = resources
+        .filter((resource) => resource.type === propertyDefinition.reference?.resource)
+        .map((resource) => resource.id);
+      if (!deletedIds.length) {
+        continue;
+      }
+      const value = appMember.properties?.[propertyName];
       let updatedValue;
 
       if (propertyDefinition.schema.type === 'integer') {
+        if (!deletedIds.includes(value)) {
+          continue;
+        }
         updatedValue = 0;
       }
 
       if (propertyDefinition.schema.type === 'array') {
-        updatedValue = appMember.properties?.[propertyName].filter(
-          (entry: number) =>
-            !resources
-              .filter((resource) => resource.type === propertyDefinition.reference?.resource)
-              .map((resource) => resource.id)
-              .includes(entry),
-        );
+        updatedValue = value?.filter((entry: number) => !deletedIds.includes(entry));
       }
 
       appMembersToUpdate[appMember.id] = {

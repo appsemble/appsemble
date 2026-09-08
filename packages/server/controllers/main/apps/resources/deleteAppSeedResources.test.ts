@@ -215,6 +215,45 @@ describe('deleteAppSeedResources', () => {
     expect((await Resource.findByPk(product.id))?.data.foo).toBe('Product');
   });
 
+  it('clears only deleted member references and accepts unset optional properties', async () => {
+    authorizeStudio();
+    const definition = structuredClone(app.definition);
+    definition.members = {
+      properties: {
+        label: { schema: { type: 'string' } },
+        favorites: {
+          schema: { type: 'array', items: { type: 'integer' } },
+          reference: { resource: 'testResource' },
+        },
+        selected: { schema: { type: 'integer' }, reference: { resource: 'testResource' } },
+      },
+    };
+    await app.update({ definition });
+    const { AppMember, Resource } = await getAppDB(app.id);
+    const deleted = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'Demo product' },
+      seed: true,
+    });
+    const kept = await Resource.create({ type: 'testResource', data: { foo: 'Saved product' } });
+    const member = await AppMember.create({
+      email: 'staff@example.com',
+      properties: { label: 'Staff', favorites: [deleted.id, kept.id], selected: kept.id },
+    });
+    const newcomer = await AppMember.create({ email: 'new@example.com', properties: {} });
+    const newcomerProperties = structuredClone(newcomer.properties);
+
+    const response = await request.delete(`/api/apps/${app.id}/resources`);
+
+    expect(response.status).toBe(204);
+    expect((await member.reload()).properties).toStrictEqual({
+      label: 'Staff',
+      favorites: [kept.id],
+      selected: kept.id,
+    });
+    expect((await newcomer.reload()).properties).toStrictEqual(newcomerProperties);
+  });
+
   it('replaces a demo with usable references and leaves persistent resources intact', async () => {
     authorizeStudio();
     const definition = structuredClone(app.definition);
