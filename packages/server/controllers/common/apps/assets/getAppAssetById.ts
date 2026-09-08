@@ -115,7 +115,11 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
 
   const bucketName = `app-${appId}`;
 
-  if (sourceAsset.mime?.startsWith('image')) {
+  // SVG is vector XML, not a raster source; a rasterized copy discards the vector, so serve it
+  // unmodified below. Match the media type exactly, ignoring any parameter and case.
+  const isSvg = sourceAsset.mime?.toLowerCase().split(';', 1)[0].trim() === 'image/svg+xml';
+
+  if (sourceAsset.mime?.startsWith('image') && !isSvg) {
     const fullDerivedAssetName = getFullDerivedAssetName(sourceAsset.id);
 
     if (shouldResize) {
@@ -235,5 +239,12 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   const stream = await getS3File(bucketName, sourceAsset.id);
 
   setAssetHeaders(ctx, sourceAsset.mime ?? 'application/octet-stream', sourceFilename, stats);
+
+  if (isSvg) {
+    // An inline SVG renders as a document on this origin; sandbox it and block all resource loading
+    // to neutralize scripts and external references in user-uploaded SVGs.
+    ctx.set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; sandbox");
+  }
+
   ctx.body = stream;
 }
