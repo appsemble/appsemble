@@ -317,6 +317,83 @@ describe('deleteAppSeedResources', () => {
     expect(await Resource.count()).toBe(1);
   });
 
+  it.each(['id', 'name'])(
+    'rejects an asset %s whose owning demo resource will be deleted',
+    async (reference) => {
+      authorizeStudio();
+      const definition = structuredClone(app.definition);
+      definition.resources!.testResource.schema.properties!.photo = {
+        type: 'string',
+        format: 'binary',
+      };
+      await app.update({ definition, demoMode: true });
+      const { Asset, Resource } = await getAppDB(app.id);
+      const product = await Resource.create({
+        type: 'testResource',
+        data: { foo: 'Product' },
+        ephemeral: true,
+      });
+      const asset = await Asset.create({
+        name: 'product-photo',
+        ResourceId: product.id,
+        ResourceType: 'testResource',
+        ephemeral: true,
+      });
+
+      const response = await request.put(`/api/apps/${app.id}/resources`, {
+        testResource: [{ foo: 'Replacement', photo: reference === 'id' ? asset.id : asset.name }],
+      });
+
+      expect(response.status).toBe(400);
+      expect((await Resource.findByPk(product.id))?.data.foo).toBe('Product');
+      expect(await Asset.findByPk(asset.id)).not.toBeNull();
+    },
+  );
+
+  it.each(['asset', 'resource'])('rejects a reference to a cascaded %s', async (reference) => {
+    authorizeStudio();
+    const definition = structuredClone(app.definition);
+    definition.resources!.testResourceNone.schema.properties!.photo = {
+      type: 'string',
+      format: 'binary',
+    };
+    definition.resources!.testResourceNone.schema.properties!.choice = { type: 'integer' };
+    definition.resources!.testResourceNone.references = {
+      choice: { resource: 'testResourceD' },
+    };
+    await app.update({ definition });
+    const { Asset, Resource } = await getAppDB(app.id);
+    const product = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'Product' },
+      seed: true,
+    });
+    const choice = await Resource.create({
+      type: 'testResourceD',
+      data: { bar: 'Saved choice', testResourceId: product.id },
+    });
+    const asset = await Asset.create({
+      name: 'choice-photo',
+      ResourceId: choice.id,
+      ResourceType: choice.type,
+    });
+
+    const response = await request.put(`/api/apps/${app.id}/resources`, {
+      testResourceNone: [
+        {
+          bar: 'Replacement',
+          ...(reference === 'asset' ? { photo: asset.id } : { choice: choice.id }),
+        },
+      ],
+    });
+
+    expect(response.status).toBe(400);
+    expect((await Resource.findByPk(product.id))?.data.foo).toBe('Product');
+    expect((await Resource.findByPk(choice.id))?.data.testResourceId).toBe(product.id);
+    expect(await Asset.findByPk(asset.id)).not.toBeNull();
+    expect(await Resource.count()).toBe(2);
+  });
+
   it('serializes concurrent replacements without mixing their data', async () => {
     authorizeStudio();
     const responses = await Promise.all(
