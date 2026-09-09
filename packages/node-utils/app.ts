@@ -145,6 +145,35 @@ export async function getRemapperContext(
   };
 }
 
+/**
+ * Split a style patch value into the declaration value and its `!important` flag.
+ *
+ * Patch values are written the way they appear in a stylesheet, so they may end in `!important`
+ * and a semicolon. css-tree keeps the important flag separate from the raw value; embedding
+ * `!important` in the value would serialize as `!important!important` on declarations that
+ * already carry the flag.
+ *
+ * @param property The declaration property.
+ * @param value The raw value from `styles.json`.
+ * @returns The value without the trailing semicolon and important flag, and whether it had one.
+ */
+function parseStyleValue(property: string, value: string): { important: boolean; value: string } {
+  const declarationList = parse(`${property}:${value}`, {
+    context: 'declarationList',
+    parseValue: false,
+  });
+  if (declarationList.type !== 'DeclarationList' || declarationList.children.size !== 1) {
+    throw new Error('Style patch value must contain exactly one declaration');
+  }
+
+  const declaration = declarationList.children.first;
+  if (declaration?.type !== 'Declaration' || declaration.value.type !== 'Raw') {
+    throw new Error('Style patch value must be a raw declaration value');
+  }
+
+  return { important: Boolean(declaration.important), value: declaration.value.value };
+}
+
 function replaceStyle(
   stylesheet: CssNode,
   selector: string,
@@ -162,8 +191,13 @@ function replaceStyle(
             return;
           }
           if (declaration.property === property) {
+            const { important, value: patchValue } = parseStyleValue(property, value);
             // eslint-disable-next-line no-param-reassign
-            declaration.value.value = value;
+            declaration.value.value = patchValue;
+            if (important) {
+              // eslint-disable-next-line no-param-reassign
+              declaration.important = true;
+            }
           }
         });
       }
