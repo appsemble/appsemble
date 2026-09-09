@@ -87,10 +87,10 @@ all-ESM, Node >= 24. The current block/package version lives in `packages/cli/pa
 
 ## Changelog
 
-Per block/package `changed/{added,changed,fixed,deprecated,removed,security}/` — add a one-line
-imperative `.md` for any notable change (parsed into the changelog on release). Format: one
-imperative line, no trailing period (e.g. `Add boolean field support`); prettier wraps it. See the
-lint-rule list above for the rest.
+Per block/package `changed/{added,changed,fixed,deprecated,removed,security}/` — add an imperative
+`.md` for any notable change (parsed into the changelog on release). Keep each entry short enough to
+stay on one physical line after formatting, with no trailing period (e.g.
+`Add boolean field support`). See the lint-rule list above for the rest.
 
 ## Migrations (high-risk — read CONTRIBUTING §Migrations first)
 
