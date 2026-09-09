@@ -9,7 +9,7 @@ import {
   uploadAssets,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
-import { literal, Op, type UniqueConstraintError } from 'sequelize';
+import { literal, Op, type Transaction, type UniqueConstraintError } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { App, getAppDB, type Resource } from '../models/index.js';
@@ -27,7 +27,10 @@ export async function createAppResourcesWithAssets({
   preparedAssets,
   resourceType,
   resources,
-}: CreateAppResourcesWithAssetsParams): Promise<ResourceInterface[]> {
+  transaction: publicationTransaction,
+}: CreateAppResourcesWithAssetsParams & { transaction?: Transaction }): Promise<
+  ResourceInterface[]
+> {
   const { Asset, Resource, sequelize } = await getAppDB(app.id!);
   const appMember = await getCurrentAppMember({ context, app });
   const resourceDefinition = getResourceDefinition(app.definition, resourceType);
@@ -40,7 +43,7 @@ export async function createAppResourcesWithAssets({
 
   let createdResources: Resource[] = [];
   try {
-    await sequelize.transaction(async (transaction) => {
+    const createResources = async (transaction: Transaction): Promise<void> => {
       const { enforceOrderingGroupByFields, positioning } = resourceDefinition;
       createdResources = await Resource.bulkCreate(
         await Promise.all(
@@ -138,7 +141,10 @@ export async function createAppResourcesWithAssets({
         }),
         { logging: false, transaction },
       );
-    });
+    };
+    await (publicationTransaction
+      ? createResources(publicationTransaction)
+      : sequelize.transaction(createResources));
   } catch (error) {
     if (preparedAssets.length) {
       await deleteS3Files(
@@ -161,8 +167,15 @@ export async function createAppResourcesWithAssets({
 
   const persistedApp = (await App.findOne({ where: { id: app.id } }))!;
 
-  processReferenceHooks(persistedApp, createdResources[0], 'create', options, context);
-  processHooks(persistedApp, createdResources[0], 'create', options, context);
+  const notify = (): void => {
+    processReferenceHooks(persistedApp, createdResources[0], 'create', options, context);
+    processHooks(persistedApp, createdResources[0], 'create', options, context);
+  };
+  if (publicationTransaction) {
+    publicationTransaction.afterCommit(notify);
+  } else {
+    notify();
+  }
 
   return createdResources.map((resource) => resource.toJSON());
 }

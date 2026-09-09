@@ -18,6 +18,7 @@ import {
   type ModelStatic,
   Op,
   type Order,
+  type Transaction,
   type WhereAttributeHashValue,
   type WhereOptions,
 } from 'sequelize';
@@ -263,6 +264,7 @@ export async function processReferenceTriggers(
   parent: Resource,
   action: 'create' | 'delete' | 'update',
   context: ParameterizedContext<DefaultState, DefaultContext, any>,
+  transaction?: Transaction,
 ): Promise<void> {
   const { Resource } = await getAppDB(app.id);
   const resourceReferences = [];
@@ -288,6 +290,7 @@ export async function processReferenceTriggers(
   const childPromises = resourceReferences.map(async ({ childName, referencedProperty }) => {
     childResources[childName] = await Resource.findAll({
       where: { type: childName, [`data.${referencedProperty}`]: parent.id },
+      transaction,
     });
   });
 
@@ -321,13 +324,16 @@ export async function processReferenceTriggers(
           triggers.map(async (trigger) => {
             switch (trigger.cascade) {
               case 'update':
-                await child.update({
-                  // @ts-expect-error 2464 Computed property must be of type ...
-                  data: { ...child.data, [referencedProperty]: null },
-                });
+                await child.update(
+                  {
+                    // @ts-expect-error 2464 Computed property must be of type ...
+                    data: { ...child.data, [referencedProperty]: null },
+                  },
+                  { transaction },
+                );
                 break;
               case 'delete':
-                await child.destroy();
+                await child.destroy({ transaction });
                 break;
               default:
                 break;
