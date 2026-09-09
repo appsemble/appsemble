@@ -1,4 +1,4 @@
-import type * as monaco from 'monaco-editor/editor';
+import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 
 const languageConfiguration: monaco.languages.LanguageConfiguration = {
   comments: {
