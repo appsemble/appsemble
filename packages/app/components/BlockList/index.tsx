@@ -3,6 +3,7 @@ import { type EventEmitter } from 'events';
 import {
   ActionError,
   type BlockDefinition,
+  hasBreadcrumbsGridArea,
   type PageDefinition,
   type PageLayoutDefinition,
   type Remapper,
@@ -23,6 +24,7 @@ import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { Block } from '../Block/index.js';
+import { Breadcrumbs } from '../Breadcrumbs/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import usePageGridCss, { DEFAULT_BREAKPOINTS } from '../PageGridProvider/index.js';
@@ -41,6 +43,11 @@ interface BlockListProps {
   readonly showDialog: ShowDialogAction;
   readonly showShareDialog: ShowShareDialog;
   readonly pageLayout?: PageLayoutDefinition;
+
+  /**
+   * The name of the addressable sub page these blocks belong to, used as the last breadcrumb.
+   */
+  readonly subPageName?: string;
 }
 
 export function BlockList({
@@ -57,6 +64,7 @@ export function BlockList({
   remap,
   showDialog,
   showShareDialog,
+  subPageName,
 }: BlockListProps): ReactNode {
   const params = useParams();
   const location = useLocation();
@@ -230,6 +238,13 @@ export function BlockList({
     BREAKPOINTS: { ...DEFAULT_BREAKPOINTS, ...appDefinition.layout?.breakpoints },
   });
 
+  // The empty context is what the two-argument call in the default breadcrumbs position resolves to,
+  // so the trail reads the same page context wherever it is placed.
+  const remapCrumb = useCallback(
+    (remapper: Remapper, input: unknown) => remap(remapper, input, {}),
+    [remap],
+  );
+
   if (!blockList.length) {
     if (!isLoggedIn) {
       return <Navigate to={`/Login?${new URLSearchParams({ redirect })}`} />;
@@ -242,6 +257,15 @@ export function BlockList({
 
   return (
     <Wrapper {...wrapperProps}>
+      {gridClassName && hasBreadcrumbsGridArea(pageLayout) ? (
+        <Breadcrumbs
+          data={data}
+          inGrid
+          pageDefinition={pageDefinition}
+          remap={remapCrumb}
+          subPageName={subPageName}
+        />
+      ) : null}
       {isLoading ? <Loader /> : null}
       {blockList.map(([block, index, visible]) =>
         visible ? (

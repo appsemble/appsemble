@@ -1,4 +1,5 @@
 import {
+  defaultGridLayout,
   type GridLayoutDefinition,
   type PageLayoutDefinition,
   type ResponsiveGridLayoutDefinition,
@@ -19,17 +20,12 @@ const DEFAULT_SPACING = {
   padding: 1,
 };
 
-const DEFAULT_LAYOUT = {
-  columns: 1,
-  template: ['main'],
-};
-
 const DEVICE_ORDER: DeviceName[] = ['mobile', 'tablet', 'desktop'];
 
 export function useGridCss({
   BREAKPOINTS,
   classNamePrefix,
-  defaultLayout = DEFAULT_LAYOUT,
+  defaultLayout = defaultGridLayout,
   layout,
   spacingProperty,
 }: {

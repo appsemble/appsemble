@@ -99,7 +99,8 @@ rendered as side navigation.
       default: false,
       description: `Whether to display a breadcrumb trail below the title bar.
 
-The trail is built from the \`parent\` of each page.
+The trail is built from the \`parent\` of each page. A grid layout that names a \`breadcrumbs\`
+template area renders the trail in that area instead.
 `,
     },
     hideTitleBar: {

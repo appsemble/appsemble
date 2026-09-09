@@ -5,6 +5,7 @@ import {
   getPageDisplayName,
   getPagePathSegment,
   normalize,
+  pageHasBreadcrumbsGridArea,
   remap,
   type PageDefinition,
   type Remapper,
@@ -395,7 +396,11 @@ export function Page(): ReactNode {
         data-path-index={prefixIndex}
       >
         <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
-        <Breadcrumbs data={data} pageDefinition={pageDefinition} remap={remapWithContext} />
+        {/* A grid layout that names a breadcrumbs area renders the trail there, and a tabs page
+            renders its own trail so it can name the active tab as the last crumb. */}
+        {pageDefinition.type === 'tabs' || pageHasBreadcrumbsGridArea(pageDefinition) ? null : (
+          <Breadcrumbs data={data} pageDefinition={pageDefinition} remap={remapWithContext} />
+        )}
         {pageDefinition.type === 'tabs' ? (
           <TabsPage
             appStorage={appStorage.current}

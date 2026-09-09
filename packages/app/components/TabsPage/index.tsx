@@ -1,6 +1,8 @@
 import {
   normalize,
   type PageDefinition,
+  pageHasBreadcrumbsGridArea,
+  type Remapper,
   type RemapperContext,
   type SubPageDefinition,
   type TabsPageDefinition,
@@ -27,6 +29,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { type BlockList } from '../BlockList/index.js';
+import { Breadcrumbs } from '../Breadcrumbs/index.js';
 
 interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
   readonly pageDefinition: TabsPageDefinition;
@@ -148,7 +151,7 @@ export function TabsPage({
     });
     const callback = (d: any): void => {
       // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-      const { blocks, name } = pageDefinition.definition.foreach;
+      const { blocks, layout, name } = pageDefinition.definition.foreach;
       function createTabs(): SubPageDefinition[] {
         const newTabs: SubPageDefinition[] = [];
         for (const [i, resourceData] of d.entries()) {
@@ -160,6 +163,7 @@ export function TabsPage({
             const newTab: SubPageDefinition = {
               name: typeof name === 'string' ? `${name}${i}` : remappedName || `Generated Tab ${i}`,
               blocks,
+              layout,
             };
             newTabs.push(newTab);
           }
@@ -178,15 +182,52 @@ export function TabsPage({
 
   const onChange = useCallback((event: unknown, value: string) => navigate(value), [navigate]);
 
+  // The empty context is what the two-argument call in `Page` resolves to, so the breadcrumb trail
+  // reads the same page context wherever it is placed.
+  const remapCrumb = useCallback(
+    (remapper: Remapper, input: unknown) => remap(remapper, input, {}),
+    [remap],
+  );
+
   const pageName = getAppMessage({
     id: prefix,
     defaultMessage: pageDefinition.name,
   }).format() as string;
 
+  const pageTabs = pageDefinition.tabs ?? createdTabs;
+
+  /**
+   * Resolve the name a tab is known by.
+   *
+   * @param tab The tab to name.
+   * @param index The position of the tab, which identifies its translation.
+   * @returns The name the tab is identified by in the app messages, and the translated name it is
+   *   addressed by in the URL.
+   */
+  const getTabNames = (tab: SubPageDefinition, index: number): [string, string] => {
+    const defaultMessage =
+      typeof tab.name === 'string' ? tab.name : String(remap(tab.name, data, remapperContext));
+    const translatedName = createdTabs.length
+      ? defaultMessage
+      : (getAppMessage({ id: `${prefix}.tabs.${index}`, defaultMessage }).format() as string);
+    return [defaultMessage, translatedName];
+  };
+
+  const activeTabName = pageTabs
+    .map((tab, index) => getTabNames(tab, index)[1])
+    .find((tabName) => normalize(tabName) === wildcard?.split('/')[0]);
+
   if (tabsWithPermissions.length) {
-    const pageTabs = pageDefinition.tabs ?? createdTabs;
     return (
       <>
+        {pageHasBreadcrumbsGridArea(pageDefinition) ? null : (
+          <Breadcrumbs
+            data={data}
+            pageDefinition={pageDefinition}
+            remap={remapCrumb}
+            subPageName={activeTabName}
+          />
+        )}
         <Tabs centered onChange={onChange} size="medium" value={pathname}>
           {pageTabs.map((tab, index) => {
             const defaultMessage = remap(tab.name, data, remapperContext);
@@ -209,15 +250,9 @@ export function TabsPage({
           })}
         </Tabs>
         <MetaSwitch title={pageName}>
-          {pageTabs.map(({ blocks, layout, name, roles }, index) => {
-            const defaultMessage =
-              typeof name === 'string' ? name : String(remap(name, data, remapperContext));
-            const translatedName = createdTabs.length
-              ? defaultMessage
-              : (getAppMessage({
-                  id: `${prefix}.tabs.${index}`,
-                  defaultMessage,
-                }).format() as string);
+          {pageTabs.map((tab, index) => {
+            const { blocks, layout, name, roles } = tab;
+            const [defaultMessage, translatedName] = getTabNames(tab, index);
 
             return (
               <Route
