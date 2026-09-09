@@ -10,6 +10,7 @@ import {
   authenticate,
   logger,
   opendirSafe,
+  preProcessCSV,
   readData,
   writeData,
 } from '@appsemble/node-utils';
@@ -33,9 +34,11 @@ import {
 } from '@appsemble/types';
 import { extractAppMessages, has } from '@appsemble/utils';
 import axios from 'axios';
+import csv from 'csvtojson';
 import { type BuildResult } from 'esbuild';
 import fg from 'fast-glob';
 import FormData from 'form-data';
+import { Validator } from 'jsonschema';
 import normalizePath from 'normalize-path';
 
 import { publishAsset } from './asset.js';
@@ -45,7 +48,6 @@ import { getProjectBuildConfig } from './config.js';
 import { printAxiosError } from './output.js';
 import { processCss } from './processCss.js';
 import { buildProject, makeProjectPayload } from './project.js';
-import { publishResourcesRecursively, type ResourceToPublish } from './resource.js';
 
 /**
  * Traverses an app directory and appends the files it finds to the given FormData object.
@@ -380,57 +382,67 @@ export async function publishSeedResources(path: string, app: App, remote: strin
   const resourcesPath = join(path, 'resources');
   logger.info(`Publishing seed resources from ${resourcesPath}`);
 
-  if (existsSync(resourcesPath)) {
-    logger.info(`Deleting existing seed resources from app ${app.id}`);
-
-    try {
-      await axios.delete(`/api/apps/${app.id}/resources`, { baseURL: remote });
-
-      const resourceFiles = await readdir(resourcesPath, { withFileTypes: true });
-      const resourcesToPublish: ResourceToPublish[] = [];
-      const publishedResourcesIds: Record<string, number[]> = {};
-
-      for (const resource of resourceFiles) {
-        if (resource.isFile()) {
-          const { name } = parse(resource.name);
-          resourcesToPublish.push({
-            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-            appId: app.id,
-            path: join(resourcesPath, resource.name),
-            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-            definition: app.definition.resources?.[name],
-            type: name,
-          });
-        } else if (resource.isDirectory()) {
-          const subDirectoryResources = await readdir(join(resourcesPath, resource.name), {
-            withFileTypes: true,
-          });
-
-          for (const subResource of subDirectoryResources.filter((s) => s.isFile())) {
-            resourcesToPublish.push({
-              // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-              appId: app.id,
-              path: join(resourcesPath, resource.name, subResource.name),
-              // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-              definition: app.definition.resources?.[resource.name],
-              type: resource.name,
-            });
-          }
-        }
-      }
-
-      await publishResourcesRecursively({
-        seed: true,
-        remote,
-        resourcesToPublish,
-        publishedResourcesIds,
-      });
-    } catch (error: unknown) {
-      logger.error('Something went wrong when publishing seed resources:');
-      logger.error(error);
-    }
-  } else {
+  if (!existsSync(resourcesPath)) {
     logger.warn(`Missing resources directory in ${path}. Skipping...`);
+    return;
+  }
+
+  const batch: Record<string, Record<string, unknown>[]> = {};
+  const resourceFiles = await readdir(resourcesPath, { withFileTypes: true });
+  for (const resource of resourceFiles) {
+    const type = resource.isDirectory() ? resource.name : parse(resource.name).name;
+    const definition = app.definition.resources?.[type];
+    if (!definition) {
+      throw new AppsembleError(`Unknown resource type: ${type}`);
+    }
+    const paths = resource.isDirectory()
+      ? (await readdir(join(resourcesPath, resource.name), { withFileTypes: true }))
+          .filter((entry) => entry.isFile())
+          .map((entry) => join(resourcesPath, resource.name, entry.name))
+      : [join(resourcesPath, resource.name)];
+    batch[type] ??= [];
+    for (const resourcePath of paths) {
+      const [file] = resourcePath.endsWith('.csv')
+        ? [await csv({ checkType: false }).fromFile(resourcePath)]
+        : await readData<Record<string, unknown> | Record<string, unknown>[]>(resourcePath);
+      const resources = Array.isArray(file) ? file : [file];
+      if (resources.some((value) => !value || typeof value !== 'object' || Array.isArray(value))) {
+        throw new AppsembleError(
+          `File at ${resourcePath} does not contain an object or array of objects`,
+        );
+      }
+      if (resourcePath.endsWith('.csv')) {
+        new Validator().validate(
+          resources,
+          {
+            type: 'array',
+            items: {
+              ...definition.schema,
+              properties: {
+                ...definition.schema.properties,
+                ...Object.fromEntries(
+                  Object.values(definition.references ?? {}).map(({ resource: referencedType }) => [
+                    `$${referencedType}`,
+                    { type: 'integer' },
+                  ]),
+                ),
+              },
+            },
+          },
+          { preValidateProperty: preProcessCSV },
+        );
+      }
+      batch[type].push(...resources);
+    }
+  }
+
+  const { data } = await axios.put<Record<string, number[]>>(
+    `/api/apps/${app.id}/resources`,
+    batch,
+    { baseURL: remote },
+  );
+  for (const [type, ids] of Object.entries(data)) {
+    logger.info(`Successfully published ${ids.length} ${type} seed resource(s)`);
   }
 }
 

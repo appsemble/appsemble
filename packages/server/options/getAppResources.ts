@@ -1,5 +1,6 @@
 import { type GetAppResourcesParams } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
+import { type Transaction } from 'sequelize';
 
 import { getAppDB } from '../models/index.js';
 import { mapKeysRecursively } from '../utils/sequelize.js';
@@ -7,11 +8,13 @@ import { mapKeysRecursively } from '../utils/sequelize.js';
 export async function getAppResources({
   app,
   findOptions,
-}: GetAppResourcesParams): Promise<ResourceInterface[]> {
+  transaction,
+}: GetAppResourcesParams & { transaction?: Transaction }): Promise<ResourceInterface[]> {
   const { attributes, ...clearOptions } = findOptions;
   const { Resource } = await getAppDB(app.id!);
   const resources = await Resource.findAll({
     ...clearOptions,
+    transaction,
     where: mapKeysRecursively(clearOptions.where),
     include: [
       { association: 'Author', attributes: ['id', 'name'], required: false },
