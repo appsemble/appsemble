@@ -8,7 +8,7 @@ import {
 } from '@appsemble/lang-sdk';
 import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
@@ -62,6 +62,7 @@ export function Breadcrumbs({
   const { getAppMessage } = useAppMessages();
   const { formatMessage } = useIntl();
   const { lang } = useParams<{ lang: string }>();
+  const { pathname } = useLocation();
 
   if (!definition.layout?.breadcrumbs) {
     return null;
@@ -101,7 +102,11 @@ export function Breadcrumbs({
             {page.type === 'container' ? (
               <span>{getLabel(page, input)}</span>
             ) : (
-              <Link to={`/${lang}/${getPagePathSegment(page)}`}>{getLabel(page, input)}</Link>
+              <Link
+                to={page === pageDefinition ? pathname : `/${lang}/${getPagePathSegment(page)}`}
+              >
+                {getLabel(page, input)}
+              </Link>
             )}
           </li>
         ))}

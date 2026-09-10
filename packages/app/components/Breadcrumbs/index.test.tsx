@@ -186,6 +186,29 @@ describe('Breadcrumbs', () => {
     expect(screen.queryByText('Lot Details')).toBeNull();
   });
 
+  it('should preserve route parameters in the current tabs page link', () => {
+    const page = {
+      name: 'Lot Details',
+      type: 'tabs',
+      parent: 'Available Lots',
+      parameters: ['lotId', 'documentId'],
+      tabs: [{ name: 'Documents', blocks: [] }],
+    } as PageDefinition;
+    mockApp(createAppDefinition([...hierarchy.slice(0, 2), page]));
+
+    renderBreadcrumbs(page, {
+      path: '/en/lot-details/documents/42/annual%20report',
+      subPageName: 'Documents',
+    });
+
+    expect(screen.getByRole('link', { name: 'Lot Details' }).getAttribute('href')).toBe(
+      '/en/lot-details/documents/42/annual%20report',
+    );
+    expect(screen.getByRole('link', { name: 'Available Lots' }).getAttribute('href')).toBe(
+      '/en/available-lots',
+    );
+  });
+
   it('should render nothing on a page that has no ancestors', () => {
     renderBreadcrumbs(hierarchy[0], { path: '/en/home' });
 

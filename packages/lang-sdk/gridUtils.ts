@@ -79,9 +79,9 @@ export function getPageGridLayouts(page: PageDefinition): (PageLayoutDefinition 
     case 'flow':
       return page.steps.map((step) => step.layout);
     case 'loop':
-      return [page.start, page.foreach, page.end]
-        .filter((subPage) => subPage != null)
-        .map((subPage) => subPage.layout);
+      return [page.start, page.foreach, page.end].flatMap((subPage) =>
+        subPage ? [subPage.layout] : [],
+      );
     case 'tabs':
       return page.tabs
         ? page.tabs.map((tab) => tab.layout)
