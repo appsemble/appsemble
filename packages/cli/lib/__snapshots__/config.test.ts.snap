@@ -2362,7 +2362,8 @@ exports[`config > getProjectImplementations > official blocks > form 1`] = `
       "change": {
         "description": "This event is emitted every time a change is made to the form.
 
-The data received in the entire form data.",
+The payload contains \`values\` with the entire form data and \`lastChanged\` with the name of
+the field edited by the user. External data and field updates set \`lastChanged\` to \`null\`.",
       },
     },
     "listen": {
@@ -4863,10 +4864,13 @@ If \`multiline\` is set to true, this is ignored",
             "format": "remapper",
           },
           "format": {
-            "description": "The format to use for validation.",
+            "description": "The native input format to use for validation.
+
+The \`time\` format represents local time as an \`HH:mm\` string.",
             "enum": [
               "email",
               "password",
+              "time",
               "url",
             ],
             "type": "string",
