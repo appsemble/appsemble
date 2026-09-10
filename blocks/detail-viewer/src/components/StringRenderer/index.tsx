@@ -17,7 +17,7 @@ export function StringRenderer({ data, field }: RendererProps<StringField>): VNo
   return hide ? null : (
     <div className="appsemble-string mb-5">
       {isPreactChild(label) ? <h6 className="title is-6 mb-0">{label}</h6> : null}
-      {value ? (
+      {value != null && value !== '' ? (
         <>
           {field.icon ? <Icon icon={field.icon} /> : null}
           <div className="content">{typeof value === 'string' ? value : JSON.stringify(value)}</div>
