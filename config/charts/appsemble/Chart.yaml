@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.38.1
-appVersion: 0.38.1
+version: 0.38.2-test.0
+appVersion: 0.38.2-test.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -36,29 +36,8 @@ dependencies:
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "Server: Support the organizations:delete client credentials scope
-        on organization deletion."
-    - kind: changed
-      description: "Server: Serve SVG app assets unmodified and sandboxed against
-        embedded scripts."
     - kind: fixed
-      description: "App: Keep a tabs page from re-running its onLoad action and
-        re-emitting the tab list on every tab switch."
-    - kind: fixed
-      description: "Cli: Publish seed resources atomically and report replacement failures."
-    - kind: fixed
-      description: "Cli: Upload app screenshots directly instead of copying them to a
-        temporary file in the app directory."
-    - kind: fixed
-      description: "Lang-sdk: Support loop grid layouts during block schema generation."
-    - kind: fixed
-      description: "Node-utils: Handle !important correctly in app variant style patches."
-    - kind: fixed
-      description: "Server: Replace seed resources transactionally and serialize
-        concurrent seed deletion."
-    - kind: fixed
-      description: "Server: Support HEIC image assets in the Debian Docker image."
+      description: "Server: Start app exports before reading assets from storage."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
