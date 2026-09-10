@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.38.1](https://gitlab.com/appsemble/appsemble/-/releases/0.38.1)] - 2026-09-10
+
+### Added
+
+- Server: Support the `organizations:delete` client credentials scope on organization deletion.
+
+### Changed
+
+- Server: Serve SVG app assets unmodified and sandboxed against embedded scripts.
+
+### Fixed
+
+- App: Keep a tabs page from re-running its onLoad action and re-emitting the tab list on every tab
+  switch.
+- Cli: Publish seed resources atomically and report replacement failures.
+- Cli: Upload app screenshots directly instead of copying them to a temporary file in the app
+  directory.
+- Lang-sdk: Support loop grid layouts during block schema generation.
+- Node-utils: Handle `!important` correctly in app variant style patches.
+- Server: Replace seed resources transactionally and serialize concurrent seed deletion.
+- Server: Support HEIC image assets in the Debian Docker image.
+
 ## \[[0.38.0](https://gitlab.com/appsemble/appsemble/-/releases/0.38.0)] - 2026-09-03
 
 ### Added
