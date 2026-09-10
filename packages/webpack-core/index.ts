@@ -90,9 +90,6 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
         '.cjs': ['.cjs', '.cts'],
         '.mjs': ['.mjs', '.mts'],
       },
-      alias: {
-        'monaco-editor/esm/vs/editor/editor.worker.js$': 'monaco-editor/editor/editor.worker',
-      },
       fallback: {
         path: false,
       },

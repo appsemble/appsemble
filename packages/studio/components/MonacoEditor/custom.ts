@@ -1,29 +1,24 @@
 import { schemas } from '@appsemble/lang-sdk';
 import { mapValues } from '@appsemble/utils';
 import { type Schema } from 'jsonschema';
-import * as monaco from 'monaco-editor/editor';
-import 'monaco-editor/features/colorPicker/register';
-import 'monaco-editor/features/comment/register';
-import 'monaco-editor/features/contextmenu/register';
-import 'monaco-editor/features/find/register';
-import 'monaco-editor/features/folding/register';
-import 'monaco-editor/features/format/register';
-import 'monaco-editor/features/hover/register';
-import 'monaco-editor/features/inlineCompletions/register';
-import 'monaco-editor/features/quickCommand/register';
-import {
-  cssDefaults,
-  lessDefaults,
-  type Options as CSSOptions,
-  scssDefaults,
-} from 'monaco-editor/languages/features/css/register';
-import 'monaco-editor/languages/features/json/register';
-import { configureMonacoYaml, type JSONSchema } from 'monaco-yaml';
+import 'monaco-editor/esm/vs/editor/contrib/colorPicker/browser/colorContributions.js';
+import 'monaco-editor/esm/vs/editor/contrib/comment/browser/comment.js';
+import 'monaco-editor/esm/vs/editor/contrib/contextmenu/browser/contextmenu.js';
+import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController.js';
+import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding.js';
+import 'monaco-editor/esm/vs/editor/contrib/format/browser/formatActions.js';
+import 'monaco-editor/esm/vs/editor/contrib/hover/browser/hover.js';
+import 'monaco-editor/esm/vs/editor/contrib/inlineCompletions/browser/inlineCompletions.contribution.js';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js';
+import 'monaco-editor/esm/vs/language/css/monaco.contribution.js';
+import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
+import { configureMonacoYaml } from 'monaco-yaml';
 
 import { appValidationLabel } from './appValidation/index.js';
 import './languages.js';
 
-const cssData: CSSOptions = {
+const cssData: monaco.languages.css.Options = {
   validate: true,
   lint: {
     compatibleVendorPrefixes: 'ignore',
@@ -70,9 +65,9 @@ const cssData: CSSOptions = {
   },
 };
 
-cssDefaults.setOptions(cssData);
-scssDefaults.setOptions(cssData);
-lessDefaults.setOptions(cssData);
+monaco.languages.css.cssDefaults.setOptions(cssData);
+monaco.languages.css.scssDefaults.setOptions(cssData);
+monaco.languages.css.lessDefaults.setOptions(cssData);
 
 window.MonacoEnvironment = {
   getWorker(workerId, label) {
@@ -80,14 +75,12 @@ window.MonacoEnvironment = {
       case appValidationLabel:
         return new Worker(new URL('appValidation/worker', import.meta.url));
       case 'css':
-        return new Worker(
-          new URL('monaco-editor/languages/features/css/css.worker', import.meta.url),
-        );
+        return new Worker(new URL('monaco-editor/esm/vs/language/css/css.worker', import.meta.url));
       case 'editorWorkerService':
-        return new Worker(new URL('monaco-editor/editor/editor.worker', import.meta.url));
+        return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url));
       case 'json':
         return new Worker(
-          new URL('monaco-editor/languages/features/json/json.worker', import.meta.url),
+          new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url),
         );
       case 'yaml':
         return new Worker(new URL('monaco-yaml/yaml.worker', import.meta.url));
@@ -98,44 +91,45 @@ window.MonacoEnvironment = {
 };
 
 /**
- * Normalize an OpenAPI schema for the Monaco YAML JSON Schema validator.
+ * Create a deep clone of a JSON schema with `markdownDescriptions` set to the description.
  *
  * @param schema The schema to process.
- * @returns The normalized schema with markdown descriptions.
+ * @returns The schema with a markdown description.
  */
-function normalizeSchema(schema: Schema): JSONSchema {
-  function normalizeValue(value: unknown): unknown {
-    if (Array.isArray(value)) {
-      return value.map(normalizeValue);
-    }
-    if (value && typeof value === 'object') {
-      const result = mapValues(value as Record<string, unknown>, normalizeValue);
-      if (typeof result.$ref === 'string' && result.$ref.startsWith('#/components/schemas/')) {
-        result.$ref = result.$ref.replace('#/components/schemas/', '#/definitions/');
-      }
-      if (typeof result.description === 'string') {
-        result.markdownDescription = result.description;
-      }
-      return result;
-    }
-    return value;
+function addMarkdownDescriptions(schema: Schema): Schema {
+  const result = { ...schema } as Schema & { markdownDescription?: string };
+  if (result.properties) {
+    result.properties = mapValues(result.properties, addMarkdownDescriptions);
   }
-
-  return normalizeValue(schema) as JSONSchema;
+  if (result.patternProperties) {
+    result.patternProperties = mapValues(result.patternProperties, addMarkdownDescriptions);
+  }
+  if (typeof result.additionalProperties === 'object') {
+    result.additionalProperties = addMarkdownDescriptions(result.additionalProperties);
+  }
+  if (Array.isArray(result.items)) {
+    result.items = result.items.map(addMarkdownDescriptions);
+  } else if (result.items && typeof result.items === 'object') {
+    result.items = addMarkdownDescriptions(result.items);
+  }
+  result.markdownDescription = result.description;
+  return result;
 }
 
-configureMonacoYaml(monaco as unknown as Parameters<typeof configureMonacoYaml>[0], {
+configureMonacoYaml(monaco, {
   completion: true,
   validate: true,
-  format: { enable: true },
+  format: true,
   enableSchemaRequest: false,
   schemas: [
     {
       uri: String(new URL('/docs/reference', window.location.origin)),
       fileMatch: ['app.yaml'],
       schema: {
-        $ref: '#/definitions/AppDefinition',
-        definitions: mapValues(schemas, normalizeSchema),
+        $ref: '#/components/schemas/AppDefinition',
+        components: {
+          schemas: mapValues(schemas, addMarkdownDescriptions),
+        },
       },
     },
   ],
