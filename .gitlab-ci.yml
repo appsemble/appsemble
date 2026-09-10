@@ -222,10 +222,13 @@ build docker image:
       -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
       --cache-from "type=registry,ref=$CACHE_IMAGE"
       --cache-from "type=registry,ref=$CI_REGISTRY_IMAGE/cache:main"
-      --cache-to "type=registry,ref=$CACHE_IMAGE,mode=min"
+      --cache-to "type=registry,ref=$CACHE_IMAGE,mode=max"
       --build-arg "version=$CI_COMMIT_REF_NAME"
       --build-arg "date=$CI_JOB_STARTED_AT"
       --load .
+    - docker run --rm --entrypoint node
+      --mount "type=bind,source=$CI_PROJECT_DIR/config,target=/app/config,readonly"
+      "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --test config/bin/check-image-formats.mjs
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
     # Extract dist/ from the built image for sourcemap uploads to Sentry
     - mkdir -p dist
