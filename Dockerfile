@@ -123,7 +123,7 @@ ENTRYPOINT ["appsemble-server"]
 CMD ["start"]
 HEALTHCHECK CMD ["appsemble-server", "health"]
 EXPOSE 9999
-ARG version=0.38.0
+ARG version=0.38.1
 ARG date
 LABEL io.artifacthub.package.alternative-locations="registry.gitlab.com/appsemble/appsemble:${version}"
 LABEL io.artifacthub.package.keywords="app,apps,appsemble,framework,low-code,lowcode"

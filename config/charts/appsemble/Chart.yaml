@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.38.0
-appVersion: 0.38.0
+version: 0.38.1
+appVersion: 0.38.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -37,46 +37,28 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(pdf-viewer): Add url property to load files from assets or
-        directly from a source."
-    - kind: added
-      description: "App: Add start and end pages to loop pages."
-    - kind: added
-      description: "App: Add configurable grid breakpoints via layout.breakpoints."
-    - kind: added
-      description: "App: Add responsive navbar grid layouts."
-    - kind: added
-      description: "App: Use CSS custom properties as responsive grid spacing units."
-    - kind: added
-      description: "Cli: Warn when the server version does not match the CLI version."
-    - kind: added
-      description: "Lang-sdk: Add layout.breakpoints to configure responsive grid breakpoints."
-    - kind: added
-      description: "Lang-sdk: Add responsive navbar grid layout definitions."
-    - kind: added
-      description: "Lang-sdk: Allow CSS custom properties as responsive grid spacing units."
-    - kind: added
-      description: "Server: Reject an app update when existing resources would no
-        longer satisfy a changed resource schema, or when a resource type with data
-        is removed from the app."
-    - kind: added
-      description: "Server: Support HEAD requests to the API root."
+      description: "Server: Support the organizations:delete client credentials scope
+        on organization deletion."
     - kind: changed
-      description: "Block(form): Load the markdown editor only when a form contains a
-        markdown field."
-    - kind: changed
-      description: "App: Check the Appsemble version using a HEAD request."
+      description: "Server: Serve SVG app assets unmodified and sandboxed against
+        embedded scripts."
     - kind: fixed
-      description: "Block(form): Allow selecting the exact minimum and maximum dates
-        in date fields."
+      description: "App: Keep a tabs page from re-running its onLoad action and
+        re-emitting the tab list on every tab switch."
     - kind: fixed
-      description: "App: Keep the app navigation layout on pages listed under the
-        profile dropdown."
+      description: "Cli: Publish seed resources atomically and report replacement failures."
     - kind: fixed
-      description: "App: Prevent session restoration while logging out."
+      description: "Cli: Upload app screenshots directly instead of copying them to a
+        temporary file in the app directory."
     - kind: fixed
-      description: "Cli: Bound server version checks and fall back to GET for servers
-        without HEAD support."
+      description: "Lang-sdk: Support loop grid layouts during block schema generation."
+    - kind: fixed
+      description: "Node-utils: Handle !important correctly in app variant style patches."
+    - kind: fixed
+      description: "Server: Replace seed resources transactionally and serialize
+        concurrent seed deletion."
+    - kind: fixed
+      description: "Server: Support HEIC image assets in the Debian Docker image."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
