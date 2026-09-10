@@ -10,8 +10,12 @@
   "removeFile": "",
   "resetLocation": "",
   "search": "",
+  "selectionAdd": "",
+  "selectionClose": "",
   "selectionNoOptions": "",
   "selectionOptionsError": "",
+  "selectionRemove": "",
+  "selectionSelected": "",
   "submitError": "",
   "submitLabel": ""
 }

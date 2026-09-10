@@ -10,8 +10,12 @@
   "removeFile": "Bestand verwijderen",
   "resetLocation": "Huidige locatie gebruiken",
   "search": "Zoeken",
+  "selectionAdd": "{option} toevoegen",
+  "selectionClose": "Selectie sluiten",
   "selectionNoOptions": "Er zijn geen opties meer beschikbaar",
   "selectionOptionsError": "Er is een fout opgetreden bij het laden van de opties",
+  "selectionRemove": "{option} verwijderen",
+  "selectionSelected": "{option} geselecteerd",
   "submitError": "Er is een probleem opgetreden bij het verzenden van dit formulier",
   "submitLabel": "Verzenden"
 }

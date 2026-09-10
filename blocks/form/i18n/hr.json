@@ -10,8 +10,12 @@
   "removeFile": "",
   "resetLocation": "",
   "search": "Pretraži",
+  "selectionAdd": "Dodaj {option}",
+  "selectionClose": "Zatvori odabir",
   "selectionNoOptions": "Nema daljnjih opcija",
   "selectionOptionsError": "Došlo je do pogreške pri učitavanju opcija",
+  "selectionRemove": "Ukloni {option}",
+  "selectionSelected": "Odabrano: {option}",
   "submitError": "Došlo je do problema pri slanju ovog obrasca",
   "submitLabel": "Pošalji"
 }
