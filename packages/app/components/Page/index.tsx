@@ -297,6 +297,9 @@ export function Page(): ReactNode {
     ],
   );
 
+  const [loadedActions, setLoadedActions] = useState<typeof actions>();
+  const dataReady = actions.onLoad.type === 'noop' || loadedActions === actions;
+
   useEffect(() => {
     if (!pageDefinition) {
       return;
@@ -316,11 +319,15 @@ export function Page(): ReactNode {
   );
 
   useEffect(() => {
+    let active = true;
     if (actions.onLoad.type !== 'noop') {
       actions
         .onLoad()
         .then((results) => {
-          setData(results);
+          if (active) {
+            setData(results);
+            setLoadedActions(actions);
+          }
         })
         .catch((error: unknown) => {
           if (!isActionOwnerAbortError(error)) {
@@ -328,6 +335,9 @@ export function Page(): ReactNode {
           }
         });
     }
+    return () => {
+      active = false;
+    };
   }, [setData, actions]);
 
   const checkPagePermissionsCallback = useCallback(
@@ -405,6 +415,7 @@ export function Page(): ReactNode {
           <TabsPage
             appStorage={appStorage.current}
             data={data}
+            dataReady={dataReady}
             ee={ee.current}
             key={prefix}
             pageDefinition={pageDefinition}
@@ -427,6 +438,7 @@ export function Page(): ReactNode {
                     appDefinition={appDefinition}
                     appStorage={appStorage.current}
                     data={data}
+                    dataReady={dataReady}
                     ee={ee.current}
                     key={prefix}
                     pageDefinition={pageDefinition}
@@ -461,6 +473,7 @@ export function Page(): ReactNode {
                     appStorage={appStorage.current}
                     blocks={pageDefinition.blocks}
                     data={data}
+                    dataReady={dataReady}
                     ee={ee.current}
                     key={prefix}
                     pageDefinition={pageDefinition}
