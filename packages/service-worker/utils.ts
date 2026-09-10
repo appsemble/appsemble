@@ -5,12 +5,8 @@ async function put(
   response: Response,
   fallback: () => Promisable<Response>,
 ): Promise<Response> {
-  // Only cache responses if the status code is 2xx
-  // or if the status is 0 due to cors and the destination is an image
-  if (
-    response.type !== 'opaque' &&
-    (response.ok || (response.status === 0 && request.destination === 'image'))
-  ) {
+  // Cache successful responses and opaque image responses.
+  if (response.ok || (response.type === 'opaque' && request.destination === 'image')) {
     const cache = await caches.open('appsemble');
     cache.put(request, response.clone());
     return response;

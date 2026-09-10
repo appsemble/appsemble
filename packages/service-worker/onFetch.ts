@@ -40,6 +40,12 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
+  // App startup data may be served by a separate API origin.
+  if (/^\/api\/apps\/\d+\/(messages(?:\/|$)|variables$)/.test(pathname)) {
+    event.respondWith(requestFirst(request));
+    return;
+  }
+
   // This is an unhandled request to an external service or the Appsemble API. This should not be
   // cached.
   if (origin !== globalThis.location.origin) {
@@ -60,12 +66,6 @@ export function onFetch(event: FetchEvent): void {
   // Block version requests are immutable and should be cached.
   if (/^\/api\/blocks\/@(?:[\da-z-]+\/){2}versions\//.test(pathname)) {
     event.respondWith(cacheFirst(request));
-    return;
-  }
-
-  // Cache app messages
-  if (/^\/api\/apps\/\d+\/messages/.test(pathname)) {
-    event.respondWith(requestFirst(request));
     return;
   }
 
