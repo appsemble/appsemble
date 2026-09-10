@@ -5,6 +5,7 @@ import {
   getPageDisplayName,
   getPagePathSegment,
   normalize,
+  pageHasBreadcrumbsGridArea,
   remap,
   type PageDefinition,
   type Remapper,
@@ -44,6 +45,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
+import { Breadcrumbs } from '../Breadcrumbs/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { FlowPage } from '../FlowPage/index.js';
 import { usePage } from '../MenuProvider/index.js';
@@ -394,6 +396,11 @@ export function Page(): ReactNode {
         data-path-index={prefixIndex}
       >
         <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
+        {/* A grid layout that names a breadcrumbs area renders the trail there, and a tabs page
+            renders its own trail so it can name the active tab as the last crumb. */}
+        {pageDefinition.type === 'tabs' || pageHasBreadcrumbsGridArea(pageDefinition) ? null : (
+          <Breadcrumbs data={data} pageDefinition={pageDefinition} remap={remapWithContext} />
+        )}
         {pageDefinition.type === 'tabs' ? (
           <TabsPage
             appStorage={appStorage.current}

@@ -13,6 +13,12 @@ import { BlockParamInstanceValidator } from './BasicValidator.js';
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { partialNormalized } from './constants/index.js';
 import { findPageByName } from './findPageByName.js';
+import {
+  breadcrumbsGridArea,
+  getCascadedGridTemplateAreas,
+  getGridTemplateAreas,
+  gridDeviceOrder,
+} from './gridUtils.js';
 import { iterAction, iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { normalize } from './normalize.js';
@@ -32,7 +38,9 @@ import {
   type LoopPageDefinition,
   type PageLayoutDefinition,
   type PageDefinition,
+  type PageParentDefinition,
   type ResponsiveGridLayoutDefinition,
+  type SubPageDefinition,
   type TabsPageDefinition,
   PredefinedAppRole,
   predefinedAppRolePermissions,
@@ -176,6 +184,97 @@ function validateUniquePageNames(definition: AppDefinition, report: Report): voi
     }
   }
   checkPages(definition.pages);
+}
+
+/**
+ * Iterate over the parent entries of every page, including the pages nested in a container.
+ *
+ * `iterApp` gives a nested page the path of the container it sits in, which is too coarse to point
+ * at the `parent` of one page, so the pages are walked here instead.
+ *
+ * @param pages The pages to walk.
+ * @param onParent Called with each parent entry, the path it lives at, and the page declaring it.
+ * @param prefix The path the pages live at.
+ */
+function iterPageParents(
+  pages: PageDefinition[],
+  onParent: (entry: PageParentDefinition, path: Prefix, page: PageDefinition) => void,
+  prefix: Prefix = ['pages'],
+): void {
+  for (const [index, page] of pages.entries()) {
+    const pagePath = [...prefix, index];
+
+    for (const [entryIndex, entry] of ([] as PageParentDefinition[])
+      .concat(page.parent ?? [])
+      .entries()) {
+      onParent(
+        entry,
+        Array.isArray(page.parent) ? [...pagePath, 'parent', entryIndex] : [...pagePath, 'parent'],
+        page,
+      );
+    }
+
+    if (page.type === 'container') {
+      iterPageParents(page.pages, onParent, [...pagePath, 'pages']);
+    }
+  }
+}
+
+function validatePageParents(definition: AppDefinition, report: Report): void {
+  if (!definition.pages) {
+    return;
+  }
+
+  // Every declared edge counts, whatever roles it is scoped to: roles overlap, so a cycle reachable
+  // under any role assignment is an authoring mistake.
+  function referencesItself(pageName: string, parentName: string): boolean {
+    const visited = new Set<string>();
+    const queue = [parentName];
+
+    while (queue.length) {
+      const name = queue.shift()!;
+
+      if (name === pageName) {
+        return true;
+      }
+
+      if (visited.has(name)) {
+        continue;
+      }
+
+      visited.add(name);
+      const parent = findPageByName(definition.pages, name);
+
+      for (const entry of ([] as PageParentDefinition[]).concat(parent?.parent ?? [])) {
+        queue.push(typeof entry === 'string' ? entry : entry.page);
+      }
+    }
+
+    return false;
+  }
+
+  iterPageParents(definition.pages, (entry, path, page) => {
+    const parentName = typeof entry === 'string' ? entry : entry.page;
+    const parent = findPageByName(definition.pages, parentName);
+
+    if (!parent) {
+      report(parentName, 'refers to a page that doesn’t exist', path);
+      return;
+    }
+
+    if (referencesItself(page.name, parentName)) {
+      report(parentName, 'cyclically references itself', path);
+      return;
+    }
+
+    if (parent.parameters?.length) {
+      report(
+        parentName,
+        'refers to a page with parameters, which cannot be used as a parent',
+        path,
+      );
+    }
+  });
 }
 
 function validateMembersSchema(definition: AppDefinition, report: Report): void {
@@ -481,27 +580,6 @@ function validateController(
   });
 }
 
-function getTemplateAreas(
-  layoutDefinition: ResponsiveGridLayoutDefinition | undefined,
-): Set<string> {
-  const areas = new Set<string>();
-  if (!layoutDefinition) {
-    return areas;
-  }
-  for (const deviceDefinition of Object.values(layoutDefinition) as DeviceGridLayoutDefinition[]) {
-    if (deviceDefinition?.layout?.template) {
-      for (const row of deviceDefinition.layout.template) {
-        for (const area of row.split(' ')) {
-          if (area && area !== '.') {
-            areas.add(area);
-          }
-        }
-      }
-    }
-  }
-  return areas;
-}
-
 function validateTemplateAreasAreRectangular(
   template: string[],
   report: Report,
@@ -603,17 +681,83 @@ function validateResponsiveGridLayoutDefinition(
 
 function validateBlockGridAreas(
   blocks: BlockDefinition[],
-  layoutDefinition: PageLayoutDefinition,
+  layoutDefinition: PageLayoutDefinition | undefined,
   report: Report,
   path: Prefix,
 ): void {
-  const templateAreas = getTemplateAreas(layoutDefinition);
+  const templateAreas = getGridTemplateAreas(layoutDefinition);
   for (const [idx, block] of blocks.entries()) {
-    if (block.gridArea && !templateAreas.has(block.gridArea)) {
+    if (block.gridArea === breadcrumbsGridArea) {
+      report(block.gridArea, 'is reserved for the breadcrumb trail', [...path, idx, 'gridArea']);
+    } else if (layoutDefinition && block.gridArea && !templateAreas.has(block.gridArea)) {
       report(
         block.gridArea,
         `does not match any area defined in the layout template. Available areas: ${[...templateAreas].join(', ') || 'none'}`,
         [...path, idx, 'gridArea'],
+      );
+    }
+  }
+}
+
+function validateBreadcrumbsGridArea(
+  layout: PageLayoutDefinition | undefined,
+  report: Report,
+  path: Prefix,
+  breadcrumbsEnabled: boolean,
+): void {
+  if (!layout || !getGridTemplateAreas(layout).has(breadcrumbsGridArea)) {
+    return;
+  }
+
+  if (!breadcrumbsEnabled) {
+    for (const [deviceName, deviceDefinition] of Object.entries(layout) as [
+      string,
+      DeviceGridLayoutDefinition,
+    ][]) {
+      const template = deviceDefinition?.layout?.template;
+      if (template?.some((row) => row.split(' ').includes(breadcrumbsGridArea))) {
+        report(
+          template,
+          `the '${breadcrumbsGridArea}' grid area requires layout.breadcrumbs to be enabled`,
+          [...path, deviceName, 'layout', 'template'],
+        );
+      }
+    }
+    return;
+  }
+
+  // A device inherits the template of the next smaller one, so an area defined only for a larger
+  // device leaves the trail without a slot to sit in below that breakpoint.
+  const cascaded = getCascadedGridTemplateAreas(layout);
+  const missing = gridDeviceOrder.filter((device) => !cascaded[device].has(breadcrumbsGridArea));
+  if (missing.length) {
+    report(
+      layout,
+      `the '${breadcrumbsGridArea}' grid area is missing from the grid rendered on ${missing.join(', ')}`,
+      path,
+    );
+  }
+}
+
+function validateConsistentBreadcrumbsGridArea(
+  subPages: [SubPageDefinition, Prefix][],
+  report: Report,
+): void {
+  // The trail belongs to the page, so it may not appear on one sub page and be missing from the
+  // next. Defining the area consistently also lets the app runtime tell from the page definition
+  // alone whether a page renders the trail from its grid or below the title bar.
+  const declaresArea = ([subPage]: [SubPageDefinition, Prefix]): boolean =>
+    getGridTemplateAreas(subPage.layout).has(breadcrumbsGridArea);
+  const declaring = subPages.filter(declaresArea);
+  if (!declaring.length || declaring.length === subPages.length) {
+    return;
+  }
+  for (const entry of subPages) {
+    if (!declaresArea(entry)) {
+      report(
+        entry[0],
+        `the '${breadcrumbsGridArea}' grid area must be defined by every sub page of this page or by none`,
+        entry[1],
       );
     }
   }
@@ -624,9 +768,11 @@ function validateSubPageLayout(
   blocks: BlockDefinition[],
   report: Report,
   path: Prefix,
+  breadcrumbsEnabled: boolean,
 ): void {
   validateResponsiveGridLayoutDefinition(layout, report, path);
-  if (layout && blocks) {
+  validateBreadcrumbsGridArea(layout, report, path, breadcrumbsEnabled);
+  if (blocks) {
     validateBlockGridAreas(blocks, layout, report, [...path, 'blocks']);
   }
 }
@@ -701,58 +847,68 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
     }
   }
 
+  const breadcrumbsEnabled = definition.layout?.breadcrumbs === true;
+
   iterApp(definition, {
     onPage(page, path) {
       // Basic page
       if (page.type === 'page' || page.type === undefined) {
         const basicPage = page as BasicPageDefinition;
-        validateSubPageLayout(basicPage.layout, basicPage.blocks, report, path);
+        validateSubPageLayout(basicPage.layout, basicPage.blocks, report, path, breadcrumbsEnabled);
         return;
       }
 
       // Tabs page
       if (page.type === 'tabs') {
         const tabsPage = page as TabsPageDefinition;
-        if (tabsPage.tabs) {
-          for (const [tabId, tab] of tabsPage.tabs.entries()) {
-            validateSubPageLayout(tab.layout, tab.blocks, report, [...path, 'tabs', tabId]);
-          }
-        } else if (tabsPage.definition?.foreach) {
-          validateSubPageLayout(
-            tabsPage.definition.foreach.layout,
-            tabsPage.definition.foreach.blocks,
-            report,
-            [...path, 'definition', 'foreach'],
-          );
+        const tabs: [SubPageDefinition, Prefix][] = tabsPage.tabs
+          ? tabsPage.tabs.map((tab, tabId) => [tab, [...path, 'tabs', tabId]])
+          : tabsPage.definition?.foreach
+            ? [[tabsPage.definition.foreach, [...path, 'definition', 'foreach']]]
+            : [];
+        for (const [tab, tabPath] of tabs) {
+          validateSubPageLayout(tab.layout, tab.blocks, report, tabPath, breadcrumbsEnabled);
         }
+        validateConsistentBreadcrumbsGridArea(tabs, report);
         return;
       }
 
       // Flow page
       if (page.type === 'flow') {
         const flowPage = page as FlowPageDefinition;
-        for (const [stepId, step] of flowPage.steps.entries()) {
-          validateSubPageLayout(step.layout, step.blocks, report, [...path, 'steps', stepId]);
+        const steps: [SubPageDefinition, Prefix][] = flowPage.steps.map((step, stepId) => [
+          step,
+          [...path, 'steps', stepId],
+        ]);
+        for (const [step, stepPath] of steps) {
+          validateSubPageLayout(step.layout, step.blocks, report, stepPath, breadcrumbsEnabled);
         }
+        validateConsistentBreadcrumbsGridArea(steps, report);
         return;
       }
 
       // Loop page
       if (page.type === 'loop') {
         const loopPage = page as LoopPageDefinition;
-        if (loopPage.start) {
-          validateSubPageLayout(loopPage.start.layout, loopPage.start.blocks, report, [
-            ...path,
-            'start',
-          ]);
+        const subPages: [SubPageDefinition, Prefix][] = (
+          [
+            [loopPage.start, 'start'],
+            [loopPage.foreach, 'foreach'],
+            [loopPage.end, 'end'],
+          ] as const
+        ).flatMap(([subPage, key]) =>
+          subPage ? [[subPage, [...path, key]] as [SubPageDefinition, Prefix]] : [],
+        );
+        for (const [subPage, subPagePath] of subPages) {
+          validateSubPageLayout(
+            subPage.layout,
+            subPage.blocks,
+            report,
+            subPagePath,
+            breadcrumbsEnabled,
+          );
         }
-        validateSubPageLayout(loopPage.foreach.layout, loopPage.foreach.blocks, report, [
-          ...path,
-          'foreach',
-        ]);
-        if (loopPage.end) {
-          validateSubPageLayout(loopPage.end.layout, loopPage.end.blocks, report, [...path, 'end']);
-        }
+        validateConsistentBreadcrumbsGridArea(subPages, report);
       }
     },
   });
@@ -1494,6 +1650,14 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
 
   iterApp(definition, { onBlock: checkRoles, onPage: checkRoles });
 
+  if (definition.pages) {
+    iterPageParents(definition.pages, (entry, path) => {
+      if (typeof entry !== 'string') {
+        checkRoles(entry, path);
+      }
+    });
+  }
+
   const { hideGroupDropdown } = definition.layout ?? {};
   if (Array.isArray(hideGroupDropdown)) {
     for (const [index, role] of hideGroupDropdown.entries()) {
@@ -2186,6 +2350,7 @@ export async function validateAppDefinition(
     validateLanguage(clonedDefinition, report);
     validateResourceReferences(clonedDefinition, report);
     validateMembersSchema(clonedDefinition, report);
+    validatePageParents(clonedDefinition, report);
     validatePhoneNumberDefinition(clonedDefinition, report);
     validateResourceSchemas(clonedDefinition, report);
     validateSecurity(clonedDefinition, report);

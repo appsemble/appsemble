@@ -94,7 +94,10 @@ The exact meaning of the parameters depends on the block type.
     events: { $ref: '#/components/schemas/EventsDefinition' },
     gridArea: {
       type: 'string',
-      description: 'Grid area defined in the page layout definition',
+      description: `Grid area defined in the page layout definition.
+
+The \`breadcrumbs\` area is reserved for the breadcrumb trail of the app.
+`,
     },
   },
 };

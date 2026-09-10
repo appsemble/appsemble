@@ -36,7 +36,10 @@ Content-Type: application/json; charset=utf-8
               "$ref": "#/components/schemas/EventsDefinition",
             },
             "gridArea": {
-              "description": "Grid area defined in the page layout definition",
+              "description": "Grid area defined in the page layout definition.
+
+The \`breadcrumbs\` area is reserved for the breadcrumb trail of the app.
+",
               "type": "string",
             },
             "header": {
@@ -360,6 +363,29 @@ passing \`id\` through is sufficient, depending on the block.
               },
               "type": "array",
             },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
+            },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
 
@@ -496,6 +522,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -651,6 +700,29 @@ passing \`id\` through is sufficient, depending on the block.
               },
               "type": "array",
             },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
+            },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
               "enum": [
@@ -804,6 +876,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -966,6 +1061,29 @@ passing \`id\` through is sufficient, depending on the block.
               },
               "type": "array",
             },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
+            },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
               "enum": [
@@ -1123,6 +1241,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -1282,6 +1423,29 @@ passing \`id\` through is sufficient, depending on the block.
               },
               "type": "array",
             },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
+            },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
               "enum": [
@@ -1439,6 +1603,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -1639,6 +1826,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1819,6 +2029,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1999,6 +2232,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -2121,7 +2377,10 @@ Content-Type: application/json; charset=utf-8
               "$ref": "#/components/schemas/EventsDefinition",
             },
             "gridArea": {
-              "description": "Grid area defined in the page layout definition",
+              "description": "Grid area defined in the page layout definition.
+
+The \`breadcrumbs\` area is reserved for the breadcrumb trail of the app.
+",
               "type": "string",
             },
             "header": {
@@ -2445,6 +2704,29 @@ passing \`id\` through is sufficient, depending on the block.
               },
               "type": "array",
             },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
+            },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
 
@@ -2581,6 +2863,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -2736,6 +3041,29 @@ passing \`id\` through is sufficient, depending on the block.
               },
               "type": "array",
             },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
+            },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
               "enum": [
@@ -2889,6 +3217,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -3051,6 +3402,29 @@ passing \`id\` through is sufficient, depending on the block.
               },
               "type": "array",
             },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
+            },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
               "enum": [
@@ -3208,6 +3582,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -3367,6 +3764,29 @@ passing \`id\` through is sufficient, depending on the block.
               },
               "type": "array",
             },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
+            },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
               "enum": [
@@ -3524,6 +3944,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -3724,6 +4167,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -3904,6 +4370,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -4084,6 +4573,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.

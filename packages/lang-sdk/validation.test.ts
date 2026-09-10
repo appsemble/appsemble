@@ -12,6 +12,7 @@ import {
   type PageLayoutDefinition,
   predefinedAppRoles,
   type Security,
+  type TabsPageDefinition,
 } from './types/index.js';
 import { validateAppDefinition } from './validation.js';
 
@@ -4710,5 +4711,397 @@ describe('validateAppDefinition', () => {
       );
       expect(rectangularErrors).toHaveLength(2);
     });
+  });
+
+  it('should report a parent that refers to a page that doesn’t exist', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = 'Missing Page';
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a page that doesn’t exist', 'Missing Page', undefined, [
+        'pages',
+        0,
+        'parent',
+      ]),
+    ]);
+  });
+
+  it('should report a page that is its own parent', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = 'Test Page';
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('cyclically references itself', 'Test Page', undefined, [
+        'pages',
+        0,
+        'parent',
+      ]),
+    ]);
+  });
+
+  it('should report a parent that requires URL parameters', async () => {
+    const app = createTestApp();
+    (app.pages[1] as BasicPageDefinition).parameters = ['id'];
+    app.pages[0].parent = 'Page with parameters';
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'refers to a page with parameters, which cannot be used as a parent',
+        'Page with parameters',
+        undefined,
+        ['pages', 0, 'parent'],
+      ),
+    ]);
+  });
+
+  it('should accept a parent declaring an empty parameter list', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = 'Page with parameters';
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should report a role-scoped parent using a role the app does not define', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = [{ page: 'Page with tabs', roles: ['Ghost'] }];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not exist in this app’s roles', 'Ghost', undefined, [
+        'pages',
+        0,
+        'parent',
+        0,
+        'roles',
+        0,
+      ]),
+    ]);
+  });
+
+  it('should report a cycle that exists only across role-scoped parents', async () => {
+    const app = createTestApp();
+    app.security!.roles = { User: {}, Admin: {} };
+    app.pages[0].parent = [{ page: 'Page with tabs', roles: ['User'] }];
+    app.pages[2].parent = [{ page: 'Test Page', roles: ['Admin'] }];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('cyclically references itself', 'Page with tabs', undefined, [
+        'pages',
+        0,
+        'parent',
+        0,
+      ]),
+      new ValidationError('cyclically references itself', 'Test Page', undefined, [
+        'pages',
+        2,
+        'parent',
+        0,
+      ]),
+    ]);
+  });
+
+  it('should report an unknown page name in a fallback parent entry', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = [{ page: 'Page with tabs', roles: ['User'] }, 'Missing Page'];
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a page that doesn’t exist', 'Missing Page', undefined, [
+        'pages',
+        0,
+        'parent',
+        1,
+      ]),
+    ]);
+  });
+
+  it('should accept a multi-level hierarchy ending at a page inside a container', async () => {
+    const app = createTestApp();
+    app.pages[0].parent = 'Contained Page';
+    app.pages[2].parent = 'Test Page';
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should accept a breadcrumbs grid area on a page layout when breadcrumbs are enabled', async () => {
+    const app = createTestApp();
+    app.layout = { breadcrumbs: true };
+    Object.assign(app.pages[0], {
+      layout: {
+        mobile: { layout: { columns: 1, template: ['breadcrumbs', 'main'] } },
+      } as PageLayoutDefinition,
+    });
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should reject a breadcrumbs grid area unless breadcrumbs are enabled for the app', async () => {
+    const app = createTestApp();
+    const layout = {
+      mobile: { layout: { columns: 1, template: ['breadcrumbs', 'main'] } },
+    } as PageLayoutDefinition;
+    Object.assign(app.pages[0], { layout });
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        "the 'breadcrumbs' grid area requires layout.breadcrumbs to be enabled",
+        layout.mobile!.layout!.template,
+        undefined,
+        ['pages', 0, 'mobile', 'layout', 'template'],
+      ),
+    );
+  });
+
+  it('should accept a breadcrumbs grid area defined by every sub page', async () => {
+    const app = createTestApp();
+    app.layout = { breadcrumbs: true };
+    const layout = {
+      mobile: { layout: { columns: 1, template: ['breadcrumbs'] } },
+    } as PageLayoutDefinition;
+    Object.assign((app.pages[2] as TabsPageDefinition).tabs![0], { layout });
+    for (const step of (app.pages[3] as FlowPageDefinition).steps) {
+      Object.assign(step, { layout });
+    }
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should reject a breadcrumbs grid area that only some tabs define', async () => {
+    const app = createTestApp();
+    app.layout = { breadcrumbs: true };
+    const tabsPage = app.pages[2] as TabsPageDefinition;
+    tabsPage.tabs!.push({ name: 'Tab B', blocks: [] });
+    Object.assign(tabsPage.tabs![0], {
+      layout: {
+        mobile: { layout: { columns: 1, template: ['breadcrumbs'] } },
+      } as PageLayoutDefinition,
+    });
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        "the 'breadcrumbs' grid area must be defined by every sub page of this page or by none",
+        tabsPage.tabs![1],
+        undefined,
+        ['pages', 2, 'tabs', 1],
+      ),
+    );
+  });
+
+  it('should reject a breadcrumbs grid area that only some flow steps define', async () => {
+    const app = createTestApp();
+    app.layout = { breadcrumbs: true };
+    const flowPage = app.pages[3] as FlowPageDefinition;
+    Object.assign(flowPage.steps[0], {
+      layout: {
+        mobile: { layout: { columns: 1, template: ['breadcrumbs'] } },
+      } as PageLayoutDefinition,
+    });
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        "the 'breadcrumbs' grid area must be defined by every sub page of this page or by none",
+        flowPage.steps[1],
+        undefined,
+        ['pages', 3, 'steps', 1],
+      ),
+    );
+  });
+
+  it('should reject a breadcrumbs grid area a smaller breakpoint does not render', async () => {
+    const app = createTestApp();
+    app.layout = { breadcrumbs: true };
+    const layout = {
+      mobile: { layout: { columns: 1, template: ['main'] } },
+      desktop: { layout: { columns: 2, template: ['breadcrumbs breadcrumbs', 'main aside'] } },
+    } as PageLayoutDefinition;
+    Object.assign(app.pages[0], { layout });
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        "the 'breadcrumbs' grid area is missing from the grid rendered on mobile, tablet",
+        layout,
+        undefined,
+        ['pages', 0],
+      ),
+    );
+  });
+
+  it('should accept a breadcrumbs grid area a larger breakpoint inherits', async () => {
+    const app = createTestApp();
+    app.layout = { breadcrumbs: true };
+    Object.assign(app.pages[0], {
+      layout: {
+        mobile: { layout: { columns: 1, template: ['breadcrumbs', 'main'] } },
+        desktop: { layout: { columns: 2, template: ['breadcrumbs breadcrumbs', 'main aside'] } },
+      } as PageLayoutDefinition,
+    });
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should report only the breakpoint gap when a sub page defines the area for one device', async () => {
+    const app = createTestApp();
+    app.layout = { breadcrumbs: true };
+    const tabsPage = app.pages[2] as TabsPageDefinition;
+    tabsPage.tabs!.push({ name: 'Tab B', blocks: [] });
+    const complete = {
+      mobile: { layout: { columns: 1, template: ['breadcrumbs'] } },
+    } as PageLayoutDefinition;
+    const desktopOnly = {
+      desktop: { layout: { columns: 1, template: ['breadcrumbs'] } },
+    } as PageLayoutDefinition;
+    Object.assign(tabsPage.tabs![0], { layout: complete });
+    Object.assign(tabsPage.tabs![1], { layout: desktopOnly });
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        "the 'breadcrumbs' grid area is missing from the grid rendered on mobile, tablet",
+        desktopOnly,
+        undefined,
+        ['pages', 2, 'tabs', 1],
+      ),
+    );
+    expect(result.errors).not.toContainEqual(
+      expect.objectContaining({
+        message: expect.stringContaining('every sub page of this page'),
+      }),
+    );
+  });
+
+  it('should reject a breadcrumbs grid area that only some loop sub pages define', async () => {
+    const app = createTestApp();
+    app.layout = { breadcrumbs: true };
+    const loopPage = {
+      name: 'Loop Page',
+      type: 'loop',
+      start: {
+        name: 'Intro',
+        blocks: [],
+        layout: {
+          mobile: { layout: { columns: 1, template: ['breadcrumbs'] } },
+        } as PageLayoutDefinition,
+      },
+      foreach: { name: 'Item', blocks: [] },
+    };
+    app.pages.push(loopPage as never);
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError(
+        "the 'breadcrumbs' grid area must be defined by every sub page of this page or by none",
+        loopPage.foreach,
+        undefined,
+        ['pages', 5, 'foreach'],
+      ),
+    );
+  });
+
+  it('should accept a breadcrumbs grid area on the tab template of a generated tabs page', async () => {
+    const app = createTestApp();
+    app.layout = { breadcrumbs: true };
+    app.pages.push({
+      name: 'Generated Tabs',
+      type: 'tabs',
+      definition: {
+        events: {},
+        foreach: {
+          name: { prop: 'title' },
+          blocks: [],
+          layout: {
+            mobile: { layout: { columns: 1, template: ['breadcrumbs', 'main'] } },
+          } as PageLayoutDefinition,
+        },
+      },
+    } as never);
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should reject a block that claims the breadcrumbs grid area on a page without a grid', async () => {
+    const app = createTestApp();
+    app.layout = { breadcrumbs: true };
+    Object.assign(app.pages[0], {
+      blocks: [{ type: 'test', version: '0.0.0', gridArea: 'breadcrumbs' }],
+    });
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError('is reserved for the breadcrumb trail', 'breadcrumbs', undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'gridArea',
+      ]),
+    );
+  });
+
+  it('should reject a block that claims the breadcrumbs grid area', async () => {
+    const app = createTestApp();
+    app.layout = { breadcrumbs: true };
+    Object.assign(app.pages[0], {
+      layout: {
+        mobile: { layout: { columns: 1, template: ['breadcrumbs', 'main'] } },
+      } as PageLayoutDefinition,
+      blocks: [{ type: 'test', version: '0.0.0', gridArea: 'breadcrumbs' }],
+    });
+
+    const result = await validateAppDefinition(app, () => []);
+
+    expect(result.errors).toContainEqual(
+      new ValidationError('is reserved for the breadcrumb trail', 'breadcrumbs', undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'gridArea',
+      ]),
+    );
   });
 });
