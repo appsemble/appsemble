@@ -109,6 +109,8 @@ function addMarkdownDescriptions(schema: Schema): Schema {
   }
   if (Array.isArray(result.items)) {
     result.items = result.items.map(addMarkdownDescriptions);
+  } else if (result.items && typeof result.items === 'object') {
+    result.items = addMarkdownDescriptions(result.items);
   }
   result.markdownDescription = result.description;
   return result;
