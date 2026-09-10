@@ -10,7 +10,7 @@ import {
 } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type Ref, type VNode } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useId, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { SelectionEntry } from './SelectionEntry/index.js';
@@ -56,6 +56,7 @@ export function SelectionInput({
   const maxItems = getMaxItems(field);
 
   const modal = useToggle();
+  const titleId = useId();
 
   useEffect(() => {
     if ('selection' in field) {
@@ -172,7 +173,15 @@ export function SelectionInput({
         </FormButtons>
       ) : null}
       {dirty && error ? <p className="help is-danger">{error}</p> : null}
-      <ModalCard isActive={modal.enabled} onClose={modal.disable}>
+      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
+      <ModalCard
+        aria-labelledby={titleId}
+        closeButtonLabel={utils.formatMessage('selectionClose')}
+        isActive={modal.enabled}
+        onClose={modal.disable}
+        role="dialog"
+        title={<span id={titleId}>{utils.remap(field.label, selectedOptions) as string}</span>}
+      >
         {!disableSearch && <Input className="mb-2" onChange={handleSearch} />}
         {loading ? (
           <Loader />
