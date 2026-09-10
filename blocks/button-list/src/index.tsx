@@ -58,7 +58,7 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
         let currentText = createNode(data);
         let currentData = data;
         node.append(currentText);
-        events.on.data((newData) => {
+        const updateData = (newData: unknown): void => {
           const newText = createNode(newData);
           const hidden = utils.remap(hide, newData);
           if (hidden) {
@@ -75,7 +75,9 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
           currentText.replaceWith(newText);
           currentText = newText;
           currentData = newData;
-        });
+        };
+        updateData(data);
+        events.on.data(updateData);
 
         node.addEventListener('click', (event) => {
           // Delegate anchor behavior to the link action.
