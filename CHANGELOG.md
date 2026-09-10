@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.38.2-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.38.2-test.0)] - 2026-09-10
+
+### Fixed
+
+- Server: Start app exports before reading assets from storage.
+
 ## \[[0.38.1](https://gitlab.com/appsemble/appsemble/-/releases/0.38.1)] - 2026-09-10
 
 ### Added
