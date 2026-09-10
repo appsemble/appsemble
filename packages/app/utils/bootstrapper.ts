@@ -22,6 +22,11 @@ const controllerResolvers = new Map<string, ((fn: ControllerFunction) => void)[]
 
 const loadedBlocks = new Set<string>();
 const loadedControllers = new Set<string>();
+let controllerInitialization: Promise<void>;
+let resolveControllerStarted: () => void;
+const controllerStarted = new Promise<void>((resolve) => {
+  resolveControllerStarted = resolve;
+});
 
 /**
  * Register a bootstrap function for a block.
@@ -142,7 +147,12 @@ export function getBlockFileURL(manifest: BlockManifest, filename: string): stri
   return fileUrl ?? prefixBlockURL({ type: manifest.name, version: manifest.version }, filename);
 }
 
-export function getHandlerFunction(handler: string): HandlerFunction {
+export async function getHandlerFunction(handler: string): Promise<HandlerFunction> {
+  if (!appControllerCode) {
+    throw new Error('This app does not define a controller');
+  }
+  await controllerStarted;
+  await controllerInitialization;
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return handlerFunctions.get(handler);
 }
@@ -184,12 +194,7 @@ export async function callBootstrap(
   }
 }
 
-/**
- * Call the controller function for a controller definition
- *
- * @param params any named parameters that will be passed to the controller function.
- */
-export async function callController(params: EventParams): Promise<void> {
+async function initializeController(params: EventParams): Promise<void> {
   if (!loadedControllers.has('app-controller')) {
     const script = document.getElementById('app-controller') as HTMLScriptElement;
 
@@ -215,4 +220,16 @@ export async function callController(params: EventParams): Promise<void> {
   for (const [name, handlerFunction] of Object.entries(actions)) {
     handlerFunctions.set(name, handlerFunction);
   }
+}
+
+/**
+ * Call the controller function for a controller definition
+ *
+ * @param params any named parameters that will be passed to the controller function.
+ * @returns A promise that resolves when the controller handlers are ready.
+ */
+export function callController(params: EventParams): Promise<void> {
+  controllerInitialization = initializeController(params);
+  resolveControllerStarted();
+  return controllerInitialization;
 }
