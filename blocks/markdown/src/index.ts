@@ -55,7 +55,7 @@ bootstrap(({ data, events, parameters, path, utils }) => {
     populateNode(node, utils.remap, d, parameters);
   });
 
-  if (shouldWait) {
+  if (shouldWait && data == null) {
     node.classList.add(style.loader, 'appsemble-loader');
   } else {
     populateNode(node, utils.remap, data, parameters);
