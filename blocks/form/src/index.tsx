@@ -514,6 +514,16 @@ bootstrap(
       errors,
     ]);
 
+    useEffect(() => {
+      const submit = (): Promise<void> | undefined => {
+        if (!disableSubmit) {
+          return onSubmit();
+        }
+      };
+      events.on.submit(submit);
+      return () => events.off.submit(submit);
+    }, [disableSubmit, events, onSubmit]);
+
     const getFieldsContainerClass = (): string => {
       switch (display) {
         case 'flex':

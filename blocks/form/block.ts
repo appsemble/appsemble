@@ -1583,6 +1583,13 @@ declare module '@appsemble/sdk' {
 
   interface EventListeners {
     /**
+     * Submit the current form values, using the same validation and disabled state as the submit button.
+     *
+     * The event payload is ignored. This also works when the submit button is hidden.
+     */
+    submit: never;
+
+    /**
      * An event that can be used to receive data.
      *
      * Compatible data that is received will be displayed and mapped to the fields as defined in the

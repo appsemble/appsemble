@@ -4,6 +4,7 @@ import { EventEmitter } from 'node:events';
 
 import { createEvents, getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type BootstrapParams } from '@appsemble/sdk';
+import { noop } from '@appsemble/utils';
 import { expect, it, vi } from 'vitest';
 
 import { type Field, type Values } from '../block.js';
@@ -79,8 +80,9 @@ it('should wait for pending validation actions before submitting', async () => {
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: {
@@ -154,8 +156,9 @@ it('should load the markdown editor when a markdown field is rendered', async ()
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: {
@@ -477,4 +480,78 @@ it('should name the invalid fields in the alert after a failed submit', async ()
       Array.from(container.querySelectorAll('[role="alert"]'), (alert) => alert.textContent),
     ).toContainEqual(expect.stringContaining('Name: Name is required')),
   );
+});
+
+async function mountExternalSubmit(disabled = false): Promise<{
+  container: HTMLElement;
+  saved: HTMLOutputElement;
+  external: EventTarget;
+}> {
+  const container = document.createElement('div');
+  const saved = document.createElement('output');
+  const external = new EventTarget();
+  const params = {
+    ...getDefaultBootstrapParams(),
+    actions: {
+      onLoad: Object.assign(noop, { type: 'noop' }),
+      onSubmit(data: { name: string }) {
+        saved.textContent = `Saved ${data.name}`;
+      },
+    },
+    events: {
+      emit: { change: noop },
+      on: {
+        data: () => false,
+        fields: () => false,
+        submit(listener: EventListener) {
+          external.addEventListener('submit', listener);
+        },
+      },
+      off: {
+        fields: noop,
+        submit(listener: EventListener) {
+          external.removeEventListener('submit', listener);
+        },
+      },
+    },
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          name: 'name',
+          label: 'Name',
+          type: 'string',
+          defaultValue: disabled ? 'Nursery' : '',
+          requirements: [{ required: true }],
+        },
+      ],
+      skipInitialLoad: true,
+      hideSubmitButton: true,
+      disabled,
+    },
+  } as unknown as BootstrapParams;
+  await mount(params);
+  return { container, saved, external };
+}
+
+it('should validate external submission and submit the current field values', async () => {
+  const { container, saved, external } = await mountExternalSubmit();
+  const name = getInputByLabel(container, 'Name');
+  expect(container.querySelector('button[type=submit]')).toBeNull();
+  external.dispatchEvent(new Event('submit'));
+  await waitFor(() => expect(container.textContent).toContain('invalidLabel'));
+  expect(saved.textContent).toBe('');
+
+  name.value = 'Nursery';
+  name.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  await waitFor(() => expect(container.textContent).not.toContain('invalidLabel'));
+  external.dispatchEvent(new Event('submit'));
+  await waitFor(() => expect(saved.textContent).toBe('Saved Nursery'));
+});
+
+it('should reject external submission while the form is disabled', async () => {
+  const { container, saved, external } = await mountExternalSubmit(true);
+  expect(getInputByLabel(container, 'Name').value).toBe('Nursery');
+  external.dispatchEvent(new Event('submit'));
+  expect(saved.textContent).toBe('');
 });
