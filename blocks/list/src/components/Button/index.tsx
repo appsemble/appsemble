@@ -85,6 +85,7 @@ export function ButtonComponent({
 
   return (
     <button
+      aria-label={remappedTitle}
       className={className}
       disabled={disabled}
       onClick={handleClick}
