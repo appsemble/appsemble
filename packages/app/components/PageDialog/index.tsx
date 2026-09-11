@@ -23,7 +23,7 @@ export function PageDialog({ dialog, remap, ...props }: PageDialogProps): ReactN
       closable={Boolean(dialog?.closable)}
       isActive={Boolean(dialog)}
       onClose={dialog?.close}
-      title={remap(dialog?.title ?? null, {}, {})}
+      title={remap(dialog?.title ?? null, dialog?.data ?? {}, {})}
     >
       {dialog ? (
         <BlockList
