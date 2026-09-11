@@ -8,13 +8,13 @@ async function put(
   // Cache successful responses and opaque image responses.
   if (response.ok || (response.type === 'opaque' && request.destination === 'image')) {
     const cache = await caches.open('appsemble');
-    cache.put(request, response.clone());
+    await cache.put(request, response.clone());
     return response;
   }
   return fallback();
 }
 
-async function tryCached(
+export async function tryCached(
   request: Request,
   fallback: () => Promisable<Response>,
 ): Promise<Response> {

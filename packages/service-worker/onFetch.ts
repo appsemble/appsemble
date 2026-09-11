@@ -1,6 +1,6 @@
 import { partialNormalized } from '@appsemble/utils';
 
-import { cacheFirst, handleModifyAndInvalidateCache, requestFirst } from './utils.js';
+import { cacheFirst, handleModifyAndInvalidateCache, requestFirst, tryCached } from './utils.js';
 
 /**
  * Map all requests to a caching behavior based on the HTTP method and URL.
@@ -46,9 +46,9 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
-  // This is an unhandled request to an external service or the Appsemble API. This should not be
-  // cached.
+  // Declared block assets may be cached from a separate CDN origin.
   if (origin !== globalThis.location.origin) {
+    event.respondWith(tryCached(request, () => fetch(request)));
     return;
   }
 

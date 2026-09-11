@@ -38,6 +38,14 @@ vi.mock('@sentry/browser', () => ({
   captureMessage: vi.fn(),
 }));
 
+vi.mock('../AppDefinitionProvider/index.js', () => {
+  const app = {
+    definition: { name: 'Offline app', defaultPage: 'Home', pages: [] },
+    blockManifests: [],
+  };
+  return { useAppDefinition: () => app };
+});
+
 let latestContext: ReturnType<typeof useServiceWorkerRegistration> | undefined;
 let requestInterceptor: ((config: { url: string }) => Promise<{ url: string }>) | undefined;
 let serviceWorkerListeners: Record<string, (event: any) => void> = {};
@@ -107,6 +115,7 @@ beforeEach(() => {
     configurable: true,
     value: {
       controller: {},
+      ready: Promise.resolve({ active: { postMessage: vi.fn() } }),
       addEventListener: vi.fn((type, listener) => {
         serviceWorkerListeners[type] = listener;
       }),
