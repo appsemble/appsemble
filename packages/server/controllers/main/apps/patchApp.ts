@@ -357,10 +357,14 @@ export async function patchApp(ctx: Context): Promise<void> {
       );
     }
 
-    result.controllerCode = ['', undefined].includes(controllerCode) ? null : controllerCode;
-    result.controllerImplementations = ['', undefined].includes(controllerImplementations)
-      ? null
-      : controllerImplementations;
+    if (controllerCode !== undefined) {
+      result.controllerCode = controllerCode === '' ? null : controllerCode;
+    }
+
+    if (controllerImplementations !== undefined) {
+      result.controllerImplementations =
+        controllerImplementations === '' ? null : controllerImplementations;
+    }
 
     if (
       domain !== undefined ||

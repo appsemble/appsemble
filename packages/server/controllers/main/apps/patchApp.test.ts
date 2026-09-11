@@ -1609,6 +1609,34 @@ describe('patchApp', () => {
     `);
   });
 
+  it('should preserve the app controller when updating its domain', async () => {
+    const controllerCode = '() => ({})';
+    const controllerImplementations = '{}';
+    const app = await App.create({
+      path: 'foo',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      controllerCode,
+      controllerImplementations,
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ domain: 'appsemble.app' }),
+    );
+
+    expect(response.status).toBe(200);
+    const { data } = await request.get(`/api/apps/${app.id}`);
+    expect(data).toMatchObject({
+      domain: 'appsemble.app',
+      controllerCode,
+      controllerImplementations,
+    });
+  });
+
   it('should set the app domain to null', async () => {
     const app = await App.create(
       {
