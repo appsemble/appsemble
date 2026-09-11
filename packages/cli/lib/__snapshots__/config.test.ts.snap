@@ -281,6 +281,12 @@ Will not render if undefined.",
             "description": "Whether the button should display its colors in the outlines.",
             "type": "boolean",
           },
+          "pressed": {
+            "description": "Whether this toggle button is pressed, based on the current data.
+
+Omit this for ordinary action buttons. Pressed state is exposed as \`aria-pressed\`.",
+            "format": "remapper",
+          },
           "rounded": {
             "description": "Whether the button should be rounded.",
             "type": "boolean",
