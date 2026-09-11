@@ -122,6 +122,11 @@ export function ServiceWorkerRegistrationProvider({
         const urls = [
           ...getAppAssets(definition, blockManifests, appUpdated),
           ...[...document.styleSheets].flatMap(({ href }) => (href ? [href] : [])),
+          ...[
+            ...document.querySelectorAll<HTMLLinkElement>(
+              'link[rel="icon"], link[rel="apple-touch-icon"], link[rel="manifest"]',
+            ),
+          ].map(({ href }) => href),
           `${apiUrl}/api/apps/${appId}/variables`,
           `${apiUrl}/api/apps/${appId}/messages/${lang}`,
         ];
