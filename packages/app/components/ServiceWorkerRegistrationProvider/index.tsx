@@ -217,6 +217,16 @@ export function ServiceWorkerRegistrationProvider({
 
       await registration.update();
     } catch (error) {
+      // A background update fetches its script from the network, even when the active
+      // worker can serve the installed app offline.
+      if (error instanceof TypeError && navigator.serviceWorker.controller) {
+        addBreadcrumb({
+          category: 'appsemble.service-worker',
+          data: { error: error.message },
+          level: 'warning',
+        });
+        return;
+      }
       handleServiceWorkerError(error);
     }
   }, [handleServiceWorkerError, serviceWorkerRegistrationPromise]);
