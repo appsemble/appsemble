@@ -1043,6 +1043,16 @@ export interface AbstractSelectionField extends AbstractField, InlineField {
   type: 'selection';
 
   /**
+   * Whether choices appear in a modal or directly inside the form.
+   *
+   * Inline choices remain visible when selected and can be toggled individually.
+   * Values retain the order in which choices are selected.
+   *
+   * @default 'modal'
+   */
+  display?: 'modal' | 'inline';
+
+  /**
    * The requirements that are used to validate the field with.
    *
    * These are evaluated in the order they are defined in.

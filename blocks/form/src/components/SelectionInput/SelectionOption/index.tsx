@@ -1,3 +1,4 @@
+import { useBlock } from '@appsemble/preact';
 import { Button } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
 import { type MutableRef, useEffect, useRef, useState } from 'preact/hooks';
@@ -9,6 +10,8 @@ import { Header } from '../Header/index.js';
 import { Image } from '../Image/index.js';
 
 interface SelectionOptionProps {
+  readonly disabled?: boolean;
+  readonly inline?: boolean;
   readonly option: SelectionChoice;
   readonly onAdd: (id: number | string) => void;
   readonly onRemove: (id: number | string) => void;
@@ -17,12 +20,15 @@ interface SelectionOptionProps {
 }
 
 export function SelectionOption({
+  disabled,
+  inline = false,
   mayRemove = false,
   onAdd,
   onRemove,
   option,
   selected = false,
 }: SelectionOptionProps): VNode {
+  const { utils } = useBlock();
   const { id, image, imageInline } = option;
   const alignment = image?.alignment || 'default';
 
@@ -89,8 +95,10 @@ export function SelectionOption({
       </div>
       <div className="is-flex is-flex-direction-column is-justify-content-end">
         <Button
-          disabled={selected ? !mayRemove : undefined}
-          icon={selected ? (mayRemove ? 'xmark' : 'check') : 'plus'}
+          aria-label={inline ? (utils.remap(option.header, option) as string) : undefined}
+          aria-pressed={inline ? selected : undefined}
+          disabled={disabled || (selected ? !mayRemove : undefined)}
+          icon={selected ? (inline || !mayRemove ? 'check' : 'xmark') : 'plus'}
           onClick={onClick}
         />
       </div>

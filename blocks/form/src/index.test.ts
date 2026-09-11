@@ -2,7 +2,9 @@
 
 import { getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type BootstrapParams } from '@appsemble/sdk';
-import { expect, it, vi } from 'vitest';
+import { noop } from '@appsemble/utils';
+import { within } from '@testing-library/dom';
+import { afterEach, expect, it, vi } from 'vitest';
 
 const sdk = vi.hoisted(() => ({
   bootstrap: vi.fn(),
@@ -47,6 +49,11 @@ async function waitFor(assertion: () => void): Promise<void> {
     }
   }
 }
+
+afterEach(() => {
+  document.body.replaceChildren();
+  vi.unstubAllGlobals();
+});
 
 it('should wait for pending validation actions before submitting', async () => {
   let resolveValidation!: (value: unknown) => void;
@@ -162,4 +169,99 @@ it('should load the markdown editor when a markdown field is rendered', async ()
       Array.from(container.querySelectorAll('button')).find((button) => button.title === 'Bold'),
     ).toBeInstanceOf(HTMLButtonElement),
   );
+});
+
+async function mountInlineSelection(disabled = false): Promise<HTMLElement> {
+  vi.stubGlobal(
+    'IntersectionObserver',
+    class {
+      observe = noop;
+
+      unobserve = noop;
+
+      disconnect = noop;
+    },
+  );
+  const container = document.createElement('div');
+  const output = document.createElement('output');
+  output.setAttribute('aria-label', 'Saved selection');
+  document.body.append(container);
+  const params = getDefaultBootstrapParams();
+  await mount({
+    ...params,
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          name: 'sounds',
+          type: 'selection',
+          display: 'inline',
+          label: 'Sounds',
+          disableSearch: true,
+          disabled,
+          selection: [
+            { id: 1, header: 'Rain' },
+            { id: 2, header: 'Waves' },
+            { id: 3, header: 'Wind' },
+          ],
+          requirements: [{ maxItems: 2 }],
+        },
+      ],
+    },
+    actions: {
+      onLoad: Object.assign(noop, { type: 'noop' }),
+      onSubmit({ sounds }: { sounds: { id: number }[] }) {
+        output.textContent = sounds.map(({ id }) => id).join(', ');
+      },
+    },
+    events: {
+      emit: { change: noop },
+      on: { data: () => false, fields: () => false },
+      off: { data: noop, fields: noop },
+    },
+  } as unknown as BootstrapParams);
+  container.append(output);
+  return container;
+}
+
+it('selects inline choices in the chosen order and removes them without opening a dialog', async () => {
+  const container = await mountInlineSelection();
+  const screen = within(container);
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Waves' })).toBeDefined());
+  screen.getByRole('button', { name: 'Waves' }).click();
+  await waitFor(() =>
+    expect(screen.getByRole('button', { name: 'Waves', pressed: true })).toBeDefined(),
+  );
+  screen.getByRole('button', { name: 'Rain' }).click();
+  await waitFor(() =>
+    expect((screen.getByRole('button', { name: 'Wind' }) as HTMLButtonElement).disabled).toBe(true),
+  );
+  screen.getByRole('button', { name: 'submitLabel' }).click();
+  await waitFor(() =>
+    expect(screen.getByRole('status', { name: 'Saved selection' }).textContent).toBe('2, 1'),
+  );
+  expect(screen.queryByRole('dialog')).toBeNull();
+  await waitFor(() =>
+    expect((screen.getByRole('button', { name: 'Waves' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    ),
+  );
+  screen.getByRole('button', { name: 'Waves' }).click();
+  await waitFor(() =>
+    expect((screen.getByRole('button', { name: 'Wind' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    ),
+  );
+  screen.getByRole('button', { name: 'submitLabel' }).click();
+  await waitFor(() =>
+    expect(screen.getByRole('status', { name: 'Saved selection' }).textContent).toBe('1'),
+  );
+});
+
+it('keeps inline choices disabled when the field is disabled', async () => {
+  const screen = within(await mountInlineSelection(true));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Rain' })).toBeDefined());
+  for (const name of ['Rain', 'Waves', 'Wind']) {
+    expect((screen.getByRole('button', { name }) as HTMLButtonElement).disabled).toBe(true);
+  }
 });

@@ -39,6 +39,7 @@ export function SelectionInput({
   const {
     allowRemovalFromModal = false,
     disableSearch = false,
+    display = 'modal',
     showSelectedInModal = false,
   } = field;
   const [loading, setLoading] = useState('event' in field);
@@ -104,12 +105,12 @@ export function SelectionInput({
 
   const getOptionsFilteredBySelection = useCallback(
     (): SelectionChoice[] =>
-      showSelectedInModal
+      display === 'inline' || showSelectedInModal
         ? options
         : options.filter(
             (option) => !selectedOptions.some((selectedOption) => selectedOption.id === option.id),
           ),
-    [options, selectedOptions, showSelectedInModal],
+    [display, options, selectedOptions, showSelectedInModal],
   );
 
   const handleModalOpen = (): void => {
@@ -138,6 +139,49 @@ export function SelectionInput({
     setFilteredOptions(filtered);
   }, [getOptionsFilteredBySelection, options, searchString, selectedOptions]);
 
+  const choices = (
+    <>
+      {!disableSearch && <Input className="mb-2" onChange={handleSearch} />}
+      {loading ? (
+        <Loader />
+      ) : optionsError ? (
+        <Message className="mt-4 mr-6 mb-4 ml-5" color="danger">
+          <span>
+            <FormattedMessage id="selectionOptionsError" />
+          </span>
+        </Message>
+      ) : filteredOptions.length > 0 ? (
+        filteredOptions.map((option) => (
+          <SelectionOption
+            disabled={
+              display === 'inline' &&
+              (disabled ||
+                readOnly ||
+                Boolean(
+                  maxItems &&
+                  selectedOptions.length >= maxItems &&
+                  !selectedOptions.some((selected) => selected.id === option.id),
+                ))
+            }
+            inline={display === 'inline'}
+            key={option.id}
+            mayRemove={display === 'inline' || allowRemovalFromModal}
+            onAdd={selectOption}
+            onRemove={deselectOption}
+            option={option}
+            selected={selectedOptions.some((o) => o.id === option.id)}
+          />
+        ))
+      ) : (
+        <Message className="mt-4 mr-6 mb-4 ml-5">
+          <span>
+            <FormattedMessage id="selectionNoOptions" />
+          </span>
+        </Message>
+      )}
+    </>
+  );
+
   return (
     <div
       className={classNames('appsemble-selection mb-4', className, styles['selection-wrapper'])}
@@ -152,52 +196,32 @@ export function SelectionInput({
           </span>
         )}
       </div>
-      <div>
-        {selectedOptions.map((option) => (
-          <SelectionEntry
-            key={option.id}
-            onRemove={deselectOption}
-            option={option}
-            showRemove={!readOnly && !disabled}
-          />
-        ))}
-      </div>
-      {!readOnly && (!maxItems || selectedOptions.length < maxItems) ? (
-        <FormButtons>
-          <Button disabled={disabled} icon="plus" onClick={handleModalOpen}>
-            {utils.remap(field.addLabel ?? 'Add', selectedOptions) as string}
-          </Button>
-        </FormButtons>
-      ) : null}
-      <ModalCard isActive={modal.enabled} onClose={modal.disable}>
-        {!disableSearch && <Input className="mb-2" onChange={handleSearch} />}
-        {loading ? (
-          <Loader />
-        ) : optionsError ? (
-          <Message className="mt-4 mr-6 mb-4 ml-5" color="danger">
-            <span>
-              <FormattedMessage id="selectionOptionsError" />
-            </span>
-          </Message>
-        ) : filteredOptions.length > 0 ? (
-          filteredOptions.map((option) => (
-            <SelectionOption
-              key={option.id}
-              mayRemove={allowRemovalFromModal}
-              onAdd={selectOption}
-              onRemove={deselectOption}
-              option={option}
-              selected={selectedOptions.some((o) => o.id === option.id)}
-            />
-          ))
-        ) : (
-          <Message className="mt-4 mr-6 mb-4 ml-5">
-            <span>
-              <FormattedMessage id="selectionNoOptions" />
-            </span>
-          </Message>
-        )}
-      </ModalCard>
+      {display === 'inline' ? (
+        <div className="appsemble-selection-inline">{choices}</div>
+      ) : (
+        <>
+          <div>
+            {selectedOptions.map((option) => (
+              <SelectionEntry
+                key={option.id}
+                onRemove={deselectOption}
+                option={option}
+                showRemove={!readOnly && !disabled}
+              />
+            ))}
+          </div>
+          {!readOnly && (!maxItems || selectedOptions.length < maxItems) ? (
+            <FormButtons>
+              <Button disabled={disabled} icon="plus" onClick={handleModalOpen}>
+                {utils.remap(field.addLabel ?? 'Add', selectedOptions) as string}
+              </Button>
+            </FormButtons>
+          ) : null}
+          <ModalCard isActive={modal.enabled} onClose={modal.disable}>
+            {choices}
+          </ModalCard>
+        </>
+      )}
     </div>
   );
 }
