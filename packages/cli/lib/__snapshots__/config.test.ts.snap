@@ -5498,9 +5498,9 @@ the action will be considered unused and invalid.",
     "emit": undefined,
     "listen": {
       "data": {
-        "description": "Data that can be used in the placeholder remappers.
+        "description": "Data that can be used in the placeholder and style remappers.
 
-All elements specifying \`data-content\` will be updated each time this event is received.",
+Elements specifying \`data-content\` or \`data-style\` update each time this event is received.",
       },
     },
   },
@@ -5509,6 +5509,12 @@ All elements specifying \`data-content\` will be updated each time this event is
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "Record<string,Record<string,Remapper>>": {
+        "additionalProperties": {
+          "$ref": "#/definitions/Record%3Cstring%2CRemapper%3E",
+        },
+        "type": "object",
+      },
       "Record<string,Remapper>": {
         "additionalProperties": {
           "format": "remapper",
@@ -5524,6 +5530,12 @@ All elements specifying \`data-content\` will be updated each time this event is
       "placeholders": {
         "$ref": "#/definitions/Record%3Cstring%2CRemapper%3E",
         "description": "The placeholders that are injected on elements with the \`data-content\` property.",
+      },
+      "styles": {
+        "$ref": "#/definitions/Record%3Cstring%2CRecord%3Cstring%2CRemapper%3E%3E",
+        "description": "CSS properties mapped onto elements with a matching \`data-style\` attribute.
+
+Property names use CSS syntax, including custom properties such as \`--progress\`. Values include any required units. A null value clears the inline property.",
       },
     },
     "required": [

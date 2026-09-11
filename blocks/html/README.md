@@ -26,6 +26,26 @@ blocks:
         <span data-content="myTestContent" />
 ```
 
+To map CSS properties from initial data and subsequent `data` events, apply `data-style`:
+
+```yaml
+blocks:
+  - type: html
+    version: 0.38.2-test.0
+    parameters:
+      styles:
+        progress:
+          --progress: { prop: percentage }
+      content: |
+        <style>
+          .progress-fill { width: var(--progress); }
+        </style>
+        <div data-style="progress"><div class="progress-fill">Progress</div></div>
+```
+
+Use CSS property names, such as `background-color` or `--progress`, and values with any required
+units, such as `40%`. A null value clears the mapped inline property.
+
 To add a click handler to a button, apply the `data-click` attribute:
 
 ```html

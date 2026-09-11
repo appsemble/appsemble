@@ -22,7 +22,7 @@ bootstrap(
     actions,
     data,
     events,
-    parameters: { content, placeholders },
+    parameters: { content, placeholders, styles = {} },
     shadowRoot,
     utils: { asset, remap },
   }) => {
@@ -31,11 +31,23 @@ bootstrap(
     const contentNodes = body.querySelectorAll<HTMLElement>('[data-content]');
     const assetNodes = body.querySelectorAll<HTMLElement>('[data-asset]');
     const clickNodes = body.querySelectorAll<HTMLElement>('[data-click]');
+    const styleNodes = body.querySelectorAll<HTMLElement>('[data-style]');
 
-    // @ts-expect-error strictNullCheck
-    events.on.data((d) => populateContentNodes(contentNodes, d, placeholders, remap));
-    // @ts-expect-error strictNullCheck
-    populateContentNodes(contentNodes, data, placeholders, remap);
+    function updateData(value: any): void {
+      // @ts-expect-error strictNullCheck
+      populateContentNodes(contentNodes, value, placeholders, remap);
+      for (const styleNode of styleNodes) {
+        const styleName = styleNode.dataset.style;
+        if (styleName && has(styles, styleName)) {
+          for (const [property, mapper] of Object.entries(styles[styleName])) {
+            styleNode.style.setProperty(property, String(remap(mapper, value) ?? ''));
+          }
+        }
+      }
+    }
+
+    events.on.data(updateData);
+    updateData(data);
 
     for (const assetNode of assetNodes) {
       const assetId = assetNode.dataset.asset;

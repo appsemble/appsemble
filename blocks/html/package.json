@@ -19,5 +19,10 @@
   "dependencies": {
     "@appsemble/sdk": "0.38.2-test.0",
     "@appsemble/utils": "0.38.2-test.0"
+  },
+  "devDependencies": {
+    "@appsemble/lang-sdk": "0.38.2-test.0",
+    "@testing-library/dom": "10.4.1",
+    "vitest": "4.1.11"
   }
 }
