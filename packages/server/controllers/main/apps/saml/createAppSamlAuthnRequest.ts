@@ -40,19 +40,20 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
     { isAllowed: false },
   );
 
-  const appMember = await AppMember.findOne({
-    where: { userId: authSubject!.id },
-    attributes: ['id'],
-  });
+  const appMember = authSubject
+    ? await AppMember.findOne({
+        where: { userId: authSubject.id },
+        attributes: ['id'],
+      })
+    : null;
 
-  assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
   assertKoaCondition(appSamlSecret != null, ctx, 404, 'SAML secret not found');
 
   const loginId = `id${randomUUID()}`;
   const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);
   const samlUrl = new URL(`/api/apps/${appId}/saml/${appSamlSecretId}`, argv.host);
 
-  const authnRequest = doc.documentElement;
+  const authnRequest = doc.documentElement!;
   authnRequest.setAttributeNS(NS.xmlns, 'xmlns:saml', NS.saml);
   authnRequest.setAttribute('AssertionConsumerServiceURL', `${samlUrl}/acs`);
   authnRequest.setAttribute('Destination', appSamlSecret.ssoUrl);
@@ -86,12 +87,12 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
 
   await SamlLoginRequest.create({
     id: loginId,
-    AppMemberId: appMember.id,
     AppSamlSecretId: appSamlSecretId,
     redirectUri,
     state,
     scope,
     timezone,
+    ...(appMember ? { AppMemberId: appMember.id } : {}),
   });
 
   ctx.body = { redirect: String(redirect) };

@@ -9,7 +9,7 @@ import { databaseBuilder } from './builder/database.js';
 import { App, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { decrypt } from '../utils/crypto.js';
-import { buildPostgresUri } from '../utils/database.js';
+import { buildPostgresUri, getDirectPostgresConnection } from '../utils/database.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
 export const command = 'backup-production-data';
@@ -82,6 +82,10 @@ export async function handler(): Promise<void> {
   }
 
   const timestamp = new Date().toISOString().replaceAll(/[.:TZ-]/g, '');
+  const directDatabase = getDirectPostgresConnection({
+    dbHost: argv.databaseHost,
+    dbPort: argv.databasePort,
+  });
 
   let failed = false;
 
@@ -90,10 +94,9 @@ export async function handler(): Promise<void> {
     logger.info('Backing up main database...');
     const key = `sql/main/${argv.backupsFilename}_${timestamp}.sql.gz`;
     const mainDbUrl = buildPostgresUri({
+      ...directDatabase,
       dbUser: argv.databaseUser,
       dbPassword: argv.databasePassword,
-      dbHost: argv.databaseHost,
-      dbPort: argv.databasePort,
       dbName: argv.databaseName,
       ssl: argv.databaseSsl,
     });
@@ -112,11 +115,14 @@ export async function handler(): Promise<void> {
 
   for (const app of apps) {
     try {
+      const appDatabase =
+        app.dbHost === argv.databaseHost && app.dbPort === argv.databasePort
+          ? getDirectPostgresConnection({ dbHost: app.dbHost, dbPort: app.dbPort })
+          : { dbHost: app.dbHost, dbPort: app.dbPort };
       const appDbUrl = buildPostgresUri({
-        dbHost: app.dbHost,
+        ...appDatabase,
         dbName: app.dbName ?? `app-${app.id}`,
         dbPassword: decrypt(app.dbPassword, argv.aesSecret),
-        dbPort: app.dbPort,
         dbUser: app.dbUser,
         ssl: argv.databaseSsl,
       });

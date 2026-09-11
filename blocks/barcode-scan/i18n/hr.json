@@ -1,5 +1,5 @@
 {
   "empty": "Nema podataka za prikaz",
-  "error": "Dogodila se greška tijekom učitavanja podataka.",
-  "loading": "Učitavanje …"
+  "error": "Došlo je do problema pri učitavanju podataka.",
+  "loading": "Učitavanje…"
 }

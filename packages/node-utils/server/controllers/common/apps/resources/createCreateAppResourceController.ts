@@ -8,9 +8,12 @@ import { type Context, type Middleware } from 'koa';
 
 import {
   getResourceDefinition,
+  getSingleGroupId,
   type Options,
   processResourceBody,
   type PreparedAsset,
+  setResourceEtagHeader,
+  validateResourceReferences,
 } from '../../../../../index.js';
 
 function clonePreparedAssets(preparedAssets: PreparedAsset[]): Promise<PreparedAsset[]> {
@@ -42,7 +45,14 @@ export function createCreateAppResourceController(options: Options): Middleware 
       query,
       queryParams: { selectedGroupId },
     } = ctx;
-    const { checkAppPermissions, createAppResourcesWithAssets, getApp, getAppAssets } = options;
+    const groupId = getSingleGroupId(selectedGroupId);
+    const {
+      checkAppPermissions,
+      createAppResourcesWithAssets,
+      getApp,
+      getAppAssets,
+      getAppResources,
+    } = options;
 
     const app = await getApp({
       context: ctx,
@@ -53,7 +63,8 @@ export function createCreateAppResourceController(options: Options): Middleware 
       context: ctx,
       permissions: [`$resource:${resourceType}:create`],
       app,
-      groupId: selectedGroupId,
+      // The resource is created in a single group; authorize against that group.
+      groupId,
     });
 
     const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx);
@@ -72,6 +83,8 @@ export function createCreateAppResourceController(options: Options): Middleware 
       ctx.body = [];
       return;
     }
+
+    await validateResourceReferences(ctx, app, resourceDefinition, processedBody, getAppResources);
 
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
 
@@ -114,7 +127,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
       const createdSeedResources = await createAppResourcesWithAssets({
         app,
-        groupId: selectedGroupId,
+        groupId,
         context: ctx,
         resources: preparedSeedResources,
         preparedAssets: preparedSeedAssets,
@@ -124,13 +137,16 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
       if (!app.demoMode) {
         ctx.body = Array.isArray(processedBody) ? createdSeedResources : createdSeedResources[0];
+        if (!Array.isArray(ctx.body)) {
+          setResourceEtagHeader(ctx, ctx.body as Record<string, unknown>);
+        }
         return;
       }
     }
 
     const createdResources = await createAppResourcesWithAssets({
       app,
-      groupId: selectedGroupId,
+      groupId,
       context: ctx,
       resources: resources.map((resource) => ({
         ...resource,
@@ -144,5 +160,8 @@ export function createCreateAppResourceController(options: Options): Middleware 
     });
 
     ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];
+    if (!Array.isArray(ctx.body)) {
+      setResourceEtagHeader(ctx, ctx.body as Record<string, unknown>);
+    }
   };
 }

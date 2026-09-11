@@ -11,6 +11,7 @@ import { parse, stringify } from 'yaml';
 
 import {
   App,
+  AppBuildSnapshot,
   AppMessages,
   AppSnapshot,
   getAppDB,
@@ -20,6 +21,7 @@ import {
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
+import { resourcePartitionName } from '../../../utils/resourcePartition.js';
 import { getResourceUniqueIndexName } from '../../../utils/resourceUniqueIndexes.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
 
@@ -225,6 +227,17 @@ describe('createAppFromTemplate', () => {
         yaml: "'name': Test app\n'description': This is a test app\n\n# comment\n\npages: []\n",
       }),
     );
+
+    const latestSnapshot = await AppSnapshot.findOne({
+      include: [{ model: AppBuildSnapshot }],
+      order: [['created', 'DESC']],
+      where: { AppId: response.data.id },
+    });
+
+    expect(latestSnapshot?.AppBuildSnapshot?.buildManifestJson).toStrictEqual({
+      version: 1,
+      blockManifests: [],
+    });
   });
 
   it('should create a new app with example resources', async () => {
@@ -291,7 +304,9 @@ describe('createAppFromTemplate', () => {
 
     const { Resource: ClonedResource, sequelize } = await getAppDB(response.data.id!);
     const resources = await ClonedResource.findAll({ where: { type: 'person' } });
-    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+    const indexes = (await sequelize
+      .getQueryInterface()
+      .showIndex(resourcePartitionName('person'))) as {
       name: string;
     }[];
 
@@ -559,10 +574,13 @@ describe('createAppFromTemplate', () => {
       emailAttribute: 'emailAttribute',
       emailVerifiedAttribute: null,
       entityId: 'entityId',
+      groupAttribute: null,
       icon: 'icon',
       id: 1,
       name: 'test',
       nameAttribute: 'nameAttribute',
+      objectIdAttribute: null,
+      roleMappings: null,
       ssoUrl: 'ssoUrl',
       spCertificate: '',
       idpCertificate: '',

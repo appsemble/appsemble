@@ -4,6 +4,7 @@ icon: book
 navTitle: { translate: testPageTitle }
 hideNavTitle: true
 navigation: bottom
+parent: Available Lots
 theme:
   primaryColor: '#dfeb08'
 parameters:

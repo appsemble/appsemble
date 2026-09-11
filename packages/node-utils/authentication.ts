@@ -11,15 +11,32 @@ export function getService(remote: string): string {
   return `appsemble://${new URL(remote).host}`;
 }
 
-export async function getKeytar(): Promise<typeof import('keytar')> {
+export interface Keyring {
+  findCredentials: (service: string) => Promise<{ account: string; password: string }[]>;
+  setPassword: (service: string, account: string, password: string) => Promise<void>;
+  deletePassword: (service: string, account: string) => Promise<void>;
+}
+
+async function importKeyring(): Promise<typeof import('@napi-rs/keyring')> {
   try {
-    const { default: keytar } = await import('keytar');
-    return keytar;
+    return await import('@napi-rs/keyring');
   } catch {
     throw new AppsembleError(
-      'Couldn’t find module keytar. Either install libsecret and reinstall @appsemble/cli, or pass --client-credentials on the command line.',
+      'Couldn’t access the system keyring. Reinstall @appsemble/cli, or pass --client-credentials on the command line.',
     );
   }
+}
+
+export async function getKeyring(): Promise<Keyring> {
+  const { AsyncEntry, findCredentialsAsync } = await importKeyring();
+  return {
+    findCredentials: (service) => findCredentialsAsync(service),
+    setPassword: (service, account, password) =>
+      new AsyncEntry(service, account).setPassword(password),
+    async deletePassword(service, account) {
+      await new AsyncEntry(service, account).deletePassword();
+    },
+  };
 }
 
 async function getClientCredentials(remote: string, inputCredentials?: string): Promise<string> {
@@ -33,7 +50,7 @@ async function getClientCredentials(remote: string, inputCredentials?: string): 
     return envCredentials;
   }
 
-  const { findCredentials } = await getKeytar();
+  const { findCredentials } = await getKeyring();
   const choices = await findCredentials(getService(remote));
   if (choices.length === 0) {
     throw new AppsembleError(

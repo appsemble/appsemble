@@ -2,6 +2,206 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.38.2-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.38.2-test.0)] - 2026-09-10
+
+### Fixed
+
+- Server: Start app exports before reading assets from storage.
+
+## \[[0.38.1](https://gitlab.com/appsemble/appsemble/-/releases/0.38.1)] - 2026-09-10
+
+### Added
+
+- Server: Support the `organizations:delete` client credentials scope on organization deletion.
+
+### Changed
+
+- Server: Serve SVG app assets unmodified and sandboxed against embedded scripts.
+
+### Fixed
+
+- App: Keep a tabs page from re-running its onLoad action and re-emitting the tab list on every tab
+  switch.
+- Cli: Publish seed resources atomically and report replacement failures.
+- Cli: Upload app screenshots directly instead of copying them to a temporary file in the app
+  directory.
+- Lang-sdk: Support loop grid layouts during block schema generation.
+- Node-utils: Handle `!important` correctly in app variant style patches.
+- Server: Replace seed resources transactionally and serialize concurrent seed deletion.
+- Server: Support HEIC image assets in the Debian Docker image.
+
+## \[[0.38.0](https://gitlab.com/appsemble/appsemble/-/releases/0.38.0)] - 2026-09-03
+
+### Added
+
+- Block(`pdf-viewer`): Add `url` property to load files from assets or directly from a source.
+- App: Add `start` and `end` pages to loop pages.
+- App: Add configurable grid breakpoints via `layout.breakpoints`.
+- App: Add responsive navbar grid layouts.
+- App: Use CSS custom properties as responsive grid spacing units.
+- Cli: Warn when the server version does not match the CLI version.
+- Lang-sdk: Add `layout.breakpoints` to configure responsive grid breakpoints.
+- Lang-sdk: Add responsive navbar grid layout definitions.
+- Lang-sdk: Allow CSS custom properties as responsive grid spacing units.
+- Server: Reject an app update when existing resources would no longer satisfy a changed resource
+  schema, or when a resource type with data is removed from the app.
+- Server: Support HEAD requests to the API root.
+
+### Changed
+
+- Block(`form`): Load the markdown editor only when a form contains a markdown field.
+- App: Check the Appsemble version using a HEAD request.
+
+### Fixed
+
+- Block(`form`): Allow selecting the exact minimum and maximum dates in date fields.
+- App: Keep the app navigation layout on pages listed under the profile dropdown.
+- App: Prevent session restoration while logging out.
+- Cli: Bound server version checks and fall back to GET for servers without HEAD support.
+
+## \[[0.37.6](https://gitlab.com/appsemble/appsemble/-/releases/0.37.6)] - 2026-08-20
+
+### Added
+
+- Utils: Support reporting resource paths for serialized assets.
+
+### Changed
+
+- Block(`table`): Set `scrollable` to true by default.
+- Server: Stop cleaning up unresolved custom domains during deployments.
+- Studio: In the app editor, turn the `Publish` button into a loader while it's busy publishing.
+
+### Fixed
+
+- Block(`cards`): Remove the reset event listener when the cards block unmounts.
+- React-components: Render validation errors for file upload fields.
+- Studio: Align documentation anchors consistently before headings.
+- Studio: Show resource validation errors below their corresponding fields.
+- Webpack-core: Stop Sass from emitting a byte order mark that invalidates a bundled CSS rule.
+
+## \[[0.37.5](https://gitlab.com/appsemble/appsemble/-/releases/0.37.5)] - 2026-08-12
+
+### Added
+
+- Block(`detail-viewer`): Add an HD download control to image previews.
+- Block(`feed`): Add an HD download control to image previews.
+- Block(`footer`): Add an HD download control to image previews.
+- Block(`form`): Add an HD download control to image file previews.
+- Block(`image`): Add an HD download control to fullscreen image previews.
+- Block(`table`): Add an HD download control to image previews.
+- App: Expose the page grid spacing unit as a CSS custom property.
+- Preact-components: Add an HD download control to image previews.
+- Server: Allow app members to download original app assets.
+
+### Changed
+
+- Block(`form`): Remove `ImageSizeSteps` option from the `Image` parameter in favor of the generic
+  `number` option.
+- Block(`list`): Remove `ImageSizeSteps` option from the `Image` parameter in favor of the generic
+  `number` option.
+- Preact-components: Remove `ImageSizeSteps` option from `ImageComponent` in favor of the generic
+  `number` option.
+
+### Fixed
+
+- Block(`form`): Block form submission while validation actions are pending.
+- Cli: Resolve Webpack loaders and default PostCSS plugins from the Appsemble CLI, making a PostCSS
+  config in the served project optional.
+- Cli: Resolve `asset()` functions in app styles served by `appsemble serve`, like the Appsemble
+  server does.
+- Cli: The development server (`appsemble serve`) reflects the request origin in CORS responses, so
+  credentialed app requests such as `/api/apps/:id/variables` no longer fail against the wildcard.
+- Studio: Download app assets through authenticated Studio requests.
+- Studio: Hide organization billing tabs from non-members.
+
+## \[[0.37.4](https://gitlab.com/appsemble/appsemble/-/releases/0.37.4)] - 2026-07-31
+
+### Changed
+
+- Block(`form`): Add more size options to the image `size` parameter: `auto`, `number` and more
+  steps (`256`, `512`).
+- Block(`list`): Add more size options to the image `size` parameter: `auto`, `number` and more
+  steps (`256`, `512`).
+- Preact-components: Add more size options to `ImageComponent`: `auto`, `number` and more steps
+  (`256`, `512`).
+- Server: Cascade delete app email quota logs when deleting an app.
+
+### Fixed
+
+- Block(`form`): Allow appending files to repeated file fields with existing assets.
+- Node-utils: Follow system screen orientation settings in web app manifests.
+- Server: Fix app member session loss during concurrent refreshes.
+- Server: Keep patched demo resource assets reachable.
+
+## \[[0.37.3](https://gitlab.com/appsemble/appsemble/-/releases/0.37.3)] - 2026-07-29
+
+## \[[0.37.2](https://gitlab.com/appsemble/appsemble/-/releases/0.37.2)] - 2026-07-22
+
+### Fixed
+
+- Server: Route PostgreSQL backup and restore commands around PgBouncer and stop restores on SQL
+  errors.
+
+## \[[0.37.1](https://gitlab.com/appsemble/appsemble/-/releases/0.37.1)] - 2026-07-18
+
+### Added
+
+- Server: Route database connections through PgBouncer when connection pooling is enabled in the
+  Helm chart.
+
+## \[[0.37.0](https://gitlab.com/appsemble/appsemble/-/releases/0.37.0)] - 2026-07-14
+
+### Added
+
+- Block(`form`): Add `minRows` option to the markdown field to set the editor's minimum height in
+  lines.
+- Block(`list`): Add `openPreview` option to image fields to trigger the item's action instead of
+  opening a fullscreen preview.
+
+### Changed
+
+- App: Expose URL query parameters to block page parameters.
+- Service-worker: Append `utm_source=notification` to URLs opened from notification clicks.
+- Web-utils: Stop reporting failed requests that never reached the server to Sentry.
+
+### Fixed
+
+- Block(`data-loader`): Drop the result of a data load when a newer load started meanwhile, so rapid
+  refreshes no longer overwrite newer data with stale responses.
+- Block(`filter`): Drop the result of a filter load when a newer load started meanwhile, so rapid
+  interactions no longer overwrite newer data with stale responses.
+- App: Remove a block's event listeners and disable its emitters when the block is unmounted, so
+  blocks from a previously shown tab or page can no longer receive or emit events on the current
+  one.
+- App: Stop the event action from emitting once its block or page is unmounted, so slow action
+  chains started on a previous tab or page no longer overwrite the current view, while their
+  remaining work such as resource writes still completes.
+- Cli: Convert local file paths to file URLs on Windows.
+- Node-utils: Apply resource schema property defaults when creating or replacing resources.
+- Server: Order resource positions within the group set by `enforceOrderingGroupByFields`.
+- Server: Reject resource creation, update, and patch requests that reference non-existent
+  resources.
+- Server: Strip the id metadata field from the stored resource data on create, update, and patch.
+
+## \[[0.36.10](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10)] - 2026-07-07
+
+## \[[0.36.10-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10-test.4)] - 2026-07-02
+
+### Added
+
+- Block(`form`): Add `disableNativePicker` option to date fields to keep the Appsemble picker on
+  mobile.
+- Block(`form`): Add `disabled` property to date picker decorations to make their date unselectable.
+
+### Fixed
+
+- Block(`form`): Fix a `self.config is undefined` crash when a date field's constraints change, by
+  updating the flatpickr instance in place instead of recreating it.
+- Block(`form`): In date fields, set the default value to undefined if today falls under one of the
+  disabled days.
+- Preact-components: Render the date picker with flatpickr instead of the native mobile picker by
+  default.
+
 ## \[[0.36.10-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10-test.3)] - 2026-05-21
 
 ## \[[0.36.10-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.36.10-test.2)] - 2026-05-20

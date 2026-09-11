@@ -38,7 +38,14 @@ export const AppMemberInfo: OpenAPIV3.NonArraySchemaObject = {
     },
     role: {
       type: 'string',
-      description: 'The role of the app member within the app',
+      description: 'The role of the app member within the app. Deprecated: use roles instead.',
+    },
+    roles: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+      description: 'The direct roles of the app member within the app.',
     },
     properties: {
       type: 'object',

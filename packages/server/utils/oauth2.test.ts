@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { getAccessToken, getUserInfo, hasScope } from './oauth2.js';
 
-const mock = new MockAdapter(axios);
+const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
 
 describe('oauth2', () => {
   afterEach(() => {
@@ -82,6 +82,53 @@ describe('oauth2', () => {
         locale: undefined,
         subscribed: false,
         zoneinfo: 'Europe/Amsterdam',
+      });
+    });
+
+    it('should read groups from the id token', async () => {
+      const userInfo = await getUserInfo(
+        '',
+        jwt.sign(
+          {
+            email: 'me@example.com',
+            email_verified: true,
+            groups: ['/Parent/Child', '/Users'],
+            name: 'Me',
+            picture: 'https://example.com/me.png',
+            sub: '42',
+          },
+          'secret',
+        ),
+      );
+
+      expect(userInfo).toMatchObject({
+        groups: ['/Parent/Child', '/Users'],
+      });
+    });
+
+    it('should not let an empty groups list shadow a later source with real groups', async () => {
+      mock.onGet('/userinfo').reply(() => [
+        200,
+        {
+          groups: ['/Managers', '/Users'],
+        },
+      ]);
+      const userInfo = await getUserInfo(
+        '',
+        jwt.sign(
+          {
+            email: 'me@example.com',
+            groups: [],
+            name: 'Me',
+            picture: 'https://example.com/me.png',
+            sub: '42',
+          },
+          'secret',
+        ),
+        '/userinfo',
+      );
+      expect(userInfo).toMatchObject({
+        groups: ['/Managers', '/Users'],
       });
     });
 

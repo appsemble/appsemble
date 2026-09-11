@@ -1,19 +1,19 @@
 {
   "app": {
-    "description": "Demonstracija pokretača resursa",
-    "name": "Pokretači",
-    "pages.owners-pets": "Životinje vlasnika",
+    "description": "Demonstracija okidača resursa",
+    "name": "Okidači",
+    "pages.owners-pets": "Omiljene životinje vlasnika",
     "pages.owners-pets.tabs.0": "Vlasnici",
-    "pages.owners-pets.tabs.1": "Kućne životinje",
-    "pages.owners-pets.tabs.2": "Domaće životinje",
-    "pages.owners-pets.tabs.3": "Divlje životinje"
+    "pages.owners-pets.tabs.1": "Kućni ljubimci",
+    "pages.owners-pets.tabs.2": "Seoski kućni ljubimci",
+    "pages.owners-pets.tabs.3": "Divlje kućne ljubimce"
   },
   "messageIds": {
-    "cancel": "Odustani",
+    "cancel": "Otkaži",
     "configDelete": "Izbriši",
-    "confirmDeleteFarmPet": "Stvarno želiš izbrisati sljedeću domaću životinju?",
-    "confirmDeleteHousePet": "Stvarno želiš izbrisati sljedeću kućnu životinju?",
-    "confirmDeleteOwner": "Stvarno želiš izbrisati sljedećeg vlasnika?",
-    "confirmDeleteWildPet": "Stvarno želiš izbrisati sljedeću divlju životinju?"
+    "confirmDeleteFarmPet": "Jeste li sigurni da želite izbrisati sljedeću farmsku životinju?",
+    "confirmDeleteHousePet": "Jeste li sigurni da želite izbrisati sljedeću kućnu ljubimicu?",
+    "confirmDeleteOwner": "Jeste li sigurni da želite izbrisati sljedećeg vlasnika?",
+    "confirmDeleteWildPet": "Jeste li sigurni da želite izbrisati sljedeću divlju životinju?"
   }
 }

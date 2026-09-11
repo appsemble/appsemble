@@ -1770,16 +1770,14 @@ export const appPatches: Patch[] = [
             typeof steps[6] === 'number' &&
             steps[7] === 'roles';
 
-          if (
-            !(
-              isPageRoles ||
-              isPageBlockRoles ||
-              isSubPageRoles ||
-              isSubPageBlockRoles ||
-              isDynamicTabPageRoles ||
-              isDynamicTabPageBlockRoles
-            )
-          ) {
+          if (!(
+            isPageRoles ||
+            isPageBlockRoles ||
+            isSubPageRoles ||
+            isSubPageBlockRoles ||
+            isDynamicTabPageRoles ||
+            isDynamicTabPageBlockRoles
+          )) {
             continue;
           }
           document.deleteIn(path);

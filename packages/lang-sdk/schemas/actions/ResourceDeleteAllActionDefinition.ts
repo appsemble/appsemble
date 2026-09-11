@@ -19,6 +19,11 @@ export const ResourceDeleteAllActionDefinition = extendJSONSchema(
         type: 'string',
         description: 'The type of the resource to delete.',
       },
+      selectedGroupId: {
+        $ref: '#/components/schemas/RemapperDefinition',
+        description:
+          'The ID of the group to scope the request to. Defaults to the currently selected group.',
+      },
     },
   },
   ['url', 'method'],

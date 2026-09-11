@@ -1,5 +1,5 @@
 {
   "buttonLabel": "Aktualisieren",
-  "newMessage": "Neue Daten sind verfügbar",
-  "updatedMessage": "Daten wurden geändert"
+  "newMessage": "Es liegen neue Daten vor",
+  "updatedMessage": "Die Daten wurden geändert."
 }

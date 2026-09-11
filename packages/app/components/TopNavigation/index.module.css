@@ -1,0 +1,20 @@
+.active {
+  box-shadow: inset 0 -3px 0 0 currentcolor;
+}
+
+.dropdownButton {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+@media screen and (width < 1024px) {
+  .menu {
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 100%;
+  }
+}

@@ -1,10 +1,86 @@
 import { type Remapper } from '@appsemble/lang-sdk';
+import { type AppMemberGroup } from '@appsemble/types';
 import axios from 'axios';
 
 import { type ActionCreator } from './index.js';
 import { request } from './request.js';
 import { type ServiceWorkerRegistrationContextType } from '../../types.js';
 import { apiUrl, appId } from '../settings.js';
+
+/**
+ * Resolve the `selectedGroupId` query value.
+ *
+ * The value defined on the action takes precedence. Otherwise it is inferred from the
+ * `selectedGroupId` input property, falling back to the app member's currently selected group.
+ *
+ * @param selectedGroup The app member's currently selected group, if any.
+ * @param override The `selectedGroupId` remapper defined on the action, if any.
+ * @returns A remapper resolving to the effective selected group id.
+ */
+function selectedGroupIdRemapper(
+  selectedGroup: AppMemberGroup | undefined,
+  override: Remapper | undefined,
+): Remapper {
+  if (override != null) {
+    return override;
+  }
+  return {
+    if: {
+      condition: { defined: { prop: 'selectedGroupId' } },
+      then: { prop: 'selectedGroupId' },
+      else: selectedGroup?.id ?? null,
+    },
+  };
+}
+
+function getOptimisticRetries(optimistic: { retries?: number } | undefined): number {
+  return Math.max(0, optimistic?.retries ?? 0);
+}
+
+function isPreconditionFailed(error: unknown): boolean {
+  if (error && typeof error === 'object') {
+    const { response, status } = error as { response?: { status?: number }; status?: number };
+    return status === 412 || response?.status === 412;
+  }
+  return false;
+}
+
+function withResourceContext(
+  context: Record<string, any> | undefined,
+  resource: unknown,
+): Record<string, any> {
+  return {
+    ...context,
+    resource,
+  };
+}
+
+/**
+ * Inject the latest resource's `$etag` into the caller's `data` so that the
+ * implicit `If-Match` precondition in `request.ts` picks it up.
+ *
+ * @param data The original write payload.
+ * @param latest The latest resource fetched before the write.
+ * @returns The payload with the latest `$etag`, or the original payload when
+ *   either side is not an object.
+ */
+function mergeImplicitEtag(data: unknown, latest: unknown): unknown {
+  if (
+    data &&
+    typeof data === 'object' &&
+    !Array.isArray(data) &&
+    latest &&
+    typeof latest === 'object' &&
+    !Array.isArray(latest) &&
+    typeof (latest as Record<string, unknown>).$etag === 'string'
+  ) {
+    return {
+      ...(data as Record<string, unknown>),
+      $etag: (latest as Record<string, unknown>).$etag,
+    };
+  }
+  return data;
+}
 
 export const historyGet: ActionCreator<'resource.history.get'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
@@ -17,9 +93,17 @@ export const historyGet: ActionCreator<'resource.history.get'> = (args) => {
     ...args,
     definition: {
       ...definition,
-      query: selectedGroupId
-        ? { 'object.assign': { selectedGroupId: selectedGroupId.id } }
-        : undefined,
+      query:
+        selectedGroupId || definition.selectedGroupId
+          ? {
+              'object.assign': {
+                selectedGroupId: selectedGroupIdRemapper(
+                  selectedGroupId,
+                  definition.selectedGroupId,
+                ),
+              },
+            }
+          : undefined,
       method: 'GET',
       proxy: false,
       type: 'request',
@@ -55,8 +139,12 @@ export const get: ActionCreator<'resource.get'> = (args) => {
   }
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
-    query.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  if (selectedGroup || definition.selectedGroupId) {
+    query.push({
+      'object.assign': {
+        selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
+      },
+    });
   }
 
   if (selectedGroup) {
@@ -105,8 +193,12 @@ export const query: ActionCreator<'resource.query'> = (args) => {
   }
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
-    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  if (selectedGroup || definition.selectedGroupId) {
+    queryRemapper.push({
+      'object.assign': {
+        selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
+      },
+    });
   }
 
   return request({
@@ -142,8 +234,12 @@ export const count: ActionCreator<'resource.count'> = (args) => {
   }
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
-    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  if (selectedGroup || definition.selectedGroupId) {
+    queryRemapper.push({
+      'object.assign': {
+        selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
+      },
+    });
   }
 
   return request({
@@ -174,8 +270,12 @@ export const create: ActionCreator<'resource.create'> = (args) => {
     .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
-    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  if (selectedGroup || definition.selectedGroupId) {
+    queryRemapper.push({
+      'object.assign': {
+        selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
+      },
+    });
   }
 
   const [dispatch, properties] = request({
@@ -207,29 +307,72 @@ export const update: ActionCreator<'resource.update'> = (args) => {
   const queryRemapper: Remapper = ([] as any[])
     .concat(definition?.query ?? resource?.update?.query ?? null)
     .filter(Boolean);
+  const optimisticQueryRemapper: Remapper = ([] as any[])
+    .concat(definition?.query ?? resource?.update?.query ?? null)
+    .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
-    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  if (selectedGroup || definition.selectedGroupId) {
+    queryRemapper.push({
+      'object.assign': {
+        selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
+      },
+    });
   }
 
-  return request({
+  const writeDefinition = {
+    ...definition,
+    query: queryRemapper.length ? queryRemapper : undefined,
+    method,
+    proxy: false,
+    type: 'request',
+    url: {
+      'string.format': {
+        template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+        values: { id: { prop: id as string } },
+      },
+    },
+    schema: resource?.schema,
+  } as const;
+
+  const [writeResource, writeProperties] = request({
+    ...args,
+    definition: writeDefinition,
+  });
+
+  if (!definition.optimistic) {
+    return [writeResource, writeProperties];
+  }
+
+  const [getResource] = get({
     ...args,
     definition: {
-      ...definition,
-      query: queryRemapper.length ? queryRemapper : undefined,
-      method,
-      proxy: false,
-      type: 'request',
-      url: {
-        'string.format': {
-          template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
-          values: { id: { prop: id as string } },
-        },
-      },
-      schema: resource?.schema,
+      type: 'resource.get',
+      query: optimisticQueryRemapper.length ? optimisticQueryRemapper : undefined,
+      resource: definition.resource,
+      selectedGroupId: definition.selectedGroupId,
     },
   });
+  const retries = getOptimisticRetries(definition.optimistic);
+
+  return [
+    async (data, context) => {
+      for (let attempt = 0; ; attempt += 1) {
+        const latest = await getResource(data, context);
+        try {
+          return await writeResource(
+            mergeImplicitEtag(data, latest),
+            withResourceContext(context, latest),
+          );
+        } catch (error) {
+          if (!isPreconditionFailed(error) || attempt >= retries) {
+            throw error;
+          }
+        }
+      }
+    },
+    writeProperties,
+  ];
 };
 
 export const updateGroup: ActionCreator<'resource.update.group'> = (args) => {
@@ -237,8 +380,12 @@ export const updateGroup: ActionCreator<'resource.update.group'> = (args) => {
   const { query: actionQuery, resource: resourceType } = definition;
   const queryRemapper = ([] as any[]).concat(actionQuery).filter(Boolean);
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
-    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  if (selectedGroup || definition.selectedGroupId) {
+    queryRemapper.push({
+      'object.assign': {
+        selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
+      },
+    });
   }
   const resource = appDefinition.resources?.[resourceType];
   const method = 'PUT';
@@ -274,8 +421,12 @@ export const updatePositions: ActionCreator<'resource.update.positions'> = (args
   const { query: actionQuery, resource: resourceType } = definition;
   const queryRemapper = ([] as any[]).concat(actionQuery).filter(Boolean);
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
-    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  if (selectedGroup || definition.selectedGroupId) {
+    queryRemapper.push({
+      'object.assign': {
+        selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
+      },
+    });
   }
   const resource = appDefinition.resources?.[resourceType];
   const method = 'PUT';
@@ -288,8 +439,12 @@ export const updatePositions: ActionCreator<'resource.update.positions'> = (args
       ...definition,
       body: {
         'object.from': {
-          prevResourcePosition: { prop: 'prevResourcePosition' },
-          nextResourcePosition: { prop: 'nextResourcePosition' },
+          prevResourcePosition: {
+            prop: definition.order === 'desc' ? 'nextResourcePosition' : 'prevResourcePosition',
+          },
+          nextResourcePosition: {
+            prop: definition.order === 'desc' ? 'prevResourcePosition' : 'nextResourcePosition',
+          },
         },
       },
       method,
@@ -321,29 +476,73 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
   const queryRemapper: Remapper = ([] as any[])
     .concat(definition?.query ?? resource?.patch?.query ?? null)
     .filter(Boolean);
+  const optimisticQueryRemapper: Remapper = ([] as any[])
+    .concat(definition?.query ?? resource?.patch?.query ?? null)
+    .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
-    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  if (selectedGroup || definition.selectedGroupId) {
+    queryRemapper.push({
+      'object.assign': {
+        selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
+      },
+    });
   }
 
-  return request({
+  const writeDefinition = {
+    ...definition,
+    query: queryRemapper.length ? queryRemapper : undefined,
+    method,
+    proxy: false,
+    type: 'request',
+    url: {
+      'string.format': {
+        template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+        values: { id: definition.id ?? { prop: id as string } },
+      },
+    },
+    schema: resource?.schema,
+  } as const;
+
+  const [writeResource, writeProperties] = request({
+    ...args,
+    definition: writeDefinition,
+  });
+
+  if (!definition.optimistic) {
+    return [writeResource, writeProperties];
+  }
+
+  const [getResource] = get({
     ...args,
     definition: {
-      ...definition,
-      query: queryRemapper.length ? queryRemapper : undefined,
-      method,
-      proxy: false,
-      type: 'request',
-      url: {
-        'string.format': {
-          template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
-          values: { id: definition.id ?? { prop: id as string } },
-        },
-      },
-      schema: resource?.schema,
+      id: definition.id,
+      query: optimisticQueryRemapper.length ? optimisticQueryRemapper : undefined,
+      resource: definition.resource,
+      selectedGroupId: definition.selectedGroupId,
+      type: 'resource.get',
     },
   });
+  const retries = getOptimisticRetries(definition.optimistic);
+
+  return [
+    async (data, context) => {
+      for (let attempt = 0; ; attempt += 1) {
+        const latest = await getResource(data, context);
+        try {
+          return await writeResource(
+            mergeImplicitEtag(data, latest),
+            withResourceContext(context, latest),
+          );
+        } catch (error) {
+          if (!isPreconditionFailed(error) || attempt >= retries) {
+            throw error;
+          }
+        }
+      }
+    },
+    writeProperties,
+  ];
 };
 
 export const remove: ActionCreator<'resource.delete'> = (args) => {
@@ -362,8 +561,12 @@ export const remove: ActionCreator<'resource.delete'> = (args) => {
     .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
-    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  if (selectedGroup || definition.selectedGroupId) {
+    queryRemapper.push({
+      'object.assign': {
+        selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
+      },
+    });
   }
 
   return request({
@@ -398,8 +601,12 @@ export const removeAll: ActionCreator<'resource.delete.all'> = (args) => {
 
   const queryRemapper: Remapper = [];
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
-    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  if (selectedGroup || definition.selectedGroupId) {
+    queryRemapper.push({
+      'object.assign': {
+        selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
+      },
+    });
   }
 
   const [queryExistingResources] = query({
@@ -446,8 +653,12 @@ export const removeBulk: ActionCreator<'resource.delete.bulk'> = (args) => {
 
   const queryRemapper: Remapper = [];
   const selectedGroup = getAppMemberSelectedGroup?.();
-  if (selectedGroup) {
-    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  if (selectedGroup || definition.selectedGroupId) {
+    queryRemapper.push({
+      'object.assign': {
+        selectedGroupId: selectedGroupIdRemapper(selectedGroup, definition.selectedGroupId),
+      },
+    });
   }
 
   return [

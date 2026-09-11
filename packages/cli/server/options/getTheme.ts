@@ -2,10 +2,7 @@ import { type GetThemeParams, type Theme as ThemeInterface } from '@appsemble/no
 
 import { Theme } from '../models/Theme.js';
 
-export async function getTheme({ theme }: GetThemeParams): Promise<ThemeInterface> {
+export async function getTheme({ theme }: GetThemeParams): Promise<ThemeInterface | null> {
   const persistedTheme = await Theme.findOne({ where: theme });
-  return {
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-    css: persistedTheme ? persistedTheme.css : null,
-  };
+  return persistedTheme && { css: persistedTheme.css };
 }

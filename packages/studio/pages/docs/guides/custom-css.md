@@ -9,6 +9,7 @@ gets injected during the runtime of an application.
 - [Applying themes for an application](#applying-themes-for-an-application)
 - [Applying themes to specific blocks or pages](#applying-themes-to-specific-blocks-or-pages)
 - [Appsemble classes](#appsemble-classes)
+- [Appsemble CSS functions](#appsemble-css-functions)
 - [Using the CLI](#using-the-cli)
 
 ## Hierarchy
@@ -151,6 +152,23 @@ Appsemble.
 | `.bottom-nav-item`      | Bottom app navigation | A navigation list item.                 |
 | `.bottom-nav-item-link` | Bottom app navigation | A link inside a list item.              |
 | `.appsemble-login`      | The login page        | A container element for the login page. |
+
+## Appsemble CSS functions
+
+Appsemble supports the following CSS functions to simplify referencing app-specific data.
+
+### `asset()`
+
+The `asset()` function can be used to reference app assets. It can be used wherever a URL is
+expected.
+
+```css copy
+.my-class {
+  background-image: asset('hero-bg');
+}
+```
+
+For more information, see the [assets documentation](../app/assets.md#custom-css).
 
 ## Using the CLI
 

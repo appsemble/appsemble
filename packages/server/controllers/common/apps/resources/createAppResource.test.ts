@@ -14,6 +14,7 @@ import {
   OrganizationMember,
   type User,
 } from '../../../../models/index.js';
+import { syncAppDefinitionIndexes } from '../../../../utils/appDefinitionIndexes.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { syncResourceUniqueIndexes } from '../../../../utils/resourceUniqueIndexes.js';
@@ -78,6 +79,7 @@ describe('createAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
       Content-Type: application/json; charset=utf-8
+      Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -86,6 +88,66 @@ describe('createAppResource', () => {
         "id": 1,
       }
     `);
+    expect(response.headers.etag).toBeDefined();
+  });
+
+  it('should apply schema property defaults for properties missing from the request', async () => {
+    const definition = {
+      ...app.definition,
+      resources: {
+        ...app.definition.resources,
+        testResource: {
+          ...app.definition.resources!.testResource,
+          schema: {
+            ...app.definition.resources!.testResource.schema,
+            properties: {
+              ...app.definition.resources!.testResource.schema.properties,
+              pinned: { type: 'boolean', default: false },
+            },
+          },
+        },
+      },
+    };
+    await app.update({ definition });
+
+    authorizeStudio();
+    const response = await request.post<ResourceType>(
+      `/api/apps/${app.id}/resources/testResource`,
+      {
+        foo: 'bar',
+      },
+    );
+
+    expect(response.status).toBe(201);
+    expect(response.data).toStrictEqual(expect.objectContaining({ foo: 'bar', pinned: false }));
+
+    const getResponse = await request.get<ResourceType>(
+      `/api/apps/${app.id}/resources/testResource/${response.data.id}`,
+    );
+
+    expect(getResponse.status).toBe(200);
+    expect(getResponse.data).toStrictEqual(expect.objectContaining({ foo: 'bar', pinned: false }));
+
+    const explicitResponse = await request.post<ResourceType>(
+      `/api/apps/${app.id}/resources/testResource`,
+      { foo: 'bar', pinned: true },
+    );
+
+    expect(explicitResponse.status).toBe(201);
+    expect(explicitResponse.data).toStrictEqual(expect.objectContaining({ pinned: true }));
+  });
+
+  it('should not store the id sent in the request body in the resource data', async () => {
+    const { Resource } = await getAppDB(app.id);
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, {
+      id: 999,
+      foo: 'I am Foo.',
+    });
+    expect(response.status).toBe(201);
+
+    const resource = (await Resource.findByPk(response.data.id))!;
+    expect(resource.data).toStrictEqual({ foo: 'I am Foo.' });
   });
 
   it('should validate resources', async () => {
@@ -188,6 +250,143 @@ describe('createAppResource', () => {
     `);
   });
 
+  it('should reject a resource referencing a non-existent resource', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceB`, {
+      bar: 'test',
+      testResourceId: 1337,
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "instance": 1337,
+              "message": "does not reference an existing resource of type testResource",
+              "path": [
+                "testResourceId",
+              ],
+              "property": "instance.testResourceId",
+              "stack": "instance.testResourceId does not reference an existing resource of type testResource",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should create a resource referencing an existing resource', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceB`, {
+      bar: 'test',
+      testResourceId: testResource.id,
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+      Etag: "ju3nRRge1s5fWZMieCqSBgnVUk-PIQbXGtWXlgZRFVk"
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "bar": "test",
+        "id": 2,
+        "testResourceId": 1,
+      }
+    `);
+  });
+
+  it('should reject an array of resources containing a broken reference', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceB`, [
+      { bar: 'test', testResourceId: testResource.id },
+      { bar: 'test', testResourceId: 1337 },
+    ]);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "instance": 1337,
+              "message": "does not reference an existing resource of type testResource",
+              "path": [
+                1,
+                "testResourceId",
+              ],
+              "property": "instance[1].testResourceId",
+              "stack": "instance[1].testResourceId does not reference an existing resource of type testResource",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should not treat an empty string reference as a broken reference', async () => {
+    const definition = {
+      ...app.definition,
+      resources: {
+        ...app.definition.resources,
+        testResourceB: {
+          ...app.definition.resources!.testResourceB,
+          schema: {
+            type: 'object',
+            required: ['bar'],
+            properties: { bar: { type: 'string' }, testResourceId: { type: 'string' } },
+          },
+        },
+      },
+    };
+    await app.update({ definition });
+
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceB`, {
+      bar: 'test',
+      testResourceId: '',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+      Etag: "zeuDh2ObGiE67ChG4dTnKbpNk3sXTSfschV84osOcfQ"
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "bar": "test",
+        "id": 1,
+        "testResourceId": "",
+      }
+    `);
+  });
+
   it('should reject duplicate resources for unique constraints', async () => {
     const definition = {
       ...app.definition,
@@ -200,7 +399,8 @@ describe('createAppResource', () => {
       },
     };
     await app.update({ definition });
-    await syncResourceUniqueIndexes(app.id, undefined, definition.resources);
+    const { sequelize } = await getAppDB(app.id);
+    await syncResourceUniqueIndexes(sequelize, undefined, definition.resources);
 
     authorizeStudio();
     const firstResponse = await request.post(`/api/apps/${app.id}/resources/testResource`, {
@@ -277,6 +477,7 @@ describe('createAppResource', () => {
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
       Content-Type: application/json; charset=utf-8
+      Etag: "wrHuBm06ZaOOoByzn1-SiAbZHc1b8Uly1BL1nQMYeBM"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -295,9 +496,13 @@ describe('createAppResource', () => {
       $expires: '1970-01-01T00:05:00.000Z',
     });
 
+    expect(response.headers.etag).toMatch(/^".+"$/);
+    response.headers.etag = '<etag>';
+
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
       Content-Type: application/json; charset=utf-8
+      Etag: <etag>
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -369,6 +574,7 @@ describe('createAppResource', () => {
     expect(assets).toStrictEqual([
       expect.objectContaining({
         ResourceId: 1,
+        ResourceType: 'testAssets',
         clonable: false,
         AppMemberId: null,
         GroupId: null,
@@ -693,6 +899,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -734,6 +941,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -875,6 +1083,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -901,6 +1110,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -999,6 +1209,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "joT8Sq8VwtzqGgcxV0GEiTpXBrAI5IZKJ3elL6SbZ8M"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -1042,6 +1253,7 @@ describe('createAppResource', () => {
       `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
+        Etag: "5PQbHLNnzGyNnHiR7FlWnCLC8Mru4rVIb6kyjVFW340"
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -1178,6 +1390,78 @@ describe('createAppResource', () => {
       .keys()
       .map((item) => ({ foo: `foo ${item}`, bar: item % 2 === 0 ? item + 1 : null }));
     await request.post<ResourceType>(`api/apps/${testApp.id}/resources/testResource`, resources);
+  });
+
+  it('should number resources whose ordering group field is empty as their own group', async () => {
+    authorizeStudio();
+    const resources = {
+      ...app.definition.resources,
+      positioned: {
+        positioning: true,
+        enforceOrderingGroupByFields: ['groupField'],
+        schema: {
+          type: 'object' as const,
+          properties: { groupField: { type: 'string' as const } },
+        },
+      },
+    };
+    await app.update({ definition: { ...app.definition, resources } });
+    const { Resource, sequelize } = await getAppDB(app.id);
+    await sequelize.transaction((transaction) =>
+      syncAppDefinitionIndexes({ resources, sequelize, transaction }),
+    );
+
+    // An empty ordering field value is a value like any other: these two belong to the same
+    // ordering group, and to a different one than a resource that omits the field.
+    const first = await request.post(`/api/apps/${app.id}/resources/positioned`, {
+      groupField: '',
+    });
+    const second = await request.post(`/api/apps/${app.id}/resources/positioned`, {
+      groupField: '',
+    });
+    const other = await request.post(`/api/apps/${app.id}/resources/positioned`, {});
+
+    expect([first.status, second.status, other.status]).toStrictEqual([201, 201, 201]);
+
+    const positions = await Resource.findAll({
+      where: { type: 'positioned' },
+      order: [['id', 'ASC']],
+    });
+    expect(positions.map(({ Position }) => String(Position))).toStrictEqual(['10', '20', '10']);
+  });
+
+  it('should number seed resources independently of the resources app members create', async () => {
+    authorizeStudio();
+    const resources = {
+      ...app.definition.resources,
+      positioned: {
+        positioning: true,
+        schema: { type: 'object' as const, properties: { foo: { type: 'string' as const } } },
+      },
+    };
+    await app.update({ definition: { ...app.definition, resources } });
+    const { Resource, sequelize } = await getAppDB(app.id);
+    await sequelize.transaction((transaction) =>
+      syncAppDefinitionIndexes({ resources, sequelize, transaction }),
+    );
+
+    const live = await request.post(`/api/apps/${app.id}/resources/positioned`, { foo: 'live' });
+    const seeded = await request.post(
+      `/api/apps/${app.id}/resources/positioned`,
+      { foo: 'seeded' },
+      { params: { seed: true } },
+    );
+
+    expect([live.status, seeded.status]).toStrictEqual([201, 201]);
+
+    const positions = await Resource.findAll({
+      where: { type: 'positioned' },
+      order: [['id', 'ASC']],
+    });
+    expect(positions.map(({ Position, seed }) => [String(Position), seed])).toStrictEqual([
+      ['10', false],
+      ['10', true],
+    ]);
   });
 
   it('should create seed resources with assets and ephemeral resources with assets in demo apps', async () => {

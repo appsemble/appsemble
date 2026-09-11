@@ -1,6 +1,7 @@
 import {
   Button,
   FormOutput,
+  JSONField,
   ModalCard,
   SimpleForm,
   SimpleFormField,
@@ -82,7 +83,13 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
   return (
     <ModalCard
       component={SimpleForm}
-      defaultValues={secret}
+      defaultValues={{
+        ...secret,
+        emailVerifiedAttribute: secret.emailVerifiedAttribute ?? '',
+        groupAttribute: secret.groupAttribute ?? '',
+        objectIdAttribute: secret.objectIdAttribute ?? '',
+        roleMappings: secret.roleMappings ?? [],
+      }}
       footer={
         <SimpleModalFooter
           cancelLabel={<FormattedMessage {...messages.close} />}
@@ -168,6 +175,25 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
         icon="user"
         label={<FormattedMessage {...messages.objectIdAttributeLabel} />}
         name="objectIdAttribute"
+      />
+      <SimpleFormField
+        datalist={[
+          'groups',
+          'memberOf',
+          'http://schemas.microsoft.com/ws/2008/06/identity/claims/groups',
+        ]}
+        disabled={app.locked !== 'unlocked'}
+        help={<FormattedMessage {...messages.groupAttributeHelp} />}
+        icon="users"
+        label={<FormattedMessage {...messages.groupAttributeLabel} />}
+        name="groupAttribute"
+      />
+      <SimpleFormField
+        component={JSONField}
+        disabled={app.locked !== 'unlocked'}
+        help={<FormattedMessage {...messages.roleMappingsHelp} />}
+        label={<FormattedMessage {...messages.roleMappingsLabel} />}
+        name="roleMappings"
       />
       <SimpleFormField
         className={styles.certificate}

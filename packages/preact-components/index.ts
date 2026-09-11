@@ -38,6 +38,7 @@ export * from './useClickOutside.js';
 export * from './useDebounce.js';
 export * from './utils.js';
 export * from './applyRefs.js';
+export * from './AppAssetDownloadButton/index.js';
 export * from './useCombinedRefs.js';
 export * from './TagsField/index.js';
 export * from './ImageComponent/index.js';

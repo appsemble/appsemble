@@ -142,7 +142,7 @@ declare module 'koas-parameters' {
     roles?: string;
     includeMessages: boolean;
     demo: boolean;
-    selectedGroupId: number;
+    selectedGroupId: number[];
     $own: boolean;
     delimiter?: string;
     email: string;
@@ -312,14 +312,14 @@ export interface CheckUserOrganizationPermissionsParams {
 export interface CheckAuthSubjectAppPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
-  groupId?: number;
+  groupId?: number | number[] | null;
   permissions: CustomAppPermission[];
 }
 
 export interface CheckAppPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
-  groupId?: number;
+  groupId?: number | number[] | null;
   permissions: CustomAppPermission[];
 }
 
@@ -359,7 +359,7 @@ export interface CreateAppResourcesWithAssetsParams extends GetAppSubEntityParam
   preparedAssets: PreparedAsset[];
   resourceType: string;
   options: Options;
-  groupId?: number;
+  groupId?: number | null;
 }
 
 export interface UpdateAppResourceParams extends GetAppSubEntityParams {
@@ -370,6 +370,19 @@ export interface UpdateAppResourceParams extends GetAppSubEntityParams {
   deletedAssetIds: string[];
   type: string;
   options: Options;
+
+  /**
+   * The same where clause used by the controller's pre-lock fetch. Re-applied
+   * inside the SELECT FOR UPDATE so the lock cannot widen the row set (e.g.
+   * picking up an expired row or one whose GroupId or seed flag changed
+   * between the unlocked read and the lock).
+   */
+  lockWhere: WhereOptions;
+
+  /**
+   * The `If-Match` header value parsed out of the request, if any.
+   */
+  ifMatch?: string;
 }
 
 export interface DeleteAppResourceParams extends GetAppSubEntityParams {
@@ -377,6 +390,18 @@ export interface DeleteAppResourceParams extends GetAppSubEntityParams {
   type: string;
   whereOptions?: WhereOptions;
   options: Options;
+
+  /**
+   * Where-clause used by the controller's pre-lock fetch. Re-applied inside
+   * the lock so a concurrent writer cannot widen the row set between the read
+   * and the delete.
+   */
+  lockWhere?: WhereOptions;
+
+  /**
+   * The `If-Match` header value parsed out of the request, if any.
+   */
+  ifMatch?: string;
 }
 
 export interface CreateAppAssetParams extends GetAppSubEntityParams {
@@ -457,7 +482,11 @@ export interface AppAsset extends Asset {
 export interface ProjectAsset {
   filename: string;
   mime: string;
-  content: Buffer;
+  content?: Buffer;
+  stream?: Readable;
+  size?: number;
+  etag?: string;
+  lastModified?: Date;
 }
 
 export interface Block extends BlockDefinition {
@@ -474,6 +503,18 @@ export interface ParsedQuery {
 }
 
 export type ContentSecurityPolicy = Record<string, (string | false)[]>;
+
+export type AppServingCacheStatus = 'disabled' | 'error' | 'hit' | 'miss';
+
+export interface AppServingCacheResult<T> {
+  status: AppServingCacheStatus;
+  value?: T;
+}
+
+export interface AppServingCache {
+  get: <T>(key: string) => Promise<AppServingCacheResult<T>>;
+  set: <T>(key: string, value: T) => Promise<AppServingCacheStatus>;
+}
 
 export interface Options {
   getSecurityEmail: () => string;
@@ -496,11 +537,12 @@ export interface Options {
   getBlockMessages: (params: GetBlockMessagesParams) => Promise<BlockMessages[]>;
   getBlockAsset: (params: GetBlockAssetParams) => Promise<ProjectAsset>;
   getBlocksAssetsPaths: (params: GetBlocksAssetsPathsParams) => Promise<string[]>;
-  getTheme: (params: GetThemeParams) => Promise<Theme>;
+  getTheme: (params: GetThemeParams) => Promise<Theme | null>;
   createTheme: (params: CreateThemeParams) => Promise<Theme>;
   getHost: (params: GetHostParams) => string;
   getCsp: (params: GetCspParams) => ContentSecurityPolicy;
   createSettings: (params: CreateSettingsParams) => Promise<[digest: string, script: string]>;
+  appServingCache?: AppServingCache;
   applyAppServiceSecrets: (
     params: ApplyAppServiceSecretsParams,
   ) => Promise<RawAxiosRequestConfig<any>>;
@@ -510,6 +552,7 @@ export interface Options {
   ) => Promise<void>;
   checkAuthSubjectAppPermissions: (params: CheckAuthSubjectAppPermissionsParams) => Promise<void>;
   checkAppPermissions: (params: CheckAppPermissionsParams) => Promise<void>;
+  getAllowedGroups: (params: CheckAppPermissionsParams) => Promise<number[]>;
   reloadUser: (params: ReloadUserParams) => Promise<Record<string, any>>;
   parseQuery: (params: ParseQueryParams) => ParsedQuery;
   getAppResource: (params: GetAppResourceParams) => Promise<Resource | null>;

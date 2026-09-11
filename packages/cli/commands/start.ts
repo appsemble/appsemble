@@ -145,6 +145,9 @@ export function builder(yargs: Argv): Argv<any> {
     .option('s3-secret-key', {
       desc: 'The secret key of the Amazon S3 compatible object storage server',
     })
+    .option('block-assets-base-url', {
+      desc: 'The base URL for block assets stored in S3 compatible object storage',
+    })
     .option('valkey-host', {
       desc: 'The host of the Valkey server to connect to.',
     })
@@ -164,6 +167,11 @@ export function builder(yargs: Argv): Argv<any> {
       desc: 'Use TLS when connecting to the Valkey server.',
       type: 'boolean',
       default: false,
+    })
+    .option('app-serving-cache-ttl', {
+      desc: 'The TTL in seconds for cached app-serving metadata. Set to 0 to disable the cache.',
+      type: 'number',
+      default: 300,
     });
 }
 

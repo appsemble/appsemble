@@ -66,6 +66,7 @@ bootstrap(
     const [submitErrorResult, setSubmitErrorResult] = useState<string | null>(null);
     const [dataLoading, setDataLoading] = useState(!skipInitialLoad);
     const [fieldsLoading, setFieldsLoading] = useState(false);
+    const [requirementsLoading, setRequirementsLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [values, setValues] = useState(defaultValues);
     const [lastChanged, setLastChanged] = useState<string | null>(null);
@@ -173,6 +174,7 @@ bootstrap(
 
       const token = Symbol('Async requirements lock');
       lock.current = token;
+      setRequirementsLoading(true);
 
       const requirementErrors = new Map<number, string | null>();
       Promise.all(
@@ -183,8 +185,15 @@ bootstrap(
               return result;
             },
             (errorResponse) => {
+              const index = (requirements ?? []).indexOf(requirement);
+              // The block was unmounted mid-validation, e.g. by switching tabs. The requirement
+              // action was cancelled, not failed, so it does not count as a requirement error.
+              if (utils.isActionOwnerAbortError(errorResponse)) {
+                requirementErrors.set(index, null);
+                return;
+              }
               requirementErrors.set(
-                (requirements ?? []).indexOf(requirement),
+                index,
                 requirement.errorMessage
                   ? (utils.remap(requirement.errorMessage, values, {
                       error: errorResponse,
@@ -194,22 +203,34 @@ bootstrap(
             },
           ),
         ),
-      ).then((patchedValues) => {
-        if (lock.current !== token) {
-          return;
-        }
-        setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
-        setLastChanged(null);
-        setFormErrors((oldErrors) =>
-          oldErrors.map((old, index) =>
-            requirementErrors.has(index) ? requirementErrors.get(index) : old,
-          ),
-        );
-      });
+      )
+        .then((patchedValues) => {
+          if (lock.current !== token) {
+            return;
+          }
+          setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
+          setLastChanged(null);
+          setFormErrors((oldErrors) =>
+            oldErrors.map((old, index) =>
+              requirementErrors.has(index) ? requirementErrors.get(index) : old,
+            ),
+          );
+        })
+        .finally(() => {
+          if (lock.current === token) {
+            setRequirementsLoading(false);
+          }
+        });
     }, [actions, errors, events, lastChanged, requirements, utils, values]);
 
+    const loading =
+      dataLoading ||
+      fieldsLoading ||
+      requirementsLoading ||
+      Object.values(fieldsReady).includes(false);
+
     const onSubmit = useCallback(async () => {
-      if (!submitting) {
+      if (!loading && !submitting) {
         setSubmitting(true);
         setSubmitErrorResult(null);
 
@@ -236,6 +257,11 @@ bootstrap(
             $thumbnails: thumbnails,
           });
         } catch (submitActionError: unknown) {
+          // The block was unmounted mid-submit, e.g. by switching tabs. The submission was
+          // cancelled, not failed, so there is nothing to report.
+          if (utils.isActionOwnerAbortError(submitActionError)) {
+            return;
+          }
           // Log the error to the console for troubleshooting.
           // eslint-disable-next-line no-console
           console.error(submitActionError);
@@ -312,6 +338,7 @@ bootstrap(
         }
       }
     }, [
+      loading,
       submitting,
       fields,
       errors,
@@ -367,8 +394,15 @@ bootstrap(
             actions[requirement.action](newValues).then(
               () => requirementErrors.set(requirements.indexOf(requirement), null),
               (errorResponse) => {
+                const index = requirements.indexOf(requirement);
+                // The block was unmounted mid-validation, e.g. by switching tabs. The requirement
+                // action was cancelled, not failed, so it does not count as a requirement error.
+                if (utils.isActionOwnerAbortError(errorResponse)) {
+                  requirementErrors.set(index, null);
+                  return;
+                }
                 requirementErrors.set(
-                  requirements.indexOf(requirement),
+                  index,
                   requirement.errorMessage
                     ? (utils.remap(requirement.errorMessage, newValues, {
                         error: errorResponse,
@@ -438,8 +472,6 @@ bootstrap(
       }
       ready();
     }, [actions, events, ready, receiveData, skipInitialLoad, pageParameters]);
-
-    const loading = dataLoading || fieldsLoading || Object.values(fieldsReady).includes(false);
 
     const disableSubmit = useMemo((): boolean => {
       if (loading || submitting || utils.remap(disabled, values)) {

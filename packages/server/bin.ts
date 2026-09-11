@@ -16,6 +16,7 @@ import * as health from './commands/health.js';
 import * as migrate from './commands/migrate.js';
 import * as provision from './commands/provision.js';
 import * as migrateAppDefinitions from './commands/migrateAppDefinitions.js';
+import * as migrateBlockAssetsToS3 from './commands/migrateBlockAssetsToS3.js';
 import * as reconcile from './commands/reconcileDNS.js';
 import * as reencryptSecrets from './commands/reencryptSecrets.js';
 import * as restoreDataFromBackup from './commands/restoreDataFromBackup.js';
@@ -68,6 +69,7 @@ const parser = yargs()
   .command(migrate as CommandModule)
   .command(provision as CommandModule)
   .command(migrateAppDefinitions as CommandModule)
+  .command(migrateBlockAssetsToS3 as CommandModule)
   .command(reencryptSecrets as CommandModule)
   .command(cleanupSoftDeletedRecords as CommandModule)
   .command(chargeOrganizationSubscriptions as CommandModule)

@@ -11,13 +11,32 @@ export interface GridLayoutSpacingDefinition {
   gap: number;
 }
 
-export interface DeviceGridLayoutDefinition {
-  layout: GridLayoutDefinition;
-  spacing: GridLayoutSpacingDefinition;
+export interface GridBreakpointsDefinition {
+  tablet?: number;
+  desktop?: number;
 }
 
-export type PageLayoutDefinition = RequireAtLeastOne<{
-  mobile: DeviceGridLayoutDefinition;
-  tablet: DeviceGridLayoutDefinition;
-  desktop: DeviceGridLayoutDefinition;
-}>;
+export interface DeviceGridLayoutDefinition {
+  layout?: GridLayoutDefinition;
+  spacing?: GridLayoutSpacingDefinition;
+}
+
+export interface ResponsiveGridLayoutDefinition {
+  desktop?: DeviceGridLayoutDefinition;
+  mobile?: DeviceGridLayoutDefinition;
+  tablet?: DeviceGridLayoutDefinition;
+}
+
+export interface NavbarDeviceGridLayoutDefinition extends DeviceGridLayoutDefinition {
+  layout: GridLayoutDefinition;
+}
+
+export interface ResponsiveNavbarGridLayoutDefinition {
+  desktop?: NavbarDeviceGridLayoutDefinition;
+  mobile?: NavbarDeviceGridLayoutDefinition;
+  tablet?: NavbarDeviceGridLayoutDefinition;
+}
+
+export type NavbarLayoutDefinition = RequireAtLeastOne<ResponsiveNavbarGridLayoutDefinition>;
+
+export type PageLayoutDefinition = RequireAtLeastOne<ResponsiveGridLayoutDefinition>;

@@ -76,13 +76,14 @@ export const appMemberInvite: ActionCreator<'app.member.invite'> = ({
     }
 
     const email = remap(definition.email, data);
-    const role = remap(definition.role, data);
+    const mappedRoles = remap(definition.roles, data);
+    const roles = Array.isArray(mappedRoles) ? mappedRoles : mappedRoles ? [mappedRoles] : [];
 
     const selectedGroupId = getAppMemberSelectedGroup()?.id;
     const url = selectedGroupId
       ? `${apiUrl}/api/apps/${appId}/invites?selectedGroupId=${selectedGroupId}`
       : `${apiUrl}/api/apps/${appId}/invites`;
-    await axios.post(url, { email, role });
+    await axios.post(url, [{ email, roles }]);
 
     return data;
   },
@@ -211,12 +212,17 @@ export const appMemberRoleUpdate: ActionCreator<'app.member.role.update'> = ({
     }
 
     const sub = remap(definition.sub, data);
-    const role = remap(definition.role, data);
+    const mappedRoles = definition.roles
+      ? remap(definition.roles, data)
+      : definition.role
+        ? remap(definition.role, data)
+        : [];
+    const roles = Array.isArray(mappedRoles) ? mappedRoles : mappedRoles ? [mappedRoles] : [];
     const selectedGroupId = getAppMemberSelectedGroup?.()?.id;
 
     const { data: response } = await axios.put<AppMemberInfo>(
       `${apiUrl}/api/apps/${appId}/app-members/${sub}/role${selectedGroupId ? `?selectedGroupId=${selectedGroupId}` : ''}`,
-      { role },
+      { roles },
     );
 
     await refetchDemoAppMembers();

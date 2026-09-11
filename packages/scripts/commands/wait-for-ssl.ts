@@ -7,6 +7,7 @@ const {
   APPSEMBLE_STAGING_DOMAIN,
   CI_MERGE_REQUEST_IID,
   WAIT_FOR_SSL_POLL_INTERVAL_MS = '10000',
+  WAIT_FOR_SSL_REQUEST_TIMEOUT_MS = '30000',
   WAIT_FOR_SSL_TIMEOUT_MS = '300000',
 } = process.env;
 
@@ -20,6 +21,20 @@ function sleep(timeout: number): Promise<void> {
   });
 }
 
+function isTransientError(error: unknown): boolean {
+  if (!axios.isAxiosError(error)) {
+    return false;
+  }
+
+  if (!error.response) {
+    return true;
+  }
+
+  return (
+    error.response.status === 408 || error.response.status === 429 || error.response.status >= 500
+  );
+}
+
 export async function handler(): Promise<void> {
   const domain = CI_MERGE_REQUEST_IID
     ? `${CI_MERGE_REQUEST_IID}.${APPSEMBLE_REVIEW_DOMAIN || 'appsemble.review'}`
@@ -31,10 +46,21 @@ export async function handler(): Promise<void> {
   let status: SSLStatusMap[string] = 'missing';
 
   while (Date.now() - startedAt < timeout) {
-    const { data } = await axios.get<SSLStatusMap>(`https://${domain}/api/ssl`, {
-      params: { domains: sslDomain },
-    });
-    status = data[sslDomain];
+    try {
+      const { data } = await axios.get<SSLStatusMap>(`https://${domain}/api/ssl`, {
+        params: { domains: sslDomain },
+        timeout: Number(WAIT_FOR_SSL_REQUEST_TIMEOUT_MS),
+      });
+      status = data[sslDomain];
+    } catch (error) {
+      if (!isTransientError(error)) {
+        throw error;
+      }
+
+      logger.warn(`SSL status for ${sslDomain} is temporarily unavailable`);
+      await sleep(pollInterval);
+      continue;
+    }
 
     logger.info(`SSL status for ${sslDomain}: ${status}`);
 

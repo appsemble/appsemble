@@ -1,5 +1,5 @@
 import { AsyncButton, useConfirmation, useMessages } from '@appsemble/react-components';
-import { type AppInvite, type GroupInvite } from '@appsemble/types';
+import { type AppInvite } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -22,7 +22,7 @@ interface InviteRowProps {
    *
    * @param invite The invite that has been deleted.
    */
-  readonly onDelete: (invite: GroupInvite) => void;
+  readonly onDelete: (invite: AppInvite) => void;
 }
 
 /**
@@ -72,7 +72,7 @@ export function InviteRow({
       <td>{invite.email}</td>
       <td />
       <td />
-      <td>{invite.role}</td>
+      <td>{invite.roles.join(', ')}</td>
       <td align="right">
         {mayInvite ? (
           <AsyncButton className="mr-2" disabled={resent} onClick={resendInvitation}>

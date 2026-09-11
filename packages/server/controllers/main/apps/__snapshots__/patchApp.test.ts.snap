@@ -36,7 +36,10 @@ Content-Type: application/json; charset=utf-8
               "$ref": "#/components/schemas/EventsDefinition",
             },
             "gridArea": {
-              "description": "Grid area defined in the page layout definition",
+              "description": "Grid area defined in the page layout definition.
+
+The \`breadcrumbs\` area is reserved for the breadcrumb trail of the app.
+",
               "type": "string",
             },
             "header": {
@@ -334,8 +337,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -343,6 +347,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -357,6 +362,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -469,8 +497,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -478,6 +507,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -492,6 +522,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -621,8 +674,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -630,6 +684,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -644,6 +699,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -773,8 +851,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -782,6 +861,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -796,6 +876,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -881,6 +984,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -928,8 +1035,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -937,6 +1045,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -951,6 +1060,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -981,6 +1113,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -1029,6 +1165,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -1076,8 +1216,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -1085,6 +1226,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -1099,6 +1241,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -1129,6 +1294,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -1177,6 +1346,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -1224,8 +1397,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -1233,6 +1407,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -1247,6 +1422,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -1277,6 +1475,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -1325,6 +1527,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -1372,8 +1578,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -1381,6 +1588,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -1395,6 +1603,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -1425,6 +1656,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -1542,8 +1777,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -1551,6 +1787,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "pages": {
@@ -1589,6 +1826,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1720,8 +1980,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -1729,6 +1990,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "pages": {
@@ -1767,6 +2029,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1898,8 +2183,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -1907,6 +2193,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "pages": {
@@ -1945,6 +2232,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -2067,7 +2377,10 @@ Content-Type: application/json; charset=utf-8
               "$ref": "#/components/schemas/EventsDefinition",
             },
             "gridArea": {
-              "description": "Grid area defined in the page layout definition",
+              "description": "Grid area defined in the page layout definition.
+
+The \`breadcrumbs\` area is reserved for the breadcrumb trail of the app.
+",
               "type": "string",
             },
             "header": {
@@ -2365,8 +2678,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -2374,6 +2688,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -2388,6 +2703,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -2500,8 +2838,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -2509,6 +2848,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -2523,6 +2863,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -2652,8 +3015,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -2661,6 +3025,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -2675,6 +3040,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -2804,8 +3192,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -2813,6 +3202,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -2827,6 +3217,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -2912,6 +3325,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -2959,8 +3376,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -2968,6 +3386,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -2982,6 +3401,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -3012,6 +3454,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -3060,6 +3506,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -3107,8 +3557,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -3116,6 +3567,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -3130,6 +3582,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -3160,6 +3635,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -3208,6 +3687,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -3255,8 +3738,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -3264,6 +3748,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -3278,6 +3763,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -3308,6 +3816,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -3356,6 +3868,10 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
+            "end": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display after the generated loop pages.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -3403,8 +3919,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -3412,6 +3929,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "parameters": {
@@ -3426,6 +3944,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "progress": {
               "description": "The method that should be used to display the status of flow pages.",
@@ -3456,6 +3997,10 @@ instructed to contact the app owner to get permissions.
                 "type": "string",
               },
               "type": "array",
+            },
+            "start": {
+              "$ref": "#/components/schemas/SubPage",
+              "description": "A page to display before the generated loop pages.",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -3573,8 +4118,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -3582,6 +4128,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "pages": {
@@ -3620,6 +4167,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -3751,8 +4321,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -3760,6 +4331,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "pages": {
@@ -3798,6 +4370,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -3929,8 +4524,9 @@ have two pages with the same name. The name of the page is displayed at the *app
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 ",
               "enum": [
                 "bottom",
@@ -3938,6 +4534,7 @@ menu. Set to \`hidden\` to display no navigational menus at all.
                 "hidden",
                 "dropdown",
                 "profileDropdown",
+                "top",
               ],
             },
             "pages": {
@@ -3976,6 +4573,29 @@ passing \`id\` through is sufficient, depending on the block.
                 "type": "string",
               },
               "type": "array",
+            },
+            "parent": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PageParentDefinition",
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PageParentDefinition",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+              ],
+              "description": "The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.

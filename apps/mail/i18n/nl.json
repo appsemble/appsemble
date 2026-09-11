@@ -1,9 +1,9 @@
 {
   "app": {
-    "app.roles.User": "User",
+    "app.roles.User": "Gebruiker",
     "app.roles.User.description": "Een gebruiker.",
     "description": "Een app die de e-mailactie in demomodus demonstreert.",
     "name": "E-mail",
-    "pages.send-mail": "Stuur e-mail"
+    "pages.send-mail": "E-mail verzenden"
   }
 }

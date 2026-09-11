@@ -23,6 +23,14 @@ export class AppMemberRefreshSessionGlobal extends Model {
 
   declare tokenHash: string;
 
+  declare tokenId?: string;
+
+  declare tokenIssuedAt?: Date;
+
+  declare previousTokenHash?: string;
+
+  declare previousTokenExpires?: Date;
+
   declare expires: Date;
 
   declare created: Date;
@@ -57,6 +65,19 @@ export function createAppMemberRefreshSessionModel(
     @Index({ name: 'AppMemberRefreshSession_tokenHash_key', unique: true })
     @Column(DataType.STRING(64))
     declare tokenHash: string;
+
+    @Column(DataType.UUID)
+    declare tokenId?: string;
+
+    @Column(DataType.DATE)
+    declare tokenIssuedAt?: Date;
+
+    @Index('app_member_refresh_session_previous_token_hash')
+    @Column(DataType.STRING(64))
+    declare previousTokenHash?: string;
+
+    @Column(DataType.DATE)
+    declare previousTokenExpires?: Date;
 
     @AllowNull(false)
     @Index('app_member_refresh_session_expires')

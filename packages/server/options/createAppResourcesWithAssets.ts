@@ -9,11 +9,11 @@ import {
   uploadAssets,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
-import { Op, type UniqueConstraintError } from 'sequelize';
+import { literal, Op, type Transaction, type UniqueConstraintError } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { App, getAppDB, type Resource } from '../models/index.js';
-import { parseQuery, processHooks, processReferenceHooks } from '../utils/resource.js';
+import { processHooks, processReferenceHooks } from '../utils/resource.js';
 import {
   isUniqueConstraintErrorLike,
   throwResourceUniqueConstraintKoaErrorForResource,
@@ -27,7 +27,10 @@ export async function createAppResourcesWithAssets({
   preparedAssets,
   resourceType,
   resources,
-}: CreateAppResourcesWithAssetsParams): Promise<ResourceInterface[]> {
+  transaction: publicationTransaction,
+}: CreateAppResourcesWithAssetsParams & { transaction?: Transaction }): Promise<
+  ResourceInterface[]
+> {
   const { Asset, Resource, sequelize } = await getAppDB(app.id!);
   const appMember = await getCurrentAppMember({ context, app });
   const resourceDefinition = getResourceDefinition(app.definition, resourceType);
@@ -40,21 +43,24 @@ export async function createAppResourcesWithAssets({
 
   let createdResources: Resource[] = [];
   try {
-    await sequelize.transaction(async (transaction) => {
+    const createResources = async (transaction: Transaction): Promise<void> => {
       const { enforceOrderingGroupByFields, positioning } = resourceDefinition;
       createdResources = await Resource.bulkCreate(
         await Promise.all(
           resources.map(
-            async ({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }, idx) => {
-              const { query } = parseQuery({
-                $filter: enforceOrderingGroupByFields
-                  ?.map((item) => `${item} eq ${data[item] ? `'${data[item]}'` : null}`)
-                  .join(' and '),
-                resourceDefinition,
-                tableName: 'Resource',
-              });
-              logger.verbose('Resource query');
-              logger.verbose(query);
+            // Exclude id from body
+            async ({ $clonable, $ephemeral, $expires, $seed, $thumbnails, id, ...data }, idx) => {
+              // The scope of this read has to be the scope the unique position index enforces, or
+              // the position it derives is free to collide. That means comparing the ordering
+              // fields as jsonb the way the index does, and matching seed and ephemeral exactly
+              // rather than only when they are set.
+              const orderingGroup = (enforceOrderingGroupByFields ?? []).map((field) =>
+                literal(
+                  `COALESCE(data->${sequelize.escape(field)}, 'null'::jsonb) = ${sequelize.escape(
+                    JSON.stringify(data[field] ?? null),
+                  )}::jsonb`,
+                ),
+              );
 
               const lastPositionResource = await Resource.findOne({
                 attributes: ['Position'],
@@ -62,9 +68,9 @@ export async function createAppResourcesWithAssets({
                   type: resourceType,
                   GroupId: groupId ?? null,
                   Position: { [Op.not]: null },
-                  ...(query ? { query } : {}),
-                  ...($seed ? { seed: $seed } : {}),
-                  ...($ephemeral ? { ephemeral: $ephemeral } : {}),
+                  seed: $seed ?? false,
+                  ephemeral: $ephemeral ?? false,
+                  ...(orderingGroup.length ? { [Op.and]: orderingGroup } : {}),
                 },
                 order: [['Position', 'DESC']],
                 transaction,
@@ -126,6 +132,7 @@ export async function createAppResourcesWithAssets({
             ...getCompressedFileMeta(asset),
             GroupId: groupId ?? null,
             ResourceId,
+            ResourceType: resourceType,
             AppMemberId: appMember?.sub,
             seed,
             clonable,
@@ -134,7 +141,10 @@ export async function createAppResourcesWithAssets({
         }),
         { logging: false, transaction },
       );
-    });
+    };
+    await (publicationTransaction
+      ? createResources(publicationTransaction)
+      : sequelize.transaction(createResources));
   } catch (error) {
     if (preparedAssets.length) {
       await deleteS3Files(
@@ -157,8 +167,15 @@ export async function createAppResourcesWithAssets({
 
   const persistedApp = (await App.findOne({ where: { id: app.id } }))!;
 
-  processReferenceHooks(persistedApp, createdResources[0], 'create', options, context);
-  processHooks(persistedApp, createdResources[0], 'create', options, context);
+  const notify = (): void => {
+    processReferenceHooks(persistedApp, createdResources[0], 'create', options, context);
+    processHooks(persistedApp, createdResources[0], 'create', options, context);
+  };
+  if (publicationTransaction) {
+    publicationTransaction.afterCommit(notify);
+  } else {
+    notify();
+  }
 
   return createdResources.map((resource) => resource.toJSON());
 }

@@ -1,4 +1,8 @@
-import { readFixture, resolveFixture, uploadAsset } from '@appsemble/node-utils';
+import { createServer as createHTTPServer } from 'node:http';
+import { type AddressInfo } from 'node:net';
+import { buffer } from 'node:stream/consumers';
+
+import { initS3Client, readFixture, resolveFixture, uploadAsset } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import JSZip from 'jszip';
@@ -497,6 +501,79 @@ describe('exportApp', () => {
     expect(await archive.file('screenshots/nl/0.png')?.async('nodebuffer')).toStrictEqual(
       await readFixture('nl-standing.png'),
     );
+  });
+
+  it.each([
+    { description: 'start the export response while asset storage is pending', unavailable: false },
+    { description: 'fail the download if an asset cannot be read', unavailable: true },
+  ])('should $description', async ({ unavailable }) => {
+    vi.useRealTimers();
+    const app = await App.create({
+      definition: { name: 'Test App' },
+      OrganizationId: organization.id,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+    });
+    const { Asset } = await getAppDB(app.id);
+    await Asset.create({ mime: 'image/png', filename: 'nodejs-logo.png' });
+    const contents = await readFixture('nodejs-logo.png');
+    const assetAvailable = Promise.withResolvers<Buffer>();
+    const storage = createHTTPServer((req, res) => {
+      if (req.url?.includes('location')) {
+        res.end('<LocationConstraint/>');
+      } else {
+        assetAvailable.promise.then((data) => {
+          if (unavailable) {
+            res.writeHead(404);
+            res.end('<Error><Code>NoSuchKey</Code><Message>Asset not found</Message></Error>');
+          } else {
+            res.end(data);
+          }
+        });
+      }
+    });
+    await new Promise<void>((resolve) => {
+      storage.listen(0, '127.0.0.1', resolve);
+    });
+    initS3Client({
+      accessKey: 'admin',
+      secretKey: 'password',
+      endPoint: '127.0.0.1',
+      port: (storage.address() as AddressInfo).port,
+      useSSL: false,
+    });
+
+    try {
+      authorizeStudio();
+      const response = await request.get(`/api/apps/${app.id}/export?assets=true`, {
+        responseType: 'stream',
+        timeout: 5000,
+      });
+      expect(response.status).toBe(200);
+      expect(response.headers['content-type']).toBe('application/zip');
+      assetAvailable.resolve(contents);
+      const download = buffer(response.data).then((data) => JSZip.loadAsync(data));
+      const outcome = await download.then(
+        async (archive) => ({
+          asset: await archive.file('assets/nodejs-logo.png')?.async('nodebuffer'),
+        }),
+        (error) => ({ error: error.code }),
+      );
+      expect(outcome).toStrictEqual(unavailable ? { error: 'ECONNRESET' } : { asset: contents });
+    } finally {
+      assetAvailable.resolve(contents);
+      storage.closeAllConnections();
+      await new Promise<void>((resolve) => {
+        storage.close(() => resolve());
+      });
+      initS3Client({
+        accessKey: 'admin',
+        secretKey: 'password',
+        endPoint: process.env.S3_HOST || 'localhost',
+        port: Number(process.env.S3_PORT) || 9009,
+        useSSL: false,
+      });
+    }
   });
 
   it('should allow exporting assets if the user has sufficient permissions', async () => {

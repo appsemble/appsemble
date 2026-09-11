@@ -1,7 +1,14 @@
 import { type Context } from 'koa';
-import sharp, { type RGBA } from 'sharp';
+import sharp from 'sharp';
 
 import { readAsset } from './readAsset.js';
+
+interface RGBA {
+  alpha: number;
+  b: number;
+  g: number;
+  r: number;
+}
 
 interface ServeIconOptions {
   /**
@@ -126,11 +133,11 @@ export async function serveIcon(
     if (background) {
       img.flatten({ background });
     }
+  }
 
-    // Cache app icons for 1 week.
-    if (cache) {
-      ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7},immutable`);
-    }
+  // Cache app icons for 1 week.
+  if (cache) {
+    ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7},immutable`);
   }
 
   ctx.body = await img.toFormat('png').toBuffer();

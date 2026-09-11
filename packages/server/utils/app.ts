@@ -24,6 +24,10 @@ import sharp from 'sharp';
 
 import { argv } from './argv.js';
 import {
+  ResourceRemovalConflictError,
+  ResourceSchemaConflictError,
+} from './resourceSchemaCompatibility.js';
+import {
   getResourceUniqueConstraintViolationErrorForDefinition,
   isUniqueConstraintErrorLike,
   ResourceUniqueConstraintConflictError,
@@ -112,6 +116,19 @@ export function getAppUrl(app: App): URL {
   const url = new URL(argv.host);
   url.hostname = app?.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
   return url;
+}
+
+/**
+ * Update the app timestamp.
+ *
+ * @param appId The id of the app to update.
+ */
+export async function touchApp(appId: number): Promise<void> {
+  const app = (await App.findByPk(appId, { attributes: ['id'] }))!;
+
+  app.set('updated', new Date());
+  app.changed('updated', true);
+  await app.save({ fields: ['updated'] });
 }
 
 /**
@@ -341,6 +358,20 @@ export async function createAppReadmes(
 }
 
 export function handleAppValidationError(ctx: Context, error: Error, app: Partial<App>): never {
+  if (error instanceof ResourceSchemaConflictError) {
+    throwKoaError(ctx, 409, error.message, {
+      code: 'RESOURCE_SCHEMA_CONFLICT',
+      resourceType: error.resourceType,
+    });
+  }
+
+  if (error instanceof ResourceRemovalConflictError) {
+    throwKoaError(ctx, 409, error.message, {
+      code: 'RESOURCE_REMOVAL_CONFLICT',
+      resourceType: error.resourceType,
+    });
+  }
+
   if (error instanceof ResourceUniqueConstraintConflictError) {
     throwKoaError(ctx, 409, error.message, {
       code: 'RESOURCE_UNIQUE_CONSTRAINT_CONFLICT',

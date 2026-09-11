@@ -116,7 +116,7 @@ describe('paymentRetries', () => {
     await organization.reload();
 
     expect(paymentsMock.createOrUpdateCustomer).toHaveBeenCalledWith(organization);
-    expect(paymentsMock.createInvoice).toHaveBeenCalledOnce();
+    expect(paymentsMock.createInvoice.mock.calls).toHaveLength(1);
   });
 
   it('should not charge a subscription expiring in 15 days', async () => {

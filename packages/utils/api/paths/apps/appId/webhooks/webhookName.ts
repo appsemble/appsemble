@@ -21,6 +21,19 @@ export const pathItems: OpenAPIV3.PathItemObject = {
           schema: {
             type: 'object',
             additionalProperties: true,
+            properties: {
+              assets: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  format: 'binary',
+                },
+              },
+              resource: {
+                type: 'object',
+                additionalProperties: true,
+              },
+            },
           },
         },
         'application/json': {

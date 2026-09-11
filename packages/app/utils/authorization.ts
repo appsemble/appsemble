@@ -14,14 +14,14 @@ const defaultAllowedPages = new Set(['Login', 'Register']);
 
 function getAppMemberViewRoles(
   appSecurityDefinition: Security,
-  appMemberRole: AppRole,
+  appMemberRoles: AppRole[],
   appMemberSelectedGroup: AppMemberGroup,
 ): ViewRole[] {
   if (!appSecurityDefinition) {
     return [];
   }
 
-  if (!appMemberRole) {
+  if (!appMemberRoles.length) {
     return ['$guest'];
   }
 
@@ -29,7 +29,7 @@ function getAppMemberViewRoles(
     return getAppInheritedRoles(appSecurityDefinition, [appMemberSelectedGroup.role]);
   }
 
-  return getAppInheritedRoles(appSecurityDefinition, [appMemberRole]);
+  return getAppInheritedRoles(appSecurityDefinition, appMemberRoles);
 }
 
 function checkAppMemberViewRoles(
@@ -65,15 +65,14 @@ function checkTabPagePermissions(
 export function checkPagePermissions(
   pageDefinition: PageDefinition,
   appDefinition: AppDefinition,
-  appMemberRole: AppRole,
+  appMemberRoles: AppRole[],
   appMemberSelectedGroup: AppMemberGroup,
 ): boolean {
-  // Users should always be able to access custom login and register pages.
   if (defaultAllowedPages.has(pageDefinition.name)) {
     return true;
   }
 
-  if (appDefinition.security && !appDefinition.security.guest && !appMemberRole) {
+  if (appDefinition.security && !appDefinition.security.guest && !appMemberRoles.length) {
     return false;
   }
 
@@ -81,7 +80,7 @@ export function checkPagePermissions(
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     appDefinition.security,
-    appMemberRole,
+    appMemberRoles,
     appMemberSelectedGroup,
   );
 
@@ -97,14 +96,14 @@ export function checkPagePermissions(
 export function checkBlockPermissions(
   blockDefinition: BlockDefinition,
   appDefinition: AppDefinition,
-  appMemberRole: AppRole,
+  appMemberRoles: AppRole[],
   appMemberSelectedGroup?: AppMemberGroup,
 ): boolean {
   const appMemberViewRoles = getAppMemberViewRoles(
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     appDefinition.security,
-    appMemberRole,
+    appMemberRoles,
     appMemberSelectedGroup,
   );
 

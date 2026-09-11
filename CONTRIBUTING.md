@@ -10,6 +10,11 @@ project on Weblate can be found [here](https://hosted.weblate.org/engage/appsemb
 
 New languages can be added [here](https://hosted.weblate.org/projects/appsemble/appsemble/).
 
+Weblate pushes finished translations to the `weblate` branch and opens a
+`Translations update from Hosted Weblate` merge request against `main`. A daily scheduled pipeline
+enables auto-merge on it, so it merges on its own once its pipeline passes. A merge request with
+conflicts is skipped and needs a maintainer.
+
 ## Development
 
 ### Apps
@@ -104,6 +109,8 @@ the following available tags to its meta:
 You can refer to existing code snippets in the guide section of the documentation.
 
 #### Message validation
+
+Text can be marked as translatable by using the `<FormattedMessage />` component.
 
 To add new messages, follow the following format:
 
@@ -643,11 +650,29 @@ npm --silent run scripts -- get-release-notes
 A release can be created by a maintainer triggering one of the release jos in the pipeline for the
 `main` branch.
 
+Release jobs can also be run from branches named `hotfix/<name>`. In that case, the generated
+release commit is pushed back to that same branch.
+
 We support the following releases:
 
 - prerelease --identifier test - Internal testing or testing with clients
 - patch - Backward-compatible bug fixes
 - minor - Backward-compatible new features or significant updates
+
+For prereleases, the GitLab `release test` job resolves the identifier from exactly one source:
+
+- `main` branch -> `test`
+- `hotfix/<name>` branch -> `<name>`
+
+The identifier must only contain letters, numbers, and hyphens (`[0-9A-Za-z-]`).
+
+Examples:
+
+- `test` -> `0.36.5-test.6`
+- `my-fix` -> `0.36.6-my-fix.0`
+
+Only stable tags (`x.y.z`) and `test` prerelease tags deploy to production; other prerelease tags
+skip the production jobs.
 
 > **Note**: Migrations are still added manually. Make sure the release matches any new migrations.
 > For example, if you’re releasing version `1.2.3`, make sure existing migrations in

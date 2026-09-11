@@ -28,5 +28,13 @@ By default the flow page retains it's data after navigating once. Set to false t
 `,
       default: true,
     },
+    start: {
+      $ref: '#/components/schemas/SubPage',
+      description: 'A page to display before the generated loop pages.',
+    },
+    end: {
+      $ref: '#/components/schemas/SubPage',
+      description: 'A page to display after the generated loop pages.',
+    },
   },
 });

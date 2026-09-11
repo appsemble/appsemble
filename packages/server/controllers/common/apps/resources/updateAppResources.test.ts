@@ -165,6 +165,7 @@ describe('updateAppResources', () => {
     expect(assets).toStrictEqual([
       expect.objectContaining({
         ResourceId: 1,
+        ResourceType: 'testAssets',
         GroupId: null,
         AppMemberId: null,
         clonable: false,
@@ -205,6 +206,53 @@ describe('updateAppResources', () => {
       ]
     `,
     );
+  });
+
+  it('should reject updates referencing a non-existent resource', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+    const resourceA = await Resource.create({
+      type: 'testResourceB',
+      data: { bar: 'test', testResourceId: testResource.id },
+    });
+    const resourceB = await Resource.create({
+      type: 'testResourceB',
+      data: { bar: 'test', testResourceId: testResource.id },
+    });
+
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/resources/testResourceB`, [
+      { id: resourceA.id, bar: 'test', testResourceId: testResource.id },
+      { id: resourceB.id, bar: 'test', testResourceId: 1337 },
+    ]);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "instance": 1337,
+              "message": "does not reference an existing resource of type testResource",
+              "path": [
+                1,
+                "testResourceId",
+              ],
+              "property": "instance[1].testResourceId",
+              "stack": "instance[1].testResourceId does not reference an existing resource of type testResource",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should not be able to update existing resources if one of them is missing an ID', async () => {
@@ -294,6 +342,7 @@ describe('updateAppResources', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: resource.type,
       AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
@@ -331,6 +380,7 @@ describe('updateAppResources', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: resource.type,
       AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
@@ -368,6 +418,7 @@ describe('updateAppResources', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: resource.type,
       AppMemberId: null,
       created: new Date(),
       data: null,

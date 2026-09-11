@@ -1,7 +1,7 @@
-import { GlideClient } from '@valkey/valkey-glide';
 import { logger } from '@appsemble/node-utils';
+import { Redis } from 'ioredis';
 
-let valkeyClient: GlideClient | undefined;
+let valkeyClient: Redis | undefined;
 
 interface InitValkeyClientOptions {
   /**
@@ -38,14 +38,12 @@ interface InitValkeyClientOptions {
 }
 
 /**
- * Initializes the singleton GlideClient instance.
+ * Initializes the singleton Valkey client instance.
  *
  * @param opts Parameters for initializing the Valkey client.
- * @returns The initialized GlideClient instance, or undefined if Valkey is not configured.
+ * @returns The initialized Valkey client instance, or undefined if Valkey is not configured.
  */
-export async function initValkeyClient(
-  opts: InitValkeyClientOptions,
-): Promise<GlideClient | undefined> {
+export async function initValkeyClient(opts: InitValkeyClientOptions): Promise<Redis | undefined> {
   // If Valkey is not configured (e.g., local dev without it), degrade gracefully
   if (!opts.host) {
     return undefined;
@@ -55,30 +53,37 @@ export async function initValkeyClient(
     return valkeyClient;
   }
 
+  let client: Redis | undefined;
   try {
-    valkeyClient = await GlideClient.createClient({
-      addresses: [{ host: opts.host, port: opts.port }],
-      credentials: opts.password
-        ? {
-            username: opts.username,
-            password: opts.password,
-          }
-        : undefined,
-      useTLS: opts.tls,
+    client = new Redis({
+      enableOfflineQueue: false,
+      host: opts.host,
+      lazyConnect: true,
+      password: opts.password,
+      port: opts.port,
+      retryStrategy: () => null,
+      tls: opts.tls ? {} : undefined,
+      username: opts.password ? opts.username : undefined,
     });
+    client.on('error', (error: Error) => {
+      logger.warn(`Valkey client error: ${error}`);
+    });
+    await client.connect();
+    valkeyClient = client;
     logger.info('Valkey client initialized successfully.');
     return valkeyClient;
   } catch (error) {
-    logger.error('Failed to initialize Valkey GlideClient:', error);
+    client?.disconnect();
+    logger.error('Failed to initialize Valkey client:', error);
     throw error;
   }
 }
 
 /**
- * Retrieves the initialized GlideClient.
+ * Retrieves the initialized Valkey client.
  *
- * @returns The GlideClient instance, or undefined if Valkey is not configured.
+ * @returns The Valkey client instance, or undefined if Valkey is not configured.
  */
-export function getValkeyClient(): GlideClient | undefined {
+export function getValkeyClient(): Redis | undefined {
   return valkeyClient;
 }

@@ -149,6 +149,14 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   prefixIndex: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   ee: EventEmitter;
+
+  /**
+   * A signal that is aborted when the owner of the actions (a block or page) is unmounted.
+   *
+   * Aborting stops action chains between steps, so unmounted owners no longer cause side effects
+   * such as emitting events into blocks that are mounted afterwards.
+   */
+  signal?: AbortSignal;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   showMessage?: ShowMessage;
   getAppMemberInfo: () => AppMemberInfo;

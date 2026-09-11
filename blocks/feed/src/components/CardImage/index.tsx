@@ -1,4 +1,4 @@
-import { Modal, useToggle } from '@appsemble/preact-components';
+import { AppAssetDownloadButton, Modal, useToggle } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
 
 import styles from './index.module.css';
@@ -35,6 +35,7 @@ export function CardImage({ alt, className, src }: CardImageProps): VNode {
         </figure>
       </button>
       <Modal isActive={modal.enabled} onClose={modal.disable}>
+        <AppAssetDownloadButton src={src} />
         <figure className="image">
           <img alt={alt} src={src} />
         </figure>

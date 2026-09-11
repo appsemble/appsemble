@@ -60,8 +60,15 @@ export interface AppMemberInfo {
 
   /**
    * The role of the app member.
+   *
+   * @deprecated Use roles instead.
    */
-  role: AppRole;
+  role?: AppRole;
+
+  /**
+   * The direct roles of the app member.
+   */
+  roles: AppRole[];
 
   /**
    * The end-user's additional properties

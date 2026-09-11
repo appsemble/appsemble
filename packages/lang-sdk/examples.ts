@@ -1312,7 +1312,7 @@ export function createExampleContext(
       email_verified: true,
       name: 'default-example-name',
       demo: false,
-      role: 'Member',
+      roles: ['Member'],
       zoneinfo: 'Europe/Amsterdam',
       properties: {
         completedExamples: [],

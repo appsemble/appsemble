@@ -431,6 +431,33 @@ describe('extractAppMessages', () => {
     expect(result).toMatchObject({ app: { 'pages.tabs': 'Tabs', 'pages.tabs.tabs.0': 'Tab' } });
   });
 
+  it('should extract names from loop page boundaries', () => {
+    const result = extractAppMessages({
+      name: 'Test app',
+      defaultPage: '',
+      pages: [
+        {
+          name: 'Survey',
+          type: 'loop',
+          actions: { onLoad: { type: 'noop' } },
+          start: { name: { translate: 'introduction' }, blocks: [] },
+          foreach: { name: 'Question', blocks: [] },
+          end: { name: 'Complete', blocks: [] },
+        },
+      ],
+    });
+
+    expect(result).toMatchObject({
+      app: {
+        'pages.survey': 'Survey',
+        'pages.survey.steps.first': 'first',
+        'pages.survey.steps': 'step',
+        'pages.survey.steps.last': 'Complete',
+      },
+      messageIds: { introduction: '' },
+    });
+  });
+
   it('should append any messages returned by onBlock', () => {
     const onBlock = vi.fn().mockReturnValue({ foo: 'bar' });
     const result = extractAppMessages(

@@ -4,10 +4,12 @@ import {
   extractResourceBody,
   getCompressedFileMeta,
   getResourceDefinition,
+  getSingleGroupId,
   logger,
   processResourceBody,
   throwKoaError,
   uploadAssets,
+  validateResourceReferences,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 import { type Context } from 'koa';
@@ -23,6 +25,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     pathParams: { appId, resourceType },
     queryParams: { selectedGroupId },
   } = ctx;
+  const groupId = getSingleGroupId(selectedGroupId);
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'id'],
   });
@@ -34,7 +37,8 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     context: ctx,
     appId,
     requiredPermissions: [`$resource:${resourceType}:update`],
-    groupId: selectedGroupId,
+    // The operation acts on a single group; authorize against that group only.
+    groupId,
   });
 
   const appMember = await getCurrentAppMember({ context: ctx, app: app.toJSON() });
@@ -61,7 +65,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     where: {
       id: resourcesPayload.map((resource) => Number(resource.id)),
       type: resourceType,
-      GroupId: selectedGroupId ?? null,
+      GroupId: groupId,
     },
     include: [
       { association: 'Author', attributes: ['id', 'name'], required: false },
@@ -89,6 +93,14 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     );
   }
 
+  await validateResourceReferences(
+    ctx,
+    app.toJSON(),
+    definition,
+    preparedResources,
+    options.getAppResources,
+  );
+
   let updatedResources: Resource[];
   if (preparedAssets.length) {
     await uploadAssets(app.id, preparedAssets);
@@ -114,6 +126,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
         await ResourceVersion.bulkCreate(
           existingResources.map((resource) => ({
             ResourceId: resource.id,
+            ResourceType: resourceType,
             AppMemberId: resource.EditorId,
             data: historyDefinition === true || historyDefinition.data ? resource.data : undefined,
           })),
@@ -141,8 +154,9 @@ export async function updateAppResources(ctx: Context): Promise<void> {
             return {
               ...asset,
               ...getCompressedFileMeta(asset),
-              GroupId: selectedGroupId ?? null,
+              GroupId: groupId,
               ResourceId,
+              ResourceType: resourceType,
               AppMemberId: appMember?.sub,
             };
           }),

@@ -2,21 +2,21 @@
   "app": {
     "app.roles.User": "Gebruiker",
     "app.roles.User.description": "gebruiker",
-    "description": "Deze app bevat elke Remapper die op het moment in Appsemble zit vanaf (0.20.40)",
+    "description": "Deze app bevat alle Remappers die momenteel in Appsemble beschikbaar zijn (versie 0.20.40)",
     "name": "Remappers",
     "pages.arrays": "Arrays",
-    "pages.conditionals": "Condities",
-    "pages.data": "Data",
-    "pages.dates": "Datums",
-    "pages.history": "History",
-    "pages.introduction": "Introductie",
+    "pages.conditionals": "Voorwaardelijke constructies",
+    "pages.data": "Gegevens",
+    "pages.dates": "Data",
+    "pages.history": "Geschiedenis",
+    "pages.introduction": "Inleiding",
     "pages.objects": "Objecten",
-    "pages.other": "Overig",
+    "pages.other": "Overige",
     "pages.randomness": "Willekeurigheid",
     "pages.strings": "Strings"
   },
   "messageIds": {
-    "weatherBody": "Zonnig 28°C",
-    "weatherTitle": "Weerverslag vandaag"
+    "weatherBody": "Zonnig 28 °C",
+    "weatherTitle": "Weersvoorspelling voor vandaag"
   }
 }

@@ -12,7 +12,7 @@ import { IntlMessageFormat } from 'intl-messageformat';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 import lodash from 'lodash';
 import { format, resolveConfig } from 'prettier';
-import { parseDocument } from 'yaml';
+import { Alias, type Document, isCollection, parseDocument } from 'yaml';
 
 import { opendirSafe, readData, writeData } from './fs.js';
 import { logger } from './logger.js';
@@ -25,6 +25,47 @@ const getNumberFormat = memoize(
 const getPluralRules = memoize(
   (locale: string, opts: Intl.PluralRulesOptions) => new Intl.PluralRules(locale, opts),
 );
+
+const aliasReferencePattern = /^\*(?!$)[^\s,[\]{}]+$/u;
+
+function expandPatchParentCollections(doc: Document, path: (number | string)[]): void {
+  for (let index = 0; index < path.length; index += 1) {
+    const node = doc.getIn(path.slice(0, index), true);
+
+    if (isCollection(node)) {
+      node.flow = false;
+    }
+  }
+}
+
+function createPatchValue(doc: Document, value: unknown): unknown {
+  if (typeof value === 'string' && aliasReferencePattern.test(value)) {
+    return new Alias(value.slice(1));
+  }
+
+  if (Array.isArray(value)) {
+    return doc.createNode(
+      value.map((item) => createPatchValue(doc, item)),
+      {
+        aliasDuplicateObjects: false,
+      },
+    );
+  }
+
+  if (value && typeof value === 'object' && Object.getPrototypeOf(value) === Object.prototype) {
+    return doc.createNode(
+      Object.fromEntries(
+        Object.entries(value).map(([entryKey, entryValue]) => [
+          entryKey,
+          createPatchValue(doc, entryValue),
+        ]),
+      ),
+      { aliasDuplicateObjects: false },
+    );
+  }
+
+  return value;
+}
 
 /**
  * Get a context for remappers based on an app definition.
@@ -104,6 +145,35 @@ export async function getRemapperContext(
   };
 }
 
+/**
+ * Split a style patch value into the declaration value and its `!important` flag.
+ *
+ * Patch values are written the way they appear in a stylesheet, so they may end in `!important`
+ * and a semicolon. css-tree keeps the important flag separate from the raw value; embedding
+ * `!important` in the value would serialize as `!important!important` on declarations that
+ * already carry the flag.
+ *
+ * @param property The declaration property.
+ * @param value The raw value from `styles.json`.
+ * @returns The value without the trailing semicolon and important flag, and whether it had one.
+ */
+function parseStyleValue(property: string, value: string): { important: boolean; value: string } {
+  const declarationList = parse(`${property}:${value}`, {
+    context: 'declarationList',
+    parseValue: false,
+  });
+  if (declarationList.type !== 'DeclarationList' || declarationList.children.size !== 1) {
+    throw new Error('Style patch value must contain exactly one declaration');
+  }
+
+  const declaration = declarationList.children.first;
+  if (declaration?.type !== 'Declaration' || declaration.value.type !== 'Raw') {
+    throw new Error('Style patch value must be a raw declaration value');
+  }
+
+  return { important: Boolean(declaration.important), value: declaration.value.value };
+}
+
 function replaceStyle(
   stylesheet: CssNode,
   selector: string,
@@ -121,8 +191,13 @@ function replaceStyle(
             return;
           }
           if (declaration.property === property) {
+            const { important, value: patchValue } = parseStyleValue(property, value);
             // eslint-disable-next-line no-param-reassign
-            declaration.value.value = value;
+            declaration.value.value = patchValue;
+            if (important) {
+              // eslint-disable-next-line no-param-reassign
+              declaration.important = true;
+            }
           }
         });
       }
@@ -152,7 +227,8 @@ export async function patchDefinition(
       if (value === undefined) {
         doc.deleteIn(key);
       } else {
-        doc.setIn(key, value);
+        expandPatchParentCollections(doc, key);
+        doc.setIn(key, createPatchValue(doc, value));
       }
     }
     const prettierOptions = (await resolveConfig(path, { editorconfig: true }))!;

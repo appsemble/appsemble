@@ -7,9 +7,15 @@ import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import { type DateDecoration, type DateField, type InputProps } from '../../../block.js';
 import { useLocale } from '../../hooks/useLocale.js';
-import { extractDate } from '../../utils/extractDate.js';
+import { extractDate, extractDateBoundary } from '../../utils/extractDate.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
-import { getDisabledDays, getMaxDate, getMinDate, isRequired } from '../../utils/requirements.js';
+import {
+  getDisabledDates,
+  getDisabledDays,
+  getMaxDate,
+  getMinDate,
+  isRequired,
+} from '../../utils/requirements.js';
 
 type DateTimeInputProps = InputProps<string, DateField>;
 
@@ -52,14 +58,17 @@ export function DateInput({
   );
 
   const maxDate = useMemo(
-    () => extractDate(getMaxDate(field, utils, formValues)),
+    () => extractDateBoundary(getMaxDate(field, utils, formValues), 'end'),
     [field, utils, formValues],
   );
   const minDate = useMemo(
-    () => extractDate(getMinDate(field, utils, formValues)),
+    () => extractDateBoundary(getMinDate(field, utils, formValues), 'start'),
     [field, utils, formValues],
   );
-  const disable = useMemo(() => getDisabledDays(field), [field]);
+  const disable = useMemo(
+    () => [...getDisabledDays(field), ...getDisabledDates(field, utils, formValues)],
+    [field, utils, formValues],
+  );
 
   const locale = useLocale(field);
 
@@ -106,6 +115,7 @@ export function DateInput({
       decorations={decorations}
       disable={disable}
       disabled={disabled}
+      disableMobile={field.disableNativePicker ?? true}
       error={dirty ? error : null}
       errorLinkRef={errorLinkRef}
       help={utils.remap(help, value) as string}

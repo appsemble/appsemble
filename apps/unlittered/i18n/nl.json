@@ -1,18 +1,18 @@
 {
   "app": {
-    "description": "Een app waarin zwerfafval kan worden gemeld en weergegeven op een interactieve kaart.",
-    "name": "Opgeruimd Staat Netjes",
-    "pages.litter-details": "Afvaldetails",
-    "pages.litter-list": "Afvallijst",
-    "pages.litter-overview": "Afvaloverzicht",
-    "pages.report-litter": "Afval rapporteren"
+    "description": "Een app waarmee zwerfafval kan worden gemeld en op een interactieve kaart wordt weergegeven.",
+    "name": "Unlittered",
+    "pages.litter-details": "Details over zwerfafval",
+    "pages.litter-list": "Lijst met afval",
+    "pages.litter-overview": "Overzicht van Litter",
+    "pages.report-litter": "Meld zwerfafval"
   },
   "messageIds": {
     "date": "Datum",
     "location": "Locatie",
-    "notes": "Notities",
-    "notesExample": "Bijvoorbeeld: Er ligt een fiets in de bosjes",
-    "photos": "Foto’s",
+    "notes": "Opmerkingen",
+    "notesExample": "Voorbeeld: Er staat een fiets in de struiken",
+    "photos": "Foto's",
     "process": "Proces"
   }
 }

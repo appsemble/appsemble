@@ -4,6 +4,7 @@ import { has } from '@appsemble/utils';
 import { IntlMessageFormat } from 'intl-messageformat';
 
 import { actions, type ServerActionParameters } from './actions/index.js';
+import { findAppMemberByRole } from './appMember.js';
 import { argv } from './argv.js';
 import { AppMessages, getAppDB } from '../models/index.js';
 
@@ -11,7 +12,7 @@ export async function handleAction(
   action: (params: ServerActionParameters) => Promise<unknown>,
   params: ServerActionParameters,
 ): Promise<unknown> {
-  const { AppMember } = await getAppDB(params.app.id);
+  await getAppDB(params.app.id);
   logger.info(`Running action: ${params.action.type}`);
   const url = new URL(argv.host);
   url.hostname =
@@ -57,9 +58,7 @@ export async function handleAction(
   };
 
   try {
-    const appMemberInfo = await AppMember.findOne({
-      where: { role: 'cron' },
-    });
+    const appMemberInfo = await findAppMemberByRole(params.app.id, 'cron');
     data = await action({
       ...params,
       // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)

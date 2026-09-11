@@ -32,7 +32,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
   const { pathname } = useLocation();
-  const { appMemberInfo, appMemberRole, appMemberSelectedGroup, isLoggedIn, logout } =
+  const { appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn, logout } =
     useAppMember();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
@@ -41,8 +41,8 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const install = usePWAInstall();
 
   const showMenu = useMemo(
-    () => shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup, pathname),
-    [definition, appMemberRole, appMemberSelectedGroup, pathname],
+    () => shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname),
+    [definition, appMemberRoles, appMemberSelectedGroup, pathname],
   );
 
   return (

@@ -73,6 +73,7 @@ describe('deleteAppResource', () => {
     expect(responseGetA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -102,6 +103,131 @@ describe('deleteAppResource', () => {
         "statusCode": 404,
       }
     `);
+  });
+
+  it('preserves cascading references when another reference blocks deletion', async () => {
+    authorizeStudio();
+    const definition = structuredClone(app.definition);
+    definition.resources!.testResourceB.references!.testResourceId.delete = {
+      triggers: [{ type: 'delete', cascade: 'update' }],
+    };
+    definition.resources!.testResourceC.references!.testResourceId.delete = {
+      triggers: [{ type: 'delete' }],
+    };
+    await app.update({ definition });
+    const { Resource } = await getAppDB(app.id);
+    const parent = await Resource.create({ type: 'testResource', data: { foo: 'Product' } });
+    const cascading = await Resource.create({
+      type: 'testResourceB',
+      data: { bar: 'Saved choice', testResourceId: parent.id },
+    });
+    const blocker = await Resource.create({
+      type: 'testResourceC',
+      data: { bar: 'User progress', testResourceId: parent.id },
+    });
+
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResource/${parent.id}`,
+    );
+
+    expect(response.status).toBe(400);
+    expect((await parent.reload()).data.foo).toBe('Product');
+    expect((await cascading.reload()).data.testResourceId).toBe(parent.id);
+    expect((await blocker.reload()).data.testResourceId).toBe(parent.id);
+  });
+
+  it('should delete a resource scoped to a single selectedGroupId (backwards compatible number)', async () => {
+    const { Group, Resource } = await getAppDB(app.id);
+    const groupA = await Group.create({ name: 'Group A' });
+    const groupB = await Group.create({ name: 'Group B' });
+    const inGroupA = await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'a' },
+      GroupId: groupA.id,
+    });
+    const inGroupB = await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'b' },
+      GroupId: groupB.id,
+    });
+
+    authorizeStudio();
+    // A single numeric selectedGroupId still scopes the delete to that group.
+    const deleted = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceGroup/${inGroupA.id}?selectedGroupId=${groupA.id}`,
+    );
+    expect(deleted.status).toBe(204);
+    expect(await Resource.findByPk(inGroupA.id)).toBeNull();
+
+    // The resource in another group is out of scope and is not found.
+    const notFound = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceGroup/${inGroupB.id}?selectedGroupId=${groupA.id}`,
+    );
+    expect(notFound.status).toBe(404);
+    expect(await Resource.findByPk(inGroupB.id)).not.toBeNull();
+  });
+
+  it('should reject stale deletes with If-Match', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const initial = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+    const staleEtag = initial.headers.etag;
+
+    await request.put(`/api/apps/${app.id}/resources/testResource/${resource.id}`, {
+      foo: 'I am not Foo.',
+    });
+
+    const staleResponse = await request.delete(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { headers: { 'If-Match': staleEtag } },
+    );
+
+    expect(staleResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 412 Precondition Failed
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "code": "RESOURCE_PRECONDITION_FAILED",
+          "resourceId": 1,
+          "resourceType": "testResource",
+        },
+        "error": "Precondition Failed",
+        "message": "This resource has changed since it was loaded. Fetch the latest version and try again.",
+        "statusCode": 412,
+      }
+    `);
+
+    const stillThere = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+    );
+    expect(stillThere.data.foo).toBe('I am not Foo.');
+  });
+
+  it('should accept a matching If-Match on delete', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const fetched = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+    const currentEtag = fetched.headers.etag;
+
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { headers: { 'If-Match': currentEtag } },
+    );
+    expect(response.status).toBe(204);
+
+    const gone = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+    expect(gone.status).toBe(404);
   });
 
   it('should soft-delete a resource', async () => {
@@ -260,6 +386,7 @@ describe('deleteAppResource', () => {
     expect(responseGet).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -301,6 +428,7 @@ describe('deleteAppResource', () => {
     expect(responseGet).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -409,6 +537,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResource).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -425,6 +554,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResourceB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Mx_UrKvgJ__y4xG3R-hk3pNt-raDYiBy0gUbl9vkwyo"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -471,6 +601,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResource).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -487,6 +618,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResourceB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Mx_UrKvgJ__y4xG3R-hk3pNt-raDYiBy0gUbl9vkwyo"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -531,6 +663,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResource).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -547,6 +680,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResourceC).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Mx_UrKvgJ__y4xG3R-hk3pNt-raDYiBy0gUbl9vkwyo"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -570,6 +704,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResourceCAfterDeletingTestResource).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Jew5Sxb8OF5pcXLBNoxtWoBeGporxfUOjYONJf7EDM0"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -601,6 +736,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResource).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "UHjE7U6NKBMk2tfRqSaKp27oCs8vZgrzfmWnWFf_Gm8"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -617,6 +753,7 @@ describe('deleteAppResource', () => {
     expect(responseGetTestResourceD).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
+      Etag: "Mx_UrKvgJ__y4xG3R-hk3pNt-raDYiBy0gUbl9vkwyo"
 
       {
         "$created": "1970-01-01T00:00:00.000Z",

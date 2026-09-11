@@ -28,7 +28,7 @@ export async function getBlock(ctx: Context): Promise<void> {
     ],
     where: { name: blockId, OrganizationId: organizationId },
     include: [
-      { model: BlockAsset, attributes: ['filename'] },
+      { model: BlockAsset, attributes: ['filename', 'storageKey'] },
       {
         model: Organization,
         attributes: ['id', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],

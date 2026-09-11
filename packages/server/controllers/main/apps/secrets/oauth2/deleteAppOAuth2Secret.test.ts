@@ -2,7 +2,13 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, getAppDB, Organization, OrganizationMember } from '../../../../../models/index.js';
+import {
+  App,
+  getAppDB,
+  getDB,
+  Organization,
+  OrganizationMember,
+} from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
@@ -68,9 +74,16 @@ describe('deleteAppOAuth2Secret', () => {
       tokenUrl: 'https://example.com/oauth/token',
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
+    await getDB().query('UPDATE "App" SET "updated" = :updated WHERE "id" = :appId', {
+      replacements: { appId: app.id, updated: new Date(-1000) },
+    });
+    await app.reload();
+    const previousUpdated = app.updated;
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`);
+    await app.reload();
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(app.updated.getTime()).toBeGreaterThan(previousUpdated.getTime());
   });
 
   it('should handle if the app id is invalid', async () => {

@@ -9,7 +9,6 @@ import { getS3File, initS3Client, logger } from '@appsemble/node-utils';
 import { App, initDB } from '../models/index.js';
 import { type App as MainApp } from '../models/main/App.js';
 import { encrypt } from '../utils/crypto.js';
-import { buildPostgresUri } from '../utils/database.js';
 import {
   restoreDataFromBackup,
   type RestoreDataFromBackupOptions,
@@ -50,10 +49,6 @@ vi.mock('../utils/crypto.js', () => ({
   encrypt: vi.fn((value: string, secret: string) => `encrypted:${value}:${secret}`),
 }));
 
-vi.mock('../utils/database.js', () => ({
-  buildPostgresUri: vi.fn(({ dbName }: { dbName: string }) => `postgres://${dbName}`),
-}));
-
 vi.mock('../utils/sqlUtils.js', () => ({
   handleDBError: vi.fn((error: Error) => {
     throw error;
@@ -68,6 +63,8 @@ const baseOptions: RestoreDataFromBackupOptions = {
   backupsPort: 443,
   backupsSecretKey: 'backup-secret-key',
   backupsSecure: true,
+  databaseDirectHost: 'database.example.com',
+  databaseDirectPort: 5432,
   databaseHost: 'database.example.com',
   databaseName: 'appsemble',
   databasePassword: 'database-password',
@@ -174,9 +171,6 @@ describe('restoreDataFromBackup', () => {
     process.env.NODE_ENV = 'test';
 
     vi.mocked(spawn).mockImplementation(() => createChildProcessMock(0) as unknown as SpawnReturn);
-    vi.mocked(buildPostgresUri).mockImplementation(
-      ({ dbName }: { dbName: string }) => `postgres://${dbName}`,
-    );
     vi.mocked(initDB).mockReturnValue({
       close: vi.fn(() => Promise.resolve()),
     } as unknown as InitDbReturn);
@@ -222,6 +216,58 @@ describe('restoreDataFromBackup', () => {
       dbUser: baseOptions.databaseUser,
     });
     expect(encrypt).toHaveBeenCalledWith(baseOptions.databasePassword, baseOptions.aesSecret);
+  });
+
+  it('should restore through the direct database endpoint', async () => {
+    const directHost = 'postgres.example.com';
+    const directPort = 5432;
+    const app = createFoundApp({
+      dbHost: 'pooler.example.com',
+      dbName: 'app-1',
+      dbPort: 6432,
+      dbUser: 'database-user',
+      id: 1,
+      update: vi.fn<MainApp['update']>(() => Promise.resolve({} as MainApp)),
+    });
+    vi.mocked(App.findAll).mockResolvedValue([app]);
+    vi.mocked(initDB).mockImplementation(({ host, port }) => {
+      if (host !== directHost || port !== directPort) {
+        throw new Error('The pooled database endpoint is unavailable.');
+      }
+      return {
+        close: vi.fn(() => Promise.resolve()),
+      } as unknown as InitDbReturn;
+    });
+    vi.mocked(spawn).mockImplementation((command, args) => {
+      const databaseArgument = args?.find((arg) => String(arg).startsWith('--dbname='));
+      const databaseUrl = new URL(String(databaseArgument).slice('--dbname='.length));
+      const usesDirectEndpoint =
+        command === 'psql' &&
+        databaseUrl.hostname === directHost &&
+        Number(databaseUrl.port) === directPort &&
+        args?.includes('-X') &&
+        args?.includes('-v') &&
+        args.includes('ON_ERROR_STOP=1');
+      return createChildProcessMock(usesDirectEndpoint ? 0 : 1) as unknown as SpawnReturn;
+    });
+
+    const failed = await restoreDataFromBackup({
+      ...baseOptions,
+      databaseDirectHost: directHost,
+      databaseDirectPort: directPort,
+      databaseHost: 'pooler.example.com',
+      databasePort: 6432,
+    });
+
+    expect(failed).toBe(false);
+    expect(getS3File).toHaveBeenCalledWith(
+      baseOptions.backupsBucket,
+      `sql/main/${baseOptions.restoreBackupFilename}`,
+    );
+    expect(getS3File).toHaveBeenCalledWith(
+      baseOptions.backupsBucket,
+      `sql/apps/1/${baseOptions.restoreBackupFilename}`,
+    );
   });
 
   it('should use local development aesSecret when missing in development', async () => {

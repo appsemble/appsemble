@@ -7,7 +7,9 @@ import {
   assertKoaCondition,
   handleValidatorResult,
   logger,
+  isValidBlockAssetFilename,
   throwKoaError,
+  uploadS3File,
   uploadToBuffer,
 } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
@@ -25,6 +27,11 @@ import {
 } from '../../../models/index.js';
 import { type PublishBlockBody } from '../../../types/index.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import {
+  deleteBlockAssetObjects,
+  getBlockAssetsBucketName,
+  getBlockAssetStorageKey,
+} from '../../../utils/blockAssets.js';
 import { blockVersionToJson } from '../../../utils/block.js';
 
 export async function createBlock(ctx: Context): Promise<void> {
@@ -107,6 +114,25 @@ export async function createBlock(ctx: Context): Promise<void> {
     );
   }
 
+  const filenames = files.map((file) => {
+    try {
+      return decodeURIComponent(file.filename);
+    } catch {
+      throwKoaError(ctx, 400, `Invalid block asset filename: ${file.filename}`);
+    }
+  });
+
+  for (const filename of filenames) {
+    assertKoaCondition(
+      isValidBlockAssetFilename(filename),
+      ctx,
+      400,
+      `Invalid block asset filename: ${filename}`,
+    );
+  }
+
+  const uploadedKeys: string[] = [];
+
   try {
     await transactional(async (transaction) => {
       const createdBlock = await BlockVersion.create(
@@ -125,18 +151,38 @@ export async function createBlock(ctx: Context): Promise<void> {
           `Creating block assets for ${name}@${version}: ${decodeURIComponent(file.filename)}`,
         );
       }
-      createdBlock.BlockAssets = await BlockAsset.bulkCreate(
-        await Promise.all(
-          files.map(async (file) => ({
-            name: blockId,
-            BlockVersionId: createdBlock.id,
-            filename: decodeURIComponent(file.filename),
-            mime: file.mime,
-            content: await uploadToBuffer(file.path),
-          })),
-        ),
-        { logging: false, transaction },
-      );
+
+      const assets = [];
+      for (const [index, file] of files.entries()) {
+        const filename = filenames[index];
+        const content = await uploadToBuffer(file.path);
+        const storageKey = getBlockAssetStorageKey({
+          blockName: blockId,
+          blockVersionId: createdBlock.id,
+          filename,
+          organizationId: OrganizationId,
+          version,
+        });
+
+        await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength, {
+          'Cache-Control': 'public,max-age=31536000,immutable',
+          'Content-Type': file.mime ?? 'application/octet-stream',
+        });
+        uploadedKeys.push(storageKey);
+        assets.push({
+          BlockVersionId: createdBlock.id,
+          content,
+          filename,
+          mime: file.mime,
+          size: content.byteLength,
+          storageKey,
+        });
+      }
+
+      createdBlock.BlockAssets = await BlockAsset.bulkCreate(assets, {
+        logging: false,
+        transaction,
+      });
 
       createdBlock.BlockMessages = messages
         ? await BlockMessages.bulkCreate(
@@ -156,12 +202,16 @@ export async function createBlock(ctx: Context): Promise<void> {
         });
       }
 
-      const manifestJson = blockVersionToJson(createdBlock);
+      const manifestJson = blockVersionToJson(createdBlock, { includeFileUrls: false });
       await createdBlock.update({ manifestJson }, { transaction });
 
-      ctx.body = manifestJson;
+      ctx.body = blockVersionToJson(createdBlock);
     });
   } catch (err: unknown) {
+    if (uploadedKeys.length) {
+      await deleteBlockAssetObjects(uploadedKeys);
+    }
+
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
       logger.silly(err);
       throwKoaError(ctx, 409, `Block “${name}@${data.version}” already exists`);

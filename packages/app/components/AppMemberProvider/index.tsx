@@ -35,11 +35,11 @@ interface JwtPayload {
 
 const initialState: LoginState = {
   isLoggedIn: false,
-  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-  appMemberRole: null,
+  appMemberRoles: [],
   appMemberGroups: [],
   totpPending: null,
 };
+const apiOrigin = new URL(apiUrl).origin;
 
 interface PasswordLoginParams {
   username: string;
@@ -65,7 +65,7 @@ interface TotpPendingState {
 
 interface LoginState {
   isLoggedIn: boolean;
-  appMemberRole: AppRole;
+  appMemberRoles: AppRole[];
   appMemberGroups: AppMemberGroup[];
   totpPending: TotpPendingState | null;
 }
@@ -258,7 +258,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       setAppMemberInfo(appMember);
       setState({
         isLoggedIn: true,
-        appMemberRole: appMember.role,
+        appMemberRoles: appMember.roles ?? [],
         appMemberGroups,
         totpPending: null,
       });
@@ -456,36 +456,34 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     });
   }, []);
 
-  // Initialize the login session/
+  // Initialize the login session.
   useEffect(() => {
     // If the app doesn’t have a security definition, don’t even bother initializing anything.
-    if (!definition.security) {
+    if (!definition.security || !isLoading) {
       return;
     }
 
-    if (!appMemberInfo) {
-      if (development) {
-        developmentLogin()
-          .finally(() => setIsLoading(false))
-          .catch(() => {
-            // This can fail if the server is not reachable, but in development this is fine.
-          });
-        return;
-      }
-
-      if (isOAuth2Callback) {
-        setIsLoading(false);
-        return;
-      }
-
-      // Try to resume the session from the refresh token cookie.
-      login('refresh_token', {})
+    if (development) {
+      developmentLogin()
+        .finally(() => setIsLoading(false))
         .catch(() => {
-          // Do nothing. `login` already resets the local session state on failure.
-        })
-        .finally(() => setIsLoading(false));
+          // This can fail if the server is not reachable, but in development this is fine.
+        });
+      return;
     }
-  }, [appMemberInfo, definition, developmentLogin, isOAuth2Callback, login, logout]);
+
+    if (isOAuth2Callback) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Try to resume the session from the refresh token cookie.
+    login('refresh_token', {})
+      .catch(() => {
+        // Do nothing. `login` already resets the local session state on failure.
+      })
+      .finally(() => setIsLoading(false));
+  }, [definition, developmentLogin, isLoading, isOAuth2Callback, login]);
 
   // Handle refreshing access tokens
   useEffect(() => {
@@ -529,8 +527,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
 
     const interceptor = axios.interceptors.request.use((config) => {
       // Only assign the authorization header to requests made to the Appsemble API.
-      const url = new URL(axios.getUri(config));
-      if (url.origin === new URL(apiUrl).origin) {
+      let url: URL;
+      try {
+        url = new URL(axios.getUri(config));
+      } catch {
+        return config;
+      }
+
+      if (url.origin === apiOrigin) {
         Object.assign(config.headers, { authorization });
       }
       return config;

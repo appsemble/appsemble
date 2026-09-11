@@ -122,6 +122,59 @@ describe('deleteAppResources', () => {
     `);
   });
 
+  it('should only delete resources belonging to the selected groups', async () => {
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const groupA = await Group.create({ name: 'Group A', AppId: app.id });
+    const groupB = await Group.create({ name: 'Group B', AppId: app.id });
+    const groupC = await Group.create({ name: 'Group C', AppId: app.id });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      timezone: 'Europe/Amsterdam',
+      userId: user.id,
+      name: user.name,
+      role: PredefinedAppRole.Member,
+    });
+    // The member may delete resources in both selected groups.
+    await GroupMember.create({
+      GroupId: groupA.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+    await GroupMember.create({
+      GroupId: groupB.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+
+    const resourceA = await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'a' },
+      GroupId: groupA.id,
+    });
+    const resourceB = await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'b' },
+      GroupId: groupB.id,
+    });
+    const resourceC = await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'c' },
+      GroupId: groupC.id,
+    });
+
+    authorizeAppMember(app, member);
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceGroup?selectedGroupId=${groupA.id}&selectedGroupId=${groupB.id}`,
+      { data: [resourceA.id, resourceB.id, resourceC.id] },
+    );
+
+    expect(response.status).toBe(204);
+    // Resources in the selected groups are gone; the unselected group is untouched.
+    expect(await Resource.findByPk(resourceA.id)).toBeNull();
+    expect(await Resource.findByPk(resourceB.id)).toBeNull();
+    expect(await Resource.findByPk(resourceC.id)).not.toBeNull();
+  });
+
   it('should soft-delete resources', async () => {
     const { Resource } = await getAppDB(app.id);
     const resourceA = await Resource.create({

@@ -711,12 +711,7 @@ export function ResourcesTab({
   const onNewField = (e: ChangeEvent<HTMLSelectElement>): void => {
     const eventVar = e;
     const fieldType = eventVar.target.value as
-      | 'array'
-      | 'boolean'
-      | 'integer'
-      | 'number'
-      | 'relationship'
-      | 'string';
+      'array' | 'boolean' | 'integer' | 'number' | 'relationship' | 'string';
     const newField: Field = {
       type: fieldType,
       fieldName: '',

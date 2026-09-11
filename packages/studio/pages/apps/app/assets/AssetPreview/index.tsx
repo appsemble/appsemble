@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { downloadAsset } from '../downloadAsset.js';
 import { useApp } from '../../index.js';
 
 export function AssetPreview({ asset }: { readonly asset: Asset }): ReactNode {
@@ -22,7 +23,13 @@ export function AssetPreview({ asset }: { readonly asset: Asset }): ReactNode {
 
   return (
     <Content className={styles.preview}>
-      <Button className="mb-2" component="a" download href={downloadUrl} icon="download">
+      <Button
+        className="is-fullwidth mb-2"
+        icon="download"
+        onClick={() => {
+          downloadAsset(downloadUrl, asset.filename || asset.name || asset.id);
+        }}
+      >
         <FormattedMessage {...messages.download} />
       </Button>
       <div className="box">

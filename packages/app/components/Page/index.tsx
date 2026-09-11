@@ -5,6 +5,7 @@ import {
   getPageDisplayName,
   getPagePathSegment,
   normalize,
+  pageHasBreadcrumbsGridArea,
   remap,
   type PageDefinition,
   type Remapper,
@@ -21,7 +22,14 @@ import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
+import {
+  Navigate,
+  type Params,
+  Route,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -29,7 +37,7 @@ import { ShareDialog, type ShareDialogState } from './ShareDialog/index.js';
 import { type ShowDialogParams, type ShowShareDialog } from '../../types.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
-import { makeActions } from '../../utils/makeActions.js';
+import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -37,6 +45,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
+import { Breadcrumbs } from '../Breadcrumbs/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { FlowPage } from '../FlowPage/index.js';
 import { usePage } from '../MenuProvider/index.js';
@@ -52,7 +61,7 @@ export function Page(): ReactNode {
     addAppMemberGroup,
     appMemberGroups,
     appMemberInfoRef,
-    appMemberRole,
+    appMemberRoles,
     appMemberSelectedGroup,
     isLoggedIn,
     logout,
@@ -63,7 +72,7 @@ export function Page(): ReactNode {
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
   const { pathname, search } = useLocation();
-  const params = useParams();
+  const routeParams = useParams();
   const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const { page: navPage, setPage } = usePage();
@@ -146,6 +155,23 @@ export function Page(): ReactNode {
   const prefix = internalPageName ? `pages.${internalPageName}` : null;
   const prefixIndex = index === -1 ? null : `pages.${index}`;
 
+  // Switching tabs only changes the tab segment of the wildcard. Page actions never read that
+  // segment, so it is left out of the identity of `params`; a new object per tab would rebuild
+  // the actions, re-run onLoad, and re-emit the tab list while a tab is still loading.
+  const { '*': wildcard = '', ...pageRouteParams } = routeParams;
+  const paramsKey = JSON.stringify(
+    pageDefinition?.type === 'tabs'
+      ? { ...pageRouteParams, '*': wildcard.split('/').slice(1).join('/') }
+      : routeParams,
+  );
+  const params = useMemo(() => JSON.parse(paramsKey) as Readonly<Params>, [paramsKey]);
+
+  // Aborted when the user navigates to another page, so in-flight action chains of the previous
+  // page stop instead of causing side effects on the newly shown page.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const abortController = useMemo(() => new AbortController(), [pageDefinition]);
+  useEffect(() => () => abortController.abort(), [abortController]);
+
   const remapWithContext = useCallback(
     (mappers: Remapper, input: any, { history = [], ...context }: Record<string, any> = {}) =>
       remap(mappers, input, {
@@ -215,6 +241,7 @@ export function Page(): ReactNode {
         showShareDialog,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         ee: ee.current,
+        signal: abortController.signal,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         pageReady: null,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
@@ -243,6 +270,7 @@ export function Page(): ReactNode {
         refetchDemoAppMembers,
       }),
     [
+      abortController,
       appStorage,
       getAppMessage,
       getVariable,
@@ -289,16 +317,23 @@ export function Page(): ReactNode {
 
   useEffect(() => {
     if (actions.onLoad.type !== 'noop') {
-      actions.onLoad().then((results) => {
-        setData(results);
-      });
+      actions
+        .onLoad()
+        .then((results) => {
+          setData(results);
+        })
+        .catch((error: unknown) => {
+          if (!isActionOwnerAbortError(error)) {
+            throw error;
+          }
+        });
     }
   }, [setData, actions]);
 
   const checkPagePermissionsCallback = useCallback(
     (pd: PageDefinition): boolean =>
-      checkPagePermissions(pd, appDefinition, appMemberRole, appMemberSelectedGroup),
-    [appDefinition, appMemberRole, appMemberSelectedGroup],
+      checkPagePermissions(pd, appDefinition, appMemberRoles, appMemberSelectedGroup),
+    [appDefinition, appMemberRoles, appMemberSelectedGroup],
   );
 
   useEffect(() => {
@@ -361,6 +396,11 @@ export function Page(): ReactNode {
         data-path-index={prefixIndex}
       >
         <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
+        {/* A grid layout that names a breadcrumbs area renders the trail there, and a tabs page
+            renders its own trail so it can name the active tab as the last crumb. */}
+        {pageDefinition.type === 'tabs' || pageHasBreadcrumbsGridArea(pageDefinition) ? null : (
+          <Breadcrumbs data={data} pageDefinition={pageDefinition} remap={remapWithContext} />
+        )}
         {pageDefinition.type === 'tabs' ? (
           <TabsPage
             appStorage={appStorage.current}
@@ -464,7 +504,7 @@ export function Page(): ReactNode {
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
   // page.
-  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, appDefinition);
+  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, appDefinition);
   const defaultPage = appDefinition.pages.find((p) => p.name === defaultPageName);
 
   if (defaultPage && checkPagePermissionsCallback(defaultPage)) {

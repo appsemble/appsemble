@@ -46,12 +46,12 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
     definition: { layout, security },
   } = useAppDefinition();
   const { formatMessage } = useIntl();
-  const { appMemberInfo, appMemberRole, appMemberSelectedGroup, isLoggedIn, logout } =
+  const { appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn, logout } =
     useAppMember();
   const checkPagePermissionsCallback = useCallback(
     (page: PageDefinition): boolean =>
-      checkPagePermissions(page, definition, appMemberRole, appMemberSelectedGroup),
-    [appMemberRole, appMemberSelectedGroup, definition],
+      checkPagePermissions(page, definition, appMemberRoles, appMemberSelectedGroup),
+    [appMemberRoles, appMemberSelectedGroup, definition],
   );
 
   const createRemapperContext = useCallback(

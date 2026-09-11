@@ -6,6 +6,45 @@ import { throwKoaError } from '../../koa.js';
 import { logger } from '../../logger.js';
 import { type FindOptions, type Options, type OrderItem, type WhereOptions } from '../types.js';
 
+/**
+ * The `selectedGroupId` value representing the app-wide (ungrouped) scope, as
+ * opposed to a concrete group id.
+ */
+export const appWideGroupId = -1;
+
+/**
+ * Collapse a `selectedGroupId` selection to a single group for operations that
+ * are inherently scoped to one group (create, update, reorder).
+ *
+ * @param selectedGroupId The selected group ids from the query parameters.
+ * @returns The first concrete group id, or null for the app-wide scope.
+ */
+export function getSingleGroupId(selectedGroupId: number[] = []): number | null {
+  const [groupId] = selectedGroupId;
+  return groupId != null && groupId > 0 ? groupId : null;
+}
+
+/**
+ * Build a resource `GroupId` filter for operations that may span multiple
+ * groups (query, delete).
+ *
+ * The app-wide scope (`appWideGroupId`, or an empty selection) matches
+ * resources without a group; concrete ids match resources in those groups.
+ *
+ * @param selectedGroupId The selected group ids from the query parameters.
+ * @returns A value for a resource `GroupId` where clause.
+ */
+export function getGroupIdWhere(selectedGroupId: number[] = []): WhereOptions[string] {
+  const groupIds = selectedGroupId.filter((id) => id > 0);
+  const includeUngrouped = selectedGroupId.length === 0 || selectedGroupId.includes(appWideGroupId);
+
+  if (!groupIds.length) {
+    return null;
+  }
+
+  return includeUngrouped ? { or: [{ in: groupIds }, null] } : { in: groupIds };
+}
+
 export function generateResourceQuery(
   ctx: Context,
   { parseQuery }: Options,

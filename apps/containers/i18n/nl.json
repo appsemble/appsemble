@@ -1,6 +1,6 @@
 {
   "app": {
-    "description": "Een app die de functie companion containers demonstreert",
+    "description": "Een app die de functie 'begeleidende containers' demonstreert",
     "name": "Containers",
     "pages.test": "Test"
   }

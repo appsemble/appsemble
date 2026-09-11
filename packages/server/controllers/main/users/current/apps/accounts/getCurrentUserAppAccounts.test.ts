@@ -116,7 +116,9 @@ describe.skip('getCurrentUserAppAccounts', () => {
             "security": {
               "default": {
                 "policy": "everyone",
-                "role": "Reader",
+                "roles": [
+            "Reader",
+          ],
               },
               "roles": {
                 "Reader": {},
@@ -171,7 +173,9 @@ describe.skip('getCurrentUserAppAccounts', () => {
           "phoneNumber": null,
           "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
           "properties": {},
-          "role": "Reader",
+          "roles": [
+            "Reader",
+          ],
           "sub": Any<String>,
           "zoneinfo": null,
         },

@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { downloadAsset } from '../downloadAsset.js';
 import { useApp } from '../../index.js';
 import { AssetPreview } from '../AssetPreview/index.js';
 
@@ -36,7 +37,13 @@ export function AssetRow({ asset, isSelected, onSelect }: AssetRowProps): ReactN
           onChange={onSelect}
           value={isSelected}
         />
-        <Button color="primary" component="a" download href={downloadUrl} icon="download" />
+        <Button
+          color="primary"
+          icon="download"
+          onClick={() => {
+            downloadAsset(downloadUrl, asset.filename || asset.name || asset.id);
+          }}
+        />
       </td>
       <td>{asset.name || asset.id}</td>
       <td>

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/eslint-config",
-  "version": "0.36.10-test.3",
+  "version": "0.38.2-test.0",
   "private": true,
   "description": "Eslint configuration used internally at Appsemble.",
   "keywords": [
@@ -29,13 +29,13 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@appsemble/eslint-plugin": "0.36.10-test.3",
-    "@eslint/js": "9.39.4",
-    "@eslint/markdown": "7.5.1",
+    "@appsemble/eslint-plugin": "0.38.2-test.0",
+    "@eslint/js": "9.39.5",
+    "@eslint/markdown": "8.0.3",
     "@remcohaszing/eslint": "12.0.1",
-    "@typescript-eslint/eslint-plugin": "8.59.3",
-    "@typescript-eslint/parser": "8.59.3",
-    "@vitest/eslint-plugin": "1.6.17",
+    "@typescript-eslint/eslint-plugin": "8.69.0",
+    "@typescript-eslint/parser": "8.69.0",
+    "@vitest/eslint-plugin": "1.6.27",
     "eslint-plugin-compat": "6.2.1",
     "eslint-plugin-formatjs": "5.4.2",
     "eslint-plugin-jsdoc": "61.7.1",

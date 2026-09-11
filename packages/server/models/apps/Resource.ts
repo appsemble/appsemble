@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { type App, type Resource as ResourceType } from '@appsemble/types';
-import { DataTypes, type DestroyOptions, type FindOptions } from 'sequelize';
+import { DataTypes, type DestroyOptions, type FindOptions, type Transaction } from 'sequelize';
 import {
   AfterDestroy,
   AllowNull,
@@ -160,9 +160,17 @@ async function beforeDestroyHook(
   app: App,
   resourceRepository: Repository<ResourceGlobal>,
   appMemberRepository: Repository<AppMember>,
+  transaction?: Transaction | null,
 ): Promise<void> {
-  const resource = await resourceRepository.findByPk(instance.id, { attributes: ['id', 'type'] });
-  const appMembers = await appMemberRepository.findAll({ attributes: ['id', 'properties'] });
+  const resource = await resourceRepository.findOne({
+    where: { id: instance.id, type: instance.type },
+    attributes: ['id', 'type'],
+    transaction,
+  });
+  const appMembers = await appMemberRepository.findAll({
+    attributes: ['id', 'properties'],
+    transaction,
+  });
 
   if (!app || !resource || !appMembers.length) {
     return;
@@ -209,7 +217,7 @@ async function beforeDestroyHook(
   logger.info(`Updating user properties for ${resource.type} resource ${resource.id}.`);
 
   for (const [appMemberId, properties] of Object.entries(appMembersToUpdate)) {
-    await appMemberRepository.update({ properties }, { where: { id: appMemberId } });
+    await appMemberRepository.update({ properties }, { where: { id: appMemberId }, transaction });
   }
 
   logger.info(
@@ -228,9 +236,13 @@ async function beforeBulkDestroyHook(
   const resources = await resourceRepository.findAll({
     where: { ...options.where },
     attributes: ['id', 'type'],
+    transaction: options.transaction,
   });
 
-  const appMembers = await appMemberRepository.findAll({ attributes: ['id', 'properties'] });
+  const appMembers = await appMemberRepository.findAll({
+    attributes: ['id', 'properties'],
+    transaction: options.transaction,
+  });
 
   if (!app || !resources.length || !appMembers.length) {
     return;
@@ -252,23 +264,27 @@ async function beforeBulkDestroyHook(
 
     for (const [propertyName, propertyDefinition] of Object.entries(userPropertiesDefinition)) {
       if (!propertyDefinition.reference) {
-        return;
+        continue;
       }
 
+      const deletedIds = resources
+        .filter((resource) => resource.type === propertyDefinition.reference?.resource)
+        .map((resource) => resource.id);
+      if (!deletedIds.length) {
+        continue;
+      }
+      const value = appMember.properties?.[propertyName];
       let updatedValue;
 
       if (propertyDefinition.schema.type === 'integer') {
+        if (!deletedIds.includes(value)) {
+          continue;
+        }
         updatedValue = 0;
       }
 
       if (propertyDefinition.schema.type === 'array') {
-        updatedValue = appMember.properties?.[propertyName].filter(
-          (entry: number) =>
-            !resources
-              .filter((resource) => resource.type === propertyDefinition.reference?.resource)
-              .map((resource) => resource.id)
-              .includes(entry),
-        );
+        updatedValue = value?.filter((entry: number) => !deletedIds.includes(entry));
       }
 
       appMembersToUpdate[appMember.id] = {
@@ -279,7 +295,10 @@ async function beforeBulkDestroyHook(
   }
 
   for (const [appMemberId, properties] of Object.entries(appMembersToUpdate)) {
-    await appMemberRepository.update({ properties }, { where: { id: appMemberId } });
+    await appMemberRepository.update(
+      { properties },
+      { where: { id: appMemberId }, transaction: options.transaction },
+    );
   }
 
   logger.info(`Updated ${Object.keys(appMembersToUpdate).length} users' properties.`);
@@ -293,6 +312,7 @@ export function createResourceModel(sequelize: Sequelize): typeof ResourceGlobal
     @Column(DataType.INTEGER)
     declare id: number;
 
+    @PrimaryKey
     @AllowNull(false)
     @Index({ name: 'resourceTypeComposite' })
     @Column(DataType.STRING)
@@ -373,14 +393,20 @@ export function createResourceModel(sequelize: Sequelize): typeof ResourceGlobal
         onDelete: 'CASCADE',
         as: 'Editor',
       });
-      Resource.hasMany(models.Asset, { onDelete: 'CASCADE' });
-      Resource.hasMany(models.ResourceSubscription, { onDelete: 'CASCADE' });
-      Resource.hasMany(models.ResourceVersion, { onDelete: 'CASCADE' });
+      Resource.hasMany(models.Asset, { onDelete: 'CASCADE', constraints: false });
+      Resource.hasMany(models.ResourceSubscription, { onDelete: 'CASCADE', constraints: false });
+      Resource.hasMany(models.ResourceVersion, { onDelete: 'CASCADE', constraints: false });
     }
 
     static addHooks(models: AppModels, app: App): void {
-      Resource.addHook('beforeDestroy', (instance) =>
-        beforeDestroyHook(instance as Resource, app, models.Resource, models.AppMember),
+      Resource.addHook('beforeDestroy', (instance, options) =>
+        beforeDestroyHook(
+          instance as Resource,
+          app,
+          models.Resource,
+          models.AppMember,
+          options.transaction,
+        ),
       );
       Resource.addHook('beforeBulkDestroy', (options) =>
         beforeBulkDestroyHook(options, app, models.Resource, models.AppMember),
@@ -388,11 +414,17 @@ export function createResourceModel(sequelize: Sequelize): typeof ResourceGlobal
     }
 
     @AfterDestroy
-    static async afterDestroyHook(instance: Resource, { force }: DestroyOptions): Promise<void> {
+    static async afterDestroyHook(
+      instance: Resource,
+      { force, transaction }: DestroyOptions,
+    ): Promise<void> {
       if (force || !instance?.ephemeral) {
         return;
       }
-      await instance?.destroy({ force: true });
+      // The hard delete must run inside the same transaction as the
+      // soft-delete UPDATE. Otherwise the new connection collides with the
+      // SELECT FOR UPDATE the outer caller holds on this row.
+      await instance?.destroy({ force: true, transaction });
     }
   }
 

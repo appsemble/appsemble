@@ -136,6 +136,10 @@ const weekdays = [
   'saturday',
 ] as const;
 
+/**
+ * @param field Date field to check
+ * @returns An array of predicate functions that return `true` when a given date should be disabled.
+ */
 export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => boolean)[] {
   if (!field.requirements) {
     return [];
@@ -155,6 +159,32 @@ export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => 
   }
 
   return [(date) => disabled.has(date.getDay())];
+}
+
+/**
+ * Resolve the explicit dates that should be disabled in a date picker.
+ *
+ * @param field The field to check.
+ * @param utils The Appsemble SDK utils.
+ * @param values The values of all form fields.
+ * @returns The ISO date strings that should not be selectable.
+ */
+export function getDisabledDates(
+  field: FieldWithRequirements,
+  utils?: BlockUtils,
+  values?: Values,
+): string[] {
+  const { disabledDates } = field as FieldWithRequirements & { disabledDates?: unknown };
+  if (disabledDates == null) {
+    return [];
+  }
+
+  const remapped = utils?.remap(disabledDates as any, values);
+  if (!Array.isArray(remapped)) {
+    return [];
+  }
+
+  return remapped.filter((date): date is string => typeof date === 'string');
 }
 
 /**

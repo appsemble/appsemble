@@ -64,7 +64,7 @@ export function MemberRow({
   onChanged,
   onDeleted,
 }: AppMemberRowProperties): ReactNode {
-  const { demo, email, name, properties, role, sub } = member;
+  const { demo, email, name, properties, roles, sub } = member;
   const {
     userInfo: { email: currentUserEmail },
   } = useUser();
@@ -91,14 +91,13 @@ export function MemberRow({
 
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>): Promise<void> => {
-      event.preventDefault();
-      const { value } = event.currentTarget;
+      const selectedRoles = Array.from(event.currentTarget.selectedOptions, ({ value }) => value);
 
       try {
         const { data } = await axios.put<AppMemberInfo>(
           `/api/apps/${app.id}/app-members/${sub}/role`,
           {
-            role: value,
+            roles: selectedRoles,
           },
         );
 
@@ -106,7 +105,7 @@ export function MemberRow({
           color: 'success',
           body: formatMessage(messages.changeRoleSuccess, {
             name: data.name || data.email || data.sub,
-            role: value,
+            roles: selectedRoles.join(', '),
           }),
         });
         onChanged(data);
@@ -187,10 +186,17 @@ export function MemberRow({
         </td>
         <td className="has-text-right">
           <div className="control is-inline">
-            <AsyncSelect defaultValue={role} disabled={!mayUpdateRoles} onChange={onChangeRole}>
-              {roleKeys.map((r) => (
-                <option key={r} value={r}>
-                  {r}
+            <AsyncSelect
+              data-testid={`app-member-roles-${email || sub}`}
+              disabled={!mayUpdateRoles}
+              multiple
+              onChange={onChangeRole}
+              size={Math.min(Math.max(roleKeys.length, 2), 6)}
+              value={roles}
+            >
+              {roleKeys.map((roleKey) => (
+                <option key={roleKey} value={roleKey}>
+                  {roleKey}
                 </option>
               ))}
             </AsyncSelect>

@@ -2,6 +2,7 @@ import {
   assertKoaCondition,
   getS3File,
   getS3FileStats,
+  replaceAssetFunctions,
   updateCompanionContainers,
   uploadS3File,
 } from '@appsemble/node-utils';
@@ -13,6 +14,7 @@ import { parseDocument } from 'yaml';
 
 import {
   App,
+  AppBuildSnapshot,
   AppMessages,
   AppReadme,
   AppScreenshot,
@@ -20,14 +22,12 @@ import {
   getAppDB,
 } from '../../../models/index.js';
 import { handleAppValidationError, setAppPath } from '../../../utils/app.js';
-import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
+import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
-import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
-import {
-  assertResourceUniqueConstraintSchemaValues,
-  syncResourceUniqueIndexes,
-} from '../../../utils/resourceUniqueIndexes.js';
+import { createAppBuildManifest } from '../../../utils/appBuildManifest.js';
+import { syncAppDefinitionIndexes } from '../../../utils/appDefinitionIndexes.js';
+import { assertResourceUniqueConstraintSchemaValues } from '../../../utils/resourceUniqueIndexes.js';
 
 export async function createAppFromTemplate(ctx: Context): Promise<void> {
   const {
@@ -139,14 +139,14 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     const appStyleUpdates: Partial<App> = {};
 
     if (record.coreStyle != null) {
-      const replacedCoreStyle = replaceAssetFunctions(record.coreStyle, record.id);
+      const replacedCoreStyle = replaceAssetFunctions(record.coreStyle, record.id, argv.host);
       if (replacedCoreStyle !== record.coreStyle) {
         appStyleUpdates.coreStyle = replacedCoreStyle;
       }
     }
 
     if (record.sharedStyle != null) {
-      const replacedSharedStyle = replaceAssetFunctions(record.sharedStyle, record.id);
+      const replacedSharedStyle = replaceAssetFunctions(record.sharedStyle, record.id, argv.host);
       if (replacedSharedStyle !== record.sharedStyle) {
         appStyleUpdates.sharedStyle = replacedSharedStyle;
       }
@@ -164,6 +164,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       AppVariable: RecordAppVariables,
       Asset: RecordAsset,
       Resource: RecordResource,
+      sequelize: recordDB,
     } = await getAppDB(record.id);
 
     const templateAppBlockStyles = await TemplateAppBlockStyle.findAll();
@@ -175,7 +176,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
           style:
             blockStyle.style == null
               ? blockStyle.style
-              : replaceAssetFunctions(blockStyle.style, record.id),
+              : replaceAssetFunctions(blockStyle.style, record.id, argv.host),
         })),
       );
     }
@@ -200,14 +201,10 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       }
     }
 
-    if (
-      record.definition.resources &&
-      Object.entries(record.definition.resources).some(
-        ([, definition]) => (definition.unique ?? []).length !== 0,
-      )
-    ) {
-      await syncResourceUniqueIndexes(record.id, undefined, record.definition.resources);
-    }
+    await syncAppDefinitionIndexes({
+      resources: record.definition.resources,
+      sequelize: recordDB,
+    });
 
     if (resources) {
       const templateResources = await TemplateResource.findAll({ where: { clonable: true } });
@@ -231,13 +228,6 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
           seed,
         })),
       );
-      for (const [resourceType, { enforceOrderingGroupByFields, positioning }] of Object.entries(
-        template.definition.resources ?? {},
-      )) {
-        if (positioning && enforceOrderingGroupByFields) {
-          await createDynamicIndexes(enforceOrderingGroupByFields, record.id, resourceType);
-        }
-      }
     }
 
     if (variables) {
@@ -329,11 +319,13 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     doc.setIn(['description'], result.definition.description);
     // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     doc.setIn(['name'], result.definition.name);
+    const buildManifestJson = await createAppBuildManifest(record.definition);
     const snapshot = await AppSnapshot.create({
       AppId: record.id,
       UserId: user!.id,
       yaml: String(doc),
     });
+    await AppBuildSnapshot.create({ AppSnapshotId: snapshot.id, buildManifestJson });
     record.AppSnapshots = [snapshot];
 
     if (template.definition.containers && template.definition.containers.length > 0) {

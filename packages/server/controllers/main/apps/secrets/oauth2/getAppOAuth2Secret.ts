@@ -19,6 +19,7 @@ export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
         'id',
         'name',
         'remapper',
+        'roleMappings',
         'tokenUrl',
         'updated',
         'userInfoUrl',

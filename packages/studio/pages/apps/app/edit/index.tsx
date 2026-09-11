@@ -69,6 +69,7 @@ export default function EditPage(): ReactNode {
   const [coreStyleErrorCount, setCoreStyleErrorCount] = useState(0);
   const [sharedStyleErrorCount, setSharedStyleErrorCount] = useState(0);
   const [pristine, setPristine] = useState(true);
+  const [isPublishing, setIsPublishing] = useState(false);
   const frame = useRef<HTMLIFrameElement>();
   const modalFrame = useRef<HTMLIFrameElement>();
   const toolbarMenuButtonRef = useRef<HTMLButtonElement>();
@@ -180,6 +181,9 @@ export default function EditPage(): ReactNode {
   useBeforeUnload(appDefinition !== app.yaml);
 
   const uploadApp = useCallback(async () => {
+    setIsPublishing(true);
+    setPristine(true);
+
     try {
       const formData = new FormData();
       formData.append('yaml', appDefinition);
@@ -191,8 +195,10 @@ export default function EditPage(): ReactNode {
 
       // Update App State
       setApp(data);
-      setPristine(true);
+      setIsPublishing(false);
     } catch (error) {
+      setIsPublishing(false);
+      setPristine(false);
       const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintErrorData }>(error)
         ? error.response?.data?.data
         : undefined;
@@ -310,7 +316,8 @@ export default function EditPage(): ReactNode {
     app.locked !== 'unlocked' ||
     appDefinitionErrorCount ||
     coreStyleErrorCount ||
-    sharedStyleErrorCount,
+    sharedStyleErrorCount ||
+    isPublishing,
   );
 
   return (
@@ -381,6 +388,7 @@ export default function EditPage(): ReactNode {
                   className="is-fullwidth mr-2 mb-1"
                   disabled={disabled}
                   icon="save"
+                  loading={isPublishing}
                   onClick={() => handleToolbarButtonClick(onUpload)}
                 >
                   <FormattedMessage {...messages.publish} />

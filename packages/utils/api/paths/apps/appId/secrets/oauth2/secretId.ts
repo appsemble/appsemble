@@ -18,8 +18,26 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         content: {
           'application/json': {
             schema: {
-              type: 'array',
-              items: { $ref: '#/components/schemas/AppOAuth2Secret' },
+              type: 'object',
+              description: 'The public facing values of an app OAuth2 secret.',
+              additionalProperties: false,
+              properties: {
+                authorizationUrl: {
+                  type: 'string',
+                  format: 'uri',
+                  description: 'The OAuth2 redirect URL.',
+                },
+                clientId: {
+                  type: 'string',
+                  description:
+                    'The public client id which identifies Appsemble to the authorization server.',
+                },
+                scope: {
+                  type: 'string',
+                  description:
+                    'The login scope that will be requested from the authorization server.',
+                },
+              },
             },
           },
         },

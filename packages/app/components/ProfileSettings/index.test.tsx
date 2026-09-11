@@ -11,7 +11,7 @@ const appMemberInfo = {
   sub: 'randomly-generated',
   email_verified: true,
   demo: false,
-  role: 'User',
+  roles: ['User'],
   zoneinfo: 'Europe/Amsterdam',
   email: 'test@appsemble.com',
   name: 'Test User',

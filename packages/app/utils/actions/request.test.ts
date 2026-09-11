@@ -12,7 +12,7 @@ let mock: MockAdapter;
 let request: AxiosRequestConfig;
 
 beforeEach(() => {
-  mock = new MockAdapter(axios);
+  mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
 });
 
 afterEach(() => {
@@ -284,6 +284,27 @@ describe('request', () => {
     expect(request.params).toBeNull();
     expect(request.data).toBeUndefined();
     expect(result).toBe('Example content');
+  });
+
+  it('should skip non-proxied requests when the URL remaps to an empty string', async () => {
+    mock.onAny(/.*/).reply(() => {
+      throw new Error('The request should not be sent');
+    });
+
+    const action = createTestAction({
+      definition: {
+        type: 'request',
+        url: { prop: 'documentUrl' },
+        proxy: false,
+      },
+      prefix: 'pages.test.blocks.0.actions.onLoad',
+      prefixIndex: 'pages.0.blocks.0.actions.onLoad',
+    });
+
+    const result = await action({ documentUrl: '' });
+
+    expect(result).toBeNull();
+    expect(mock.history.get).toHaveLength(0);
   });
 
   it('should allow for using context in query remappers', async () => {

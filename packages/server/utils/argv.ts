@@ -164,6 +164,17 @@ export interface Argv {
    */
   slowQueryThreshold: number;
 
+  /**
+   * The maximum number of app databases to keep cached.
+   *
+   * Each cached app database holds a Sequelize instance with its own connection pool and model
+   * definitions. The least recently used instance is closed and evicted when the limit is
+   * exceeded.
+   *
+   * @default 200
+   */
+  appDbCacheLimit: number;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Valkey                                                                                       //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -197,6 +208,13 @@ export interface Argv {
    * @default false
    */
   valkeyTls: boolean;
+
+  /**
+   * The TTL in seconds for cached app-serving metadata. Set to 0 to disable the cache.
+   *
+   * @default 300
+   */
+  appServingCacheTtl: number;
 
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // SSL                                                                                          //
@@ -473,6 +491,13 @@ export interface Argv {
   s3SecretKey: string;
 
   /**
+   * The base URL for block assets stored in S3 compatible object storage.
+   *
+   * default undefined
+   */
+  blockAssetsBaseUrl: string;
+
+  /**
    * Enable dry run for reconcile-dns command
    *
    * @default true
@@ -632,6 +657,7 @@ const defaults: Argv = {
   migrateTo: undefined,
   databaseBenchmark: false,
   slowQueryThreshold: 100,
+  appDbCacheLimit: 200,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   valkeyHost: undefined,
   valkeyPort: 6379,
@@ -639,6 +665,7 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   valkeyPassword: undefined,
   valkeyTls: false,
+  appServingCacheTtl: 300,
   ssl: false,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sslKey: undefined,
@@ -705,6 +732,8 @@ const defaults: Argv = {
   s3AccessKey: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   s3SecretKey: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  blockAssetsBaseUrl: undefined,
   dryRun: true,
   skipCustomDomains: false,
   backupsBucket: 'appsemble-backups-exampleenv',

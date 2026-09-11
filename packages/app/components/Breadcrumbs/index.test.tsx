@@ -1,0 +1,236 @@
+import { type AppDefinition, type PageDefinition, remap, type Remapper } from '@appsemble/lang-sdk';
+import { render, screen } from '@testing-library/react';
+import { IntlProvider } from 'react-intl';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { Breadcrumbs } from './index.js';
+import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
+import * as appMemberProvider from '../AppMemberProvider/index.js';
+import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+
+function createAppDefinition(pages: PageDefinition[]): AppDefinition {
+  return {
+    name: 'Test App',
+    defaultPage: 'Home',
+    layout: { breadcrumbs: true },
+    pages,
+  } as unknown as AppDefinition;
+}
+
+function mockApp(definition: AppDefinition, appMemberRoles: string[] = ['User']): void {
+  vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+    definition,
+    demoMode: false,
+    revision: 1,
+    blockManifests: [],
+  });
+  vi.spyOn(appMemberProvider, 'useAppMember').mockReturnValue({
+    appMemberRoles,
+    appMemberSelectedGroup: undefined,
+    appMemberInfo: { name: 'Jane' },
+    isLoggedIn: true,
+  } as never);
+  vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
+    getAppMessage: ({ defaultMessage }: { defaultMessage?: string }) => ({
+      format: () => defaultMessage,
+    }),
+    getMessage: () => ({ format: () => '' }),
+  } as never);
+}
+
+function renderBreadcrumbs(
+  page: PageDefinition,
+  {
+    data = {},
+    inGrid,
+    path = '/en/lot-details',
+    subPageName,
+  }: { data?: unknown; inGrid?: boolean; path?: string; subPageName?: string } = {},
+): void {
+  // The real remapper, so a `navTitle` in a fixture behaves the way it does in an app.
+  const remapWithContext = (mappers: Remapper, input: unknown): unknown =>
+    remap(mappers, input, { pageData: data, pageName: page.name } as never);
+
+  render(
+    <IntlProvider locale="en" messages={{}}>
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route
+            element={
+              <Breadcrumbs
+                data={data}
+                inGrid={inGrid}
+                pageDefinition={page}
+                remap={remapWithContext}
+                subPageName={subPageName}
+              />
+            }
+            path="/:lang/:pageId/*"
+          />
+        </Routes>
+      </MemoryRouter>
+    </IntlProvider>,
+  );
+}
+
+const hierarchy = [
+  { name: 'Home', blocks: [] },
+  { name: 'Available Lots', parent: 'Home', blocks: [] },
+  { name: 'Lot Details', parent: 'Available Lots', blocks: [] },
+] as unknown as PageDefinition[];
+
+beforeEach(() => {
+  mockApp(createAppDefinition(hierarchy));
+});
+
+describe('Breadcrumbs', () => {
+  it('should link every ancestor and leave the current page as plain text', () => {
+    renderBreadcrumbs(hierarchy[2]);
+
+    expect(screen.getByRole('link', { name: 'Home' }).getAttribute('href')).toBe('/en/home');
+    expect(screen.getByRole('link', { name: 'Available Lots' }).getAttribute('href')).toBe(
+      '/en/available-lots',
+    );
+    expect(screen.getByText('Lot Details')).not.toBeNull();
+    expect(screen.queryByRole('link', { name: 'Lot Details' })).toBeNull();
+  });
+
+  it('should omit an ancestor the member is not allowed to view', () => {
+    const pages = [
+      { name: 'Home', blocks: [] },
+      { name: 'Admin Area', parent: 'Home', roles: ['Admin'], blocks: [] },
+      { name: 'Lot Details', parent: 'Admin Area', blocks: [] },
+    ] as unknown as PageDefinition[];
+    const definition = createAppDefinition(pages);
+    definition.security = { roles: { User: {}, Admin: {} } } as never;
+    mockApp(definition, ['User']);
+
+    renderBreadcrumbs(pages[2]);
+
+    expect(screen.getByRole('link', { name: 'Home' })).not.toBeNull();
+    expect(screen.queryByText('Admin Area')).toBeNull();
+  });
+
+  it('should render nothing when breadcrumbs are not enabled for the app', () => {
+    const definition = createAppDefinition(hierarchy);
+    definition.layout = {};
+    mockApp(definition);
+
+    renderBreadcrumbs(hierarchy[2]);
+
+    expect(screen.queryByRole('navigation')).toBeNull();
+  });
+
+  it('should label the current page from its navTitle remapped against the page data', () => {
+    const pages = [
+      { name: 'Available Lots', blocks: [] },
+      {
+        name: 'Lot Details',
+        parent: 'Available Lots',
+        navTitle: { prop: 'description' },
+        blocks: [],
+      },
+    ] as unknown as PageDefinition[];
+    mockApp(createAppDefinition(pages));
+
+    renderBreadcrumbs(pages[1], { data: { description: 'Lot 42' } });
+
+    expect(screen.getByText('Lot 42')).not.toBeNull();
+    expect(screen.queryByText('Lot Details')).toBeNull();
+  });
+
+  it('should fall back to the page name when an ancestor navTitle resolves to nothing', () => {
+    const pages = [
+      { name: 'Available Lots', navTitle: { prop: 'description' }, blocks: [] },
+      { name: 'Lot Details', parent: 'Available Lots', blocks: [] },
+    ] as unknown as PageDefinition[];
+    mockApp(createAppDefinition(pages));
+
+    renderBreadcrumbs(pages[1], { data: { description: 'Lot 42' } });
+
+    expect(screen.getByRole('link', { name: 'Available Lots' })).not.toBeNull();
+  });
+
+  it('should render a container ancestor as plain text rather than a link', () => {
+    const pages = [
+      { name: 'Container', type: 'container', pages: [{ name: 'Grouped', blocks: [] }] },
+      { name: 'Lot Details', parent: 'Container', blocks: [] },
+    ] as unknown as PageDefinition[];
+    mockApp(createAppDefinition(pages));
+
+    renderBreadcrumbs(pages[1]);
+
+    expect(screen.getByText('Container')).not.toBeNull();
+    expect(screen.queryByRole('link', { name: 'Container' })).toBeNull();
+  });
+
+  it('should append the name of the sub page as the final crumb', () => {
+    renderBreadcrumbs(hierarchy[2], { subPageName: 'Documents' });
+
+    expect(screen.getByRole('link', { name: 'Lot Details' })).not.toBeNull();
+    expect(screen.getByText('Documents')).not.toBeNull();
+    expect(screen.queryByRole('link', { name: 'Documents' })).toBeNull();
+  });
+
+  it('should keep labelling a page from its page data once a sub page follows it', () => {
+    const pages = [
+      { name: 'Available Lots', blocks: [] },
+      { name: 'Lot Details', parent: 'Available Lots', navTitle: { prop: 'description' } },
+    ] as unknown as PageDefinition[];
+    mockApp(createAppDefinition(pages));
+
+    renderBreadcrumbs(pages[1], { data: { description: 'Lot 42' }, subPageName: 'Documents' });
+
+    expect(screen.getByRole('link', { name: 'Lot 42' })).not.toBeNull();
+    expect(screen.queryByText('Lot Details')).toBeNull();
+  });
+
+  it('should preserve route parameters in the current tabs page link', () => {
+    const page = {
+      name: 'Lot Details',
+      type: 'tabs',
+      parent: 'Available Lots',
+      parameters: ['lotId', 'documentId'],
+      tabs: [{ name: 'Documents', blocks: [] }],
+    } as PageDefinition;
+    mockApp(createAppDefinition([...hierarchy.slice(0, 2), page]));
+
+    renderBreadcrumbs(page, {
+      path: '/en/lot-details/documents/42/annual%20report',
+      subPageName: 'Documents',
+    });
+
+    expect(screen.getByRole('link', { name: 'Lot Details' }).getAttribute('href')).toBe(
+      '/en/lot-details/documents/42/annual%20report',
+    );
+    expect(screen.getByRole('link', { name: 'Available Lots' }).getAttribute('href')).toBe(
+      '/en/available-lots',
+    );
+  });
+
+  it('should render nothing on a page that has no ancestors', () => {
+    renderBreadcrumbs(hierarchy[0], { path: '/en/home' });
+
+    expect(screen.queryByRole('navigation')).toBeNull();
+  });
+
+  it('should render a trail on a page without ancestors that shows a sub page', () => {
+    renderBreadcrumbs(hierarchy[0], { path: '/en/home', subPageName: 'Documents' });
+
+    expect(screen.getByRole('link', { name: 'Home' })).not.toBeNull();
+    expect(screen.getByText('Documents')).not.toBeNull();
+  });
+
+  it('should occupy the reserved area when it is rendered inside the grid of the page', () => {
+    renderBreadcrumbs(hierarchy[2], { inGrid: true });
+
+    expect(screen.getByRole('navigation').style.gridArea).toBe('breadcrumbs');
+  });
+
+  it('should claim no area when it is rendered below the title bar', () => {
+    renderBreadcrumbs(hierarchy[2]);
+
+    expect(screen.getByRole('navigation').style.gridArea).toBe('');
+  });
+});

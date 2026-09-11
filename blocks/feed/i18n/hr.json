@@ -1,7 +1,7 @@
 {
   "anonymousLabel": "Anonimno",
   "emptyLabel": "Nema podataka za prikaz",
-  "permissionDeniedLabel": "Obratite se administratoru da vam nadogradi ulogu ako ste ovdje očekivali podatke",
-  "replyErrorMessage": "Dogodila se greška tijekom pokušaja slanja ove poruke.",
-  "replyLabel": "Ostavi poruku …"
+  "permissionDeniedLabel": "Obratite se administratoru da nadogradi vašu ulogu ako ste očekivali vidjeti podatke ovdje",
+  "replyErrorMessage": "Nešto je pošlo po zlu pri pokušaju slanja ove poruke.",
+  "replyLabel": "Ostavite poruku…"
 }

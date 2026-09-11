@@ -1,5 +1,10 @@
 import { useBlock } from '@appsemble/preact';
-import { Modal, useObjectURL, useToggle } from '@appsemble/preact-components';
+import {
+  AppAssetDownloadButton,
+  Modal,
+  useObjectURL,
+  useToggle,
+} from '@appsemble/preact-components';
 import {
   type FileIconName,
   getFilenameFromContentDisposition,
@@ -328,13 +333,16 @@ export function FileEntry({
       {value && url && previewAvailable ? (
         <Modal isActive={modal.enabled} onClose={modal.disable}>
           {fileType === 'image' ? (
-            <figure className="image">
-              <img
-                alt={(utils.remap(field.label, value) as string) ?? field.name}
-                className={styles.image}
-                src={url}
-              />
-            </figure>
+            <>
+              <AppAssetDownloadButton src={url} />
+              <figure className="image">
+                <img
+                  alt={(utils.remap(field.label, value) as string) ?? field.name}
+                  className={styles.image}
+                  src={url}
+                />
+              </figure>
+            </>
           ) : null}
           {fileType === 'video' ? (
             <video controls ref={videoRef} src={url}>

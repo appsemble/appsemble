@@ -1,5 +1,5 @@
 import { bootstrap } from '@appsemble/preact';
-import { Modal, useToggle } from '@appsemble/preact-components';
+import { AppAssetDownloadButton, Modal, useToggle } from '@appsemble/preact-components';
 import { type JSX } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
@@ -48,6 +48,12 @@ bootstrap(
       setSelectedImage(img);
     }, [img]);
 
+    const selectedSrc = selectedImage
+      ? /^(https?:|blob:https?:)?\/\//.test(selectedImage)
+        ? selectedImage
+        : asset(selectedImage)
+      : defaultSrc;
+
     if (boxRef.current) {
       boxRef.current.style.justifyContent =
         alignment === 'right' ? 'flex-start' : alignment === 'left' ? 'left' : 'center';
@@ -84,18 +90,7 @@ bootstrap(
           <div className={styles.imageScannerWrapper}>
             <button onClick={modal.enable} type="button">
               <figure>
-                <img
-                  alt={alt}
-                  className={styles.img}
-                  ref={imgRef}
-                  src={
-                    selectedImage
-                      ? /^(https?:|blob:https?:)?\/\//.test(selectedImage)
-                        ? selectedImage
-                        : asset(selectedImage)
-                      : defaultSrc
-                  }
-                />
+                <img alt={alt} className={styles.img} ref={imgRef} src={selectedSrc} />
               </figure>
             </button>
             {input ? (
@@ -114,6 +109,7 @@ bootstrap(
         </div>
         {fullscreen ? (
           <Modal isActive={modal.enabled} onClose={modal.disable}>
+            <AppAssetDownloadButton src={selectedSrc} />
             <figure className="image">
               <img
                 alt={alt}

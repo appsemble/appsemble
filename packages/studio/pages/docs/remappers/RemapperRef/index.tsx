@@ -47,7 +47,7 @@ export function RemapperRef({
                 <Playground defaultOption={defaultOption as RemapperExampleKeys} />
               </Collapsible>
             ) : null}
-            <Schema idPrefix={id} renderRef={Ref} schema={schema} />
+            <Schema anchors idPrefix={id} renderRef={Ref} schema={schema} />
           </Fragment>
         );
       })}

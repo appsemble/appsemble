@@ -131,6 +131,10 @@ export const messages = defineMessages({
     id: 'studio.9VC1l4',
     defaultMessage: 'Delete apps.',
   },
+  'organizations:delete': {
+    id: 'studio.kdMZ78',
+    defaultMessage: 'Delete organizations.',
+  },
   'resources:read': {
     id: 'studio.snEcFS',
     defaultMessage: 'Read app resources',

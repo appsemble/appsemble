@@ -2,6 +2,48 @@
 
 set -eu
 
+delete_cert_manager_tls_secrets() {
+  id="$1"
+  domain="${APPSEMBLE_REVIEW_DOMAIN:-appsemble.review}"
+
+  kubectl get secrets -o json | jq -r --arg suffix "$id.$domain" '
+    def matches_review_domain:
+      . == $suffix or endswith("." + $suffix);
+
+    .items[]
+    | select(.type == "kubernetes.io/tls")
+    | .metadata as $metadata
+    | ($metadata.annotations // {}) as $annotations
+    | (($annotations["cert-manager.io/alt-names"] // "") | split(",")) as $altNames
+    | ($annotations["cert-manager.io/common-name"] // "") as $commonName
+    | select(([$commonName] + $altNames) | any(matches_review_domain))
+    | $metadata.name
+  ' | while read -r secret; do
+    [ -n "$secret" ] || continue
+    kubectl delete secret "$secret" --ignore-not-found=true || true
+  done
+}
+
+purge_release() {
+  rel="$1"
+  id="$2"
+  echo "[review-cleanup] deleting $rel ($3)"
+  helm delete "$rel" --no-hooks --ignore-not-found || true
+  kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=$rel" --ignore-not-found=true || true
+  kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=$rel" --ignore-not-found=true || true
+  # Drops the helm release record, which is what clears releases wedged in
+  # "uninstalling" so they stop counting against the capacity limit.
+  kubectl delete secret -l "owner=helm,name=$rel" --ignore-not-found=true || true
+  kubectl delete namespace "companion-containers-$rel" --ignore-not-found=true || true
+  kubectl delete secret "$rel-mailpit-tls" "$rel-valkey" "$rel-pgbouncer-userlist" "stripe-webhook-secret-$id" --ignore-not-found=true || true
+  delete_cert_manager_tls_secrets "$id"
+}
+
+if [ -n "${PURGE_REVIEW_IID:-}" ]; then
+  purge_release "review-$PURGE_REVIEW_IID" "$PURGE_REVIEW_IID" requested
+  exit 0
+fi
+
 ACTIVE="${KEEP_REVIEW_IIDS:-} ${CI_MERGE_REQUEST_IID:-}"
 KNOWN="$ACTIVE"
 
@@ -44,20 +86,6 @@ KNOWN=$(printf '%s\n' "$KNOWN" 2>/dev/null | tr -s '[:space:]' '\n' | awk '/^[0-
 keep() { echo " $ACTIVE " | grep -q " $1 "; }
 known() { echo " $KNOWN " | grep -q " $1 "; }
 
-purge_release() {
-  rel="$1"
-  id="$2"
-  echo "[review-cleanup] deleting $rel ($3)"
-  helm delete "$rel" --no-hooks --ignore-not-found || true
-  kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=$rel" --ignore-not-found=true || true
-  kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=$rel" --ignore-not-found=true || true
-  # Drops the helm release record, which is what clears releases wedged in
-  # "uninstalling" so they stop counting against the capacity limit.
-  kubectl delete secret -l "owner=helm,name=$rel" --ignore-not-found=true || true
-  kubectl delete namespace "companion-containers-$rel" --ignore-not-found=true || true
-  kubectl delete secret "$rel-mailpit-tls" "$rel-valkey" "stripe-webhook-secret-$id" --ignore-not-found=true || true
-}
-
 helm list -a -o json | jq -r '.[] | select(.name | test("^review-[0-9][0-9]*$")) | "\(.name) \(.status)"' | while read -r r status; do
   iid=${r#review-}
   keep "$iid" && continue
@@ -79,8 +107,8 @@ for n in $(kubectl get namespaces --no-headers -o custom-columns=:metadata.name 
   keep "$iid" || kubectl delete namespace "$n" --ignore-not-found=true || true
 done
 
-for s in $(kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep -E '^(review-[0-9]+-(mailpit-tls|valkey)|stripe-webhook-secret-[0-9]+)$' || true); do
-  iid=$(printf '%s\n' "$s" | sed -nE 's/^review-([0-9]+)-(mailpit-tls|valkey)$/\1/p; s/^stripe-webhook-secret-([0-9]+)$/\1/p')
+for s in $(kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep -E '^(review-[0-9]+-(mailpit-tls|valkey|pgbouncer-userlist)|stripe-webhook-secret-[0-9]+)$' || true); do
+  iid=$(printf '%s\n' "$s" | sed -nE 's/^review-([0-9]+)-(mailpit-tls|valkey|pgbouncer-userlist)$/\1/p; s/^stripe-webhook-secret-([0-9]+)$/\1/p')
   [ -n "$iid" ] || continue
   known "$iid" || continue
   keep "$iid" && continue

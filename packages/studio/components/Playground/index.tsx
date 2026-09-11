@@ -202,7 +202,7 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
     return createExampleContext(url, lang, {
       ...userInfo,
       demo: false,
-      role: PredefinedAppRole.Member,
+      roles: [PredefinedAppRole.Member],
       $seed: false,
       $ephemeral: false,
     });

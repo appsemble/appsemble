@@ -13,6 +13,14 @@ import {
   type Security,
 } from './types/index.js';
 
+function normalizeAppRoles(appRoles: AppRole | AppRole[] | null | undefined): AppRole[] {
+  if (!appRoles) {
+    return [];
+  }
+
+  return Array.isArray(appRoles) ? appRoles : [appRoles];
+}
+
 function checkAppPermissions(
   acquiredPermissions: CustomAppPermission[],
   requiredPermissions: CustomAppPermission[],
@@ -245,9 +253,12 @@ export function getAppRolesByPermissions(
 
 export function checkAppRoleAppPermissions(
   appSecurityDefinition: Security,
-  appRole: string,
+  appRoles: AppRole | AppRole[] | null | undefined,
   requiredPermissions: CustomAppPermission[],
 ): boolean {
-  const appRolePermissions = getAppRolePermissions(appSecurityDefinition, [appRole]);
+  const appRolePermissions = getAppRolePermissions(
+    appSecurityDefinition,
+    normalizeAppRoles(appRoles),
+  );
   return checkAppPermissions(appRolePermissions, requiredPermissions);
 }

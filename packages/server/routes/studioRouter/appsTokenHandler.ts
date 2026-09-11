@@ -228,7 +228,13 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           appRole,
           client_id: clientId,
           scope: requestedScope,
-        } = checkTokenRequestParameters(query, ['client_id', 'role', 'scope', 'refresh_token']);
+        } = checkTokenRequestParameters(query, [
+          'appMemberId',
+          'appRole',
+          'client_id',
+          'refresh_token',
+          'scope',
+        ]);
 
         const appId = Number(clientId.replace('app:', ''));
         const { AppMember, Group, GroupMember, sequelize } = await getAppDB(appId);
@@ -259,7 +265,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
             const demoEmail = `demo-${identifier}@example.com`;
             appMember = await AppMember.create(
               {
-                role,
+                roles: [role],
                 email: demoEmail,
                 emailVerified: true,
                 name: `${role} ${identifier}`,

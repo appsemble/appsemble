@@ -6,18 +6,33 @@ import {
   type ResourceDefinition,
 } from '@appsemble/lang-sdk';
 import {
+  appWideGroupId,
   getRemapperContext,
   type Options,
   type QueryParams,
   throwKoaError,
 } from '@appsemble/node-utils';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
-import { literal, type ModelStatic, Op, type Order, type WhereOptions } from 'sequelize';
+import {
+  literal,
+  type ModelStatic,
+  Op,
+  type Order,
+  type Transaction,
+  type WhereAttributeHashValue,
+  type WhereOptions,
+} from 'sequelize';
 import { type Literal } from 'sequelize/types/utils';
 
 import { type FieldType, odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 import { sendNotification, type SendNotificationOptions } from './sendNotification.js';
-import { type App, type AppSubscription, getAppDB, type Resource } from '../models/index.js';
+import {
+  type App,
+  type AppSubscription,
+  getAppDB,
+  type Resource,
+  trackBackgroundTask,
+} from '../models/index.js';
 
 export function renameOData(name: string): string {
   switch (name) {
@@ -125,7 +140,7 @@ async function sendSubscriptionNotifications(
   }
 }
 
-export async function processHooks(
+async function runHooks(
   app: App,
   resource: Resource,
   action: 'create' | 'delete' | 'update',
@@ -183,7 +198,20 @@ export async function processHooks(
   }
 }
 
-export async function processReferenceHooks(
+// Run resource notification hooks as tracked background work so a caller can leave it running after
+// responding, without a teardown dropping the app database out from under its queries and without
+// leaking an unhandled rejection.
+export function processHooks(
+  app: App,
+  resource: Resource,
+  action: 'create' | 'delete' | 'update',
+  options: Options,
+  context: ParameterizedContext<DefaultState, DefaultContext, any>,
+): Promise<void> {
+  return trackBackgroundTask(runHooks(app, resource, action, options, context));
+}
+
+async function runReferenceHooks(
   app: App,
   resource: Resource,
   action: 'create' | 'delete' | 'update',
@@ -220,11 +248,23 @@ export async function processReferenceHooks(
   );
 }
 
+// Run resource reference hooks as tracked background work (see trackBackgroundTask).
+export function processReferenceHooks(
+  app: App,
+  resource: Resource,
+  action: 'create' | 'delete' | 'update',
+  options: Options,
+  context: ParameterizedContext<DefaultState, DefaultContext, any>,
+): Promise<void> {
+  return trackBackgroundTask(runReferenceHooks(app, resource, action, options, context));
+}
+
 export async function processReferenceTriggers(
   app: App,
   parent: Resource,
   action: 'create' | 'delete' | 'update',
   context: ParameterizedContext<DefaultState, DefaultContext, any>,
+  transaction?: Transaction,
 ): Promise<void> {
   const { Resource } = await getAppDB(app.id);
   const resourceReferences = [];
@@ -250,6 +290,7 @@ export async function processReferenceTriggers(
   const childPromises = resourceReferences.map(async ({ childName, referencedProperty }) => {
     childResources[childName] = await Resource.findAll({
       where: { type: childName, [`data.${referencedProperty}`]: parent.id },
+      transaction,
     });
   });
 
@@ -283,13 +324,16 @@ export async function processReferenceTriggers(
           triggers.map(async (trigger) => {
             switch (trigger.cascade) {
               case 'update':
-                await child.update({
-                  // @ts-expect-error 2464 Computed property must be of type ...
-                  data: { ...child.data, [referencedProperty]: null },
-                });
+                await child.update(
+                  {
+                    // @ts-expect-error 2464 Computed property must be of type ...
+                    data: { ...child.data, [referencedProperty]: null },
+                  },
+                  { transaction },
+                );
                 break;
               case 'delete':
-                await child.destroy();
+                await child.destroy({ transaction });
                 break;
               default:
                 break;
@@ -301,6 +345,29 @@ export async function processReferenceTriggers(
   }
 
   await Promise.all(triggerPromises);
+}
+
+/**
+ * Build a Sequelize resource `GroupId` filter for operations that may span
+ * multiple groups (query, delete).
+ *
+ * The app-wide scope (`appWideGroupId`, or an empty selection) matches
+ * resources without a group; concrete ids match resources in those groups.
+ *
+ * @param selectedGroupId The selected group ids from the query parameters.
+ * @returns A value for a resource `GroupId` where clause.
+ */
+export function getGroupIdWhere(
+  selectedGroupId: number[] = [],
+): WhereAttributeHashValue<number | null> {
+  const groupIds = selectedGroupId.filter((id) => id > 0);
+  const includeUngrouped = selectedGroupId.length === 0 || selectedGroupId.includes(appWideGroupId);
+
+  if (!groupIds.length) {
+    return null;
+  }
+
+  return includeUngrouped ? { [Op.or]: [{ [Op.in]: groupIds }, null] } : { [Op.in]: groupIds };
 }
 
 /**
@@ -341,6 +408,7 @@ export function parseQuery({
           .replaceAll(/(^|\B)\$ephemeral(\b|$)/g, '__ephemeral__'),
         tableName,
         renameOData,
+        ['data'],
       )
     : undefined;
 

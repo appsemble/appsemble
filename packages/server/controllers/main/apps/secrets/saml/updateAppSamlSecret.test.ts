@@ -5,7 +5,13 @@ import {
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, getAppDB, Organization, OrganizationMember } from '../../../../../models/index.js';
+import {
+  App,
+  getAppDB,
+  getDB,
+  Organization,
+  OrganizationMember,
+} from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
@@ -61,6 +67,11 @@ describe('updateAppSamlSecret', () => {
       spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
+    await getDB().query('UPDATE "App" SET "updated" = :updated WHERE "id" = :appId', {
+      replacements: { appId: app.id, updated: new Date(-1000) },
+    });
+    await app.reload();
+    const previousUpdated = app.updated;
     const response = await request.put<AppSamlSecretType>(
       `/api/apps/${app.id}/secrets/saml/${secret.id}`,
       {
@@ -81,6 +92,7 @@ describe('updateAppSamlSecret', () => {
         "emailAttribute": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
         "emailVerifiedAttribute": null,
         "entityId": "https://updated.example/saml/metadata.xml",
+        "groupAttribute": null,
         "icon": "updated",
         "id": 1,
         "idpCertificate": "-----BEGIN CERTIFICATE-----
@@ -88,6 +100,8 @@ describe('updateAppSamlSecret', () => {
       -----END CERTIFICATE-----",
         "name": "Updated",
         "nameAttribute": null,
+        "objectIdAttribute": null,
+        "roleMappings": null,
         "spCertificate": Any<String>,
         "ssoUrl": "https://updated.example/saml/login",
         "updated": "1970-01-01T00:00:00.000Z",
@@ -95,8 +109,47 @@ describe('updateAppSamlSecret', () => {
     `,
     );
     await secret.reload();
+    await app.reload();
     const { updated, ...data } = response.data;
     expect(secret).toMatchObject(data);
+    expect(app.updated.getTime()).toBeGreaterThan(previousUpdated.getTime());
+  });
+
+  it('should clear SAML group attribute and role mappings when empty values are submitted', async () => {
+    authorizeStudio();
+    const { AppSamlSecret } = await getAppDB(app.id);
+    const secret = await AppSamlSecret.create({
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      groupAttribute: 'memberOf',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+      roleMappings: [{ group: '/Test', role: 'Test' }],
+      spCertificate: '-----BEGIN CERTIFICATE-----\nSP\n-----END CERTIFICATE-----',
+      spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
+      spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
+    });
+    const response = await request.put<AppSamlSecretType>(
+      `/api/apps/${app.id}/secrets/saml/${secret.id}`,
+      {
+        entityId: 'https://updated.example/saml/metadata.xml',
+        ssoUrl: 'https://updated.example/saml/login',
+        groupAttribute: '',
+        idpCertificate: '-----BEGIN CERTIFICATE-----\nUPDATED\n-----END CERTIFICATE-----',
+        icon: 'updated',
+        name: 'Updated',
+        roleMappings: [],
+      },
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data.groupAttribute).toBeNull();
+    expect(response.data.roleMappings).toBeNull();
+
+    await secret.reload();
+    expect(secret.groupAttribute).toBeNull();
+    expect(secret.roleMappings).toBeNull();
   });
 
   it('should not throw status 404 for unknown apps', async () => {

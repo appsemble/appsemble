@@ -66,7 +66,7 @@ describe('deleteAppInvite', () => {
     await AppInvite.create({
       email: 'test@example.com',
       key: 'test-key',
-      role: 'User',
+      roles: ['User'],
     });
 
     const response = await request.delete(`/api/apps/${app.id}/invites`, {
@@ -99,7 +99,7 @@ describe('deleteAppInvite', () => {
     await AppInvite.create({
       email: 'test@example.com',
       key: 'test-key',
-      role: 'User',
+      roles: ['User'],
     });
 
     const unauthorizedUser = await User.create({

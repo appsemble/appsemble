@@ -6,7 +6,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     { $ref: '#/components/parameters/assetId' },
   ],
   get: {
-    tags: ['main', 'app', 'asset'],
+    tags: ['common', 'app', 'asset'],
     description: 'Download the original asset binary.',
     operationId: 'getOriginalAppAsset',
     responses: {
@@ -14,6 +14,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'The original asset that matches the given id.',
       },
     },
-    security: [{ studio: [] }, { cli: ['assets:write'] }],
+    security: [{}, { studio: [] }, { app: [] }, { cli: ['assets:write'] }],
   },
 };

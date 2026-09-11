@@ -271,6 +271,7 @@ export async function updateCompanionContainers(
           );
           continue;
         }
+        const podName = pod.metadata.name;
 
         // Set base labels, such as selector, pod name, pod hash
         const props = {
@@ -281,7 +282,7 @@ export async function updateCompanionContainers(
             'pod-template-hash': pod?.metadata?.labels?.['pod-template-hash'],
             appId,
           },
-          name: pod.metadata.name,
+          name: podName,
         };
         const podPatch = [
           {
@@ -291,7 +292,7 @@ export async function updateCompanionContainers(
           },
         ];
         const updatedPod = await coreApi.patchNamespacedPod({
-          name: pod.metadata.name,
+          name: podName,
           namespace,
           body: podPatch,
         });

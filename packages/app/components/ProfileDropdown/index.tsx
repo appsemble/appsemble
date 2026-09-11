@@ -20,7 +20,7 @@ export function ProfileDropdown(): ReactNode {
   const { definition } = useAppDefinition();
   const navigate = useNavigate();
   const { getAppMessage } = useAppMessages();
-  const { appMemberInfo, appMemberRole, appMemberSelectedGroup, isLoggedIn, logout } =
+  const { appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn, logout } =
     useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const { pathname } = useLocation();
@@ -61,7 +61,7 @@ export function ProfileDropdown(): ReactNode {
   const pages = definition.pages.filter(
     (page) =>
       page.navigation === 'profileDropdown' &&
-      checkPagePermissions(page, definition, appMemberRole, appMemberSelectedGroup),
+      checkPagePermissions(page, definition, appMemberRoles, appMemberSelectedGroup),
   );
   const showSettings =
     (layout?.settings ?? 'navbar') === 'navbar' &&

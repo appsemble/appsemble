@@ -12,6 +12,7 @@ import {
   EmailQuotaExceededError,
   getContainerNamespace,
   getRemapperContext,
+  getSSRFProtectedAgents,
   logger,
   type Options,
   parseServiceUrl,
@@ -22,11 +23,10 @@ import {
   waitForPodReadiness,
 } from '@appsemble/node-utils';
 import { type App } from '@appsemble/types';
+import { deserializeResource } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { type Context, type Middleware } from 'koa';
-import { get, mapValues, pick } from 'lodash-es';
-import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-filtering-agent';
-import { type JsonObject, type JsonValue } from 'type-fest';
+import { get, pick } from 'lodash-es';
 
 /**
  * These response headers are forwarded when proxying requests.
@@ -95,29 +95,6 @@ export async function handleNotify(
   await sendNotifications({ app, to, title, body, link });
 
   ctx.status = 204;
-}
-
-function deserializeResource(data: any): any {
-  // Extract the resource and assets from the JSON object
-  const { resource } = data;
-  const assets = data.assets as Blob[];
-
-  // Function to replace asset placeholders with actual Blobs
-  const replaceAssets = (value: JsonValue): any => {
-    if (Array.isArray(value)) {
-      return value.map(replaceAssets);
-    }
-    if (typeof value === 'string' && /^\d+$/.test(value)) {
-      return assets[Number(value)];
-    }
-    if (value && typeof value === 'object') {
-      return mapValues(value as JsonObject, replaceAssets);
-    }
-    return value;
-  };
-
-  // Replace placeholders and return the deserialized resource
-  return replaceAssets(resource);
 }
 
 async function handleRequestProxy(
@@ -238,25 +215,13 @@ async function handleRequestProxy(
     // Apply SSRF protection for non-companion-container URLs
     // This blocks requests to private IPs, localhost, link-local addresses,
     // and hostnames that resolve to private IPs (prevents DNS rebinding attacks)
-    //
-    // VITEST_CONF_ALLOW_PRIVATE_IP_PROXY: Test-only env var set in vitest.setup.ts
-    // to allow proxy tests to use localhost servers. SSRF tests explicitly unset this.
-    // This env var should NEVER be set in production.
-    const allowPrivateIPAddress = process.env.VITEST_CONF_ALLOW_PRIVATE_IP_PROXY === '1';
-
-    // Preserve any existing agent options (e.g., client certs from applyAppServiceSecrets)
-    // while still applying SSRF protection
-    const existingHttpsOptions = axiosConfig.httpsAgent?.options ?? {};
-    const existingHttpOptions = axiosConfig.httpAgent?.options ?? {};
-
-    axiosConfig.httpAgent = new RequestFilteringHttpAgent({
-      ...existingHttpOptions,
-      allowPrivateIPAddress,
+    const { httpAgent, httpsAgent } = await getSSRFProtectedAgents({
+      hostname: proxyUrl.hostname,
+      httpAgent: axiosConfig.httpAgent,
+      httpsAgent: axiosConfig.httpsAgent,
     });
-    axiosConfig.httpsAgent = new RequestFilteringHttpsAgent({
-      ...existingHttpsOptions,
-      allowPrivateIPAddress,
-    });
+    axiosConfig.httpAgent = httpAgent;
+    axiosConfig.httpsAgent = httpsAgent;
   }
 
   logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);

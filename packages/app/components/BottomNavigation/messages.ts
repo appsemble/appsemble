@@ -21,4 +21,8 @@ export const messages = defineMessages({
     id: 'app.ubmFc8',
     defaultMessage: 'Install',
   },
+  debug: {
+    id: 'app.z3UjXR',
+    defaultMessage: 'Debug',
+  },
 });

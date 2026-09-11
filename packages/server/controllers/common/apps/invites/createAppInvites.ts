@@ -13,6 +13,7 @@ import {
   User,
 } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
+import { normalizeAppMemberRoles } from '../../../../utils/appMember.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
 export async function createAppInvites(ctx: Context): Promise<void> {
@@ -47,9 +48,13 @@ export async function createAppInvites(ctx: Context): Promise<void> {
   );
 
   assertKoaCondition(
-    (body as AppInvite[]).every((invite) =>
-      getAppRoles(app.definition.security).find((role) => role === invite.role),
-    ),
+    (body as AppInvite[]).every((invite) => {
+      const roles = normalizeAppMemberRoles(invite.roles);
+      return (
+        roles.length > 0 &&
+        roles.every((role) => getAppRoles(app.definition.security).includes(role))
+      );
+    }),
     ctx,
     403,
     'Role not allowed.',
@@ -72,7 +77,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
   const newInvites = (body as AppInvite[])
     .map((invite) => ({
       email: invite.email.toLowerCase(),
-      role: invite.role,
+      roles: normalizeAppMemberRoles(invite.roles),
     }))
     .filter((invite) => !memberEmails.has(invite.email));
 
@@ -110,9 +115,9 @@ export async function createAppInvites(ctx: Context): Promise<void> {
             email: user?.primaryEmail ?? invite.email,
             userId: user.id,
             key,
-            role: invite.role,
+            roles: invite.roles,
           }
-        : { email: invite.email, role: invite.role, key };
+        : { email: invite.email, roles: invite.roles, key };
     }),
   );
 
@@ -141,5 +146,5 @@ export async function createAppInvites(ctx: Context): Promise<void> {
       });
     }),
   );
-  ctx.body = result.map(({ email, role }) => ({ email, role }));
+  ctx.body = result.map(({ email, roles }) => ({ email, roles }));
 }

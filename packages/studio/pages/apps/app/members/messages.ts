@@ -18,8 +18,8 @@ export const messages = defineMessages({
     defaultMessage: 'Member',
   },
   role: {
-    id: 'studio.1ZgrhW',
-    defaultMessage: 'Role',
+    id: 'studio.c35gM5',
+    defaultMessage: 'Roles',
   },
   noMembers: {
     id: 'studio.jRZz4r',

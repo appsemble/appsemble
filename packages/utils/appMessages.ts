@@ -150,9 +150,16 @@ export function extractAppMessages(
       }
 
       if (page.type === 'loop') {
-        messages.app[`${prefix}.steps.first`] = 'first';
+        Object.assign(
+          messages.messageIds,
+          findMessageIds(page.start?.name),
+          findMessageIds(page.end?.name),
+        );
+        messages.app[`${prefix}.steps.first`] =
+          (typeof page.start?.name === 'string' ? page.start.name : '') || 'first';
         messages.app[`${prefix}.steps`] = 'step';
-        messages.app[`${prefix}.steps.last`] = 'last';
+        messages.app[`${prefix}.steps.last`] =
+          (typeof page.end?.name === 'string' ? page.end.name : '') || 'last';
       }
     },
   });

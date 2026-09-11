@@ -1,14 +1,14 @@
 {
   "app": {
-    "description": "Une application simple de visualisation de formulaires et de données utilisant l'API de ressources",
+    "description": "Une application simple permettant de créer des formulaires et de consulter des données à l'aide de l'API de ressources",
     "name": "Personne",
-    "pages.person-details": "Détails de l'individu",
+    "pages.person-details": "Détails de la personne",
     "pages.person-list": "Liste des personnes",
-    "pages.person-registration-form": "Formulaire d'inscription de personne"
+    "pages.person-registration-form": "Formulaire d'inscription d'une personne"
   },
   "messageIds": {
     "description": "Description",
-    "email": "Courriel",
+    "email": "E-mail",
     "firstName": "Prénom",
     "lastName": "Nom de famille",
     "picture": "Image"

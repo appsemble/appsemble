@@ -11,6 +11,7 @@ users of the app.
 - [Resources](#resources)
 - [Studio](#studio)
 - [CLI](#cli)
+- [Custom CSS](#custom-css)
 - [Clonable assets](#clonable-assets)
 - [SDK](#sdk)
 - [Security](#security)
@@ -28,10 +29,10 @@ Assets can typically be used for 2 use cases:
 
 ## Image delivery
 
-Uploaded asset binaries remain unchanged in storage. Public image requests return cached AVIF
-derivatives: a resized AVIF when a smaller width and height are requested, otherwise a full-size
-AVIF. The original upload stays available for Studio downloads, export and future reprocessing when
-that is needed.
+Uploaded asset binaries remain unchanged in storage. Public image requests return cached derivatives
+encoded as JPEG, or WebP when the source has transparency: a resized derivative when a smaller width
+and height are requested, otherwise the image capped to 1024px on its longest edge. The original
+upload stays available for Studio downloads, export and future reprocessing when that is needed.
 
 ## Resources
 
@@ -65,6 +66,28 @@ assets with the ones currently in the assets directory of the app.
 
 `seed` assets and `ephemeral` assets behave the same way as
 [seed resources and ephemeral resources](../guides/sharing-resources.md).
+
+## Custom CSS
+
+Assets can be referenced in custom CSS using the `asset()` function. This function can be used
+wherever a URL is expected, such as in `background-image` or `font-face`.
+
+The `asset()` function can be used in two ways:
+
+- `asset('asset-name')`: This will be resolved to `url('/api/apps/{appId}/assets/{asset-name}')`.
+  **This is the preferred way.**
+- `url(asset('asset-name'))`: This is also supported and resolves to the same URL.
+
+Example:
+
+```css copy
+.my-class {
+  background-image: asset('hero-bg');
+}
+```
+
+This is particularly useful because it automatically handles the app ID and base URL of the
+Appsemble instance.
 
 ## Clonable assets
 

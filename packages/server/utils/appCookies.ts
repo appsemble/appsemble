@@ -2,7 +2,7 @@ import { type Context } from 'koa';
 
 export const APP_REFRESH_TOKEN_COOKIE_NAME = 'app_refresh_token';
 
-const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 14;
+export const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 function getCookieOptions(path: string): {
   httpOnly: boolean;

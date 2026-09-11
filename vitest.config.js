@@ -10,6 +10,7 @@ export default defineConfig({
   plugins: [tsconfigPaths({ ignoreConfigErrors: true })],
   test: {
     maxWorkers,
+    projects: ['blocks/*', 'packages/*', '!packages/e2e'],
     reporters: ['junit', 'default'],
     outputFile: {
       junit: 'junit.xml',

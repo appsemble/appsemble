@@ -51,11 +51,13 @@ If set to \`navigation\`, it will only be visible if \`login\` is also visible i
 `,
     },
     navigation: {
-      enum: ['bottom', 'left-menu', 'hidden'],
+      enum: ['bottom', 'left-menu', 'hidden', 'top'],
       default: 'left-menu',
       description: `The navigation type to use.
 
 If this is omitted, a collapsable side navigation menu will be rendered on the left.
+Top navigation is rendered in the title bar. When the title bar is hidden, top navigation is
+rendered as side navigation.
 `,
     },
     logo: {
@@ -92,10 +94,48 @@ If this is omitted, a collapsable side navigation menu will be rendered on the l
       type: 'string',
       enum: ['appName', 'pageName'],
     },
+    breadcrumbs: {
+      type: 'boolean',
+      default: false,
+      description: `Whether to display a breadcrumb trail below the title bar.
+
+The trail is built from the \`parent\` of each page. A grid layout that names a \`breadcrumbs\`
+template area renders the trail in that area instead.
+`,
+    },
     hideTitleBar: {
       description: 'Whether to hide the title bar',
       type: 'boolean',
       default: false,
+    },
+    stackedHeader: {
+      description: `Whether to render the app logo on its own centered row above the navigation.
+
+Only applies when \`navigation\` is set to \`top\`.
+`,
+      type: 'boolean',
+      default: false,
+    },
+    navbar: {
+      $ref: '#/components/schemas/NavbarLayoutDefinition',
+      description: `Responsive grid layout for the top navigation header.
+
+Only applies when \`navigation\` is set to \`top\` and cannot be combined with \`stackedHeader\`.
+`,
+    },
+    breakpoints: {
+      $ref: '#/components/schemas/GridBreakpointsDefinition',
+      description: `Minimum viewport widths in pixels at which the tablet and desktop grid layouts apply.
+
+Applies to every responsive grid layout in the app, including pages and the navbar.
+`,
+    },
+    hideGroupDropdown: {
+      description: `Whether to hide the group dropdown.
+
+Set to \`true\` to hide it for all users, or provide a list of role names to hide it only
+for members holding any of those roles.`,
+      oneOf: [{ type: 'boolean' }, { type: 'array', items: { type: 'string' } }],
     },
   },
 };

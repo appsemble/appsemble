@@ -1,0 +1,34 @@
+{{- if .Values.prometheusRule.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "appsemble.fullname" . }}
+  labels:
+    {{ include "appsemble.labels" . }}
+    {{- range $key, $value := .Values.prometheusRule.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  groups:
+    - name: appsemble
+      rules:
+        - alert: AppsembleContainerRestarted
+          expr: >-
+            increase(kube_pod_container_status_restarts_total{namespace={{ .Release.Namespace | quote }},container={{ .Chart.Name | quote }}}[10m]) > 0
+          labels:
+            severity: critical
+          annotations:
+            summary: Appsemble server container restarted
+            description: 'Container {{ "{{ $labels.container }}" }} in pod {{ "{{ $labels.pod }}" }} restarted in the last 10 minutes. Check the pod status for OOMKilled.'
+        - alert: AppsembleHighMemoryUsage
+          expr: >-
+            max by (namespace, pod, container) (container_memory_working_set_bytes{namespace={{ .Release.Namespace | quote }},container={{ .Chart.Name | quote }}})
+            / max by (namespace, pod, container) (kube_pod_container_resource_limits{namespace={{ .Release.Namespace | quote }},container={{ .Chart.Name | quote }},resource="memory"})
+            > 0.8
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: Appsemble server memory above 80% of its limit
+            description: 'Container {{ "{{ $labels.container }}" }} in pod {{ "{{ $labels.pod }}" }} has used more than 80% of its memory limit for 10 minutes.'
+{{- end }}

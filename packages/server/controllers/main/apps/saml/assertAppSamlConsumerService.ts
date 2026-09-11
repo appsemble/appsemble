@@ -1,7 +1,7 @@
 import { assertKoaCondition, logger } from '@appsemble/node-utils';
 import { type SAMLStatus } from '@appsemble/types';
 import { wrapPem } from '@appsemble/utils';
-import { DOMParser } from '@xmldom/xmldom';
+import { DOMParser, type Element as XmlElement, type Node as XmlNode } from '@xmldom/xmldom';
 import axios from 'axios';
 import { type Context } from 'koa';
 import { type Promisable } from 'type-fest';
@@ -15,6 +15,11 @@ import {
 } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
 import { checkAppSecurityPolicy, handleUniqueAppMemberEmailIndex } from '../../../../utils/auth.js';
+import {
+  hasLoginRoleMappings,
+  resolveLoginRoleMappings,
+  syncLoginRoleMappings,
+} from '../../../../utils/loginRoleMappings.js';
 import { createAppOAuth2AuthorizationCode } from '../../../../utils/oauth2.js';
 import { NS } from '../../../../utils/saml.js';
 
@@ -52,10 +57,24 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     { isAllowed: false },
   );
 
-  const { AppMember, AppSamlAuthorization, AppSamlSecret, SamlLoginRequest } =
-    await getAppDB(appId);
+  const {
+    AppMember,
+    AppMemberAssignedRole,
+    AppSamlAuthorization,
+    AppSamlSecret,
+    SamlLoginRequest,
+  } = await getAppDB(appId);
   const appSamlSecret = await AppSamlSecret.findOne({
-    attributes: ['entityId', 'idpCertificate', 'objectIdAttribute'],
+    attributes: [
+      'entityId',
+      'emailAttribute',
+      'emailVerifiedAttribute',
+      'groupAttribute',
+      'idpCertificate',
+      'nameAttribute',
+      'objectIdAttribute',
+      'roleMappings',
+    ],
     where: { id: appSamlSecretId },
   });
 
@@ -66,12 +85,12 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   const buf = Buffer.from(SAMLResponse, 'base64');
   const xml = buf.toString('utf8');
   logger.verbose(`SAML response XML: ${xml}`);
-  const doc = parser.parseFromString(xml);
-  const x = (localName: string, namespace: NS, element: Node = doc): Element =>
+  const doc = parser.parseFromString(xml, 'application/xml');
+  const x = (localName: string, namespace: NS, element: XmlNode = doc): XmlElement =>
     xpath(
-      element,
+      element as unknown as Node,
       `//*[local-name(.)="${localName}" and namespace-uri(.)="${namespace}"]`,
-    )?.[0] as Element;
+    )?.[0] as unknown as XmlElement;
 
   const sig = new SignedXml();
 
@@ -85,7 +104,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   if (appSamlSecret.entityId) {
     try {
       const { data } = await axios.get<string>(appSamlSecret.entityId);
-      const metadata = parser.parseFromString(data);
+      const metadata = parser.parseFromString(data, 'application/xml');
       const cert = x('X509Certificate', NS.ds, metadata)?.textContent;
       if (cert) {
         idpCertificate = wrapPem(cert, 'CERTIFICATE');
@@ -100,7 +119,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     getKeyInfo: null,
     getKey: () => Buffer.from(idpCertificate || appSamlSecret.idpCertificate),
   };
-  sig.loadSignature(signature);
+  sig.loadSignature(signature as unknown as Node);
   const res = sig.checkSignature(xml);
   if (!res) {
     for (const error of sig.validationErrors) {
@@ -132,7 +151,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
       },
       {
         model: AppMember,
-        attributes: ['id', 'primaryEmail'],
+        attributes: ['id', 'email'],
       },
     ],
   });
@@ -145,34 +164,56 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     include: [{ model: AppMember, attributes: ['id'] }],
   });
 
-  const attributes = new Map(
-    Array.from(
-      x('AttributeStatement', NS.saml)?.childNodes as unknown as Iterable<Element>,
-      (el) => [el.getAttribute('Name')?.trim(), el.firstChild?.textContent?.trim()],
-    ),
-  );
+  const attributeStatement = x('AttributeStatement', NS.saml);
+  const attributeElements = attributeStatement
+    ? Array.from(attributeStatement.childNodes as unknown as Iterable<Element>).filter(
+        (element) => element.nodeType === 1,
+      )
+    : [];
+
+  const getAttributeValues = (attributeName?: string): string[] => {
+    if (!attributeName) {
+      return [];
+    }
+
+    return attributeElements
+      .filter((element) => element.getAttribute('Name')?.trim() === attributeName)
+      .flatMap(
+        (attribute) =>
+          Array.from(attribute.childNodes as unknown as Iterable<Element>)
+            .filter((value) => value.nodeType === 1)
+            .map((value) => value.textContent?.trim())
+            .filter(Boolean) as string[],
+      );
+  };
+
+  const getAttributeValue = (attributeName?: string): string | undefined =>
+    getAttributeValues(attributeName)[0];
 
   // These have to be specified within the SAML secret configuration
-  const email =
-    appSamlSecret.emailAttribute && attributes.get(appSamlSecret.emailAttribute)?.toLowerCase();
+  const email = getAttributeValue(appSamlSecret.emailAttribute)?.toLowerCase();
   const emailVerified =
-    (appSamlSecret.emailVerifiedAttribute &&
-      attributes.get(appSamlSecret.emailVerifiedAttribute)?.toLowerCase()) === 'true';
-  const name = appSamlSecret.nameAttribute && attributes.get(appSamlSecret.nameAttribute);
-  const objectId =
-    appSamlSecret.objectIdAttribute && attributes.get(appSamlSecret.objectIdAttribute);
+    getAttributeValue(appSamlSecret.emailVerifiedAttribute)?.toLowerCase() === 'true';
+  const name = getAttributeValue(appSamlSecret.nameAttribute);
+  const objectId = getAttributeValue(appSamlSecret.objectIdAttribute);
+  const groups = getAttributeValues(appSamlSecret.groupAttribute);
+  const resolvedRoleMappings = resolveLoginRoleMappings(groups, appSamlSecret.roleMappings);
+  const shouldSyncRoleMappings = hasLoginRoleMappings(appSamlSecret.roleMappings);
 
   function handleAuthorization(appMember?: AppMember): Promisable<AppSamlAuthorization> {
-    return (
-      authorization ??
-      AppSamlAuthorization.create({
-        nameId,
-        email,
-        emailVerified,
-        AppSamlSecretId: appSamlSecretId,
-        AppMemberId: appMember?.id,
-      })
-    );
+    return authorization
+      ? authorization.update({
+          email,
+          emailVerified,
+          ...(appMember ? { AppMemberId: appMember.id } : {}),
+        })
+      : AppSamlAuthorization.create({
+          nameId,
+          email,
+          emailVerified,
+          AppSamlSecretId: appSamlSecretId,
+          AppMemberId: appMember?.id,
+        });
   }
 
   let appMember: AppMember | null = null;
@@ -196,11 +237,22 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
 
     default:
       appMember = authorization?.AppMember ?? null;
-      if (!appMember) {
+      if (shouldSyncRoleMappings && appMember && !resolvedRoleMappings.length) {
+        await syncLoginRoleMappings(AppMemberAssignedRole, appMember, []);
+        return prompt('noRoleMatch');
+      }
+
+      if (!appMember && shouldSyncRoleMappings && !resolvedRoleMappings.length) {
+        return prompt('noRoleMatch');
+      }
+
+      if (appMember) {
+        await handleAuthorization(appMember);
+      } else {
         const role = app.definition.security?.default?.role;
         try {
           appMember = await AppMember.create({
-            role,
+            ...(shouldSyncRoleMappings ? {} : { role }),
             email,
             name,
             timezone: '',
@@ -229,6 +281,15 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
           );
         }
       }
+  }
+
+  if (appMember && shouldSyncRoleMappings) {
+    if (!resolvedRoleMappings.length) {
+      await syncLoginRoleMappings(AppMemberAssignedRole, appMember, []);
+      return prompt('noRoleMatch');
+    }
+
+    await syncLoginRoleMappings(AppMemberAssignedRole, appMember, resolvedRoleMappings);
   }
 
   if (appMember) {

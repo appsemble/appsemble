@@ -85,6 +85,7 @@ describe('getAppOAuth2Secrets', () => {
           "id": 1,
           "name": "Example",
           "remapper": null,
+          "roleMappings": null,
           "scope": "email openid profile",
           "tokenUrl": "https://example.com/oauth/token",
           "updated": "1970-01-01T00:00:00.000Z",

@@ -1,10 +1,12 @@
+import { type CustomAppPermission } from '@appsemble/lang-sdk';
 import { assertKoaCondition, getResourceDefinition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../models/index.js';
 import { options } from '../../../../options/options.js';
-import { checkAppPermissions } from '../../../../utils/authorization.js';
+import { checkAppPermissions, getPermittedGroups } from '../../../../utils/authorization.js';
 import {
+  getGroupIdWhere,
   processHooks,
   processReferenceHooks,
   processReferenceTriggers,
@@ -22,14 +24,28 @@ export async function deleteAppResources(ctx: Context): Promise<void> {
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  await checkAppPermissions({
+  const requiredPermissions: CustomAppPermission[] = [`$resource:${resourceType}:delete`];
+
+  // Across multiple selected groups the permission acts as a filter: only
+  // resources in the groups the subject may delete are removed. When no
+  // selected group is deletable, the strict permission check throws its 403.
+  const allowedGroups = await getPermittedGroups({
     context: ctx,
     appId,
-    requiredPermissions: [`$resource:${resourceType}:delete`],
+    requiredPermissions,
     groupId: selectedGroupId,
   });
 
   getResourceDefinition(app.definition, resourceType, ctx);
+
+  if (!allowedGroups.length) {
+    await checkAppPermissions({
+      context: ctx,
+      appId,
+      requiredPermissions,
+      groupId: selectedGroupId,
+    });
+  }
 
   let deletedAmount = 0;
   while (deletedAmount < body.length) {
@@ -37,7 +53,7 @@ export async function deleteAppResources(ctx: Context): Promise<void> {
       where: {
         id: body.slice(deletedAmount, deletedAmount + 100),
         type: resourceType,
-        GroupId: selectedGroupId ?? null,
+        GroupId: getGroupIdWhere(allowedGroups.length ? allowedGroups : selectedGroupId),
       },
       limit: 100,
     })) {

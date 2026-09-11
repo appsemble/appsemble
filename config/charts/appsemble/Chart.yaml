@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.36.10-test.3
-appVersion: 0.36.10-test.3
+version: 0.38.2-test.0
+appVersion: 0.38.2-test.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,7 +23,7 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: mailpit
-    version: 0.32.5
+    version: 0.36.0
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
   - name: minio
@@ -31,12 +31,13 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
   - name: valkey
-    version: 0.9.4
+    version: 0.12.0
     repository: https://valkey.io/valkey-helm
     condition: valkey.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: fixed
+      description: "Server: Start app exports before reading assets from storage."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

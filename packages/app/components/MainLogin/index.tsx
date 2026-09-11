@@ -3,6 +3,7 @@ import {
   type LoginFormValues,
   Message,
   Login as PasswordLogin,
+  useQuery,
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
@@ -30,10 +31,12 @@ export function MainLogin(): ReactNode {
   const busy = useToggle(false);
   const { formatMessage } = useIntl();
   const push = useMessages();
+  const qs = useQuery();
 
   const { definition } = useAppDefinition();
   const { cancelTotpLogin, logout, passwordLogin, totpLogin, totpPending } = useAppMember();
   const linking = loadAccountLinkingState();
+  const redirect = qs.get('redirect');
 
   const openIDLoginProps: OpenIDLoginProps = {
     disabled: busy.enabled,
@@ -50,14 +53,18 @@ export function MainLogin(): ReactNode {
     async (credentials: LoginFormValues): Promise<void> => {
       busy.enable();
       try {
-        await passwordLogin({ username: credentials.email, password: credentials.password });
+        await passwordLogin({
+          username: credentials.email,
+          password: credentials.password,
+          redirect: redirect ?? undefined,
+        });
       } catch (error: unknown) {
         busy.disable();
         throw error;
       }
       busy.disable();
     },
-    [busy, passwordLogin],
+    [busy, passwordLogin, redirect],
   );
 
   const handleReturn = useCallback((): void => {

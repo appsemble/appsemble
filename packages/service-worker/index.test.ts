@@ -2,6 +2,8 @@ import makeServiceWorkerEnv from 'service-worker-mock';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 interface MockServiceWorkerGlobal {
+  listeners: Map<string, Set<(event: NotificationEvent) => void>>;
+  NotificationEvent: typeof NotificationEvent;
   appAssets: { url: string }[];
   clients: Clients;
   registration: ServiceWorkerRegistration;
@@ -9,6 +11,22 @@ interface MockServiceWorkerGlobal {
 }
 
 const serviceWorkerGlobal = globalThis as typeof globalThis & MockServiceWorkerGlobal;
+
+function setRegistrationScope(scope: string): void {
+  Object.defineProperty(serviceWorkerGlobal.registration, 'scope', {
+    configurable: true,
+    value: scope,
+  });
+}
+
+async function triggerNotificationClick(notification: Notification): Promise<void> {
+  const event = new serviceWorkerGlobal.NotificationEvent('notificationclick', {
+    notification,
+  }) as NotificationEvent & { promise: Promise<unknown> };
+  const [listener] = serviceWorkerGlobal.listeners.get('notificationclick') ?? [];
+  listener(event);
+  await event.promise;
+}
 
 describe('service worker install', () => {
   beforeEach(() => {
@@ -59,5 +77,51 @@ describe('service worker install', () => {
       type: 'appsemble.notification',
       notification: { title: 'New feedback', body: 'Please review', link: 'feedback' },
     });
+  });
+
+  it('should append UTM source when opening notification links', async () => {
+    const close = vi.fn();
+    const openWindow = vi.fn();
+    const matchAll = vi.fn().mockResolvedValue([]);
+
+    setRegistrationScope('https://example.com/app/en/');
+    serviceWorkerGlobal.clients.matchAll = matchAll as typeof serviceWorkerGlobal.clients.matchAll;
+    serviceWorkerGlobal.clients.openWindow =
+      openWindow as typeof serviceWorkerGlobal.clients.openWindow;
+
+    await import('./index.js');
+
+    await triggerNotificationClick({
+      close,
+      data: { link: 'feedback' },
+    } as unknown as Notification);
+
+    expect(close).toHaveBeenCalledWith();
+    expect(openWindow).toHaveBeenCalledWith(
+      'https://example.com/app/en/feedback?utm_source=notification',
+    );
+  });
+
+  it('should preserve the service worker scope for leading slash notification links', async () => {
+    const close = vi.fn();
+    const openWindow = vi.fn();
+    const matchAll = vi.fn().mockResolvedValue([]);
+
+    setRegistrationScope('https://example.com/app/en/');
+    serviceWorkerGlobal.clients.matchAll = matchAll as typeof serviceWorkerGlobal.clients.matchAll;
+    serviceWorkerGlobal.clients.openWindow =
+      openWindow as typeof serviceWorkerGlobal.clients.openWindow;
+
+    await import('./index.js');
+
+    await triggerNotificationClick({
+      close,
+      data: { link: '/feedback' },
+    } as unknown as Notification);
+
+    expect(close).toHaveBeenCalledWith();
+    expect(openWindow).toHaveBeenCalledWith(
+      'https://example.com/app/en//feedback?utm_source=notification',
+    );
   });
 });

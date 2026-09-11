@@ -495,6 +495,149 @@ describe('queryAppResources', () => {
     );
   });
 
+  it('should fetch resources from every selected group', async () => {
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const groupA = await Group.create({ name: 'Group A', AppId: app.id });
+    const groupB = await Group.create({ name: 'Group B', AppId: app.id });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      timezone: 'Europe/Amsterdam',
+      userId: user.id,
+      name: user.name,
+      role: PredefinedAppRole.Member,
+    });
+    // The member manages resources in both selected groups.
+    await GroupMember.create({
+      GroupId: groupA.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+    await GroupMember.create({
+      GroupId: groupB.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'a' },
+      AuthorId: member.id,
+      GroupId: groupA.id,
+    });
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'b' },
+      AuthorId: member.id,
+      GroupId: groupB.id,
+    });
+    // A resource in a group that was not selected must be excluded.
+    const groupC = await Group.create({ name: 'Group C', AppId: app.id });
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'c' },
+      AuthorId: member.id,
+      GroupId: groupC.id,
+    });
+
+    authorizeAppMember(app, member);
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceGroup?selectedGroupId=${groupA.id}&selectedGroupId=${groupB.id}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect((response.data as ResourceType[]).map((resource) => resource.foo).sort()).toStrictEqual([
+      'a',
+      'b',
+    ]);
+  });
+
+  it('should filter querying to the groups the member has permission in', async () => {
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const groupA = await Group.create({ name: 'Group A', AppId: app.id });
+    const groupB = await Group.create({ name: 'Group B', AppId: app.id });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      timezone: 'Europe/Amsterdam',
+      userId: user.id,
+      name: user.name,
+      role: PredefinedAppRole.Member,
+    });
+    // Manager in group A, but a plain member without query permission in group B.
+    await GroupMember.create({
+      GroupId: groupA.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+    await GroupMember.create({
+      GroupId: groupB.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.Member,
+    });
+
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'a' },
+      AuthorId: member.id,
+      GroupId: groupA.id,
+    });
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'b' },
+      AuthorId: member.id,
+      GroupId: groupB.id,
+    });
+
+    authorizeAppMember(app, member);
+
+    // Both groups are selected, but the permission filters the result to the
+    // group the member may query; group B's resource is excluded.
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceGroup?selectedGroupId=${groupA.id}&selectedGroupId=${groupB.id}`,
+    );
+    expect(response.status).toBe(200);
+    expect((response.data as ResourceType[]).map((resource) => resource.foo)).toStrictEqual(['a']);
+  });
+
+  it('should parse a bracket-serialized selectedGroupId array (axios/browser default)', async () => {
+    const { AppMember, Group, GroupMember, Resource } = await getAppDB(app.id);
+    const group1 = await Group.create({ name: 'Group 1', AppId: app.id });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      timezone: 'Europe/Amsterdam',
+      userId: user.id,
+      name: user.name,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+    await GroupMember.create({
+      GroupId: group1.id,
+      AppMemberId: member.id,
+      role: PredefinedAppRole.ResourcesManager,
+    });
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'grouped' },
+      AuthorId: member.id,
+      GroupId: group1.id,
+    });
+    await Resource.create({
+      type: 'testResourceGroup',
+      data: { foo: 'ungrouped' },
+      AuthorId: member.id,
+    });
+
+    authorizeAppMember(app, member);
+    // Axios serializes an array param as `selectedGroupId[]=-1&selectedGroupId[]=1`.
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceGroup`, {
+      params: { selectedGroupId: [-1, group1.id] },
+    });
+
+    expect(response.status).toBe(200);
+    expect((response.data as ResourceType[]).map((resource) => resource.foo).sort()).toStrictEqual([
+      'grouped',
+      'ungrouped',
+    ]);
+  });
+
   it('should be able to limit the amount of resources', async () => {
     const { Resource } = await getAppDB(app.id);
     await Resource.create({
@@ -1024,6 +1167,34 @@ describe('queryAppResources', () => {
     `);
   });
 
+  it('should be able to filter fields by an empty string when fetching resources', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({
+      type: 'testResource',
+      data: { foo: '' },
+    });
+    await Resource.create({ type: 'testResource', data: { foo: 'bar' } });
+    authorizeStudio();
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$filter=foo eq ''`,
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "",
+          "id": 1,
+        },
+      ]
+    `);
+  });
+
   it('should be able to filter fields with special characters when fetching resources', async () => {
     const { Resource } = await getAppDB(app.id);
     await Resource.create({
@@ -1079,6 +1250,356 @@ describe('queryAppResources', () => {
         },
       ]
     `);
+  });
+
+  it('should be able to filter fields by number values', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const match = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'a', number: 42 },
+    });
+    await Resource.create({ type: 'testResource', data: { foo: 'b', number: 7 } });
+    await Resource.create({ type: 'testResource', data: { foo: 'c' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: 'number eq 42' },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([match.id]);
+  });
+
+  it('should be able to filter fields by boolean values', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const match = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'a', boolean: true },
+    });
+    await Resource.create({ type: 'testResource', data: { foo: 'b', boolean: false } });
+    await Resource.create({ type: 'testResource', data: { foo: 'c' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: 'boolean eq true' },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([match.id]);
+  });
+
+  it('should match number values when filtering with a string literal', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const storedNumber = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'a', number: 123 },
+    });
+    const storedString = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'b', number: '123' },
+    });
+    await Resource.create({ type: 'testResource', data: { foo: 'c', number: 124 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "number eq '123'" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([
+      storedNumber.id,
+      storedString.id,
+    ]);
+  });
+
+  it('should match boolean values when filtering with a string literal', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const storedBoolean = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'a', boolean: true },
+    });
+    const storedString = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'b', boolean: 'true' },
+    });
+    await Resource.create({ type: 'testResource', data: { foo: 'c', boolean: false } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "boolean eq 'true'" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([
+      storedBoolean.id,
+      storedString.id,
+    ]);
+  });
+
+  it('should match a string literal by exact text and not coerce it to a number', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const storedString = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'a', amount: '1.0' },
+    });
+    await Resource.create({ type: 'testResource', data: { foo: 'b', amount: 1 } });
+    await Resource.create({ type: 'testResource', data: { foo: 'c', amount: 1.5 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "amount eq '1.0'" },
+    });
+
+    // The literal '1.0' renders differently from the number 1, so only the string is matched.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([
+      storedString.id,
+    ]);
+  });
+
+  it('should apply equality filters regardless of operand order', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const match = await Resource.create({ type: 'testResource', data: { foo: 'bar' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'baz' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "'bar' eq foo" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([match.id]);
+  });
+
+  it('should be able to filter by nested object properties', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const match = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'a', object: { kind: 'first' } },
+    });
+    await Resource.create({ type: 'testResource', data: { foo: 'b', object: { kind: 'second' } } });
+    await Resource.create({ type: 'testResource', data: { foo: 'c' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "object/kind eq 'first'" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([match.id]);
+  });
+
+  it('should match null and missing values when filtering by null', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const missing = await Resource.create({ type: 'testResource', data: { foo: 'a' } });
+    const explicitNull = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'b', bar: null },
+    });
+    await Resource.create({ type: 'testResource', data: { foo: 'c', bar: 'set' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: 'bar eq null' },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([
+      missing.id,
+      explicitNull.id,
+    ]);
+  });
+
+  it('should not match null and missing values when filtering by ne', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'a' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'b', bar: null } });
+    const match = await Resource.create({ type: 'testResource', data: { foo: 'c', bar: 'other' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'd', bar: 'set' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "bar ne 'set'" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([match.id]);
+  });
+
+  it('should be able to combine equality filters with and and or', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const first = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'a', number: 1 },
+    });
+    const second = await Resource.create({ type: 'testResource', data: { foo: 'b', number: 2 } });
+    await Resource.create({ type: 'testResource', data: { foo: 'b', number: 3 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "foo eq 'a' or (foo eq 'b' and number eq 2)" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([
+      first.id,
+      second.id,
+    ]);
+  });
+
+  it('should negate a data-property equality comparison with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'match' } });
+    const other = await Resource.create({ type: 'testResource', data: { foo: 'other' } });
+    // Row without foo: the text extraction is null, so the negated comparison is null too.
+    await Resource.create({ type: 'testResource', data: { number: 1 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (foo eq 'match')" },
+    });
+
+    // The filter not (foo eq 'match') follows SQL three-valued logic: only rows whose foo
+    // has a concrete value other than 'match' are returned. The matching row and rows
+    // without foo are excluded, matching the semantics of `foo ne 'match'`.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([other.id]);
+  });
+
+  it('should turn a negated inequality into an equality with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const match = await Resource.create({ type: 'testResource', data: { foo: 'match' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'other' } });
+    await Resource.create({ type: 'testResource', data: { number: 1 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (foo ne 'match')" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([match.id]);
+  });
+
+  it('should negate a greater-than comparison on a regular column with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const first = await Resource.create({ type: 'testResource', data: { foo: 'a' } });
+    const second = await Resource.create({ type: 'testResource', data: { foo: 'b' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'c' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'd' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: `not (id gt ${second.id})` },
+    });
+
+    // The filter not (id gt 2) keeps the rows with id 1 and 2.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([
+      first.id,
+      second.id,
+    ]);
+  });
+
+  it('should negate a contains function with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'foo' } });
+    const bar = await Resource.create({ type: 'testResource', data: { foo: 'bar' } });
+    await Resource.create({ type: 'testResource', data: { number: 1 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (contains(foo, 'oo'))" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([bar.id]);
+  });
+
+  it('should negate a startswith function with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'abc' } });
+    const other = await Resource.create({ type: 'testResource', data: { foo: 'xyz' } });
+    // Row without foo: the LIKE argument is null, so the negated match is null too.
+    await Resource.create({ type: 'testResource', data: { number: 1 } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (startswith(foo, 'ab'))" },
+    });
+
+    // The startswith function uses a different operator (LIKE 'ab%') than contains, so its
+    // negation is covered separately: only the row whose foo has a concrete value not starting
+    // with 'ab' is returned; the matching and foo-less rows are excluded.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([other.id]);
+  });
+
+  it('should distribute not over and (De Morgan)', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'a', bar: 'b' } });
+    const second = await Resource.create({ type: 'testResource', data: { foo: 'a', bar: 'c' } });
+    const third = await Resource.create({ type: 'testResource', data: { foo: 'x', bar: 'b' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (foo eq 'a' and bar eq 'b')" },
+    });
+
+    // The filter not (foo eq 'a' and bar eq 'b') excludes only the row matching both.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([
+      second.id,
+      third.id,
+    ]);
+  });
+
+  it('should distribute not over or (De Morgan)', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'a' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'b' } });
+    const third = await Resource.create({ type: 'testResource', data: { foo: 'c' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (foo eq 'a' or foo eq 'b')" },
+    });
+
+    // The filter not (foo eq 'a' or foo eq 'b') excludes both disjuncts.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([third.id]);
+  });
+
+  it('should cancel a double negation', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const match = await Resource.create({ type: 'testResource', data: { foo: 'a' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'b' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "not (not (foo eq 'a'))" },
+    });
+
+    // The filter not (not (foo eq 'a')) is equivalent to foo eq 'a'.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([match.id]);
+  });
+
+  it('should negate a null check into a not-null check with not', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const set = await Resource.create({ type: 'testResource', data: { foo: 'a', bar: 'set' } });
+    await Resource.create({ type: 'testResource', data: { foo: 'b', bar: null } });
+    await Resource.create({ type: 'testResource', data: { foo: 'c' } });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: 'not (bar eq null)' },
+    });
+
+    // The filter not (bar eq null) is the complement of the null/missing check: only rows
+    // whose bar has a concrete value are returned.
+    expect(response.status).toBe(200);
+    expect(response.data.map((resource: ResourceType) => resource.id)).toStrictEqual([set.id]);
   });
 
   it('should be able to filter by author', async () => {

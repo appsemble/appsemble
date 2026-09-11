@@ -1,15 +1,15 @@
 {
   "confirmLabel": "Bevestigen",
-  "fieldErrorLabel": "Een van de vereisten van dit veld is ongeldig.",
-  "fixErrors": "Los de volgende fouten op:",
-  "formRequirementError": "Een van de vereisten van dit formulier is ongeldig.",
+  "fieldErrorLabel": "Een van de vereisten op dit gebied is ongeldig.",
+  "fixErrors": "Corrigeer de volgende fouten:",
+  "formRequirementError": "Een van de velden in dit formulier is ongeldig.",
   "invalidLabel": "Deze waarde is ongeldig",
-  "longSubmissionWarning": "Het formulier wordt nog verzonden, een ogenblik geduld alstublieft.",
+  "longSubmissionWarning": "Het formulier wordt nog verzonden, even geduld a.u.b.",
   "optionalLabel": "(Optioneel)",
   "previousLabel": "Vorige",
-  "selectionNoOptions": "Geen beschikbare opties meer",
+  "search": "Zoeken",
+  "selectionNoOptions": "Er zijn geen opties meer beschikbaar",
   "selectionOptionsError": "Er is een fout opgetreden bij het laden van de opties",
-  "submitError": "Er is iets misgegaan bij het versturen van dit formulier",
-  "submitLabel": "Versturen",
-  "search": "Zoeken"
+  "submitError": "Er is een probleem opgetreden bij het verzenden van dit formulier",
+  "submitLabel": "Verzenden"
 }

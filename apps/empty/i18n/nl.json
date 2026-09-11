@@ -1,6 +1,6 @@
 {
   "app": {
-    "description": "Deze app is een kale app met twee pagina's en knoppen die ertussen schakelen.",
+    "description": "Empty App is een uiterst eenvoudige app met twee pagina's en knoppen om tussen beide te schakelen.",
     "name": "Lege app",
     "pages.example-page-a": "Voorbeeldpagina A",
     "pages.example-page-b": "Voorbeeldpagina B"

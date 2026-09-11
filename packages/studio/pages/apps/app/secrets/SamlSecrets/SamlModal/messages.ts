@@ -81,9 +81,27 @@ export const messages = defineMessages({
     defaultMessage: 'Object ID attribute',
   },
   objectIdAttributeHelp: {
-    id: 'studio.gM6Voq',
+    id: 'studio.hh9BSl',
     defaultMessage:
-      'If specified, this SAML attribute is used to determine the user’s object ID. Required if there is a SCIM connection present.',
+      "If specified, this SAML attribute is used to determine the user's object ID. Required if there is a SCIM connection present.",
+  },
+  groupAttributeLabel: {
+    id: 'studio.dRetPl',
+    defaultMessage: 'Group attribute',
+  },
+  groupAttributeHelp: {
+    id: 'studio.BqF3QB',
+    defaultMessage:
+      'If specified, this SAML attribute is used to read one or more external groups. Required when role mappings are configured.',
+  },
+  roleMappingsLabel: {
+    id: 'studio.Q9LqJX',
+    defaultMessage: 'Role mappings',
+  },
+  roleMappingsHelp: {
+    id: 'studio.u6ZJe+',
+    defaultMessage:
+      'Configure exact external-group to app-role mappings. When mappings are configured, users without a match cannot sign in.',
   },
   idpCertificateLabel: {
     id: 'studio.qGxjxU',

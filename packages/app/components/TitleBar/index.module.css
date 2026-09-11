@@ -1,9 +1,74 @@
-.dropdowns {
-  display: flex;
-}
-
 .logo {
   cursor: pointer;
   height: 48px;
   padding: 4px;
+}
+
+.brandColumn {
+  width: 100%;
+}
+
+.brandRow .logo {
+  height: unset;
+}
+
+.navRow {
+  width: 100%;
+}
+
+.navbarGrid {
+  width: 100%;
+}
+
+.logoArea {
+  justify-self: center;
+}
+
+.nameArea {
+  align-items: center;
+  display: flex;
+}
+
+.controlsArea {
+  align-items: center;
+  display: flex;
+  justify-self: end;
+}
+
+:global([data-grid-area='logo']) {
+  grid-area: logo;
+}
+
+:global([data-grid-area='name']) {
+  grid-area: name;
+}
+
+:global([data-grid-area='navigation']) {
+  grid-area: navigation;
+}
+
+:global([data-grid-area='controls']) {
+  grid-area: controls;
+}
+
+/* Custom header layouts can be taller than Bulma's default navbar. Let the fixed bar grow and keep
+   it in flow so page content is not hidden behind it. */
+:global(.navbar.is-fixed-top):has(.brandColumn, .navbarGrid) {
+  height: auto;
+  position: sticky;
+}
+
+:global(body.has-navbar-fixed-top):has(.brandColumn, .navbarGrid) {
+  padding-top: 0;
+}
+
+@media screen and (width < 1024px) {
+  .navEnd {
+    margin-left: auto;
+  }
+
+  .navEnd :global(.navbar-burger) {
+    display: block;
+    flex-shrink: 0;
+  }
 }

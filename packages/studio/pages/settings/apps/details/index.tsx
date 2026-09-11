@@ -80,96 +80,98 @@ export function DetailsPage(): ReactNode {
       loadingMessage={<FormattedMessage {...messages.loading} />}
       result={result}
     >
-      {({ app, appMemberInfo, sso }) => (
-        <CardHeaderControl
-          controls={
-            <>
-              <Button
-                className="mb-3 ml-4"
-                color="primary"
-                component={Link}
-                to={`../../../apps/${appId}`}
-              >
-                <FormattedMessage {...messages.storePage} />
-              </Button>
-              <AsyncButton className="mb-3 ml-4" color="danger" onClick={onDelete}>
-                <FormattedMessage {...messages.delete} />
-              </AsyncButton>
-            </>
-          }
-          description={app.messages?.app?.description || app.definition.description}
-          icon={<AppIcon app={app} />}
-          key={app.id}
-          subtitle={
-            <Link to={`../../../organizations/${app.OrganizationId}`}>
-              {app.OrganizationName || app.OrganizationId}
-            </Link>
-          }
-          title={app.messages?.app?.name || app.definition.name}
-        >
-          <SimpleForm className="card-content" defaultValues={appMemberInfo} onSubmit={onSubmit}>
-            <SimpleFormError>
-              {() => <FormattedMessage {...messages.submitError} />}
-            </SimpleFormError>
-            <SimpleFormField
-              help={
-                app.messages?.app?.[`app,roles.${appMemberInfo.role}.description`] || (
-                  <FormattedMessage {...messages.roleHelp} />
-                )
-              }
-              label={<FormattedMessage {...messages.roleLabel} />}
-              name="role"
-              readOnly
-              required
-            />
-            <SimpleFormField
-              help={<FormattedMessage {...messages.nameHelp} />}
-              label={<FormattedMessage {...messages.nameLabel} />}
-              name="name"
-              required
-              validityMessages={{
-                valueMissing: <FormattedMessage {...messages.nameRequired} />,
-              }}
-            />
-            <SimpleFormField
-              accept="image/jpeg, image/png, image/tiff, image/webp"
-              component={FileUpload}
-              fileButtonLabel={<FormattedMessage {...messages.picture} />}
-              fileLabel={<FormattedMessage {...messages.selectFile} />}
-              help={<FormattedMessage {...messages.pictureDescription} />}
-              label={<FormattedMessage {...messages.picture} />}
-              name="picture"
-              preview={<PicturePreview pictureUrl={appMemberInfo?.picture} />}
-            />
-            <FormButtons>
-              <SimpleSubmit>
-                <FormattedMessage {...messages.submit} />
-              </SimpleSubmit>
-            </FormButtons>
-          </SimpleForm>
-          {sso.length ? (
-            <div className="card-content">
-              <Title size={4}>
-                <FormattedMessage {...messages.ssoTitle} />
-              </Title>
-              {sso.map(({ icon, name, url }, index) => (
-                <Fragment key={url}>
-                  {index ? <hr /> : null}
-                  <div className="is-flex">
-                    <Icon icon={icon} size="large" />
-                    <div>
-                      <Title size={5}>{name}</Title>
-                      <Subtitle size={6}>
-                        <a href={url}>{new URL(url).origin}</a>
-                      </Subtitle>
+      {({ app, appMemberInfo, sso }) => {
+        const roleDescriptions = appMemberInfo.roles
+          .map((role) => app.messages?.app?.[`app,roles.${role}.description`])
+          .filter(Boolean);
+
+        return (
+          <CardHeaderControl
+            controls={
+              <>
+                <Button
+                  className="mb-3 ml-4"
+                  color="primary"
+                  component={Link}
+                  to={`../../../apps/${appId}`}
+                >
+                  <FormattedMessage {...messages.storePage} />
+                </Button>
+                <AsyncButton className="mb-3 ml-4" color="danger" onClick={onDelete}>
+                  <FormattedMessage {...messages.delete} />
+                </AsyncButton>
+              </>
+            }
+            description={app.messages?.app?.description || app.definition.description}
+            icon={<AppIcon app={app} />}
+            key={app.id}
+            subtitle={
+              <Link to={`../../../organizations/${app.OrganizationId}`}>
+                {app.OrganizationName || app.OrganizationId}
+              </Link>
+            }
+            title={app.messages?.app?.name || app.definition.name}
+          >
+            <SimpleForm className="card-content" defaultValues={appMemberInfo} onSubmit={onSubmit}>
+              <SimpleFormError>
+                {() => <FormattedMessage {...messages.submitError} />}
+              </SimpleFormError>
+              <SimpleFormField
+                help={roleDescriptions.join(' ') || <FormattedMessage {...messages.roleHelp} />}
+                label={<FormattedMessage {...messages.roleLabel} />}
+                name="rolesDisplay"
+                readOnly
+                value={appMemberInfo.roles.join(', ') || '-'}
+              />
+              <SimpleFormField
+                help={<FormattedMessage {...messages.nameHelp} />}
+                label={<FormattedMessage {...messages.nameLabel} />}
+                name="name"
+                required
+                validityMessages={{
+                  valueMissing: <FormattedMessage {...messages.nameRequired} />,
+                }}
+              />
+              <SimpleFormField
+                accept="image/jpeg, image/png, image/tiff, image/webp"
+                component={FileUpload}
+                fileButtonLabel={<FormattedMessage {...messages.picture} />}
+                fileLabel={<FormattedMessage {...messages.selectFile} />}
+                help={<FormattedMessage {...messages.pictureDescription} />}
+                label={<FormattedMessage {...messages.picture} />}
+                name="picture"
+                preview={<PicturePreview pictureUrl={appMemberInfo?.picture} />}
+              />
+              <FormButtons>
+                <SimpleSubmit>
+                  <FormattedMessage {...messages.submit} />
+                </SimpleSubmit>
+              </FormButtons>
+            </SimpleForm>
+            {sso.length ? (
+              <div className="card-content">
+                <Title size={4}>
+                  <FormattedMessage {...messages.ssoTitle} />
+                </Title>
+                {sso.map(({ icon, name, url }, index) => (
+                  <Fragment key={url}>
+                    {index ? <hr /> : null}
+                    <div className="is-flex">
+                      <Icon icon={icon} size="large" />
+                      <div>
+                        <Title size={5}>{name}</Title>
+                        <Subtitle size={6}>
+                          <a href={url}>{new URL(url).origin}</a>
+                        </Subtitle>
+                      </div>
                     </div>
-                  </div>
-                </Fragment>
-              ))}
-            </div>
-          ) : null}
-        </CardHeaderControl>
-      )}
+                  </Fragment>
+                ))}
+              </div>
+            ) : null}
+          </CardHeaderControl>
+        );
+      }}
     </AsyncDataView>
   );
 }

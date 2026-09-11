@@ -3,6 +3,7 @@ import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../../models/index.js';
+import { touchApp } from '../../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
 
@@ -27,4 +28,5 @@ export async function deleteAppSamlSecret(ctx: Context): Promise<void> {
   assertKoaCondition(appSamlSecret != null, ctx, 404, 'SAML secret not found');
 
   await appSamlSecret.destroy();
+  await touchApp(appId);
 }

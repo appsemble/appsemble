@@ -3,6 +3,7 @@ import { type BlockUtils } from '@appsemble/sdk';
 import { describe, expect, it } from 'vitest';
 
 import {
+  getDisabledDates,
   getDisabledDays,
   getMaxDate,
   getMinDate,
@@ -143,6 +144,50 @@ describe('getDisabledDays', () => {
     } as FieldWithRequirements;
 
     expect(getDisabledDays(field)).toStrictEqual([]);
+  });
+});
+
+describe('getDisabledDates', () => {
+  it('should return an empty array when disabledDates is undefined', () => {
+    const field = {} as FieldWithRequirements;
+
+    expect(getDisabledDates(field, utils)).toStrictEqual([]);
+  });
+
+  it('should return a static list of disabled dates', () => {
+    const field = {
+      disabledDates: { static: ['2022-11-27', '2022-11-28'] },
+    } as unknown as FieldWithRequirements;
+
+    expect(getDisabledDates(field, utils)).toStrictEqual(['2022-11-27', '2022-11-28']);
+  });
+
+  it('should remap disabled dates from the provided values', () => {
+    const field = {
+      disabledDates: { prop: 'closures' },
+    } as unknown as FieldWithRequirements;
+
+    const values: Values = {
+      closures: ['2022-12-25', '2022-12-26'],
+    };
+
+    expect(getDisabledDates(field, utils, values)).toStrictEqual(['2022-12-25', '2022-12-26']);
+  });
+
+  it('should ignore non-string entries', () => {
+    const field = {
+      disabledDates: { static: ['2022-11-27', 5, null] },
+    } as unknown as FieldWithRequirements;
+
+    expect(getDisabledDates(field, utils)).toStrictEqual(['2022-11-27']);
+  });
+
+  it('should return an empty array when the remapped value is not an array', () => {
+    const field = {
+      disabledDates: { static: 'nope' },
+    } as unknown as FieldWithRequirements;
+
+    expect(getDisabledDates(field, utils)).toStrictEqual([]);
   });
 });
 

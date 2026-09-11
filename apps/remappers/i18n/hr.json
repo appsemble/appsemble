@@ -2,21 +2,21 @@
   "app": {
     "app.roles.User": "Korisnik",
     "app.roles.User.description": "korisnik",
-    "description": "Ovaj program sadrži sve trenutačne Remappere u Appsembleu od (0.20.40)",
-    "name": "Remappers",
+    "description": "Ova aplikacija sadrži sve Remapere koji su trenutno dostupni u Appsembleu u verziji (0.20.40)",
+    "name": "Remaperi",
     "pages.arrays": "Nizovi",
-    "pages.conditionals": "Uvjetne naredbe",
+    "pages.conditionals": "Uslovni izrazi",
     "pages.data": "Podaci",
     "pages.dates": "Datumi",
     "pages.history": "Povijest",
     "pages.introduction": "Uvod",
     "pages.objects": "Objekti",
-    "pages.other": "Drugo",
-    "pages.randomness": "Slučajnost",
-    "pages.strings": "Izrazi"
+    "pages.other": "Ostalo",
+    "pages.randomness": "Nasumičnost",
+    "pages.strings": "Nizovi"
   },
   "messageIds": {
-    "weatherBody": "Sunčano 28 °C",
-    "weatherTitle": "Vremenska prognoza danas"
+    "weatherBody": "Sunčano 28 °C",
+    "weatherTitle": "Vremenska prognoza za danas"
   }
 }

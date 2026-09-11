@@ -9,6 +9,7 @@ import {
   assertKoaCondition,
   handleValidatorResult,
   logger,
+  replaceAssetFunctions,
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
@@ -20,6 +21,7 @@ import { parse } from 'yaml';
 
 import {
   App,
+  AppBuildSnapshot,
   AppReadme,
   AppScreenshot,
   AppSnapshot,
@@ -32,15 +34,16 @@ import {
   createAppScreenshots,
   handleAppValidationError,
 } from '../../../utils/app.js';
-import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import { findAppMemberByRole } from '../../../utils/appMember.js';
 import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
-import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
-import { syncResourceUniqueIndexes } from '../../../utils/resourceUniqueIndexes.js';
+import { syncAppDefinitionIndexes } from '../../../utils/appDefinitionIndexes.js';
+import { assertResourceSchemaCompatibility } from '../../../utils/resourceSchemaCompatibility.js';
+import { createAppBuildManifest, pruneAppBuildSnapshots } from '../../../utils/appBuildManifest.js';
 import { isValidSentryDsn } from '../../../utils/sentry.js';
 
 export async function patchApp(ctx: Context): Promise<void> {
@@ -147,12 +150,13 @@ export async function patchApp(ctx: Context): Promise<void> {
     let Resource = OldResource;
     let appDB = oldAppDB;
     const previousResourceDefinitions = dbApp.definition.resources as
-      | Record<string, ResourceDefinition>
-      | undefined;
+      Record<string, ResourceDefinition> | undefined;
 
     const permissionsToCheck: OrganizationPermission[] = [];
     if (yaml) {
       permissionsToCheck.push(OrganizationPermission.UpdateApps);
+
+      assertKoaCondition(typeof yaml === 'string', ctx, 400, 'The yaml field must be a string');
 
       const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
 
@@ -170,12 +174,12 @@ export async function patchApp(ctx: Context): Promise<void> {
 
       result.definition = definition;
       if (definition.cron && definition.security?.cron) {
-        const appMember = await AppMember.findOne({ where: { role: 'cron' } });
+        const appMember = await findAppMemberByRole(dbApp.id, 'cron');
 
         if (!appMember) {
           const identifier = Math.random().toString(36).slice(2);
           const cronEmail = `cron-${identifier}@example.com`;
-          await AppMember.create({ email: cronEmail, role: 'cron' });
+          await AppMember.create({ email: cronEmail, roles: ['cron'] });
         }
       }
       // Make the actual update
@@ -298,7 +302,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.coreStyle =
         validatedCoreStyle == null
           ? validatedCoreStyle
-          : replaceAssetFunctions(validatedCoreStyle, dbApp.id);
+          : replaceAssetFunctions(validatedCoreStyle, dbApp.id, argv.host);
     }
 
     if (sharedStyle !== undefined) {
@@ -306,7 +310,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.sharedStyle =
         validatedSharedStyle == null
           ? validatedSharedStyle
-          : replaceAssetFunctions(validatedSharedStyle, dbApp.id);
+          : replaceAssetFunctions(validatedSharedStyle, dbApp.id, argv.host);
     }
 
     if (icon) {
@@ -393,10 +397,19 @@ export async function patchApp(ctx: Context): Promise<void> {
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
       if (yaml) {
+        const buildManifestJson = await createAppBuildManifest(
+          result.definition as AppDefinition,
+          transaction,
+        );
         const snapshot = await AppSnapshot.create(
           { AppId: dbApp.id, UserId: user!.id, yaml },
           { transaction },
         );
+        await AppBuildSnapshot.create(
+          { AppSnapshotId: snapshot.id, buildManifestJson },
+          { transaction },
+        );
+        await pruneAppBuildSnapshots({ AppSnapshotId: snapshot.id, appId: dbApp.id, transaction });
         dbApp.AppSnapshots = [snapshot];
       }
 
@@ -414,7 +427,14 @@ export async function patchApp(ctx: Context): Promise<void> {
         await appDB.transaction(async (appTransaction) => {
           const { resources: nextResources } = result.definition!;
 
-          await syncResourceUniqueIndexes(
+          await syncAppDefinitionIndexes({
+            previousResources: previousResourceDefinitions,
+            resources: nextResources as Record<string, ResourceDefinition> | undefined,
+            sequelize: appDB,
+            transaction: appTransaction,
+          });
+
+          await assertResourceSchemaCompatibility(
             appId,
             previousResourceDefinitions,
             nextResources as Record<string, ResourceDefinition> | undefined,
@@ -430,33 +450,42 @@ export async function patchApp(ctx: Context): Promise<void> {
             if (!positioning) {
               continue;
             }
-            let group: string[] | undefined;
             try {
-              if (enforceOrderingGroupByFields) {
-                await createDynamicIndexes(
-                  enforceOrderingGroupByFields,
-                  appId,
-                  key,
-                  appTransaction,
-                );
-                group = enforceOrderingGroupByFields.map((field) => `data.${field}`);
+              const orderingGroupFields: string[] = [];
+              for (const field of enforceOrderingGroupByFields ?? []) {
+                orderingGroupFields.push(`(data->>${appDB.escape(field)})`);
               }
-              const resourcesToUpdate = await Resource.findAll({
-                where: { type: key },
-                // Reset positions every time the app is updated
-                order: [...(group ?? []), ['Position', 'ASC'], ['updated', 'DESC']],
-                transaction: appTransaction,
-              });
+              const partitionByOrderingGroup = orderingGroupFields.length
+                ? `PARTITION BY ${orderingGroupFields.join(', ')}`
+                : '';
+              await appDB.query(
+                `CREATE TEMPORARY TABLE "ResourcePositionReset" ON COMMIT DROP AS
+SELECT
+  id,
+  ROW_NUMBER() OVER (
+    ${partitionByOrderingGroup}
+    ORDER BY "Position" ASC, updated DESC
+  ) * 10 AS position
+FROM "Resource"
+WHERE type = :resourceType`,
+                { replacements: { resourceType: key }, transaction: appTransaction },
+              );
+
               await Resource.update(
                 { Position: null },
                 { where: { type: key }, transaction: appTransaction },
               );
-
-              for (const [i, element] of resourcesToUpdate.entries()) {
-                // If we start with 0, insertion at top becomes impossible unless we move the
-                // first item.
-                await element.update({ Position: (i + 1) * 10 }, { transaction: appTransaction });
-              }
+              await appDB.query(
+                `UPDATE "Resource" AS resource
+SET "Position" = positions.position,
+    updated = NOW()
+FROM "ResourcePositionReset" AS positions
+WHERE resource.id = positions.id`,
+                { transaction: appTransaction },
+              );
+              await appDB.query('DROP TABLE "ResourcePositionReset"', {
+                transaction: appTransaction,
+              });
             } catch (error) {
               logger.error(error);
               await appTransaction.rollback();

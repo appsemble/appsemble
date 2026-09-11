@@ -1,8 +1,11 @@
+import { AppAssetDownloadButton } from '../AppAssetDownloadButton/index.js';
 import { Modal, useToggle } from '../index.js';
 import { Fragment, type VNode } from 'preact';
 import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
+
+const appAssetPattern = /\/api\/apps\/\d+\/assets\//;
 
 function getDevicePixelRatio(): number {
   if (typeof window === 'undefined') {
@@ -24,11 +27,15 @@ function getDevicePixelRatio(): number {
 
 interface ImageComponentProps {
   /**
-   * The image is scaled with bulma sizes.
+   * Base size of the image.
+   *
+   * The displayed dimensions are calculated based on the aspect ratio.
+   *
+   * When set to `auto`, no fixed image dimensions are applied
    *
    * @default 48
    */
-  readonly size: 16 | 24 | 32 | 48 | 64 | 96 | 128;
+  readonly size: 'auto' | number;
 
   /**
    * The aspect ratio the image should be displayed in.
@@ -58,12 +65,22 @@ interface ImageComponentProps {
    * The alt image to display.
    */
   readonly alt: string;
+
+  /**
+   * Open a fullscreen preview of the image when it is clicked.
+   *
+   * When false, the click is left to propagate to surrounding elements instead.
+   *
+   * @default true
+   */
+  readonly openPreview?: boolean;
 }
 
 export function ImageComponent({
   alt,
   aspectRatio = 'square',
   id,
+  openPreview = true,
   rounded,
   size = 48,
   src,
@@ -74,9 +91,9 @@ export function ImageComponent({
 
   const imgRef = useRef<HTMLImageElement>();
 
-  let width = size;
-  let height = size;
-  if (aspectRatio !== 'square') {
+  let width = size === 'auto' ? null : size;
+  let height = size === 'auto' ? null : size;
+  if (aspectRatio !== 'square' && size !== 'auto') {
     const [w, h] = aspectRatio.split(':').map(Number);
     if (w > h) {
       width = (w / h) * size;
@@ -85,8 +102,7 @@ export function ImageComponent({
     }
   }
 
-  const requestedWidth = Math.ceil(width * getDevicePixelRatio());
-  const requestedHeight = Math.ceil(height * getDevicePixelRatio());
+  const isAppAsset = appAssetPattern.test(src);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -118,10 +134,13 @@ export function ImageComponent({
 
   const handleClick = useCallback(
     (e: MouseEvent) => {
+      if (!openPreview) {
+        return;
+      }
       e.stopPropagation();
       modal.enable();
     },
-    [modal],
+    [modal, openPreview],
   );
 
   return (
@@ -140,8 +159,10 @@ export function ImageComponent({
                 ref={imgRef as MutableRef<HTMLImageElement>}
                 src={
                   isVisible
-                    ? /\/api\/apps\/\d+\/assets\//.test(src)
-                      ? `${src}${src.includes('?') ? '&' : '?'}width=${requestedWidth}&height=${requestedHeight}`
+                    ? isAppAsset
+                      ? size === 'auto'
+                        ? src
+                        : `${src}${src.includes('?') ? '&' : '?'}width=${Math.ceil(width! * getDevicePixelRatio())}&height=${Math.ceil(height! * getDevicePixelRatio())}`
                       : src
                     : undefined
                 }
@@ -149,6 +170,7 @@ export function ImageComponent({
             </figure>
           </button>
           <Modal isActive={modal.enabled} onClose={modal.disable}>
+            <AppAssetDownloadButton src={src} />
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions */}
             <figure
               className="image"

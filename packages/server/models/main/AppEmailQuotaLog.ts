@@ -24,7 +24,7 @@ export class AppEmailQuotaLog extends Model {
   @ForeignKey(() => App)
   declare AppId?: number;
 
-  @BelongsTo(() => App)
+  @BelongsTo(() => App, { onDelete: 'CASCADE' })
   declare App?: Awaited<App>;
 
   @CreatedAt

@@ -1,7 +1,7 @@
 {
   "app": {
-    "description": "Cette application affiche des boutons qui émettent des sons quand on clique dessus.",
-    "name": "Table d'harmonie",
-    "pages.soundboard": "Table d'harmonie"
+    "description": "Cette application affiche des boutons qui émettent des sons lorsque vous cliquez dessus.",
+    "name": "Soundboard",
+    "pages.soundboard": "Soundboard"
   }
 }

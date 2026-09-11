@@ -42,6 +42,8 @@ IBAN
 KNAB
 RABO
 sepa
+predesigned
+codebase
 
 # Technical slang and libraries
 .editorconfig
@@ -77,6 +79,7 @@ fieldset
 fieldsets
 GDPR
 GitLab
+glab
 Gravatar
 HTTPS
 HTTP01
@@ -105,6 +108,7 @@ PEM
 Preact
 prerelease/release
 PWA
+pooler
 proxied
 remapper/mapper
 Redux
@@ -125,6 +129,7 @@ TLS
 TTL
 testid
 util/kitten
+unstub
 UUID
 Valkey
 valkey
@@ -231,3 +236,6 @@ RABO
 sepa
 externalname
 exampleenv
+subsampling
+ORM
+Sequelize

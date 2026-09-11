@@ -2818,17 +2818,23 @@ The date value can be accessed using the \`root\` remapper.",
             "description": "The default value of the field.",
             "type": "string",
           },
+          "disableNativePicker": {
+            "default": true,
+            "description": "Disable the operating system's native date picker on mobile devices and always render the Appsemble date picker instead.
+
+On mobile browsers the field falls back to the native date picker by default. That picker cannot render decorations or disabled dates, and it ignores the configured date format and the minimum and maximum date requirements, so the field can behave differently on mobile than on desktop. Set this to \`false\` to use the native mobile picker.",
+            "type": "boolean",
+          },
           "disabled": {
             "default": false,
             "description": "Whether the field should always be be disabled.",
             "format": "remapper",
           },
           "disabledDates": {
-            "description": "Dates to disable in the picker (ISO date strings).",
-            "items": {
-              "type": "string",
-            },
-            "type": "array",
+            "description": "Dates to disable in the picker.
+
+A remapper that should resolve to an array of ISO date strings (\`yyyy-MM-dd\`). The resolved dates cannot be selected in the picker.",
+            "format": "remapper",
           },
           "help": {
             "description": "A description for the text field. For adding more information about the field.",
@@ -2943,6 +2949,13 @@ The date value can be accessed using the \`root\` remapper.",
           "defaultValue": {
             "description": "The default value of the field.",
             "type": "string",
+          },
+          "disableNativePicker": {
+            "default": true,
+            "description": "Disable the operating system's native date picker on mobile devices and always render the Appsemble date picker instead.
+
+On mobile browsers the field falls back to the native date picker by default. That picker cannot render decorations or disabled dates, and it ignores the configured date format and the minimum and maximum date requirements, so the field can behave differently on mobile than on desktop. Set this to \`false\` to use the native mobile picker.",
+            "type": "boolean",
           },
           "disabled": {
             "default": false,
@@ -3913,18 +3926,21 @@ image can either be url or uploaded image",
             "type": "boolean",
           },
           "size": {
-            "default": 48,
-            "description": "The image is scaled with bulma sizes.",
-            "enum": [
-              16,
-              24,
-              32,
-              48,
-              64,
-              96,
-              128,
+            "anyOf": [
+              {
+                "const": "auto",
+                "type": "string",
+              },
+              {
+                "type": "number",
+              },
             ],
-            "type": "number",
+            "default": 48,
+            "description": "Base size of the image.
+
+The displayed dimensions are calculated based on the aspect ratio.
+
+When set to \`auto\`, no fixed image dimensions are applied",
           },
         },
         "required": [
@@ -4024,6 +4040,13 @@ image can either be url or uploaded image",
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
+          },
+          "minRows": {
+            "description": "The minimum number of text lines the editor is tall.
+
+The markdown field renders a rich text editor rather than a plain text area, so this sets a minimum height rather than a fixed row count. The editor still grows as more content is added.",
+            "minimum": 1,
+            "type": "number",
           },
           "name": {
             "description": "The name used when storing this field.",
@@ -6764,23 +6787,33 @@ Cannot be set in combination with button or dropdown.",
 image can either be url or uploaded image",
             "format": "remapper",
           },
+          "openPreview": {
+            "default": true,
+            "description": "Open a fullscreen preview of the image when it is clicked.
+
+When false, clicking the image triggers the list item's \`onClick\` action instead of opening the preview.",
+            "type": "boolean",
+          },
           "rounded": {
             "description": "Is image rounded.",
             "type": "boolean",
           },
           "size": {
-            "default": 48,
-            "description": "The image is scaled with bulma sizes.",
-            "enum": [
-              16,
-              24,
-              32,
-              48,
-              64,
-              96,
-              128,
+            "anyOf": [
+              {
+                "const": "auto",
+                "type": "string",
+              },
+              {
+                "type": "number",
+              },
             ],
-            "type": "number",
+            "default": 48,
+            "description": "Base size of the image.
+
+The displayed dimensions are calculated based on the aspect ratio.
+
+When set to \`auto\`, no fixed image dimensions are applied",
           },
         },
         "required": [
@@ -7276,6 +7309,10 @@ exports[`config > getProjectImplementations > official blocks > pdf-viewer 1`] =
           "number",
           "string",
         ],
+      },
+      "url": {
+        "description": "URL or asset ID of the file to display, use this if you want to load an asset",
+        "format": "remapper",
       },
       "width": {
         "description": "Width of the container in which PDF is displayed",
@@ -7957,7 +7994,8 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
         "type": "array",
       },
       "scrollable": {
-        "description": "Whether the table should be scrollable.",
+        "default": true,
+        "description": "Whether the table should show a scrollwheel when it becomes too small to show everything.",
         "type": "boolean",
       },
     },

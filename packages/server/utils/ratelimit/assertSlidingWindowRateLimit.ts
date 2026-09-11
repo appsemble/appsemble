@@ -1,4 +1,3 @@
-import { Script } from '@valkey/valkey-glide';
 import { getValkeyClient } from '../valkey.js';
 import { type Context } from 'koa';
 import { assertKoaCondition, logger } from '@appsemble/node-utils';
@@ -21,7 +20,7 @@ interface SlidingWindowRateLimitOptions {
 
 const RATE_LIMIT_KEY_PREFIX = 'appsemble-rate-limit';
 
-const script = new Script(`
+const script = `
 local key = KEYS[1]
 local window_ms = tonumber(ARGV[1])
 local max_requests = tonumber(ARGV[2])
@@ -43,7 +42,7 @@ if request_count < max_requests then
   return 0
 end
 return 1
-`);
+`;
 
 /**
  * Implements a sliding window rate limiter using Redis sorted sets.
@@ -71,11 +70,8 @@ export async function assertSlidingWindowRateLimit(
   const idFunction = options.identifierFunction ?? ((context) => context.ip);
   const identifier = idFunction(ctx);
   const fullKey = `${RATE_LIMIT_KEY_PREFIX}:${key}:${identifier}`;
-  const response = await client?.invokeScript(script, {
-    keys: [fullKey],
-    args: [String(windowMs), String(maxRequests)],
-  });
-  const isRateLimited = response === 1;
+  const response = await client.eval(script, 1, fullKey, String(windowMs), String(maxRequests));
+  const isRateLimited = Number(response) === 1;
   assertKoaCondition(
     !isRateLimited,
     ctx,

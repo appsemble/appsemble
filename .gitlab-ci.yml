@@ -1,5 +1,11 @@
 default:
   image: node:24-trixie-slim
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - scheduler_failure
+      - api_failure
 
 stages:
   - security
@@ -19,6 +25,8 @@ workflow:
     - if: $CI_MERGE_REQUEST_ID
     # By default, run jobs for every commit on main.
     - if: $CI_COMMIT_BRANCH == 'main'
+    # By default, run jobs for every hotfix branch.
+    - if: $CI_COMMIT_BRANCH =~ /^hotfix\/[0-9A-Za-z-]+$/
     # By default, run jobs for every commit on staging.
     - if: $CI_COMMIT_BRANCH == 'staging'
     # By default, run jobs for every tag
@@ -51,7 +59,7 @@ workflow:
   extends: .npm
   stage: publish
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'main' || $CI_COMMIT_BRANCH =~ /^hotfix\/[0-9A-Za-z-]+$/
       when: manual
   allow_failure: true
   script:
@@ -59,8 +67,28 @@ workflow:
     - apt-get install --yes git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
     - |
-      if [ -n "$IDENTIFIER" ]; then
-        npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
+      resolve_identifier_from_branch_name() {
+        case "$CI_COMMIT_REF_NAME" in
+          hotfix/*)
+            printf '%s\n' "${CI_COMMIT_REF_NAME##*/}" |
+              sed -nE 's/^([0-9A-Za-z-]+)$/\1/p'
+            ;;
+        esac
+      }
+
+      if [ "$INCREMENT" = 'prerelease' ]; then
+        if [ "$CI_COMMIT_REF_NAME" = 'main' ]; then
+          RELEASE_IDENTIFIER='test'
+        else
+          RELEASE_IDENTIFIER="$(resolve_identifier_from_branch_name)"
+        fi
+        if [ -z "$RELEASE_IDENTIFIER" ]; then
+          echo 'No pre-release identifier resolved.'
+          echo 'Use main for test prereleases or a hotfix/<identifier> branch for custom prereleases.'
+          exit 1
+        fi
+        echo "Using pre-release identifier: $RELEASE_IDENTIFIER"
+        npm run scripts -- release "$INCREMENT" --identifier "$RELEASE_IDENTIFIER"
       else
         npm run scripts -- release "$INCREMENT"
       fi
@@ -76,70 +104,57 @@ workflow:
     - git add .
     - git commit --message "$MESSAGE" --cleanup whitespace --gpg-sign
     - git tag "$VERSION" --message "$MESSAGE" --cleanup whitespace --sign
-    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:main
+    - RELEASE_TARGET_BRANCH="$CI_COMMIT_REF_NAME"
+    - 'echo "Pushing release commit to branch: $RELEASE_TARGET_BRANCH"'
+    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:"$RELEASE_TARGET_BRANCH"
     - |
       if [ $? -eq 0 ]; then
-        echo "Code push successful. Pushing tags..."
+        echo "Code push to $RELEASE_TARGET_BRANCH successful. Pushing tags..."
         git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" --tags
       else
-        echo "Push to main branch failed. Tags will not be pushed."
+        echo "Code push to $RELEASE_TARGET_BRANCH failed. Tags will not be pushed."
       fi
 
-###################################################################################################
-#  Auto-approve Renovate MRs                                                                      #
-###################################################################################################
-
-# Automatically approve merge requests from Renovate bot after build succeeds
-auto-approve-renovate:
-  stage: test
-  image: alpine:latest
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\// && $CI_MERGE_REQUEST_APPROVED != "true"
-  needs:
-    - npm_ci
-    - build docker image
-  script:
-    - apk add --no-cache curl
-    - |
-      curl --fail --request POST \
-        --header "PRIVATE-TOKEN: $GITLAB_APPROVAL_TOKEN" \
-        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/approve"
-
-# Automatically enable auto-merge for Weblate merge requests.
+# Enable auto-merge on the open Weblate merge requests. This runs from a scheduled pipeline on
+# main, where the protected GITLAB_ACCESS_TOKEN is available; set AUTO_MERGE_WEBLATE on that
+# schedule so the other schedules skip this job.
 auto-merge-weblate:
   stage: test
   image: alpine:latest
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble' && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^weblate($|[-\/])/ && $GITLAB_ACCESS_TOKEN
-  allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $AUTO_MERGE_WEBLATE && $GITLAB_ACCESS_TOKEN
   script:
     - apk add --no-cache curl jq
     - |
-      merge_request="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID"
+      merge_requests="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests"
 
       curl --fail --silent --show-error \
         --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-        "$merge_request" \
-        | tee /tmp/merge-request.json \
-        | jq '{iid, source_branch, detailed_merge_status, merge_when_pipeline_succeeds}'
+        --get "$merge_requests" \
+        --data-urlencode 'state=opened' \
+        --data-urlencode 'source_branch=weblate' \
+        --data-urlencode 'target_branch=main' \
+        --output /tmp/merge-requests.json
 
-      if jq -e '.merge_when_pipeline_succeeds' /tmp/merge-request.json > /dev/null; then
-        echo 'Auto-merge already enabled.'
-        exit 0
-      fi
+      jq '[.[] | {iid, detailed_merge_status, merge_when_pipeline_succeeds}]' /tmp/merge-requests.json
 
-      if [ "$(jq -r '.detailed_merge_status' /tmp/merge-request.json)" = 'conflict' ]; then
-        echo 'Merge request has conflicts.'
-        exit 0
-      fi
+      jq -r '.[]
+             | select(.merge_when_pipeline_succeeds | not)
+             | select(.detailed_merge_status != "conflict")
+             | "\(.iid) \(.sha)"' /tmp/merge-requests.json > /tmp/mergeable.txt
 
-      curl --fail --request PUT \
-        --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-        --url "$merge_request/merge" \
-        --data-urlencode "auto_merge=true" \
-        --data-urlencode "sha=$CI_COMMIT_SHA" \
-        --data-urlencode "should_remove_source_branch=true" \
-        | jq '{iid, detailed_merge_status, merge_when_pipeline_succeeds, should_remove_source_branch}'
+      while read -r iid sha; do
+        curl --fail --silent --show-error --request PUT \
+          --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+          --url "$merge_requests/$iid/merge" \
+          --data-urlencode "auto_merge=true" \
+          --data-urlencode "sha=$sha" \
+          --data-urlencode "should_remove_source_branch=true" \
+          --output /tmp/merge-result.json
+
+        jq '{iid, detailed_merge_status, merge_when_pipeline_succeeds, should_remove_source_branch}' \
+          /tmp/merge-result.json
+      done < /tmp/mergeable.txt
 
 ###################################################################################################
 #  Security Stage                                                                                 #
@@ -158,6 +173,19 @@ secret-scan-mr:
     when: always
     paths: [scan-report-mr.html]
     expire_in: 1 week
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+trufflehog:
+  stage: security
+  image: alpine:latest
+  variables:
+    TRUFFLEHOG_VERSION: v3.97.0
+  before_script:
+    - apk add --no-cache curl git
+    - curl --fail --silent --show-error --location "https://raw.githubusercontent.com/trufflesecurity/trufflehog/$TRUFFLEHOG_VERSION/scripts/install.sh" | sh -s -- -b /usr/local/bin "$TRUFFLEHOG_VERSION"
+  script:
+    - trufflehog git file://. --results=verified --fail --since-commit "$CI_MERGE_REQUEST_DIFF_BASE_SHA" --branch "$CI_COMMIT_SHA"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
@@ -185,27 +213,22 @@ npm_ci:
 
 # Build the Docker image.
 build docker image:
-  tags:
-    - saas-linux-small-amd64
   extends: .docker
   stage: build
-  cache:
-    key: '$CI_COMMIT_REF_NAME'
-    paths:
-      - /root/.npm/
   script:
-    # https://docs.gitlab.com/ee/ci/docker/docker_layer_caching.html
-    # We're pulling latest if no previous builds exist because we want the greatest possibility of cache hits for build layers.
-    - CACHE_IMAGE="$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-    # We wouldn't like anything funny to happen to us because of cache
-    - if [ "$CI_COMMIT_REF_NAME" == "main" ] || [ "$CI_COMMIT_REF_NAME" == "staging" ]; then USE_CACHE="0"; else USE_CACHE="1"; fi
-    - if ! docker pull "$CACHE_IMAGE"; then CACHE_IMAGE="$CI_REGISTRY_IMAGE:latest"; docker pull "$CACHE_IMAGE" || true; fi
-    - docker build
+    - CACHE_IMAGE="$CI_REGISTRY_IMAGE/cache:$CI_COMMIT_REF_SLUG"
+    - docker buildx create --use
+    - docker buildx build
       -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-      --cache-from "$CACHE_IMAGE"
-      --build-arg "BUILDKIT_INLINE_CACHE=$USE_CACHE"
+      --cache-from "type=registry,ref=$CACHE_IMAGE"
+      --cache-from "type=registry,ref=$CI_REGISTRY_IMAGE/cache:main"
+      --cache-to "type=registry,ref=$CACHE_IMAGE,mode=max"
       --build-arg "version=$CI_COMMIT_REF_NAME"
-      --build-arg "date=$CI_JOB_STARTED_AT" .
+      --build-arg "date=$CI_JOB_STARTED_AT"
+      --load .
+    - docker run --rm --entrypoint node
+      --mount "type=bind,source=$CI_PROJECT_DIR/config,target=/app/config,readonly"
+      "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --test config/bin/check-image-formats.mjs
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
     # Extract dist/ from the built image for sourcemap uploads to Sentry
     - mkdir -p dist
@@ -216,8 +239,6 @@ build docker image:
 
 # Populate a postgres database with the 'default' data it needs to function
 seed database:
-  tags:
-    - saas-linux-small-amd64
   stage: build
   interruptible: true
   needs:
@@ -282,6 +303,11 @@ seed database:
       --name Appsemble
       --website https://appsemble.com
     - npm run appsemble -- block publish 'blocks/*'
+    - npm run scripts -- sync-object-storage-bucket export seeded-object-storage
+      --s3-host minio
+      --s3-secure=false
+      --s3-access-key admin
+      --s3-secret-key password
   after_script:
     - apt-get update && apt-get install -y postgresql-client
     - PGPASSWORD="password" pg_dump -h database -U admin --no-owner --no-acl appsemble > seededDb.sql
@@ -290,12 +316,11 @@ seed database:
     expose_as: Default database dump
     paths:
       - seededDb.sql
+      - seeded-object-storage/
     expire_in: 2 hours
 
 # Build the database into a docker image for use in other jobs
 build seeded db image:
-  tags:
-    - saas-linux-small-amd64
   extends: .docker
   stage: build
   needs:
@@ -417,6 +442,21 @@ prettier:
   script:
     - npx -- prettier .
 
+# Verify the committed Mermaid SVGs are in sync with the diagrams in the docs.
+mermaid svgs:
+  extends: .npm
+  image: mcr.microsoft.com/playwright:v1.62.1-noble
+  stage: test
+  script:
+    - npm run render-mermaid
+    - |
+      if [ -n "$(git status --porcelain -- packages/webpack-core/mermaid/assets)" ]; then
+        echo 'Committed Mermaid SVGs are out of date. Run `npm run render-mermaid` and commit the result.'
+        git status --porcelain -- packages/webpack-core/mermaid/assets
+        git --no-pager diff -- packages/webpack-core/mermaid/assets
+        exit 1
+      fi
+
 # Lint Markdown using remark.
 remark lint:
   extends: .npm
@@ -437,7 +477,7 @@ test node:
   services:
     - name: postgres:17
       alias: postgres
-    - name: valkey/valkey:9.0.2
+    - name: valkey/valkey:9.1.1
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: minio/minio:latest
@@ -558,6 +598,8 @@ validate snippets:
     - build docker image
     - npm_ci
     - build seeded db image
+    - job: seed database
+      artifacts: true
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_COMMIT_TAG
@@ -607,6 +649,12 @@ validate snippets:
         migrateTo: next
   script:
     - npm run appsemble -- config set remote 'http://appsemble:9999'
+    - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
+      --s3-host minio
+      --s3-secure=false
+      --s3-access-key admin
+      --s3-secret-key password
+      --public-read
     - npm run scripts -- validate-docs --organization appsemble --remote 'http://appsemble:9999' --clientCredentials $APPSEMBLE_CLIENT_CREDENTIALS -vv
 
 ###################################################################################################
@@ -615,12 +663,14 @@ validate snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.58.1-noble
+  image: mcr.microsoft.com/playwright:v1.62.1-noble
   interruptible: true
   needs:
     - build docker image
     - npm_ci
     - build seeded db image
+    - job: seed database
+      artifacts: true
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_COMMIT_TAG
@@ -651,7 +701,7 @@ e2e node:
       variables:
         MINIO_ROOT_USER: admin
         MINIO_ROOT_PASSWORD: password
-    - name: valkey/valkey:9.0.2
+    - name: valkey/valkey:9.1.1
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
@@ -695,8 +745,110 @@ e2e node:
     - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/utils run prepack
     - npm --workspace @appsemble/node-utils run prepack
+    - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
+      --s3-host minio
+      --s3-secure=false
+      --s3-access-key admin
+      --s3-secret-key password
+      --public-read
     - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
   parallel: 6
+  artifacts:
+    expose_as: Playwright videos
+    when: always
+    paths:
+      - packages/e2e/test-results/
+    reports:
+      junit: packages/e2e/results.xml
+
+e2e keycloak:
+  stage: end 2 end
+  image: mcr.microsoft.com/playwright:v1.62.1-noble
+  interruptible: true
+  needs:
+    - build docker image
+    - npm_ci
+    - build seeded db image
+    - job: seed database
+      artifacts: true
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_COMMIT_TAG
+  parallel:
+    matrix:
+      - KEYCLOAK_PROTOCOL: oidc
+      - KEYCLOAK_PROTOCOL: saml
+  variables:
+    FF_NETWORK_PER_BUILD: 'true'
+    DATABASE_HOST: database
+    DATABASE_PORT: 5432
+    DATABASE_NAME: appsemble
+    DATABASE_USER: admin
+    DATABASE_PASSWORD: password
+    E2E_HOST: 'http://appsemble:9999'
+    KEYCLOAK_ADMIN_PASSWORD: password
+    KEYCLOAK_ADMIN_USERNAME: admin
+    KEYCLOAK_BASE_URL: 'http://keycloak:8080'
+    KEYCLOAK_REALM: appsemble-e2e
+  services:
+    - name: '$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG'
+      alias: database
+      variables:
+        POSTGRES_DB: appsemble
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: password
+    - name: minio/minio:latest
+      alias: minio
+      entrypoint: ['sh', '-c', 'minio server /data']
+      variables:
+        MINIO_ROOT_USER: admin
+        MINIO_ROOT_PASSWORD: password
+    - name: quay.io/keycloak/keycloak:26.6.1
+      alias: keycloak
+      command: ['start-dev', '--http-enabled=true', '--hostname-strict=false']
+      variables:
+        KC_BOOTSTRAP_ADMIN_PASSWORD: password
+        KC_BOOTSTRAP_ADMIN_USERNAME: admin
+        KC_HEALTH_ENABLED: 'true'
+    - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+      alias: appsemble
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          until pg_isready -h database -p 5432 -U admin; do
+            sleep 1
+          done
+          exec appsemble-server start
+      variables:
+        SECRET: secret
+        AES_SECRET: secret
+        HOST: 'http://appsemble:9999'
+        REMOTE: 'https://appsemble.app'
+        DATABASE_HOST: database
+        DATABASE_PORT: 5432
+        DATABASE_NAME: appsemble
+        DATABASE_USER: admin
+        DATABASE_PASSWORD: password
+        S3_HOST: minio
+        S3_SECURE: false
+        S3_ACCESS_KEY: admin
+        S3_SECRET_KEY: password
+        migrateTo: next
+        E2E: true
+  script:
+    - npm run appsemble -- config set context e2e
+    - npm run appsemble -- config set remote 'http://appsemble:9999'
+    - npm --workspace @appsemble/types run prepack
+    - npm --workspace @appsemble/lang-sdk run prepack
+    - npm --workspace @appsemble/utils run prepack
+    - npm --workspace @appsemble/node-utils run prepack
+    - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
+      --s3-host minio
+      --s3-secure=false
+      --s3-access-key admin
+      --s3-secret-key password
+      --public-read
+    - npm --workspace @appsemble/e2e run e2e -- --project=chromium tests/studio/logins/keycloak-${KEYCLOAK_PROTOCOL}.spec.ts
   artifacts:
     expose_as: Playwright videos
     when: always
@@ -957,12 +1109,14 @@ sentry release:
     - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
     - sentry-cli releases files "$CI_COMMIT_TAG" upload-sourcemaps dist/
 
-# Create a test pre-release
+# Create a pre-release. By default this creates a test release.
+# Branch behavior:
+# - main -> test prerelease identifier
+# - hotfix/<name> -> <name> prerelease identifier
 release test:
   extends: .release
   variables:
     INCREMENT: prerelease
-    IDENTIFIER: test
 
 # Create a patch release
 release patch:
@@ -1031,8 +1185,11 @@ update dependencies:
     name: review/$CI_MERGE_REQUEST_IID
     url: https://$CI_MERGE_REQUEST_IID.appsemble.review
     on_stop: stop review
+    auto_stop_in: 1 week
   variables:
     GIT_STRATEGY: fetch
+    # Matches the chart default global.postgresql.auth.username.
+    POSTGRES_APP_USER: appsemble
   retry:
     max: 1
     when:
@@ -1044,18 +1201,18 @@ update dependencies:
     - apk add --no-cache curl jq tar openssl
     - ./scripts/cleanup-review-resources.sh
     - ./scripts/pre-review-capacity-check.sh
-    # This is the only way to make sure the review environment can be overwritten
-    - helm delete "review-$CI_MERGE_REQUEST_IID" --no-hooks --ignore-not-found || true
-    - kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete secret -l "owner=helm,name=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete secret review-$CI_MERGE_REQUEST_IID-mailpit-tls --ignore-not-found=true || true
-    - kubectl delete secret review-$CI_MERGE_REQUEST_IID-valkey --ignore-not-found=true || true
+    - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-valkey --from-literal "password=$(openssl rand -base64 30)"
+    # PgBouncer setup, auth file generation
+    - |
+      POSTGRES_PASSWORD="$(kubectl get secret postgresql-secret -o jsonpath='{.data.password}' | base64 -d)"
+
+      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
+    - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt
+    - rm pgbouncer-userlist.txt
     # Stripe webhook setup
     - |
       STRIPE_RELEASE_URL=$(curl -fsSL -H 'User-Agent: appsemble-ci' \
@@ -1086,10 +1243,14 @@ update dependencies:
         --api-key "$STRIPE_API_SECRET_KEY" | jq -r '.secret')
     - kubectl create secret generic stripe-webhook-secret-$CI_MERGE_REQUEST_IID --from-literal=stripe-webhook-secret="$STRIPE_WEBHOOK_SECRET"
     # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
+    # --wait (not --atomic): on failure leave the release for the next deploy to
+    # clean up, instead of triggering an uninstall whose pre-delete cleanup hook
+    # hangs against the un-migrated database and turns failures into ~60m jobs.
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --debug
-      --atomic
-      --timeout 10m0s
+      --wait
+      --timeout 30m0s
+      --set "cronjob.platform.enabled=false"
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
@@ -1104,9 +1265,11 @@ update dependencies:
       --set "ingress.tlsWildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
       --set "migrateTo=next"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
-      --set "postgresql.primary.persistence.size=1Gi"
+      --set "postgresql.primary.persistence.enabled=false"
       --set "postgresql.primary.resources.requests.memory=256Mi"
       --set "postgresql.primary.resources.limits.memory=512Mi"
+      --set "resources.deployment.requests.cpu=250m"
+      --set "resources.deployment.requests.memory=1Gi"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
@@ -1122,7 +1285,7 @@ update dependencies:
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
-      --set "minio.persistence.size=1Gi"
+      --set "minio.persistence.enabled=false"
       --set "minio.fullnameOverride=review-$CI_MERGE_REQUEST_IID-minio"
       --set "minio.ingress.hostname=console.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-review"
@@ -1136,6 +1299,8 @@ update dependencies:
       --set "valkey.resources.limits.cpu=250m"
       --set "valkey.resources.limits.memory=128Mi"
       --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
+      --set "pgbouncer.enabled=true"
+      --set "pgbouncer.auth.existingSecret=review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist"
       --set "backups.enabled=false"
 
 review:
@@ -1166,16 +1331,11 @@ stop review:
     name: review/$CI_MERGE_REQUEST_IID
     action: stop
   variables:
-    GIT_STRATEGY: none
+    GIT_STRATEGY: fetch
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:review"
-    - helm delete "review-$CI_MERGE_REQUEST_IID" --no-hooks --ignore-not-found || true
-    - kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete secret -l "owner=helm,name=review-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
-    - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
-    - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep "^review-$CI_MERGE_REQUEST_IID" | xargs -I{} kubectl delete secret {} || true
-    - kubectl delete secret "stripe-webhook-secret-$CI_MERGE_REQUEST_IID" --ignore-not-found=true || true
+    - apk add --no-cache jq
+    - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
 
 # Deploy the Docker image for main to the staging environment.
 staging:
@@ -1192,10 +1352,14 @@ staging:
     url: https://appsemble.eu
   variables:
     GIT_STRATEGY: none
+    # Matches the chart default global.postgresql.auth.username.
+    POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
     # This is the only way to make sure staging can be overwritten
-    - helm delete staging || true
+    - helm delete staging --no-hooks || true
+    # Replaces the skipped pre-delete cleanup hook: remove server-created app ingresses and TLS secrets
+    - kubectl delete ingress,secret -l app.kubernetes.io/managed-by=staging-appsemble || true
     - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
     - kubectl delete namespace "companion-containers-staging" || true
     - kubectl delete secret staging-mailpit-tls || true
@@ -1206,6 +1370,13 @@ staging:
     - '[ -n "$STAGING_BACKUPS_HOST" ] || { echo "Please set STAGING_BACKUPS_HOST for staging backup destination" >&2; exit 1; }'
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
+    # PgBouncer auth file, generated from the PostgreSQL user password
+    - |
+      POSTGRES_PASSWORD="$(kubectl get secret postgresql-secret -o jsonpath='{.data.password}' | base64 -d)"
+
+      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
+    - kubectl create secret generic staging-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
+    - rm pgbouncer-userlist.txt
     - helm install staging ./public/appsemble-*.tgz
       --atomic
       --timeout 30m0s
@@ -1215,7 +1386,7 @@ staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=staging"
-      --set "ingress.clusterIssuer=acme-issuer-dev"
+      --set "ingress.clusterIssuer=acme-issuer-staging"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.eu"
       --set "ingress.tls=true"
@@ -1257,12 +1428,14 @@ staging:
       --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
       --set "minio.fullnameOverride=staging-minio"
       --set "minio.ingress.hostname=console.minio.appsemble.eu"
-      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-staging"
       --set "minio.apiIngress.hostname=api.minio.appsemble.eu"
-      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-staging"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "valkey.fullnameOverride=staging-valkey"
       --set "valkey.auth.usersExistingSecret=valkey"
+      --set "pgbouncer.enabled=true"
+      --set "pgbouncer.auth.existingSecret=staging-pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=50m"
       --set "valkey.resources.requests.memory=64Mi"
       --set "valkey.resources.limits.cpu=500m"
@@ -1285,12 +1458,15 @@ production:
     - publish docker
     - publish helm
   rules:
-    - if: $CI_COMMIT_TAG
+    # Deploy stable and test prerelease tags; hotfix prerelease tags skip production.
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+(-test\.\d+)?$/'
   environment:
     name: production
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
+    # Matches the chart default global.postgresql.auth.username.
+    POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:production"
     - kubectl config set-context --current --namespace default
@@ -1324,7 +1500,31 @@ production:
     - rm mailpit.key mailpit.crt
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
+    # PgBouncer auth file, generated from the PostgreSQL user password
+    - |
+      POSTGRES_PASSWORD="$(kubectl get secret "$POSTGRESQL_SECRET" -o jsonpath='{.data.password}' | base64 -d)"
+
+      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
+    - kubectl create secret generic pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
+    - rm pgbouncer-userlist.txt
     - kubectl rollout restart deployment appsemble-mailpit || true
+    # PostgreSQL performance tuning for the 2Gi production container, applied
+    # through the bitnami subchart's extendedConfiguration (override.conf).
+    # shared_buffers is ~25% of the container limit; work_mem is raised to cut
+    # temp-file spilling on sorts/hashes across the many per-app databases; and
+    # effective_cache_size reflects the real cgroup budget rather than the
+    # subchart default of 4GB. The shared_preload_libraries and pg_stat_statements
+    # settings match the chart default so pgaudit and pg_stat_statements keep
+    # working; extendedConfiguration is a single value, so it is set in full here.
+    - |
+      cat > postgresql-tuning.conf <<'EOF'
+      shared_preload_libraries = 'pgaudit,pg_stat_statements'
+      pg_stat_statements.max = 10000
+      pg_stat_statements.track = all
+      shared_buffers = 512MB
+      effective_cache_size = 1536MB
+      work_mem = 16MB
+      EOF
     - helm upgrade appsemble appsemble/appsemble
       --debug
       --timeout 30m
@@ -1355,8 +1555,11 @@ production:
       --set "postgresql.primary.resources.requests.memory=1Gi"
       --set "postgresql.primary.resources.limits.cpu=1"
       --set "postgresql.primary.resources.limits.memory=2Gi"
+      --set-file "postgresql.primary.extendedConfiguration=postgresql-tuning.conf"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
+      --set "replicaCount=2"
+      --set "prometheusRule.enabled=true"
       --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
       --set "sentry.environment=production"
       --set "sentry.secret=sentry"
@@ -1364,6 +1567,7 @@ production:
       --set "quotas.appEmail.dailyLimit=10"
       --set "quotas.appEmail.alertOrganizationOwner=true"
       --set "mailpit.mailpit.smtp.tls.secretName=appsemble-mailpit-tls"
+      --set "blockAssets.publicUrl=https://api.minio.appsemble.app"
       --set "minio.ingress.hostname=console.minio.appsemble.app"
       --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
       --set "minio.apiIngress.hostname=api.minio.appsemble.app"
@@ -1371,6 +1575,8 @@ production:
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
       --set "valkey.fullnameOverride=appsemble-valkey"
       --set "valkey.auth.usersExistingSecret=valkey"
+      --set "pgbouncer.enabled=true"
+      --set "pgbouncer.auth.existingSecret=pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=100m"
       --set "valkey.resources.requests.memory=128Mi"
       --set "valkey.resources.limits.cpu=1"
@@ -1411,7 +1617,19 @@ provision review:
     - npm run appsemble -- config set context review
     - |
       REVIEW_HOST="$CI_MERGE_REQUEST_IID.$APPSEMBLE_REVIEW_DOMAIN"
-      REVIEW_IP=$(node -e 'const host = process.argv[1]; fetch(`https://dns.google/resolve?name=${host}&type=A`).then((response) => response.json()).then((data) => { const answer = (data.Answer || []).find((entry) => entry.type === 1); if (!answer) { process.stderr.write(`No A record found for ${host}\n`); process.exit(1); } process.stdout.write(answer.data); }).catch((error) => { console.error(error); process.exit(1); });' "$REVIEW_HOST")
+      REVIEW_IP=
+      for attempt in $(seq 1 60); do
+        REVIEW_IP=$(node -e 'const host = process.argv[1]; fetch(`https://dns.google/resolve?name=${host}&type=A`).then((response) => response.json()).then((data) => { const answer = (data.Answer || []).find((entry) => entry.type === 1); if (answer) { process.stdout.write(answer.data); } }).catch((error) => { console.error(error); process.exit(1); });' "$REVIEW_HOST")
+        if [ -n "$REVIEW_IP" ]; then
+          break
+        fi
+        echo "Waiting for A record for $REVIEW_HOST ($attempt/60)"
+        sleep 10
+      done
+      if [ -z "$REVIEW_IP" ]; then
+        echo "No A record found for $REVIEW_HOST" >&2
+        exit 1
+      fi
       echo "$REVIEW_IP $REVIEW_HOST" >> /etc/hosts
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
@@ -1450,7 +1668,7 @@ provision production:
   extends: .npm
   stage: provision
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+(-test\.\d+)?$/'
   needs:
     - production
     - npm_ci

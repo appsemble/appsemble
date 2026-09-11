@@ -18,6 +18,57 @@ import { configureMonacoYaml } from 'monaco-yaml';
 import { appValidationLabel } from './appValidation/index.js';
 import './languages.js';
 
+const cssData: monaco.languages.css.Options = {
+  validate: true,
+  lint: {
+    compatibleVendorPrefixes: 'ignore',
+    vendorPrefix: 'warning',
+    duplicateProperties: 'warning',
+    emptyRules: 'warning',
+    importStatement: 'ignore',
+    boxModel: 'ignore',
+    universalSelector: 'ignore',
+    zeroUnits: 'ignore',
+    fontFaceProperties: 'warning',
+    hexColorLength: 'error',
+    argumentsInColorFunction: 'error',
+    unknownProperties: 'warning',
+    ieHack: 'ignore',
+    unknownVendorSpecificProperties: 'ignore',
+    propertyIgnoredDueToDisplay: 'warning',
+    important: 'ignore',
+    float: 'ignore',
+    idSelector: 'ignore',
+  },
+  data: {
+    useDefaultDataProvider: true,
+    dataProviders: {
+      appsemble: {
+        version: 1.1,
+        // @ts-expect-error: 'functions' is supported in the CSS language service, but not yet
+        // reflected in Monaco's types.
+        functions: [
+          {
+            name: 'asset',
+            description: 'Reference an app asset by its name or ID.',
+          },
+        ],
+      },
+    },
+  },
+  format: {
+    newlineBetweenSelectors: true,
+    newlineBetweenRules: true,
+    spaceAroundSelectorSeparator: false,
+    braceStyle: 'collapse',
+    preserveNewLines: true,
+  },
+};
+
+monaco.languages.css.cssDefaults.setOptions(cssData);
+monaco.languages.css.scssDefaults.setOptions(cssData);
+monaco.languages.css.lessDefaults.setOptions(cssData);
+
 window.MonacoEnvironment = {
   getWorker(workerId, label) {
     switch (label) {
@@ -58,6 +109,8 @@ function addMarkdownDescriptions(schema: Schema): Schema {
   }
   if (Array.isArray(result.items)) {
     result.items = result.items.map(addMarkdownDescriptions);
+  } else if (result.items && typeof result.items === 'object') {
+    result.items = addMarkdownDescriptions(result.items);
   }
   result.markdownDescription = result.description;
   return result;

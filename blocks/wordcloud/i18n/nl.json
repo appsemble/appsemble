@@ -1,6 +1,6 @@
 {
-  "empty": "Geen data om te weergeven",
-  "error": "Er was een probleem met het laden van de data",
-  "loading": "Laden…",
-  "unsupported": "Uw browser ondersteunt het wordcloud blok niet!"
+  "empty": "Er zijn geen gegevens om weer te geven",
+  "error": "Er is een probleem opgetreden bij het laden van de gegevens.",
+  "loading": "Bezig met laden…",
+  "unsupported": "Uw browser ondersteunt het wordcloud-blok niet!"
 }

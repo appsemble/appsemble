@@ -2,7 +2,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, Organization, OrganizationMember } from '../../../../../models/index.js';
+import { App, getDB, Organization, OrganizationMember } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
@@ -32,7 +32,15 @@ describe('createAppSamlSecret', () => {
       OrganizationId: organization.id,
       vapidPublicKey: '',
       vapidPrivateKey: '',
-      definition: {},
+      definition: {
+        security: {
+          default: {
+            role: 'Test',
+            policy: 'everyone',
+          },
+          roles: { Manager: {}, Test: {} },
+        },
+      },
     });
     member = await OrganizationMember.create({
       OrganizationId: organization.id,
@@ -47,6 +55,11 @@ describe('createAppSamlSecret', () => {
 
   it('should generate SAML parameters', async () => {
     authorizeStudio();
+    await getDB().query('UPDATE "App" SET "updated" = :updated WHERE "id" = :appId', {
+      replacements: { appId: app.id, updated: new Date(-1000) },
+    });
+    await app.reload();
+    const previousUpdated = app.updated;
     const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
@@ -73,6 +86,8 @@ describe('createAppSamlSecret', () => {
       }
     `,
     );
+    await app.reload();
+    expect(app.updated.getTime()).toBeGreaterThan(previousUpdated.getTime());
   });
 
   it('should not throw status 404 for unknown apps', async () => {
@@ -92,6 +107,51 @@ describe('createAppSamlSecret', () => {
         "error": "Not Found",
         "message": "App not found",
         "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should normalize role mappings when creating a SAML secret', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      groupAttribute: 'memberOf',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+      roleMappings: [
+        { group: ' /Managers ', role: 'Manager' },
+        { group: '/Managers', role: 'Manager' },
+      ],
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.data).toMatchObject({
+      groupAttribute: 'memberOf',
+      roleMappings: [{ group: '/Managers', role: 'Manager' }],
+    });
+  });
+
+  it('should require a group attribute when SAML role mappings are configured', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+      roleMappings: [{ group: '/Managers', role: 'Manager' }],
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Group attribute is required when role mappings are configured",
+        "statusCode": 400,
       }
     `);
   });

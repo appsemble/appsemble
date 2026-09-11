@@ -4,12 +4,12 @@
   "fixErrors": "Ret venligst følgende fejl:",
   "formRequirementError": "Et af kravene i denne formular er ugyldigt.",
   "invalidLabel": "Denne værdi er ugyldig",
-  "longSubmissionWarning": "Formularen er stadig ved at blive indsendt, vent venligst.",
-  "optionalLabel": "(Valgfri)",
-  "previousLabel": "Foregående",
-  "selectionNoOptions": "Ikke flere tilgængelige muligheder",
-  "selectionOptionsError": "Der opstod en fejl ved indlæsning af indstillingerne",
-  "submitError": "Der opstod et problem med at indsende denne formular",
-  "submitLabel": "Indsend",
-  "search": "Suchen"
+  "longSubmissionWarning": "Formularen sendes stadig, vent venligst.",
+  "optionalLabel": "(Valgfrit)",
+  "previousLabel": "Forrige",
+  "search": "Søg",
+  "selectionNoOptions": "Der er ikke flere tilgængelige muligheder",
+  "selectionOptionsError": "Der opstod en fejl under indlæsning af indstillingerne",
+  "submitError": "Der opstod et problem ved indsendelse af denne formular",
+  "submitLabel": "Indsend"
 }

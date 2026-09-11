@@ -3,8 +3,10 @@ import { createRoot } from 'react-dom/client';
 
 import { App } from './components/App/index.js';
 import './index.css';
+import { polyfillStorage } from './utils/polyfillStorage.js';
 import { sentryDsn, sentryEnvironment } from './utils/settings.js';
 
+polyfillStorage();
 setupSentry(sentryDsn, sentryEnvironment);
 
 // WebPack does not allow it

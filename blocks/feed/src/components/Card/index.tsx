@@ -111,7 +111,12 @@ export function Card({ content, onUpdate }: CardProps): VNode {
           // Scroll to the bottom of the reply container
           replyContainer.current.scrollTop = replyContainer.current.scrollHeight;
         }
-      } catch {
+      } catch (error) {
+        // The block was unmounted mid-submit, e.g. by switching tabs. The reply was cancelled, not
+        // failed, so there is nothing to report.
+        if (utils.isActionOwnerAbortError(error)) {
+          return;
+        }
         utils.showMessage(utils.formatMessage('replyErrorMessage'));
       }
     },

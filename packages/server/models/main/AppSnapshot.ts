@@ -6,6 +6,7 @@ import {
   CreatedAt,
   DataType,
   ForeignKey,
+  HasOne,
   Index,
   Model,
   PrimaryKey,
@@ -13,6 +14,7 @@ import {
 } from 'sequelize-typescript';
 
 import { App, User } from '../index.js';
+import { AppBuildSnapshot } from './AppBuildSnapshot.js';
 
 @Table({ tableName: 'AppSnapshot', updatedAt: false })
 export class AppSnapshot extends Model {
@@ -48,4 +50,7 @@ export class AppSnapshot extends Model {
 
   @BelongsTo(() => User)
   declare User?: Awaited<User>;
+
+  @HasOne(() => AppBuildSnapshot, { onDelete: 'CASCADE' })
+  declare AppBuildSnapshot?: AppBuildSnapshot;
 }

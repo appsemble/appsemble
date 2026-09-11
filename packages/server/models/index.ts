@@ -7,6 +7,10 @@ import {
   createAppBlockStyleModel,
 } from './apps/AppBlockStyle.js';
 import { type AppInviteGlobal as AppInvite, createAppInviteModel } from './apps/AppInvite.js';
+import {
+  type AppMemberAssignedRoleGlobal as AppMemberAssignedRole,
+  createAppMemberAssignedRoleModel,
+} from './apps/AppMemberAssignedRole.js';
 import { type AppMemberGlobal as AppMember, createAppMemberModel } from './apps/AppMember.js';
 import {
   type AppMemberEmailAuthorizationGlobal as AppMemberEmailAuthorization,
@@ -77,6 +81,7 @@ import {
   type SamlLoginRequestGlobal as SamlLoginRequest,
 } from './apps/SamlLoginRequest.js';
 import { App } from './main/App.js';
+import { AppBuildSnapshot } from './main/AppBuildSnapshot.js';
 import { AppCollection } from './main/AppCollection.js';
 import { AppCollectionApp } from './main/AppCollectionApp.js';
 import { AppEmailQuotaLog } from './main/AppEmailQuotaLog.js';
@@ -107,6 +112,8 @@ import { User } from './main/User.js';
 import { migrations } from '../migrations/apps/index.js';
 import { argv } from '../utils/argv.js';
 import { decrypt } from '../utils/crypto.js';
+import { dropAllTablesWithPartitions } from '../utils/dropAllTablesWithPartitions.js';
+import { addResourceCompositeForeignKeys } from '../utils/resourceForeignKeys.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError, logSQL } from '../utils/sqlUtils.js';
 
@@ -127,8 +134,10 @@ export interface InitDBParams {
 export {
   App,
   type AppMember,
+  type AppMemberAssignedRole,
   type AppServiceSecret,
   type AppBlockStyle,
+  AppBuildSnapshot,
   AppCollection,
   AppCollectionApp,
   AppEmailQuotaLog,
@@ -207,6 +216,7 @@ export function initDB({
       AppReadme,
       AppScreenshot,
       AppSnapshot,
+      AppBuildSnapshot,
       AppMessages,
       BlockAsset,
       BlockMessages,
@@ -286,6 +296,7 @@ export interface AppModels {
   AppMemberRefreshSession: Repository<AppMemberRefreshSession>;
   AppInvite: Repository<AppInvite>;
   AppMember: Repository<AppMember>;
+  AppMemberAssignedRole: Repository<AppMemberAssignedRole>;
   AppMemberEmailAuthorization: Repository<AppMemberEmailAuthorization>;
   AppOAuth2Authorization: Repository<AppOAuth2Authorization>;
   AppOAuth2Secret: Repository<AppOAuth2Secret>;
@@ -311,7 +322,95 @@ export interface AppDB extends AppModels {
   sequelize: Sequelize;
 }
 
-const appDBs: Record<number, AppDB | null> = {};
+/**
+ * Cache of app database instances, ordered from least to most recently used.
+ *
+ * Each entry holds a Sequelize instance with its own connection pool and model definitions, so
+ * the cache is bounded by `argv.appDbCacheLimit` to keep memory usage bounded.
+ */
+const appDBs = new Map<number, AppDB>();
+
+/**
+ * In-flight app database initializations, used to deduplicate concurrent `getAppDB()` calls.
+ */
+const pendingAppDBs = new Map<number, Promise<void>>();
+
+/**
+ * The teardown that is currently dropping and closing every cached app database, if any.
+ *
+ * While it is set, `getAppDB()` waits for it to finish before initializing anything, so no
+ * migration runs against an app database whose tables are being dropped.
+ */
+let activeTeardown: Promise<void> | undefined;
+
+/**
+ * Fire-and-forget work that queries app databases after a request has already responded, such as
+ * resource notification hooks. It is tracked so a teardown can wait for it to finish instead of
+ * dropping an app database's tables out from under an in-flight query.
+ */
+const backgroundTasks = new Set<Promise<unknown>>();
+
+/**
+ * Track a fire-and-forget promise so {@link dropAndCloseAllAppDBs} waits for it before dropping app
+ * database tables, and so its rejection is logged instead of becoming an unhandled rejection.
+ *
+ * @param task The background promise to track.
+ * @returns A settled-safe promise for the task; awaiting it never rejects.
+ */
+export function trackBackgroundTask(task: Promise<unknown>): Promise<void> {
+  const tracked = Promise.resolve(task)
+    .catch((error: unknown) => {
+      logger.error(error as Error);
+    })
+    .finally(() => {
+      backgroundTasks.delete(tracked);
+    }) as Promise<void>;
+  backgroundTasks.add(tracked);
+  return tracked;
+}
+
+/**
+ * Wait for all tracked background tasks to settle.
+ *
+ * A task may schedule further tasks (a hook triggering another hook), so this drains until quiescent
+ * rather than awaiting a single snapshot. It is bounded so a task that keeps scheduling work cannot
+ * hang teardown forever.
+ */
+async function settleBackgroundTasks(): Promise<void> {
+  for (let round = 0; backgroundTasks.size && round < 100; round += 1) {
+    await Promise.allSettled(backgroundTasks);
+  }
+}
+
+/**
+ * Interval in milliseconds between idle checks when lazily closing a displaced app database.
+ */
+const appDBCloseInterval = 10_000;
+
+/**
+ * Close a displaced app database once its connection pool is fully idle.
+ *
+ * Callers that still hold a reference from before a replacement or eviction keep a working
+ * instance while it drains: the close only happens at an idle check, so such callers get at least
+ * one full interval to finish their queries.
+ *
+ * @param appId The id of the app the displaced instance belongs to.
+ * @param sequelize The displaced Sequelize instance to close.
+ */
+function closeWhenIdle(appId: number, sequelize: Sequelize): void {
+  const { pool } = sequelize.connectionManager as unknown as {
+    pool?: { using: number; waiting: number };
+  };
+  const interval = setInterval(() => {
+    if (pool && (pool.using > 0 || pool.waiting > 0)) {
+      return;
+    }
+    clearInterval(interval);
+    logger.info(`Closing displaced app database for app ${appId}`);
+    sequelize.close().catch((error: Error) => logger.error(error));
+  }, appDBCloseInterval);
+  interval.unref();
+}
 
 export async function initAppDB(
   appId: number,
@@ -322,8 +421,14 @@ export async function initAppDB(
 ): Promise<void> {
   const mainDB = rootDB ?? getDB();
 
-  if (appDBs[appId] && !replace) {
+  if (appDBs.has(appId) && !replace) {
     throw new Error('initAppDB() was called multiple times within the same context.');
+  }
+
+  const replaced = appDBs.get(appId);
+  if (replaced) {
+    appDBs.delete(appId);
+    closeWhenIdle(appId, replaced.sequelize);
   }
 
   const app = (await mainDB.models.App.findOne({
@@ -359,7 +464,7 @@ export async function initAppDB(
     }
   }
 
-  let appDB;
+  let appDB!: Sequelize;
   try {
     appDB = new Sequelize({
       database: appDBName,
@@ -383,6 +488,7 @@ export async function initAppDB(
       AppMemberRefreshSession: createAppMemberRefreshSessionModel(appDB),
       AppInvite: createAppInviteModel(appDB),
       AppMember: createAppMemberModel(appDB),
+      AppMemberAssignedRole: createAppMemberAssignedRoleModel(appDB),
       AppMemberEmailAuthorization: createAppMemberEmailAuthorizationModel(appDB),
       Meta: createAppMetaModel(appDB),
       AppOAuth2Authorization: createAppOAuth2AuthorizationModel(appDB),
@@ -413,13 +519,34 @@ export async function initAppDB(
       }
     }
 
+    // Sequelize associations cannot express the composite foreign keys to the partitioned Resource
+    // table, so add them after a full model sync to match the schema the migrations produce.
+    // `afterBulkSync` runs once when every table exists, unlike `afterSync` which fires per model.
+    appDB.addHook('afterBulkSync', async () => {
+      await addResourceCompositeForeignKeys(appDB);
+    });
+
     await migrate(appDB, argv.migrateTo ?? 'next', migrations);
 
-    appDBs[appId] = {
+    appDBs.set(appId, {
       sequelize: appDB,
       ...models,
-    };
+    });
+
+    const cacheLimit = Math.max(argv.appDbCacheLimit, 1);
+    while (appDBs.size > cacheLimit) {
+      const [lruAppId, lruAppDB] = appDBs.entries().next().value!;
+      appDBs.delete(lruAppId);
+      logger.info(
+        `Evicting least recently used app database for app ${lruAppId} (cache size ${appDBs.size}, limit ${cacheLimit})`,
+      );
+      closeWhenIdle(lruAppId, lruAppDB.sequelize);
+    }
   } catch (error) {
+    // Close the instance so failed initializations do not leak Sequelize instances.
+    if (appDB) {
+      await appDB.close().catch((closeError: Error) => logger.error(closeError));
+    }
     handleDBError(error as Error);
   }
 }
@@ -431,34 +558,101 @@ export async function getAppDB(
   replace?: boolean,
   aesSecret?: string,
 ): Promise<AppDB> {
-  if (appDBs[appId] == null || replace === true) {
-    await initAppDB(appId, rootDB, transaction, replace, aesSecret);
+  // Never initialize an app database while a teardown is dropping tables. Waiting keeps
+  // initialization from running its migrations against a database whose tables are being dropped,
+  // and lets the fresh instance start from the cleared cache once teardown has finished.
+  while (activeTeardown) {
+    await activeTeardown;
   }
 
-  return appDBs[appId]!;
+  const cached = appDBs.get(appId);
+  if (cached && replace !== true) {
+    // Re-insert the entry so eviction targets the least recently used app database.
+    appDBs.delete(appId);
+    appDBs.set(appId, cached);
+    return cached;
+  }
+
+  let pending = pendingAppDBs.get(appId);
+  if (!pending || replace === true) {
+    // A replacement waits for the in-flight initialization to settle instead of racing it, so at
+    // most one initAppDB() runs per app at any time.
+    const previous: Promise<unknown> = pending ? Promise.allSettled([pending]) : Promise.resolve();
+    const tracked: Promise<void> = previous
+      .then(() => initAppDB(appId, rootDB, transaction, replace, aesSecret))
+      .finally(() => {
+        // Only delete the pending entry this initialization owns; a replacement may have set a
+        // newer one.
+        if (pendingAppDBs.get(appId) === tracked) {
+          pendingAppDBs.delete(appId);
+        }
+      });
+    pendingAppDBs.set(appId, tracked);
+    pending = tracked;
+  }
+  await pending;
+
+  const initialized = appDBs.get(appId);
+  if (initialized) {
+    return initialized;
+  }
+
+  // The entry was evicted again between initialization and this lookup; go through the cache once
+  // more so callers never receive undefined.
+  return getAppDB(appId, rootDB, transaction, undefined, aesSecret);
 }
 
 export async function closeAppDB(appId: number): Promise<void> {
-  const appDB = appDBs[appId];
+  const appDB = appDBs.get(appId);
 
   if (!appDB) {
     return;
   }
 
-  delete appDBs[appId];
+  appDBs.delete(appId);
   await appDB.sequelize.close();
 }
 
 export async function dropAndCloseAllAppDBs(): Promise<void> {
-  await Promise.all(
-    Object.entries(appDBs).map(async ([appId, appDB]) => {
-      const sequelize = appDB?.sequelize;
-      if (!sequelize) {
-        return;
-      }
-      await sequelize.getQueryInterface().dropAllTables();
-      await sequelize.close();
-      appDBs[Number(appId)] = null;
-    }),
-  );
+  // Serialize concurrent teardowns so each one drops and closes a consistent snapshot.
+  while (activeTeardown) {
+    await activeTeardown;
+  }
+
+  // Let fire-and-forget background work (resource hooks querying app databases) finish before
+  // dropping any tables, so a drop never races an in-flight query. This runs before `activeTeardown`
+  // is published so the background work's own getAppDB() calls are not blocked by this teardown.
+  await settleBackgroundTasks();
+
+  // Snapshotting the pending initializations and publishing the teardown both happen in this
+  // synchronous run, so a racing `getAppDB()` is either already in the snapshot below or observes
+  // `activeTeardown` and waits instead of initializing against the databases being dropped.
+  const teardown = (async () => {
+    await Promise.allSettled(pendingAppDBs.values());
+
+    // Detach every instance from the cache before dropping and closing it. Removing entries up
+    // front keeps the cache consistent even if a close is interrupted or a connection was already
+    // closed, so a single failed teardown cannot leave a closed instance behind that breaks every
+    // subsequent teardown.
+    const appDBsToClose = [...appDBs.values()];
+    appDBs.clear();
+
+    await Promise.all(
+      appDBsToClose.map(async ({ sequelize }) => {
+        try {
+          await dropAllTablesWithPartitions(sequelize);
+          await sequelize.close();
+        } catch (error) {
+          logger.error(error as Error);
+        }
+      }),
+    );
+  })();
+
+  activeTeardown = teardown;
+  try {
+    await teardown;
+  } finally {
+    activeTeardown = undefined;
+  }
 }

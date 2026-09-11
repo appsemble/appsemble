@@ -1,4 +1,4 @@
-{{- if .Values.ingress.enabled -}}
+{{- if .Values.cronjob.platform.enabled -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -6,11 +6,12 @@ metadata:
   labels:
     {{ include "appsemble.labels" . }}
 spec:
-  schedule: "0 * * * *" # Run every day at 12:00:00
+  schedule: "7 * * * *" # Run hourly at minute 7
   successfulJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
       template:
         metadata:
           annotations:

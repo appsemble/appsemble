@@ -66,7 +66,7 @@ it('should render the checkbox fields', async () => {
     />
   `);
   await userEvent.click(checkbox);
-  expect(onChange).toHaveBeenCalledOnce();
+  expect(onChange.mock.calls).toHaveLength(1);
 });
 
 it('should render a disabled checkbox', async () => {

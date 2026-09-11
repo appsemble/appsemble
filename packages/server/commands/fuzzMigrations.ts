@@ -6,6 +6,7 @@ import { databaseBuilder } from './builder/database.js';
 import { migrations as appMigrations } from '../migrations/apps/index.js';
 import { migrations } from '../migrations/main/index.js';
 import { getAppDB } from '../models/index.js';
+import { dropAllTablesWithPartitions } from '../utils/dropAllTablesWithPartitions.js';
 import { logDBDebugInstructions, migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 import { setupTestDatabase } from '../utils/test/testSchema.js';
@@ -27,7 +28,7 @@ export async function handler(): Promise<void> {
   }
 
   logger.info('dropping database');
-  await db.getQueryInterface().dropAllTables();
+  await dropAllTablesWithPartitions(db);
 
   try {
     for (let index = 0; index < 2; index += 1) {
@@ -51,7 +52,7 @@ export async function handler(): Promise<void> {
     const { sequelize: appDB } = await getAppDB(1);
 
     logger.info('dropping database');
-    await appDB.getQueryInterface().dropAllTables();
+    await dropAllTablesWithPartitions(appDB);
 
     try {
       for (let index = 0; index < 5; index += 1) {

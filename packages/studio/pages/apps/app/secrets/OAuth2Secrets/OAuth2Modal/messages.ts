@@ -94,6 +94,15 @@ export const messages = defineMessages({
     id: 'studio.pc+67A',
     defaultMessage: 'A <link>remapper</link> that is applied on the user info object',
   },
+  roleMappingsLabel: {
+    id: 'studio.Q9LqJX',
+    defaultMessage: 'Role mappings',
+  },
+  roleMappingsHelp: {
+    id: 'studio.u6ZJe+',
+    defaultMessage:
+      'Configure exact external-group to app-role mappings. When mappings are configured, users without a match cannot sign in.',
+  },
   badUrl: {
     id: 'studio.SHiPSp',
     defaultMessage: 'This must be a valid URL',

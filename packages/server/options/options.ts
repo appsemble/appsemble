@@ -13,6 +13,7 @@ import {
   deleteAppAsset,
   deleteAppResource,
   email,
+  getAllowedGroups,
   getApp,
   getAppAsset,
   getAppAssets,
@@ -46,6 +47,7 @@ import {
 } from './index.js';
 import { handleAction as handleActionImpl } from '../utils/action.js';
 import { actions } from '../utils/actions/index.js';
+import { appServingCache } from '../utils/serverCache.js';
 import { type App } from '../models/index.js';
 
 /**
@@ -71,6 +73,7 @@ const serverActions = Object.fromEntries(
 ) as Options['serverActions'];
 
 export const options: Options = {
+  appServingCache,
   checkUserOrganizationPermissions,
   checkAppMemberAppPermissions,
   checkAuthSubjectAppPermissions,
@@ -87,6 +90,7 @@ export const options: Options = {
   deleteAppAsset,
   deleteAppResource,
   email,
+  getAllowedGroups,
   getApp,
   getAppAsset,
   getAppBlockStyles,

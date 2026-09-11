@@ -2,12 +2,29 @@
 import crypto from 'node:crypto';
 
 import { type AppDefinition } from '@appsemble/lang-sdk';
+import {
+  errorMiddleware,
+  logger,
+  type AppServingCache,
+  type AppServingCacheResult,
+} from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
+import Koa from 'koa';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, AppMessages, BlockAsset, BlockVersion, Organization } from '../../models/index.js';
+import {
+  App,
+  AppBuildSnapshot,
+  AppMessages,
+  AppSnapshot,
+  BlockAsset,
+  BlockVersion,
+  Organization,
+} from '../../models/index.js';
+import { options } from '../../options/options.js';
+import { appRouter } from './index.js';
 import { setArgv } from '../../utils/argv.js';
-import { createServer } from '../../utils/createServer.js';
+import { appServingCache } from '../../utils/serverCache.js';
 
 let requestURL: URL;
 
@@ -21,11 +38,32 @@ function parseCsp(csp: string): Record<string, string[]> {
 }
 
 function parseSettingsScript(settings: string): {
+  blockManifests: { name: string; version: string; fileUrls?: Record<string, string> }[];
   definition: AppDefinition & Record<string, unknown>;
 } {
   return JSON.parse(settings.slice('<script>window.settings='.length, -'</script>'.length)) as {
+    blockManifests: { name: string; version: string; fileUrls?: Record<string, string> }[];
     definition: AppDefinition & Record<string, unknown>;
   };
+}
+
+function createTestCache(): AppServingCache & { keys: () => IterableIterator<string> } {
+  const store = new Map<string, unknown>();
+
+  return {
+    get: vi.fn(<T>(key: string): Promise<AppServingCacheResult<T>> =>
+      Promise.resolve(
+        store.has(key)
+          ? { status: 'hit' as const, value: store.get(key) as T }
+          : { status: 'miss' as const },
+      ),
+    ),
+    keys: store.keys.bind(store),
+    set: vi.fn((key: string, value: unknown) => {
+      store.set(key, value);
+      return Promise.resolve('miss' as const);
+    }),
+  } as AppServingCache & { keys: () => IterableIterator<string> };
 }
 
 describe('indexHandler', () => {
@@ -51,112 +89,116 @@ describe('indexHandler', () => {
       { name: 'b', OrganizationId: 'appsemble', version: '0.1.0' },
       { name: 'b', OrganizationId: 'appsemble', version: '0.1.2' },
     ]);
-    await BlockAsset.bulkCreate([
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a00.id,
-        filename: 'a0.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a00.id,
-        filename: 'a0.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a01.id,
-        filename: 'a1.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: a01.id,
-        filename: 'a1.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b00.id,
-        filename: 'b0.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b00.id,
-        filename: 'b0.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b02.id,
-        filename: 'b2.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'test',
-        BlockVersionId: b02.id,
-        filename: 'b2.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a10.id,
-        filename: 'a0.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a10.id,
-        filename: 'a0.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a11.id,
-        filename: 'a1.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: a11.id,
-        filename: 'a1.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b10.id,
-        filename: 'b0.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b10.id,
-        filename: 'b0.css',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b12.id,
-        filename: 'b2.js',
-        content: Buffer.from(''),
-      },
-      {
-        OrganizationId: 'appsemble',
-        BlockVersionId: b12.id,
-        filename: 'b2.css',
-        content: Buffer.from(''),
-      },
-    ]);
+    await BlockAsset.bulkCreate(
+      [
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a00.id,
+          filename: 'a0.js',
+          storageKey: 'test/a/0.0.0/hash/a0.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a00.id,
+          filename: 'a0.css',
+          storageKey: 'test/a/0.0.0/hash/a0.css',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a01.id,
+          filename: 'a1.js',
+          storageKey: 'test/a/0.0.1/hash/a1.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: a01.id,
+          filename: 'a1.css',
+          storageKey: 'test/a/0.0.1/hash/a1.css',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b00.id,
+          filename: 'b0.js',
+          storageKey: 'test/b/0.0.0/hash/b0.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b00.id,
+          filename: 'b0.css',
+          storageKey: 'test/b/0.0.0/hash/b0.css',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b02.id,
+          filename: 'b2.js',
+          storageKey: 'test/b/0.0.2/hash/b2.js',
+        },
+        {
+          OrganizationId: 'test',
+          BlockVersionId: b02.id,
+          filename: 'b2.css',
+          storageKey: 'test/b/0.0.2/hash/b2.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a10.id,
+          filename: 'a0.js',
+          storageKey: 'appsemble/a/0.1.0/hash/a0.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a10.id,
+          filename: 'a0.css',
+          storageKey: 'appsemble/a/0.1.0/hash/a0.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a11.id,
+          filename: 'a1.js',
+          storageKey: 'appsemble/a/0.1.1/hash/a1.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: a11.id,
+          filename: 'a1.css',
+          storageKey: 'appsemble/a/0.1.1/hash/a1.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b10.id,
+          filename: 'b0.js',
+          storageKey: 'appsemble/b/0.1.0/hash/b0.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b10.id,
+          filename: 'b0.css',
+          storageKey: 'appsemble/b/0.1.0/hash/b0.css',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b12.id,
+          filename: 'b2.js',
+          storageKey: 'appsemble/b/0.1.2/hash/b2.js',
+        },
+        {
+          OrganizationId: 'appsemble',
+          BlockVersionId: b12.id,
+          filename: 'b2.css',
+          storageKey: 'appsemble/b/0.1.2/hash/b2.css',
+        },
+      ].map((asset) => ({ ...asset, content: Buffer.alloc(0) })),
+    );
     setArgv({ host: 'http://host.example', secret: 'test' });
-    const server = await createServer({
-      middleware(ctx, next) {
+    options.appServingCache = appServingCache;
+    const server = new Koa()
+      .use((ctx, next) => {
         Object.defineProperty(ctx, 'URL', { get: () => requestURL });
         Object.defineProperty(ctx, 'hostname', { get: () => requestURL.hostname });
         return next();
-      },
-    });
+      })
+      .use(errorMiddleware())
+      .use(appRouter);
     await setTestApp(server);
   });
 
@@ -240,9 +282,11 @@ describe('indexHandler', () => {
     expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Content-Security-Policy: base-uri 'self'; connect-src * blob: data:; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-K6r4ZcCdlHM2RMHKUTdq24LZ1uJpbodSHflnSZwsRzg=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
+      Content-Security-Policy: base-uri 'self'; connect-src * blob: data:; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-zCYrniI+9/bTmzwyYtPfYOHkPht43kpSB8FKKbsGTl4=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
+      X-Appsemble-Messages-Cache: miss
+      X-Appsemble-Settings-Cache: miss
 
       {
         "data": {
@@ -367,12 +411,74 @@ describe('indexHandler', () => {
           ],
           "noIndex": true,
           "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-          "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.js","b2.css"]},{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.js","a1.css"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]}</script>",
+          "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]}</script>",
           "themeColor": "#ffffff",
         },
         "filename": "app/index.html",
       }
     `);
+  });
+
+  it('should cache app messages and settings for repeated app loads', async () => {
+    const cache = createTestCache();
+    options.appServingCache = cache;
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/a', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'en',
+      messages: { app: { description: 'Test app' }, messageIds: {} },
+    });
+
+    const firstResponse = await request.get('/');
+    const secondResponse = await request.get('/');
+
+    expect(firstResponse.headers['x-appsemble-messages-cache']).toBe('miss');
+    expect(firstResponse.headers['x-appsemble-settings-cache']).toBe('miss');
+    expect(secondResponse.headers['x-appsemble-messages-cache']).toBe('hit');
+    expect(secondResponse.headers['x-appsemble-settings-cache']).toBe('hit');
+    secondResponse.data.data.nonce = firstResponse.data.data.nonce;
+    expect(secondResponse.data).toStrictEqual(firstResponse.data);
+  });
+
+  it('should miss the settings cache when the latest snapshot changes', async () => {
+    const cache = createTestCache();
+    options.appServingCache = cache;
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/a', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'en',
+      messages: { app: { description: 'Test app' }, messageIds: {} },
+    });
+
+    await request.get('/');
+    await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\npages: []\n' });
+    const response = await request.get('/');
+
+    expect(response.headers['x-appsemble-messages-cache']).toBe('hit');
+    expect(response.headers['x-appsemble-settings-cache']).toBe('miss');
+    expect([...cache.keys()].filter((key) => key.startsWith('app-settings:'))).toHaveLength(2);
   });
 
   it('should omit security permission mappings from bootstrapped settings if showAppDefinition is false', async () => {
@@ -500,6 +606,10 @@ describe('indexHandler', () => {
         defaultLanguage: 'nl',
         defaultPage: 'Home',
         layout: {
+          breakpoints: {
+            desktop: 1024,
+            tablet: 640,
+          },
           login: 'navbar',
           settings: 'navigation',
           feedback: 'navigation',
@@ -507,6 +617,14 @@ describe('indexHandler', () => {
           debug: 'navigation',
           enabledSettings: ['name', 'email', 'phoneNumber'],
           navigation: 'left-menu',
+          navbar: {
+            desktop: {
+              layout: {
+                columns: 3,
+                template: ['logo logo logo', 'name navigation controls'],
+              },
+            },
+          },
           logo: {
             position: 'navbar',
             asset: 'logo',
@@ -601,6 +719,10 @@ describe('indexHandler', () => {
       defaultLanguage: 'nl',
       defaultPage: 'Home',
       layout: {
+        breakpoints: {
+          desktop: 1024,
+          tablet: 640,
+        },
         debug: 'navigation',
         enabledSettings: ['name', 'email', 'phoneNumber'],
         feedback: 'navigation',
@@ -616,6 +738,14 @@ describe('indexHandler', () => {
           asset: 'logo',
         },
         navigation: 'left-menu',
+        navbar: {
+          desktop: {
+            layout: {
+              columns: 3,
+              template: ['logo logo logo', 'name navigation controls'],
+            },
+          },
+        },
         settings: 'navigation',
         titleBarText: 'appName',
       },
@@ -724,6 +854,8 @@ describe('indexHandler', () => {
       Content-Security-Policy: base-uri 'self'; connect-src * blob: data: https://clarity.ms https://www.clarity.ms; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example https://clarity.ms https://www.clarity.ms; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clarity.ms https://scripts.clarity.ms https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
+      X-Appsemble-Messages-Cache: miss
+      X-Appsemble-Settings-Cache: miss
 
       {
         "data": {
@@ -848,7 +980,7 @@ describe('indexHandler', () => {
           ],
           "noIndex": true,
           "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-          "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.js","b2.css"]},{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.js","a1.css"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]};(function(c,l,a,r,i,t,y){
+          "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]};(function(c,l,a,r,i,t,y){
           c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
           t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
           y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
@@ -860,7 +992,46 @@ describe('indexHandler', () => {
     `);
   });
 
+  it('should include public block asset file URLs in settings when blockAssetsBaseUrl is set', async () => {
+    setArgv({
+      blockAssetsBaseUrl: 'https://static.appsemble.example/minio',
+      host: 'http://host.example',
+      secret: 'test',
+    });
+    await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/a', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const response = await request.get('/');
+    const settings = parseSettingsScript(response.data.data.settings);
+    const manifest = settings.blockManifests.find(
+      ({ name, version }) => name === '@test/a' && version === '0.0.0',
+    );
+
+    expect(manifest?.fileUrls).toStrictEqual({
+      'a0.css':
+        'https://static.appsemble.example/minio/appsemble-block-assets/test/a/0.0.0/hash/a0.css',
+      'a0.js':
+        'https://static.appsemble.example/minio/appsemble-block-assets/test/a/0.0.0/hash/a0.js',
+    });
+  });
+
   it('should render a stricter published app CSP when contentSecurityPolicy is configured', async () => {
+    setArgv({
+      blockAssetsBaseUrl: 'https://static.appsemble.example/minio',
+      host: 'http://host.example',
+      secret: 'test',
+    });
     await App.create({
       OrganizationId: 'test',
       definition: {
@@ -896,15 +1067,38 @@ describe('indexHandler', () => {
     );
     expect(csp['connect-src']).not.toContain('*');
     expect(csp['font-src']).toStrictEqual(
-      expect.arrayContaining(["'self'", 'data:', 'https://fonts.gstatic.com']),
+      expect.arrayContaining([
+        "'self'",
+        'data:',
+        'https://fonts.gstatic.com',
+        'https://static.appsemble.example',
+      ]),
     );
     expect(csp['font-src']).not.toContain('*');
     expect(csp['img-src']).toStrictEqual(
-      expect.arrayContaining(["'self'", 'blob:', 'data:', 'http://host.example']),
+      expect.arrayContaining([
+        "'self'",
+        'blob:',
+        'data:',
+        'http://host.example',
+        'https://static.appsemble.example',
+      ]),
     );
     expect(csp['img-src']).not.toContain('*');
+    expect(csp['script-src']).toStrictEqual(
+      expect.arrayContaining(['https://static.appsemble.example']),
+    );
+    expect(csp['style-src']).toStrictEqual(
+      expect.arrayContaining(['https://static.appsemble.example']),
+    );
     expect(csp['media-src']).toStrictEqual(
-      expect.arrayContaining(["'self'", 'blob:', 'data:', 'http://host.example']),
+      expect.arrayContaining([
+        "'self'",
+        'blob:',
+        'data:',
+        'http://host.example',
+        'https://static.appsemble.example',
+      ]),
     );
     expect(csp['media-src']).not.toContain('*');
     expect(csp['object-src']).toStrictEqual(["'none'"]);
@@ -1046,5 +1240,293 @@ describe('indexHandler', () => {
       },
       filename: 'app/index.html',
     });
+  });
+
+  it('should use the snapshot manifest for settings', async () => {
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/a', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const snapshot = await AppSnapshot.create({
+      AppId: app.id,
+      yaml: 'name: Test App\ndefaultPage: Test Page\npages: []\n',
+    });
+    await AppBuildSnapshot.create({
+      AppSnapshotId: snapshot.id,
+      buildManifestJson: {
+        version: 1,
+        blockManifests: [
+          {
+            actions: null,
+            events: null,
+            files: ['a0.css', 'a0.js'],
+            layout: null,
+            name: '@test/a',
+            version: '0.0.0',
+          },
+        ],
+      },
+    });
+
+    await BlockAsset.destroy({ where: {} });
+    await BlockVersion.destroy({ where: {} });
+
+    requestURL = new URL('http://app.test.host.example/en/test-page');
+
+    const response = await request.get('/en/test-page');
+
+    expect(response.data).toMatchObject({
+      filename: 'app/index.html',
+    });
+    expect(response.data.data.settings).toContain('"blockManifests":[');
+    expect(response.data.data.settings).toContain('"name":"@test/a"');
+    expect(response.data.data.settings).toContain('"files":["a0.css","a0.js"]');
+  });
+
+  it('should lazily create a build manifest when the latest snapshot has no build manifest', async () => {
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/a', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const snapshot = await AppSnapshot.create({
+      AppId: app.id,
+      yaml: `
+        name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: '@test/a'
+                version: 0.0.0
+      `,
+    });
+
+    requestURL = new URL('http://app.test.host.example/en/test-page');
+
+    const response = await request.get('/en/test-page');
+
+    expect(response.data).toMatchObject({
+      filename: 'app/index.html',
+    });
+    expect(response.data.data.settings).toContain('"blockManifests":[');
+    expect(response.data.data.settings).toContain('"name":"@test/a"');
+    expect(response.data.data.settings).toContain('"files":["a0.css","a0.js"]');
+
+    expect(await AppBuildSnapshot.findByPk(snapshot.id)).toStrictEqual(
+      expect.objectContaining({
+        AppSnapshotId: snapshot.id,
+        buildManifestJson: {
+          version: 1,
+          blockManifests: [
+            {
+              actions: null,
+              events: null,
+              files: ['a0.css', 'a0.js'],
+              layout: null,
+              name: '@test/a',
+              version: '0.0.0',
+            },
+          ],
+        },
+      }),
+    );
+
+    await request.get('/en/test-page');
+
+    expect(await AppBuildSnapshot.count({ where: { AppSnapshotId: snapshot.id } })).toBe(1);
+  });
+
+  it('should lazily prune older build manifests after creating the latest build manifest', async () => {
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/a', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const oldSnapshot = await AppSnapshot.create({
+      AppId: app.id,
+      yaml: 'name: Old App\npages: []\n',
+    });
+    await AppBuildSnapshot.create({
+      AppSnapshotId: oldSnapshot.id,
+      buildManifestJson: { version: 1, blockManifests: [] },
+    });
+    const latestSnapshot = await AppSnapshot.create({
+      AppId: app.id,
+      yaml: `
+        name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: '@test/a'
+                version: 0.0.0
+      `,
+    });
+
+    requestURL = new URL('http://app.test.host.example/en/test-page');
+
+    const response = await request.get('/en/test-page');
+
+    expect(response.data).toMatchObject({
+      filename: 'app/index.html',
+    });
+    expect(await AppSnapshot.count({ where: { AppId: app.id } })).toBe(2);
+    expect(await AppBuildSnapshot.findAll({ order: [['AppSnapshotId', 'ASC']] })).toStrictEqual([
+      expect.objectContaining({
+        AppSnapshotId: latestSnapshot.id,
+      }),
+    ]);
+  });
+
+  it('should fall back without writing a build manifest when block metadata is incomplete', async () => {
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/missing', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const snapshot = await AppSnapshot.create({
+      AppId: app.id,
+      yaml: `
+        name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: '@test/missing'
+                version: 0.0.0
+      `,
+    });
+
+    requestURL = new URL('http://app.test.host.example/en/test-page');
+
+    const response = await request.get('/en/test-page');
+
+    expect(response.data).toMatchObject({
+      filename: 'app/index.html',
+    });
+    expect(response.data.data.settings).toContain('"blockManifests":[]');
+    expect(await AppBuildSnapshot.findByPk(snapshot.id)).toBeNull();
+  });
+
+  it('should fall back without writing a build manifest when the latest snapshot yaml is invalid', async () => {
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/a', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const snapshot = await AppSnapshot.create({
+      AppId: app.id,
+      yaml: 'name: Test App\npages:\n  - name: Test Page\n    blocks: [',
+    });
+
+    requestURL = new URL('http://app.test.host.example/en/test-page');
+
+    const response = await request.get('/en/test-page');
+
+    expect(response.data).toMatchObject({
+      filename: 'app/index.html',
+    });
+    expect(response.data.data.settings).toContain('"blockManifests":[');
+    expect(response.data.data.settings).toContain('"name":"@test/a"');
+    expect(await AppBuildSnapshot.findByPk(snapshot.id)).toBeNull();
+  });
+
+  it('should keep the derived build manifest when persisting it fails', async () => {
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page', blocks: [{ type: '@test/missing', version: '0.0.0' }] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const snapshot = await AppSnapshot.create({
+      AppId: app.id,
+      yaml: `
+        name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: '@test/a'
+                version: 0.0.0
+      `,
+    });
+    const persistenceError = new Error('persist failed');
+    const findOrCreateSpy = vi
+      .spyOn(AppBuildSnapshot, 'findOrCreate')
+      .mockRejectedValue(persistenceError);
+    const loggerWarnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => logger);
+    const loggerErrorSpy = vi.spyOn(logger, 'error').mockImplementation(() => logger);
+
+    requestURL = new URL('http://app.test.host.example/en/test-page');
+
+    const response = await request.get('/en/test-page');
+
+    expect(response.data).toMatchObject({
+      filename: 'app/index.html',
+    });
+    expect(response.data.data.settings).toContain('"blockManifests":[');
+    expect(response.data.data.settings).toContain('"name":"@test/a"');
+    expect(response.data.data.settings).not.toContain('"blockManifests":[]');
+    expect(findOrCreateSpy.mock.calls).toHaveLength(1);
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      `Failed to persist a build manifest for app snapshot ${snapshot.id}.`,
+    );
+    expect(loggerErrorSpy).toHaveBeenCalledWith(persistenceError);
+    expect(await AppBuildSnapshot.findByPk(snapshot.id)).toBeNull();
   });
 });

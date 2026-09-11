@@ -1,16 +1,16 @@
 {
   "app": {
     "app.roles.User": "Pengguna",
-    "app.roles.User.description": "Seorang pengguna yang menyimpan catatannya sendiri.",
+    "app.roles.User.description": "Seorang pengguna yang menyimpan catatan sendiri.",
     "description": "Simpan catatan pribadi",
     "name": "Catatan",
     "pages.notes": "Catatan"
   },
   "messageIds": {
-    "body": "Badan",
+    "body": "Isi",
     "cancel": "Batal",
     "configDelete": "Hapus",
-    "confirmDelete": "Anda yakin ingin menghapus catatan berikut?",
+    "confirmDelete": "Apakah Anda yakin ingin menghapus catatan berikut ini?",
     "title": "Judul"
   }
 }

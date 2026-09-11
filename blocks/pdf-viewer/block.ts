@@ -30,5 +30,10 @@ declare module '@appsemble/sdk' {
      * Width of the container in which PDF is displayed
      */
     width?: number | string;
+
+    /**
+     * URL or asset ID of the file to display, use this if you want to load an asset
+     */
+    url?: Remapper;
   }
 }

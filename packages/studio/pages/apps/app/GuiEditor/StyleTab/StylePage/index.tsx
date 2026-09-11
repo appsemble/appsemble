@@ -39,7 +39,7 @@ const borderTypes = [
 const loginOptions = ['navbar', 'navigation', 'hidden'] as const;
 const settingsOptions = ['navbar', 'navigation', 'hidden'] as const;
 const feedBackOptions = ['navigation', 'navbar', 'hidden'] as const;
-const navigationOptions = ['left-menu', 'bottom', 'hidden'] as const;
+const navigationOptions = ['left-menu', 'bottom', 'hidden', 'top'] as const;
 
 export function StylePage({
   changeIn,

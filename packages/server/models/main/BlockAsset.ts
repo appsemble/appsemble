@@ -32,6 +32,12 @@ export class BlockAsset extends Model {
   @Column(DataType.BLOB)
   declare content: Buffer;
 
+  @Column(DataType.TEXT)
+  declare storageKey?: string;
+
+  @Column(DataType.INTEGER)
+  declare size?: number;
+
   @AllowNull(false)
   @Column(DataType.STRING)
   @Index({ name: 'blockAssetFilenameIndex' })

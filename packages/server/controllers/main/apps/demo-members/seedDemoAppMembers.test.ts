@@ -45,6 +45,7 @@ describe('seedDemoAppMembers', () => {
           },
           roles: {
             Reader: {},
+            Admin: {},
           },
         },
       },
@@ -60,8 +61,7 @@ describe('seedDemoAppMembers', () => {
     await authorizeClientCredentials('apps:write');
     const response = await request.post('/api/apps/2/demo-members', [
       {
-        email: 'test@example.com',
-        role: 'Reader',
+        roles: ['Reader'],
         name: 'Example Reader',
         timezone: 'Europe/Amsterdam',
       },
@@ -82,8 +82,7 @@ describe('seedDemoAppMembers', () => {
     authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/demo-members`, [
       {
-        email: 'test@example.com',
-        role: 'Reader',
+        roles: ['Reader'],
         name: 'Example Reader',
         timezone: 'Europe/Amsterdam',
       },
@@ -111,8 +110,7 @@ describe('seedDemoAppMembers', () => {
     await authorizeClientCredentials('apps:write', user);
     const response = await request.post(`/api/apps/${app.id}/demo-members`, [
       {
-        email: 'test@example.com',
-        role: 'Reader',
+        roles: ['Reader'],
         name: 'Example Reader',
         timezone: 'Europe/Amsterdam',
       },
@@ -134,8 +132,7 @@ describe('seedDemoAppMembers', () => {
     await authorizeClientCredentials('apps:write');
     const response = await request.post(`/api/apps/${app.id}/demo-members`, [
       {
-        email: 'test@example.com',
-        role: 'Reader',
+        roles: ['Reader'],
         name: 'Example Reader',
         timezone: 'Europe/Amsterdam',
       },
@@ -156,30 +153,30 @@ describe('seedDemoAppMembers', () => {
     await authorizeClientCredentials('apps:write');
     const response = await request.post(`/api/apps/${app.id}/demo-members`, [
       {
-        email: 'test@example.com',
-        role: 'Reader',
+        roles: ['Admin', 'Reader'],
         name: 'Example Reader',
         timezone: 'Europe/Amsterdam',
       },
       {
-        email: 'test2@example.com',
-        role: 'Reader',
+        roles: ['Reader'],
         name: 'Example Reader 2',
         timezone: 'Europe/Amsterdam',
       },
       {
-        email: 'test3@example.com',
-        role: 'Reader',
+        roles: ['Reader'],
         name: 'Example Reader 3',
         timezone: 'Europe/Amsterdam',
       },
       {
-        email: 'test4@example.com',
-        role: 'Reader',
+        roles: ['Reader'],
         name: 'Example Reader 4',
         timezone: 'Europe/Amsterdam',
       },
     ]);
     expect(response.status).toBe(200);
+    expect(response.data[0]).toMatchObject({
+      demo: true,
+      roles: ['Admin', 'Reader'],
+    });
   });
 });

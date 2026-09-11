@@ -83,7 +83,8 @@ export function createApiServer({ context }: CreateServerOptions): Koa {
           ctx.path.startsWith('/api') ||
           ctx.path === '/auth/oauth2/token' ||
           /\/apps\/\d+\/auth\/oauth2\/token/.test(ctx.path),
-        cors(),
+        // Reflect the origin instead of '*', so credentialed app requests pass CORS.
+        cors({ origin: (ctx) => ctx.get('Origin') || '*', credentials: true }),
       ),
       koas(api(version, argv), [
         parameters(),

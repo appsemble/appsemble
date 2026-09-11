@@ -633,9 +633,9 @@ export interface AppMemberInviteAction extends BaseActionDefinition<'app.member.
   email: Remapper;
 
   /**
-   * The role to invite the app member with.
+   * The roles to invite the app member with.
    */
-  role: Remapper;
+  roles: Remapper;
 }
 
 export interface AppMemberQueryAction extends BaseActionDefinition<'app.member.query'> {
@@ -658,9 +658,16 @@ export interface AppMemberRoleUpdateAction extends BaseActionDefinition<'app.mem
   sub: Remapper;
 
   /**
-   * The role of the updated app member
+   * The roles of the updated app member.
    */
-  role: Remapper;
+  roles?: Remapper;
+
+  /**
+   * The role of the updated app member.
+   *
+   * @deprecated Use `roles` instead.
+   */
+  role?: Remapper;
 }
 
 export interface AppMemberPropertiesPatchAction extends BaseActionDefinition<'app.member.properties.patch'> {
@@ -712,10 +719,7 @@ export interface AppMemberDeleteAction extends BaseActionDefinition<'app.member.
 
 interface RequestActionHeaders {
   'Content-Type':
-    | 'application/x-www-form-urlencoded'
-    | 'application/xml'
-    | 'multipart/form-data'
-    | 'text/plain';
+    'application/x-www-form-urlencoded' | 'application/xml' | 'multipart/form-data' | 'text/plain';
 }
 
 export interface RequestLikeActionDefinition<
@@ -768,6 +772,14 @@ export interface ResourceActionDefinition<
    * The name of the resource.
    */
   resource: string;
+
+  /**
+   * The ID of the group to scope the request to.
+   *
+   * Defaults to the `selectedGroupId` input property, or the app member's currently selected
+   * group when the property is not present.
+   */
+  selectedGroupId?: Remapper;
 }
 
 interface ViewResourceDefinition {
@@ -791,6 +803,27 @@ interface ResourceActionWithIdDefinition {
   id?: Remapper;
 }
 
+interface ResourceOrderQueryDefinition {
+  /**
+   * Whether the resources loaded are in descending order.
+   */
+  order?: 'asc' | 'desc';
+}
+
+interface OptimisticResourceWriteActionDefinition {
+  /**
+   * Fetch the latest resource before writing, merge its `$etag` into the request data so the
+   * implicit `If-Match` precondition holds, and retry on precondition conflicts. The fetched
+   * resource is also exposed to remappers as `{ context: resource }`.
+   */
+  optimistic?: {
+    /**
+     * The number of precondition conflicts to retry after fetching the latest resource again.
+     */
+    retries?: number;
+  };
+}
+
 export interface ControllerActionDefinition extends BaseActionDefinition<'controller'> {
   handler: string;
 }
@@ -809,16 +842,20 @@ export type ResourceQueryActionDefinition = OwnResourceDefinition &
   ViewResourceDefinition;
 export type ResourceCountActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.count'>;
-export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
+export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'> &
+  OptimisticResourceWriteActionDefinition;
 export type ResourceUpdateGroupActionDefinition =
   ResourceActionDefinition<'resource.update.group'> &
     ResourceActionWithIdDefinition & {
       groupId?: Remapper;
     };
 export type ResourceUpdatePositionsActionDefinition =
-  ResourceActionDefinition<'resource.update.positions'> & ResourceActionWithIdDefinition;
+  ResourceActionDefinition<'resource.update.positions'> &
+    ResourceActionWithIdDefinition &
+    ResourceOrderQueryDefinition;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'> &
-  ResourceActionWithIdDefinition;
+  ResourceActionWithIdDefinition &
+  OptimisticResourceWriteActionDefinition;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
 
 export interface BaseResourceSubscribeActionDefinition<

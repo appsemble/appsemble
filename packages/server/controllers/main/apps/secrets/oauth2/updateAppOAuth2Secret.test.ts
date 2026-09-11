@@ -2,7 +2,13 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, getAppDB, Organization, OrganizationMember } from '../../../../../models/index.js';
+import {
+  App,
+  getAppDB,
+  getDB,
+  Organization,
+  OrganizationMember,
+} from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
@@ -68,6 +74,11 @@ describe('updateAppOAuth2Secret', () => {
       tokenUrl: 'https://example.com/oauth/token',
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
+    await getDB().query('UPDATE "App" SET "updated" = :updated WHERE "id" = :appId', {
+      replacements: { appId: app.id, updated: new Date(-1000) },
+    });
+    await app.reload();
+    const previousUpdated = app.updated;
     authorizeStudio();
     const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
       authorizationUrl: 'https://other.example/oauth/authorize',
@@ -92,6 +103,7 @@ describe('updateAppOAuth2Secret', () => {
         "id": 1,
         "name": "Updated Example",
         "remapper": null,
+        "roleMappings": null,
         "scope": "custom",
         "tokenUrl": "https://other.example/oauth/token",
         "updated": "1970-01-01T00:00:00.000Z",
@@ -99,6 +111,7 @@ describe('updateAppOAuth2Secret', () => {
       }
     `);
     await secret.reload();
+    await app.reload();
     expect(secret).toMatchObject({
       authorizationUrl: 'https://other.example/oauth/authorize',
       clientId: 'other_client_id',
@@ -109,6 +122,7 @@ describe('updateAppOAuth2Secret', () => {
       tokenUrl: 'https://other.example/oauth/token',
       userInfoUrl: 'https://other.example/oauth/userinfo',
     });
+    expect(app.updated.getTime()).toBeGreaterThan(previousUpdated.getTime());
   });
 
   it('should update AppOAuth2Secret.userInfoUrl to be null when undefined', async () => {
@@ -146,6 +160,7 @@ describe('updateAppOAuth2Secret', () => {
         "id": 1,
         "name": "Updated Example",
         "remapper": null,
+        "roleMappings": null,
         "scope": "custom",
         "tokenUrl": "https://other.example/oauth/token",
         "updated": "1970-01-01T00:00:00.000Z",
@@ -163,6 +178,38 @@ describe('updateAppOAuth2Secret', () => {
       tokenUrl: 'https://other.example/oauth/token',
       userInfoUrl: null,
     });
+  });
+
+  it('should clear OAuth2 role mappings when an empty list is submitted', async () => {
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    const secret = await AppOAuth2Secret.create({
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      roleMappings: [{ group: '/Test', role: 'Test' }],
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+      userInfoUrl: 'https://example.com/oauth/userinfo',
+    });
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+      authorizationUrl: 'https://other.example/oauth/authorize',
+      clientId: 'other_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'updated',
+      name: 'Updated Example',
+      roleMappings: [],
+      scope: 'custom',
+      tokenUrl: 'https://other.example/oauth/token',
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.roleMappings).toBeNull();
+
+    await secret.reload();
+    expect(secret.roleMappings).toBeNull();
   });
 
   it('should handle if the app id is invalid', async () => {

@@ -1,4 +1,4 @@
-import { ActionError } from '@appsemble/lang-sdk';
+import { type ActionError } from '@appsemble/lang-sdk';
 import { type IDBPDatabase } from 'idb';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -62,13 +62,11 @@ describe('storage.read', () => {
     } catch (error) {
       result = error as ActionError;
     }
-    expect(result).toStrictEqual(
-      new ActionError({
-        cause: 'Could not find data at this key.',
-        data: null,
-        definition: { type: 'storage.read', key: 'test', storage: 'localStorage' },
-      }),
-    );
+    expect(result).toMatchObject({
+      cause: { message: 'Could not find data at this key.' },
+      data: {},
+      definition: { type: 'storage.read', key: 'test', storage: 'localStorage' },
+    });
   });
 
   it('should return undefined for unknown keys in the store', async () => {
@@ -93,13 +91,11 @@ describe('storage.read', () => {
       result = error as ActionError;
     }
 
-    expect(result).toStrictEqual(
-      new ActionError({
-        cause: 'Could not find data at this key.',
-        data: null,
-        definition: { type: 'storage.read', key: { prop: 'key' }, storage: 'localStorage' },
-      }),
-    );
+    expect(result).toMatchObject({
+      cause: { message: 'Could not find data at this key.' },
+      data: { key: 'invalid key' },
+      definition: { type: 'storage.read', key: { prop: 'key' }, storage: 'localStorage' },
+    });
   });
 });
 

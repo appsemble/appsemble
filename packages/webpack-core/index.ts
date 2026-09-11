@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -10,7 +11,6 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeMdxCodeProps from 'rehype-mdx-code-props';
 import rehypeMdxImportMedia from 'rehype-mdx-import-media';
 import rehypeMdxTitle from 'rehype-mdx-title';
-import rehypeMermaid from 'rehype-mermaid';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
@@ -20,8 +20,20 @@ import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { type Configuration } from 'webpack';
 import { GenerateSW, InjectManifest } from 'workbox-webpack-plugin';
 
+import { rehypeMermaid } from './rehype/mermaid.js';
 import { rehypeSearchIndex } from './rehype/searchIndex.js';
 import { remarkRewriteLinks } from './remark/rewriteLinks.js';
+
+const require = createRequire(import.meta.url);
+
+const loaders = {
+  css: require.resolve('css-loader'),
+  mdx: require.resolve('@mdx-js/loader'),
+  postcss: require.resolve('postcss-loader'),
+  sass: require.resolve('sass-loader'),
+  svgo: require.resolve('svgo-loader'),
+  ts: require.resolve('ts-loader'),
+};
 
 interface CliConfigOptions {
   mode: 'development' | 'production';
@@ -127,7 +139,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           use: [
             MiniCssExtractPlugin.loader,
             {
-              loader: 'css-loader',
+              loader: loaders.css,
               options: {
                 importLoaders: 1,
                 modules: {
@@ -136,18 +148,22 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                 },
               },
             },
-            'postcss-loader',
+            loaders.postcss,
           ],
         },
         {
           test: /\.s[ac]ss/,
           use: [
             MiniCssExtractPlugin.loader,
-            { loader: 'css-loader', options: { importLoaders: 1 } },
+            { loader: loaders.css, options: { importLoaders: 1 } },
             {
-              loader: 'sass-loader',
+              loader: loaders.sass,
               options: {
                 sassOptions: {
+                  // Sass prepends a byte order mark to output containing non-ASCII characters.
+                  // Bundled after another stylesheet it lands mid-file, where it is parsed as part
+                  // of the next selector and invalidates that rule.
+                  charset: false,
                   logger: {
                     debug(message) {
                       logger.silly(message);
@@ -167,7 +183,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           test: /\.mdx?$/,
           use: [
             {
-              loader: '@mdx-js/loader',
+              loader: loaders.mdx,
               options: {
                 providerImportSource: '@mdx-js/react',
                 remarkPlugins: [
@@ -202,10 +218,20 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
         },
         {
           test: /\.tsx?$/,
-          loader: 'ts-loader',
+          loader: loaders.ts,
           options: {
             transpileOnly: true,
             configFile,
+            // In transpileOnly mode ts-loader compiles each file with ts.transpileModule, which
+            // cannot read package.json to detect the module format. Under the repo's `NodeNext`
+            // setting it then emits CommonJS `require()` calls, which webpack cannot tree-shake, so
+            // a single named import from a barrel package like @appsemble/utils drags in the whole
+            // dependency tree. Emitting ES modules keeps imports statically analysable and
+            // tree-shakable.
+            compilerOptions: {
+              module: 'esnext',
+              moduleResolution: 'bundler',
+            },
           },
         },
         {
@@ -214,7 +240,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
         },
         {
           test: /\.svg$/,
-          loader: 'svgo-loader',
+          loader: loaders.svgo,
         },
         {
           test: /\/esm\/.*\.js$/,

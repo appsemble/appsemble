@@ -36,7 +36,7 @@ export const description = 'Prepare files for a new release.';
 
 interface Args {
   increment: 'minor' | 'patch' | 'prerelease';
-  identifier: 'test';
+  identifier?: string;
 }
 
 interface Changes {
@@ -265,11 +265,17 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('identifier', {
       description: `The identifier to use for the pre-release version:
-        - test: Internal testing or testing with clients (e.g., test.3).`,
-      choices: ['test'],
+        - test: Internal testing or testing with clients (e.g., test.3).
+        - any other identifier: hotfix pre-releases (e.g., my-fix.0).`,
       default: undefined,
+      type: 'string',
     })
     .check((argv) => {
+      if (argv.identifier && !/^[\dA-Za-z-]+$/.test(argv.identifier)) {
+        throw new Error(
+          'The "identifier" must only contain letters, numbers, or hyphens to be valid semver pre-release metadata.',
+        );
+      }
       if (argv.increment === 'prerelease' && !argv.identifier) {
         throw new Error(
           'The "identifier" must be specified when incrementing the pre-release version.',
@@ -296,7 +302,9 @@ export function builder(yargs: Argv): Argv<any> {
 export async function handler({ identifier, increment }: Args): Promise<void> {
   const workspaces = await getWorkspaces(process.cwd());
   logger.info(`Old version: ${version}`);
-  const newVersion = semver.inc(version, increment, identifier);
+  const newVersion = identifier
+    ? semver.inc(version, increment, identifier)
+    : semver.inc(version, increment);
   if (newVersion == null) {
     throw new Error(`Invalid version increment: ${increment}, semver.inc returned ${newVersion}`);
   }

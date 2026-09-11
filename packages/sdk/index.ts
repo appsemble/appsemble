@@ -98,7 +98,15 @@ export interface EventListeners {}
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Parameters {}
 
-export type PageParameters = Record<string, string>;
+export interface PageParameters extends Record<
+  string,
+  string | Record<string, string> | undefined
+> {
+  /**
+   * Query parameters from the current URL.
+   */
+  query?: Record<string, string>;
+}
 
 /**
  * A menu item that can be displayed in addition to the normal app menu.
@@ -160,6 +168,18 @@ export interface Utils {
    * @returns Whether or not the input is an action error.
    */
   isActionError: (input: unknown) => input is ActionError;
+
+  /**
+   * Test if the input is an error caused by the action's owner being aborted.
+   *
+   * An action chain rejects with this when the block, page, or flow page that owns it is unmounted
+   * while the chain is in flight, e.g. by navigating away or switching tabs. It signals a
+   * cancellation, not a failure, so blocks should treat it as a benign stop rather than an error.
+   *
+   * @param input The input to test
+   * @returns Whether or not the input is an action owner abort error.
+   */
+  isActionOwnerAbortError: (input: unknown) => boolean;
 
   /**
    * Remap data based in a user defined remapper function.

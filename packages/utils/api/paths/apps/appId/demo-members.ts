@@ -40,13 +40,16 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             additionalProperties: false,
             items: {
               type: 'object',
-              required: ['name', 'role'],
+              required: ['name', 'roles'],
               properties: {
                 name: {
                   type: 'string',
                 },
-                role: {
-                  type: 'string',
+                roles: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
                 },
                 properties: {
                   type: 'object',

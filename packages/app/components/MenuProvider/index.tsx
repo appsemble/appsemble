@@ -15,8 +15,7 @@ import { FormattedMessage } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import { checkPagePermissions } from '../../utils/authorization.js';
-import { shouldShowMenu } from '../../utils/layout.js';
+import { getNavPages, shouldShowMenu } from '../../utils/layout.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -52,7 +51,7 @@ export function usePage(): MenuProviderContext {
 
 export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const { definition: appDefinition } = useAppDefinition();
-  const { appMemberRole, appMemberSelectedGroup } = useAppMember();
+  const { appMemberRoles, appMemberSelectedGroup } = useAppMember();
   const [page, setPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
   const { pathname } = useLocation();
@@ -77,23 +76,21 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
     [page],
   );
 
-  const pages = appDefinition.pages.filter(
-    (pageDefinition) =>
-      !pageDefinition.parameters &&
-      !pageDefinition.hideNavTitle &&
-      !(
-        pageDefinition.navigation === 'hidden' || pageDefinition.navigation === 'profileDropdown'
-      ) &&
-      checkPagePermissions(pageDefinition, appDefinition, appMemberRole, appMemberSelectedGroup),
-  );
+  const pages = getNavPages(appDefinition, appMemberRoles, appMemberSelectedGroup);
 
   let navigationElement: ReactNode;
-  const showMenu = shouldShowMenu(appDefinition, appMemberRole, appMemberSelectedGroup, pathname);
+  const showMenu = shouldShowMenu(appDefinition, appMemberRoles, appMemberSelectedGroup, pathname);
 
   if (showMenu) {
-    const navigation = page?.navigation || appDefinition.layout?.navigation;
+    // `profileDropdown` only lists a page under the profile dropdown; it does not describe the
+    // navigation layout. Fall back to the app navigation so such pages keep the app's menu instead
+    // of dropping it (which would leave the title bar's menu button without a provider).
+    const pageNavigation = page?.navigation === 'profileDropdown' ? undefined : page?.navigation;
+    const navigation = pageNavigation || appDefinition.layout?.navigation;
+    const effectiveNavigation =
+      navigation === 'top' && appDefinition.layout?.hideTitleBar ? 'left-menu' : navigation;
 
-    switch (navigation) {
+    switch (effectiveNavigation) {
       case 'bottom':
         navigationElement = (
           <>
@@ -102,8 +99,8 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
           </>
         );
         break;
+      case 'top':
       case 'hidden':
-      case 'profileDropdown':
         navigationElement = children;
         break;
       default:

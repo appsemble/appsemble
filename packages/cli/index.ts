@@ -34,6 +34,7 @@ import * as start from './commands/start.js';
 import * as synchronizeTrainings from './commands/synchronizeTrainings.js';
 import { coerceRemote } from './lib/coercers.js';
 import { initAxios } from './lib/initAxios.js';
+import { validateServerVersion } from './lib/validateServerVersion.js';
 
 process.title = 'appsemble';
 
@@ -61,7 +62,7 @@ let parser = yargs(process.argv.slice(2))
     description: `OAuth2 client credentials formatted as "client_id:client_secret". This may also be defined in the ${CREDENTIALS_ENV_VAR} environment variable.`,
   })
   // @ts-expect-error 2322 ... is not assignable to type (strictNullChecks)
-  .middleware([configureLogger, initAxios])
+  .middleware([configureLogger, initAxios, () => validateServerVersion()])
   .command(app)
   .command(asset)
   .command(block)

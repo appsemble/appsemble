@@ -78,7 +78,7 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
     await sequelize.transaction(async (transaction) => {
       member = await AppMember.create(
         {
-          role: defaultRole,
+          roles: [defaultRole],
           email: userName,
           name: formattedName,
           scimExternalId: externalId,

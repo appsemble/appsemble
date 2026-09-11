@@ -7,6 +7,19 @@ import { has } from '@appsemble/utils';
 import { addBreadcrumb } from '@sentry/browser';
 
 /**
+ * The events object passed to a block, extended with a `destroy` method for the app runtime.
+ */
+export interface DestroyableEvents extends Events {
+  /**
+   * Remove all listeners registered through this events object and disable it.
+   *
+   * After destruction `on` no longer registers listeners and `emit` no longer emits. This prevents
+   * unmounted blocks from receiving or emitting events on the shared page event emitter.
+   */
+  destroy: () => void;
+}
+
+/**
  * Create the events object that is passed to a block.
  *
  * @param ee The internal event emitter to use.
@@ -20,7 +33,7 @@ export function createEvents(
   ready: Promise<void>,
   manifest?: ProjectManifest['events'],
   definition?: BlockDefinition['events'],
-): Events {
+): DestroyableEvents {
   function createProxy<
     E extends keyof Events,
     M extends keyof NonNullable<ProjectManifest['events']>,
@@ -47,10 +60,30 @@ export function createEvents(
     );
   }
 
+  let destroyed = false;
+  const registered: {
+    callback: (...args: any[]) => void;
+    listener: (...args: any[]) => void;
+    name: string;
+  }[] = [];
+
+  function findRegisteredIndex(name: string, callback: (...args: any[]) => void): number {
+    for (let index = registered.length - 1; index >= 0; index -= 1) {
+      const registration = registered[index];
+      if (registration.name === name && registration.callback === callback) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
   const emit = createProxy<'emit', 'emit'>('emit', (implemented, key) =>
     implemented
       ? async (data, error) => {
           await ready;
+          if (destroyed) {
+            return false;
+          }
           const name = definition?.emit?.[key];
           // @ts-expect-error 2345 argument of type is not assignable to parameter of type
           // (strictNullChecks)
@@ -70,9 +103,19 @@ export function createEvents(
   const on = createProxy<'on', 'listen'>('listen', (implemented, key) =>
     implemented
       ? (callback) => {
+          if (destroyed) {
+            return false;
+          }
+          const name = definition?.listen?.[key];
+          const listener = (...args: any[]): void => {
+            (callback as (...listenerArgs: any[]) => void)(...args);
+          };
           // @ts-expect-error 2345 argument of type is not assignable to parameter of type
           // (strictNullChecks)
-          ee.on(definition.listen?.[key], callback);
+          ee.on(name, listener);
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+          // (strictNullChecks)
+          registered.push({ callback, listener, name });
           return true;
         }
       : () => false,
@@ -81,13 +124,24 @@ export function createEvents(
   const off = createProxy<'off', 'listen'>('listen', (implemented, key) =>
     implemented
       ? (callback) => {
-          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-          // (strictNullChecks)
-          ee.off(definition.listen?.[key], callback);
+          const name = definition?.listen?.[key];
+          const index = findRegisteredIndex(name!, callback);
+          if (index !== -1) {
+            const [registration] = registered.splice(index, 1);
+            ee.off(registration.name, registration.listener);
+          }
           return true;
         }
       : () => false,
   );
 
-  return { emit, on, off };
+  const destroy = (): void => {
+    destroyed = true;
+    for (const { listener, name } of registered) {
+      ee.off(name, listener);
+    }
+    registered.length = 0;
+  };
+
+  return { emit, on, off, destroy };
 }

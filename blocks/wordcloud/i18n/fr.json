@@ -1,6 +1,6 @@
 {
-  "empty": "Il n'y a pas de données à afficher",
-  "error": "Il y avait un problème de chargement des données.",
-  "loading": "Chargement …",
-  "unsupported": "Votre navigateur ne prend pas en charge le bloc wordcloud !"
+  "empty": "Il n'y a aucune donnée à afficher.",
+  "error": "Un problème est survenu lors du chargement des données.",
+  "loading": "Chargement en cours…",
+  "unsupported": "Votre navigateur ne prend pas en charge le bloc « wordcloud » !"
 }

@@ -37,14 +37,15 @@ have two pages with the same name. The name of the page is displayed at the *app
       default: false,
     },
     navigation: {
-      enum: ['bottom', 'left-menu', 'hidden', 'dropdown', 'profileDropdown'],
+      enum: ['bottom', 'left-menu', 'hidden', 'dropdown', 'profileDropdown', 'top'],
       description: `The type of navigation displayed on the page.
 
 This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
 App navigation are not set.
 
-Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to \`hidden\` to display no navigational menus at all.
+Set to \`bottom\` to use a navigation pane at the bottom of the screen. Set to \`top\` to render
+navigation in the title bar. When the title bar is hidden, top navigation is rendered as side
+navigation. Set to \`hidden\` to display no navigational menus at all.
 `,
     },
     icon: {
@@ -53,6 +54,25 @@ menu. Set to \`hidden\` to display no navigational menus at all.
 
 This will be displayed in the navigation menu.
 `,
+    },
+    parent: {
+      description: `The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+`,
+      anyOf: [
+        { $ref: '#/components/schemas/PageParentDefinition' },
+        {
+          type: 'array',
+          minItems: 1,
+          items: { $ref: '#/components/schemas/PageParentDefinition' },
+        },
+      ],
     },
     parameters: {
       type: 'array',

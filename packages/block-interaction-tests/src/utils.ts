@@ -64,6 +64,9 @@ export function getDefaultUtils(): BlockUtils {
     isActionError(input): input is ActionError {
       return input instanceof ActionError;
     },
+    isActionOwnerAbortError(input) {
+      return (input as Error | null)?.name === 'ActionOwnerAbortError';
+    },
     addCleanup() {
       return null;
     },

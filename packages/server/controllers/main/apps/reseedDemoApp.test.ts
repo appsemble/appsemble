@@ -738,4 +738,49 @@ describe('reseedDemoApp', () => {
 
     expect(oldEphemeralMembers).toStrictEqual([]);
   });
+
+  it('should keep reseeded resource assets linked to their resource', async () => {
+    vi.useRealTimers();
+    authorizeStudio();
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Asset, Resource } = await getAppDB(appId);
+    const { id: seedResourceId } = await Resource.create({
+      type: 'tasks',
+      seed: true,
+      data: { foo: 'bar' },
+    });
+
+    const { id: seedAssetId } = await Asset.create({
+      name: 'tasks',
+      seed: true,
+      ResourceId: seedResourceId,
+      ResourceType: 'tasks',
+    });
+    await uploadS3File(`app-${appId}`, seedAssetId, createFixtureStream('standing.png'));
+
+    await request.post(`/api/apps/${appId}/reseed`);
+
+    const newEphemeralAsset = (await Asset.findOne({
+      attributes: ['ResourceId', 'ResourceType', 'seed', 'ephemeral'],
+      where: {
+        ephemeral: true,
+      },
+    }))!;
+
+    expect(newEphemeralAsset).toStrictEqual(
+      expect.objectContaining({
+        ResourceId: seedResourceId,
+        ResourceType: 'tasks',
+        seed: false,
+        ephemeral: true,
+      }),
+    );
+  });
 });

@@ -1,12 +1,12 @@
 {
   "app": {
-    "description": "Demonstratie van app-controller",
-    "name": "Controleur",
+    "description": "Demonstratie van de app-controller",
+    "name": "Controller",
     "pages.example-page-a": "Voorbeeldpagina A"
   },
   "messageIds": {
-    "firstNumber": "Eerste Nummer",
-    "operation": "Operatie",
-    "secondNumber": "Tweede Nummer"
+    "firstNumber": "Eerste nummer",
+    "operation": "Werking",
+    "secondNumber": "Tweede nummer"
   }
 }
