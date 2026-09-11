@@ -79,6 +79,7 @@ declare global {
       appControllerCode: string;
       appControllerImplementations: ProjectImplementations;
       blockManifests: BlockManifest[];
+      staticAssets?: string[];
       pageManifests: ProjectImplementations;
       vapidPublicKey: string;
       id: number;

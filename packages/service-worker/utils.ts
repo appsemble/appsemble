@@ -52,6 +52,30 @@ export function cacheFirst(request: Request): Promise<Response> {
 }
 
 /**
+ * Serve an app asset, matching SVG images independently of raster resize parameters.
+ *
+ * @param request The asset request.
+ * @returns The requested asset response.
+ */
+export async function assetFirst(request: Request): Promise<Response> {
+  try {
+    return await cacheFirst(request);
+  } catch (error) {
+    const original = new URL(request.url);
+    if (!original.searchParams.has('width') && !original.searchParams.has('height')) {
+      throw error;
+    }
+    original.searchParams.delete('width');
+    original.searchParams.delete('height');
+    const cached = await caches.match(new Request(original));
+    if (cached?.headers.get('content-type')?.split(';', 1)[0].trim() === 'image/svg+xml') {
+      return cached;
+    }
+    throw error;
+  }
+}
+
+/**
  * Try returning a response from a request first.
  *
  * If the request fails for whatever reason, a cached response is returned.

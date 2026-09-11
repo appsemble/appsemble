@@ -19,7 +19,14 @@ import { useParams } from 'react-router-dom';
 import { messages } from './messages.js';
 import { type Permission, type ServiceWorkerRegistrationContextType } from '../../types.js';
 import { getAppAssets } from '../../utils/appAssets.js';
-import { apiUrl, appId, appUpdated, e2e, vapidPublicKey } from '../../utils/settings.js';
+import {
+  apiUrl,
+  appId,
+  appUpdated,
+  e2e,
+  staticAssets,
+  vapidPublicKey,
+} from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 interface ServiceWorkerRegistrationProviderProps {
@@ -121,12 +128,14 @@ export function ServiceWorkerRegistrationProvider({
         const { active } = await navigator.serviceWorker.ready;
         const urls = [
           ...getAppAssets(definition, blockManifests, appUpdated),
-          ...[...document.styleSheets].flatMap(({ href }) => (href ? [href] : [])),
           ...[
             ...document.querySelectorAll<HTMLLinkElement>(
-              'link[rel="icon"], link[rel="apple-touch-icon"], link[rel="manifest"]',
+              'link[rel="stylesheet"], link[rel="icon"], link[rel="apple-touch-icon"], link[rel="manifest"]',
             ),
           ].map(({ href }) => href),
+          ...(staticAssets ?? []).map(
+            (name) => `${apiUrl}/api/apps/${appId}/assets/${encodeURIComponent(name)}`,
+          ),
           `${apiUrl}/api/apps/${appId}/variables`,
           `${apiUrl}/api/apps/${appId}/messages/${lang}`,
         ];

@@ -1,6 +1,12 @@
 import { partialNormalized } from '@appsemble/utils';
 
-import { cacheFirst, handleModifyAndInvalidateCache, requestFirst, tryCached } from './utils.js';
+import {
+  assetFirst,
+  cacheFirst,
+  handleModifyAndInvalidateCache,
+  requestFirst,
+  tryCached,
+} from './utils.js';
 
 /**
  * Map all requests to a caching behavior based on the HTTP method and URL.
@@ -30,7 +36,7 @@ export function onFetch(event: FetchEvent): void {
 
   // App assets are immutable and can be cached.
   if (/^\/api\/apps\/\d+\/assets\//.test(pathname) && request.method !== 'HEAD') {
-    event.respondWith(cacheFirst(request));
+    event.respondWith(assetFirst(request));
     return;
   }
 

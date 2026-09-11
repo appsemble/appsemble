@@ -5,6 +5,7 @@ import {
   logger,
 } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
+import { Op } from 'sequelize';
 import { parse } from 'yaml';
 
 import { App, AppBuildSnapshot, AppSnapshot, getAppDB, transactional } from '../models/index.js';
@@ -104,7 +105,7 @@ export async function createSettings({
   languages,
   nonce,
 }: CreateSettingsParams): Promise<[digest: string, script: string]> {
-  const { AppOAuth2Secret, AppSamlSecret } = await getAppDB(app.id!);
+  const { AppOAuth2Secret, AppSamlSecret, Asset } = await getAppDB(app.id!);
 
   const persistedApp = (await App.findOne({
     attributes: [
@@ -209,9 +210,21 @@ export async function createSettings({
     persistedApp.sentryEnvironment,
   );
 
+  const staticAssets = await Asset.findAll({
+    attributes: ['name'],
+    where: {
+      name: { [Op.not]: null },
+      seed: true,
+      ResourceId: null,
+      AppMemberId: null,
+      GroupId: null,
+    },
+  });
+
   return createUtilsSettings(
     {
       apiUrl: host,
+      staticAssets: staticAssets.map(({ name }) => name),
       appControllerCode: persistedApp.controllerCode,
       appControllerImplementations: persistedApp.controllerImplementations,
       blockManifests: (blockManifests ?? []).map((blockManifest) => {

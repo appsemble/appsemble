@@ -1,1 +1,1 @@
-Precache declared block files and current app styles for offline navigation to unvisited pages
+Precache declared blocks, app styles, seed assets, fonts and installed app startup for offline use
