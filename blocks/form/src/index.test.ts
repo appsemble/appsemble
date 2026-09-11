@@ -4,6 +4,7 @@ import { getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { noop } from '@appsemble/utils';
 import { within } from '@testing-library/dom';
+import { render } from 'preact';
 import { afterEach, expect, it, vi } from 'vitest';
 
 const sdk = vi.hoisted(() => ({
@@ -18,6 +19,7 @@ vi.mock('@appsemble/sdk', async (importOriginal) => ({
 await import('./index.js');
 
 const mount = sdk.bootstrap.mock.calls[0][0] as (params: BootstrapParams) => Promise<void>;
+const containers = new Set<HTMLElement>();
 
 function getInputByLabel(container: HTMLElement, label: string): HTMLInputElement {
   const labelElement = Array.from(container.querySelectorAll('label')).find((element) =>
@@ -51,6 +53,10 @@ async function waitFor(assertion: () => void): Promise<void> {
 }
 
 afterEach(() => {
+  for (const container of containers) {
+    render(null, container);
+  }
+  containers.clear();
   document.body.replaceChildren();
   vi.unstubAllGlobals();
 });
@@ -184,6 +190,7 @@ async function mountInlineSelection(disabled = false): Promise<HTMLElement> {
   );
   const container = document.createElement('div');
   const output = document.createElement('output');
+  containers.add(container);
   output.setAttribute('aria-label', 'Saved selection');
   document.body.append(container);
   const params = getDefaultBootstrapParams();
