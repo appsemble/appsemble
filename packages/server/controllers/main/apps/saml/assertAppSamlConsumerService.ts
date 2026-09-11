@@ -1,7 +1,7 @@
 import { assertKoaCondition, logger } from '@appsemble/node-utils';
 import { type SAMLStatus } from '@appsemble/types';
 import { wrapPem } from '@appsemble/utils';
-import { DOMParser } from '@xmldom/xmldom';
+import { DOMParser, type Element as XmlElement, type Node as XmlNode } from '@xmldom/xmldom';
 import axios from 'axios';
 import { type Context } from 'koa';
 import { type Promisable } from 'type-fest';
@@ -85,12 +85,12 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   const buf = Buffer.from(SAMLResponse, 'base64');
   const xml = buf.toString('utf8');
   logger.verbose(`SAML response XML: ${xml}`);
-  const doc = parser.parseFromString(xml);
-  const x = (localName: string, namespace: NS, element: Node = doc): Element =>
+  const doc = parser.parseFromString(xml, 'application/xml');
+  const x = (localName: string, namespace: NS, element: XmlNode = doc): XmlElement =>
     xpath(
-      element,
+      element as unknown as Node,
       `//*[local-name(.)="${localName}" and namespace-uri(.)="${namespace}"]`,
-    )?.[0] as Element;
+    )?.[0] as unknown as XmlElement;
 
   const sig = new SignedXml();
 
@@ -104,7 +104,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   if (appSamlSecret.entityId) {
     try {
       const { data } = await axios.get<string>(appSamlSecret.entityId);
-      const metadata = parser.parseFromString(data);
+      const metadata = parser.parseFromString(data, 'application/xml');
       const cert = x('X509Certificate', NS.ds, metadata)?.textContent;
       if (cert) {
         idpCertificate = wrapPem(cert, 'CERTIFICATE');
@@ -119,7 +119,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     getKeyInfo: null,
     getKey: () => Buffer.from(idpCertificate || appSamlSecret.idpCertificate),
   };
-  sig.loadSignature(signature);
+  sig.loadSignature(signature as unknown as Node);
   const res = sig.checkSignature(xml);
   if (!res) {
     for (const error of sig.validationErrors) {

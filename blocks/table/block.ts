@@ -293,7 +293,9 @@ declare module '@appsemble/sdk' {
     borders?: boolean;
 
     /**
-     * Whether the table should be scrollable.
+     * Whether the table should show a scrollwheel when it becomes too small to show everything.
+     *
+     * @default true
      */
     scrollable?: boolean;
   }

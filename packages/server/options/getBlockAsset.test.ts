@@ -1,21 +1,37 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { buffer as streamToBuffer } from 'node:stream/consumers';
+
+import { uploadS3File } from '@appsemble/node-utils';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { getBlockAsset } from './getBlockAsset.js';
-import { BlockAsset, BlockVersion } from '../models/index.js';
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
+import { BlockAsset, BlockVersion, Organization } from '../models/index.js';
+import { getBlockAssetsBucketName } from '../utils/blockAssets.js';
 
 describe('getBlockAsset', () => {
-  it('should fetch the block version first and then fetch the asset by BlockVersionId', async () => {
-    const blockVersion = { id: 'version-id' };
-    const blockAsset = { mime: 'application/javascript', content: Buffer.from('console.log(1)') };
+  let blockVersion: BlockVersion;
 
-    const findVersion = vi
-      .spyOn(BlockVersion, 'findOne')
-      .mockResolvedValueOnce(blockVersion as never);
-    const findAsset = vi.spyOn(BlockAsset, 'findOne').mockResolvedValueOnce(blockAsset as never);
+  beforeEach(async () => {
+    await Organization.create({ id: 'appsemble', name: 'Appsemble' });
+    blockVersion = await BlockVersion.create({
+      OrganizationId: 'appsemble',
+      name: 'form',
+      version: '1.0.0',
+    });
+  });
+
+  it('should return bytes and metadata from an S3-backed block asset', async () => {
+    const content = Buffer.from('console.log("object storage")');
+    const storageKey = `appsemble/form/1.0.0/${blockVersion.id}/form.js.map`;
+    await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength, {
+      'Content-Type': 'application/javascript',
+    });
+    await BlockAsset.create({
+      BlockVersionId: blockVersion.id,
+      content: Buffer.from('database fallback'),
+      filename: 'form.js.map',
+      mime: 'application/javascript',
+      storageKey,
+    });
 
     const result = await getBlockAsset({
       context: {} as never,
@@ -24,30 +40,47 @@ describe('getBlockAsset', () => {
       version: '1.0.0',
     });
 
-    expect(findVersion).toHaveBeenCalledWith({
-      attributes: ['id'],
-      where: { OrganizationId: 'appsemble', name: 'form', version: '1.0.0' },
+    expect(result).toMatchObject({
+      filename: 'form.js.map',
+      mime: 'application/javascript',
+      size: content.byteLength,
     });
-    expect(findAsset).toHaveBeenCalledWith({
-      attributes: ['mime', 'content'],
-      where: { filename: 'form.js.map', BlockVersionId: 'version-id' },
+    expect(result.etag).toBeTruthy();
+    expect(result.lastModified).toBeInstanceOf(Date);
+    expect(await streamToBuffer(result.stream!)).toStrictEqual(content);
+  });
+
+  it('should fall back to database content when the asset is not S3-backed', async () => {
+    const content = Buffer.from('console.log(1)');
+    await BlockAsset.create({
+      BlockVersionId: blockVersion.id,
+      content,
+      filename: 'form.js.map',
+      mime: 'application/javascript',
     });
-    expect(result).toBe(blockAsset);
+
+    const result = await getBlockAsset({
+      context: {} as never,
+      filename: 'form.js.map',
+      name: '@appsemble/form',
+      version: '1.0.0',
+    });
+
+    expect(result).toStrictEqual({
+      content,
+      filename: 'form.js.map',
+      mime: 'application/javascript',
+    });
   });
 
   it('should return null if the block version does not exist', async () => {
-    const findVersion = vi.spyOn(BlockVersion, 'findOne').mockResolvedValueOnce(null);
-    const findAsset = vi.spyOn(BlockAsset, 'findOne').mockResolvedValueOnce({} as never);
-
     const result = await getBlockAsset({
       context: {} as never,
       filename: 'form.js.map',
-      name: '@appsemble/form',
-      version: '1.0.0',
+      name: '@unknown/form',
+      version: '9.9.9',
     });
 
-    expect(findVersion).toHaveBeenCalledTimes(1);
-    expect(findAsset).not.toHaveBeenCalled();
     expect(result).toBeNull();
   });
 });

@@ -81,7 +81,7 @@ export default defineConfig({
     {
       name: 'webkit',
       testIgnore: '**/static-ui/**',
-      use: { ...devices['Desktop Safari'] },
+      use: { ...devices['Desktop Safari'], serviceWorkers: 'block' },
       dependencies: ['create-accounts'],
     },
     { name: 'teardown-accounts', testMatch: /teardown-accounts\.setup\.ts/ },

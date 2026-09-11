@@ -16,7 +16,20 @@ import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { GroupDropdown } from '../GroupDropdown/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
+import { DEFAULT_BREAKPOINTS, useGridCss } from '../PageGridProvider/index.js';
 import { TopNavigation } from '../TopNavigation/index.js';
+
+// Breakpoints the author leaves undefined fall back to a single-row navbar layout so every rendered
+// area still has a matching grid slot instead of being orphaned by the generic default template.
+const NAVBAR_DEFAULT_LAYOUT_WITH_LOGO = {
+  columns: 4,
+  template: ['logo name navigation controls'],
+};
+
+const NAVBAR_DEFAULT_LAYOUT_WITHOUT_LOGO = {
+  columns: 3,
+  template: ['name navigation controls'],
+};
 
 interface AppBarProps {
   readonly children?: ReactNode;
@@ -37,6 +50,16 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { getAppMessage, getMessage } = useAppMessages();
   const { lang: locale } = useParams();
   const { pathname } = useLocation();
+  const logoInNavbar = (definition.layout?.logo?.position || 'hidden') === 'navbar';
+  const navbarGridClassName = useGridCss({
+    BREAKPOINTS: { ...DEFAULT_BREAKPOINTS, ...definition.layout?.breakpoints },
+    classNamePrefix: 'navbar-grid',
+    defaultLayout: logoInNavbar
+      ? NAVBAR_DEFAULT_LAYOUT_WITH_LOGO
+      : NAVBAR_DEFAULT_LAYOUT_WITHOUT_LOGO,
+    layout: definition.layout?.navbar,
+    spacingProperty: '--appsemble-navbar-grid-spacing-unit',
+  });
   const remapperContext = useMemo(
     () =>
       ({
@@ -64,7 +87,11 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
     appMemberRoles,
   );
 
-  const navigation = (page?.navigation || definition?.layout?.navigation) ?? 'left-menu';
+  // `profileDropdown` only lists a page under the profile dropdown; it does not describe how the
+  // navbar renders. Fall back to the app navigation so such pages keep the app's navbar layout
+  // instead of collapsing into the default single-row bar.
+  const pageNavigation = page?.navigation === 'profileDropdown' ? undefined : page?.navigation;
+  const navigation = (pageNavigation || definition?.layout?.navigation) ?? 'left-menu';
   const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;
 
   const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
@@ -76,7 +103,6 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
 
   const showMenu = shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname);
   const topNavigation = navigation === 'top' && showMenu;
-  const logoInNavbar = (definition.layout?.logo?.position || 'hidden') === 'navbar';
 
   // `layout.stackedHeader` gives the logo its own centered row above the top navigation.
   const stackedTopHeader = topNavigation && definition.layout?.stackedHeader === true;
@@ -124,6 +150,31 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   );
 
   const navbar = document.getElementsByClassName('navbar')[0];
+
+  if (topNavigation && navbarGridClassName) {
+    return (
+      <Portal element={navbar}>
+        <div className={`${styles.navbarGrid} ${navbarGridClassName}`}>
+          {logoNode ? (
+            <div className={styles.logoArea} data-grid-area="logo">
+              {logoNode}
+            </div>
+          ) : null}
+          <div className={styles.nameArea} data-grid-area="name">
+            {nameNode}
+            {headerTagNode}
+          </div>
+          <div data-grid-area="navigation">
+            <TopNavigation />
+          </div>
+          <div className={styles.controlsArea} data-grid-area="controls">
+            {demoNode}
+            {dropdownsNode}
+          </div>
+        </div>
+      </Portal>
+    );
+  }
 
   if (stackedTopHeader) {
     return (

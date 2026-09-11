@@ -38,7 +38,7 @@ export async function deleteAppResource({
     processReferenceHooks(persistedApp, locked, 'delete', options, context);
     processHooks(persistedApp, locked, 'delete', options, context);
 
-    await processReferenceTriggers(persistedApp, locked, 'delete', context);
+    await processReferenceTriggers(persistedApp, locked, 'delete', context, transaction);
 
     await locked.destroy({ transaction });
   });

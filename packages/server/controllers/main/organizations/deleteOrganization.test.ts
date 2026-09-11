@@ -13,7 +13,11 @@ import {
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
+import {
+  authorizeClientCredentials,
+  authorizeStudio,
+  createTestUser,
+} from '../../../utils/test/authorization.js';
 
 let organization: Organization;
 let server: Koa;
@@ -55,6 +59,25 @@ describe('deleteOrganization', () => {
       UserId: user.id,
       role: PredefinedOrganizationRole.Owner,
     });
+    await request.delete(`/api/organizations/${organization2.id}`);
+    const response = await request.get(`/api/organizations/${organization2.id}`);
+    expect(response).toMatchObject({
+      status: 404,
+      data: { error: 'Not Found', statusCode: 404, message: 'Organization not found.' },
+    });
+  });
+
+  it('should delete the organization with client credentials', async () => {
+    const organization2 = await Organization.create({
+      id: 'testorganization2',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization2.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+    await authorizeClientCredentials('organizations:delete');
     await request.delete(`/api/organizations/${organization2.id}`);
     const response = await request.get(`/api/organizations/${organization2.id}`);
     expect(response).toMatchObject({

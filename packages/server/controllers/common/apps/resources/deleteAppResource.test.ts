@@ -105,6 +105,37 @@ describe('deleteAppResource', () => {
     `);
   });
 
+  it('preserves cascading references when another reference blocks deletion', async () => {
+    authorizeStudio();
+    const definition = structuredClone(app.definition);
+    definition.resources!.testResourceB.references!.testResourceId.delete = {
+      triggers: [{ type: 'delete', cascade: 'update' }],
+    };
+    definition.resources!.testResourceC.references!.testResourceId.delete = {
+      triggers: [{ type: 'delete' }],
+    };
+    await app.update({ definition });
+    const { Resource } = await getAppDB(app.id);
+    const parent = await Resource.create({ type: 'testResource', data: { foo: 'Product' } });
+    const cascading = await Resource.create({
+      type: 'testResourceB',
+      data: { bar: 'Saved choice', testResourceId: parent.id },
+    });
+    const blocker = await Resource.create({
+      type: 'testResourceC',
+      data: { bar: 'User progress', testResourceId: parent.id },
+    });
+
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResource/${parent.id}`,
+    );
+
+    expect(response.status).toBe(400);
+    expect((await parent.reload()).data.foo).toBe('Product');
+    expect((await cascading.reload()).data.testResourceId).toBe(parent.id);
+    expect((await blocker.reload()).data.testResourceId).toBe(parent.id);
+  });
+
   it('should delete a resource scoped to a single selectedGroupId (backwards compatible number)', async () => {
     const { Group, Resource } = await getAppDB(app.id);
     const groupA = await Group.create({ name: 'Group A' });

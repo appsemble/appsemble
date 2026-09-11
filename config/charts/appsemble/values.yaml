@@ -30,6 +30,12 @@ ingress:
   tlsSecretName: ''
   tlsWildcardSecretName: ''
 
+blockAssets:
+  publicUrl: ''
+  migration:
+    enabled: true
+    batch: 100
+
 # OpenShift Route configuration (alternative to Ingress)
 route:
   enabled: false
@@ -99,6 +105,9 @@ cronjob:
     # Deploy the SaaS-only CronJobs (subscription billing, production backup, container scaling).
     enabled: true
   jobsHistoryLimit: 3
+  # Delete finished (Complete or Failed) Job objects this many seconds after they finish, so
+  # cronjob runs do not accumulate indefinitely across releases. 86400 = 1 day.
+  ttlSecondsAfterFinished: 86400
 
 gitlab:
   app: null
@@ -128,10 +137,10 @@ global:
     service:
       ports:
         postgresql: 5432
-  security:
-    allowInsecureImages: true
-
 postgresql:
+  global:
+    security:
+      allowInsecureImages: true
   fullnameOverride: appsemble-postgresql
   tls:
     enabled: true
@@ -227,6 +236,9 @@ mailpit:
           name: mailpit-ui
 
 minio:
+  global:
+    security:
+      allowInsecureImages: true
   fullnameOverride: appsemble-minio
   image:
     registry: docker.io

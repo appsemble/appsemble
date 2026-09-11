@@ -21,6 +21,7 @@ import {
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
+import { resourcePartitionName } from '../../../utils/resourcePartition.js';
 import { getResourceUniqueIndexName } from '../../../utils/resourceUniqueIndexes.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
 
@@ -303,7 +304,9 @@ describe('createAppFromTemplate', () => {
 
     const { Resource: ClonedResource, sequelize } = await getAppDB(response.data.id!);
     const resources = await ClonedResource.findAll({ where: { type: 'person' } });
-    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+    const indexes = (await sequelize
+      .getQueryInterface()
+      .showIndex(resourcePartitionName('person'))) as {
       name: string;
     }[];
 

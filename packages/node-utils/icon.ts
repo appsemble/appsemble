@@ -1,7 +1,14 @@
 import { type Context } from 'koa';
-import sharp, { type RGBA } from 'sharp';
+import sharp from 'sharp';
 
 import { readAsset } from './readAsset.js';
+
+interface RGBA {
+  alpha: number;
+  b: number;
+  g: number;
+  r: number;
+}
 
 interface ServeIconOptions {
   /**

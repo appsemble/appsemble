@@ -176,6 +176,10 @@ Configure the environment variables for Appsemble to connect with the Minio inst
       name: {{ . | quote }}
       key: secret-key
 {{- end }}
+{{- if .Values.blockAssets.publicUrl }}
+- name: BLOCK_ASSETS_BASE_URL
+  value: {{ .Values.blockAssets.publicUrl | quote }}
+{{- end }}
 {{- end -}}
 
 {{/*

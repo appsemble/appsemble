@@ -10,7 +10,11 @@ import { type ResourceDefinition } from './resource.js';
 import { type AppRole, type ViewRole } from './roles.js';
 import { type Security } from './security.js';
 import { type Theme } from './theme.js';
-import { type PageLayoutDefinition } from './gridLayout.js';
+import {
+  type GridBreakpointsDefinition,
+  type NavbarLayoutDefinition,
+  type PageLayoutDefinition,
+} from './gridLayout.js';
 
 export type SettingName = 'email' | 'languages' | 'name' | 'password' | 'phoneNumber' | 'picture';
 
@@ -128,6 +132,11 @@ export interface AppDefinition {
     titleBarText?: 'appName' | 'pageName';
 
     /**
+     * Whether to display a breadcrumb trail below the title bar.
+     */
+    breadcrumbs?: boolean;
+
+    /**
      * Whether to hide the title bar from all pages in the app.
      */
     hideTitleBar?: boolean;
@@ -138,6 +147,26 @@ export interface AppDefinition {
      * Only applies when `navigation` is set to `top`.
      */
     stackedHeader?: boolean;
+
+    /**
+     * Responsive grid layout for the top navigation header.
+     *
+     * Only applies when `navigation` is set to `top`. This cannot be combined with
+     * `stackedHeader`.
+     *
+     * The available template areas are logo, name, navigation, and controls.
+     * Each rendered area must be included and their first visual occurrence must follow that order.
+     */
+    navbar?: NavbarLayoutDefinition;
+
+    /**
+     * Minimum viewport widths in pixels at which the tablet and desktop grid layouts apply.
+     *
+     * Applies to every responsive grid layout in the app, including pages and the navbar. The
+     * mobile layout always applies from a width of 0. Each breakpoint must be smaller than the
+     * next.
+     */
+    breakpoints?: GridBreakpointsDefinition;
 
     /**
      * Whether to hide the group dropdown.
@@ -216,6 +245,11 @@ export interface AppDefinition {
 }
 
 /**
+ * A candidate parent page, optionally scoped to a set of roles.
+ */
+export type PageParentDefinition = string | { page: string; roles?: string[] };
+
+/**
  * This describes what a page will look like in the app.
  */
 export interface BasePageDefinition {
@@ -253,6 +287,15 @@ export interface BasePageDefinition {
    * top navigation is rendered as side navigation.
    */
   navigation?: Navigation | 'profileDropdown';
+
+  /**
+   * The page this page sits under in the breadcrumb hierarchy.
+   *
+   * A page name applies to every member. An entry carrying `roles` applies only to members holding
+   * one of them. A list is resolved in order, so the first matching entry wins and an entry without
+   * `roles` acts as the fallback.
+   */
+  parent?: PageParentDefinition | PageParentDefinition[];
 
   /**
    * A list of roles that may view the page.
@@ -373,6 +416,16 @@ export interface LoopPageDefinition extends BasePageDefinition {
    * @default true
    */
   retainFlowData?: boolean;
+
+  /**
+   * The page to display before the generated loop pages.
+   */
+  start?: SubPageDefinition;
+
+  /**
+   * The page to display after the generated loop pages.
+   */
+  end?: SubPageDefinition;
 }
 
 export interface AlternateTabsDefinition {

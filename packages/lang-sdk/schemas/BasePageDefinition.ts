@@ -55,6 +55,25 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
 This will be displayed in the navigation menu.
 `,
     },
+    parent: {
+      description: `The page this page sits under in the breadcrumb hierarchy.
+
+A page name applies to every app member. An entry carrying \`roles\` applies only to members holding
+one of those roles. A list is resolved in order, so the first matching entry wins and an entry
+without \`roles\` acts as the fallback.
+
+A page that declares \`parameters\` cannot be used as a parent, because its URL cannot be resolved
+from another page.
+`,
+      anyOf: [
+        { $ref: '#/components/schemas/PageParentDefinition' },
+        {
+          type: 'array',
+          minItems: 1,
+          items: { $ref: '#/components/schemas/PageParentDefinition' },
+        },
+      ],
+    },
     parameters: {
       type: 'array',
       description: `Page parameters can be used for linking to a page that should display a single resource.

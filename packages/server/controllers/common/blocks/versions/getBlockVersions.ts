@@ -27,7 +27,7 @@ export async function getBlockVersions(ctx: Context): Promise<void> {
     ],
     where: { name: blockId, OrganizationId: organizationId },
     include: [
-      { model: BlockAsset, attributes: ['filename'] },
+      { model: BlockAsset, attributes: ['filename', 'storageKey'] },
       {
         model: Organization,
         attributes: ['id', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
@@ -43,5 +43,5 @@ export async function getBlockVersions(ctx: Context): Promise<void> {
 
   assertKoaCondition(blockVersions.length !== 0, ctx, 404, 'Block not found.');
 
-  ctx.body = blockVersions.map(blockVersionToJson);
+  ctx.body = blockVersions.map((blockVersion) => blockVersionToJson(blockVersion));
 }

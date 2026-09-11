@@ -5,6 +5,7 @@ import {
   getPageDisplayName,
   getPagePathSegment,
   normalize,
+  pageHasBreadcrumbsGridArea,
   remap,
   type PageDefinition,
   type Remapper,
@@ -21,7 +22,14 @@ import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
+import {
+  Navigate,
+  type Params,
+  Route,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -37,6 +45,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
+import { Breadcrumbs } from '../Breadcrumbs/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { FlowPage } from '../FlowPage/index.js';
 import { usePage } from '../MenuProvider/index.js';
@@ -63,7 +72,7 @@ export function Page(): ReactNode {
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
   const { pathname, search } = useLocation();
-  const params = useParams();
+  const routeParams = useParams();
   const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const { page: navPage, setPage } = usePage();
@@ -145,6 +154,17 @@ export function Page(): ReactNode {
   const internalPageName = pageDefinition ? normalize(pageDefinition.name) : null;
   const prefix = internalPageName ? `pages.${internalPageName}` : null;
   const prefixIndex = index === -1 ? null : `pages.${index}`;
+
+  // Switching tabs only changes the tab segment of the wildcard. Page actions never read that
+  // segment, so it is left out of the identity of `params`; a new object per tab would rebuild
+  // the actions, re-run onLoad, and re-emit the tab list while a tab is still loading.
+  const { '*': wildcard = '', ...pageRouteParams } = routeParams;
+  const paramsKey = JSON.stringify(
+    pageDefinition?.type === 'tabs'
+      ? { ...pageRouteParams, '*': wildcard.split('/').slice(1).join('/') }
+      : routeParams,
+  );
+  const params = useMemo(() => JSON.parse(paramsKey) as Readonly<Params>, [paramsKey]);
 
   // Aborted when the user navigates to another page, so in-flight action chains of the previous
   // page stop instead of causing side effects on the newly shown page.
@@ -376,6 +396,11 @@ export function Page(): ReactNode {
         data-path-index={prefixIndex}
       >
         <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
+        {/* A grid layout that names a breadcrumbs area renders the trail there, and a tabs page
+            renders its own trail so it can name the active tab as the last crumb. */}
+        {pageDefinition.type === 'tabs' || pageHasBreadcrumbsGridArea(pageDefinition) ? null : (
+          <Breadcrumbs data={data} pageDefinition={pageDefinition} remap={remapWithContext} />
+        )}
         {pageDefinition.type === 'tabs' ? (
           <TabsPage
             appStorage={appStorage.current}

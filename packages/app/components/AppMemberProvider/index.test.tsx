@@ -6,14 +6,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppMemberProvider, useAppMember } from './index.js';
 
-const { axiosGet, axiosPost, getUri, requestEject, requestUse, setSentryUser } = vi.hoisted(() => ({
-  axiosGet: vi.fn(),
-  axiosPost: vi.fn(),
-  getUri: vi.fn((config: { url?: string }) => config.url ?? ''),
-  requestEject: vi.fn(),
-  requestUse: vi.fn(),
-  setSentryUser: vi.fn(),
-}));
+const { axiosGet, axiosPost, definitionSecurity, getUri, requestEject, requestUse, setSentryUser } =
+  vi.hoisted(() => ({
+    axiosGet: vi.fn(),
+    axiosPost: vi.fn(),
+    definitionSecurity: { value: undefined as Record<string, unknown> | undefined },
+    getUri: vi.fn((config: { url?: string }) => config.url ?? ''),
+    requestEject: vi.fn(),
+    requestUse: vi.fn(),
+    setSentryUser: vi.fn(),
+  }));
 
 vi.mock('axios', () => ({
   default: {
@@ -40,6 +42,7 @@ vi.mock('../AppDefinitionProvider/index.js', () => ({
       name: 'Test App',
       defaultPage: 'Test Page',
       pages: [],
+      security: definitionSecurity.value,
     },
   }),
 }));
@@ -86,19 +89,25 @@ beforeEach(() => {
   vi.clearAllMocks();
   appMember = undefined;
   requestInterceptor = undefined;
+  definitionSecurity.value = undefined;
   accessToken = createAccessToken();
   requestUse.mockImplementation((interceptor) => {
     requestInterceptor = interceptor;
     return 1;
   });
   axiosPost.mockResolvedValue({ data: { access_token: accessToken } });
-  axiosGet.mockResolvedValueOnce({
-    data: {
-      sub: 'member',
-      roles: ['Staff'],
-    },
-  });
-  axiosGet.mockResolvedValueOnce({ data: [] });
+  axiosGet.mockImplementation((url: string) =>
+    Promise.resolve(
+      url.endsWith('/groups')
+        ? { data: [] }
+        : {
+            data: {
+              sub: 'member',
+              roles: ['Staff'],
+            },
+          },
+    ),
+  );
 });
 
 afterEach(() => {
@@ -106,6 +115,36 @@ afterEach(() => {
 });
 
 describe('AppMemberProvider', () => {
+  it('should remain logged out while the server revokes the session', async () => {
+    definitionSecurity.value = {};
+    let resolveLogout: () => void;
+    const logoutResponse = new Promise<{ data: object }>((resolve) => {
+      resolveLogout = () => resolve({ data: {} });
+    });
+    axiosPost.mockImplementation((...args: [string, URLSearchParams]) => {
+      const data = args[1];
+      const grantType = data.get('grant_type');
+      if (grantType === 'revoke_token') {
+        return logoutResponse;
+      }
+      return Promise.resolve({ data: { access_token: accessToken } });
+    });
+
+    renderProvider();
+    await waitFor(() => expect(appMember?.isLoggedIn).toBe(true));
+
+    let logoutPromise: Promise<void> | undefined;
+    await act(async () => {
+      logoutPromise = appMember?.logout();
+      await Promise.resolve();
+    });
+
+    expect(appMember?.isLoggedIn).toBe(false);
+    resolveLogout!();
+    await logoutPromise;
+    expect(appMember?.isLoggedIn).toBe(false);
+  });
+
   it('should ignore malformed request URLs in the authorization interceptor', async () => {
     renderProvider();
 

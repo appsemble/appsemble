@@ -561,9 +561,9 @@ describe('updateAppResource', () => {
       },
     };
     await app.update({ definition });
-    await syncResourceUniqueIndexes(app.id, undefined, definition.resources);
 
-    const { Resource } = await getAppDB(app.id);
+    const { Resource, sequelize } = await getAppDB(app.id);
+    await syncResourceUniqueIndexes(sequelize, undefined, definition.resources);
     const [firstResource, secondResource] = await Promise.all([
       Resource.create({ type: 'testResource', data: { foo: 'first' } }),
       Resource.create({ type: 'testResource', data: { foo: 'second' } }),
@@ -856,6 +856,7 @@ describe('updateAppResource', () => {
     expect(assets).toStrictEqual([
       expect.objectContaining({
         ResourceId: 1,
+        ResourceType: 'testAssets',
         GroupId: null,
         AppMemberId: null,
         clonable: false,
@@ -1202,6 +1203,7 @@ describe('updateAppResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: 'testHistoryTrue',
       AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
@@ -1239,6 +1241,7 @@ describe('updateAppResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: 'testHistoryDataTrue',
       AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
@@ -1276,6 +1279,7 @@ describe('updateAppResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: 'testHistoryDataFalse',
       AppMemberId: null,
       created: new Date(),
       data: null,

@@ -1,0 +1,23 @@
+.root {
+  align-items: center;
+  background: rgb(10 10 10 / 20%);
+  border: none;
+  border-radius: 9999px;
+  color: rgb(255 255 255);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1.5rem;
+  height: 40px;
+  justify-content: center;
+  position: fixed;
+  right: 72px;
+  text-decoration: none;
+  top: 20px;
+  width: 40px;
+  z-index: 1;
+}
+
+.root:hover {
+  background: rgb(10 10 10 / 30%);
+  color: rgb(255 255 255);
+}

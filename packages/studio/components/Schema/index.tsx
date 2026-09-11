@@ -1,6 +1,5 @@
 import { camelToHyphen, combineSchemas, decodeJSONRef } from '@appsemble/lang-sdk';
 import { Join, Title } from '@appsemble/react-components';
-import classNames from 'classnames';
 import { type Schema as SchemaType } from 'jsonschema';
 import { type FC, type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -89,7 +88,7 @@ export function Schema({
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : ''}>
       {name ? (
-        <div className={classNames('pb-2', { [styles.hasAnchor]: anchors })}>
+        <div className="pb-2">
           <Title anchor={anchors} className="is-inline-block is-marginless" id={id} size={5}>
             {mergedSchema.title ? (
               <>

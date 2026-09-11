@@ -254,6 +254,7 @@ allows TLS 1.2 and TLS 1.3.
 | `sentry.environment`                      | `nil`                         | The environment to send with Sentry error reports.                                                                                        |
 | `secretSecret`                            | `appsemble`                   | The Kubernetes secret which holds the `SECRET` environment variable.                                                                      |
 | `cronjob.jobsHistoryLimit`                | 3                             | How long to keep logs for cronjobs in days.                                                                                               |
+| `cronjob.ttlSecondsAfterFinished`         | 86400                         | Seconds after a CronJob's Job finishes before Kubernetes automatically deletes it.                                                        |
 | `cronjob.enabled`                         | true                          | Deploy the app cron runner and generic maintenance CronJobs (independent of ingress/route).                                               |
 | `cronjob.platform.enabled`                | true                          | Deploy the SaaS-only CronJobs: subscription billing, production backup, container scaling.                                                |
 | `migrateTo`                               | `nil`                         | If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`.                   |

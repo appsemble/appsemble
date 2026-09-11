@@ -11,13 +11,13 @@ import { App, AppCollection, Organization } from '../../models/index.js';
 import { setArgv } from '../argv.js';
 
 let kubernetes: typeof import('./kubernetes.js');
-const mock = new MockAdapter(axios);
+const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
 const ca = `-----BEGIN CERTIFICATE-----
 -----END CERTIFICATE-----`;
 
-describe('kubernetes', () => {
-  vi.mock('node:fs/promises', () => fs.promises);
+vi.mock('node:fs/promises', () => fs.promises);
 
+describe('kubernetes', () => {
   beforeAll(async () => {
     kubernetes = await import('./kubernetes.js');
   });

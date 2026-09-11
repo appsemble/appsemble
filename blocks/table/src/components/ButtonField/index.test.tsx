@@ -80,7 +80,7 @@ it('should render the button inside the field', async () => {
   `);
 
   await userEvent.click(button);
-  expect(onClickButtonMock).toHaveBeenCalledOnce();
+  expect(onClickButtonMock.mock.calls).toHaveLength(1);
 });
 
 it('should execute the block onClick action as fallback if not defined for the field', async () => {
@@ -131,5 +131,5 @@ it('should execute the block onClick action as fallback if not defined for the f
   );
 
   await userEvent.click(screen.getByRole('button'));
-  expect(onClickMock).toHaveBeenCalledOnce();
+  expect(onClickMock.mock.calls).toHaveLength(1);
 });

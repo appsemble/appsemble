@@ -1,8 +1,15 @@
-import { type AppStyles, type GetAppSubEntityParams } from '@appsemble/node-utils';
+import {
+  type AppStyles,
+  type GetAppSubEntityParams,
+  replaceAssetFunctions,
+} from '@appsemble/node-utils';
 
 export function getAppStyles({ context }: GetAppSubEntityParams): Promise<AppStyles> {
+  const { apiUrl, appsembleApp } = context;
+  const { coreStyle = '', id, sharedStyle = '' } = appsembleApp;
+
   return Promise.resolve({
-    coreStyle: context.appsembleApp.coreStyle,
-    sharedStyle: context.appsembleApp.sharedStyle,
+    coreStyle: replaceAssetFunctions(coreStyle, id, apiUrl),
+    sharedStyle: replaceAssetFunctions(sharedStyle, id, apiUrl),
   });
 }

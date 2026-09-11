@@ -112,6 +112,8 @@ import { User } from './main/User.js';
 import { migrations } from '../migrations/apps/index.js';
 import { argv } from '../utils/argv.js';
 import { decrypt } from '../utils/crypto.js';
+import { dropAllTablesWithPartitions } from '../utils/dropAllTablesWithPartitions.js';
+import { addResourceCompositeForeignKeys } from '../utils/resourceForeignKeys.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError, logSQL } from '../utils/sqlUtils.js';
 
@@ -462,7 +464,7 @@ export async function initAppDB(
     }
   }
 
-  let appDB;
+  let appDB!: Sequelize;
   try {
     appDB = new Sequelize({
       database: appDBName,
@@ -516,6 +518,13 @@ export async function initAppDB(
         model.addHooks(models, app.toJSON());
       }
     }
+
+    // Sequelize associations cannot express the composite foreign keys to the partitioned Resource
+    // table, so add them after a full model sync to match the schema the migrations produce.
+    // `afterBulkSync` runs once when every table exists, unlike `afterSync` which fires per model.
+    appDB.addHook('afterBulkSync', async () => {
+      await addResourceCompositeForeignKeys(appDB);
+    });
 
     await migrate(appDB, argv.migrateTo ?? 'next', migrations);
 
@@ -631,7 +640,7 @@ export async function dropAndCloseAllAppDBs(): Promise<void> {
     await Promise.all(
       appDBsToClose.map(async ({ sequelize }) => {
         try {
-          await sequelize.getQueryInterface().dropAllTables();
+          await dropAllTablesWithPartitions(sequelize);
           await sequelize.close();
         } catch (error) {
           logger.error(error as Error);

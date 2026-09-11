@@ -1,7 +1,5 @@
 import { type JsonObject, type JsonValue } from 'type-fest';
 
-import { mapValues } from './mapValues.js';
-
 interface ResourceSchema {
   format?: string;
   items?: unknown;
@@ -12,23 +10,37 @@ interface ResourceSchema {
  * Works on a resource on the client, for example passed from the form block
  *
  * @param data The resource to be serialized, optionally containing asset blobs
+ * @param onAsset Called with the index and resource path of each serialized asset
  * @returns A FormData instance containing the resource and an array of the assets
  *   referenced from the resource
  */
-export function serializeResource(data: any): FormData | JsonValue {
+export function serializeResource(
+  data: any,
+  onAsset?: (index: number, path: (number | string)[]) => void,
+): FormData | JsonValue {
   const assets: Blob[] = [];
-  const extractAssets = (value: Blob | Date | JsonValue): JsonValue => {
+  const extractAssets = (
+    value: Blob | Date | JsonValue,
+    path: (number | string)[] = [],
+  ): JsonValue => {
     if (Array.isArray(value)) {
-      return value.map(extractAssets);
+      return value.map((item, index) => extractAssets(item, [...path, index]));
     }
     if (value instanceof Blob) {
-      return String(assets.push(value) - 1);
+      const index = assets.push(value) - 1;
+      onAsset?.(index, path);
+      return String(index);
     }
     if (value instanceof Date) {
       return value.toJSON();
     }
     if (value && typeof value === 'object') {
-      return mapValues(value as JsonObject, extractAssets);
+      return Object.fromEntries(
+        Object.entries(value as JsonObject).map(([key, item]) => [
+          key,
+          extractAssets(item, [...path, key]),
+        ]),
+      );
     }
     return value;
   };

@@ -7310,6 +7310,10 @@ exports[`config > getProjectImplementations > official blocks > pdf-viewer 1`] =
           "string",
         ],
       },
+      "url": {
+        "description": "URL or asset ID of the file to display, use this if you want to load an asset",
+        "format": "remapper",
+      },
       "width": {
         "description": "Width of the container in which PDF is displayed",
         "type": [
@@ -7990,7 +7994,8 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
         "type": "array",
       },
       "scrollable": {
-        "description": "Whether the table should be scrollable.",
+        "default": true,
+        "description": "Whether the table should show a scrollwheel when it becomes too small to show everything.",
         "type": "boolean",
       },
     },

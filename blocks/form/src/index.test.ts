@@ -131,3 +131,35 @@ it('should wait for pending validation actions before submitting', async () => {
     }),
   );
 });
+
+it('should load the markdown editor when a markdown field is rendered', async () => {
+  const container = document.createElement('div');
+  const params = {
+    ...getDefaultBootstrapParams(),
+    actions: {
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+      onSubmit: vi.fn(),
+    },
+    events: {
+      emit: { change: vi.fn() },
+      on: {
+        data: vi.fn(() => false),
+        fields: vi.fn(() => false),
+      },
+      off: { fields: vi.fn() },
+    },
+    shadowRoot: container,
+    parameters: {
+      fields: [{ label: 'Description', name: 'description', type: 'markdown' }],
+      skipInitialLoad: true,
+    },
+  } as unknown as BootstrapParams;
+
+  await mount(params);
+
+  await waitFor(() =>
+    expect(
+      Array.from(container.querySelectorAll('button')).find((button) => button.title === 'Bold'),
+    ).toBeInstanceOf(HTMLButtonElement),
+  );
+});

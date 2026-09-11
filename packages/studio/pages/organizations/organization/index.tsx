@@ -30,6 +30,53 @@ import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 import { type Organization } from '../../../types.js';
 
+interface OrganizationSideMenuProps {
+  readonly mayEdit: boolean;
+  readonly organization: Organization;
+  readonly url: string;
+  readonly userOrganization?: Organization;
+}
+
+export function OrganizationSideMenu({
+  mayEdit,
+  organization,
+  url,
+  userOrganization,
+}: OrganizationSideMenuProps): ReactNode {
+  return (
+    <MenuSection label={<span className="ml-2">{organization.name}</span>}>
+      <MenuItem end icon="briefcase" to={url}>
+        <FormattedMessage {...messages.organization} />
+      </MenuItem>
+      {userOrganization ? (
+        <MenuItem end icon="list-alt" to={`${url}/subscriptions`}>
+          <FormattedMessage {...messages.subscriptions} />
+        </MenuItem>
+      ) : null}
+      {userOrganization ? (
+        <MenuItem end icon="eur" to={`${url}/invoices`}>
+          <FormattedMessage {...messages.invoices} />
+        </MenuItem>
+      ) : null}
+      {userOrganization ? (
+        <MenuItem end icon="users" to={`${url}/members`}>
+          <FormattedMessage {...messages.members} />
+        </MenuItem>
+      ) : null}
+      {userOrganization ? (
+        <MenuItem end icon="folder" to={`${url}/collections`}>
+          <FormattedMessage {...messages.collections} />
+        </MenuItem>
+      ) : null}
+      {mayEdit ? (
+        <MenuItem end icon="cog" to={`${url}/settings`}>
+          <FormattedMessage {...messages.settings} />
+        </MenuItem>
+      ) : null}
+    </MenuSection>
+  );
+}
+
 /**
  * Render routes related to apps.
  */
@@ -55,34 +102,14 @@ export function OrganizationRoutes(): ReactNode {
     ]);
 
   useSideMenu(
-    result.data && (
-      <MenuSection label={<span className="ml-2">{result.data.name}</span>}>
-        <MenuItem end icon="briefcase" to={url}>
-          <FormattedMessage {...messages.organization} />
-        </MenuItem>
-        <MenuItem end icon="list-alt" to={`${url}/subscriptions`}>
-          <FormattedMessage {...messages.subscriptions} />
-        </MenuItem>
-        <MenuItem end icon="eur" to={`${url}/invoices`}>
-          <FormattedMessage {...messages.invoices} />
-        </MenuItem>
-        {userOrganization ? (
-          <MenuItem end icon="users" to={`${url}/members`}>
-            <FormattedMessage {...messages.members} />
-          </MenuItem>
-        ) : null}
-        {userOrganization ? (
-          <MenuItem end icon="folder" to={`${url}/collections`}>
-            <FormattedMessage {...messages.collections} />
-          </MenuItem>
-        ) : null}
-        {mayEdit ? (
-          <MenuItem end icon="cog" to={`${url}/settings`}>
-            <FormattedMessage {...messages.settings} />
-          </MenuItem>
-        ) : null}
-      </MenuSection>
-    ),
+    result.data ? (
+      <OrganizationSideMenu
+        mayEdit={Boolean(mayEdit)}
+        organization={result.data}
+        url={url}
+        userOrganization={userOrganization}
+      />
+    ) : null,
   );
 
   if (!normalized.test(organizationId)) {
@@ -118,14 +145,9 @@ export function OrganizationRoutes(): ReactNode {
             />
           </Route>
           <Route
-            element={<SuccessBox organization={organization} />}
-            path="/subscriptions/success/:subscriptionPlanName"
-          />
-          <Route element={<FailureBox />} path="/subscriptions/failure" />
-          <Route
             element={
               <ProtectedRoute
-                organization={userOrganization ?? organization}
+                organization={userOrganization}
                 permissions={[OrganizationPermission.ManageOrganizationSubscriptions]}
               />
             }
@@ -144,11 +166,16 @@ export function OrganizationRoutes(): ReactNode {
           <Route
             element={
               <ProtectedRoute
-                organization={userOrganization ?? organization}
+                organization={userOrganization}
                 permissions={[OrganizationPermission.QueryOrganizationSubscriptions]}
               />
             }
           >
+            <Route
+              element={<SuccessBox organization={organization} />}
+              path="/subscriptions/success/:subscriptionPlanName"
+            />
+            <Route element={<FailureBox />} path="/subscriptions/failure" />
             <Route
               element={
                 <OrganizationSubscriptionsPage
@@ -158,8 +185,8 @@ export function OrganizationRoutes(): ReactNode {
               }
               path="/subscriptions"
             />
+            <Route element={<InvoiceInformationPage />} path="/invoices" />
           </Route>
-          <Route element={<InvoiceInformationPage />} path="/invoices" />
           {userOrganization ? (
             <Route element={<ProtectedRoute organization={userOrganization} />}>
               <Route

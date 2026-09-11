@@ -208,8 +208,7 @@ describe('createEvents', () => {
       ee.on('bar', listener);
       events.destroy();
       ee.emit('bar', 'data');
-      expect(listener).toHaveBeenCalledOnce();
-      expect(listener).toHaveBeenCalledWith('data');
+      expect(listener).toHaveBeenCalledExactlyOnceWith('data');
     });
 
     it('should not track listeners that were unregistered before destroy', () => {
@@ -228,7 +227,7 @@ describe('createEvents', () => {
       events.on.foo(listener);
       events.off.foo(listener);
       ee.emit('bar', 'data');
-      expect(listener).toHaveBeenCalledOnce();
+      expect(listener.mock.calls).toHaveLength(1);
     });
 
     it('should not register new listeners after destroy', () => {

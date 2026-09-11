@@ -12,6 +12,7 @@ spec:
   failedJobsHistoryLimit: {{ mul 24 .Values.cronjob.jobsHistoryLimit }}
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
       template:
         metadata:
           annotations:

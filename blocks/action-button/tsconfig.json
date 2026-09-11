@@ -2,6 +2,7 @@
   "extends": "@appsemble/tsconfig",
   "compilerOptions": {
     "types": ["@appsemble/webpack-config/types"],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "lib": ["dom", "dom.iterable", "esnext"]
   }
 }

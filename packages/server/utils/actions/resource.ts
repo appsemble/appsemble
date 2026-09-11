@@ -321,6 +321,7 @@ export async function update({
               ...asset,
               ...getCompressedFileMeta(asset),
               ResourceId: lockedResource.id,
+              ResourceType: action.resource,
             })),
             { logging: false, transaction },
           ),
@@ -332,6 +333,7 @@ export async function update({
           ResourceVersion.create(
             {
               ResourceId: lockedResource.id,
+              ResourceType: action.resource,
               AppMemberId: previousEditorId,
               data: definition.history === true || definition.history.data ? oldData : undefined,
             },
@@ -469,6 +471,7 @@ export async function patch({
               ...asset,
               ...getCompressedFileMeta(asset),
               ResourceId: lockedResource.id,
+              ResourceType: action.resource,
             })),
             { logging: false, transaction },
           ),
@@ -480,6 +483,7 @@ export async function patch({
           ResourceVersion.create(
             {
               ResourceId: lockedResource.id,
+              ResourceType: action.resource,
               AppMemberId: previousEditorId,
               data: definition.history === true || definition.history.data ? oldData : undefined,
             },

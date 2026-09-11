@@ -1,11 +1,7 @@
-This block was bootstrapped using the following command:
+This block renders a PDF inside an app. Set the `url` parameter to an app asset ID or an HTTP URL.
+If `url` is omitted, load the PDF as a blob using the `onLoad` action or the `data` event. The
+`height` and `width` parameters control the size of the viewer.
 
-```sh
-npm init appsemble block
-```
+### Images
 
-This block renders a list of data entities that is emitted through an Appsemble block event. It uses
-[`preact`](https://preactjs.com) to define a block.
-
-This readme will be rendered on <https://appsemble.app> when the block is published. Replace the
-contents of this document with a useful block description.
+![PDF Viewer](https://gitlab.com/appsemble/appsemble/-/raw/main/config/assets/pdf-viewer.png)

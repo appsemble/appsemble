@@ -491,6 +491,13 @@ export interface Argv {
   s3SecretKey: string;
 
   /**
+   * The base URL for block assets stored in S3 compatible object storage.
+   *
+   * default undefined
+   */
+  blockAssetsBaseUrl: string;
+
+  /**
    * Enable dry run for reconcile-dns command
    *
    * @default true
@@ -725,6 +732,8 @@ const defaults: Argv = {
   s3AccessKey: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   s3SecretKey: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  blockAssetsBaseUrl: undefined,
   dryRun: true,
   skipCustomDomains: false,
   backupsBucket: 'appsemble-backups-exampleenv',

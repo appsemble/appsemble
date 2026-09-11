@@ -456,36 +456,34 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     });
   }, []);
 
-  // Initialize the login session/
+  // Initialize the login session.
   useEffect(() => {
     // If the app doesn’t have a security definition, don’t even bother initializing anything.
-    if (!definition.security) {
+    if (!definition.security || !isLoading) {
       return;
     }
 
-    if (!appMemberInfo) {
-      if (development) {
-        developmentLogin()
-          .finally(() => setIsLoading(false))
-          .catch(() => {
-            // This can fail if the server is not reachable, but in development this is fine.
-          });
-        return;
-      }
-
-      if (isOAuth2Callback) {
-        setIsLoading(false);
-        return;
-      }
-
-      // Try to resume the session from the refresh token cookie.
-      login('refresh_token', {})
+    if (development) {
+      developmentLogin()
+        .finally(() => setIsLoading(false))
         .catch(() => {
-          // Do nothing. `login` already resets the local session state on failure.
-        })
-        .finally(() => setIsLoading(false));
+          // This can fail if the server is not reachable, but in development this is fine.
+        });
+      return;
     }
-  }, [appMemberInfo, definition, developmentLogin, isOAuth2Callback, login, logout]);
+
+    if (isOAuth2Callback) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Try to resume the session from the refresh token cookie.
+    login('refresh_token', {})
+      .catch(() => {
+        // Do nothing. `login` already resets the local session state on failure.
+      })
+      .finally(() => setIsLoading(false));
+  }, [definition, developmentLogin, isLoading, isOAuth2Callback, login]);
 
   // Handle refreshing access tokens
   useEffect(() => {

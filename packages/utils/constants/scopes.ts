@@ -8,6 +8,7 @@ export const scopes = [
   'blocks:write',
   'blocks:delete',
   'organizations:write',
+  'organizations:delete',
   'resources:read',
   'resources:write',
   'assets:write',

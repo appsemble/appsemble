@@ -724,7 +724,7 @@ describe('applyAppServiceSecrets', () => {
 
     let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
-    const mock = new MockAdapter(axios);
+    const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
 
     mock.onPost(tokenUrl).reply(200, {
       access_token: 'abcd',

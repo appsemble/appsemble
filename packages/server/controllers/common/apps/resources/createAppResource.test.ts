@@ -14,6 +14,7 @@ import {
   OrganizationMember,
   type User,
 } from '../../../../models/index.js';
+import { syncAppDefinitionIndexes } from '../../../../utils/appDefinitionIndexes.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { syncResourceUniqueIndexes } from '../../../../utils/resourceUniqueIndexes.js';
@@ -398,7 +399,8 @@ describe('createAppResource', () => {
       },
     };
     await app.update({ definition });
-    await syncResourceUniqueIndexes(app.id, undefined, definition.resources);
+    const { sequelize } = await getAppDB(app.id);
+    await syncResourceUniqueIndexes(sequelize, undefined, definition.resources);
 
     authorizeStudio();
     const firstResponse = await request.post(`/api/apps/${app.id}/resources/testResource`, {
@@ -572,6 +574,7 @@ describe('createAppResource', () => {
     expect(assets).toStrictEqual([
       expect.objectContaining({
         ResourceId: 1,
+        ResourceType: 'testAssets',
         clonable: false,
         AppMemberId: null,
         GroupId: null,
@@ -1387,6 +1390,78 @@ describe('createAppResource', () => {
       .keys()
       .map((item) => ({ foo: `foo ${item}`, bar: item % 2 === 0 ? item + 1 : null }));
     await request.post<ResourceType>(`api/apps/${testApp.id}/resources/testResource`, resources);
+  });
+
+  it('should number resources whose ordering group field is empty as their own group', async () => {
+    authorizeStudio();
+    const resources = {
+      ...app.definition.resources,
+      positioned: {
+        positioning: true,
+        enforceOrderingGroupByFields: ['groupField'],
+        schema: {
+          type: 'object' as const,
+          properties: { groupField: { type: 'string' as const } },
+        },
+      },
+    };
+    await app.update({ definition: { ...app.definition, resources } });
+    const { Resource, sequelize } = await getAppDB(app.id);
+    await sequelize.transaction((transaction) =>
+      syncAppDefinitionIndexes({ resources, sequelize, transaction }),
+    );
+
+    // An empty ordering field value is a value like any other: these two belong to the same
+    // ordering group, and to a different one than a resource that omits the field.
+    const first = await request.post(`/api/apps/${app.id}/resources/positioned`, {
+      groupField: '',
+    });
+    const second = await request.post(`/api/apps/${app.id}/resources/positioned`, {
+      groupField: '',
+    });
+    const other = await request.post(`/api/apps/${app.id}/resources/positioned`, {});
+
+    expect([first.status, second.status, other.status]).toStrictEqual([201, 201, 201]);
+
+    const positions = await Resource.findAll({
+      where: { type: 'positioned' },
+      order: [['id', 'ASC']],
+    });
+    expect(positions.map(({ Position }) => String(Position))).toStrictEqual(['10', '20', '10']);
+  });
+
+  it('should number seed resources independently of the resources app members create', async () => {
+    authorizeStudio();
+    const resources = {
+      ...app.definition.resources,
+      positioned: {
+        positioning: true,
+        schema: { type: 'object' as const, properties: { foo: { type: 'string' as const } } },
+      },
+    };
+    await app.update({ definition: { ...app.definition, resources } });
+    const { Resource, sequelize } = await getAppDB(app.id);
+    await sequelize.transaction((transaction) =>
+      syncAppDefinitionIndexes({ resources, sequelize, transaction }),
+    );
+
+    const live = await request.post(`/api/apps/${app.id}/resources/positioned`, { foo: 'live' });
+    const seeded = await request.post(
+      `/api/apps/${app.id}/resources/positioned`,
+      { foo: 'seeded' },
+      { params: { seed: true } },
+    );
+
+    expect([live.status, seeded.status]).toStrictEqual([201, 201]);
+
+    const positions = await Resource.findAll({
+      where: { type: 'positioned' },
+      order: [['id', 'ASC']],
+    });
+    expect(positions.map(({ Position, seed }) => [String(Position), seed])).toStrictEqual([
+      ['10', false],
+      ['10', true],
+    ]);
   });
 
   it('should create seed resources with assets and ephemeral resources with assets in demo apps', async () => {

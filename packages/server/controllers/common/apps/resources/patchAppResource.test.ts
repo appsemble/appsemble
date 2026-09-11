@@ -1141,6 +1141,7 @@ describe('patchAppResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: 'testHistoryTrue',
       AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
@@ -1178,6 +1179,7 @@ describe('patchAppResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: 'testHistoryDataTrue',
       AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
@@ -1215,6 +1217,7 @@ describe('patchAppResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
+      ResourceType: 'testHistoryDataFalse',
       AppMemberId: null,
       created: new Date(),
       data: null,

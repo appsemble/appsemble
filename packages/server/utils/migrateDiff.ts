@@ -5,6 +5,8 @@ import { diffString } from 'json-diff';
 import { isEqual as deepEquals } from 'lodash-es';
 import { type Sequelize } from 'sequelize';
 
+import { dropAllTablesWithPartitions } from './dropAllTablesWithPartitions.js';
+
 const { extractSchemas } = extractPgSchema;
 
 interface Schema {
@@ -14,7 +16,7 @@ interface Schema {
 
 export async function apply(db: Sequelize, name: string, fn: () => Promise<void>): Promise<Schema> {
   logger.info('Dropping database');
-  await db.getQueryInterface().dropAllTables();
+  await dropAllTablesWithPartitions(db);
   logger.info(`Creating database using ${name}`);
   await fn();
   logger.info('Taking schema from database');
@@ -31,35 +33,44 @@ export async function apply(db: Sequelize, name: string, fn: () => Promise<void>
   );
   const result: Schema = {
     tables: Object.fromEntries(
-      schema.public.tables.map((table) => [
-        table.name,
-        {
-          ...table,
-          indices: Object.fromEntries(
-            table.indices.map((index) => [
-              index.name,
-              {
-                ...index,
-                columns: Object.fromEntries(index.columns.map((column) => [column.name, column])),
-              },
-            ]),
-          ),
-          columns: Object.fromEntries(
-            table.columns.map((column) => [
-              column.name,
-              {
-                ...column,
-                // Position in table schema irrelevant
-                ordinalPosition: 0,
-                // Again contains ordinal positions
-                informationSchemaValue: {},
-                // Ingore already present on table under indices
-                indices: [] as unknown[],
-              },
-            ]),
-          ),
-        },
-      ]),
+      schema.public.tables.map((table) => {
+        // Extract-pg-schema does not flag a partitioned table's primary-key columns as such, so
+        // derive isPrimaryKey from the primary-key index (which it does capture) for both sides.
+        const primaryKeyColumns = new Set(
+          table.indices.find((index) => index.isPrimary)?.columns.map((column) => column.name) ??
+            [],
+        );
+        return [
+          table.name,
+          {
+            ...table,
+            indices: Object.fromEntries(
+              table.indices.map((index) => [
+                index.name,
+                {
+                  ...index,
+                  columns: Object.fromEntries(index.columns.map((column) => [column.name, column])),
+                },
+              ]),
+            ),
+            columns: Object.fromEntries(
+              table.columns.map((column) => [
+                column.name,
+                {
+                  ...column,
+                  isPrimaryKey: primaryKeyColumns.has(column.name),
+                  // Position in table schema irrelevant
+                  ordinalPosition: 0,
+                  // Again contains ordinal positions
+                  informationSchemaValue: {},
+                  // Ingore already present on table under indices
+                  indices: [] as unknown[],
+                },
+              ]),
+            ),
+          },
+        ];
+      }),
     ),
     enums: Object.fromEntries(schema.public.enums.map((e) => [e.name, [...e.values].sort()])),
   };

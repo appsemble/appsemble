@@ -604,7 +604,7 @@ _Test App_
         logout: vi.fn(),
       };
       vi.spyOn(mailer, 'createImapFlow').mockReturnValue(mockedFlow as ImapFlow);
-      vi.spyOn(mailer, 'copyToSentFolder');
+      const copyToSentFolderSpy = vi.spyOn(mailer, 'copyToSentFolder');
       vi.setSystemTime(0);
       await mailer.sendEmail({
         to: 'Me <test@example.com>',
@@ -630,7 +630,7 @@ _Test App_
         html: '<p>Test</p>',
         attachments: [],
       });
-      expect(mailer.copyToSentFolder).toHaveBeenCalledOnce();
+      expect(copyToSentFolderSpy.mock.calls).toHaveLength(1);
     });
 
     it('should copy the email to the sent folder', async () => {
@@ -651,7 +651,7 @@ _Test App_
       };
       const appendMock = mockedFlow.append as ReturnType<typeof vi.fn>;
       vi.spyOn(mailer, 'createImapFlow').mockReturnValue(mockedFlow as ImapFlow);
-      vi.spyOn(mailer, 'copyToSentFolder');
+      const copyToSentFolderSpy = vi.spyOn(mailer, 'copyToSentFolder');
       vi.setSystemTime(0);
       await mailer.sendEmail({
         to: 'Me <test@example.com>',
@@ -673,8 +673,8 @@ _Test App_
         html: '<p>Test</p>',
         attachments: [],
       });
-      expect(mailer.copyToSentFolder).toHaveBeenCalledOnce();
-      expect(mockedFlow.append).toHaveBeenCalledOnce();
+      expect(copyToSentFolderSpy.mock.calls).toHaveLength(1);
+      expect(appendMock.mock.calls).toHaveLength(1);
       expect(appendMock.mock.calls[0][0]).toBe('Sent');
       const appendCallBody = appendMock.mock.calls[0][1]
         .replaceAll(/^\s*boundary=.*$/gm, '')

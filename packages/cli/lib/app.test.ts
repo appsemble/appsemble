@@ -1,4 +1,6 @@
-import { writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import { getS3FileBuffer, readFixture, resolveFixture } from '@appsemble/node-utils';
 import {
@@ -19,6 +21,7 @@ import {
   deleteApp,
   patchApp,
   publishApp,
+  publishSeedResources,
   resolveAppIdAndRemote,
   traverseAppDirectory,
   updateApp,
@@ -188,6 +191,90 @@ describe('app', () => {
 
   afterAll(() => {
     vi.useRealTimers();
+  });
+
+  describe('publishSeedResources', () => {
+    it.each(['{"foo":42}', '{invalid json'])(
+      'rejects invalid replacement and preserves published resources: %s',
+      async (contents) => {
+        vi.useRealTimers();
+        await authorizeCLI('resources:write', testApp);
+        const app = await App.create({
+          OrganizationId: organization.id,
+          vapidPublicKey: '',
+          vapidPrivateKey: '',
+          definition: {
+            name: 'Seed publication',
+            defaultPage: '',
+            pages: [],
+            resources: {
+              product: {
+                schema: {
+                  type: 'object',
+                  required: ['foo'],
+                  properties: { foo: { type: 'string' } },
+                },
+              },
+            },
+          },
+        });
+        const { Resource } = await getAppDB(app.id);
+        const existing = await Resource.create({
+          type: 'product',
+          data: { foo: 'Heineken' },
+          seed: true,
+        });
+        const path = await mkdtemp(join(tmpdir(), 'seed-publication-'));
+        try {
+          await mkdir(join(path, 'resources'));
+          await writeFile(join(path, 'resources', 'product.json'), contents);
+          await expect(
+            publishSeedResources(path, app.toJSON(), testApp.defaults.baseURL!),
+          ).rejects.toThrow(contents.startsWith('{invalid') ? /Error parsing/ : /400/);
+          expect((await Resource.findByPk(existing.id))?.data).toStrictEqual({ foo: 'Heineken' });
+          expect(await Resource.count()).toBe(1);
+        } finally {
+          await rm(path, { recursive: true, force: true });
+        }
+      },
+    );
+
+    it('publishes every file of a resource type and converts CSV fields', async () => {
+      vi.useRealTimers();
+      await authorizeCLI('resources:write', testApp);
+      const app = await App.create({
+        OrganizationId: organization.id,
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+        definition: {
+          name: 'Seed publication',
+          defaultPage: '',
+          pages: [],
+          resources: {
+            product: {
+              schema: {
+                type: 'object',
+                required: ['foo'],
+                properties: { foo: { type: 'string' }, amount: { type: 'number' } },
+              },
+            },
+          },
+        },
+      });
+      const path = await mkdtemp(join(tmpdir(), 'seed-publication-'));
+      try {
+        await mkdir(join(path, 'resources', 'product'), { recursive: true });
+        await writeFile(join(path, 'resources', 'product', 'a.json'), '{"foo":"Heineken"}');
+        await writeFile(join(path, 'resources', 'product', 'b.csv'), 'foo,amount\nBrand,5.5\n');
+        await publishSeedResources(path, app.toJSON(), testApp.defaults.baseURL!);
+        const { Resource } = await getAppDB(app.id);
+        expect(
+          (await Resource.findAll({ order: [['id', 'ASC']] })).map(({ data }) => data),
+        ).toStrictEqual([{ foo: 'Heineken' }, { foo: 'Brand', amount: 5.5 }]);
+      } finally {
+        await rm(path, { recursive: true, force: true });
+      }
+    });
   });
 
   describe('publishApp', () => {

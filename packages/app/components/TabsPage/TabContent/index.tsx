@@ -7,7 +7,7 @@ interface TabContentProps extends ComponentPropsWithoutRef<typeof BlockList> {
   /**
    * The name of the tab.
    *
-   * This will be set in the document title.
+   * This will be set in the document title and used as the last breadcrumb.
    */
   readonly name: string;
 
@@ -22,5 +22,5 @@ export function TabContent({ name, tabRef, ...props }: TabContentProps): ReactNo
 
   applyRefs({ name }, tabRef);
 
-  return <BlockList {...props} />;
+  return <BlockList {...props} subPageName={name} />;
 }

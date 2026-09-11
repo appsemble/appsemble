@@ -1,6 +1,7 @@
 import { baseTheme } from '@appsemble/lang-sdk';
 import { type ContentSecurityPolicy, type GetCspParams } from '@appsemble/node-utils';
 
+import { getBlockAssetPublicOrigin } from '../utils/blockAssets.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
 function getCustomDirectiveSources(app: GetCspParams['app'], directive: string): string[] {
@@ -27,11 +28,13 @@ export function getCsp({
     (displayFont != null && (displayFont.source ?? baseTheme.font.source) === 'google');
   const objectSrc = getCustomDirectiveSources(app, 'object-src');
   const requiresDynamicScripts = Boolean(app.msClarityID) || Boolean(app.metaPixelID);
+  const blockAssetsOrigin = getBlockAssetPublicOrigin() ?? false;
 
   const scriptSrc: (string | false)[] = requiresDynamicScripts
     ? [
         "'self'",
         "'unsafe-inline'",
+        blockAssetsOrigin,
         app.googleAnalyticsID ? 'https://www.googletagmanager.com' : false,
         app.metaPixelID ? 'https://connect.facebook.net' : false,
         app.msClarityID ? 'https://www.clarity.ms' : false,
@@ -44,6 +47,7 @@ export function getCsp({
         "'self'",
         `'nonce-${nonce}'`,
         settingsHash,
+        blockAssetsOrigin,
         app.googleAnalyticsID ? 'https://www.googletagmanager.com' : false,
         ...getCustomDirectiveSources(app, 'script-src'),
         process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
@@ -57,6 +61,7 @@ export function getCsp({
           'blob:',
           'data:',
           host,
+          blockAssetsOrigin,
           sentryOrigin ?? false,
           app.metaPixelID ? 'https://graph.facebook.com' : false,
           app.msClarityID ? 'https://www.clarity.ms' : false,
@@ -73,7 +78,7 @@ export function getCsp({
           app.msClarityID ? 'https://clarity.ms' : false,
         ],
     'default-src': ["'self'"],
-    'worker-src': ["'self'", 'blob:'],
+    'worker-src': ["'self'", 'blob:', blockAssetsOrigin],
     'script-src': scriptSrc,
     'img-src': hasStrictContentSecurityPolicy
       ? [
@@ -81,6 +86,7 @@ export function getCsp({
           'blob:',
           'data:',
           host,
+          blockAssetsOrigin,
           app.metaPixelID ? 'https://www.facebook.com' : false,
           app.msClarityID ? 'https://www.clarity.ms' : false,
           app.msClarityID ? 'https://clarity.ms' : false,
@@ -91,17 +97,26 @@ export function getCsp({
           'blob:',
           'data:',
           host,
+          blockAssetsOrigin,
           app.metaPixelID ? 'https://www.facebook.com' : false,
           app.msClarityID ? 'https://www.clarity.ms' : false,
           app.msClarityID ? 'https://clarity.ms' : false,
         ],
     'media-src': hasStrictContentSecurityPolicy
-      ? ["'self'", 'blob:', 'data:', host, ...getCustomDirectiveSources(app, 'media-src')]
-      : ['*', 'blob:', 'data:', host],
+      ? [
+          "'self'",
+          'blob:',
+          'data:',
+          host,
+          blockAssetsOrigin,
+          ...getCustomDirectiveSources(app, 'media-src'),
+        ]
+      : ['*', 'blob:', 'data:', host, blockAssetsOrigin],
     // Unsafe-inline used in the restaurants app.
     'style-src': [
       "'self'",
       "'unsafe-inline'",
+      blockAssetsOrigin,
       usesGoogleFonts ? 'https://fonts.googleapis.com' : false,
       ...getCustomDirectiveSources(app, 'style-src'),
     ],
@@ -109,10 +124,11 @@ export function getCsp({
       ? [
           "'self'",
           'data:',
+          blockAssetsOrigin,
           usesGoogleFonts ? 'https://fonts.gstatic.com' : false,
           ...getCustomDirectiveSources(app, 'font-src'),
         ]
-      : ['*', 'data:'],
+      : ['*', 'data:', blockAssetsOrigin],
     // Frames videos from vimeo and youtube in the `@appsemble/video` block, weseedo in
     // `@eindhoven/weseedo` block.
     'frame-src': [

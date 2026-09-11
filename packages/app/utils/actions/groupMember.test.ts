@@ -7,7 +7,7 @@ import { createTestAction } from '../makeActions.js';
 let mock: MockAdapter;
 
 beforeEach(() => {
-  mock = new MockAdapter(axios);
+  mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
 });
 
 afterEach(() => {

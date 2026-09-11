@@ -7,6 +7,7 @@ import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function JSONSchemaBooleanEditor({
   disabled,
+  error,
   name,
   onChange,
   prefix,
@@ -17,6 +18,7 @@ export function JSONSchemaBooleanEditor({
   return (
     <CheckboxField
       disabled={disabled}
+      error={error}
       help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       name={name}

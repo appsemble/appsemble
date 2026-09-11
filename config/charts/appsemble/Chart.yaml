@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.37.4
-appVersion: 0.37.4
+version: 0.38.2-test.0
+appVersion: 0.38.2-test.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,7 +23,7 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: mailpit
-    version: 0.34.1
+    version: 0.36.0
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
   - name: minio
@@ -31,31 +31,13 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
   - name: valkey
-    version: 0.11.0
+    version: 0.12.0
     repository: https://valkey.io/valkey-helm
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: changed
-      description: "Block(form): Add more size options to the image size parameter:
-        auto, number and more steps (256, 512)."
-    - kind: changed
-      description: "Block(list): Add more size options to the image size parameter:
-        auto, number and more steps (256, 512)."
-    - kind: changed
-      description: "Preact-components: Add more size options to ImageComponent: auto,
-        number and more steps (256, 512)."
-    - kind: changed
-      description: "Server: Cascade delete app email quota logs when deleting an app."
     - kind: fixed
-      description: "Block(form): Allow appending files to repeated file fields with
-        existing assets."
-    - kind: fixed
-      description: "Node-utils: Follow system screen orientation settings in web app manifests."
-    - kind: fixed
-      description: "Server: Fix app member session loss during concurrent refreshes."
-    - kind: fixed
-      description: "Server: Keep patched demo resource assets reachable."
+      description: "Server: Start app exports before reading assets from storage."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Modal, useToggle } from '@appsemble/preact-components';
+import { AppAssetDownloadButton, Modal, useToggle } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 
@@ -32,6 +32,7 @@ export function ImageComponent({ field }: { field: Image }): VNode | null {
         </figure>
       </button>
       <Modal isActive={modal.enabled} onClose={modal.disable}>
+        <AppAssetDownloadButton src={img} />
         <figure className="image">
           <img alt={alt} className={styles.img} src={img} />
         </figure>

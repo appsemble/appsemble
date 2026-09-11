@@ -6,6 +6,7 @@ import {
   type AppBlockStyle as AppBlockStyleInterface,
   type GetAppBlockStylesParams,
   opendirSafe,
+  replaceAssetFunctions,
 } from '@appsemble/node-utils';
 
 import { processCss } from '../../lib/processCss.js';
@@ -14,7 +15,7 @@ export async function getAppBlockStyles({
   context,
   name,
 }: GetAppBlockStylesParams): Promise<AppBlockStyleInterface[]> {
-  const { appPath } = context;
+  const { apiUrl, appPath, appsembleApp } = context;
 
   const [, blockName] = parseBlockName(name);
   let style = '';
@@ -30,7 +31,8 @@ export async function getAppBlockStyles({
     if (themeStat.name.startsWith('@') && existsSync(blockDir)) {
       await opendirSafe(blockDir, async (file) => {
         if (file.endsWith('.css')) {
-          style = await processCss(join(file));
+          const css = await processCss(join(file));
+          style = replaceAssetFunctions(css, appsembleApp.id, apiUrl);
         }
       });
     }

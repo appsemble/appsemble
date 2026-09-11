@@ -13,6 +13,7 @@ import {
   type Resource,
   type User,
 } from '../../../models/index.js';
+import { syncAppDefinitionIndexes } from '../../../utils/appDefinitionIndexes.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import {
@@ -76,6 +77,10 @@ describe('updateResourcePosition', () => {
       vapidPrivateKey: 'b',
     });
     appMember = await createTestAppMember(app.id, user.primaryEmail, PredefinedAppRole.Owner);
+    const { sequelize } = await getAppDB(app.id);
+    await sequelize.transaction((transaction) =>
+      syncAppDefinitionIndexes({ resources: app.definition.resources, sequelize, transaction }),
+    );
 
     const { Resource } = await getAppDB(app.id);
     resource = await Resource.create({
@@ -321,17 +326,17 @@ describe('updateResourcePosition', () => {
   });
 
   async function enforceOrderingGroupByBar(): Promise<void> {
-    await app.update({
-      definition: {
-        ...app.definition,
-        resources: {
-          testResource: {
-            ...app.definition.resources!.testResource,
-            enforceOrderingGroupByFields: ['bar'],
-          },
-        },
+    const resources = {
+      testResource: {
+        ...app.definition.resources!.testResource,
+        enforceOrderingGroupByFields: ['bar'],
       },
-    });
+    };
+    await app.update({ definition: { ...app.definition, resources } });
+    const { sequelize } = await getAppDB(app.id);
+    await sequelize.transaction((transaction) =>
+      syncAppDefinitionIndexes({ resources, sequelize, transaction }),
+    );
   }
 
   it('should order a resource among the resources of its own ordering group', async () => {
@@ -411,6 +416,39 @@ describe('updateResourcePosition', () => {
       `/api/apps/${app.id}/resources/testResource?$orderby=${encodeURIComponent('Position asc')}`,
     );
     expect(resources.data.map(({ foo }) => foo)).toStrictEqual(['first', 'moved', 'last']);
+  });
+
+  it('should reset positions when the new numbering overlaps the current one', async () => {
+    const { Resource } = await getAppDB(app.id);
+    await Resource.destroy({ where: { type: 'testResource' }, force: true });
+    // The reset numbers the group 10, 20, 30, ... while these resources already sit on those
+    // values, so every write lands on a position another resource still holds.
+    await Resource.bulkCreate([
+      { type: 'testResource', data: { foo: 'first' }, Position: 10 },
+      { type: 'testResource', data: { foo: 'second' }, Position: 10.000_000_000_000_002 },
+      { type: 'testResource', data: { foo: 'third' }, Position: 20 },
+      { type: 'testResource', data: { foo: 'fourth' }, Position: 30 },
+      { type: 'testResource', data: { foo: 'moved' }, Position: 40 },
+    ]);
+    const moved = await Resource.findOne({ where: { type: 'testResource', Position: 40 } });
+
+    authorizeAppMember(app, appMember);
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${moved!.id}/positions`,
+      { prevResourcePosition: 10, nextResourcePosition: 10.000_000_000_000_002 },
+    );
+    expect(response.status).toBe(200);
+
+    const resources = await request.get<{ foo: string }[]>(
+      `/api/apps/${app.id}/resources/testResource?$orderby=${encodeURIComponent('Position asc')}`,
+    );
+    expect(resources.data.map(({ foo }) => foo)).toStrictEqual([
+      'first',
+      'moved',
+      'second',
+      'third',
+      'fourth',
+    ]);
   });
 
   it('should reset the positions of the resources of the moved resource ordering group only', async () => {

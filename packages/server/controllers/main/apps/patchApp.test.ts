@@ -29,6 +29,7 @@ import {
   getResourceUniqueIndexName,
   syncResourceUniqueIndexes,
 } from '../../../utils/resourceUniqueIndexes.js';
+import { resourcePartitionName } from '../../../utils/resourcePartition.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
 import { createTestDBWithUser } from '../../../utils/test/testSchema.js';
 
@@ -388,6 +389,14 @@ describe('patchApp', () => {
         type: 'testResource',
       })),
     );
+
+    await expect(
+      Resource.create({
+        type: 'testResource',
+        data: { foo: 'duplicate position' },
+        Position: 10,
+      }),
+    ).rejects.toMatchObject({ parent: { code: '23505' } });
   });
 
   it('should reset the positions and respect enforceOrderingGroupByFields if the resources already have positions', async () => {
@@ -449,107 +458,461 @@ describe('patchApp', () => {
 
     const resources = (
       await Resource.findAll({
-        attributes: ['id', 'data', 'Position', 'type'],
+        attributes: ['data', 'Position'],
         where: {
           type: 'testResource',
         },
-        order: [['Position', 'ASC']],
       })
     ).map((resource) => resource.dataValues);
-    expect(resources).toMatchInlineSnapshot(`
-      [
-        {
-          "Position": "10",
-          "data": {
-            "foo": "bar 0",
-            "numericFoo": 0,
-          },
-          "id": 1,
-          "type": "testResource",
+
+    const positionsByOrderingGroup = new Map<number, string[]>();
+    for (const { data, Position } of resources) {
+      positionsByOrderingGroup.set(data.numericFoo, [
+        ...(positionsByOrderingGroup.get(data.numericFoo) ?? []),
+        Position,
+      ]);
+    }
+    expect(
+      (positionsByOrderingGroup.get(0) ?? []).sort((a, b) => Number(a) - Number(b)),
+    ).toStrictEqual(['10', '20', '30', '40', '50']);
+    for (const orderingGroup of [1, 3, 5, 7, 9]) {
+      expect(positionsByOrderingGroup.get(orderingGroup)).toStrictEqual(['10']);
+    }
+  });
+
+  it('should scope positions to the ordering group after enforceOrderingGroupByFields is added', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {},
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const definitionYaml = (orderingGroup: string): string =>
+      stripIndent(`
+        name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+        resources:
+          testResource:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                foo:
+                  type: string
+                groupField:
+                  type: string
+            positioning: true${orderingGroup}
+          ungroupedResource:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                foo:
+                  type: string
+            positioning: true
+      `);
+    const ungroupedYaml = definitionYaml('');
+    const groupedYaml = definitionYaml('\n            enforceOrderingGroupByFields: [groupField]');
+
+    authorizeStudio(user);
+    // The type is first published without an ordering group, then gains one.
+    const { status: firstStatus } = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ yaml: ungroupedYaml }),
+    );
+    expect(firstStatus).toBe(200);
+    const { status } = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ yaml: groupedYaml }),
+    );
+    expect(status).toBe(200);
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { groupField: 'a' }, Position: 10 });
+
+    // A different ordering group numbers its own positions from the start.
+    expect(
+      await Resource.create({ type: 'testResource', data: { groupField: 'b' }, Position: 10 }),
+    ).toMatchObject({ Position: '10' });
+
+    // The same ordering group still may not reuse a position.
+    await expect(
+      Resource.create({ type: 'testResource', data: { groupField: 'a' }, Position: 10 }),
+    ).rejects.toMatchObject({ parent: { code: '23505' } });
+
+    // Resources without an ordering group field value share one ordering group, whether the field
+    // is absent or explicitly null.
+    await Resource.create({ type: 'testResource', data: {}, Position: 10 });
+    await expect(
+      Resource.create({ type: 'testResource', data: { groupField: null }, Position: 10 }),
+    ).rejects.toMatchObject({ parent: { code: '23505' } });
+  });
+
+  it('should reject a schema change that existing resources violate', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: { schema: { type: 'object', properties: { foo: { type: 'string' } } } },
         },
-        {
-          "Position": "20",
-          "data": {
-            "foo": "bar 2",
-            "numericFoo": 0,
-          },
-          "id": 3,
-          "type": "testResource",
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'not a number' } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: integer
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(409);
+
+    // The rejected definition must not be applied: the stored schema stays as it was.
+    const unchanged = await App.findByPk(app.id, { attributes: ['definition'] });
+    expect(unchanged?.definition.resources?.testResource.schema.properties?.foo).toStrictEqual({
+      type: 'string',
+    });
+  });
+
+  it('should reject adding a required property that existing resources lack', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: { schema: { type: 'object', properties: { foo: { type: 'string' } } } },
         },
-        {
-          "Position": "30",
-          "data": {
-            "foo": "bar 4",
-            "numericFoo": 0,
-          },
-          "id": 5,
-          "type": "testResource",
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'bar' } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                required:
+                  - bar
+                properties:
+                  foo:
+                    type: string
+                  bar:
+                    type: string
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(409);
+  });
+
+  it('should allow a schema change that existing resources still satisfy', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: { schema: { type: 'object', properties: { foo: { type: 'string' } } } },
         },
-        {
-          "Position": "40",
-          "data": {
-            "foo": "bar 6",
-            "numericFoo": 0,
-          },
-          "id": 7,
-          "type": "testResource",
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'bar' } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: string
+                  extra:
+                    type: number
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(200);
+  });
+
+  it('should allow unchanged resource schemas without checking existing resources', async () => {
+    const resourceDefinition: ResourceDefinition = {
+      schema: {
+        additionalProperties: false,
+        type: 'object',
+        properties: { foo: { type: 'string' } },
+      },
+    };
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: resourceDefinition,
         },
-        {
-          "Position": "50",
-          "data": {
-            "foo": "bar 8",
-            "numericFoo": 0,
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 123 } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: string
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(200);
+  });
+
+  it('should allow removing a property even when additionalProperties constrains extra data', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            schema: {
+              additionalProperties: false,
+              type: 'object',
+              properties: { foo: { type: 'number' } },
+            },
           },
-          "id": 9,
-          "type": "testResource",
         },
-        {
-          "Position": "60",
-          "data": {
-            "foo": "bar 1",
-            "numericFoo": 1,
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 1 } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                type: object
+                properties: {}
+                additionalProperties:
+                  type: string
+        `),
+      }),
+    );
+
+    // The removed "foo" is now undeclared data; it must not be validated against the
+    // schema-object additionalProperties, so the update is allowed.
+    expect(response.status).toBe(200);
+  });
+
+  it('should reject removing a resource type that still has data', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          keepResource: {
+            schema: {
+              additionalProperties: false,
+              type: 'object',
+              properties: { foo: { type: 'string' } },
+            },
           },
-          "id": 2,
-          "type": "testResource",
-        },
-        {
-          "Position": "70",
-          "data": {
-            "foo": "bar 3",
-            "numericFoo": 3,
+          dropResource: {
+            schema: {
+              additionalProperties: false,
+              type: 'object',
+              properties: { foo: { type: 'string' } },
+            },
           },
-          "id": 4,
-          "type": "testResource",
         },
-        {
-          "Position": "80",
-          "data": {
-            "foo": "bar 5",
-            "numericFoo": 5,
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'dropResource', data: { foo: 'bar' } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            keepResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: string
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(409);
+
+    // The removed type's data must survive the rejected update.
+    const remaining = await Resource.count({ where: { type: 'dropResource' } });
+    expect(remaining).toBe(1);
+  });
+
+  it('should reject removing the resources section while data remains', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          dropResource: {
+            schema: {
+              additionalProperties: false,
+              type: 'object',
+              properties: { foo: { type: 'string' } },
+            },
           },
-          "id": 6,
-          "type": "testResource",
         },
-        {
-          "Position": "90",
-          "data": {
-            "foo": "bar 7",
-            "numericFoo": 7,
-          },
-          "id": 8,
-          "type": "testResource",
-        },
-        {
-          "Position": "100",
-          "data": {
-            "foo": "bar 9",
-            "numericFoo": 9,
-          },
-          "id": 10,
-          "type": "testResource",
-        },
-      ]
-    `);
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource } = await getAppDB(app.id);
+    await Resource.create({ type: 'dropResource', data: { foo: 'bar' } });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(409);
   });
 
   it('should create unique indexes for resources when added to the app definition', async () => {
@@ -596,7 +959,9 @@ describe('patchApp', () => {
     expect(status).toBe(200);
 
     const { sequelize } = await getAppDB(app.id);
-    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+    const indexes = (await sequelize
+      .getQueryInterface()
+      .showIndex(resourcePartitionName('testResource'))) as {
       name: string;
     }[];
 
@@ -623,7 +988,8 @@ describe('patchApp', () => {
       OrganizationId: organization.id,
     });
 
-    await syncResourceUniqueIndexes(app.id, undefined, app.definition.resources);
+    const { sequelize } = await getAppDB(app.id);
+    await syncResourceUniqueIndexes(sequelize, undefined, app.definition.resources);
 
     authorizeStudio(user);
     const { status } = await request.patch(
@@ -651,8 +1017,9 @@ describe('patchApp', () => {
 
     expect(status).toBe(200);
 
-    const { sequelize } = await getAppDB(app.id);
-    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+    const indexes = (await sequelize
+      .getQueryInterface()
+      .showIndex(resourcePartitionName('testResource'))) as {
       name: string;
     }[];
 
@@ -679,9 +1046,8 @@ describe('patchApp', () => {
       OrganizationId: organization.id,
     });
 
-    await syncResourceUniqueIndexes(app.id, undefined, app.definition.resources);
-
     const { sequelize } = await getAppDB(app.id);
+    await syncResourceUniqueIndexes(sequelize, undefined, app.definition.resources);
     const previousIndexName = getResourceUniqueIndexName(
       'testResource',
       ['foo'],
@@ -743,6 +1109,71 @@ describe('patchApp', () => {
     expect(beforePatch[0].indexDefinition).not.toContain('::bigint');
     expect(afterPatch[0].indexDefinition).toContain('::bigint');
     expect(removedIndex).toStrictEqual([]);
+  });
+
+  it('should keep the existing unique index when recreating it fails', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            unique: ['foo'],
+            schema: { type: 'object', properties: { foo: { type: 'string' } } },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { Resource, sequelize } = await getAppDB(app.id);
+    await Resource.create({ type: 'testResource', data: { foo: 'not a number' } });
+    await syncResourceUniqueIndexes(sequelize, undefined, app.definition.resources);
+
+    const previousIndexName = getResourceUniqueIndexName(
+      'testResource',
+      ['foo'],
+      app.definition.resources!.testResource,
+    );
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: integer
+              unique:
+                - foo
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.data.data.code).toBe('RESOURCE_UNIQUE_CONSTRAINT_VALUE_ERROR');
+
+    const indexes = (await sequelize
+      .getQueryInterface()
+      .showIndex(resourcePartitionName('testResource'))) as {
+      name: string;
+    }[];
+    expect(indexes.map(({ name }) => name)).toContain(previousIndexName);
   });
 
   it('should reject adding a unique constraint if duplicate resources already exist', async () => {

@@ -5,40 +5,48 @@ export const key = '0.37.5';
 
 /**
  * Summary:
- * - Add columns `displayFontFamily` and `displayFontSource` to table `Theme`
+ * - Add `storageKey` column to table `BlockAsset`.
+ * - Add `size` column to table `BlockAsset`.
  */
 
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.info('Add column `displayFontFamily` to table `Theme`');
+  logger.info('Add column `storageKey` to table `BlockAsset`');
   await queryInterface.addColumn(
-    'Theme',
-    'displayFontFamily',
-    { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+    'BlockAsset',
+    'storageKey',
+    {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     { transaction },
   );
 
-  logger.info('Add column `displayFontSource` to table `Theme`');
+  logger.info('Add column `size` to table `BlockAsset`');
   await queryInterface.addColumn(
-    'Theme',
-    'displayFontSource',
-    { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+    'BlockAsset',
+    'size',
+    {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     { transaction },
   );
 }
 
 /**
  * Summary:
- * - Remove columns `displayFontFamily` and `displayFontSource` from table `Theme`
+ * - Remove `size` column from `BlockAsset`.
+ * - Remove `storageKey` column from `BlockAsset`.
  */
 
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.info('Remove column `displayFontFamily` from table `Theme`');
-  await queryInterface.removeColumn('Theme', 'displayFontFamily', { transaction });
+  logger.info('Remove column `size` from `BlockAsset` table');
+  await queryInterface.removeColumn('BlockAsset', 'size', { transaction });
 
-  logger.info('Remove column `displayFontSource` from table `Theme`');
-  await queryInterface.removeColumn('Theme', 'displayFontSource', { transaction });
+  logger.info('Remove column `storageKey` from `BlockAsset` table');
+  await queryInterface.removeColumn('BlockAsset', 'storageKey', { transaction });
 }

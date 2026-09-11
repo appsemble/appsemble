@@ -18,6 +18,7 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
+import { resourcePartitionName } from '../../../../utils/resourcePartition.js';
 import { getResourceUniqueIndexName } from '../../../../utils/resourceUniqueIndexes.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
@@ -159,7 +160,9 @@ describe('importApp', () => {
     );
 
     const { Asset, Resource, sequelize } = await getAppDB(1);
-    const indexes = (await sequelize.getQueryInterface().showIndex('Resource')) as {
+    const indexes = (await sequelize
+      .getQueryInterface()
+      .showIndex(resourcePartitionName('testResource'))) as {
       name: string;
     }[];
     const resources = await Resource.findAll();

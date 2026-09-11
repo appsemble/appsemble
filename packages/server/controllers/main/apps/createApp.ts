@@ -9,6 +9,7 @@ import {
   AppsembleError,
   assertKoaCondition,
   handleValidatorResult,
+  replaceAssetFunctions,
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
@@ -33,14 +34,12 @@ import {
   handleAppValidationError,
   setAppPath,
 } from '../../../utils/app.js';
-import { replaceAssetFunctions } from '../../../utils/assetCssURL.js';
 import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { encrypt } from '../../../utils/crypto.js';
-import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
-import { syncResourceUniqueIndexes } from '../../../utils/resourceUniqueIndexes.js';
+import { syncAppDefinitionIndexes } from '../../../utils/appDefinitionIndexes.js';
 import { isValidSentryDsn } from '../../../utils/sentry.js';
 import { createAppBuildManifest } from '../../../utils/appBuildManifest.js';
 
@@ -197,14 +196,14 @@ export async function createApp(ctx: Context): Promise<void> {
         const styleUpdates: Partial<App> = {};
 
         if (app.coreStyle != null) {
-          const replacedCoreStyle = replaceAssetFunctions(app.coreStyle, app.id);
+          const replacedCoreStyle = replaceAssetFunctions(app.coreStyle, app.id, argv.host);
           if (replacedCoreStyle !== app.coreStyle) {
             styleUpdates.coreStyle = replacedCoreStyle;
           }
         }
 
         if (app.sharedStyle != null) {
-          const replacedSharedStyle = replaceAssetFunctions(app.sharedStyle, app.id);
+          const replacedSharedStyle = replaceAssetFunctions(app.sharedStyle, app.id, argv.host);
           if (replacedSharedStyle !== app.sharedStyle) {
             styleUpdates.sharedStyle = replacedSharedStyle;
           }
@@ -252,28 +251,11 @@ export async function createApp(ctx: Context): Promise<void> {
     const { AppMember, sequelize: appDB } = await getAppDB(createdApp.id);
     try {
       await appDB.transaction(async (appTransaction) => {
-        if (createdApp.definition.resources) {
-          await syncResourceUniqueIndexes(
-            createdApp.id,
-            undefined,
-            createdApp.definition.resources,
-            appTransaction,
-          );
-
-          for (const [
-            resourceType,
-            { enforceOrderingGroupByFields, positioning },
-          ] of Object.entries(createdApp.definition.resources ?? {})) {
-            if (positioning && enforceOrderingGroupByFields) {
-              await createDynamicIndexes(
-                enforceOrderingGroupByFields,
-                createdApp.id,
-                resourceType,
-                appTransaction,
-              );
-            }
-          }
-        }
+        await syncAppDefinitionIndexes({
+          resources: createdApp.definition.resources,
+          sequelize: appDB,
+          transaction: appTransaction,
+        });
 
         if (createdApp.definition.cron && createdApp.definition.security?.cron) {
           const identifier = Math.random().toString(36).slice(2);

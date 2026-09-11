@@ -64,6 +64,7 @@ export function createResourceSubscriptionModel(
         foreignKey: 'ResourceId',
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
+        constraints: false,
       });
     }
   }

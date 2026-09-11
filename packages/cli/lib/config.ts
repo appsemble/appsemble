@@ -509,7 +509,7 @@ export async function getProjectWebpackConfig(
   config.output = config.output || {};
   config.output.path = outputPath || publicPath;
   logger.verbose(`Patched webpack config output.path to ${config.output.path}`);
-  config.output.publicPath = publicPath;
+  config.output.publicPath = mode === 'production' ? 'auto' : publicPath;
   logger.verbose(`Patched webpack config output.publicPath to ${config.output.publicPath}`);
 
   return config;

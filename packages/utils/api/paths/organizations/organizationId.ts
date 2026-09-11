@@ -85,6 +85,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'successfully deleted organization',
       },
     },
-    security: [{ studio: [] }, {}],
+    security: [{ studio: [] }, { cli: ['organizations:delete'] }],
   },
 };

@@ -10,6 +10,7 @@ import {
   assertKoaCondition,
   getSupportedLanguages,
   handleValidatorResult,
+  replaceAssetFunctions,
   type TempFile,
   uploadS3File,
 } from '@appsemble/node-utils';
@@ -36,15 +37,12 @@ import {
   handleAppValidationError,
   setAppPath,
 } from '../../../../utils/app.js';
-import { replaceAssetFunctions } from '../../../../utils/assetCssURL.js';
+import { argv } from '../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { getBlockVersions } from '../../../../utils/block.js';
-import { createDynamicIndexes } from '../../../../utils/dynamicIndexes.js';
+import { syncAppDefinitionIndexes } from '../../../../utils/appDefinitionIndexes.js';
 import { processHooks, processReferenceHooks } from '../../../../utils/resource.js';
-import {
-  assertResourceUniqueConstraintSchemaValues,
-  syncResourceUniqueIndexes,
-} from '../../../../utils/resourceUniqueIndexes.js';
+import { assertResourceUniqueConstraintSchemaValues } from '../../../../utils/resourceUniqueIndexes.js';
 
 export async function importApp(ctx: Context): Promise<void> {
   const {
@@ -122,14 +120,18 @@ export async function importApp(ctx: Context): Promise<void> {
         const appStyleUpdates: Partial<App> = {};
 
         if (record.coreStyle != null) {
-          const replacedCoreStyle = replaceAssetFunctions(record.coreStyle, record.id);
+          const replacedCoreStyle = replaceAssetFunctions(record.coreStyle, record.id, argv.host);
           if (replacedCoreStyle !== record.coreStyle) {
             appStyleUpdates.coreStyle = replacedCoreStyle;
           }
         }
 
         if (record.sharedStyle != null) {
-          const replacedSharedStyle = replaceAssetFunctions(record.sharedStyle, record.id);
+          const replacedSharedStyle = replaceAssetFunctions(
+            record.sharedStyle,
+            record.id,
+            argv.host,
+          );
           if (replacedSharedStyle !== record.sharedStyle) {
             appStyleUpdates.sharedStyle = replacedSharedStyle;
           }
@@ -163,30 +165,11 @@ export async function importApp(ctx: Context): Promise<void> {
           const resourcesFolder =
             zip.folder('resources')?.filter((filename) => filename.endsWith('json')) ?? [];
 
-          if (record!.definition.resources) {
-            await syncResourceUniqueIndexes(
-              record!.id,
-              undefined,
-              record!.definition.resources,
-              appTransaction,
-            );
-          }
-
-          if (resourcesFolder.length) {
-            for (const [
-              resourceType,
-              { enforceOrderingGroupByFields, positioning },
-            ] of Object.entries(record!.definition.resources ?? {})) {
-              if (positioning && enforceOrderingGroupByFields) {
-                await createDynamicIndexes(
-                  enforceOrderingGroupByFields,
-                  record!.id,
-                  resourceType,
-                  appTransaction,
-                );
-              }
-            }
-          }
+          await syncAppDefinitionIndexes({
+            resources: record!.definition.resources,
+            sequelize: appDB,
+            transaction: appTransaction,
+          });
 
           for (const file of resourcesFolder) {
             const [, resourceJsonName] = file.name.split('/');
@@ -269,7 +252,7 @@ export async function importApp(ctx: Context): Promise<void> {
               const style = validateStyle(await block.async('text'));
               await AppBlockStyle.create(
                 {
-                  style: replaceAssetFunctions(style, appId),
+                  style: replaceAssetFunctions(style, appId, argv.host),
                   block: `${orgName}/${blockName}`,
                 },
                 { transaction: appTransaction },

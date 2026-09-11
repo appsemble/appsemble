@@ -60,7 +60,7 @@ it('should render a header component', async () => {
   const testSelect = screen.getByTestId('header-test');
   expect(testSelect).toMatchSnapshot();
   await userEvent.click(testSelect);
-  expect(onClickMock).toHaveBeenCalledOnce();
+  expect(onClickMock.mock.calls).toHaveLength(1);
 });
 
 it('should render a header component with a link onClick action', async () => {
@@ -105,5 +105,5 @@ it('should render a header component with a link onClick action', async () => {
   const header = screen.getByTestId('header-test');
   expect(header).toMatchSnapshot();
   await userEvent.click(header);
-  expect(onClickMock).toHaveBeenCalledOnce();
+  expect(onClickMock.mock.calls).toHaveLength(1);
 });

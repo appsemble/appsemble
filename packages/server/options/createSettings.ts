@@ -14,6 +14,7 @@ import {
   pruneAppBuildSnapshots,
   resolveBlockManifests,
 } from '../utils/appBuildManifest.js';
+import { getSettingsBlockFileUrls } from '../utils/blockAssets.js';
 import { createGtagCode, createMetaPixelCode, createMSClarityCode } from '../utils/render.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
@@ -63,6 +64,8 @@ function sanitizeAppDefinitionForPublicSettings(
     defaultPage: definition.defaultPage,
     layout: definition.layout
       ? {
+          breadcrumbs: definition.layout.breadcrumbs,
+          breakpoints: definition.layout.breakpoints,
           debug: definition.layout.debug,
           enabledSettings: definition.layout.enabledSettings,
           feedback: definition.layout.feedback,
@@ -72,6 +75,7 @@ function sanitizeAppDefinitionForPublicSettings(
           login: definition.layout.login,
           logo: definition.layout.logo,
           navigation: definition.layout.navigation,
+          navbar: definition.layout.navbar,
           settings: definition.layout.settings,
           stackedHeader: definition.layout.stackedHeader,
           titleBarText: definition.layout.titleBarText,
@@ -193,6 +197,9 @@ export async function createSettings({
     blockManifests = await resolveBlockManifests({ identifiableBlocks });
   }
 
+  // Public URLs embed deployment configuration, so derive them from stable storage keys per request.
+  const blockFileUrls = await getSettingsBlockFileUrls(blockManifests ?? []);
+
   const appOAuth2Secrets = await AppOAuth2Secret.findAll({ attributes: ['icon', 'id', 'name'] });
   const appSamlSecrets = await AppSamlSecret.findAll({ attributes: ['icon', 'id', 'name'] });
 
@@ -207,7 +214,10 @@ export async function createSettings({
       apiUrl: host,
       appControllerCode: persistedApp.controllerCode,
       appControllerImplementations: persistedApp.controllerImplementations,
-      blockManifests,
+      blockManifests: (blockManifests ?? []).map((blockManifest) => {
+        const fileUrls = blockFileUrls[`${blockManifest.name}@${blockManifest.version}`];
+        return fileUrls ? { ...blockManifest, fileUrls } : blockManifest;
+      }),
       id: persistedApp.id,
       languages,
       logins: [
