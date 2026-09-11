@@ -1,0 +1,19 @@
+{
+  "app": {
+    "description": "",
+    "name": "",
+    "pages.owners-pets": "",
+    "pages.owners-pets.tabs.0": "",
+    "pages.owners-pets.tabs.1": "",
+    "pages.owners-pets.tabs.2": "",
+    "pages.owners-pets.tabs.3": ""
+  },
+  "messageIds": {
+    "cancel": "",
+    "configDelete": "",
+    "confirmDeleteFarmPet": "",
+    "confirmDeleteHousePet": "",
+    "confirmDeleteOwner": "",
+    "confirmDeleteWildPet": ""
+  }
+}
