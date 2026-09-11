@@ -1546,6 +1546,12 @@ production:
       --set "postgresql.enabled=true"
       --set 'postgresSSL=false'
       --set 'minio.persistence.size=50Gi'
+      --set "minio.resources.requests.cpu=250m"
+      --set "minio.resources.requests.memory=512Mi"
+      --set "minio.resources.requests.ephemeral-storage=50Mi"
+      --set "minio.resources.limits.cpu=1"
+      --set "minio.resources.limits.memory=1Gi"
+      --set "minio.resources.limits.ephemeral-storage=2Gi"
       --set "minio.persistence.storageClass=hetzner-volumes-retain"
       --set "minio.persistence.annotations.helm\\.sh/resource-policy=keep"
       --set "postgresql.primary.resources.requests.cpu=250m"
