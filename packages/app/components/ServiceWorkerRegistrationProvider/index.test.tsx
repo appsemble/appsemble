@@ -1,5 +1,5 @@
 // CSpell:ignore cooldown
-import { act, render, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
@@ -44,7 +44,11 @@ let serviceWorkerListeners: Record<string, (event: any) => void> = {};
 
 function Consumer(): ReactNode {
   latestContext = useServiceWorkerRegistration();
-  return null;
+  return (
+    <button onClick={latestContext.update} type="button">
+      Update app
+    </button>
+  );
 }
 
 function renderProvider(serviceWorkerRegistration: ServiceWorkerRegistration | null): void {
@@ -60,11 +64,18 @@ function renderProvider(serviceWorkerRegistration: ServiceWorkerRegistration | n
 }
 
 function createRegistration({
+  active = {} as ServiceWorker,
+  installing = null,
   waiting,
-}: { waiting?: ServiceWorker | null } = {}): ServiceWorkerRegistration {
+}: {
+  active?: ServiceWorker | null;
+  installing?: ServiceWorker | null;
+  waiting?: ServiceWorker | null;
+} = {}): ServiceWorkerRegistration {
   return {
+    active,
     waiting: waiting ?? null,
-    installing: null,
+    installing,
     onupdatefound: null,
     pushManager: {
       getSubscription: vi.fn().mockResolvedValue(null),
@@ -132,6 +143,72 @@ describe('ServiceWorkerRegistrationProvider', () => {
     await waitFor(() => expect(registration.update).toHaveBeenCalledTimes(1));
     expect(caches.keys).not.toHaveBeenCalled();
     expect(caches.delete).not.toHaveBeenCalled();
+  });
+
+  it('should keep the app usable when its registration has no worker at startup', async () => {
+    const registration = createRegistration({ active: null });
+    vi.mocked(registration.update).mockRejectedValue(
+      new DOMException('newestWorker is null', 'InvalidStateError'),
+    );
+
+    await act(() => {
+      renderProvider(registration);
+    });
+
+    expect(screen.queryByText('ServiceWorkerError')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Update app' })).toBeDefined();
+  });
+
+  it('should keep the app usable when an explicit update finds no remaining worker', async () => {
+    const registration = createRegistration();
+
+    await act(() => {
+      renderProvider(registration);
+    });
+
+    Object.defineProperty(registration, 'active', { value: null });
+    vi.mocked(registration.update).mockRejectedValue(
+      new DOMException('newestWorker is null', 'InvalidStateError'),
+    );
+
+    await act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Update app' }));
+    });
+
+    expect(screen.queryByText('ServiceWorkerError')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Update app' })).toBeDefined();
+  });
+
+  it.each(['installing', 'waiting', 'active'] as const)(
+    'should report startup update failures when an %s worker exists',
+    async (state) => {
+      const registration = createRegistration({ active: null, [state]: {} as ServiceWorker });
+      vi.mocked(registration.update).mockRejectedValue(new Error('Unexpected update failure'));
+
+      await act(() => {
+        renderProvider(registration);
+      });
+
+      expect(screen.getByText('ServiceWorkerError')).toBeDefined();
+    },
+  );
+
+  it('should report unexpected errors from an explicit update', async () => {
+    const registration = createRegistration();
+
+    await act(() => {
+      renderProvider(registration);
+    });
+
+    vi.mocked(registration.update).mockRejectedValue(
+      new DOMException('The context has stopped', 'InvalidStateError'),
+    );
+
+    await act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Update app' }));
+    });
+
+    expect(screen.getByText('ServiceWorkerError')).toBeDefined();
   });
 
   it('should throttle repeated version checks during the cooldown window', async () => {
