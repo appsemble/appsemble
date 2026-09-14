@@ -38,27 +38,31 @@ spec:
             - name: http
               containerPort: 9999
               protocol: TCP
-          # /api/health reports unhealthy until the database and Valkey are
-          # reachable. The startup probe gives those dependencies time to come
-          # up before the liveness probe can restart the container, and the
-          # liveness probe tolerates brief dependency blips rather than killing
-          # the pod after the default 30s.
+          # /health/live answers a constant UP without touching any dependency,
+          # so a database or Valkey outage never restarts the fleet. Only the
+          # readiness probe checks the database, and it removes the pod from
+          # the Service endpoints instead of restarting it.
           startupProbe:
             httpGet:
-              path: /api/health
+              path: /health/live
               port: http
             periodSeconds: 10
-            failureThreshold: 60
+            timeoutSeconds: 2
+            failureThreshold: 6
           livenessProbe:
             httpGet:
-              path: /api/health
+              path: /health/live
               port: http
             periodSeconds: 10
-            failureThreshold: 6
+            timeoutSeconds: 2
+            failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /api/health
+              path: /health/ready
               port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.resources.deployment | nindent 12 }}
           env:

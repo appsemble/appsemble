@@ -204,6 +204,20 @@ allows TLS 1.2 and TLS 1.3.
 > **Important**: `postgresSSL` and `postgresql.tls.enabled` must match. If Appsemble uses TLS while
 > PostgreSQL TLS is disabled, startup fails with a TLS-not-supported error.
 
+## Health checks
+
+The server serves three operational endpoints on every hostname, following the
+[MicroProfile Health](https://microprofile.io/specifications/health/) response format:
+
+| Endpoint        | Answers                                                    | Read by                                          |
+| --------------- | ---------------------------------------------------------- | ------------------------------------------------ |
+| `/health/live`  | A constant `UP`, without touching any dependency           | The startup and liveness probes                  |
+| `/health/ready` | Whether PostgreSQL answers and whether the pod is draining | The readiness probe; point uptime monitors here  |
+| `/version`      | The Appsemble version, commit SHA and build time           | A person verifying which build a hostname serves |
+
+Valkey is a soft dependency: the server keeps serving apps without it, so it is not part of
+readiness. `/api/health` is a deprecated alias of `/health/ready`.
+
 ## Variables
 
 | Name                                      | Default                       | Description                                                                                                                               |

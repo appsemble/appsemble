@@ -225,6 +225,7 @@ build docker image:
       --cache-to "type=registry,ref=$CACHE_IMAGE,mode=max"
       --build-arg "version=$CI_COMMIT_REF_NAME"
       --build-arg "date=$CI_JOB_STARTED_AT"
+      --build-arg "commit=$CI_COMMIT_SHA"
       --load .
     - docker run --rm --entrypoint node
       --mount "type=bind,source=$CI_PROJECT_DIR/config,target=/app/config,readonly"
