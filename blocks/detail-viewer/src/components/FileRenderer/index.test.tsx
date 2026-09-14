@@ -1,17 +1,18 @@
-import { getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
-import { Context } from '@appsemble/preact';
+import { createExampleContext, remap, type Remapper } from '@appsemble/lang-sdk';
+import { type BlockProps, Context } from '@appsemble/preact';
 import { render, screen } from '@testing-library/preact';
 import { expect, it } from 'vitest';
 
 import { FileRenderer } from './index.js';
 import { type FileField } from '../../../block.js';
 
-declare module '@appsemble/sdk' {
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  interface EventEmitters {
-    [K: string]: never;
-  }
-}
+const context = createExampleContext(new URL('https://example.com/en/example'), 'en');
+const block = {
+  utils: {
+    asset: (id: string) => id,
+    remap: (remapper: Remapper, data: unknown) => remap(remapper, data, context),
+  },
+} as BlockProps;
 
 it.each([false, true])('shows images when the record allows them (repeated: %s)', (repeated) => {
   const field: FileField = {
@@ -24,9 +25,7 @@ it.each([false, true])('shows images when the record allows them (repeated: %s)'
   const images = ['https://example.com/gluten.png', 'https://example.com/milk.png'];
 
   render(
-    <Context.Provider
-      value={{ ...getDefaultBootstrapParams(), actions: {}, parameters: { fields: [field] } }}
-    >
+    <Context.Provider value={block}>
       <FileRenderer data={{ image: images[0], images, showImages: true }} field={field} />
     </Context.Provider>,
   );
@@ -49,9 +48,7 @@ it.each([false, true])(
     };
 
     render(
-      <Context.Provider
-        value={{ ...getDefaultBootstrapParams(), actions: {}, parameters: { fields: [field] } }}
-      >
+      <Context.Provider value={block}>
         <FileRenderer
           data={{
             image: 'https://example.com/gluten.png',

@@ -26,7 +26,7 @@
     "preact": "^10.0.0"
   },
   "devDependencies": {
-    "@appsemble/block-interaction-tests": "0.38.2-test.0",
+    "@appsemble/lang-sdk": "0.38.2-test.0",
     "@testing-library/preact": "3.2.4",
     "vitest": "4.1.11"
   }
