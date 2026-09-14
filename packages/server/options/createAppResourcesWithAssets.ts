@@ -2,7 +2,7 @@ import { isDeepStrictEqual } from 'node:util';
 
 import {
   type CreateAppResourcesWithAssetsParams,
-  deleteS3Files,
+  deleteAppAssetObjects,
   getCompressedFileMeta,
   getResourceDefinition,
   logger,
@@ -147,8 +147,8 @@ export async function createAppResourcesWithAssets({
       : sequelize.transaction(createResources));
   } catch (error) {
     if (preparedAssets.length) {
-      await deleteS3Files(
-        `app-${app.id}`,
+      await deleteAppAssetObjects(
+        app.id!,
         preparedAssets.map((asset) => asset.id),
       );
     }

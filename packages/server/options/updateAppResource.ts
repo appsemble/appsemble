@@ -1,5 +1,5 @@
 import {
-  deleteS3Files,
+  deleteAppAssetObjects,
   getCompressedFileMeta,
   logger,
   type UpdateAppResourceParams,
@@ -110,7 +110,7 @@ export async function updateAppResource({
         await Asset.destroy({ where: { id: deletedAssetIds }, transaction });
         transaction.afterCommit(async () => {
           try {
-            await deleteS3Files(`app-${app.id}`, deletedAssetIds);
+            await deleteAppAssetObjects(app.id!, deletedAssetIds);
           } catch (error) {
             logger.error(error);
           }
@@ -133,7 +133,7 @@ export async function updateAppResource({
     });
   } catch (error) {
     if (uploadedAssetIds.length) {
-      await deleteS3Files(`app-${app.id}`, uploadedAssetIds);
+      await deleteAppAssetObjects(app.id!, uploadedAssetIds);
     }
 
     if (isUniqueConstraintErrorLike(error)) {

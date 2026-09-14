@@ -93,6 +93,25 @@
         }
       }
     },
+    "s3": {
+      "type": "object",
+      "description": "Configuration for the S3 compatible object storage that holds app and block assets. The endpoint and credentials come from the `minio.auth.existingSecret` secret.",
+      "additionalProperties": false,
+      "properties": {
+        "bucket": {
+          "type": "string",
+          "description": "The single, pre-provisioned bucket that holds all app and block assets. App assets are stored under `apps/<appId>/` and block assets under `blocks/`. When empty, every app gets its own `app-<appId>` bucket and block assets live in the `appsemble-block-assets` bucket, both created on demand."
+        },
+        "region": {
+          "type": "string",
+          "description": "The region to sign object storage requests for."
+        },
+        "pathStyle": {
+          "type": "boolean",
+          "description": "Whether to address buckets in the URL path instead of as a subdomain of the endpoint."
+        }
+      }
+    },
     "blockAssets": {
       "type": "object",
       "additionalProperties": false,
@@ -720,6 +739,14 @@
         "host": { "type": "string" },
         "port": { "type": "number" },
         "secure": { "type": "boolean" },
+        "region": {
+          "type": "string",
+          "description": "The region to sign backup object storage requests for."
+        },
+        "pathStyle": {
+          "type": "boolean",
+          "description": "Whether to address the backups bucket in the URL path instead of as a subdomain of the endpoint."
+        },
         "existingSecret": {
           "type": "string",
           "description": "The name of the existing kubernetes secret to get the access key and secret key from. Must contain access-key and secret-key"

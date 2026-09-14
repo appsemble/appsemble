@@ -30,6 +30,11 @@ ingress:
   tlsSecretName: ''
   tlsWildcardSecretName: ''
 
+s3:
+  bucket: ''
+  region: us-east-1
+  pathStyle: true
+
 blockAssets:
   publicUrl: ''
   migration:
@@ -291,6 +296,8 @@ backups:
   filename: appsemble_backup
   port: 443
   secure: true
+  region: us-east-1
+  pathStyle: true
   existingSecret: backups-secret
 
 assetsBackups:

@@ -27,6 +27,7 @@ beforeAll(async () => {
     endPoint: process.env.S3_HOST || 'localhost',
     port: Number(process.env.S3_PORT) || 9009,
     useSSL: false,
+    bucket: process.env.S3_BUCKET,
   });
 });
 

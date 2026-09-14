@@ -1,11 +1,16 @@
 import { parseBlockName } from '@appsemble/lang-sdk';
-import { deleteS3Files, logger, setS3BucketPolicy } from '@appsemble/node-utils';
+import {
+  blockAssetsBucketName,
+  deleteS3Files,
+  getBlockAssetLocation,
+  getS3Bucket,
+  logger,
+  setS3BucketPolicy,
+} from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 
 import { argv } from './argv.js';
 import { BlockAsset, BlockVersion } from '../models/index.js';
-
-const blockAssetsBucketName = 'appsemble-block-assets';
 
 interface BlockAssetReference {
   filename: string;
@@ -18,10 +23,6 @@ interface BlockAssetLocation {
   filename: string;
   organizationId: string;
   version: string;
-}
-
-export function getBlockAssetsBucketName(): string {
-  return blockAssetsBucketName;
 }
 
 export function getBlockAssetStorageKey({
@@ -40,9 +41,8 @@ export function getBlockAssetPublicUrl(storageKey?: string | null): string | und
   }
 
   const publicBase = `${argv.blockAssetsBaseUrl.replace(/\/+$/, '')}/`;
-  const encodedPath = [getBlockAssetsBucketName(), ...storageKey.split('/')]
-    .map(encodeURIComponent)
-    .join('/');
+  const { bucket, key } = getBlockAssetLocation(storageKey);
+  const encodedPath = [bucket, ...key.split('/')].map(encodeURIComponent).join('/');
 
   return String(new URL(encodedPath, publicBase));
 }
@@ -71,13 +71,19 @@ export function getBlockAssetPublicOrigin(): string | undefined {
   return new URL(argv.blockAssetsBaseUrl).origin;
 }
 
+/**
+ * Grant anonymous read access to the block assets bucket in the bucket-per-app layout.
+ *
+ * In the single-bucket layout the operator grants public read on the `blocks/` prefix; the server
+ * manages no bucket policy there.
+ */
 export async function ensureBlockAssetsBucketPublicRead(): Promise<void> {
-  if (!argv.blockAssetsBaseUrl) {
+  if (!argv.blockAssetsBaseUrl || getS3Bucket()) {
     return;
   }
 
   await setS3BucketPolicy(
-    getBlockAssetsBucketName(),
+    blockAssetsBucketName,
     JSON.stringify({
       Version: '2012-10-17',
       Statement: [
@@ -85,7 +91,7 @@ export async function ensureBlockAssetsBucketPublicRead(): Promise<void> {
           Effect: 'Allow',
           Principal: '*',
           Action: ['s3:GetObject'],
-          Resource: [`arn:aws:s3:::${getBlockAssetsBucketName()}/*`],
+          Resource: [`arn:aws:s3:::${blockAssetsBucketName}/*`],
         },
       ],
     }),
@@ -99,8 +105,12 @@ export async function deleteBlockAssetObjects(storageKeys: string[]): Promise<vo
     return;
   }
 
+  const locations = uniqueStorageKeys.map(getBlockAssetLocation);
   try {
-    await deleteS3Files(getBlockAssetsBucketName(), uniqueStorageKeys);
+    await deleteS3Files(
+      locations[0].bucket,
+      locations.map(({ key }) => key),
+    );
   } catch (error) {
     logger.error(`Failed to delete block asset object(s): ${uniqueStorageKeys.join(', ')}`);
     logger.error(error);

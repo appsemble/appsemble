@@ -1,10 +1,10 @@
-import { getS3FileBuffer } from '@appsemble/node-utils';
+import { getBlockAssetLocation, getS3FileBuffer } from '@appsemble/node-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { migrateBlockAssetsToS3 } from './migrateBlockAssetsToS3.js';
 import { BlockAsset, BlockVersion, Organization } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
-import { getBlockAssetsBucketName, getBlockAssetStorageKey } from '../utils/blockAssets.js';
+import { getBlockAssetStorageKey } from '../utils/blockAssets.js';
 
 async function createBlockVersion(): Promise<BlockVersion> {
   await Organization.create({
@@ -60,7 +60,8 @@ describe('migrateBlockAssetsToS3', () => {
       size: content.byteLength,
       storageKey,
     });
-    expect(await getS3FileBuffer(getBlockAssetsBucketName(), storageKey)).toStrictEqual(content);
+    const { bucket, key } = getBlockAssetLocation(storageKey);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(content);
   });
 
   it('should ignore block assets that have already been migrated', async () => {
@@ -121,7 +122,8 @@ describe('migrateBlockAssetsToS3', () => {
     });
     await blockAsset.reload();
     expect(blockAsset).toMatchObject({ content, size: content.byteLength, storageKey });
-    expect(await getS3FileBuffer(getBlockAssetsBucketName(), storageKey)).toStrictEqual(content);
+    const { bucket, key } = getBlockAssetLocation(storageKey);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(content);
 
     uploadS3FileSpy.mockRestore();
   });

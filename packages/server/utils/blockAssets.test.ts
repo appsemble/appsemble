@@ -1,12 +1,22 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { initS3Client } from '@appsemble/node-utils';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { setArgv } from './argv.js';
 import {
+  ensureBlockAssetsBucketPublicRead,
   getBlockAssetFileUrls,
   getSettingsBlockFileUrls,
   getBlockAssetStorageKey,
 } from './blockAssets.js';
 import { BlockAsset, BlockVersion, Organization } from '../models/index.js';
+
+const s3Config = {
+  accessKey: 'admin',
+  secretKey: 'password',
+  endPoint: process.env.S3_HOST || 'localhost',
+  port: Number(process.env.S3_PORT) || 9009,
+  useSSL: false,
+};
 
 beforeEach(() => {
   setArgv({
@@ -52,6 +62,30 @@ describe('getBlockAssetFileUrls', () => {
       'test.js':
         'https://static.appsemble.example/appsemble-block-assets/xkcd/test/1.2.3/id/test.js',
     });
+  });
+});
+
+describe('single-bucket layout', () => {
+  beforeEach(() => {
+    initS3Client({ ...s3Config, bucket: 'objects' });
+  });
+
+  afterEach(() => {
+    initS3Client({ ...s3Config, bucket: process.env.S3_BUCKET });
+  });
+
+  it('should serve block assets from the blocks prefix of the configured bucket', () => {
+    expect(
+      getBlockAssetFileUrls([{ filename: 'test.js', storageKey: 'xkcd/test/1.2.3/id/test.js' }]),
+    ).toStrictEqual({
+      'test.js': 'https://static.appsemble.example/objects/blocks/xkcd/test/1.2.3/id/test.js',
+    });
+  });
+
+  it('should leave bucket policies to the operator', async () => {
+    // The configured bucket does not exist on the test object storage, so any attempt to manage a
+    // policy fails.
+    expect(await ensureBlockAssetsBucketPublicRead()).toBeUndefined();
   });
 });
 
