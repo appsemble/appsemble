@@ -20,6 +20,9 @@
   }
 }
 
+/* The icon wrapper is sized by its content, so glyphs and custom icons keep the same footprint. */
 .icon {
   font-size: calc(min(3em, 10vw));
+  height: auto;
+  width: auto;
 }

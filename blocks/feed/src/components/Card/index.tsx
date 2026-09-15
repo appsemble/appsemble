@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
-import { Button, Input, isPreactChild, Location } from '@appsemble/preact-components';
+import { Button, Icon, Input, isPreactChild, Location } from '@appsemble/preact-components';
 import { type IconName } from '@appsemble/sdk';
-import { type DivIcon, type Icon } from 'leaflet';
+import { type DivIcon, type Icon as LeafletIcon } from 'leaflet';
 import { type JSX, type VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
@@ -36,7 +36,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   const [message, setMessage] = useState('');
   const [replies, setReplies] = useState<unknown[]>([]);
   const [valid, setValid] = useState(false);
-  const [marker, setMarker] = useState<DivIcon | Icon | null>(null);
+  const [marker, setMarker] = useState<DivIcon | LeafletIcon | null>(null);
 
   useEffect(() => {
     createIcon({ parameters, utils }).then(setMarker);
@@ -164,9 +164,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         <div className={`media ${styles.media}`}>
           <AvatarWrapper action={actions.onAvatarClick} onAvatarClick={onAvatarClick}>
             <figure className={`image is-48x48 ${color} ${styles.avatarIcon}`}>
-              <span className="icon">
-                <i className={`${utils.fa(icon)} fa-2x`} />
-              </span>
+              <Icon icon={icon} iconSize="2x" />
             </figure>
           </AvatarWrapper>
           <header className="media-content">
