@@ -20,6 +20,34 @@ export { type Action, type BulmaColor, type BulmaSize, type Theme };
 export type Remapper = object[] | boolean | number | object | string;
 
 /**
+ * Options for rendering an icon.
+ */
+export interface IconRenderOptions {
+  /**
+   * An additional CSS class to apply to the outer `.icon` wrapper.
+   */
+  className?: string;
+
+  /**
+   * The Bulma size modifier of the wrapper.
+   */
+  size?: BulmaSize;
+
+  /**
+   * The size modifier of the glyph or image. Defaults to a value derived from `size`.
+   */
+  iconSize?: '2x' | '3x' | 'lg';
+}
+
+/**
+ * An icon reference resolved against the app’s icon registry.
+ *
+ * Invalid references, including registry keys which don’t exist, never produce a URL.
+ */
+export type RenderableIcon =
+  { type: 'asset'; url: string } | { type: 'fontawesome'; name: IconName } | { type: 'invalid' };
+
+/**
  * Actions defined on a block.
  *
  * If a block uses actions, extend this interface using module augmentation. The keys are the names
@@ -128,7 +156,7 @@ export interface MenuItem {
   /**
    * The icon to display next to the title.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The color to use for the icon.
@@ -233,6 +261,25 @@ export interface BlockUtils extends Utils {
    * @returns String containing the FontAwesome classes for the icon.
    */
   fa: (icon: IconName) => string;
+
+  /**
+   * Resolve a Font Awesome icon name or an `icon:<key>` reference against the app’s icon registry.
+   *
+   * @param reference The icon reference to resolve.
+   * @returns A Font Awesome name, the URL of a custom icon asset, or an invalid result.
+   */
+  resolveIcon: (reference: IconReference) => RenderableIcon;
+
+  /**
+   * Create a DOM element rendering a Font Awesome icon or a custom icon from the app’s registry.
+   *
+   * Each call returns a fresh `.icon` wrapper. Replace the element when the reference changes.
+   *
+   * @param reference The icon reference to render.
+   * @param options Rendering options.
+   * @returns A span element containing the glyph or image.
+   */
+  icon: (reference: IconReference, options?: IconRenderOptions) => HTMLSpanElement;
 
   /**
    * @param items The list of menu items to display.

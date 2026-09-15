@@ -10,7 +10,7 @@ import {
 import { Title, useMessages } from '@appsemble/react-components';
 import { type BlockUtils } from '@appsemble/sdk';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
-import { fa } from '@appsemble/web-utils';
+import { createIconElement, fa, getIconAssetUrl, resolveIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -236,6 +236,14 @@ export function Block({
         ) as string;
       },
       fa,
+      resolveIcon(reference) {
+        return resolveIcon(reference, appDefinition.icons, (asset) =>
+          getIconAssetUrl(apiUrl, appId, asset),
+        );
+      },
+      icon(reference, options) {
+        return createIconElement(utils.resolveIcon(reference), options);
+      },
       isActionError(input): input is ActionError {
         return input instanceof ActionError;
       },

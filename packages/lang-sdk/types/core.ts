@@ -330,11 +330,12 @@ export interface BasePageDefinition {
   roles?: ViewRole[];
 
   /**
-   * An optional icon from the fontawesome icon set
+   * An optional icon from the Font Awesome icon set, or an `icon:<key>` reference to the app’s
+   * `icons` registry.
    *
    * This will be displayed in the navigation menu.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * Page parameters can be used for linking to a page that should display a single resource.

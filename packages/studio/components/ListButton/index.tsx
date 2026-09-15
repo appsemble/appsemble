@@ -1,6 +1,5 @@
-import { Subtitle, Title } from '@appsemble/react-components';
-import { fa } from '@appsemble/web-utils';
-import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconReference } from '@appsemble/lang-sdk';
+import { Icon, Subtitle, Title } from '@appsemble/react-components';
 import { type ElementType, type MouseEventHandler, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -9,7 +8,7 @@ import styles from './index.module.css';
 interface ListButtonProps {
   readonly alt?: string;
   readonly description?: ReactNode;
-  readonly icon?: IconName;
+  readonly icon?: IconReference;
   readonly image?: string;
   readonly onClick?: MouseEventHandler<HTMLButtonElement>;
   readonly subtitle?: ReactNode;
@@ -36,9 +35,9 @@ export function ListButton({
         <figure className={`image is-64x64 is-flex ${styles.figure}`}>
           {image ? (
             <img alt={alt} src={image} />
-          ) : (
-            <i className={`${fa(icon)} fa-3x has-text-dark`} />
-          )}
+          ) : icon ? (
+            <Icon color="dark" icon={icon} iconSize="3x" />
+          ) : null}
         </figure>
         <div className={`ml-4 ${styles.content}`}>
           {title ? (
