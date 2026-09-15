@@ -597,6 +597,44 @@ describe('indexHandler', () => {
     });
   });
 
+  it.each([true, false])(
+    'should keep the custom icon registry in bootstrapped settings if showAppDefinition is %s',
+    async (showAppDefinition) => {
+      await App.create({
+        OrganizationId: 'test',
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Home',
+          icons: {
+            lot: { asset: 'lot-icon' },
+            parking: { asset: 'parking-icon' },
+          },
+          pages: [
+            {
+              name: 'Home',
+              icon: 'icon:lot',
+              blocks: [],
+            },
+          ],
+        },
+        showAppDefinition,
+        path: 'app',
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+        coreStyle: '',
+        sharedStyle: '',
+      });
+
+      const response = await request.get('/');
+      const settings = parseSettingsScript(response.data.data.settings);
+
+      expect(settings.definition.icons).toStrictEqual({
+        lot: { asset: 'lot-icon' },
+        parking: { asset: 'parking-icon' },
+      });
+    },
+  );
+
   it('should omit non-bootstrapped app definition fields from bootstrapped settings', async () => {
     await App.create({
       OrganizationId: 'test',
