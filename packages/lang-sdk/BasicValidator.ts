@@ -7,6 +7,7 @@ import {
 } from 'jsonschema';
 import { type JsonObject } from 'type-fest';
 
+import { isValidIconReference } from './icons.js';
 import { schemas as allSchemas, type BlockDefinition } from './index.js';
 import { escapeJsonPointer } from './jsonPointer.js';
 import { has } from './miscellaneous.js';
@@ -30,6 +31,7 @@ export class BaseValidatorFactory {
     byte: () => true,
     binary: () => true,
     password: () => true,
+    icon: isValidIconReference,
   };
 
   private schemas;
@@ -44,7 +46,10 @@ export class BaseValidatorFactory {
   build(): Validator {
     const validator = new Validator();
 
-    for (const [key, format] of Object.entries(this.customFormats ?? {})) {
+    for (const [key, format] of Object.entries({
+      ...BaseValidatorFactory.defaultCustomFormats,
+      ...this.customFormats,
+    })) {
       validator.customFormats[key] = format;
     }
 

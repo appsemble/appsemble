@@ -1,9 +1,17 @@
-import { type Action, type ActionError, type BaseMessage, type Theme } from '@appsemble/lang-sdk';
+import {
+  type Action,
+  type ActionError,
+  type BaseMessage,
+  type IconReference,
+  type IconRegistry,
+  type IconRegistryEntry,
+  type Theme,
+} from '@appsemble/lang-sdk';
 import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Promisable } from 'type-fest';
 
-export { type IconName };
+export { type IconName, type IconReference, type IconRegistry, type IconRegistryEntry };
 export { type Action, type BulmaColor, type BulmaSize, type Theme };
 
 /**
