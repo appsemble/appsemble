@@ -431,6 +431,46 @@ English (\`en\`) messages are required.
     });
   });
 
+  it('should not be possible to register a lower block version than the existing one', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('description', 'This block has been uploaded for the purpose of unit testing.');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'standing.png',
+    });
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'testblock.js',
+    });
+
+    await authorizeClientCredentials('blocks:write');
+    await request.post('/api/blocks', formData);
+
+    const formData2 = new FormData();
+    formData2.append('name', '@xkcd/standing');
+    formData2.append(
+      'description',
+      'This block has been uploaded for the purpose of unit testing.',
+    );
+    formData2.append('version', '1.32.8');
+    formData2.append('files', createFixtureStream('standing.png'), {
+      filepath: 'standing.png',
+    });
+    formData2.append('files', createFixtureStream('standing.png'), {
+      filepath: 'testblock.js',
+    });
+
+    await authorizeClientCredentials('blocks:write');
+    const { data } = await request.post('/api/blocks', formData2);
+
+    expect(data).toStrictEqual({
+      error: 'Conflict',
+      message:
+        'Version 1.32.8 is equal to or lower than the already existing @xkcd/standing@1.32.9.',
+      statusCode: 409,
+    });
+  });
+
   it('should require at least one file', async () => {
     const formData = new FormData();
     formData.append('name', '@xkcd/standing');
