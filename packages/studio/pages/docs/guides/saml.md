@@ -46,7 +46,8 @@ The following properties can be filled in without restrictions. Use values that 
 
 - **Name**: The name that will be displayed on the login button.
 - **Icon**: A Font Awesome icon. A list of available icons can be found
-  [here](https://fontawesome.com/icons?m=free)
+  [here](https://fontawesome.com/icons?m=free). This may also be an `icon:<key>` reference to a
+  [custom icon](custom-icons.md) of the app.
 - **Login endpoint**: It’s a required field, but you might not yet have received the proper value
   from the IDP. If that’s the case, temporarily fill in: `https://example.com`
 
