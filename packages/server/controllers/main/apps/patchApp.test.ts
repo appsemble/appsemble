@@ -2092,6 +2092,18 @@ describe('patchApp', () => {
                     "maxLength": 80,
                     "type": "string",
                   },
+                  "icons": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/IconRegistryEntryDefinition",
+                    },
+                    "description": "Custom icons that can be referenced as \`icon:<key>\` wherever an icon is accepted.
+
+      Each key names an app-level SVG asset by its name. Keys and asset names must consist of lower case
+      letters, digits, and single hyphens. Keys are case-sensitive, and \`icon:<key>\` never falls back
+      to a Font Awesome icon.
+      ",
+                    "type": "object",
+                  },
                   "layout": {
                     "$ref": "#/components/schemas/AppLayoutDefinition",
                     "description": "Properties related to the layout of the app.",
@@ -2266,6 +2278,18 @@ describe('patchApp', () => {
                     "maxLength": 80,
                     "type": "string",
                   },
+                  "icons": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/IconRegistryEntryDefinition",
+                    },
+                    "description": "Custom icons that can be referenced as \`icon:<key>\` wherever an icon is accepted.
+
+      Each key names an app-level SVG asset by its name. Keys and asset names must consist of lower case
+      letters, digits, and single hyphens. Keys are case-sensitive, and \`icon:<key>\` never falls back
+      to a Font Awesome icon.
+      ",
+                    "type": "object",
+                  },
                   "layout": {
                     "$ref": "#/components/schemas/AppLayoutDefinition",
                     "description": "Properties related to the layout of the app.",
@@ -2372,6 +2396,154 @@ describe('patchApp', () => {
         "statusCode": 400,
       }
     `);
+  });
+
+  it('should reject removing an icon key which is still used by stored SSO settings', async () => {
+    const app = await App.create({
+      path: 'foo',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        icons: { google: { asset: 'google-logo' }, okta: { asset: 'okta-logo' } },
+        pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const { AppOAuth2Secret, AppSamlSecret } = await getAppDB(app.id);
+    await AppOAuth2Secret.create({
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'icon:google',
+      name: 'Google',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+    await AppSamlSecret.create({
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: 'icon:okta',
+      name: 'Okta',
+      spCertificate: '-----BEGIN CERTIFICATE-----\nSP\n-----END CERTIFICATE-----',
+      spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
+      spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          icons:
+            microsoft:
+              asset: microsoft-logo
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "instance": {
+                "microsoft": {
+                  "asset": "microsoft-logo",
+                },
+              },
+              "message": "is missing the icon key “google”, which is used by the OAuth2 secret “Google” (id 1)",
+              "path": [
+                "icons",
+              ],
+              "property": "instance.icons",
+              "stack": "instance.icons is missing the icon key “google”, which is used by the OAuth2 secret “Google” (id 1)",
+            },
+            {
+              "instance": {
+                "microsoft": {
+                  "asset": "microsoft-logo",
+                },
+              },
+              "message": "is missing the icon key “okta”, which is used by the SAML secret “Okta” (id 1)",
+              "path": [
+                "icons",
+              ],
+              "property": "instance.icons",
+              "stack": "instance.icons is missing the icon key “okta”, which is used by the SAML secret “Okta” (id 1)",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "App validation failed",
+        "statusCode": 400,
+      }
+    `);
+    await app.reload();
+    expect(app.definition.icons).toStrictEqual({
+      google: { asset: 'google-logo' },
+      okta: { asset: 'okta-logo' },
+    });
+  });
+
+  it('should allow changing the asset of an icon key which is used by stored SSO settings', async () => {
+    const app = await App.create({
+      path: 'foo',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        icons: { google: { asset: 'google-logo' } },
+        pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    await AppOAuth2Secret.create({
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'icon:google',
+      name: 'Google',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          icons:
+            google:
+              asset: google-logo-v2
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    await app.reload();
+    expect(app.definition.icons).toStrictEqual({ google: { asset: 'google-logo-v2' } });
   });
 
   it('should validate and update css when updating an app', async () => {

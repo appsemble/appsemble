@@ -10,6 +10,7 @@ import {
   handleValidatorResult,
   logger,
   replaceAssetFunctions,
+  throwKoaError,
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
@@ -41,6 +42,7 @@ import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
+import { validateStoredSsoIcons } from '../../../utils/icons.js';
 import { syncAppDefinitionIndexes } from '../../../utils/appDefinitionIndexes.js';
 import { assertResourceSchemaCompatibility } from '../../../utils/resourceSchemaCompatibility.js';
 import { createAppBuildManifest, pruneAppBuildSnapshots } from '../../../utils/appBuildManifest.js';
@@ -171,6 +173,10 @@ export async function patchApp(ctx: Context): Promise<void> {
         ),
         'App validation failed',
       );
+      const ssoIconErrors = await validateStoredSsoIcons(appId, definition);
+      if (ssoIconErrors.length) {
+        throwKoaError(ctx, 400, 'App validation failed', { errors: ssoIconErrors });
+      }
 
       result.definition = definition;
       if (definition.cron && definition.security?.cron) {

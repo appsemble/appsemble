@@ -2739,6 +2739,18 @@ describe('createApp', () => {
                     "maxLength": 80,
                     "type": "string",
                   },
+                  "icons": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/IconRegistryEntryDefinition",
+                    },
+                    "description": "Custom icons that can be referenced as \`icon:<key>\` wherever an icon is accepted.
+
+      Each key names an app-level SVG asset by its name. Keys and asset names must consist of lower case
+      letters, digits, and single hyphens. Keys are case-sensitive, and \`icon:<key>\` never falls back
+      to a Font Awesome icon.
+      ",
+                    "type": "object",
+                  },
                   "layout": {
                     "$ref": "#/components/schemas/AppLayoutDefinition",
                     "description": "Properties related to the layout of the app.",

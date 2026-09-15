@@ -18,8 +18,13 @@ export const messages = defineMessages({
     defaultMessage: 'Icon',
   },
   iconHelp: {
-    id: 'studio.Fb3/VH',
-    defaultMessage: 'The FontAwesome icon that will be displayed on the login button',
+    id: 'studio.Xq8LX4',
+    defaultMessage:
+      'The Font Awesome icon that will be displayed on the login button, or an `icon:<key>` reference to an icon from the app’s `icons` registry',
+  },
+  submitError: {
+    id: 'studio.8TH0bj',
+    defaultMessage: 'Something went wrong trying to save the secret',
   },
   redirectUrlLabel: {
     id: 'studio.pn2dEs',

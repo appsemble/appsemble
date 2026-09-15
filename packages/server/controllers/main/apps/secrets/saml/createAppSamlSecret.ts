@@ -11,6 +11,7 @@ import { touchApp } from '../../../../../utils/app.js';
 import { argv } from '../../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
+import { getSsoIconError } from '../../../../../utils/icons.js';
 import {
   normalizeLoginRoleMappings,
   validateLoginRoleMappings,
@@ -53,6 +54,9 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
   cert.setSubject(attrs);
   cert.setIssuer(attrs);
   cert.sign(privateKey);
+
+  const iconError = getSsoIconError(body.icon, app.definition);
+  assertKoaCondition(iconError == null, ctx, 400, iconError ?? 'Invalid icon');
 
   const roleMappingsError = validateLoginRoleMappings(
     body.roleMappings,
