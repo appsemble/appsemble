@@ -35,7 +35,8 @@ function getInputByLabel(container: HTMLElement, label: string): HTMLInputElemen
 }
 
 async function waitFor(assertion: () => void): Promise<void> {
-  const end = Date.now() + 1000;
+  // The markdown editor is loaded lazily, which can take a while on a loaded CI runner.
+  const end = Date.now() + 10_000;
 
   for (;;) {
     try {
