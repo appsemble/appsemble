@@ -311,7 +311,9 @@ declare module '@appsemble/sdk' {
 
 Render the icon with `utils.icon()`. It returns a `.icon` wrapper element containing either a Font
 Awesome glyph or an image of the custom icon, so the block doesn’t need to know which kind of icon
-it received. Each call creates a new element; replace it when the reference changes.
+it received. Each call creates a new element; replace it when the reference changes. Custom icons
+fill the wrapper, so pass the Bulma `size` option to size them; `iconSize` only affects Font Awesome
+glyphs.
 
 ```ts copy
 bootstrap(({ parameters, utils }) => {

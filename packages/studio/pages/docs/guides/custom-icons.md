@@ -96,9 +96,11 @@ or an `asset` of their own, so they keep their existing configuration and don’
 
 ## Appearance
 
-A custom icon takes the same space as the Font Awesome icon it replaces: the image is centered in
-the regular icon box and scales with the surrounding font size, so the same icon can be used in
-navigation, on a button and in a large tile.
+A custom icon fills the icon box it replaces a Font Awesome icon in. The box is sized by the
+surrounding component, for example 1.5rem in navigation, 1rem on a small button and 3rem in a large
+tile, so the same icon can be used everywhere. Font Awesome glyphs leave some room inside the box,
+so draw custom icons with a little margin inside a square canvas, as most icon sets do, to match
+their visual weight.
 
 Custom icons keep the colors of their artwork. Theme colors such as the color of a button only
 affect Font Awesome icons. Pick artwork which is legible on light and dark surfaces, and on active,

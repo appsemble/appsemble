@@ -39,7 +39,7 @@ it('should render custom icons as images inside a provider', () => {
   const img = container.querySelector('img')!;
   expect(img.getAttribute('alt')).toBe('');
   expect(img.getAttribute('src')).toBe('https://example.com/api/apps/42/assets/company-logo');
-  expect(img.className).toBe('image lg');
+  expect(img.className).toBe('image');
   expect(img.parentElement?.className).toBe('icon is-medium');
 });
 

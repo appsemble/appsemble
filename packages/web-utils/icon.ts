@@ -14,12 +14,6 @@ const sizeModifierMap: Partial<Record<BulmaSize, IconSizeModifier>> = {
   large: '2x',
 };
 
-const imageSizeMap: Record<IconSizeModifier, string> = {
-  lg: '1.3333em',
-  '2x': '2em',
-  '3x': '3em',
-};
-
 /**
  * Get the icon size modifier to use, deriving it from the wrapper size if it isn’t explicit.
  *
@@ -32,18 +26,6 @@ export function getIconSizeModifier(
   iconSize?: IconSizeModifier,
 ): IconSizeModifier | undefined {
   return iconSize ?? (size ? sizeModifierMap[size] : undefined);
-}
-
-/**
- * Get the CSS length of a custom icon image for a size modifier.
- *
- * The sizes match the visual size of Font Awesome glyphs with the same modifier.
- *
- * @param iconSize The size modifier.
- * @returns A CSS length relative to the wrapper’s font size.
- */
-export function getIconImageSize(iconSize?: IconSizeModifier): string {
-  return iconSize ? imageSizeMap[iconSize] : '1em';
 }
 
 /**
@@ -87,14 +69,13 @@ export function resolveIcon(
 /**
  * Apply the styles of a custom icon image to an image element.
  *
+ * The image fills its `.icon` wrapper, so the wrapper’s Bulma size determines the rendered size.
  * Inline styles are used so the image renders the same inside block shadow roots.
  *
  * @param img The image element to style.
- * @param iconSize The size modifier of the icon.
  */
-export function applyIconImageStyle(img: HTMLImageElement, iconSize?: IconSizeModifier): void {
-  const size = getIconImageSize(iconSize);
-  Object.assign(img.style, { width: size, height: size, objectFit: 'contain' });
+export function applyIconImageStyle(img: HTMLImageElement): void {
+  Object.assign(img.style, { width: '100%', height: '100%', objectFit: 'contain' });
 }
 
 /**
@@ -127,7 +108,7 @@ export function createIconElement(
   } else if (icon.type === 'asset') {
     const img = document.createElement('img');
     img.alt = '';
-    applyIconImageStyle(img, iconSize);
+    applyIconImageStyle(img);
     img.addEventListener('error', () => {
       img.hidden = true;
     });

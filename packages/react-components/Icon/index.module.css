@@ -1,20 +1,6 @@
+/* The image fills the wrapper, so the Bulma size of the wrapper determines the rendered size. */
 .image {
-  height: 1em;
+  height: 100%;
   object-fit: contain;
-  width: 1em;
-}
-
-.lg {
-  height: 1.3333em;
-  width: 1.3333em;
-}
-
-.x2 {
-  height: 2em;
-  width: 2em;
-}
-
-.x3 {
-  height: 3em;
-  width: 3em;
+  width: 100%;
 }

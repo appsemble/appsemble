@@ -164,7 +164,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         <div className={`media ${styles.media}`}>
           <AvatarWrapper action={actions.onAvatarClick} onAvatarClick={onAvatarClick}>
             <figure className={`image is-48x48 ${color} ${styles.avatarIcon}`}>
-              <Icon icon={icon} iconSize="2x" />
+              <Icon icon={icon} size="large" />
             </figure>
           </AvatarWrapper>
           <header className="media-content">

@@ -34,7 +34,9 @@ export interface IconRenderOptions {
   size?: BulmaSize;
 
   /**
-   * The size modifier of the glyph or image. Defaults to a value derived from `size`.
+   * The size modifier of a Font Awesome glyph. Defaults to a value derived from `size`.
+   *
+   * Custom icons fill the wrapper, so only `size` affects them.
    */
   iconSize?: '2x' | '3x' | 'lg';
 }

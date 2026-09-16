@@ -1,13 +1,7 @@
 import { type IconRegistry } from '@appsemble/lang-sdk';
 import { describe, expect, it } from 'vitest';
 
-import {
-  createIconElement,
-  getIconAssetUrl,
-  getIconImageSize,
-  getIconSizeModifier,
-  resolveIcon,
-} from './icon.js';
+import { createIconElement, getIconAssetUrl, getIconSizeModifier, resolveIcon } from './icon.js';
 
 const registry: IconRegistry = { logo: { asset: 'company-logo' } };
 const getAssetUrl = (asset: string): string => `https://example.com/assets/${asset}`;
@@ -26,18 +20,6 @@ describe('getIconSizeModifier', () => {
     expect(getIconSizeModifier('small')).toBeUndefined();
     expect(getIconSizeModifier('normal')).toBeUndefined();
     expect(getIconSizeModifier()).toBeUndefined();
-  });
-});
-
-describe('getIconImageSize', () => {
-  it('should match the visual size of Font Awesome glyphs', () => {
-    expect(getIconImageSize('lg')).toBe('1.3333em');
-    expect(getIconImageSize('2x')).toBe('2em');
-    expect(getIconImageSize('3x')).toBe('3em');
-  });
-
-  it('should default to the font size', () => {
-    expect(getIconImageSize()).toBe('1em');
   });
 });
 
@@ -118,18 +100,18 @@ describe('createIconElement', () => {
     const img = element.querySelector('img');
     expect(img?.getAttribute('alt')).toBe('');
     expect(img?.getAttribute('src')).toBe('https://example.com/logo');
-    expect(img?.style.width).toBe('1em');
-    expect(img?.style.height).toBe('1em');
+    expect(img?.style.width).toBe('100%');
+    expect(img?.style.height).toBe('100%');
     expect(img?.style.objectFit).toBe('contain');
   });
 
-  it('should size custom icons like glyphs', () => {
+  it('should size custom icons by the wrapper', () => {
     const element = createIconElement(
       { type: 'asset', url: 'https://example.com/logo' },
-      { size: 'large' },
+      { iconSize: '3x', size: 'large' },
     );
     expect(element.className).toBe('icon is-large');
-    expect(element.querySelector('img')?.style.width).toBe('2em');
+    expect(element.querySelector('img')?.style.width).toBe('100%');
   });
 
   it('should hide failed images but keep the wrapper', () => {

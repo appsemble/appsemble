@@ -30,12 +30,6 @@ interface IconProps {
   readonly size?: BulmaSize;
 }
 
-const imageSizeClasses: Record<IconSizeModifier, string> = {
-  lg: styles.lg,
-  '2x': styles.x2,
-  '3x': styles.x3,
-};
-
 /**
  * Display a Font Awesome icon or a custom icon from the app’s icon registry.
  */
@@ -61,7 +55,7 @@ export function Icon({
         // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
         <img
           alt=""
-          className={classNames(styles.image, iconSize && imageSizeClasses[iconSize])}
+          className={styles.image}
           onError={() => setFailedUrl(resolved.url)}
           src={resolved.url}
         />

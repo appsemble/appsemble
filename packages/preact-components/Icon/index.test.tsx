@@ -34,7 +34,7 @@ it('should render custom icons as images', () => {
   const img = container.querySelector('img')!;
   expect(img.getAttribute('alt')).toBe('');
   expect(img.getAttribute('src')).toBe('https://example.com/assets/company-logo');
-  expect(img.className).toBe('image x3');
+  expect(img.className).toBe('image');
 });
 
 it('should render invalid references as empty boxes', () => {

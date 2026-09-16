@@ -7,9 +7,9 @@
   flex: 1 1;
 }
 
-/* The icon wrapper is sized by its content, so glyphs and custom icons keep the same footprint. */
+/* The wrapper matches the glyph size, so custom icons fill the same footprint as glyphs. */
 .icon {
   font-size: calc(min(3em, 10vw));
-  height: auto;
-  width: auto;
+  height: 1em;
+  width: 1em;
 }
