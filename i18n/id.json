@@ -1000,7 +1000,6 @@
   "studio.XdKIcE": "Simpan Halaman",
   "studio.XkOni/": "Pesan khusus",
   "studio.XpziH6": "Status sertifikat SSL saat ini tidak diketahui",
-  "studio.Xq8LX4": "",
   "studio.Xr50rl": "Koleksi aplikasi telah berhasil dihapus {name}",
   "studio.XuZJvq": "Pengaturan pembayaran telah berhasil diperbarui",
   "studio.Xw/F4c": "Terapkan opsi filter ke sumber daya Anda; opsi-opsi ini juga akan diterapkan saat mengekspor file CSV.",
@@ -1528,5 +1527,6 @@
   "studio.zji8KM": "Apakah Anda mengizinkan {app} untuk melakukan tindakan berikut atas nama Anda?",
   "studio.zo9Szm": "Penghapusan koleksi aplikasi tidak dapat dibatalkan.",
   "studio.zoSzG+": "Beralih ke Editor GUI",
-  "studio.zwurmB": "Cookie"
+  "studio.zwurmB": "Cookie",
+  "studio.zzKGTH": ""
 }

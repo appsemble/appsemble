@@ -1000,7 +1000,6 @@
   "studio.XdKIcE": "Spremite stranicu",
   "studio.XkOni/": "Prilagođene poruke",
   "studio.XpziH6": "Trenutni status SSL certifikata je nepoznat",
-  "studio.Xq8LX4": "",
   "studio.Xr50rl": "Uspješno izbrisana kolekcija aplikacija {name}",
   "studio.XuZJvq": "Uspješno ažurirane postavke plaćanja",
   "studio.Xw/F4c": "Primijenite opcije filtriranja na svoje resurse, te će se opcije također primijeniti pri izvozu CSV datoteke.",
@@ -1528,5 +1527,6 @@
   "studio.zji8KM": "Dozvolite li tvrtki {app} da u vaše ime obavi sljedeće radnje?",
   "studio.zo9Szm": "Brisanje kolekcije aplikacija ne može se poništiti.",
   "studio.zoSzG+": "Prebacite se na GUI uređivač",
-  "studio.zwurmB": "Kolačić"
+  "studio.zwurmB": "Kolačić",
+  "studio.zzKGTH": ""
 }

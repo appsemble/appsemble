@@ -10,9 +10,9 @@ export const messages = defineMessages({
     defaultMessage: 'Icon',
   },
   iconHelp: {
-    id: 'studio.Xq8LX4',
+    id: 'studio.zzKGTH',
     defaultMessage:
-      'The Font Awesome icon that will be displayed on the login button, or an `icon:<key>` reference to an icon from the app’s `icons` registry',
+      'The Font Awesome icon that will be displayed on the login button, or an `icon:` reference to a key from the app’s `icons` registry',
   },
   submitError: {
     id: 'studio.8TH0bj',

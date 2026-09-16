@@ -1000,7 +1000,6 @@
   "studio.XdKIcE": "Seite speichern",
   "studio.XkOni/": "Benutzerdefinierte Meldungen",
   "studio.XpziH6": "Der aktuelle Status des SSL-Zertifikats ist unbekannt.",
-  "studio.Xq8LX4": "",
   "studio.Xr50rl": "App-Sammlung erfolgreich gelöscht {name}",
   "studio.XuZJvq": "Zahlungseinstellungen erfolgreich aktualisiert",
   "studio.Xw/F4c": "Wenden Sie Filteroptionen auf Ihre Ressourcen an; diese Optionen werden auch beim Exportieren der CSV-Datei angewendet.",
@@ -1528,5 +1527,6 @@
   "studio.zji8KM": "Dürfen wir „ {app} “ erlauben, die folgenden Aktionen in Ihrem Namen durchzuführen?",
   "studio.zo9Szm": "Das Löschen einer App-Sammlung kann nicht rückgängig gemacht werden.",
   "studio.zoSzG+": "Zum GUI-Editor wechseln",
-  "studio.zwurmB": "Cookie"
+  "studio.zwurmB": "Cookie",
+  "studio.zzKGTH": ""
 }

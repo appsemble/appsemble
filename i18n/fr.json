@@ -1000,7 +1000,6 @@
   "studio.XdKIcE": "Enregistrer la page",
   "studio.XkOni/": "Messages personnalisés",
   "studio.XpziH6": "Le statut actuel du certificat SSL est inconnu.",
-  "studio.Xq8LX4": "",
   "studio.Xr50rl": "Suppression de la collection d'applications réussie {name}",
   "studio.XuZJvq": "Les paramètres de paiement ont été mis à jour avec succès.",
   "studio.Xw/F4c": "Appliquez des filtres à vos ressources ; ces filtres seront également appliqués lors de l'exportation au format CSV.",
@@ -1528,5 +1527,6 @@
   "studio.zji8KM": "Autorisez-vous {app} à effectuer les actions suivantes en votre nom ?",
   "studio.zo9Szm": "La suppression d'une collection d'applications est irréversible.",
   "studio.zoSzG+": "Passer à l'éditeur graphique",
-  "studio.zwurmB": "Cookie"
+  "studio.zwurmB": "Cookie",
+  "studio.zzKGTH": ""
 }

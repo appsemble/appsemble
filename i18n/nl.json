@@ -1000,7 +1000,6 @@
   "studio.XdKIcE": "Pagina opslaan",
   "studio.XkOni/": "Aangepaste berichten",
   "studio.XpziH6": "De huidige status van het SSL-certificaat is onbekend",
-  "studio.Xq8LX4": "Het Font Awesome-pictogram dat op de inlogknop wordt weergegeven, of een `icon:<key>`-verwijzing naar een pictogram uit het `icons`-register van de app",
   "studio.Xr50rl": "App-collectie succesvol verwijderd {name}",
   "studio.XuZJvq": "Betalingsinstellingen succesvol bijgewerkt",
   "studio.Xw/F4c": "Pas filteropties toe op uw bronnen; deze opties worden ook toegepast bij het exporteren van de CSV.",
@@ -1528,5 +1527,6 @@
   "studio.zji8KM": "Wilt u {app} toestaan de volgende acties namens u uit te voeren?",
   "studio.zo9Szm": "Het verwijderen van een app-collectie kan niet ongedaan worden gemaakt.",
   "studio.zoSzG+": "Overschakelen naar de GUI-editor",
-  "studio.zwurmB": "Cookie"
+  "studio.zwurmB": "Cookie",
+  "studio.zzKGTH": "Het Font Awesome-pictogram dat op de inlogknop wordt weergegeven, of een `icon:`-verwijzing naar een sleutel uit het `icons`-register van de app"
 }

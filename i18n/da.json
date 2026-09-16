@@ -1000,7 +1000,6 @@
   "studio.XdKIcE": "Gem side",
   "studio.XkOni/": "Brugerdefinerede meddelelser",
   "studio.XpziH6": "Den aktuelle status for SSL-certifikatet er ukendt",
-  "studio.Xq8LX4": "",
   "studio.Xr50rl": "App-samlingen er blevet slettet {name}",
   "studio.XuZJvq": "Betalingsindstillingerne er blevet opdateret",
   "studio.Xw/F4c": "Anvend filterindstillinger på dine ressourcer. Disse indstillinger vil også blive anvendt, når du eksporterer CSV-filen.",
@@ -1528,5 +1527,6 @@
   "studio.zji8KM": "Vil du give {app} tilladelse til at udføre følgende handlinger på dine vegne?",
   "studio.zo9Szm": "Sletning af en app-samling kan ikke fortrydes.",
   "studio.zoSzG+": "Skift til GUI-editoren",
-  "studio.zwurmB": "Cookie"
+  "studio.zwurmB": "Cookie",
+  "studio.zzKGTH": ""
 }
