@@ -15,7 +15,7 @@ import {
   type TempFile,
   uploadS3File,
 } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/types';
+import { APP_VALIDATION_FAILED, OrganizationPermission } from '@appsemble/types';
 import { normalize, normalizeLocale, validateStyle } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
@@ -74,11 +74,17 @@ export async function importApp(ctx: Context): Promise<void> {
     const definition = parse(yaml, { maxAliasCount: 10_000 });
 
     const appValidator = new AppValidator();
-    handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
+    handleValidatorResult(
+      ctx,
+      appValidator.validateApp(definition),
+      'App validation failed',
+      APP_VALIDATION_FAILED,
+    );
     handleValidatorResult(
       ctx,
       await validateAppDefinition(definition, getBlockVersions),
       'App validation failed',
+      APP_VALIDATION_FAILED,
     );
 
     const path = normalize(definition.name);

@@ -3,21 +3,19 @@ import { type EventEmitter } from 'node:events';
 import {
   ActionError,
   type BlockDefinition,
-  type IconReference,
   type ProjectManifest,
   remap,
   type Remapper,
-  resolveIconReference,
 } from '@appsemble/lang-sdk';
 import {
   type BlockUtils,
   type BootstrapParams,
   type Events,
   type Messages,
-  type RenderableIcon,
   type Theme,
 } from '@appsemble/sdk';
 import { defaultLocale, has } from '@appsemble/utils';
+import { createIconElement, resolveIcon } from '@appsemble/web-utils';
 
 export function remapWithContext(
   remapper: Remapper,
@@ -40,17 +38,6 @@ export function remapWithContext(
   });
 }
 
-/**
- * Resolve an icon reference without an icon registry, like an app without custom icons does.
- *
- * @param reference The icon reference to resolve.
- * @returns The Font Awesome icon, or an invalid result for registry references.
- */
-function resolveIcon(reference: IconReference): RenderableIcon {
-  const resolved = resolveIconReference(reference);
-  return resolved.type === 'fontawesome' ? resolved : { type: 'invalid' };
-}
-
 export function getDefaultUtils(): BlockUtils {
   return {
     showMessage(message) {
@@ -69,17 +56,10 @@ export function getDefaultUtils(): BlockUtils {
     fa(icon) {
       return icon;
     },
+    // Without a registry this resolves like an app without custom icons does.
     resolveIcon,
-    icon(reference, { className, size } = {}) {
-      const wrapper = document.createElement('span');
-      wrapper.className = ['icon', size && `is-${size}`, className].filter(Boolean).join(' ');
-      const resolved = resolveIcon(reference);
-      if (resolved.type === 'fontawesome') {
-        const glyph = document.createElement('i');
-        glyph.className = resolved.name;
-        wrapper.append(glyph);
-      }
-      return wrapper;
+    icon(reference, options) {
+      return createIconElement(resolveIcon(reference), options);
     },
     // @ts-expect-error strictNullChecks not assignable to type
     remap: remapWithContext,

@@ -77,16 +77,6 @@ export function isValidIconReference(reference: unknown): reference is IconRefer
   return parseIconReference(reference).type !== 'invalid';
 }
 
-/**
- * Check whether a value references a custom icon.
- *
- * @param reference The value to check.
- * @returns Whether the value starts with the custom icon prefix.
- */
-export function isCustomIconReference(reference: unknown): reference is `icon:${string}` {
-  return typeof reference === 'string' && reference.startsWith(customIconPrefix);
-}
-
 export type ResolvedIcon =
   | { type: 'asset'; key: string; asset: string }
   | { type: 'fontawesome'; name: IconName }

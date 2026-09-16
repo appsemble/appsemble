@@ -2016,6 +2016,7 @@ describe('patchApp', () => {
 
       {
         "data": {
+          "code": "APP_VALIDATION_FAILED",
           "errors": [
             {
               "argument": "defaultPage",
@@ -2457,6 +2458,7 @@ describe('patchApp', () => {
 
       {
         "data": {
+          "code": "APP_VALIDATION_FAILED",
           "errors": [
             {
               "instance": {

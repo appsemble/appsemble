@@ -1499,6 +1499,7 @@ describe('createApp', () => {
 
       {
         "data": {
+          "code": "APP_VALIDATION_FAILED",
           "errors": [
             {
               "instance": "@non/existent",
@@ -1546,6 +1547,7 @@ describe('createApp', () => {
 
       {
         "data": {
+          "code": "APP_VALIDATION_FAILED",
           "errors": [
             {
               "instance": "test",
@@ -1595,6 +1597,7 @@ describe('createApp', () => {
 
       {
         "data": {
+          "code": "APP_VALIDATION_FAILED",
           "errors": [
             {
               "instance": "invalid",
@@ -2308,6 +2311,7 @@ describe('createApp', () => {
 
         {
           "data": {
+            "code": "APP_VALIDATION_FAILED",
             "errors": [
               {
                 "instance": "upstream",
@@ -2362,6 +2366,7 @@ describe('createApp', () => {
 
         {
           "data": {
+            "code": "APP_VALIDATION_FAILED",
             "errors": [
               {
                 "instance": "upstream",
@@ -2416,6 +2421,7 @@ describe('createApp', () => {
 
         {
           "data": {
+            "code": "APP_VALIDATION_FAILED",
             "errors": [
               {
                 "instance": "upstream",
@@ -2652,6 +2658,7 @@ describe('createApp', () => {
 
       {
         "data": {
+          "code": "APP_VALIDATION_FAILED",
           "errors": [
             {
               "argument": "name",

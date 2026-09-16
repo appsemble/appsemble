@@ -19,7 +19,7 @@ import {
   getGridTemplateAreas,
   gridDeviceOrder,
 } from './gridUtils.js';
-import { isValidIconName, parseIconReference, resolveIconReference } from './icons.js';
+import { isValidIconName, parseIconReference } from './icons.js';
 import { iterAction, iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { normalize } from './normalize.js';
@@ -1831,13 +1831,11 @@ function validateIconReferences(
   report: Report,
 ): void {
   const check = (reference: string, path: Prefix): void => {
-    // Syntax errors are reported by the schema validation; only check registry membership here.
-    if (parseIconReference(reference).type !== 'custom') {
-      return;
-    }
-    const resolved = resolveIconReference(reference, definition.icons);
-    if (resolved.type === 'invalid') {
-      report(reference, resolved.reason, path);
+    // Syntax errors are reported by the schema validation and invalid registry entries by
+    // validateIcons; only check registry membership here.
+    const parsed = parseIconReference(reference);
+    if (parsed.type === 'custom' && !has(definition.icons, parsed.key)) {
+      report(reference, `references the unknown icon key “${parsed.key}”`, path);
     }
   };
 

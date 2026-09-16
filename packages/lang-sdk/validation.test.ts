@@ -5172,9 +5172,12 @@ describe('validateAppDefinition', () => {
       expect(result.errors).toStrictEqual([]);
     });
 
-    it('should report invalid registry keys and asset names', async () => {
+    it('should report invalid registry keys and asset names once', async () => {
       const app = createTestApp();
       app.icons = { Dossier: { asset: 'dossier-icon' }, ok: { asset: 'Dossier Icon.svg' } };
+      // References to a key with an invalid asset name are valid references.
+      Object.assign(app.pages[0], { icon: 'icon:ok' });
+      Object.assign(app.pages[1], { icon: 'icon:ok' });
 
       const result = await validateAppDefinition(app, () => []);
 

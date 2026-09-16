@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  isCustomIconReference,
   isValidIconName,
   isValidIconReference,
   parseIconReference,
@@ -84,15 +83,6 @@ describe('isValidIconReference', () => {
       expect(isValidIconReference(reference)).toBe(false);
     },
   );
-});
-
-describe('isCustomIconReference', () => {
-  it('should detect the icon prefix', () => {
-    expect(isCustomIconReference('icon:dossier')).toBe(true);
-    expect(isCustomIconReference('icon:')).toBe(true);
-    expect(isCustomIconReference('home')).toBe(false);
-    expect(isCustomIconReference(null)).toBe(false);
-  });
 });
 
 describe('resolveIconReference', () => {

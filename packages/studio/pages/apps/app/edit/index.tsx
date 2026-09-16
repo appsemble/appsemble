@@ -15,7 +15,7 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { type App } from '@appsemble/types';
+import { APP_VALIDATION_FAILED, type App } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import equal from 'fast-deep-equal';
@@ -220,7 +220,7 @@ export default function EditPage(): ReactNode {
         return;
       }
 
-      if (response?.message === 'App validation failed' && response.data?.errors?.length) {
+      if (response?.data?.code === APP_VALIDATION_FAILED && response.data.errors?.length) {
         push({
           body: formatMessage(messages.validationErrors, {
             errors: response.data.errors

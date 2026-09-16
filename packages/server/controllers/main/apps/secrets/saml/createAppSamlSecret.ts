@@ -33,28 +33,6 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateAppSecrets],
   });
 
-  const { privateKey, publicKey } = await new Promise<forge.pki.rsa.KeyPair>((resolve, reject) => {
-    forge.pki.rsa.generateKeyPair({ bits: 2048 }, (error, result) =>
-      error ? reject(error) : resolve(result),
-    );
-  });
-
-  const cert = forge.pki.createCertificate();
-
-  cert.publicKey = publicKey;
-  cert.privateKey = privateKey;
-  cert.validity.notBefore = new Date();
-  cert.validity.notAfter = addYears(new Date(), 10);
-
-  const attrs = [
-    { shortName: 'CN', value: argv.host },
-    { shortName: 'O', value: 'Appsemble' },
-  ];
-
-  cert.setSubject(attrs);
-  cert.setIssuer(attrs);
-  cert.sign(privateKey);
-
   const iconError = getSsoIconError(body.icon, app.definition);
   assertKoaCondition(iconError == null, ctx, 400, iconError ?? 'Invalid icon');
 
@@ -77,6 +55,28 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
     400,
     'Group attribute is required when role mappings are configured',
   );
+
+  const { privateKey, publicKey } = await new Promise<forge.pki.rsa.KeyPair>((resolve, reject) => {
+    forge.pki.rsa.generateKeyPair({ bits: 2048 }, (error, result) =>
+      error ? reject(error) : resolve(result),
+    );
+  });
+
+  const cert = forge.pki.createCertificate();
+
+  cert.publicKey = publicKey;
+  cert.privateKey = privateKey;
+  cert.validity.notBefore = new Date();
+  cert.validity.notAfter = addYears(new Date(), 10);
+
+  const attrs = [
+    { shortName: 'CN', value: argv.host },
+    { shortName: 'O', value: 'Appsemble' },
+  ];
+
+  cert.setSubject(attrs);
+  cert.setIssuer(attrs);
+  cert.sign(privateKey);
 
   const { AppSamlSecret } = await getAppDB(appId);
   const secret = {

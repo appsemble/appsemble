@@ -1,2 +1,1 @@
-Show server validation errors when saving OAuth2 or SAML secrets and when publishing an app
-definition
+Show server validation errors for SSO secrets and app definition publishing

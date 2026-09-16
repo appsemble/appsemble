@@ -8152,10 +8152,18 @@ Takes either a hex color or a [Bulma color](https://bulma.io/documentation/helpe
         "format": "remapper",
       },
       "icon": {
+        "anyOf": [
+          {
+            "format": "icon",
+            "type": "string",
+          },
+          {
+            "format": "remapper",
+          },
+        ],
         "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render, or an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.
 
 This is ignored if an asset can be resolved.",
-        "format": "remapper",
       },
       "image": {
         "description": "This can be used to render an image. This can be either an asset ID or name, or a full URL.

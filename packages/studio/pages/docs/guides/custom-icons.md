@@ -94,6 +94,46 @@ The `icon:` form is accepted wherever the app definition documents an icon:
 Marker icons of the `map` and `detail-viewer` blocks are drawn on the map from a Font Awesome glyph
 or an `asset` of their own, so they keep their existing configuration and don’t use the registry.
 
+### Icons from remappers
+
+Some icon parameters, such as the `icon` of the `tiles` block, also accept a
+[remapper](../remappers/index.mdx). A remapper which resolves to an `icon:<key>` string renders the
+registered icon, so the key can come from the data, for example from a `type` property of a
+resource.
+
+```yaml copy filename="app-definition.yaml"
+icons:
+  dossier:
+    asset: dossier-icon
+  person:
+    asset: person-icon
+
+pages:
+  - name: Overview
+    blocks:
+      - type: data-loader
+        version: 0.38.2-test.0
+        actions:
+          onLoad:
+            type: resource.query
+            resource: item
+        events:
+          emit:
+            data: items
+      - type: tiles
+        version: 0.38.2-test.0
+        events:
+          listen:
+            data: items
+        parameters:
+          text: { prop: name }
+          icon: { string.format: { template: 'icon:{type}', values: { type: { prop: type } } } }
+```
+
+Only literal `icon:<key>` values are checked when the app is published. A remapper is evaluated at
+runtime, so a key it produces which isn’t in the registry, or a value which isn’t a valid icon
+reference, renders an empty icon box instead of failing validation.
+
 ## Appearance
 
 A custom icon fills the icon box it replaces a Font Awesome icon in. The box is sized by the

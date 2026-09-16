@@ -1,4 +1,4 @@
-import { type Remapper } from '@appsemble/sdk';
+import { type IconReference, type Remapper } from '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
   interface Actions {
@@ -30,7 +30,7 @@ declare module '@appsemble/sdk' {
      *
      * This is ignored if an asset can be resolved.
      */
-    icon?: Remapper;
+    icon?: IconReference | Remapper;
 
     /**
      * The label to render.
