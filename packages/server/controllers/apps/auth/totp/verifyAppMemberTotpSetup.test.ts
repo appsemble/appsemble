@@ -283,4 +283,40 @@ describe('verifyAppMemberTotpSetup', () => {
     // The code is consumed, so it can’t be replayed against /auth/totp/verify.
     expect(updatedMember?.totpLastCounter).toBe(0);
   });
+
+  it('should reject a pending TOTP token which was already used to enroll', async () => {
+    await app.update({ totp: 'required' });
+    const secret = authenticator.generateSecret();
+    const appMember = await createTestAppMember(app.id);
+    await appMember.update({ totpSecret: encrypt(secret, 'test') });
+    const totpToken = createTotpPendingToken({
+      aud: `app:${app.id}`,
+      scope: appOAuth2Scope,
+      sub: appMember.id,
+    });
+
+    const enroll = await request.post(`/api/apps/${app.id}/auth/totp/verify-setup`, {
+      token: authenticator.generate(secret),
+      totpToken,
+    });
+    expect(enroll.status).toBe(200);
+
+    // A fresh code, so only the spent pending token can reject this second login.
+    vi.setSystemTime(30 * 1000);
+    const response = await request.post(`/api/apps/${app.id}/auth/totp/verify`, {
+      token: authenticator.generate(secret),
+      totpToken,
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 401 Unauthorized
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Unauthorized",
+        "message": "Pending TOTP token has already been used",
+        "statusCode": 401,
+      }
+    `);
+  });
 });

@@ -1,6 +1,6 @@
 import querystring from 'node:querystring';
 
-import { assertKoaCondition, logger } from '@appsemble/node-utils';
+import { logger } from '@appsemble/node-utils';
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
 import { type Context } from 'koa';
@@ -19,7 +19,7 @@ import {
 } from '../../utils/appMemberRefreshSession.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { GrantError, hasScope } from '../../utils/oauth2.js';
-import { requireTotp, type TotpChallenge } from '../../utils/totp.js';
+import { type TotpChallenge, requireTotp } from '../../utils/totp.js';
 
 function checkTokenRequestParameters(
   query: Record<string, string[] | string | undefined>,
@@ -37,6 +37,24 @@ function checkTokenRequestParameters(
 }
 
 /**
+ * Reject a grant whose first authentication factor checks out, but which may not be issued a
+ * session until a second factor has been verified.
+ *
+ * The body follows the OAuth2 error shape, which is why it’s snake_case where the other TOTP
+ * endpoints aren’t.
+ *
+ * @param challenge The TOTP challenge to hand to the client.
+ */
+function throwTotpRequiredGrant(challenge: TotpChallenge): never {
+  throw new GrantError('totp_required', 400, {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    totp_enabled: challenge.totpEnabled,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    totp_token: challenge.totpToken,
+  });
+}
+
+/**
  * Get an access token for a client.
  *
  * This handler is written to be compliant with [rfc6749](https://tools.ietf.org/html/rfc6749).
@@ -50,7 +68,6 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
   let refreshToken: string | undefined;
   let scope: string | undefined;
   let sub: string;
-  let totpChallenge: TotpChallenge | null = null;
 
   try {
     if (!ctx.is('application/x-www-form-urlencoded')) {
@@ -83,9 +100,12 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           throw new GrantError('invalid_client');
         }
         const appId = Number(match[1]);
-        const app = await App.findByPk(appId);
-        assertKoaCondition(app != null, ctx, 404, 'App not found');
-        const { OAuth2AuthorizationCode } = await getAppDB(appId);
+        const app = await App.findByPk(appId, { attributes: ['demoMode', 'id', 'totp'] });
+        // Never fall back to a permissive TOTP setting for an app which doesn’t exist.
+        if (!app) {
+          throw new GrantError('invalid_client');
+        }
+        const { AppMember, OAuth2AuthorizationCode } = await getAppDB(appId);
         const authorizationCode = await OAuth2AuthorizationCode.findOne({
           attributes: ['expires', 'scope', 'AppMemberId'],
           where: { code, redirectUri },
@@ -106,14 +126,16 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
         createRefreshSessionForAppId = appId;
         scope = requestedScope;
         sub = authorizationCode.AppMemberId;
-        const { AppMember } = await getAppDB(appId);
         const codeAppMember = await AppMember.findByPk(sub, {
           attributes: ['id', 'totpEnabled'],
         });
         if (!codeAppMember) {
           throw new GrantError('invalid_client');
         }
-        totpChallenge = await requireTotp(appId, codeAppMember, { aud, scope });
+        const codeChallenge = requireTotp(app, codeAppMember, { aud, scope });
+        if (codeChallenge) {
+          throwTotpRequiredGrant(codeChallenge);
+        }
         break;
       }
       case 'client_credentials': {
@@ -196,7 +218,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           username,
         } = checkTokenRequestParameters(query, ['client_id', 'username', 'password', 'scope']);
         const appId = Number(clientId.replace('app:', ''));
-        const app = await App.findByPk(appId, { attributes: ['id'] });
+        const app = await App.findByPk(appId, { attributes: ['demoMode', 'id', 'totp'] });
         // Never fall back to a permissive TOTP setting for an app which doesn’t exist.
         if (!app) {
           throw new GrantError('invalid_client');
@@ -215,7 +237,10 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
         sub = appMember.id;
         scope = requestedScope;
         createRefreshSessionForAppId = appId;
-        totpChallenge = await requireTotp(appId, appMember, { aud, scope });
+        const passwordChallenge = requireTotp(app, appMember, { aud, scope });
+        if (passwordChallenge) {
+          throwTotpRequiredGrant(passwordChallenge);
+        }
         break;
       }
       case 'urn:ietf:params:oauth:grant-type:demo-login': {
@@ -302,20 +327,6 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
       return;
     }
     throw error;
-  }
-
-  if (totpChallenge) {
-    // The first authentication factor checks out, but no session may exist until the second factor
-    // has been verified. The pending token is what proves the first step to the TOTP endpoints.
-    ctx.status = 400;
-    ctx.body = {
-      error: 'totp_required',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      totp_enabled: totpChallenge.totpEnabled,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      totp_token: totpChallenge.totpToken,
-    };
-    return;
   }
 
   if (createRefreshSessionForAppId != null) {

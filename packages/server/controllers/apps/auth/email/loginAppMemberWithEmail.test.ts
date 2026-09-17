@@ -2,6 +2,7 @@ import { basicAuth } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { jwtPattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
+import jwt from 'jsonwebtoken';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -13,7 +14,9 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { createTestUser } from '../../../../utils/test/authorization.js';
+import { createTestAppMember, createTestUser } from '../../../../utils/test/authorization.js';
+
+const authorization = { headers: { authorization: basicAuth('test@example.com', 'testpassword') } };
 
 let organization: Organization;
 let user: User;
@@ -84,11 +87,9 @@ describe('loginAppMemberWithEmail', () => {
   });
 
   it('should return tokens when the app does not use TOTP', async () => {
-    const response = await request.post(
-      `/api/apps/${app.id}/auth/email/login`,
-      {},
-      { headers: { authorization: basicAuth('test@example.com', 'testpassword') } },
-    );
+    const appMember = await createTestAppMember(app.id);
+
+    const response = await request.post(`/api/apps/${app.id}/auth/email/login`, {}, authorization);
 
     expect(response).toMatchObject({
       status: 200,
@@ -98,16 +99,53 @@ describe('loginAppMemberWithEmail', () => {
         token_type: 'bearer',
       },
     });
+    // The session belongs to the app member owning the email, not to the studio user which
+    // authenticated.
+    expect(jwt.decode(response.data.access_token)).toMatchObject({ sub: appMember.id });
+  });
+
+  it('should refuse to log in without an app member', async () => {
+    const response = await request.post(`/api/apps/${app.id}/auth/email/login`, {}, authorization);
+
+    expect(response).toMatchObject({
+      status: 401,
+      data: { error: 'Unauthorized', message: 'App member not found', statusCode: 401 },
+    });
+  });
+
+  it('should not challenge a member who has not opted in on an app where TOTP is optional', async () => {
+    await app.update({ totp: 'enabled' });
+    await createTestAppMember(app.id);
+
+    const response = await request.post(`/api/apps/${app.id}/auth/email/login`, {}, authorization);
+
+    expect(response.status).toBe(200);
+  });
+
+  it('should challenge a member who opted in on an app where TOTP is optional', async () => {
+    await app.update({ totp: 'enabled' });
+    const appMember = await createTestAppMember(app.id);
+    await appMember.update({ totpEnabled: true });
+
+    const response = await request.post(`/api/apps/${app.id}/auth/email/login`, {}, authorization);
+
+    expect(response.status).toBe(401);
+    expect(response.data).toMatchObject({
+      error: 'Unauthorized',
+      message: 'TOTP verification required',
+      data: {
+        totpRequired: true,
+        totpEnabled: true,
+        totpToken: expect.stringMatching(jwtPattern),
+      },
+    });
   });
 
   it('should enforce TOTP before issuing tokens', async () => {
     await app.update({ totp: 'required' });
+    const appMember = await createTestAppMember(app.id);
 
-    const response = await request.post(
-      `/api/apps/${app.id}/auth/email/login`,
-      {},
-      { headers: { authorization: basicAuth('test@example.com', 'testpassword') } },
-    );
+    const response = await request.post(`/api/apps/${app.id}/auth/email/login`, {}, authorization);
 
     expect(response.status).toBe(401);
     expect(response.data).toMatchObject({
@@ -118,6 +156,14 @@ describe('loginAppMemberWithEmail', () => {
         totpEnabled: false,
         totpToken: expect.stringMatching(jwtPattern),
       },
+    });
+    // The pending token has to identify the app member, or the verification step can’t resolve who
+    // is logging in.
+    expect(jwt.decode(response.data.data.totpToken)).toMatchObject({
+      aud: `app:${app.id}`,
+      sub: appMember.id,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      token_use: 'totp_pending',
     });
   });
 });

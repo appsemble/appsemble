@@ -157,6 +157,20 @@ describe('setupAppMemberTotp', () => {
     expect(updatedMember?.totpEnabled).toBe(false);
   });
 
+  it('should accept the same pending TOTP token more than once', async () => {
+    await app.update({ totp: 'required' });
+    const appMember = await createTestAppMember(app.id);
+    const totpToken = createTotpPendingToken({ aud: `app:${app.id}`, sub: appMember.id });
+
+    const first = await request.post(`/api/apps/${app.id}/auth/totp/setup`, { totpToken });
+    // Restarting enrollment is not a login, so the pending token isn’t spent by it.
+    const second = await request.post(`/api/apps/${app.id}/auth/totp/setup`, { totpToken });
+
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    expect(second.data.secret).not.toBe(first.data.secret);
+  });
+
   it('should return 400 if TOTP is disabled for the app', async () => {
     await app.update({ totp: 'disabled' });
     const appMember = await createTestAppMember(app.id);

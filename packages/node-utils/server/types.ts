@@ -69,7 +69,7 @@ declare module 'koas-security' {
 
   interface Users {
     app: AuthSubject;
-    basic: AuthSubject;
+    basic: AuthSubject & { email: string };
     cli: AuthSubject;
     scim: AuthSubject;
     studio: AuthSubject;

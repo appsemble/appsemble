@@ -67,7 +67,8 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'Invalid TOTP token or TOTP setup not initiated.',
       },
       401: {
-        description: 'User is not authenticated.',
+        description:
+          'User is not authenticated, or the pending TOTP token is invalid or already spent.',
       },
       429: {
         description: 'Too many failed TOTP attempts.',

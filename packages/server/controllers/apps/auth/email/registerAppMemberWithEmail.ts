@@ -59,6 +59,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       'path',
       'enableSelfRegistration',
       'demoMode',
+      'totp',
     ],
     include: {
       model: AppMessages,
@@ -202,8 +203,9 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
   const aud = `app:${appId}`;
 
   // A freshly registered app member still has to enroll in TOTP before they get a session on apps
-  // where TOTP is required.
-  const challenge = await requireTotp(appId, appMember, { aud, scope: appOAuth2Scope });
+  // where TOTP is required. The account was created, but this response carries no tokens, so it’s
+  // the same challenge every other non OAuth2 endpoint responds with.
+  const challenge = requireTotp(app, appMember, { aud, scope: appOAuth2Scope });
   if (challenge) {
     throwTotpRequired(ctx, challenge);
   }

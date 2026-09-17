@@ -33,6 +33,11 @@ interface Options {
 
 export interface TotpPendingPayload {
   /**
+   * The unique id of this token, which is what makes it single use.
+   */
+  jti: string;
+
+  /**
    * The scope to grant once the second factor has been verified.
    */
   scope?: string;
@@ -93,14 +98,42 @@ export function verifyTotpPendingToken(
   let payload: jwt.JwtPayload;
 
   try {
-    payload = jwt.verify(token, argv.secret, { audience: `app:${appId}` }) as jwt.JwtPayload;
+    payload = jwt.verify(token, argv.secret, {
+      audience: `app:${appId}`,
+      issuer: argv.host,
+    }) as jwt.JwtPayload;
   } catch {
     throwKoaError(ctx, 401, 'Invalid pending TOTP token');
   }
 
-  if (payload.token_use !== 'totp_pending' || typeof payload.sub !== 'string') {
+  if (
+    payload.token_use !== 'totp_pending' ||
+    typeof payload.sub !== 'string' ||
+    typeof payload.jti !== 'string'
+  ) {
     throwKoaError(ctx, 401, 'Invalid pending TOTP token');
   }
 
-  return { scope: payload.scope, sub: payload.sub };
+  return { jti: payload.jti, scope: payload.scope, sub: payload.sub };
+}
+
+/**
+ * Reject a pending TOTP token which has already been exchanged for tokens.
+ *
+ * Exchanging a pending token records its id on the app member, so presenting that same token again
+ * is rejected. Tracking the id rather than the time of the last verification is what keeps a token
+ * issued in the same second as a verification usable.
+ *
+ * @param ctx The Koa context used to throw the error response.
+ * @param payload The payload of the pending TOTP token.
+ * @param consumedJti The id of the pending token the app member last exchanged, if any.
+ */
+export function assertUnusedTotpPendingToken(
+  ctx: Context,
+  { jti }: TotpPendingPayload,
+  consumedJti?: string | null,
+): void {
+  if (consumedJti && jti === consumedJti) {
+    throwKoaError(ctx, 401, 'Pending TOTP token has already been used');
+  }
 }

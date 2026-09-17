@@ -22,6 +22,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId, development } from '../../utils/settings.js';
+import { getGrantTotpChallenge } from '../../utils/totp.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 axios.defaults.withCredentials = true;
@@ -50,6 +51,11 @@ interface PasswordLoginParams {
 interface AuthorizationCodeLoginParams {
   code: string;
   redirect_uri: string;
+
+  /**
+   * The app page the OAuth2 login was started from, if any.
+   */
+  redirect?: string;
 }
 
 interface DemoLoginParams {
@@ -107,41 +113,6 @@ interface TokenResponse {
    * A refresh token for renewing the current app member session.
    */
   refresh_token?: string;
-}
-
-/**
- * The error response of the token endpoint indicating TOTP verification is required.
- */
-interface TotpRequiredResponse {
-  error: 'totp_required';
-
-  /**
-   * Whether the app member has already enrolled in TOTP, or still has to.
-   */
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  totp_enabled: boolean;
-
-  /**
-   * The pending TOTP token to pass to the TOTP endpoints.
-   */
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  totp_token: string;
-}
-
-/**
- * Get the TOTP challenge from a failed token request, if that’s why it failed.
- *
- * @param error The error thrown by the token request.
- * @returns The TOTP challenge, or undefined if the request failed for another reason.
- */
-function getTotpChallenge(error: unknown): TotpRequiredResponse | undefined {
-  if (!axios.isAxiosError(error)) {
-    return;
-  }
-  const data = error.response?.data as TotpRequiredResponse | undefined;
-  if (error.response?.status === 400 && data?.error === 'totp_required') {
-    return data;
-  }
 }
 
 // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
@@ -327,7 +298,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
           }),
         ));
       } catch (error: unknown) {
-        const challenge = getTotpChallenge(error);
+        const challenge = getGrantTotpChallenge(error);
         if (!challenge) {
           throw error;
         }
@@ -335,13 +306,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
           return false;
         }
         // The credentials check out, but no session exists yet. The pending token is what proves
-        // that first step to the TOTP endpoints.
+        // that first step to the TOTP endpoints. The redirect is carried along, so completing the
+        // second factor still lands on the page the login was started from.
         setState((prev) => ({
           ...prev,
           totpPending: {
             redirect: params.redirect,
-            totpEnabled: challenge.totp_enabled ?? false,
-            totpToken: challenge.totp_token,
+            totpEnabled: challenge.totpEnabled,
+            totpToken: challenge.totpToken,
           },
         }));
         return null;
@@ -385,7 +357,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         await hydrateAuthenticatedState(
           requestId,
           auth,
-          (params as unknown as PasswordLoginParams).redirect,
+          (params as { redirect?: string }).redirect,
         );
       } catch (error: unknown) {
         if (isLatestAuthRequest(requestId)) {

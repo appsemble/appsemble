@@ -6,6 +6,7 @@ import { createAppMemberRefreshSession } from '../../../../utils/appMemberRefres
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 import { assertTotpToken } from '../../../../utils/totp.js';
 import {
+  assertUnusedTotpPendingToken,
   type TotpPendingPayload,
   verifyTotpPendingToken,
 } from '../../../../utils/totpPendingToken.js';
@@ -42,7 +43,12 @@ export async function verifyAppMemberTotpSetup(ctx: Context): Promise<void> {
   assertKoaCondition(member.totpSecret != null, ctx, 400, 'TOTP setup not initiated');
   assertKoaCondition(!member.totpEnabled, ctx, 400, 'TOTP is already enabled');
 
-  await assertTotpToken(ctx, member, token, 400);
+  if (pending) {
+    assertUnusedTotpPendingToken(ctx, pending, member.totpConsumedJti);
+  }
+
+  // Accepting the code spends the pending token along with it, in the same statement.
+  await assertTotpToken(ctx, member, token, 400, pending?.jti);
 
   await member.update({ totpEnabled: true });
 

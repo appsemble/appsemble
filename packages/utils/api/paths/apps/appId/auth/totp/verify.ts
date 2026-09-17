@@ -65,7 +65,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'TOTP is not enabled for this member.',
       },
       401: {
-        description: 'Invalid TOTP token or invalid pending TOTP token.',
+        description: 'Invalid TOTP token, or a pending TOTP token which is invalid or spent.',
       },
       404: {
         description: 'App member not found.',

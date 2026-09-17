@@ -5,7 +5,10 @@ import { App, getAppDB } from '../../../../models/index.js';
 import { createAppMemberRefreshSession } from '../../../../utils/appMemberRefreshSession.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 import { assertTotpToken } from '../../../../utils/totp.js';
-import { verifyTotpPendingToken } from '../../../../utils/totpPendingToken.js';
+import {
+  assertUnusedTotpPendingToken,
+  verifyTotpPendingToken,
+} from '../../../../utils/totpPendingToken.js';
 
 export async function verifyAppMemberTotp(ctx: Context): Promise<void> {
   const {
@@ -21,7 +24,8 @@ export async function verifyAppMemberTotp(ctx: Context): Promise<void> {
 
   // The pending token is the only thing binding this request to the app member whose password was
   // verified in the first step of the login flow.
-  const { scope, sub } = verifyTotpPendingToken(ctx, appId, totpToken);
+  const pending = verifyTotpPendingToken(ctx, appId, totpToken);
+  const { jti, scope, sub } = pending;
 
   const { AppMember } = await getAppDB(appId);
 
@@ -34,7 +38,10 @@ export async function verifyAppMemberTotp(ctx: Context): Promise<void> {
     'TOTP is not enabled for this member',
   );
 
-  await assertTotpToken(ctx, member, token, 401);
+  assertUnusedTotpPendingToken(ctx, pending, member.totpConsumedJti);
+
+  // Accepting the code spends the pending token along with it, in the same statement.
+  await assertTotpToken(ctx, member, token, 401, jti);
 
   const aud = `app:${appId}`;
   const refreshToken = await createAppMemberRefreshSession(ctx, {

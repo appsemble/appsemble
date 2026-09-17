@@ -59,6 +59,7 @@ export function authentication(): SecurityOptions {
 
   return {
     async basic(email: string, password: string) {
+      const normalizedEmail = email.toLowerCase();
       // @ts-expect-error Messed up
       const { User: user } = await EmailAuthorization.findOne({
         include: [
@@ -67,13 +68,15 @@ export function authentication(): SecurityOptions {
             attributes: ['id', 'password'],
           },
         ],
-        where: { email: email.toLowerCase() },
+        where: { email: normalizedEmail },
       });
 
       const isValidPassword = await compare(password, user.password);
 
       if (isValidPassword) {
-        return user;
+        // The email which was authenticated with. A user may own several, and this is the one
+        // identifying them within an app, so it can’t be derived from the user afterwards.
+        return Object.assign(user, { email: normalizedEmail });
       }
 
       return null;
