@@ -1940,7 +1940,7 @@ describe('createApp', () => {
               - type: test
                 version: 0.0.0
       `),
-      coreStyle: "body{background-image:url(asset('hero-bg'))}",
+      coreStyle: "body{background-image:asset('hero-bg')}",
       sharedStyle: "body{background-image:url('/api/apps/999/assets/logo')}",
     });
     authorizeStudio();
@@ -1957,7 +1957,7 @@ describe('createApp', () => {
     );
   });
 
-  it('should keep rejected traversal and encoded-slash asset ids unchanged when creating an app', async () => {
+  it('should reject invalid asset references when creating an app', async () => {
     const form = createFormData({
       OrganizationId: organization.id,
       yaml: stripIndent(`
@@ -1969,18 +1969,13 @@ describe('createApp', () => {
               - type: test
                 version: 0.0.0
       `),
-      coreStyle:
-        "a{background-image:url(asset('../admin'))}b{background-image:url(asset('a%2fb'))}",
+      coreStyle: "a{background-image:asset('../admin')}b{background-image:asset('a%2fb')}",
     });
     authorizeStudio();
-    const response = await request.post<AppType>('/api/apps', form);
+    const response = await request.post('/api/apps', form);
 
-    const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
-
-    expect(coreStyle.data).toBe(
-      "a{background-image:url(asset('../admin'))}b{background-image:url(asset('a%2fb'))}",
-    );
-    expect(coreStyle.data).not.toContain('http://localhost/api/apps/');
+    expect(response.status).toBe(400);
+    expect(response.data.message).toBe('Provided CSS was invalid.');
   });
 
   it('should not allow invalid core stylesheets when creating an app', async () => {

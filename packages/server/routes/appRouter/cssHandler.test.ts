@@ -71,7 +71,7 @@ describe('cssHandler', () => {
       OrganizationId: 'org',
       definition: {},
       path: 'app',
-      coreStyle: "body{background-image:url(asset('hero-bg'))}",
+      coreStyle: "body{background-image:asset('hero-bg')}",
       sharedStyle: '',
       vapidPrivateKey: '',
       vapidPublicKey: '',
@@ -84,7 +84,7 @@ describe('cssHandler', () => {
       headers: {
         'content-type': 'text/css; charset=utf-8',
       },
-      data: "body{background-image:url(asset('hero-bg'))}",
+      data: "body{background-image:asset('hero-bg')}",
     });
   });
 
@@ -95,7 +95,7 @@ describe('cssHandler', () => {
       definition: {},
       path: 'app',
       coreStyle:
-        "a{background:url(asset('https://example.com/x'))}b{background:url(asset('/x'))}c{background:url(asset('data:image/png;base64,AAAA'))}",
+        "a{background:asset('https://example.com/x')}b{background:asset('/x')}c{background:asset('data:image/png;base64,AAAA')}",
       sharedStyle: '',
       vapidPrivateKey: '',
       vapidPublicKey: '',
@@ -108,7 +108,7 @@ describe('cssHandler', () => {
       headers: {
         'content-type': 'text/css; charset=utf-8',
       },
-      data: "a{background:url(asset('https://example.com/x'))}b{background:url(asset('/x'))}c{background:url(asset('data:image/png;base64,AAAA'))}",
+      data: "a{background:asset('https://example.com/x')}b{background:asset('/x')}c{background:asset('data:image/png;base64,AAAA')}",
     });
   });
 
