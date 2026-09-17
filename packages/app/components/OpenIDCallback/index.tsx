@@ -47,7 +47,7 @@ export function OpenIDCallback(): ReactNode {
   });
 
   const session = useMemo(() => loadOAuth2State<OAuth2State>(), []);
-  const { appMemberRoles, authorizationCodeLogin, isLoggedIn } = useAppMember();
+  const { appMemberRoles, authorizationCodeLogin, isLoggedIn, totpPending } = useAppMember();
 
   const { definition } = useAppDefinition();
 
@@ -75,6 +75,12 @@ export function OpenIDCallback(): ReactNode {
   }, [isLoggedIn]);
 
   if (shouldLink) {
+    return <Navigate to="/Login" />;
+  }
+
+  // The authorization code was valid, but a second factor still has to be verified, which happens
+  // on the login page.
+  if (totpPending) {
     return <Navigate to="/Login" />;
   }
 

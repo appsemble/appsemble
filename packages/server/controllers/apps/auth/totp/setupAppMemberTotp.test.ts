@@ -17,6 +17,7 @@ import {
   createTestAppMember,
   createTestUser,
 } from '../../../../utils/test/authorization.js';
+import { createTotpPendingToken } from '../../../../utils/totpPendingToken.js';
 
 let organization: Organization;
 let user: User;
@@ -99,6 +100,61 @@ describe('setupAppMemberTotp', () => {
         "statusCode": 401,
       }
     `);
+  });
+
+  it('should reject an unauthenticated request on an app which requires TOTP', async () => {
+    await app.update({ totp: 'required' });
+    await createTestAppMember(app.id);
+
+    const response = await request.post(`/api/apps/${app.id}/auth/totp/setup`, {});
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 401 Unauthorized
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Unauthorized",
+        "message": "User is not authenticated",
+        "statusCode": 401,
+      }
+    `);
+  });
+
+  it('should reject an invalid pending TOTP token', async () => {
+    await app.update({ totp: 'required' });
+    await createTestAppMember(app.id);
+
+    const response = await request.post(`/api/apps/${app.id}/auth/totp/setup`, {
+      totpToken: 'not-a-token',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 401 Unauthorized
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Unauthorized",
+        "message": "Invalid pending TOTP token",
+        "statusCode": 401,
+      }
+    `);
+  });
+
+  it('should accept a pending TOTP token from the first login step', async () => {
+    await app.update({ totp: 'required' });
+    const appMember = await createTestAppMember(app.id);
+
+    const response = await request.post(`/api/apps/${app.id}/auth/totp/setup`, {
+      totpToken: createTotpPendingToken({ aud: `app:${app.id}`, sub: appMember.id }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data.secret).toMatch(/^[2-7A-Z]{16}$/);
+
+    const { AppMember } = await getAppDB(app.id);
+    const updatedMember = await AppMember.findByPk(appMember.id);
+    expect(updatedMember?.totpSecret).not.toBeNull();
+    expect(updatedMember?.totpEnabled).toBe(false);
   });
 
   it('should return 400 if TOTP is disabled for the app', async () => {

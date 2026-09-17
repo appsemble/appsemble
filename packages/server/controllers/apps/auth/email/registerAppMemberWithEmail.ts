@@ -21,6 +21,7 @@ import { createAppMemberRefreshSession } from '../../../../utils/appMemberRefres
 import { checkAppSecurityPolicy } from '../../../../utils/auth.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 import { assertSlidingWindowRateLimit } from '../../../../utils/ratelimit/assertSlidingWindowRateLimit.js';
+import { requireTotp, throwTotpRequired } from '../../../../utils/totp.js';
 
 const MAX_REGISTRATION_ATTEMPTS = 5;
 // 1 hour
@@ -199,6 +200,14 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     });
 
   const aud = `app:${appId}`;
+
+  // A freshly registered app member still has to enroll in TOTP before they get a session on apps
+  // where TOTP is required.
+  const challenge = await requireTotp(appId, appMember, { aud, scope: appOAuth2Scope });
+  if (challenge) {
+    throwTotpRequired(ctx, challenge);
+  }
+
   const refreshToken = await createAppMemberRefreshSession(ctx, {
     appId,
     aud,

@@ -19,6 +19,7 @@ import {
 } from '../../utils/appMemberRefreshSession.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { GrantError, hasScope } from '../../utils/oauth2.js';
+import { requireTotp, type TotpChallenge } from '../../utils/totp.js';
 
 function checkTokenRequestParameters(
   query: Record<string, string[] | string | undefined>,
@@ -49,6 +50,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
   let refreshToken: string | undefined;
   let scope: string | undefined;
   let sub: string;
+  let totpChallenge: TotpChallenge | null = null;
 
   try {
     if (!ctx.is('application/x-www-form-urlencoded')) {
@@ -104,6 +106,14 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
         createRefreshSessionForAppId = appId;
         scope = requestedScope;
         sub = authorizationCode.AppMemberId;
+        const { AppMember } = await getAppDB(appId);
+        const codeAppMember = await AppMember.findByPk(sub, {
+          attributes: ['id', 'totpEnabled'],
+        });
+        if (!codeAppMember) {
+          throw new GrantError('invalid_client');
+        }
+        totpChallenge = await requireTotp(appId, codeAppMember, { aud, scope });
         break;
       }
       case 'client_credentials': {
@@ -186,7 +196,11 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           username,
         } = checkTokenRequestParameters(query, ['client_id', 'username', 'password', 'scope']);
         const appId = Number(clientId.replace('app:', ''));
-        const app = await App.findByPk(appId, { attributes: ['totp'] });
+        const app = await App.findByPk(appId, { attributes: ['id'] });
+        // Never fall back to a permissive TOTP setting for an app which doesn’t exist.
+        if (!app) {
+          throw new GrantError('invalid_client');
+        }
         const { AppMember } = await getAppDB(appId);
         const appMember = await AppMember.findOne({
           where: { email: username.toLowerCase() },
@@ -197,29 +211,11 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           throw new GrantError('invalid_client');
         }
 
-        // Check if TOTP verification is required
-        const totpSetting = app?.totp ?? 'disabled';
-        const memberHasTotpEnabled = appMember.totpEnabled ?? false;
-
-        // TOTP is required if:
-        // 1. App setting is 'required' (everyone must use TOTP), OR
-        // 2. App setting is 'enabled' and the member has TOTP enabled
-        if (totpSetting === 'required' || (totpSetting === 'enabled' && memberHasTotpEnabled)) {
-          // Return a response indicating TOTP verification is needed
-          // Include totpEnabled so client knows whether to show verification or setup
-          ctx.status = 200;
-          ctx.body = {
-            totpRequired: true,
-            totpEnabled: memberHasTotpEnabled,
-            memberId: appMember.id,
-          };
-          return;
-        }
-
         aud = clientId;
         sub = appMember.id;
         scope = requestedScope;
         createRefreshSessionForAppId = appId;
+        totpChallenge = await requireTotp(appId, appMember, { aud, scope });
         break;
       }
       case 'urn:ietf:params:oauth:grant-type:demo-login': {
@@ -302,10 +298,24 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
   } catch (error: unknown) {
     if (error instanceof GrantError) {
       ctx.status = error.status;
-      ctx.body = { error: error.message };
+      ctx.body = { error: error.message, ...error.data };
       return;
     }
     throw error;
+  }
+
+  if (totpChallenge) {
+    // The first authentication factor checks out, but no session may exist until the second factor
+    // has been verified. The pending token is what proves the first step to the TOTP endpoints.
+    ctx.status = 400;
+    ctx.body = {
+      error: 'totp_required',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      totp_enabled: totpChallenge.totpEnabled,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      totp_token: totpChallenge.totpToken,
+    };
+    return;
   }
 
   if (createRefreshSessionForAppId != null) {

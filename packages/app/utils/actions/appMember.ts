@@ -5,6 +5,7 @@ import axios from 'axios';
 
 import { type ActionCreator } from './index.js';
 import { apiUrl, appId } from '../settings.js';
+import { isTotpRequiredError } from '../totp.js';
 
 export const appMemberRegister: ActionCreator<'app.member.register'> = ({
   definition,
@@ -50,7 +51,15 @@ export const appMemberRegister: ActionCreator<'app.member.register'> = ({
 
     assignAppMemberProperties(properties, formData);
 
-    await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
+    try {
+      await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
+    } catch (error: unknown) {
+      // The account was created, but it needs a second factor before it gets a session. The login
+      // below is what surfaces the TOTP challenge.
+      if (!isTotpRequiredError(error)) {
+        throw error;
+      }
+    }
 
     if (login) {
       await passwordLogin({ username: email, password });

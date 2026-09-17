@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
+import { isTotpRequiredError } from '../../utils/totp.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { AppBar } from '../TitleBar/index.js';
@@ -42,7 +43,15 @@ export function Register(): ReactNode {
         formData.append('phoneNumber', values.phoneNumber);
       }
 
-      await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
+      try {
+        await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
+      } catch (error: unknown) {
+        // The account was created, but it needs a second factor before it gets a session. Logging
+        // in below is what surfaces the TOTP challenge.
+        if (!isTotpRequiredError(error)) {
+          throw error;
+        }
+      }
       await passwordLogin({
         username: values.email,
         password: values.password,

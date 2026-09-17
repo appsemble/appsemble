@@ -42,5 +42,8 @@ export async function createSettings({
     logins: [],
     development: true,
     supportedLanguages: ['en'],
+    // Locally served apps have no app record backing them, so two factor authentication can never
+    // be set up for them.
+    totp: 'disabled',
   });
 }

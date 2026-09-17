@@ -694,6 +694,101 @@ describe('appsTokenHandler', () => {
     });
   });
 
+  describe('password', () => {
+    async function createPasswordApp(totp: 'disabled' | 'enabled' | 'required'): Promise<App> {
+      const organizationId = `org-${randomUUID()}`;
+      await user.$create('Organization', { id: organizationId });
+      return App.create({
+        OrganizationId: organizationId,
+        definition: '',
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+        totp,
+      });
+    }
+
+    it('should return an access token response for valid credentials', async () => {
+      const app = await createPasswordApp('disabled');
+      const appMember = await createTestAppMember(app.id);
+
+      const response = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${app.id}`,
+          grant_type: 'password',
+          password: 'testpassword',
+          scope: 'openid',
+          username: appMember.email,
+        }),
+      );
+
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+          token_type: 'bearer',
+        },
+      });
+    });
+
+    it('should not issue any token before TOTP has been verified', async () => {
+      const app = await createPasswordApp('required');
+      const appMember = await createTestAppMember(app.id);
+
+      const response = await request.post(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${app.id}`,
+          grant_type: 'password',
+          password: 'testpassword',
+          scope: 'openid',
+          username: appMember.email,
+        }),
+      );
+
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          error: 'totp_required',
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          totp_enabled: false,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          totp_token: expect.stringMatching(jwtPattern),
+        },
+      });
+      expect(response.data).not.toHaveProperty('access_token');
+
+      const payload = jwt.decode(response.data.totp_token) as jwt.JwtPayload;
+      expect(payload).toMatchObject({
+        aud: `app:${app.id}`,
+        sub: appMember.id,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'totp_pending',
+      });
+    });
+
+    it('should reject credentials for an app which doesn’t exist', async () => {
+      const response = await request.post(
+        '/apps/1234/auth/oauth2/token',
+        new URLSearchParams({
+          client_id: 'app:1234',
+          grant_type: 'password',
+          password: 'testpassword',
+          scope: 'openid',
+          username: 'test@example.com',
+        }),
+      );
+
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          error: 'invalid_client',
+        },
+      });
+    });
+  });
+
   describe('refresh_token', () => {
     let appId: number;
     let tokenEndpoint: string;

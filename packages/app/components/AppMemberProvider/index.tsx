@@ -58,9 +58,13 @@ interface DemoLoginParams {
 }
 
 interface TotpPendingState {
-  memberId: string;
   redirect?: string;
   totpEnabled: boolean;
+
+  /**
+   * The pending TOTP token proving the first authentication factor has been verified.
+   */
+  totpToken: string;
 }
 
 interface LoginState {
@@ -75,6 +79,7 @@ interface AppMemberContext extends LoginState {
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   demoLogin: (props: DemoLoginParams) => Promise<void>;
   totpLogin: (token: string) => Promise<void>;
+  completeTotpLogin: (tokens: TokenResponse) => Promise<void>;
   cancelTotpLogin: () => void;
   logout: () => Promise<void>;
   appMemberInfo: AppMemberInfo;
@@ -105,12 +110,38 @@ interface TokenResponse {
 }
 
 /**
- * A response indicating TOTP verification is required.
+ * The error response of the token endpoint indicating TOTP verification is required.
  */
 interface TotpRequiredResponse {
-  totpRequired: true;
-  totpEnabled: boolean;
-  memberId: string;
+  error: 'totp_required';
+
+  /**
+   * Whether the app member has already enrolled in TOTP, or still has to.
+   */
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  totp_enabled: boolean;
+
+  /**
+   * The pending TOTP token to pass to the TOTP endpoints.
+   */
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  totp_token: string;
+}
+
+/**
+ * Get the TOTP challenge from a failed token request, if that’s why it failed.
+ *
+ * @param error The error thrown by the token request.
+ * @returns The TOTP challenge, or undefined if the request failed for another reason.
+ */
+function getTotpChallenge(error: unknown): TotpRequiredResponse | undefined {
+  if (!axios.isAxiosError(error)) {
+    return;
+  }
+  const data = error.response?.data as TotpRequiredResponse | undefined;
+  if (error.response?.status === 400 && data?.error === 'totp_required') {
+    return data;
+  }
 }
 
 // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
@@ -284,34 +315,43 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         return isLatestAuthRequest(requestId) ? '' : false;
       }
 
-      const { data } = await axios.post<TokenResponse | TotpRequiredResponse>(
-        `${apiUrl}/apps/${appId}/auth/oauth2/token`,
-        new URLSearchParams({
-          client_id: `app:${appId}`,
-          grant_type: grantType,
-          scope: oauth2Scope,
-          ...params,
-        }),
-      );
-
-      if (!isLatestAuthRequest(requestId)) {
-        return false;
-      }
-
-      // Check if TOTP verification is required
-      if ('totpRequired' in data && data.totpRequired) {
+      let data: TokenResponse;
+      try {
+        ({ data } = await axios.post<TokenResponse>(
+          `${apiUrl}/apps/${appId}/auth/oauth2/token`,
+          new URLSearchParams({
+            client_id: `app:${appId}`,
+            grant_type: grantType,
+            scope: oauth2Scope,
+            ...params,
+          }),
+        ));
+      } catch (error: unknown) {
+        const challenge = getTotpChallenge(error);
+        if (!challenge) {
+          throw error;
+        }
+        if (!isLatestAuthRequest(requestId)) {
+          return false;
+        }
+        // The credentials check out, but no session exists yet. The pending token is what proves
+        // that first step to the TOTP endpoints.
         setState((prev) => ({
           ...prev,
           totpPending: {
-            memberId: data.memberId,
             redirect: params.redirect,
-            totpEnabled: data.totpEnabled ?? false,
+            totpEnabled: challenge.totp_enabled ?? false,
+            totpToken: challenge.totp_token,
           },
         }));
         return null;
       }
 
-      const { access_token: accessToken, refresh_token: refreshToken } = data as TokenResponse;
+      if (!isLatestAuthRequest(requestId)) {
+        return false;
+      }
+
+      const { access_token: accessToken, refresh_token: refreshToken } = data;
       const auth = `Bearer ${accessToken}`;
       setAuthorization(auth);
       if (refreshToken) {
@@ -405,6 +445,18 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
    *
    * @param token The TOTP token from the authenticator app.
    */
+  const completeTotpLogin = useCallback(
+    async (data: TokenResponse) => {
+      const requestId = invalidateAuthRequests();
+      refreshTokenRef.current = data.refresh_token;
+      const auth = `Bearer ${data.access_token}`;
+      setAuthorization(auth);
+      applyTokenExpiration(data.access_token, requestId);
+      await hydrateAuthenticatedState(requestId, auth, state.totpPending?.redirect);
+    },
+    [applyTokenExpiration, hydrateAuthenticatedState, invalidateAuthRequests, state.totpPending],
+  );
+
   const totpLogin = useCallback(
     async (token: string) => {
       if (!state.totpPending) {
@@ -414,21 +466,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       const { data } = await axios.post<TokenResponse>(
         `${apiUrl}/api/apps/${appId}/auth/totp/verify`,
         {
-          memberId: state.totpPending.memberId,
           token,
-          scope: oauth2Scope,
+          totpToken: state.totpPending.totpToken,
         },
       );
 
-      const requestId = invalidateAuthRequests();
-      refreshTokenRef.current = data.refresh_token;
-      const auth = `Bearer ${data.access_token}`;
-      setAuthorization(auth);
-      applyTokenExpiration(data.access_token, requestId);
-      const { redirect } = state.totpPending;
-      await hydrateAuthenticatedState(requestId, auth, redirect);
+      await completeTotpLogin(data);
     },
-    [applyTokenExpiration, hydrateAuthenticatedState, invalidateAuthRequests, state.totpPending],
+    [completeTotpLogin, state.totpPending],
   );
 
   /**
@@ -550,6 +595,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       developmentLogin,
       demoLogin,
       totpLogin,
+      completeTotpLogin,
       cancelTotpLogin,
       logout,
       addAppMemberGroup,
@@ -566,6 +612,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       developmentLogin,
       demoLogin,
       totpLogin,
+      completeTotpLogin,
       cancelTotpLogin,
       logout,
       addAppMemberGroup,

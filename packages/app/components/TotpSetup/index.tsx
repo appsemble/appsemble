@@ -24,26 +24,38 @@ interface SetupResponse {
   otpauthUrl: string;
 }
 
+/**
+ * The tokens returned when enrollment completes a pending login.
+ */
+export interface TotpSetupTokenResponse {
+  access_token: string;
+  refresh_token?: string;
+}
+
 interface TotpSetupProps {
   /**
-   * Called when TOTP setup is complete. Receives the verified token so it can be used for login.
+   * Called when TOTP setup is complete.
+   *
+   * Receives the tokens completing the login when enrollment was part of a login flow, or `null`
+   * when the app member was already logged in.
    */
-  readonly onComplete: (token: string) => void;
+  readonly onComplete: (tokens: TotpSetupTokenResponse | null) => Promise<void>;
   readonly onCancel: () => void;
   readonly isRequired?: boolean;
 
   /**
-   * The member ID to set up TOTP for.
-   * Used when the user is in the login flow and hasn't fully authenticated yet.
+   * The pending TOTP token from the first login step.
+   *
+   * Used when the app member is in the login flow and hasn’t fully authenticated yet.
    */
-  readonly memberId?: string;
+  readonly totpToken?: string;
 }
 
 export function TotpSetup({
   isRequired = false,
-  memberId,
   onCancel,
   onComplete,
+  totpToken,
 }: TotpSetupProps): ReactNode {
   const { formatMessage } = useIntl();
   const { appMemberInfo, setAppMemberInfo } = useAppMember();
@@ -57,7 +69,7 @@ export function TotpSetup({
       try {
         const { data } = await axios.post<SetupResponse>(
           `${apiUrl}/api/apps/${appId}/auth/totp/setup`,
-          memberId ? { memberId } : undefined,
+          totpToken ? { totpToken } : undefined,
         );
         setSetupData(data);
         setIsLoading(false);
@@ -68,15 +80,22 @@ export function TotpSetup({
     };
 
     startSetup();
-  }, [formatMessage, memberId]);
+  }, [formatMessage, totpToken]);
 
   const onVerifySetup = useCallback(
     async (values: { token: string }) => {
+      let tokens: TotpSetupTokenResponse | null = null;
       try {
-        await axios.post(`${apiUrl}/api/apps/${appId}/auth/totp/verify-setup`, {
-          token: values.token,
-          ...(memberId ? { memberId } : {}),
-        });
+        // On the login flow this completes the login and returns tokens, so the code doesn’t have
+        // to be submitted a second time.
+        const { data, status } = await axios.post<TotpSetupTokenResponse | ''>(
+          `${apiUrl}/api/apps/${appId}/auth/totp/verify-setup`,
+          {
+            token: values.token,
+            ...(totpToken ? { totpToken } : {}),
+          },
+        );
+        tokens = status === 200 && data ? data : null;
         // Only update appMemberInfo if the user is already logged in
         if (appMemberInfo) {
           setAppMemberInfo({
@@ -84,15 +103,14 @@ export function TotpSetup({
             totpEnabled: true,
           });
         }
-        push({ body: formatMessage(messages.setupSuccess), color: 'success' });
-        // Pass the token back so it can be used for login
-        onComplete(values.token);
       } catch {
         push({ body: formatMessage(messages.invalidCode), color: 'danger' });
         throw new Error(formatMessage(messages.invalidCode));
       }
+      await onComplete(tokens);
+      push({ body: formatMessage(messages.setupSuccess), color: 'success' });
     },
-    [appMemberInfo, formatMessage, memberId, onComplete, push, setAppMemberInfo],
+    [appMemberInfo, formatMessage, onComplete, push, setAppMemberInfo, totpToken],
   );
 
   if (isLoading) {
