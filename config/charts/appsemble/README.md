@@ -315,11 +315,31 @@ rclone copy src:appsemble-block-assets dst:my-bucket/blocks
 `src` and `dst` are rclone remotes for the current and the new object storage; they can point at the
 same server.
 
+## Zero-downtime rollouts
+
+The Deployment rolls with `maxSurge: 1` and `maxUnavailable: 0`, so a replacement pod passes its
+readiness probe before an old one is stopped. A single-replica install therefore also rolls over
+without a gap.
+
+Stopping a pod is staged, because removal from the Service endpoints is asynchronous and would
+otherwise drop requests still being routed to it:
+
+1. The pod keeps answering normally for `preStopSleepSeconds`, while the removal propagates.
+2. It is sent `SIGTERM`. `/health/ready` reports `DOWN` from that moment, the server stops accepting
+   connections, finishes the requests in flight and closes its database connections.
+3. `terminationGracePeriodSeconds` later, anything left is killed. Raise it above the default when
+   the deployment serves requests longer than 30 seconds.
+
+With `replicaCount` above 1, a PodDisruptionBudget of `minAvailable: 1` is rendered as well, so a
+node drain or other voluntary disruption cannot evict every replica at once.
+
 ## Variables
 
 | Name                                        | Default                        | Description                                                                                                                               |
 | ------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `replicaCount`                              | 1                              |                                                                                                                                           |
+| `preStopSleepSeconds`                       | 10                             | How long a stopping pod keeps answering before it is sent `SIGTERM`, so its removal from the Service endpoints has propagated by then.    |
+| `terminationGracePeriodSeconds`             | 40                             | How long a pod may take to stop before it is killed. Must cover `preStopSleepSeconds` plus the longest request.                           |
 | `image.repository`                          | `appsemble/appsemble`          | Set this to `registry.gitlab.io/appsemble/appsemble` to support prerelease versions.                                                      |
 | `image.tag`                                 | `nil`                          | If specified, this Docker image tag will be used. Otherwise, it will use the chart’s `appVersion`.                                        |
 | `image.pullPolicy`                          | `IfNotPresent`                 | This can be used to override the default image pull policy.                                                                               |
