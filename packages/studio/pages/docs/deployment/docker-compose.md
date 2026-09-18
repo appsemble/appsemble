@@ -11,6 +11,8 @@ x-database-name: &database-name ${DATABASE_NAME:-appsemble_database_name}
 x-database-user: &database-user ${DATABASE_USER:-appsemble_database_user}
 x-database-password: &database-password ${DATABASE_PASSWORD:-appsemble_database_password}
 x-secret: &secret ${SECRET:-appsemble_secret_LwP4gsYuuoFb3dRhEW_4iPVPLcfIvsDuBHDJHDbjQ}
+x-s3-access-key: &s3-access-key ${S3_ACCESS_KEY:-appsemble_s3_access_key}
+x-s3-secret-key: &s3-secret-key ${S3_SECRET_KEY:-appsemble_s3_secret_key}
 
 networks:
   appsemble:
@@ -21,6 +23,7 @@ services:
     image: appsemble/appsemble:latest
     depends_on:
       - postgresql
+      - minio
     networks:
       - appsemble
     restart: always
@@ -31,6 +34,11 @@ services:
       DATABASE_PASSWORD: *database-password
       HOST: http://localhost:8000
       SECRET: *secret
+      S3_HOST: minio
+      S3_PORT: 9000
+      S3_SECURE: 'false'
+      S3_ACCESS_KEY: *s3-access-key
+      S3_SECRET_KEY: *s3-secret-key
     ports:
       # Expose Appsemble at port 8000.
       - '8000:9999'
@@ -48,6 +56,18 @@ services:
       - $HOME/.local/share/appsemble-postgresql:/var/lib/postgresql/data
     ports:
       - '5432:5432'
+
+  minio:
+    image: minio/minio:latest
+    networks:
+      - appsemble
+    restart: always
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: *s3-access-key
+      MINIO_ROOT_PASSWORD: *s3-secret-key
+    volumes:
+      - $HOME/.local/share/appsemble-minio:/data
 ```
 
 It is highly recommended to specify the version of the `appsemble/appsemble` image to use. Replace
@@ -80,6 +100,37 @@ a container can be found
 > fallback.
 
 ---
+
+## Object storage
+
+Appsemble keeps app assets and block assets in S3 compatible object storage. The example above runs
+[MinIO](https://min.io) next to the server; any S3 compatible service works. Without it the server
+still starts, but publishing a block and uploading or serving an app asset fail.
+
+- `S3_HOST`
+- `S3_PORT`
+- `S3_SECURE`
+- `S3_ACCESS_KEY`
+- `S3_SECRET_KEY`
+- `S3_REGION`, the region to sign requests for, `us-east-1` by default
+- `S3_PATH_STYLE`, whether to address buckets in the URL path instead of as a subdomain of the host,
+  `true` by default
+- `S3_BUCKET`
+
+`S3_BUCKET` selects how objects are laid out. Leave it empty and the server creates an `app-<appId>`
+bucket for every app and an `appsemble-block-assets` bucket on demand, which means the credentials
+must be allowed to create buckets. Set it to a bucket you provision yourself and every object lives
+in that one bucket, app assets under `apps/<appId>/` and block assets under `blocks/`, with
+credentials that only get, put, delete and list objects in it. Pick the single bucket when the
+provider caps the number of buckets or when the credentials must stay least-privilege.
+
+Both layouts serve block assets through the server. To serve them straight from the object storage
+instead, point `BLOCK_ASSETS_BASE_URL` at its public URL and allow anonymous reads on the block
+assets. The
+[Appsemble chart README](https://gitlab.com/appsemble/appsemble/-/tree/main/config/charts/appsemble#object-storage)
+covers both layouts in full, including how to provision the bucket on OpenShift Data Foundation,
+Hetzner Object Storage, MinIO and SeaweedFS, and how to copy an existing installation into a single
+bucket.
 
 A wide range of other services like [sentry](https://sentry.io), [GitHub](https://github.com),
 [GitLab](https://gitlab.com) etc can be configured using various environment variables. For a
