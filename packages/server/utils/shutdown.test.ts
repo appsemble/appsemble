@@ -35,10 +35,17 @@ it('should finish a request in flight before it stops serving and releases the d
     requestReceived = resolve;
   });
 
+  // The handler queries the database after it is released, because a request in flight keeps
+  // serving only if its connections outlive the drain.
   const server = createServer(async (req, res) => {
     requestReceived();
     await responseReleased;
-    res.end('finished');
+    try {
+      await getDB().authenticate();
+      res.end('finished');
+    } catch {
+      res.end('database closed');
+    }
   });
   await new Promise<void>((resolve) => {
     server.listen(0, '127.0.0.1', resolve);
