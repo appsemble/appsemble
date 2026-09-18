@@ -148,6 +148,37 @@ describe('kubernetes', () => {
       ]);
     });
 
+    it('should create the DNS records of an organization before its ingress', async () => {
+      mock.reset();
+
+      const configs: AxiosRequestConfig[] = [];
+      mock.onPost(/.*/).reply((request) => {
+        configs.push(request);
+        return [201, request.data];
+      });
+      mock.onPatch(/.*/).reply((request) => {
+        configs.push(request);
+        return [200, []];
+      });
+
+      setArgv({
+        host: 'https://host.example',
+        serviceName: 'review-service',
+        servicePort: 'http',
+        dnsProvider: 'desec',
+        dnsZone: 'host.example',
+        dnsToken: 'test.token',
+        dnsTargets: '203.0.113.10',
+      });
+      await kubernetes.configureDNS();
+      await Organization.create({ id: 'testorg' });
+
+      expect(configs.map(({ url }) => url)).toStrictEqual([
+        'https://desec.io/api/v1/domains/host.example/rrsets/',
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses',
+      ]);
+    });
+
     it('should retry transient Kubernetes API errors when creating an ingress', async () => {
       mock.reset();
       process.env.KUBERNETES_REQUEST_RETRIES = '2';
@@ -1054,6 +1085,34 @@ describe('kubernetes', () => {
         ttl: 3600,
         records: ['203.0.113.10'],
       });
+    });
+
+    it('should create the DNS records of all organizations before any ingress', async () => {
+      mock.onPatch(/.*/).reply((request) => {
+        configs.push(request);
+        return [200, []];
+      });
+
+      setArgv({
+        host: 'https://host.example',
+        serviceName: 'review-service',
+        servicePort: 'http',
+        dnsProvider: 'desec',
+        dnsZone: 'host.example',
+        dnsToken: 'test.token',
+        dnsTargets: '203.0.113.10',
+      });
+      await kubernetes.reconcileDNS({ dryRun: false });
+
+      const created = configs.findIndex(
+        ({ data, url }) =>
+          url === 'https://desec.io/api/v1/domains/host.example/rrsets/' &&
+          JSON.parse(data).some(({ records }: { records: string[] }) => records.length),
+      );
+      const ingress = configs.findIndex(({ method }) => method === 'post');
+      expect(created).toBeGreaterThan(-1);
+      expect(ingress).toBeGreaterThan(-1);
+      expect(created).toBeLessThan(ingress);
     });
 
     it('should not write DNS records on a dry run', async () => {

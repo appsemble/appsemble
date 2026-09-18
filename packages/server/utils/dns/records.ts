@@ -14,7 +14,8 @@ const recordTTL = 3600;
 /**
  * The number of resource record sets to send in one bulk request.
  *
- * The deSEC API accepts 4091 resource record sets and 64000 bytes per request.
+ * A bulk request is applied atomically, so the chunk size bounds both the size of a request and the
+ * amount of work a retry repeats.
  */
 const bulkSize = 250;
 
@@ -146,7 +147,7 @@ async function writeRRsets(rrsets: RRset[], { token, zone }: Provider): Promise<
         if (retries >= maxRetries || !axios.isAxiosError(error) || error.response?.status !== 429) {
           throw error;
         }
-        const retryAfter = Number(error.response.headers['retry-after']);
+        const retryAfter = Number(error.response.headers['retry-after'] ?? 1);
         logger.warn(`Rate limited by the deSEC API. Retrying in ${retryAfter} seconds`);
         await sleep(retryAfter * 1000);
       }

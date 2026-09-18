@@ -144,6 +144,28 @@
             "type": "string"
           }
         }
+      },
+      "if": {
+        "properties": {
+          "provider": {
+            "minLength": 1
+          }
+        },
+        "required": ["provider"]
+      },
+      "then": {
+        "properties": {
+          "zone": {
+            "minLength": 1
+          },
+          "secret": {
+            "minLength": 1
+          },
+          "targets": {
+            "minItems": 1
+          }
+        },
+        "required": ["zone", "secret", "targets"]
       }
     },
     "blockAssets": {

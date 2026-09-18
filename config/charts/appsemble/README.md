@@ -123,6 +123,10 @@ controller, and `dns.secret` names a secret which holds the API token of the pro
 `dns-token`. Appsemble writes the records when an organization is created, removes them when it is
 deleted, and writes the records of all organizations in the `reconcile-dns` job.
 
+Restrict the token to the records Appsemble manages. For deSEC, give it token policies which allow
+writing `A` and `AAAA` record sets in `dns.zone` and nothing else, so it cannot touch the
+`_acme-challenge` records of cert-manager or the records of custom domains in the same zone.
+
 ## Migrations
 
 The chart runs database migrations automatically using the `migrate` Job hook after each install and

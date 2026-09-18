@@ -474,12 +474,16 @@ export async function configureDNS(): Promise<void> {
   const createSSLSecret = await createSSLSecretFunction();
 
   /**
-   * Register an ingress and DNS records for the host names of an organization.
+   * Register DNS records and an ingress for the host names of an organization.
+   *
+   * The records come first. Creating the ingress makes cert-manager request a certificate for the
+   * wildcard host, and the DNS01 challenge record it writes makes the organization host exist in
+   * the zone, after which a wildcard record higher up in the zone resolves nothing below it.
    */
   Organization.afterCreate('dns', async ({ id }) => {
     const hosts = getOrganizationHosts(id, hostname);
-    await createIngress(hosts);
     await createDNSRecords(hosts);
+    await createIngress(hosts);
   });
 
   Organization.afterDestroy('dns', async ({ id }) => {
@@ -671,6 +675,11 @@ export async function reconcileDNS({
     await deleteDNSRecords(hosts.filter((host) => host.endsWith(`.${hostname}`)));
     logger.info(`Deleted extra ingress ${name}`);
   }
+  // The records of every organization are written before any ingress is created or patched, because
+  // an ingress which serves a wildcard host makes cert-manager start a DNS01 challenge for it.
+  if (!dryRun) {
+    await createDNSRecords([...organizationHosts.values()].flat());
+  }
   const createIngress = dryRun ? () => Promise.resolve() : await createIngressFunction();
   const createSSLSecret = dryRun ? () => Promise.resolve() : await createSSLSecretFunction();
   for (const hosts of missingIngresses) {
@@ -693,9 +702,6 @@ export async function reconcileDNS({
       await createSSLSecret(name, sslCertificate, sslKey);
     }
     logger.info(`Created missing ingress ${name}`);
-  }
-  if (!dryRun) {
-    await createDNSRecords([...organizationHosts.values()].flat());
   }
 }
 
