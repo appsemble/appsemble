@@ -79,7 +79,8 @@ async function exportBlockAssets(directory: string): Promise<void> {
     throw new Error(`Unsafe object storage key: ${unsafeFile.key}`);
   }
 
-  await rm(directory, { force: true, recursive: true });
+  await rm(objectsDirectory, { force: true, recursive: true });
+  await rm(join(directory, metadataFilename), { force: true });
   await mkdir(objectsDirectory, { recursive: true });
 
   for (const file of files) {

@@ -1,8 +1,11 @@
+import { createHash } from 'node:crypto';
+import { createServer, type IncomingHttpHeaders, type Server } from 'node:http';
+import { type AddressInfo } from 'node:net';
 import { Readable } from 'node:stream';
 import { buffer as streamToBuffer } from 'node:stream/consumers';
 
 import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
-import { beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { logger } from './logger.js';
 import {
@@ -74,6 +77,21 @@ describe('bucket-per-app layout', () => {
       ['HeadBucketCommand', { Bucket: 'app-1216' }],
       ['CreateBucketCommand', { Bucket: 'app-1216' }],
       ['PutObjectCommand', expect.objectContaining({ Bucket: 'app-1216', Key: 'asset-id' })],
+    ]);
+  });
+
+  it('creates a bucket in the configured region', async () => {
+    initS3Client({ ...credentials, region: 'eu-central-1' });
+    send.mockRejectedValueOnce(s3Error('NotFound'));
+
+    await uploadS3File('app-1216', 'asset-id', 'payload');
+
+    expect(sentCommands()[1]).toStrictEqual([
+      'CreateBucketCommand',
+      {
+        Bucket: 'app-1216',
+        CreateBucketConfiguration: { LocationConstraint: 'eu-central-1' },
+      },
     ]);
   });
 
@@ -168,6 +186,39 @@ describe('single-bucket layout', () => {
     ]);
   });
 
+  it('lists every page of keys before deleting them', async () => {
+    let page = 0;
+    send.mockImplementation((command: Command) => {
+      if (command.constructor.name !== 'ListObjectsV2Command') {
+        return {};
+      }
+      page += 1;
+      return page === 1
+        ? { Contents: [{ Key: 'first' }], NextContinuationToken: 'token' }
+        : { Contents: [{ Key: 'second' }] };
+    });
+
+    await clearAllS3Buckets();
+
+    expect(sentCommands()).toStrictEqual([
+      [
+        'ListObjectsV2Command',
+        { Bucket: 'objects', Prefix: undefined, ContinuationToken: undefined },
+      ],
+      [
+        'ListObjectsV2Command',
+        { Bucket: 'objects', Prefix: undefined, ContinuationToken: 'token' },
+      ],
+      [
+        'DeleteObjectsCommand',
+        {
+          Bucket: 'objects',
+          Delete: { Objects: [{ Key: 'first' }, { Key: 'second' }], Quiet: true },
+        },
+      ],
+    ]);
+  });
+
   it('deletes app assets under their prefix', async () => {
     await deleteAppAssetObjects(1216, ['a', 'b']);
 
@@ -235,9 +286,44 @@ describe('uploadS3File', () => {
   it('sends the full content of a stream of unknown length', async () => {
     await uploadS3File('app-1216', 'asset-id', Readable.from('payload'));
 
-    const [, [name, input]] = sentCommands();
-    expect(name).toBe('PutObjectCommand');
+    const [, [, input]] = sentCommands();
     expect(Buffer.from(input.Body as Uint8Array).toString()).toBe('payload');
+  });
+
+  it('uploads a stream larger than the part size in parts', async () => {
+    // The gzip'd pg_dump of `backup-production-data` is the stream of unknown length that outgrows
+    // a single request.
+    const parts: Buffer[] = [];
+    send.mockImplementation((command: Command) => {
+      switch (command.constructor.name) {
+        case 'CreateMultipartUploadCommand':
+          return Promise.resolve({ UploadId: 'upload-id' });
+        case 'UploadPartCommand':
+          parts.push(Buffer.from(command.input.Body as Uint8Array));
+          return Promise.resolve({ ETag: `"part-${command.input.PartNumber}"` });
+        default:
+          return Promise.resolve({});
+      }
+    });
+    const content = Buffer.alloc(6 * 1024 * 1024, 'a');
+
+    await uploadS3File('app-1216', 'asset-id', Readable.from(content), undefined, {
+      'Content-Type': 'application/gzip',
+    });
+
+    expect(sentCommandNames()).toStrictEqual([
+      'HeadBucketCommand',
+      'CreateMultipartUploadCommand',
+      'UploadPartCommand',
+      'UploadPartCommand',
+      'CompleteMultipartUploadCommand',
+    ]);
+    expect(sentCommands()[1][1]).toMatchObject({
+      Bucket: 'app-1216',
+      ContentType: 'application/gzip',
+      Key: 'asset-id',
+    });
+    expect(Buffer.concat(parts)).toStrictEqual(content);
   });
 
   it('fails if a stream upload loses its bucket after consuming the stream', async () => {
@@ -253,6 +339,7 @@ describe('uploadS3File', () => {
     await expect(uploadS3File('app-1216', 'asset-id', Readable.from('payload'), 7)).rejects.toBe(
       error,
     );
+    expect(sentCommandNames()).toStrictEqual(['HeadBucketCommand', 'PutObjectCommand']);
   });
 });
 
@@ -332,5 +419,48 @@ describe('deleteS3File', () => {
     send.mockRejectedValueOnce(error);
 
     await expect(deleteS3File('app-1216', 'asset-id')).rejects.toBe(error);
+  });
+});
+
+describe('request headers', () => {
+  let server: Server;
+  let received: { body: string; headers: IncomingHttpHeaders }[];
+
+  beforeEach(async () => {
+    send.mockRestore();
+    received = [];
+    server = createServer((request, response) => {
+      const chunks: Buffer[] = [];
+      request.on('data', (chunk: Buffer) => chunks.push(chunk));
+      request.on('end', () => {
+        received.push({ body: Buffer.concat(chunks).toString(), headers: request.headers });
+        response.writeHead(200, { 'content-type': 'application/xml' });
+        response.end('<?xml version="1.0" encoding="UTF-8"?><DeleteResult></DeleteResult>');
+      });
+    });
+    await new Promise<void>((resolve) => {
+      server.listen(0, '127.0.0.1', resolve);
+    });
+    initS3Client({
+      ...credentials,
+      port: (server.address() as AddressInfo).port,
+    });
+  });
+
+  afterEach(async () => {
+    await new Promise((resolve) => {
+      server.close(resolve);
+    });
+  });
+
+  it('signs a delete of multiple objects with Content-MD5', async () => {
+    // Object stores from before the flexible checksums of S3 reject a DeleteObjects request that
+    // carries only the CRC32 checksum the SDK sends by default.
+    await deleteS3Files('app-1216', ['asset-id']);
+
+    expect(received).toHaveLength(1);
+    expect(received[0].headers['content-md5']).toBe(
+      createHash('md5').update(received[0].body).digest('base64'),
+    );
   });
 });

@@ -250,7 +250,7 @@ which MinIO, ODF and SeaweedFS need and Hetzner and AWS accept.
 | Block asset              | bucket `appsemble-block-assets`, key `<org>/<block>/<version>/<blockVersionId>/<filename>`      | bucket `s3.bucket`, key `blocks/<org>/<block>/<version>/<blockVersionId>/<filename>` |
 | Bucket creation          | at runtime by the server                                                                        | never; the bucket is pre-provisioned                                                 |
 | Block assets public read | the server sets a bucket policy on `appsemble-block-assets` when `blockAssets.publicUrl` is set | granted on `blocks/*` when provisioning the bucket; the server sets no policy        |
-| Credentials need         | create and list buckets, put bucket policies, object CRUD                                       | get, put, delete and list objects in the one bucket                                  |
+| Credentials need         | create buckets, put bucket policies, object CRUD                                                | get, put, delete and list objects in the one bucket                                  |
 
 The single bucket suits providers that limit the number of buckets, credentials that cannot create
 buckets, and buckets claimed through Kubernetes. `blockAssets.publicUrl` serves block assets from
@@ -508,7 +508,9 @@ To restore MinIO app asset backups, run `sh scripts/s3-assets-restore.sh` with `
 pointing at the backup object storage and `RESTORE_S3_*` pointing at the MinIO/S3 target. The script
 restores `current` by default. Set `RESTORE_SOURCE=snapshot` and `SNAPSHOT_ID=<yyyy-mm-01>` to
 restore a monthly full snapshot. By default it copies objects without deleting extra objects in the
-target; set `DELETE_EXTRA=true` to make the target exactly match the backup source.
+target; set `DELETE_EXTRA=true` to make the target exactly match the backup source. On a
+single-bucket installation, set `S3_BUCKET` to the same value as `s3.bucket` so each backup is
+restored into its `apps/<id>/` prefix.
 
 > Note: `helm.sh/resource-policy=keep` reduces Helm-driven deletion risk but does not replace
 > backups.

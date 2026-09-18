@@ -1,5 +1,6 @@
+import * as nodeUtils from '@appsemble/node-utils';
 import { initS3Client } from '@appsemble/node-utils';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setArgv } from './argv.js';
 import {
@@ -83,9 +84,12 @@ describe('single-bucket layout', () => {
   });
 
   it('should leave bucket policies to the operator', async () => {
-    // The configured bucket does not exist on the test object storage, so any attempt to manage a
-    // policy fails.
-    expect(await ensureBlockAssetsBucketPublicRead()).toBeUndefined();
+    const setS3BucketPolicy = vi.spyOn(nodeUtils, 'setS3BucketPolicy').mockResolvedValue();
+
+    await ensureBlockAssetsBucketPublicRead();
+
+    expect(setS3BucketPolicy).not.toHaveBeenCalled();
+    setS3BucketPolicy.mockRestore();
   });
 });
 

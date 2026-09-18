@@ -28,7 +28,7 @@ MinIO, and any S3 compatible store can replace it. The `s3.bucket` value selects
 
 - **Bucket per app** (the default, used by appsemble.app): the server creates an `app-<id>` bucket
   for every app and an `appsemble-block-assets` bucket at runtime. The credentials must be allowed
-  to create and list buckets and to set bucket policies.
+  to create buckets and to set bucket policies.
 - **Single bucket** (`s3.bucket` set): all objects live in one bucket you provision up front, app
   assets under `apps/<id>/` and block assets under `blocks/`. The credentials only need to read,
   write, delete and list objects in that bucket.

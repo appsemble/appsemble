@@ -251,9 +251,7 @@ minio:
     tag: 2024.12.18-debian-12-r1
   volumePermissions:
     image:
-      registry: docker.io
       repository: bitnamilegacy/os-shell
-      tag: 12-debian-12-r35
   auth:
     existingSecret: s3
     rootUserSecretKey: access-key

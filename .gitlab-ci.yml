@@ -706,7 +706,7 @@ e2e node:
           until mc alias set local http://127.0.0.1:9001 admin password >/dev/null 2>&1; do
             sleep 1
           done
-          mc mb local/appsemble
+          mc mb --ignore-existing local/appsemble
           mc anonymous set download local/appsemble/blocks
           cat > /tmp/objects-policy.json <<'EOF'
           {

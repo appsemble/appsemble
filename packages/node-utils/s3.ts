@@ -1,9 +1,11 @@
+import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { Readable } from 'node:stream';
 import { buffer as streamToBuffer } from 'node:stream/consumers';
 
 import {
+  type BucketLocationConstraint,
   CreateBucketCommand,
   DeleteBucketCommand,
   DeleteObjectsCommand,
@@ -23,6 +25,7 @@ import { logger } from './logger.js';
 
 let s3Client: S3Client;
 let s3Bucket: string | undefined;
+let s3Region: string;
 
 export const blockAssetsBucketName = 'appsemble-block-assets';
 
@@ -86,7 +89,20 @@ export function initS3Client({
       requestChecksumCalculation: 'WHEN_REQUIRED',
       responseChecksumValidation: 'WHEN_REQUIRED',
     });
+    // S3 requires a checksum on DeleteObjects. The SDK sends CRC32, which object stores from
+    // before the flexible checksums reject in favour of Content-MD5.
+    s3Client.middlewareStack.add(
+      (next, context) => (args) => {
+        const request = args.request as { body?: string; headers: Record<string, string> };
+        if (context.commandName === 'DeleteObjectsCommand' && request.body) {
+          request.headers['content-md5'] = createHash('md5').update(request.body).digest('base64');
+        }
+        return next(args);
+      },
+      { step: 'finalizeRequest', name: 'deleteObjectsContentMd5' },
+    );
     s3Bucket = bucket || undefined;
+    s3Region = region;
   } catch (error) {
     logger.error(error);
     throw error;
@@ -135,7 +151,19 @@ async function ensureBucket(name: string): Promise<void> {
     }
   }
   try {
-    await s3Client.send(new CreateBucketCommand({ Bucket: name }));
+    await s3Client.send(
+      new CreateBucketCommand({
+        Bucket: name,
+        // S3 rejects a location constraint for its default region.
+        ...(s3Region === 'us-east-1'
+          ? {}
+          : {
+              CreateBucketConfiguration: {
+                LocationConstraint: s3Region as BucketLocationConstraint,
+              },
+            }),
+      }),
+    );
   } catch (error) {
     if (isS3ErrorCode(error, 'BucketAlreadyOwnedByYou')) {
       logger.warn(error);
