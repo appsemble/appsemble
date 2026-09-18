@@ -116,6 +116,15 @@ helm install --name my-appsemble appsemble/appsemble \
 Make sure `ingress.host` resolves to the ingress controller with both `A` and `AAAA` records. Point
 `*.ingress.host` to the same place, preferably with a wildcard `CNAME` to the apex host.
 
+Appsemble creates an ingress per organization which serves `<organization>.ingress.host` and
+`*.<organization>.ingress.host`. Both host names need a DNS record of their own. The certificate of
+that ingress covers a wildcard host, so cert-manager validates it with a DNS01 challenge, and the
+challenge record makes `<organization>.ingress.host` exist in the zone, after which the wildcard
+record on `ingress.host` no longer resolves anything below it. Run a DNS controller such as
+[external-dns](https://github.com/kubernetes-sigs/external-dns) which creates records for the host
+names of the ingresses Appsemble manages. The `ingress.annotations` value is applied to those
+ingresses as well, so annotations the controller needs are configured there.
+
 ## Use HTTPS configured elsewhere
 
 If you’re not using `cert-manager` and can’t add the `ingress.tls`, `ingress.tlsSecretName`, and

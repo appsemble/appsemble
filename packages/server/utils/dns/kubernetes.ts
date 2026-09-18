@@ -6,7 +6,6 @@ import { logger, version } from '@appsemble/node-utils';
 import { type SSLStatusMap } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
-import { escapeJsonPointer } from 'koas-core/lib/jsonRefs.js';
 import { matcher } from 'matcher';
 import { Op } from 'sequelize';
 
@@ -263,15 +262,33 @@ function generateSSLSecretName(domain: string): string {
 }
 
 /**
+ * Get the host names served by the ingress of an organization.
+ *
+ * The wildcard host serves the apps of the organization. The organization host itself redirects to
+ * the organization page in Appsemble Studio. Both are listed on the ingress, so a DNS controller
+ * creates a record for each of them and resolving them doesn't depend on a wildcard record higher
+ * up in the zone.
+ *
+ * @param organizationId The id of the organization.
+ * @param hostname The host name of the Appsemble deployment.
+ * @returns The host names of the ingress of the organization. The wildcard host comes first, as it
+ *   determines the name of the ingress and of its TLS secret.
+ */
+function getOrganizationHosts(organizationId: string, hostname: string): [string, string] {
+  return [`*.${organizationId}.${hostname}`, `${organizationId}.${hostname}`];
+}
+
+/**
  * Create a function for creating ingresses.
  *
  * @returns A function for creating an ingress.
  *
- *   The ingress function takes a domain name to create an ingress for. The rest is determined from
- *   the command line arguments and the environment.
+ *   The ingress function takes the host names to create an ingress for. The first host name
+ *   determines the name of the ingress and of its TLS secret. The rest is determined from the
+ *   command line arguments and the environment.
  */
 async function createIngressFunction(): Promise<
-  (domain: string, customSSL?: boolean, redirectTo?: string) => Promise<void>
+  (hosts: string[], customSSL?: boolean, redirectTo?: string) => Promise<void>
 > {
   const { clusterIssuer, ingressAnnotations, ingressClassName, issuer, serviceName, servicePort } =
     argv;
@@ -287,7 +304,8 @@ async function createIngressFunction(): Promise<
       : undefined;
   const issuerAnnotationValue = clusterIssuer || issuer;
 
-  return async (domain, customSSL, redirectTo) => {
+  return async (hosts, customSSL, redirectTo) => {
+    const [domain] = hosts;
     const name = normalize(domain);
     const url = `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`;
     const annotations = {
@@ -306,7 +324,29 @@ async function createIngressFunction(): Promise<
       annotations[issuerAnnotationKey] = issuerAnnotationValue;
     }
 
-    logger.info(`Registering ingress ${name} for ${domain}`);
+    const spec: Ingress['spec'] = {
+      ingressClassName,
+      rules: hosts.map((host) => ({
+        host,
+        http: {
+          paths: [
+            {
+              path: '/',
+              pathType: 'Prefix',
+              backend: { service: { name: serviceName, port: { name: servicePort } } },
+            },
+          ],
+        },
+      })),
+      tls: [
+        {
+          hosts,
+          secretName,
+        },
+      ],
+    };
+
+    logger.info(`Registering ingress ${name} for ${hosts.join(', ')}`);
     try {
       await requestKubernetes(`create ingress ${name}`, () =>
         axios.post(
@@ -325,29 +365,7 @@ async function createIngressFunction(): Promise<
               },
               name,
             },
-            spec: {
-              ingressClassName,
-              rules: [
-                {
-                  host: domain,
-                  http: {
-                    paths: [
-                      {
-                        path: '/',
-                        pathType: 'Prefix',
-                        backend: { service: { name: serviceName, port: { name: servicePort } } },
-                      },
-                    ],
-                  },
-                },
-              ],
-              tls: [
-                {
-                  hosts: [domain],
-                  secretName,
-                },
-              ],
-            },
+            spec,
           } as Ingress,
           config,
         ),
@@ -357,41 +375,31 @@ async function createIngressFunction(): Promise<
         throw error;
       }
       logger.warn(`Conflict registering ingress ${name}`);
-      if (issuerAnnotationKey) {
-        logger.info(`Patching ingress ${name} instead`);
-        const path = `/metadata/annotations/${escapeJsonPointer(issuerAnnotationKey)}`;
-        try {
-          await requestKubernetes(`patch ingress ${name}`, () =>
-            axios.patch(
-              // Not SSRF: baseURL is from server config (argv), namespace from K8s service account, name is normalized domain
-              // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
-              `${url}/${name}`,
-              [
-                customSSL
-                  ? { op: 'remove', path }
-                  : { op: 'add', path, value: issuerAnnotationValue },
-              ],
-              {
-                ...config,
-                headers: {
-                  ...(config.headers as Record<string, string>),
-                  'content-type': 'application/json-patch+json',
-                },
-              },
-            ),
-          );
-        } catch (err) {
-          if (axios.isAxiosError(err) && err.response?.status !== 422) {
-            throw err;
-          }
-
-          logger.warn('Patching ingress failed. It was likely already up to date');
-        }
+      logger.info(`Patching ingress ${name} instead`);
+      const patchAnnotations: Record<string, string | null> = { ...annotations };
+      if (customSSL && issuerAnnotationKey) {
+        patchAnnotations[issuerAnnotationKey] = null;
       }
+      await requestKubernetes(`patch ingress ${name}`, () =>
+        axios.patch(
+          // Not SSRF: baseURL is from server config (argv), namespace from K8s service account, name is normalized domain
+          // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
+          `${url}/${name}`,
+          { metadata: { annotations: patchAnnotations }, spec },
+          {
+            ...config,
+            headers: {
+              ...(config.headers as Record<string, string>),
+              'content-type': 'application/merge-patch+json',
+            },
+          },
+        ),
+      );
     }
-    logger.info(`Successfully registered ingress ${name} for ${domain}`);
+    logger.info(`Successfully registered ingress ${name} for ${hosts.join(', ')}`);
   };
 }
+
 async function createSSLSecretFunction(): Promise<
   (domain: string, certificate: string, key: string) => Promise<void>
 > {
@@ -466,9 +474,9 @@ export async function configureDNS(): Promise<void> {
   const createSSLSecret = await createSSLSecretFunction();
 
   /**
-   * Register a wildcard domain name ingress for organizations.
+   * Register an ingress for the host names of an organization.
    */
-  Organization.afterCreate('dns', ({ id }) => createIngress(`*.${id}.${hostname}`));
+  Organization.afterCreate('dns', ({ id }) => createIngress(getOrganizationHosts(id, hostname)));
 
   Organization.afterDestroy('dns', async ({ id }) => {
     const domain = `*.${id}.${hostname}`;
@@ -483,7 +491,7 @@ export async function configureDNS(): Promise<void> {
     const { domain, sslCertificate, sslKey } = app;
 
     if (domain) {
-      await createIngress(domain, Boolean(sslCertificate && sslKey) || argv.skipCustomDomains);
+      await createIngress([domain], Boolean(sslCertificate && sslKey) || argv.skipCustomDomains);
       if (sslKey && sslCertificate) {
         await createSSLSecret(domain, sslCertificate, sslKey);
       }
@@ -513,9 +521,9 @@ export async function configureDNS(): Promise<void> {
     const { domain } = collection;
 
     if (domain) {
-      await createIngress(domain, argv.skipCustomDomains);
+      await createIngress([domain], argv.skipCustomDomains);
       if (!domain.startsWith('www.')) {
-        await createIngress(`www.${domain}`, argv.skipCustomDomains, domain);
+        await createIngress([`www.${domain}`], argv.skipCustomDomains, domain);
       }
     }
     const oldDomain = collection.previous('domain') as string;
@@ -601,9 +609,10 @@ export async function reconcileDNS({
   skipCustomDomains = false,
 }: { dryRun?: boolean | undefined; skipCustomDomains?: boolean | undefined } = {}): Promise<void> {
   const { hostname } = new URL(argv.host);
-  const orgWildcards = new Set<string>();
+  const organizationHosts = new Map<string, [string, string]>();
   for await (const { id } of iterTable(Organization, { attributes: ['id'] })) {
-    orgWildcards.add(`*.${id}.${hostname}`);
+    const hosts = getOrganizationHosts(id, hostname);
+    organizationHosts.set(hosts[0], hosts);
   }
 
   const appDomains = new Set<string>();
@@ -634,10 +643,13 @@ export async function reconcileDNS({
     ({ hosts }) =>
       !hosts.some((host) => appDomains.has(host)) &&
       !hosts.some((host) => appCollectionDomains.has(host)) &&
-      !hosts.some((host) => orgWildcards.has(host)),
+      !hosts.some((host) => organizationHosts.has(host)),
   );
-  const missingIngresses = [...appDomains, ...appCollectionDomains, ...orgWildcards].filter(
-    (host) => !ingressHosts.some(({ hosts }) => hosts.includes(host)),
+  const missingIngresses = [
+    ...[...appDomains, ...appCollectionDomains].map((host) => [host]),
+    ...organizationHosts.values(),
+  ].filter(
+    (expected) => !ingressHosts.some(({ hosts }) => expected.every((host) => hosts.includes(host))),
   );
   for (const { name } of extraIngresses) {
     logger.info(`Deleting extra ingress ${name}${dryRun ? ' (Dry run)' : ''}`);
@@ -649,7 +661,8 @@ export async function reconcileDNS({
   }
   const createIngress = dryRun ? () => Promise.resolve() : await createIngressFunction();
   const createSSLSecret = dryRun ? () => Promise.resolve() : await createSSLSecretFunction();
-  for (const name of missingIngresses) {
+  for (const hosts of missingIngresses) {
+    const [name] = hosts;
     logger.info(`Creating missing ingress ${name}${dryRun ? ' (Dry run)' : ''}`);
     if (dryRun) {
       continue;
@@ -659,8 +672,8 @@ export async function reconcileDNS({
         ? name.slice(4)
         : undefined;
     await createIngress(
-      name,
-      appDomainCertificates.has(name) || (!orgWildcards.has(name) && skipCustomDomains),
+      hosts,
+      appDomainCertificates.has(name) || (!organizationHosts.has(name) && skipCustomDomains),
       redirect,
     );
     if (appDomainCertificates.has(name)) {

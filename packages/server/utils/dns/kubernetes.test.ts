@@ -43,7 +43,7 @@ describe('kubernetes', () => {
   });
 
   describe('configureDNS', () => {
-    it('should create a wildcard ingress when an organization is created', async () => {
+    it('should create an ingress for both organization host names when an organization is created', async () => {
       let config: AxiosRequestConfig | undefined;
       mock.onPost(/.*/).reply((request) => {
         config = request;
@@ -91,9 +91,24 @@ describe('kubernetes', () => {
                 ],
               },
             },
+            {
+              host: 'testorg.host.example',
+              http: {
+                paths: [
+                  {
+                    backend: { service: { name: 'review-service', port: { name: 'http' } } },
+                    path: '/',
+                    pathType: 'Prefix',
+                  },
+                ],
+              },
+            },
           ],
           tls: [
-            { hosts: ['*.testorg.host.example'], secretName: 'testorg-host-example-tls-wilcard' },
+            {
+              hosts: ['*.testorg.host.example', 'testorg.host.example'],
+              secretName: 'testorg-host-example-tls-wilcard',
+            },
           ],
         },
       });
@@ -122,6 +137,43 @@ describe('kubernetes', () => {
       expect(configs[0].url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
       expect(configs[1].url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
       expect(JSON.parse(configs[1].data).spec.rules[0].host).toBe('*.testorg.host.example');
+    });
+
+    it('should update an existing organization ingress to serve both organization host names', async () => {
+      mock.reset();
+
+      const configs: AxiosRequestConfig[] = [];
+      mock.onPost(/.*/).reply((request) => {
+        configs.push(request);
+        return [409];
+      });
+      mock.onPatch(/.*/).reply((request) => {
+        configs.push(request);
+        return [200, request.data];
+      });
+
+      setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+      await kubernetes.configureDNS();
+      await Organization.create({ id: 'testorg' });
+
+      expect(configs).toHaveLength(2);
+      const patch = configs[1];
+      expect(patch.method).toBe('patch');
+      expect(patch.url).toBe(
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/testorg-host-example',
+      );
+      expect({ ...patch.headers }).toMatchObject({
+        'Content-Type': 'application/merge-patch+json',
+      });
+      const { spec } = JSON.parse(patch.data);
+      expect(spec.rules[0].host).toBe('*.testorg.host.example');
+      expect(spec.rules[1].host).toBe('testorg.host.example');
+      expect(spec.tls).toStrictEqual([
+        {
+          hosts: ['*.testorg.host.example', 'testorg.host.example'],
+          secretName: 'testorg-host-example-tls-wilcard',
+        },
+      ]);
     });
 
     it('should create an ingress when an app with a domain is created', async () => {
@@ -258,8 +310,25 @@ describe('kubernetes', () => {
                 ],
               },
             },
+            {
+              host: 'foo.host.example',
+              http: {
+                paths: [
+                  {
+                    backend: { service: { name: 'review-service', port: { name: 'http' } } },
+                    path: '/',
+                    pathType: 'Prefix',
+                  },
+                ],
+              },
+            },
           ],
-          tls: [{ hosts: ['*.foo.host.example'], secretName: 'foo-host-example-tls-wilcard' }],
+          tls: [
+            {
+              hosts: ['*.foo.host.example', 'foo.host.example'],
+              secretName: 'foo-host-example-tls-wilcard',
+            },
+          ],
         },
       });
     });
@@ -805,7 +874,7 @@ describe('kubernetes', () => {
       await kubernetes.reconcileDNS({ dryRun: false });
 
       const creates = configs.filter(({ method }) => method === 'post');
-      expect(creates).toHaveLength(8);
+      expect(creates).toHaveLength(9);
       for (const { url } of creates) {
         expect(url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
       }
@@ -814,12 +883,14 @@ describe('kubernetes', () => {
         'app3-example-com',
         'collection2-example-com',
         'collection3-example-com',
+        'org1-host-example',
         'org2-host-example',
         'org3-host-example',
         'www-collection2-example-com',
         'www-collection3-example-com',
       ]);
       expect(creates.map(({ data }) => JSON.parse(data).spec.rules[0].host).sort()).toStrictEqual([
+        '*.org1.host.example',
         '*.org2.host.example',
         '*.org3.host.example',
         'app2.example.com',
@@ -828,6 +899,25 @@ describe('kubernetes', () => {
         'collection3.example.com',
         'www.collection2.example.com',
         'www.collection3.example.com',
+      ]);
+    });
+
+    it('should add the organization host to an organization ingress which only serves the wildcard host', async () => {
+      await kubernetes.reconcileDNS({ dryRun: false });
+
+      const creates = configs.filter(
+        ({ data, method }) =>
+          method === 'post' && JSON.parse(data).metadata.name === 'org1-host-example',
+      );
+      expect(creates).toHaveLength(1);
+      const { spec } = JSON.parse(creates[0].data);
+      expect(spec.rules[0].host).toBe('*.org1.host.example');
+      expect(spec.rules[1].host).toBe('org1.host.example');
+      expect(spec.tls).toStrictEqual([
+        {
+          hosts: ['*.org1.host.example', 'org1.host.example'],
+          secretName: 'org1-host-example-tls-wilcard',
+        },
       ]);
     });
 
