@@ -266,9 +266,8 @@ function generateSSLSecretName(domain: string): string {
  * Get the host names served by the ingress of an organization.
  *
  * The wildcard host serves the apps of the organization. The organization host itself redirects to
- * the organization page in Appsemble Studio. Both are listed on the ingress, so a DNS controller
- * creates a record for each of them and resolving them doesn't depend on a wildcard record higher
- * up in the zone.
+ * the organization page in Appsemble Studio. Both are listed on the ingress and get a DNS record of
+ * their own, so resolving them doesn't depend on a wildcard record higher up in the zone.
  *
  * @param organizationId The id of the organization.
  * @param hostname The host name of the Appsemble deployment.
