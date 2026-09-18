@@ -255,7 +255,14 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
 
   process.once('SIGTERM', async () => {
     logger.info('Received SIGTERM, draining');
-    await shutdown(httpServer);
-    process.exit();
+    try {
+      await shutdown(httpServer);
+    } catch (error) {
+      logger.error(error as Error);
+    } finally {
+      // The process logs unhandled rejections rather than exiting on them, so a failed shutdown
+      // would otherwise leave it running until the termination grace period kills it.
+      process.exit();
+    }
   });
 }
