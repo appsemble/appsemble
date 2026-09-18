@@ -8,6 +8,7 @@ import { pipeline } from 'node:stream/promises';
 import { AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
   assertKoaCondition,
+  getAppAssetLocation,
   getSupportedLanguages,
   handleValidatorResult,
   replaceAssetFunctions,
@@ -232,7 +233,8 @@ export async function importApp(ctx: Context): Promise<void> {
                 { transaction: appTransaction },
               );
 
-              await uploadS3File(`app-${appId}`, asset.id, createReadStream(tempPath), stats.size);
+              const { bucket, key } = getAppAssetLocation(appId, asset.id);
+              await uploadS3File(bucket, key, createReadStream(tempPath), stats.size);
             }
           }
 

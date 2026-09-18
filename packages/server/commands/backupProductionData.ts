@@ -5,6 +5,7 @@ import { createGzip } from 'node:zlib';
 import { initS3Client, logger, uploadS3File } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
+import { backupsBuilder } from './builder/backups.js';
 import { databaseBuilder } from './builder/database.js';
 import { App, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
@@ -16,7 +17,7 @@ export const command = 'backup-production-data';
 export const description = 'Backs up data from the main database and app databases.';
 
 export function builder(yargs: Argv): Argv {
-  return databaseBuilder(yargs);
+  return backupsBuilder(databaseBuilder(yargs));
 }
 
 async function backupDatabaseToS3(
@@ -75,6 +76,9 @@ export async function handler(): Promise<void> {
         typeof argv.backupsSecure === 'string' ? argv.backupsSecure === 'true' : argv.backupsSecure,
       accessKey: argv.backupsAccessKey,
       secretKey: argv.backupsSecretKey,
+      region: argv.backupsRegion,
+      pathStyle: argv.backupsPathStyle,
+      bucket: argv.backupsBucket,
     });
   } catch (error: unknown) {
     logger.warn(`S3Error: ${error}`);

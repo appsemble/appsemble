@@ -693,9 +693,44 @@ e2e node:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
+    # The single-bucket layout: the bucket, anonymous read on its block assets and a user that can
+    # only touch its objects are provisioned before MinIO listens on the port the job connects to.
     - name: minio/minio:latest
       alias: minio
-      entrypoint: ['sh', '-c', 'minio server /data']
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          set -eu
+          minio server --address :9001 /data &
+          minio_pid=$!
+          until mc alias set local http://127.0.0.1:9001 admin password >/dev/null 2>&1; do
+            sleep 1
+          done
+          mc mb --ignore-existing local/appsemble
+          mc anonymous set download local/appsemble/blocks
+          cat > /tmp/objects-policy.json <<'EOF'
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": ["s3:ListBucket"],
+                "Resource": ["arn:aws:s3:::appsemble"]
+              },
+              {
+                "Effect": "Allow",
+                "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+                "Resource": ["arn:aws:s3:::appsemble/*"]
+              }
+            ]
+          }
+          EOF
+          mc admin policy create local appsemble-objects /tmp/objects-policy.json
+          mc admin user add local appsemble-server appsemble-server-secret
+          mc admin policy attach local appsemble-objects --user appsemble-server
+          kill "$minio_pid"
+          wait "$minio_pid" || true
+          exec minio server /data
       variables:
         MINIO_ROOT_USER: admin
         MINIO_ROOT_PASSWORD: password
@@ -730,8 +765,9 @@ e2e node:
         DATABASE_PASSWORD: password
         S3_HOST: minio
         S3_SECURE: false
-        S3_ACCESS_KEY: admin
-        S3_SECRET_KEY: password
+        S3_BUCKET: appsemble
+        S3_ACCESS_KEY: appsemble-server
+        S3_SECRET_KEY: appsemble-server-secret
         migrateTo: next
         E2E: true
   script:
@@ -746,9 +782,9 @@ e2e node:
     - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
       --s3-host minio
       --s3-secure=false
-      --s3-access-key admin
-      --s3-secret-key password
-      --public-read
+      --s3-bucket appsemble
+      --s3-access-key appsemble-server
+      --s3-secret-key appsemble-server-secret
     - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
   parallel: 6
   artifacts:
@@ -1290,6 +1326,11 @@ update dependencies:
       --set "minio.apiIngress.hostname=api.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-review"
       --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "minio.provisioning.enabled=true"
+      --set "minio.provisioning.buckets[0].name=appsemble"
+      --set "minio.provisioning.extraCommands[0]=mc anonymous set download provisioning/appsemble/blocks"
+      --set "s3.bucket=appsemble"
+      --set "blockAssets.publicUrl=https://api.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "valkey.fullnameOverride=review-$CI_MERGE_REQUEST_IID-valkey"
       --set "valkey.auth.usersExistingSecret=review-$CI_MERGE_REQUEST_IID-valkey"
       --set "valkey.resources.requests.cpu=25m"

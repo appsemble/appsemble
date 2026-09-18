@@ -21,6 +21,24 @@ The Helm chart runs database migrations automatically after each `helm install` 
 For operational migration checks and troubleshooting commands, use the chart documentation on
 [Artifact Hub](https://artifacthub.io/packages/helm/appsemble/appsemble) (see section `Migrations`).
 
+## Object storage
+
+Appsemble keeps app assets and block assets in S3 compatible object storage. The chart bundles
+MinIO, and any S3 compatible store can replace it. The `s3.bucket` value selects one of two layouts:
+
+- **Bucket per app** (the default, used by appsemble.app): the server creates an `app-<id>` bucket
+  for every app and an `appsemble-block-assets` bucket at runtime. The credentials must be allowed
+  to create buckets and to set bucket policies.
+- **Single bucket** (`s3.bucket` set): all objects live in one bucket you provision up front, app
+  assets under `apps/<id>/` and block assets under `blocks/`. The credentials only need to read,
+  write, delete and list objects in that bucket.
+
+Pick the single bucket when the provider limits the number of buckets (Hetzner Object Storage), when
+buckets are claimed through Kubernetes (an `ObjectBucketClaim` on OpenShift Data Foundation), or
+when the credentials must stay least-privilege. The secret contract, provisioning steps per provider
+and the commands that copy an existing installation into a single bucket are in the
+[Appsemble chart README](https://gitlab.com/appsemble/appsemble/-/tree/main/config/charts/appsemble#object-storage).
+
 ## Cert-manager
 
 Cert-manager is manages TLS certificates in Kubernetes. It can be used to automatically provision

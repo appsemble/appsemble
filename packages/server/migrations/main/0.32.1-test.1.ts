@@ -3,7 +3,7 @@ import { unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { logger, uploadS3FileFromPath } from '@appsemble/node-utils';
+import { getAppAssetLocation, logger, uploadS3FileFromPath } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes, type Sequelize, type Transaction } from 'sequelize';
 
 export const key = '0.32.1-test.1';
@@ -48,7 +48,8 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         if (row.data) {
           const path = join(tmpdir(), `${Date.now()}-${randomUUID()}`);
           await writeFile(path, row.data);
-          await uploadS3FileFromPath(`app-${row.AppId}`, row.id, path);
+          const location = getAppAssetLocation(row.AppId, row.id);
+          await uploadS3FileFromPath(location.bucket, location.key, path);
           await unlink(path);
         } else {
           logger.warn(`Asset ${row.id} data has not loaded into memory`);

@@ -9,6 +9,9 @@ SRC_S3_ENDPOINT="${SRC_S3_ENDPOINT:?Please set SRC_S3_ENDPOINT, e.g. https://api
 SRC_S3_ACCESS_KEY="${SRC_S3_ACCESS_KEY:?Please set SRC_S3_ACCESS_KEY}"
 SRC_S3_SECRET_KEY="${SRC_S3_SECRET_KEY:?Please set SRC_S3_SECRET_KEY}"
 SRC_S3_REGION="${SRC_S3_REGION:-us-east-1}"
+# The single bucket of the single-bucket layout. When set, app assets are read from its apps/<id>/
+# prefixes instead of from app-<id> buckets; the backup keeps the app-<id> layout either way.
+S3_BUCKET="${S3_BUCKET:-}"
 
 DST_S3_ENDPOINT="${DST_S3_ENDPOINT:?Please set DST_S3_ENDPOINT}"
 DST_S3_BUCKET="${DST_S3_BUCKET:?Please set DST_S3_BUCKET}"
@@ -80,10 +83,18 @@ configure_remote "$SRC_REMOTE_NAME" "$SRC_S3_ENDPOINT" "$SRC_S3_ACCESS_KEY" "$SR
 configure_remote "$DST_REMOTE_NAME" "$DST_S3_ENDPOINT" "$DST_S3_ACCESS_KEY" "$DST_S3_SECRET_KEY" "$DST_S3_REGION"
 
 log "Discovering source buckets"
-rclone lsf "${SRC_REMOTE_NAME}:" --dirs-only |
-  sed 's:/$::' |
-  grep -E '^app-[0-9]+$' |
-  sort >"$BUCKET_LIST_FILE"
+if [ -n "$S3_BUCKET" ]; then
+  rclone lsf "${SRC_REMOTE_NAME}:${S3_BUCKET}/apps" --dirs-only |
+    sed 's:/$::' |
+    grep -E '^[0-9]+$' |
+    sed 's/^/app-/' |
+    sort >"$BUCKET_LIST_FILE"
+else
+  rclone lsf "${SRC_REMOTE_NAME}:" --dirs-only |
+    sed 's:/$::' |
+    grep -E '^app-[0-9]+$' |
+    sort >"$BUCKET_LIST_FILE"
+fi
 
 if [ ! -s "$BUCKET_LIST_FILE" ]; then
   log "No app-* buckets found. Aborting."
@@ -98,7 +109,11 @@ log "Log file: $LOG_FILE"
 while IFS= read -r bucket; do
   [ -n "$bucket" ] || continue
 
-  src="${SRC_REMOTE_NAME}:${bucket}"
+  if [ -n "$S3_BUCKET" ]; then
+    src="${SRC_REMOTE_NAME}:${S3_BUCKET}/apps/${bucket#app-}"
+  else
+    src="${SRC_REMOTE_NAME}:${bucket}"
+  fi
   dst_current="${DST_REMOTE_NAME}:${DST_S3_BUCKET}/${BACKUP_PREFIX}/current/${bucket}"
   dst_archive="${DST_REMOTE_NAME}:${DST_S3_BUCKET}/${BACKUP_PREFIX}/archive/${RUN_ID}/${bucket}"
 

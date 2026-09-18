@@ -83,6 +83,10 @@ spec:
                       key: {{ .Values.minio.auth.rootPasswordSecretKey | quote }}
                 - name: SRC_S3_REGION
                   value: {{ .Values.assetsBackups.sourceRegion | quote }}
+{{- with .Values.s3.bucket }}
+                - name: S3_BUCKET
+                  value: {{ . | quote }}
+{{- end }}
                 - name: DST_S3_ENDPOINT
                   value: {{ $destinationEndpoint | quote }}
                 - name: DST_S3_BUCKET

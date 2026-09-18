@@ -1,4 +1,9 @@
-import { createFixtureStream, getS3FileBuffer, readFixture } from '@appsemble/node-utils';
+import {
+  createFixtureStream,
+  getBlockAssetLocation,
+  getS3FileBuffer,
+  readFixture,
+} from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -14,10 +19,7 @@ import {
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
-import {
-  ensureBlockAssetsBucketPublicRead,
-  getBlockAssetsBucketName,
-} from '../../../utils/blockAssets.js';
+import { ensureBlockAssetsBucketPublicRead } from '../../../utils/blockAssets.js';
 import { createServer } from '../../../utils/createServer.js';
 import { authorizeClientCredentials, createTestUser } from '../../../utils/test/authorization.js';
 
@@ -96,9 +98,8 @@ describe('createBlock', () => {
     });
     expect(blockAsset?.size).toBe(content.byteLength);
     expect(blockAsset?.storageKey).toContain(`/${blockAsset!.BlockVersionId}/`);
-    expect(
-      await getS3FileBuffer(getBlockAssetsBucketName(), blockAsset!.storageKey!),
-    ).toStrictEqual(content);
+    const { bucket, key } = getBlockAssetLocation(blockAsset!.storageKey!);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(content);
   });
 
   it('should serve published bytes directly from the configured object storage URL', async () => {
@@ -155,9 +156,8 @@ describe('createBlock', () => {
 
     const blockAsset = await BlockAsset.findOne({ where: { filename } });
     expect(status).toBe(201);
-    expect(
-      await getS3FileBuffer(getBlockAssetsBucketName(), blockAsset!.storageKey!),
-    ).toStrictEqual(await readFixture('standing.png'));
+    const { bucket, key } = getBlockAssetLocation(blockAsset!.storageKey!);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(await readFixture('standing.png'));
   });
 
   it('should accept and return repositoryUrl when publishing blocks', async () => {

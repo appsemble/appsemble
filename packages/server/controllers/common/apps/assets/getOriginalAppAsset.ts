@@ -1,5 +1,6 @@
 import {
   assertKoaCondition,
+  getAppAssetLocation,
   getS3File,
   getS3FileStats,
   setAssetHeaders,
@@ -44,10 +45,10 @@ export async function getOriginalAppAsset(ctx: Context): Promise<void> {
   });
   assertKoaCondition(asset != null, ctx, 404, 'Asset not found');
 
-  const bucketName = `app-${appId}`;
+  const { bucket, key } = getAppAssetLocation(appId, asset.id);
   const filename = getAssetFilename(asset.id, asset.filename, asset.mime);
-  const stats = await getS3FileStats(bucketName, asset.id);
-  const stream = await getS3File(bucketName, asset.id);
+  const stats = await getS3FileStats(bucket, key);
+  const stream = await getS3File(bucket, key);
 
   setAssetHeaders(ctx, asset.mime ?? 'application/octet-stream', filename, stats);
 

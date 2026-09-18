@@ -137,9 +137,17 @@ Get the TLS secret PgBouncer should use for client-facing TLS.
 {{- end -}}
 
 {{/*
-Configure the environment variables for Appsemble to connect with the Minio instance.
+Configure the environment variables for Appsemble to connect with the S3 compatible object storage.
 */}}
 {{- define "appsemble.s3" -}}
+{{- with .Values.s3.bucket }}
+- name: S3_BUCKET
+  value: {{ . | quote }}
+{{- end }}
+- name: S3_REGION
+  value: {{ .Values.s3.region | quote }}
+- name: S3_PATH_STYLE
+  value: {{ .Values.s3.pathStyle | quote }}
 {{- if .Values.minio.apiIngress.enabled }}
 - name: S3_HOST
   value: {{ .Values.minio.apiIngress.hostname | quote }}
@@ -251,6 +259,10 @@ Configure the environment variables for Appsemble to enable backups.
   value: {{ .Values.backups.port | quote }}
 - name: BACKUPS_SECURE
   value: {{ .Values.backups.secure | quote }}
+- name: BACKUPS_REGION
+  value: {{ .Values.backups.region | quote }}
+- name: BACKUPS_PATH_STYLE
+  value: {{ .Values.backups.pathStyle | quote }}
 {{- with .Values.backups.existingSecret }}
 - name: BACKUPS_ACCESS_KEY
   valueFrom:
