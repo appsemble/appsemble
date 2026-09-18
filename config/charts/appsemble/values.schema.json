@@ -763,7 +763,7 @@
     },
     "assetsBackups": {
       "type": "object",
-      "description": "Configuration for MinIO app-asset object backups.",
+      "description": "Configuration for app-asset object backups.",
       "additionalProperties": false,
       "required": ["enabled"],
       "properties": {
@@ -777,7 +777,7 @@
         },
         "sourceEndpoint": {
           "type": ["string", "null"],
-          "description": "Optional explicit source S3 endpoint; if omitted, it is derived from MinIO settings."
+          "description": "Optional explicit source S3 endpoint; if omitted, it is derived from the SeaweedFS settings."
         },
         "sourceRegion": {
           "type": "string"

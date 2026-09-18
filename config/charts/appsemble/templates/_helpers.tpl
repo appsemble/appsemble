@@ -150,6 +150,13 @@ Get the in-cluster host of the bundled SeaweedFS S3 gateway. The all-in-one pod 
 {{- end -}}
 
 {{/*
+Get the port the bundled SeaweedFS S3 gateway listens on, resolved the way its service does.
+*/}}
+{{- define "appsemble.seaweedfs.port" -}}
+{{- .Values.seaweedfs.allInOne.s3.port | default .Values.seaweedfs.s3.port | default 8333 -}}
+{{- end -}}
+
+{{/*
 Configure the environment variables for Appsemble to connect with the S3 compatible object storage.
 */}}
 {{- define "appsemble.s3" -}}
@@ -165,7 +172,7 @@ Configure the environment variables for Appsemble to connect with the S3 compati
 - name: S3_HOST
   value: {{ include "appsemble.seaweedfs.host" . | quote }}
 - name: S3_PORT
-  value: {{ .Values.seaweedfs.s3.port | default 8333 | quote }}
+  value: {{ include "appsemble.seaweedfs.port" . | quote }}
 - name: S3_SECURE
   value: "false"
 {{- else }}

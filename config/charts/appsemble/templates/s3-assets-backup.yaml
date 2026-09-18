@@ -1,7 +1,7 @@
 {{- if and .Values.cronjob.platform.enabled .Values.assetsBackups.enabled -}}
 {{- $sourceEndpoint := .Values.assetsBackups.sourceEndpoint -}}
 {{- if not $sourceEndpoint -}}
-{{- $sourceEndpoint = printf "http://%s:%v" (include "appsemble.seaweedfs.host" .) (.Values.seaweedfs.s3.port | default 8333) -}}
+{{- $sourceEndpoint = printf "http://%s:%s" (include "appsemble.seaweedfs.host" .) (include "appsemble.seaweedfs.port" .) -}}
 {{- end -}}
 {{- $destinationScheme := ternary "https" "http" .Values.backups.secure -}}
 {{- $destinationPort := int .Values.backups.port -}}

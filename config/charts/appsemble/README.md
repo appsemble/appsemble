@@ -509,16 +509,17 @@ node drain or other voluntary disruption cannot evict every replica at once.
 
 ## Production durability recommendations
 
-For production environments with significant asset storage in MinIO:
+For production environments with significant asset storage in the bundled object store:
 
-- set `minio.persistence.size` to at least `50Gi`.
-- set `minio.persistence.storageClass` to a retained storage class (for Hetzner:
+- set `seaweedfs.allInOne.data.size` to at least `50Gi`. SeaweedFS reclaims the space of deleted
+  objects by vacuuming its volumes, so leave headroom above the live object size.
+- set `seaweedfs.allInOne.data.storageClass` to a retained storage class (for Hetzner:
   `hetzner-volumes-retain`).
-- set the MinIO PVC annotation `helm.sh/resource-policy: keep`.
+- set the SeaweedFS PVC annotation `helm.sh/resource-policy: keep`.
 - set `postgresql.primary.persistence.storageClass` to the same retained class.
 - set the PostgreSQL PVC annotation `helm.sh/resource-policy: keep`.
 - keep `backup-production-data` enabled for database backups.
-- enable `assetsBackups.enabled=true` for MinIO app-asset backups (incremental daily + monthly full
+- enable `assetsBackups.enabled=true` for app-asset backups (incremental daily + monthly full
   snapshots).
 
 Valkey persistence is disabled by default because Appsemble uses it for disposable runtime data.
@@ -527,12 +528,13 @@ Only enable Valkey persistence when it is used for durable queues or state.
 Example:
 
 ```yaml
-minio:
-  persistence:
-    size: 50Gi
-    storageClass: hetzner-volumes-retain
-    annotations:
-      helm.sh/resource-policy: keep
+seaweedfs:
+  allInOne:
+    data:
+      size: 50Gi
+      storageClass: hetzner-volumes-retain
+      annotations:
+        helm.sh/resource-policy: keep
 postgresql:
   primary:
     persistence:
