@@ -167,6 +167,7 @@
     "cacheability",
     "unprefixed",
     "valkey",
+    "rollouts",
     "seaweedfs",
     "chrislusf",
     "icalendar",

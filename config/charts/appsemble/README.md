@@ -318,6 +318,35 @@ rclone copy src:appsemble-block-assets dst:my-bucket/blocks
 `src` and `dst` are rclone remotes for the current and the new object storage; they can point at the
 same server.
 
+### Moving from the bundled MinIO to SeaweedFS
+
+SeaweedFS starts with an empty volume and the upgrade removes the MinIO Deployment, so objects have
+to be copied across by hand. The MinIO PersistentVolumeClaim survives when it carries
+`helm.sh/resource-policy: keep`, but nothing serves it once the Deployment is gone: copy the objects
+out **before** upgrading.
+
+1. Scale the Appsemble Deployment to zero so nothing writes while the copy runs.
+2. With the old MinIO still running, copy every bucket to a holding location:
+
+   ```sh
+   rclone sync minio: holding:
+   ```
+
+3. Upgrade the chart. SeaweedFS comes up with an empty volume.
+4. Copy the objects into SeaweedFS and scale Appsemble back up:
+
+   ```sh
+   rclone sync holding: seaweedfs:
+   ```
+
+`minio`, `holding` and `seaweedfs` are rclone remotes; `holding` can be a local directory. With
+`assetsBackups.enabled=true` the backup bucket already holds a copy of the app assets, so step 2 can
+be replaced by a final run of the backup CronJob and step 4 by `sh scripts/s3-assets-restore.sh`.
+Block assets are not part of those backups and always need the rclone copy.
+
+Verify the object count per bucket before scaling Appsemble back up; a short check is
+`rclone size seaweedfs:` against the same command on the holding remote.
+
 ## Zero-downtime rollouts
 
 The Deployment rolls with `maxSurge: 1` and `maxUnavailable: 0`, so a replacement pod passes its
