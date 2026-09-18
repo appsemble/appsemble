@@ -14,8 +14,8 @@ import { getDB, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { configureDNS } from '../utils/dns/index.js';
-import { startDraining } from '../utils/health.js';
 import { migrate } from '../utils/migrate.js';
+import { shutdown } from '../utils/shutdown.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 import { syncTrainings } from '../utils/syncTrainings.js';
 import { initValkeyClient } from '../utils/valkey.js';
@@ -253,10 +253,16 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
     logger.info(api(version, argv).info.description);
   });
 
-  process.once('SIGTERM', () => {
+  process.once('SIGTERM', async () => {
     logger.info('Received SIGTERM, draining');
-    startDraining();
-    // Stop accepting connections, let the requests in flight finish, then exit.
-    httpServer.close(() => process.exit());
+    try {
+      await shutdown(httpServer);
+    } catch (error) {
+      logger.error(error as Error);
+    } finally {
+      // The process logs unhandled rejections rather than exiting on them, so a failed shutdown
+      // would otherwise leave it running until the termination grace period kills it.
+      process.exit();
+    }
   });
 }

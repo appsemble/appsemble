@@ -1,0 +1,16 @@
+{{- if gt (int .Values.replicaCount) 1 }}
+# Keeps a node drain or other voluntary disruption from evicting every replica at once. Only
+# rendered for a multi-replica install, where a single-replica one would block drains entirely.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "appsemble.fullname" . }}
+  labels:
+    {{ include "appsemble.labels" . }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+      app.kubernetes.io/name: {{ include "appsemble.name" . }}
+{{- end }}

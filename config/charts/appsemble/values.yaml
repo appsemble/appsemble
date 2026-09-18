@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=values.schema.json
 replicaCount: 1
 
+# The grace period must cover the preStop sleep plus the longest request.
+preStopSleepSeconds: 10
+terminationGracePeriodSeconds: 40
+
 image:
   repository: appsemble/appsemble
   tag: null

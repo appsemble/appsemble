@@ -6,6 +6,14 @@
     "replicaCount": {
       "type": "integer"
     },
+    "preStopSleepSeconds": {
+      "type": "integer",
+      "description": "How long a stopping pod keeps answering before it is sent SIGTERM, so its removal from the Service endpoints has propagated by then."
+    },
+    "terminationGracePeriodSeconds": {
+      "type": "integer",
+      "description": "How long a pod may take to stop before it is killed. Must cover `preStopSleepSeconds` plus the longest request."
+    },
     "image": {
       "type": "object",
       "additionalProperties": false,
