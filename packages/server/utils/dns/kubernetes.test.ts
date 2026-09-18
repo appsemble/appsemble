@@ -37,6 +37,12 @@ describe('kubernetes', () => {
     Organization.removeHook('afterDestroy', 'dns');
     AppCollection.removeHook('afterSave', 'dns');
     AppCollection.removeHook('afterDestroy', 'dns');
+    setArgv({
+      dnsProvider: undefined,
+      dnsTargets: undefined,
+      dnsToken: undefined,
+      dnsZone: undefined,
+    });
     delete process.env.KUBERNETES_REQUEST_RETRIES;
     delete process.env.KUBERNETES_RETRY_DELAY_MS;
     delete process.env.KUBERNETES_REQUEST_TIMEOUT_MS;
@@ -112,6 +118,34 @@ describe('kubernetes', () => {
           ],
         },
       });
+    });
+
+    it('should create DNS records for both organization host names when an organization is created', async () => {
+      const configs: AxiosRequestConfig[] = [];
+      mock.onPost(/.*/).reply((request) => [201, request.data]);
+      mock.onPatch(/.*/).reply((request) => {
+        configs.push(request);
+        return [200, []];
+      });
+
+      setArgv({
+        host: 'https://host.example',
+        serviceName: 'review-service',
+        servicePort: 'http',
+        dnsProvider: 'desec',
+        dnsZone: 'host.example',
+        dnsToken: 'test.token',
+        dnsTargets: '203.0.113.10',
+      });
+      await kubernetes.configureDNS();
+      await Organization.create({ id: 'testorg' });
+
+      expect(configs).toHaveLength(1);
+      expect(configs[0].url).toBe('https://desec.io/api/v1/domains/host.example/rrsets/');
+      expect(JSON.parse(configs[0].data)).toStrictEqual([
+        { subname: '*.testorg', type: 'A', ttl: 3600, records: ['203.0.113.10'] },
+        { subname: 'testorg', type: 'A', ttl: 3600, records: ['203.0.113.10'] },
+      ]);
     });
 
     it('should retry transient Kubernetes API errors when creating an ingress', async () => {
@@ -574,6 +608,39 @@ describe('kubernetes', () => {
       );
     });
 
+    it('should delete the DNS records of an organization when it is deleted', async () => {
+      const configs: AxiosRequestConfig[] = [];
+      mock.onPost(/.*/).reply((request) => [201, request.data]);
+      mock.onDelete(/.*/).reply(204);
+      mock.onPatch(/.*/).reply((request) => {
+        configs.push(request);
+        return [200, []];
+      });
+
+      setArgv({
+        host: 'https://host.example',
+        serviceName: 'review-service',
+        servicePort: 'http',
+        dnsProvider: 'desec',
+        dnsZone: 'host.example',
+        dnsToken: 'test.token',
+        dnsTargets: '203.0.113.10',
+      });
+      await kubernetes.configureDNS();
+      const org = await Organization.create({ id: 'testorg' });
+      configs.length = 0;
+
+      await org.destroy();
+
+      expect(configs).toHaveLength(1);
+      expect(JSON.parse(configs[0].data)).toStrictEqual([
+        { subname: '*.testorg', type: 'A', ttl: 3600, records: [] },
+        { subname: '*.testorg', type: 'AAAA', ttl: 3600, records: [] },
+        { subname: 'testorg', type: 'A', ttl: 3600, records: [] },
+        { subname: 'testorg', type: 'AAAA', ttl: 3600, records: [] },
+      ]);
+    });
+
     it("should delete the collection's ingress when an app collection is deleted", async () => {
       await Organization.create({ id: 'org' });
 
@@ -769,6 +836,35 @@ describe('kubernetes', () => {
         labelSelector: 'app.kubernetes.io/managed-by=review-service',
       });
     });
+
+    it('should delete the DNS records of all organizations', async () => {
+      const configs: AxiosRequestConfig[] = [];
+      mock.onDelete(/.*/).reply(204);
+      mock.onPatch(/.*/).reply((request) => {
+        configs.push(request);
+        return [200, []];
+      });
+
+      setArgv({
+        host: 'https://host.example',
+        serviceName: 'review-service',
+        servicePort: 'http',
+        dnsProvider: 'desec',
+        dnsZone: 'host.example',
+        dnsToken: 'test.token',
+        dnsTargets: '203.0.113.10',
+      });
+      await Organization.create({ id: 'testorg' });
+      await kubernetes.cleanupDNS();
+
+      expect(configs).toHaveLength(1);
+      expect(JSON.parse(configs[0].data)).toStrictEqual([
+        { subname: '*.testorg', type: 'A', ttl: 3600, records: [] },
+        { subname: '*.testorg', type: 'AAAA', ttl: 3600, records: [] },
+        { subname: 'testorg', type: 'A', ttl: 3600, records: [] },
+        { subname: 'testorg', type: 'AAAA', ttl: 3600, records: [] },
+      ]);
+    });
   });
 
   describe('reconcileDNS', () => {
@@ -919,6 +1015,66 @@ describe('kubernetes', () => {
           secretName: 'org1-host-example-tls-wilcard',
         },
       ]);
+    });
+
+    it('should create DNS records for all organizations and delete the records of extra ingresses', async () => {
+      const patches: AxiosRequestConfig[] = [];
+      mock.onPatch(/.*/).reply((request) => {
+        patches.push(request);
+        return [200, []];
+      });
+
+      setArgv({
+        host: 'https://host.example',
+        serviceName: 'review-service',
+        servicePort: 'http',
+        dnsProvider: 'desec',
+        dnsZone: 'host.example',
+        dnsToken: 'test.token',
+        dnsTargets: '203.0.113.10',
+      });
+      await kubernetes.reconcileDNS({ dryRun: false });
+
+      const [deleted, created] = patches.map(({ data }) => JSON.parse(data));
+      expect(deleted).toStrictEqual([
+        { subname: '*.org4', type: 'A', ttl: 3600, records: [] },
+        { subname: '*.org4', type: 'AAAA', ttl: 3600, records: [] },
+      ]);
+      expect(created.map(({ subname }: { subname: string }) => subname)).toStrictEqual([
+        '*.org1',
+        'org1',
+        '*.org2',
+        'org2',
+        '*.org3',
+        'org3',
+      ]);
+      expect(created[0]).toStrictEqual({
+        subname: '*.org1',
+        type: 'A',
+        ttl: 3600,
+        records: ['203.0.113.10'],
+      });
+    });
+
+    it('should not write DNS records on a dry run', async () => {
+      const patches: AxiosRequestConfig[] = [];
+      mock.onPatch(/.*/).reply((request) => {
+        patches.push(request);
+        return [200, []];
+      });
+
+      setArgv({
+        host: 'https://host.example',
+        serviceName: 'review-service',
+        servicePort: 'http',
+        dnsProvider: 'desec',
+        dnsZone: 'host.example',
+        dnsToken: 'test.token',
+        dnsTargets: '203.0.113.10',
+      });
+      await kubernetes.reconcileDNS({ dryRun: true });
+
+      expect(patches).toHaveLength(0);
     });
 
     it('should delete ingresses for apps, orgs, and app collections that no longer exist', async () => {

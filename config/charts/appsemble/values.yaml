@@ -39,6 +39,12 @@ s3:
   region: us-east-1
   pathStyle: true
 
+dns:
+  provider: ''
+  zone: ''
+  secret: ''
+  targets: []
+
 blockAssets:
   publicUrl: ''
   migration:

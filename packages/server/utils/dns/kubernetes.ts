@@ -9,6 +9,7 @@ import axios, { type RawAxiosRequestConfig } from 'axios';
 import { matcher } from 'matcher';
 import { Op } from 'sequelize';
 
+import { createDNSRecords, deleteDNSRecords } from './records.js';
 import { App, AppCollection, Organization } from '../../models/index.js';
 import { argv } from '../argv.js';
 import { iterTable } from '../database.js';
@@ -474,14 +475,18 @@ export async function configureDNS(): Promise<void> {
   const createSSLSecret = await createSSLSecretFunction();
 
   /**
-   * Register an ingress for the host names of an organization.
+   * Register an ingress and DNS records for the host names of an organization.
    */
-  Organization.afterCreate('dns', ({ id }) => createIngress(getOrganizationHosts(id, hostname)));
+  Organization.afterCreate('dns', async ({ id }) => {
+    const hosts = getOrganizationHosts(id, hostname);
+    await createIngress(hosts);
+    await createDNSRecords(hosts);
+  });
 
   Organization.afterDestroy('dns', async ({ id }) => {
-    const domain = `*.${id}.${hostname}`;
-    const name = normalize(domain);
-    await deleteIngress(name);
+    const hosts = getOrganizationHosts(id, hostname);
+    await deleteIngress(hosts[0]);
+    await deleteDNSRecords(hosts);
   });
 
   /**
@@ -549,12 +554,19 @@ export async function configureDNS(): Promise<void> {
 }
 
 /**
- * Cleanup all ingresses managed by the current service.
+ * Cleanup all ingresses, TLS secrets, and organization DNS records managed by the current service.
  */
 export async function cleanupDNS(): Promise<void> {
   const { serviceName } = argv;
   const config = await getAxiosConfig();
   const namespace = await readK8sSecret('namespace');
+  const { hostname } = new URL(argv.host);
+  const organizationHosts: string[] = [];
+  for await (const { id } of iterTable(Organization, { attributes: ['id'] })) {
+    organizationHosts.push(...getOrganizationHosts(id, hostname));
+  }
+  await deleteDNSRecords(organizationHosts);
+
   logger.warn(`Deleting all ingresses for ${serviceName}`);
   await requestKubernetes(`delete ingresses for ${serviceName}`, () =>
     axios.delete(`/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`, {
@@ -651,12 +663,13 @@ export async function reconcileDNS({
   ].filter(
     (expected) => !ingressHosts.some(({ hosts }) => expected.every((host) => hosts.includes(host))),
   );
-  for (const { name } of extraIngresses) {
+  for (const { hosts, name } of extraIngresses) {
     logger.info(`Deleting extra ingress ${name}${dryRun ? ' (Dry run)' : ''}`);
     if (dryRun) {
       continue;
     }
     await deleteIngress(name);
+    await deleteDNSRecords(hosts.filter((host) => host.endsWith(`.${hostname}`)));
     logger.info(`Deleted extra ingress ${name}`);
   }
   const createIngress = dryRun ? () => Promise.resolve() : await createIngressFunction();
@@ -681,6 +694,9 @@ export async function reconcileDNS({
       await createSSLSecret(name, sslCertificate, sslKey);
     }
     logger.info(`Created missing ingress ${name}`);
+  }
+  if (!dryRun) {
+    await createDNSRecords([...organizationHosts.values()].flat());
   }
 }
 

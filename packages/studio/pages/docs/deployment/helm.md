@@ -120,10 +120,22 @@ Appsemble creates an ingress per organization which serves `<organization>.ingre
 `*.<organization>.ingress.host`. Both host names need a DNS record of their own. The certificate of
 that ingress covers a wildcard host, so cert-manager validates it with a DNS01 challenge, and the
 challenge record makes `<organization>.ingress.host` exist in the zone, after which the wildcard
-record on `ingress.host` no longer resolves anything below it. Run a DNS controller such as
-[external-dns](https://github.com/kubernetes-sigs/external-dns) which creates records for the host
-names of the ingresses Appsemble manages. The `ingress.annotations` value is applied to those
-ingresses as well, so annotations the controller needs are configured there.
+record on `ingress.host` no longer resolves anything below it. Set the `dns` values to let Appsemble
+create an `A` and `AAAA` record for both host names of every organization:
+
+```sh
+helm install my-appsemble appsemble/appsemble \
+--set "dns.provider=desec" \
+--set "dns.zone=example.com" \
+--set "dns.secret=appsemble-dns" \
+--set "dns.targets={203.0.113.10,2001:db8::10}"
+# ...
+```
+
+`dns.zone` is the zone which contains `ingress.host`, `dns.targets` are the addresses of the ingress
+controller, and `dns.secret` names a secret which holds the API token of the provider under the key
+`dns-token`. Appsemble writes the records when an organization is created, removes them when it is
+deleted, and writes the records of all organizations in the `reconcile-dns` job.
 
 ## Use HTTPS configured elsewhere
 

@@ -328,6 +328,28 @@ Configure the environment variable for Appsemble to connect to Stripe.
 {{- end }}
 
 {{/*
+Configure the environment variables for Appsemble to manage the DNS records of organization host
+names.
+*/}}
+{{- define "appsemble.dns" -}}
+{{- with .Values.dns }}
+{{- if .provider }}
+- name: DNS_PROVIDER
+  value: {{ .provider | quote }}
+- name: DNS_ZONE
+  value: {{ .zone | quote }}
+- name: DNS_TARGETS
+  value: {{ join "," .targets | quote }}
+- name: DNS_TOKEN
+  valueFrom:
+    secretKeyRef:
+      name: {{ .secret | quote }}
+      key: dns-token
+{{- end }}
+{{- end }}
+{{- end -}}
+
+{{/*
 Configure the environment variables for Sentry.
 */}}
 {{- define "appsemble.sentry" -}}

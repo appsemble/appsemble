@@ -106,10 +106,22 @@ Appsemble creates an ingress per organization which serves `<organization>.ingre
 `*.<organization>.ingress.host`. Both host names need a DNS record of their own. The certificate of
 that ingress covers a wildcard host, so cert-manager validates it with a DNS01 challenge, and the
 challenge record makes `<organization>.ingress.host` exist in the zone, after which the wildcard
-record on `ingress.host` no longer resolves anything below it. Run a DNS controller such as
-[external-dns](https://github.com/kubernetes-sigs/external-dns) which creates records for the host
-names of the ingresses Appsemble manages. The `ingress.annotations` value is applied to those
-ingresses as well, so annotations the controller needs are configured there.
+record on `ingress.host` no longer resolves anything below it. Set the `dns` values to let Appsemble
+create an `A` and `AAAA` record for both host names of every organization:
+
+```sh
+helm install my-appsemble appsemble/appsemble \
+--set "dns.provider=desec" \
+--set "dns.zone=example.com" \
+--set "dns.secret=appsemble-dns" \
+--set "dns.targets={203.0.113.10,2001:db8::10}"
+# ...
+```
+
+`dns.zone` is the zone which contains `ingress.host`, `dns.targets` are the addresses of the ingress
+controller, and `dns.secret` names a secret which holds the API token of the provider under the key
+`dns-token`. Appsemble writes the records when an organization is created, removes them when it is
+deleted, and writes the records of all organizations in the `reconcile-dns` job.
 
 ## Migrations
 
@@ -397,6 +409,10 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `ingress.tls`                               | `false`                        | Whether TLS should be configured for the top-level and wildcard hosts.                                                                    |
 | `ingress.tlsSecretName`                     | `''`                           | The secret name to use to configure TLS for the top level host.                                                                           |
 | `ingress.tlsWildcardSecretName`             | `''`                           | The secret name to use to configure TLS for the direct wildcard host.                                                                     |
+| `dns.provider`                              | `''`                           | The provider which serves the DNS zone of the organization host names. The only supported value is `desec`.                               |
+| `dns.zone`                                  | `''`                           | The name of the DNS zone which contains the organization host names.                                                                      |
+| `dns.secret`                                | `''`                           | The name of the secret which holds the API token of the DNS provider under the key `dns-token`.                                           |
+| `dns.targets`                               | `[]`                           | The IP addresses the organization host names resolve to.                                                                                  |
 | `route.enabled`                             | `false`                        | Whether or not the service should be exposed through an OpenShift Route.                                                                  |
 | `route.host`                                | `''`                           | The host name on which the route will expose the service.                                                                                 |
 | `route.annotations`                         | `{}`                           | Annotations for the OpenShift Route.                                                                                                      |

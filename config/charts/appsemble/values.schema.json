@@ -120,6 +120,32 @@
         }
       }
     },
+    "dns": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "type": "string",
+          "description": "The provider which serves the DNS zone of the organization host names.",
+          "enum": ["", "desec"]
+        },
+        "zone": {
+          "type": "string",
+          "description": "The name of the DNS zone which contains the organization host names."
+        },
+        "secret": {
+          "type": "string",
+          "description": "The name of the secret which holds the API token of the DNS provider under the key dns-token."
+        },
+        "targets": {
+          "type": "array",
+          "description": "The IP addresses the organization host names resolve to.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "blockAssets": {
       "type": "object",
       "additionalProperties": false,

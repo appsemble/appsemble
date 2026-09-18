@@ -104,6 +104,7 @@ spec:
               value: {{ include "appsemble.fullname" . }}
             - name: SERVICE_PORT
               value: http
+{{ include "appsemble.dns" . | indent 12 }}
             {{- end }}
             - name: SECRET
               valueFrom:
