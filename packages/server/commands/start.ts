@@ -194,19 +194,13 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
     logger.warn('Features related to file uploads will not work correctly!');
   }
 
-  const opts = {
+  await initValkeyClient({
     host: argv.valkeyHost,
     port: argv.valkeyPort,
     username: argv.valkeyUsername,
     password: argv.valkeyPassword,
     tls: argv.valkeyTls,
-  };
-  try {
-    await initValkeyClient(opts);
-  } catch (error: unknown) {
-    logger.warn(`ValkeyError: ${error}`);
-    logger.warn('Valkey-related features will not work correctly!');
-  }
+  });
 
   if (argv.migrateTo) {
     const db = getDB();
