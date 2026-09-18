@@ -257,6 +257,12 @@ seaweedfs:
     enabled: false
   volume:
     enabled: false
+    # The all-in-one pod takes its volume ceiling from here. SeaweedFS grows volumes per bucket and
+    # the default `0` derives the ceiling from the disk size, which a bucket per app exhausts almost
+    # immediately. Volumes are created on demand and stay sparse, so a high ceiling costs nothing.
+    dataDirs:
+      - name: data
+        maxVolumes: 2000
   filer:
     enabled: false
   allInOne:

@@ -516,6 +516,10 @@ For production environments with significant asset storage in the bundled object
 - set `seaweedfs.allInOne.data.storageClass` to a retained storage class (for Hetzner:
   `hetzner-volumes-retain`).
 - set the SeaweedFS PVC annotation `helm.sh/resource-policy: keep`.
+- raise `seaweedfs.volume.dataDirs[0].maxVolumes` above roughly seven times the number of apps.
+  SeaweedFS keeps a separate set of volumes per bucket and the bucket per app layout gives every app
+  its own bucket. Volumes are created on demand and stay sparse, so the ceiling costs nothing until
+  it is used, but reaching it fails writes for new apps.
 - set `postgresql.primary.persistence.storageClass` to the same retained class.
 - set the PostgreSQL PVC annotation `helm.sh/resource-policy: keep`.
 - keep `backup-production-data` enabled for database backups.

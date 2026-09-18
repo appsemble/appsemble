@@ -276,7 +276,7 @@ seed database:
             ]
           }
           JSON
-          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json
+          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
       entrypoint: ['sh', '-c']
@@ -509,7 +509,7 @@ test node:
             ]
           }
           JSON
-          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json
+          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
@@ -658,7 +658,7 @@ validate snippets:
             ]
           }
           JSON
-          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json
+          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
       entrypoint: ['sh', '-c']
@@ -768,7 +768,7 @@ e2e node:
           echo 's3.bucket.create -name appsemble' | weed shell
           kill "$weed_pid"
           wait "$weed_pid" || true
-          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json
+          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     - name: valkey/valkey:9.1.2
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
@@ -885,7 +885,7 @@ e2e keycloak:
             ]
           }
           JSON
-          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json
+          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     - name: quay.io/keycloak/keycloak:26.6.1
       alias: keycloak
       command: ['start-dev', '--http-enabled=true', '--hostname-strict=false']

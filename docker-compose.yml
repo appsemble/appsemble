@@ -62,7 +62,7 @@ services:
           ]
         }
         JSON
-        exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json
+        exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     ports:
       - '8333:8333'
     volumes:
@@ -86,7 +86,7 @@ services:
           ]
         }
         JSON
-        exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json
+        exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     ports:
       - '9009:8333'
     volumes:

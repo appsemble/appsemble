@@ -78,7 +78,7 @@ services:
           ]
         }
         JSON
-        exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json
+        exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     environment:
       S3_ACCESS_KEY: *s3-access-key
       S3_SECRET_KEY: *s3-secret-key
