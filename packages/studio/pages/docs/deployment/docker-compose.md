@@ -23,7 +23,7 @@ services:
     image: appsemble/appsemble:latest
     depends_on:
       - postgresql
-      - minio
+      - s3
     networks:
       - appsemble
     restart: always
@@ -34,8 +34,8 @@ services:
       DATABASE_PASSWORD: *database-password
       HOST: http://localhost:8000
       SECRET: *secret
-      S3_HOST: minio
-      S3_PORT: 9000
+      S3_HOST: s3
+      S3_PORT: 8333
       S3_SECURE: 'false'
       S3_ACCESS_KEY: *s3-access-key
       S3_SECRET_KEY: *s3-secret-key
@@ -57,17 +57,33 @@ services:
     ports:
       - '5432:5432'
 
-  minio:
-    image: minio/minio:latest
+  s3:
+    image: chrislusf/seaweedfs:4.47
     networks:
       - appsemble
     restart: always
-    command: server /data
+    entrypoint: ['sh', '-ec']
+    command:
+      - |
+        cat > /etc/seaweedfs/s3.json <<JSON
+        {
+          "identities": [
+            {
+              "name": "appsemble",
+              "credentials": [
+                { "accessKey": "$$S3_ACCESS_KEY", "secretKey": "$$S3_SECRET_KEY" }
+              ],
+              "actions": ["Admin", "Read", "Write"]
+            }
+          ]
+        }
+        JSON
+        exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json
     environment:
-      MINIO_ROOT_USER: *s3-access-key
-      MINIO_ROOT_PASSWORD: *s3-secret-key
+      S3_ACCESS_KEY: *s3-access-key
+      S3_SECRET_KEY: *s3-secret-key
     volumes:
-      - $HOME/.local/share/appsemble-minio:/data
+      - $HOME/.local/share/appsemble-s3:/data
 ```
 
 It is highly recommended to specify the version of the `appsemble/appsemble` image to use. Replace
@@ -104,8 +120,8 @@ a container can be found
 ## Object storage
 
 Appsemble keeps app assets and block assets in S3 compatible object storage. The example above runs
-[MinIO](https://min.io) next to the server; any S3 compatible service works. Without it the server
-still starts, but publishing a block and uploading or serving an app asset fail.
+[SeaweedFS](https://seaweedfs.com) next to the server; any S3 compatible service works. Without it
+the server still starts, but publishing a block and uploading or serving an app asset fail.
 
 - `S3_HOST`
 - `S3_PORT`
@@ -129,8 +145,7 @@ instead, point `BLOCK_ASSETS_BASE_URL` at its public URL and allow anonymous rea
 assets. The
 [Appsemble chart README](https://gitlab.com/appsemble/appsemble/-/tree/main/config/charts/appsemble#object-storage)
 covers both layouts in full, including how to provision the bucket on OpenShift Data Foundation,
-Hetzner Object Storage, MinIO and SeaweedFS, and how to copy an existing installation into a single
-bucket.
+Hetzner Object Storage and SeaweedFS, and how to copy an existing installation into a single bucket.
 
 A wide range of other services like [sentry](https://sentry.io), [GitHub](https://github.com),
 [GitLab](https://gitlab.com) etc can be configured using various environment variables. For a

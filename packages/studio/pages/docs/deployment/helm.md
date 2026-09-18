@@ -24,7 +24,8 @@ For operational migration checks and troubleshooting commands, use the chart doc
 ## Object storage
 
 Appsemble keeps app assets and block assets in S3 compatible object storage. The chart bundles
-MinIO, and any S3 compatible store can replace it. The `s3.bucket` value selects one of two layouts:
+SeaweedFS, and any S3 compatible store can replace it. The `s3.bucket` value selects one of two
+layouts:
 
 - **Bucket per app** (the default, used by appsemble.app): the server creates an `app-<id>` bucket
   for every app and an `appsemble-block-assets` bucket at runtime. The credentials must be allowed

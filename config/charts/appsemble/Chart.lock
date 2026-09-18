@@ -5,11 +5,11 @@ dependencies:
 - name: mailpit
   repository: https://jouve.github.io/charts
   version: 0.36.0
-- name: minio
-  repository: https://charts.bitnami.com/bitnami
-  version: 14.10.5
+- name: seaweedfs
+  repository: https://seaweedfs.github.io/seaweedfs/helm
+  version: 4.47.0
 - name: valkey
   repository: https://valkey.io/valkey-helm
   version: 0.12.0
-digest: sha256:36d9259b997303ac809f391809c1282711e6b344369bc02c264c1b431ba46c26
-generated: "2026-09-09T04:18:56.107528877Z"
+digest: sha256:24c2606e5e47c497ffb966bb5de6cf1d4722ee73b763925d195e305679cc5a39
+generated: "2026-09-18T22:36:30.656180885+02:00"

@@ -221,9 +221,9 @@ readiness. `/api/health` is a deprecated alias of `/health/ready`.
 ## Object storage
 
 Appsemble stores app assets and block assets in S3 compatible object storage. The chart bundles
-[MinIO](https://artifacthub.io/packages/helm/bitnami/minio) (`minio.*` values) and reads the
-connection from the `s3` secret (`minio.auth.existingSecret`), which the bundled MinIO also uses for
-its root credentials:
+[SeaweedFS](https://artifacthub.io/packages/helm/seaweedfs/seaweedfs) (`seaweedfs.*` values) and
+reads the connection from the `s3` secret (`seaweedfs.s3.credentials.admin.existingSecret`), which
+the bundled SeaweedFS also uses for its admin credentials:
 
 ```sh
 kubectl create secret generic s3 \
@@ -234,11 +234,16 @@ kubectl create secret generic s3 \
   --from-literal 'secret-key=my-secret-key'
 ```
 
-With `minio.apiIngress.enabled=true` (the default) Appsemble connects to `minio.apiIngress.hostname`
-on port 443 and ignores `host` and `port` of the secret. To bring your own object storage, set
-`minio.enabled=false` and `minio.apiIngress.enabled=false`; the secret then provides the endpoint.
-`s3.region` is sent with every request and `s3.pathStyle=true` addresses buckets in the URL path,
-which MinIO, ODF and SeaweedFS need and Hetzner and AWS accept.
+With `seaweedfs.enabled=true` (the default) Appsemble connects to the bundled S3 gateway inside the
+cluster and ignores `host`, `port` and `secure` of the secret. To bring your own object storage, set
+`seaweedfs.enabled=false`; the secret then provides the endpoint. `s3.region` is sent with every
+request and `s3.pathStyle=true` addresses buckets in the URL path, which SeaweedFS, MinIO and ODF
+need and Hetzner and AWS accept.
+
+The bundled SeaweedFS runs one pod that serves the master, volume, filer and S3 roles together
+(`seaweedfs.allInOne`), backed by one PersistentVolumeClaim (`seaweedfs.allInOne.data`). It suits
+development and small installations; point the chart at the platform's own object storage for
+production.
 
 ### Layouts
 
@@ -284,20 +289,18 @@ anonymous reads on the `blocks/` prefix:
   project. Use `host=<location>.your-objectstorage.com`, `port=443`, `secure=true` and
   `s3.region=<location>` (for example `fsn1`). Apply the policy above with
   `aws s3api put-bucket-policy` against that endpoint.
-- **MinIO or SeaweedFS**: with the MinIO client, run `mc mb <alias>/<bucket>` and
-  `mc anonymous set download <alias>/<bucket>/blocks`. For the bundled MinIO the chart can do this
-  on install:
+- **SeaweedFS**: the bundled chart creates buckets on install. Anonymous read cannot be scoped to a
+  prefix through an identity, so apply the policy above with `aws s3api put-bucket-policy` when
+  `blockAssets.publicUrl` is set:
 
   ```yaml
   s3:
     bucket: appsemble
-  minio:
-    provisioning:
-      enabled: true
-      buckets:
-        - name: appsemble
-      extraCommands:
-        - mc anonymous set download provisioning/appsemble/blocks
+  seaweedfs:
+    allInOne:
+      s3:
+        createBuckets:
+          - name: appsemble
   ```
 
 ### Switching an existing installation to a single bucket
@@ -439,14 +442,16 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `blockAssets.publicUrl`                     | `''`                           | The public base URL of the object storage. When set, block assets are served from `<publicUrl>/<bucket>/<key>` instead of the API.        |
 | `blockAssets.migration.enabled`             | `true`                         | Run the job that moves database-stored block assets to object storage after each install and upgrade.                                     |
 | `blockAssets.migration.batch`               | `100`                          | The number of block assets that job migrates per database batch.                                                                          |
-| `minio`                                     |                                | Values passed into the bundled Bitnami MinIO dependency chart.                                                                            |
-| `minio.enabled`                             | `true`                         | Set this to false explicitly to bring your own S3 compatible object storage.                                                              |
-| `minio.fullnameOverride`                    | `appsemble-minio`              | The name used for the bundled MinIO service.                                                                                              |
-| `minio.auth.existingSecret`                 | `s3`                           | The secret with `host`, `port`, `secure`, `access-key` and `secret-key`. The bundled MinIO uses the keys as its root credentials.         |
-| `minio.apiIngress.enabled`                  | `true`                         | Expose the MinIO API through an ingress. When enabled, Appsemble connects to `minio.apiIngress.hostname` on port 443.                     |
-| `minio.apiIngress.hostname`                 | `nil`                          | The host name of the MinIO API ingress.                                                                                                   |
-| `minio.ingress.enabled`                     | `true`                         | Expose the MinIO console through an ingress.                                                                                              |
-| `minio.ingress.hostname`                    | `nil`                          | The host name of the MinIO console ingress.                                                                                               |
+| `seaweedfs`                                 |                                | Values passed into the bundled SeaweedFS dependency chart.                                                                                |
+| `seaweedfs.enabled`                         | `true`                         | Set this to false explicitly to bring your own S3 compatible object storage.                                                              |
+| `seaweedfs.fullnameOverride`                | `appsemble-seaweedfs`          | The name used for the bundled SeaweedFS service.                                                                                          |
+| `seaweedfs.s3.credentials.admin`            |                                | The `existingSecret`, `accessKeyKey` and `secretKeyKey` of the S3 credentials secret. SeaweedFS uses them as its admin credentials.       |
+| `seaweedfs.allInOne.data.type`              | `persistentVolumeClaim`        | How the SeaweedFS data volume is provisioned. Use `emptyDir` for throwaway installations.                                                 |
+| `seaweedfs.allInOne.data.size`              | `8Gi`                          | The size of the SeaweedFS data volume.                                                                                                    |
+| `seaweedfs.allInOne.data.storageClass`      | `nil`                          | The storage class of the SeaweedFS data volume. Defaults to the cluster default.                                                          |
+| `seaweedfs.allInOne.s3.createBuckets`       | `[]`                           | Buckets to create on install. Needed for the single bucket layout, where the server never creates one.                                    |
+| `seaweedfs.s3.ingress.enabled`              | `false`                        | Expose the SeaweedFS S3 API through an ingress. Needed to serve block assets from `blockAssets.publicUrl`.                                |
+| `seaweedfs.s3.ingress.host`                 | `nil`                          | The host name of the SeaweedFS S3 ingress.                                                                                                |
 | `backups.enabled`                           | `true`                         | Deploy the CronJob that backs up the main and app databases to object storage.                                                            |
 | `backups.bucket`                            | `appsemble-backups-exampleenv` | The pre-provisioned bucket to store database backups in.                                                                                  |
 | `backups.filename`                          | `appsemble_backup`             | The prefix of the backup files before their timestamp.                                                                                    |
@@ -458,7 +463,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `backups.existingSecret`                    | `backups-secret`               | The secret that holds the `access-key` and `secret-key` of the backups object storage.                                                    |
 | `assetsBackups.enabled`                     | `false`                        | Deploy the CronJob that syncs app assets to the backups object storage with rclone.                                                       |
 | `assetsBackups.schedule`                    | `20 2 * * *`                   | The cron schedule of the asset backup job.                                                                                                |
-| `assetsBackups.sourceEndpoint`              | `null`                         | The endpoint of the object storage to back up. Derived from the MinIO values when unset.                                                  |
+| `assetsBackups.sourceEndpoint`              | `null`                         | The endpoint of the object storage to back up. Derived from the SeaweedFS values when unset.                                              |
 | `assetsBackups.sourceRegion`                | `fsn1`                         | The region of the object storage to back up.                                                                                              |
 | `assetsBackups.destinationRegion`           | `fsn1`                         | The region of the backups object storage.                                                                                                 |
 | `assetsBackups.prefix`                      | `assets/app-buckets`           | The key prefix under `backups.bucket` to store asset backups in.                                                                          |

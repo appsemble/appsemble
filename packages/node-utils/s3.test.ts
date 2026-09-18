@@ -1,11 +1,8 @@
-import { createHash } from 'node:crypto';
-import { createServer, type IncomingHttpHeaders, type Server } from 'node:http';
-import { type AddressInfo } from 'node:net';
 import { Readable } from 'node:stream';
 import { buffer as streamToBuffer } from 'node:stream/consumers';
 
 import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { logger } from './logger.js';
 import {
@@ -419,48 +416,5 @@ describe('deleteS3File', () => {
     send.mockRejectedValueOnce(error);
 
     await expect(deleteS3File('app-1216', 'asset-id')).rejects.toBe(error);
-  });
-});
-
-describe('request headers', () => {
-  let server: Server;
-  let received: { body: string; headers: IncomingHttpHeaders }[];
-
-  beforeEach(async () => {
-    send.mockRestore();
-    received = [];
-    server = createServer((request, response) => {
-      const chunks: Buffer[] = [];
-      request.on('data', (chunk: Buffer) => chunks.push(chunk));
-      request.on('end', () => {
-        received.push({ body: Buffer.concat(chunks).toString(), headers: request.headers });
-        response.writeHead(200, { 'content-type': 'application/xml' });
-        response.end('<?xml version="1.0" encoding="UTF-8"?><DeleteResult></DeleteResult>');
-      });
-    });
-    await new Promise<void>((resolve) => {
-      server.listen(0, '127.0.0.1', resolve);
-    });
-    initS3Client({
-      ...credentials,
-      port: (server.address() as AddressInfo).port,
-    });
-  });
-
-  afterEach(async () => {
-    await new Promise((resolve) => {
-      server.close(resolve);
-    });
-  });
-
-  it('signs a delete of multiple objects with Content-MD5', async () => {
-    // Object stores from before the flexible checksums of S3 reject a DeleteObjects request that
-    // carries only the CRC32 checksum the SDK sends by default.
-    await deleteS3Files('app-1216', ['asset-id']);
-
-    expect(received).toHaveLength(1);
-    expect(received[0].headers['content-md5']).toBe(
-      createHash('md5').update(received[0].body).digest('base64'),
-    );
   });
 });

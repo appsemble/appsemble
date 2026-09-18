@@ -244,30 +244,42 @@ mailpit:
         existingSecret:
           name: mailpit-ui
 
-minio:
+seaweedfs:
+  enabled: true
+  fullnameOverride: appsemble-seaweedfs
   global:
-    security:
-      allowInsecureImages: true
-  fullnameOverride: appsemble-minio
-  image:
-    registry: docker.io
-    repository: bitnamilegacy/minio
-    tag: 2024.12.18-debian-12-r1
-  volumePermissions:
-    image:
-      repository: bitnamilegacy/os-shell
-  auth:
-    existingSecret: s3
-    rootUserSecretKey: access-key
-    rootPasswordSecretKey: secret-key
-  ingress:
+    seaweedfs:
+      # The shared ClusterRole grants cluster-wide pod write access, which an object store does
+      # not need.
+      createClusterRole: false
+  # One pod runs the master, volume server, filer and S3 gateway together.
+  master:
+    enabled: false
+  volume:
+    enabled: false
+  filer:
+    enabled: false
+  allInOne:
     enabled: true
-    tls: true
-    ingressClassName: nginx
-  apiIngress:
-    enabled: true
-    tls: true
-    ingressClassName: nginx
+    s3:
+      enabled: true
+      enableAuth: true
+    data:
+      type: persistentVolumeClaim
+      size: 8Gi
+  s3:
+    # The S3 gateway runs inside the all-in-one pod, so the standalone deployment stays off.
+    # These settings still configure the gateway and its ingress.
+    enabled: false
+    enableAuth: true
+    credentials:
+      admin:
+        existingSecret: s3
+        accessKeyKey: access-key
+        secretKeyKey: secret-key
+    ingress:
+      enabled: false
+      className: nginx
 
 valkey:
   enabled: true
