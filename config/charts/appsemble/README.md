@@ -306,7 +306,7 @@ Objects are not migrated automatically. Copy them once with [rclone](https://rcl
 installation is stopped, then upgrade with `s3.bucket` set:
 
 ```sh
-rclone lsf src: --dirs-only | grep '^app-' | while read -r bucket; do
+rclone lsf src: --dirs-only | sed 's:/$::' | grep -E '^app-[0-9]+$' | while read -r bucket; do
   rclone copy "src:${bucket}" "dst:my-bucket/apps/${bucket#app-}"
 done
 rclone copy src:appsemble-block-assets dst:my-bucket/blocks
