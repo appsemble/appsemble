@@ -1,11 +1,17 @@
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type MouseEvent, type ReactNode, useCallback, useContext } from 'react';
+import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { CollapsedContext, Icon, NavLink } from '../index.js';
 
 interface SideNavLinkProps {
+  /**
+   * Explicit navigation selection, including an ancestor section.
+   */
+  readonly 'aria-current'?: 'page' | 'location' | false;
+
   /**
    * The title text to apply to the link.
    */
@@ -42,7 +48,15 @@ interface SideNavLinkProps {
  *
  * https://bulma.io/documentation/components/menu
  */
-export function MenuItem({ children, count, end, icon, title, to }: SideNavLinkProps): ReactNode {
+export function MenuItem({
+  'aria-current': current,
+  children,
+  count,
+  end,
+  icon,
+  title,
+  to,
+}: SideNavLinkProps): ReactNode {
   const { collapsed, collapsible, setCollapsed } = useContext(CollapsedContext);
   const clickHideButton = useCallback(
     (event: MouseEvent<HTMLSpanElement>) => {
@@ -75,6 +89,23 @@ export function MenuItem({ children, count, end, icon, title, to }: SideNavLinkP
     [children, clickHideButton, collapsed, collapsible, count, icon],
   );
 
+  if (to && current !== undefined) {
+    return (
+      <Link
+        aria-current={current}
+        className={classNames(
+          'is-relative is-flex is-align-items-center is-radiusless',
+          styles.root,
+          current && ['is-active', styles.active],
+        )}
+        title={title}
+        to={to}
+      >
+        {renderMenuItem(Boolean(current))}
+      </Link>
+    );
+  }
+
   return to ? (
     <NavLink
       className={classNames(`is-relative is-flex is-align-items-center ${styles.root}`)}
@@ -85,6 +116,15 @@ export function MenuItem({ children, count, end, icon, title, to }: SideNavLinkP
       {({ isActive }) => renderMenuItem(isActive)}
     </NavLink>
   ) : (
-    <div className={classNames('is-relative is-flex px-2 py-3 ml-1')}>{renderMenuItem()}</div>
+    <div
+      aria-current={current}
+      className={classNames(
+        'is-relative is-flex is-radiusless px-2 py-3 ml-1',
+        current && ['is-active', styles.active],
+      )}
+      title={title}
+    >
+      {renderMenuItem(Boolean(current))}
+    </div>
   );
 }
