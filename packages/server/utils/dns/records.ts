@@ -92,7 +92,10 @@ function getProvider(): Provider | undefined {
       'The DNS provider requires --dns-targets, --dns-token, and --dns-zone',
     );
   }
-  const targets = dnsTargets.split(',').filter(Boolean);
+  const targets = dnsTargets
+    .split(',')
+    .map((target) => target.trim())
+    .filter(Boolean);
   return {
     token: dnsToken,
     targets: {
@@ -147,7 +150,8 @@ async function writeRRsets(rrsets: RRset[], { token, zone }: Provider): Promise<
         if (retries >= maxRetries || !axios.isAxiosError(error) || error.response?.status !== 429) {
           throw error;
         }
-        const retryAfter = Number(error.response.headers['retry-after'] ?? 1);
+        const seconds = Number(error.response.headers['retry-after']);
+        const retryAfter = Number.isFinite(seconds) ? seconds : 1;
         logger.warn(`Rate limited by the deSEC API. Retrying in ${retryAfter} seconds`);
         await sleep(retryAfter * 1000);
       }

@@ -87,6 +87,23 @@ describe('records', () => {
       ]);
     });
 
+    it('should ignore whitespace around the configured targets', async () => {
+      setDNSArgv({
+        dnsProvider: 'desec',
+        dnsTargets: '203.0.113.10, 2001:db8::10',
+        dnsToken: 'test.token',
+        dnsZone: 'host.example',
+      });
+      mock.onPatch(/.*/).reply(200, []);
+
+      await createDNSRecords(['testorg.host.example']);
+
+      expect(JSON.parse(mock.history.patch[0].data)).toStrictEqual([
+        { subname: 'testorg', type: 'A', ttl: 3600, records: ['203.0.113.10'] },
+        { subname: 'testorg', type: 'AAAA', ttl: 3600, records: ['2001:db8::10'] },
+      ]);
+    });
+
     it('should send the records in chunks the API accepts', async () => {
       mock.onPatch(/.*/).reply(200, []);
 
@@ -109,6 +126,25 @@ describe('records', () => {
       await createDNSRecords(['testorg.host.example']);
 
       expect(mock.history.patch).toHaveLength(2);
+    });
+
+    it('should back off before retrying if retry-after is not a number of seconds', async () => {
+      mock
+        .onPatch(/.*/)
+        .replyOnce(
+          429,
+          { detail: 'Request was throttled.' },
+          { 'retry-after': 'Wed, 21 Oct 2026 07:28:00 GMT' },
+        )
+        .onPatch(/.*/)
+        .reply(200, []);
+
+      const start = process.hrtime.bigint();
+      await createDNSRecords(['testorg.host.example']);
+      const elapsed = Number(process.hrtime.bigint() - start) / 1e6;
+
+      expect(mock.history.patch).toHaveLength(2);
+      expect(elapsed).toBeGreaterThanOrEqual(500);
     });
 
     it('should not write records if no DNS provider is configured', async () => {
