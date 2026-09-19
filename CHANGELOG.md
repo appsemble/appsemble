@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.39.1](https://gitlab.com/appsemble/appsemble/-/releases/0.39.1)] - 2026-09-19
+
+### Added
+
+- Server: Create DNS records for both host names of an organization through the configured DNS
+  provider.
+
+### Fixed
+
+- Cli: Upload app translations whose catalogs carry a POSIX locale name, such as `zh_Hans.json` or
+  `pt_BR.json`, which the API rejected as an invalid language.
+- Server: Serve the organization host name next to the wildcard host name on the ingress of an
+  organization.
+
 ## \[[0.39.0](https://gitlab.com/appsemble/appsemble/-/releases/0.39.0)] - 2026-09-19
 
 ### Added
