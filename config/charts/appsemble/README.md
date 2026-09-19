@@ -332,20 +332,22 @@ out **before** upgrading.
    rclone sync minio: holding:
    ```
 
-3. Upgrade the chart. SeaweedFS comes up with an empty volume.
-4. Copy the objects into SeaweedFS and scale Appsemble back up:
+3. Upgrade the chart with `--set replicaCount=0`. The upgrade re-applies `replicaCount`, so without
+   it the server is serving again before its objects are, and `rclone sync` deletes whatever it
+   writes in the meantime. SeaweedFS comes up with an empty volume.
+4. Copy the objects into SeaweedFS:
 
    ```sh
    rclone sync holding: seaweedfs:
    ```
 
+5. Compare `rclone size seaweedfs:` with the same command on the holding remote, then scale the
+   Appsemble Deployment back up.
+
 `minio`, `holding` and `seaweedfs` are rclone remotes; `holding` can be a local directory. With
 `assetsBackups.enabled=true` the backup bucket already holds a copy of the app assets, so step 2 can
 be replaced by a final run of the backup CronJob and step 4 by `sh scripts/s3-assets-restore.sh`.
 Block assets are not part of those backups and always need the rclone copy.
-
-Verify the object count per bucket before scaling Appsemble back up; a short check is
-`rclone size seaweedfs:` against the same command on the holding remote.
 
 ## Zero-downtime rollouts
 
@@ -516,10 +518,11 @@ For production environments with significant asset storage in the bundled object
 - set `seaweedfs.allInOne.data.storageClass` to a retained storage class (for Hetzner:
   `hetzner-volumes-retain`).
 - set the SeaweedFS PVC annotation `helm.sh/resource-policy: keep`.
-- raise `seaweedfs.volume.dataDirs[0].maxVolumes` above roughly seven times the number of apps.
-  SeaweedFS keeps a separate set of volumes per bucket and the bucket per app layout gives every app
-  its own bucket. Volumes are created on demand and stay sparse, so the ceiling costs nothing until
-  it is used, but reaching it fails writes for new apps.
+- raise `seaweedfs.volume.dataDirs[0].maxVolumes` above the number of apps. SeaweedFS keeps a
+  separate set of volumes per bucket and the bucket per app layout gives every app its own bucket,
+  one volume per bucket under the chart's `master.volume_growth` setting. Volumes are created on
+  demand and stay sparse, so the ceiling costs nothing until it is used, but reaching it fails
+  writes for new apps.
 - set `postgresql.primary.persistence.storageClass` to the same retained class.
 - set the PostgreSQL PVC annotation `helm.sh/resource-policy: keep`.
 - keep `backup-production-data` enabled for database backups.

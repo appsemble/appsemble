@@ -255,6 +255,12 @@ seaweedfs:
   # One pod runs the master, volume server, filer and S3 gateway together.
   master:
     enabled: false
+    # SeaweedFS keeps a separate set of volumes per bucket and grows them seven at a time, which the
+    # bucket per app layout multiplies by the number of apps. One volume at a time is enough for a
+    # single volume server and keeps the file count proportional to the objects stored.
+    config: |-
+      [master.volume_growth]
+      copy_1 = 1
   volume:
     enabled: false
     # The all-in-one pod takes its volume ceiling from here. SeaweedFS grows volumes per bucket and
