@@ -518,6 +518,9 @@ For production environments with significant asset storage in the bundled object
 - set `seaweedfs.allInOne.data.storageClass` to a retained storage class (for Hetzner:
   `hetzner-volumes-retain`).
 - set the SeaweedFS PVC annotation `helm.sh/resource-policy: keep`.
+- set `seaweedfs.allInOne.resources.limits.memory` to at least `3Gi`. Idle usage stays near 110 MB,
+  but a bulk ingest such as `s3-assets-restore.sh` runs eight parallel `rclone` transfers and holds
+  around 1.5 GB of anonymous memory, which a `1Gi` limit ends in `OOMKilled`.
 - raise `seaweedfs.volume.dataDirs[0].maxVolumes` above the number of apps. SeaweedFS keeps a
   separate set of volumes per bucket and the bucket per app layout gives every app its own bucket,
   one volume per bucket under the chart's `master.volume_growth` setting. Volumes are created on
@@ -542,6 +545,9 @@ seaweedfs:
       storageClass: hetzner-volumes-retain
       annotations:
         helm.sh/resource-policy: keep
+    resources:
+      limits:
+        memory: 3Gi
 postgresql:
   primary:
     persistence:
