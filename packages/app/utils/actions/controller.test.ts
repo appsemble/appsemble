@@ -58,4 +58,14 @@ describe('controller', () => {
     await nextPage;
     expect(await result).toBe('Lamp settings');
   });
+
+  it('should reject a controller action in an app without a controller', async () => {
+    window.settings = { ...settings, appControllerCode: '' };
+    const { createTestAction } = await import('../makeActions.js');
+    const view = createTestAction({ definition: { type: 'controller', handler: 'view' } });
+
+    await expect(view()).rejects.toMatchObject({
+      cause: { message: 'This app does not define a controller' },
+    });
+  });
 });
