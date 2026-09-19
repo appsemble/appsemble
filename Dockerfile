@@ -123,7 +123,7 @@ ENTRYPOINT ["appsemble-server"]
 CMD ["start"]
 HEALTHCHECK CMD ["appsemble-server", "health"]
 EXPOSE 9999
-ARG version=0.38.2-test.0
+ARG version=0.39.0
 ARG date
 ARG commit
 # Reported by `/version`.

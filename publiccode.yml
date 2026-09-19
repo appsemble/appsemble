@@ -1,8 +1,8 @@
 publiccodeYmlVersion: '0.2'
 name: Appsemble
 url: https://gitlab.com/appsemble/appsemble
-softwareVersion: 0.38.2-test.0
-releaseDate: 2026-09-10
+softwareVersion: 0.39.0
+releaseDate: 2026-09-19
 logo: config/assets/logo.svg
 monochromeLogo: config/assets/logo-monochrome.svg
 platforms:
@@ -125,15 +125,27 @@ maintenance:
 localisation:
   localisationReady: true
   availableLanguages:
+    - ang
     - bg
+    - ca
     - da
     - de
     - en
+    - es
     - fr
     - hr
     - id
+    - ko
     - nl
+    - pl
+    - pt
+    - pt_BR
     - ru
+    - sv
+    - ta
+    - tr
+    - uk
+    - zh_Hans
 dependsOn:
   open:
     - name: Docker

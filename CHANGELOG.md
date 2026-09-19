@@ -2,6 +2,80 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.39.0](https://gitlab.com/appsemble/appsemble/-/releases/0.39.0)] - 2026-09-19
+
+### Added
+
+- Block(`form`): Support native local time fields with HH:mm values.
+- App: Highlight the nearest visible parent in app navigation.
+- Cli: Add the `organization member add` command.
+- Preact-components: Support native time inputs.
+- React-components: Support explicit current page and section selection in menu items.
+- Server: Add the `/health/live`, `/health/ready` and `/version` endpoints.
+- Server: Add the `POST /api/organizations/{organizationId}/members` endpoint to add an existing
+  account to an organization.
+- Server: Roll the Helm deployment over without dropping requests, and keep a replica through a node
+  drain.
+- Server: Store all app and block assets in one pre-provisioned bucket when `S3_BUCKET` (Helm value
+  `s3.bucket`) is set, with `S3_REGION` and `S3_PATH_STYLE` options for the object storage and the
+  backups.
+
+### Changed
+
+- Node-utils: Replace the `minio` client with `@aws-sdk/client-s3`.
+- Server: Expect the backups bucket of `backup-production-data` to be pre-provisioned; the command
+  no longer creates it.
+- Server: Finish the requests in flight and release the database connections before exiting on
+  SIGTERM.
+- Server: Only rewrite app asset URLs in custom CSS that address the host the app is published to. A
+  URL such as `url('https://appsemble.app/api/apps/123/assets/logo')` published to another host
+  keeps addressing that app on that host, where it previously addressed the app being published. Use
+  `asset('logo')` to address the app being published on any host.
+- Server: Point the Helm liveness and startup probes at `/health/live` and the readiness probe at
+  `/health/ready`, so a database or Valkey outage removes pods from the Service instead of
+  restarting them.
+- Server: Reject custom CSS whose `asset()` utilities do not resolve to an app asset, instead of
+  serving them unresolved. Publishing an app with such CSS fails with `Provided CSS was invalid.`.
+- Server: Replace the bundled Bitnami MinIO dependency chart with SeaweedFS (Helm values
+  `seaweedfs.*`), which runs one pod backed by one volume and implements the S3 flexible checksums.
+  The upgrade removes the MinIO Deployment and starts SeaweedFS with an empty volume, so copy the
+  objects across first; the chart README describes the migration under "Moving from the bundled
+  MinIO to SeaweedFS".
+- Server: Support client credentials on the organization members endpoints.
+
+### Deprecated
+
+- Server: Deprecate `/api/health` in favor of `/health/ready`.
+
+### Removed
+
+- Node-utils: Stop signing a multi-object delete with `Content-MD5`, which only the retired bundled
+  MinIO build required.
+- Server: Support for calling the `asset()` CSS utility inside `url()`, as in `url(asset('logo'))`,
+  and for calling it with an unquoted reference, as in `asset(logo)`. Use `asset('logo')` on its
+  own. An unquoted reference is rejected when the app is published; a nested call is left as
+  written.
+
+### Fixed
+
+- Block(`detail-viewer`): Evaluate file field visibility against the record data.
+- Block(`form`): Distinguish external form data updates from user edits in change events.
+- App: Remap dialog titles using the data passed to the dialog action.
+- Cli: Upload app screenshots directly instead of copying them to a temporary file in the app
+  directory.
+- Scripts: Include `deprecated` entries in the changelog when releasing.
+- Server: Give the bundled object storage a volume ceiling and grow one volume per bucket instead of
+  seven, which SeaweedFS otherwise derives from the disk size and the first app's bucket already
+  exhausts.
+- Server: Reconnect the Valkey client after it drops and skip the rate limit check while it is
+  disconnected.
+
+### Security
+
+- Server: Escape quotes and backslashes in app asset URLs resolved in custom CSS. A quote in the
+  query or fragment of an app asset path could end the generated CSS string and inject arbitrary
+  rules into an app stylesheet.
+
 ## \[[0.38.2-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.38.2-test.0)] - 2026-09-10
 
 ### Fixed

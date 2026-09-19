@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.38.2-test.0
-appVersion: 0.38.2-test.0
+version: 0.39.0
+appVersion: 0.39.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -36,8 +36,96 @@ dependencies:
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "Block(form): Support native local time fields with HH:mm values."
+    - kind: added
+      description: "App: Highlight the nearest visible parent in app navigation."
+    - kind: added
+      description: "Cli: Add the organization member add command."
+    - kind: added
+      description: "Preact-components: Support native time inputs."
+    - kind: added
+      description: "React-components: Support explicit current page and section
+        selection in menu items."
+    - kind: added
+      description: "Server: Add the /health/live, /health/ready and /version endpoints."
+    - kind: added
+      description: "Server: Add the POST /api/organizations/{organizationId}/members
+        endpoint to add an existing account to an organization."
+    - kind: added
+      description: "Server: Roll the Helm deployment over without dropping requests,
+        and keep a replica through a node drain."
+    - kind: added
+      description: "Server: Store all app and block assets in one pre-provisioned
+        bucket when S3_BUCKET (Helm value s3.bucket) is set, with S3_REGION and
+        S3_PATH_STYLE options for the object storage and the backups."
+    - kind: changed
+      description: "Node-utils: Replace the minio client with @aws-sdk/client-s3."
+    - kind: changed
+      description: "Server: Expect the backups bucket of backup-production-data to be
+        pre-provisioned; the command no longer creates it."
+    - kind: changed
+      description: "Server: Finish the requests in flight and release the database
+        connections before exiting on SIGTERM."
+    - kind: changed
+      description: "Server: Only rewrite app asset URLs in custom CSS that address the
+        host the app is published to. A URL such as
+        url('https://appsemble.app/api/apps/123/assets/logo') published to another
+        host keeps addressing that app on that host, where it previously addressed
+        the app being published. Use asset('logo') to address the app being
+        published on any host."
+    - kind: changed
+      description: "Server: Point the Helm liveness and startup probes at /health/live
+        and the readiness probe at /health/ready, so a database or Valkey outage
+        removes pods from the Service instead of restarting them."
+    - kind: changed
+      description: "Server: Reject custom CSS whose asset() utilities do not resolve
+        to an app asset, instead of serving them unresolved. Publishing an app with
+        such CSS fails with Provided CSS was invalid.."
+    - kind: changed
+      description: 'Server: Replace the bundled Bitnami MinIO dependency chart with
+        SeaweedFS (Helm values seaweedfs.*), which runs one pod backed by one volume
+        and implements the S3 flexible checksums. The upgrade removes the MinIO
+        Deployment and starts SeaweedFS with an empty volume, so copy the objects
+        across first; the chart README describes the migration under "Moving from
+        the bundled MinIO to SeaweedFS".'
+    - kind: changed
+      description: "Server: Support client credentials on the organization members endpoints."
+    - kind: deprecated
+      description: "Server: Deprecate /api/health in favor of /health/ready."
+    - kind: removed
+      description: "Node-utils: Stop signing a multi-object delete with Content-MD5,
+        which only the retired bundled MinIO build required."
+    - kind: removed
+      description: "Server: Support for calling the asset() CSS utility inside url(),
+        as in url(asset('logo')), and for calling it with an unquoted reference, as
+        in asset(logo). Use asset('logo') on its own. An unquoted reference is
+        rejected when the app is published; a nested call is left as written."
     - kind: fixed
-      description: "Server: Start app exports before reading assets from storage."
+      description: "Block(detail-viewer): Evaluate file field visibility against the
+        record data."
+    - kind: fixed
+      description: "Block(form): Distinguish external form data updates from user
+        edits in change events."
+    - kind: fixed
+      description: "App: Remap dialog titles using the data passed to the dialog action."
+    - kind: fixed
+      description: "Cli: Upload app screenshots directly instead of copying them to a
+        temporary file in the app directory."
+    - kind: fixed
+      description: "Scripts: Include deprecated entries in the changelog when releasing."
+    - kind: fixed
+      description: "Server: Give the bundled object storage a volume ceiling and grow
+        one volume per bucket instead of seven, which SeaweedFS otherwise derives
+        from the disk size and the first app's bucket already exhausts."
+    - kind: fixed
+      description: "Server: Reconnect the Valkey client after it drops and skip the
+        rate limit check while it is disconnected."
+    - kind: security
+      description: "Server: Escape quotes and backslashes in app asset URLs resolved
+        in custom CSS. A quote in the query or fragment of an app asset path could
+        end the generated CSS string and inject arbitrary rules into an app
+        stylesheet."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
