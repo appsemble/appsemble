@@ -32,7 +32,7 @@ import {
   type ValueFromProcess,
   type WritableAppSamlSecret,
 } from '@appsemble/types';
-import { extractAppMessages, has } from '@appsemble/utils';
+import { extractAppMessages, has, normalizeLocale } from '@appsemble/utils';
 import axios from 'axios';
 import csv from 'csvtojson';
 import { type BuildResult } from 'esbuild';
@@ -327,7 +327,9 @@ export async function uploadMessages(
     join(path, 'i18n'),
     async (messageFile) => {
       logger.verbose(`Processing ${messageFile} ⚙️`);
-      const { name: language } = parse(messageFile);
+      // Weblate names its catalogs with a POSIX locale, such as `zh_Hans.json`. The API takes a
+      // BCP 47 language tag.
+      const language = normalizeLocale(parse(messageFile).name);
 
       if (result.some((entry) => entry.language === language)) {
         throw new AppsembleError(

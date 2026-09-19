@@ -25,6 +25,7 @@ import {
   resolveAppIdAndRemote,
   traverseAppDirectory,
   updateApp,
+  uploadMessages,
   writeAppMessages,
 } from './app.js';
 import { initAxios } from './initAxios.js';
@@ -2744,6 +2745,39 @@ describe('app', () => {
       await deleteApp({ id: app.id, remote: testApp.defaults.baseURL!, clientCredentials });
       const foundApps = await App.findAll();
       expect(foundApps).toStrictEqual([]);
+    });
+  });
+
+  describe('uploadMessages', () => {
+    it('uploads translations whose catalogs are named with a POSIX locale', async () => {
+      const app = await App.create(
+        {
+          path: 'test-app',
+          definition: { name: 'Test App', defaultPage: 'Test Page' },
+          vapidPublicKey: 'a',
+          vapidPrivateKey: 'b',
+          visibility: 'public',
+          OrganizationId: organization.id,
+        },
+        { raw: true },
+      );
+      const directory = await mkdtemp(join(tmpdir(), 'appsemble-messages'));
+      await mkdir(join(directory, 'i18n'));
+      await writeFile(
+        join(directory, 'i18n', 'zh_Hans.json'),
+        JSON.stringify({ app: { name: '测试应用' } }),
+      );
+      await writeFile(
+        join(directory, 'i18n', 'pt_BR.json'),
+        JSON.stringify({ app: { name: 'Test App' } }),
+      );
+      await authorizeCLI('apps:write', testApp);
+
+      await uploadMessages(directory, app.id, testApp.defaults.baseURL!, false);
+
+      const messages = await AppMessages.findAll({ where: { AppId: app.id } });
+      expect(messages.map(({ language }) => language).sort()).toStrictEqual(['pt-br', 'zh-hans']);
+      await rm(directory, { force: true, recursive: true });
     });
   });
 
