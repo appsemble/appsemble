@@ -137,6 +137,26 @@ Get the TLS secret PgBouncer should use for client-facing TLS.
 {{- end -}}
 
 {{/*
+Get the in-cluster host of the bundled SeaweedFS S3 gateway. The all-in-one pod serves S3 from the
+`-all-in-one` service; a split deployment serves it from the `-s3` service.
+*/}}
+{{- define "appsemble.seaweedfs.host" -}}
+{{- $name := default (printf "%s-seaweedfs" .Release.Name) .Values.seaweedfs.fullnameOverride -}}
+{{- if .Values.seaweedfs.allInOne.enabled -}}
+{{- printf "%s-all-in-one" $name -}}
+{{- else -}}
+{{- printf "%s-s3" $name -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the port the bundled SeaweedFS S3 gateway listens on, resolved the way its service does.
+*/}}
+{{- define "appsemble.seaweedfs.port" -}}
+{{- .Values.seaweedfs.allInOne.s3.port | default .Values.seaweedfs.s3.port | default 8333 -}}
+{{- end -}}
+
+{{/*
 Configure the environment variables for Appsemble to connect with the S3 compatible object storage.
 */}}
 {{- define "appsemble.s3" -}}
@@ -148,13 +168,15 @@ Configure the environment variables for Appsemble to connect with the S3 compati
   value: {{ .Values.s3.region | quote }}
 - name: S3_PATH_STYLE
   value: {{ .Values.s3.pathStyle | quote }}
-{{- if .Values.minio.apiIngress.enabled }}
+{{- if .Values.seaweedfs.enabled }}
 - name: S3_HOST
-  value: {{ .Values.minio.apiIngress.hostname | quote }}
+  value: {{ include "appsemble.seaweedfs.host" . | quote }}
 - name: S3_PORT
-  value: "443"
+  value: {{ include "appsemble.seaweedfs.port" . | quote }}
+- name: S3_SECURE
+  value: "false"
 {{- else }}
-{{- with .Values.minio.auth.existingSecret }}
+{{- with .Values.seaweedfs.s3.credentials.admin.existingSecret }}
 - name: S3_HOST
   valueFrom:
     secretKeyRef:
@@ -165,24 +187,24 @@ Configure the environment variables for Appsemble to connect with the S3 compati
     secretKeyRef:
       name: {{ . | quote }}
       key: port
-{{- end }}
-{{- end }}
-{{- with .Values.minio.auth.existingSecret }}
 - name: S3_SECURE
   valueFrom:
     secretKeyRef:
       name: {{ . | quote }}
       key: secure
+{{- end }}
+{{- end }}
+{{- with .Values.seaweedfs.s3.credentials.admin.existingSecret }}
 - name: S3_ACCESS_KEY
   valueFrom:
     secretKeyRef:
       name: {{ . | quote }}
-      key: access-key
+      key: {{ $.Values.seaweedfs.s3.credentials.admin.accessKeyKey | quote }}
 - name: S3_SECRET_KEY
   valueFrom:
     secretKeyRef:
       name: {{ . | quote }}
-      key: secret-key
+      key: {{ $.Values.seaweedfs.s3.credentials.admin.secretKeyKey | quote }}
 {{- end }}
 {{- if .Values.blockAssets.publicUrl }}
 - name: BLOCK_ASSETS_BASE_URL

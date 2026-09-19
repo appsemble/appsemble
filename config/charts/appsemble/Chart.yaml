@@ -26,10 +26,10 @@ dependencies:
     version: 0.36.0
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
-  - name: minio
-    version: 14.10.5
-    repository: https://charts.bitnami.com/bitnami
-    condition: minio.enabled
+  - name: seaweedfs
+    version: 4.47.0
+    repository: https://seaweedfs.github.io/seaweedfs/helm
+    condition: seaweedfs.enabled
   - name: valkey
     version: 0.12.0
     repository: https://valkey.io/valkey-helm

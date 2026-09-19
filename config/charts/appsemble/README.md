@@ -221,9 +221,9 @@ readiness. `/api/health` is a deprecated alias of `/health/ready`.
 ## Object storage
 
 Appsemble stores app assets and block assets in S3 compatible object storage. The chart bundles
-[MinIO](https://artifacthub.io/packages/helm/bitnami/minio) (`minio.*` values) and reads the
-connection from the `s3` secret (`minio.auth.existingSecret`), which the bundled MinIO also uses for
-its root credentials:
+[SeaweedFS](https://artifacthub.io/packages/helm/seaweedfs/seaweedfs) (`seaweedfs.*` values) and
+reads the connection from the `s3` secret (`seaweedfs.s3.credentials.admin.existingSecret`), which
+the bundled SeaweedFS also uses for its admin credentials:
 
 ```sh
 kubectl create secret generic s3 \
@@ -234,11 +234,16 @@ kubectl create secret generic s3 \
   --from-literal 'secret-key=my-secret-key'
 ```
 
-With `minio.apiIngress.enabled=true` (the default) Appsemble connects to `minio.apiIngress.hostname`
-on port 443 and ignores `host` and `port` of the secret. To bring your own object storage, set
-`minio.enabled=false` and `minio.apiIngress.enabled=false`; the secret then provides the endpoint.
-`s3.region` is sent with every request and `s3.pathStyle=true` addresses buckets in the URL path,
-which MinIO, ODF and SeaweedFS need and Hetzner and AWS accept.
+With `seaweedfs.enabled=true` (the default) Appsemble connects to the bundled S3 gateway inside the
+cluster and ignores `host`, `port` and `secure` of the secret. To bring your own object storage, set
+`seaweedfs.enabled=false`; the secret then provides the endpoint. `s3.region` is sent with every
+request and `s3.pathStyle=true` addresses buckets in the URL path, which SeaweedFS, MinIO and ODF
+need and Hetzner and AWS accept.
+
+The bundled SeaweedFS runs one pod that serves the master, volume, filer and S3 roles together
+(`seaweedfs.allInOne`), backed by one PersistentVolumeClaim (`seaweedfs.allInOne.data`). It suits
+development and small installations; point the chart at the platform's own object storage for
+production.
 
 ### Layouts
 
@@ -284,20 +289,18 @@ anonymous reads on the `blocks/` prefix:
   project. Use `host=<location>.your-objectstorage.com`, `port=443`, `secure=true` and
   `s3.region=<location>` (for example `fsn1`). Apply the policy above with
   `aws s3api put-bucket-policy` against that endpoint.
-- **MinIO or SeaweedFS**: with the MinIO client, run `mc mb <alias>/<bucket>` and
-  `mc anonymous set download <alias>/<bucket>/blocks`. For the bundled MinIO the chart can do this
-  on install:
+- **SeaweedFS**: the bundled chart creates buckets on install. Anonymous read cannot be scoped to a
+  prefix through an identity, so apply the policy above with `aws s3api put-bucket-policy` when
+  `blockAssets.publicUrl` is set:
 
   ```yaml
   s3:
     bucket: appsemble
-  minio:
-    provisioning:
-      enabled: true
-      buckets:
-        - name: appsemble
-      extraCommands:
-        - mc anonymous set download provisioning/appsemble/blocks
+  seaweedfs:
+    allInOne:
+      s3:
+        createBuckets:
+          - name: appsemble
   ```
 
 ### Switching an existing installation to a single bucket
@@ -314,6 +317,37 @@ rclone copy src:appsemble-block-assets dst:my-bucket/blocks
 
 `src` and `dst` are rclone remotes for the current and the new object storage; they can point at the
 same server.
+
+### Moving from the bundled MinIO to SeaweedFS
+
+SeaweedFS starts with an empty volume and the upgrade removes the MinIO Deployment, so objects have
+to be copied across by hand. The MinIO PersistentVolumeClaim survives when it carries
+`helm.sh/resource-policy: keep`, but nothing serves it once the Deployment is gone: copy the objects
+out **before** upgrading.
+
+1. Scale the Appsemble Deployment to zero so nothing writes while the copy runs.
+2. With the old MinIO still running, copy every bucket to a holding location:
+
+   ```sh
+   rclone sync minio: holding:
+   ```
+
+3. Upgrade the chart with `--set replicaCount=0`. The upgrade re-applies `replicaCount`, so without
+   it the server is serving again before its objects are, and `rclone sync` deletes whatever it
+   writes in the meantime. SeaweedFS comes up with an empty volume.
+4. Copy the objects into SeaweedFS:
+
+   ```sh
+   rclone sync holding: seaweedfs:
+   ```
+
+5. Compare `rclone size seaweedfs:` with the same command on the holding remote, then scale the
+   Appsemble Deployment back up.
+
+`minio`, `holding` and `seaweedfs` are rclone remotes; `holding` can be a local directory. With
+`assetsBackups.enabled=true` the backup bucket already holds a copy of the app assets, so step 2 can
+be replaced by a final run of the backup CronJob and step 4 by `sh scripts/s3-assets-restore.sh`.
+Block assets are not part of those backups and always need the rclone copy.
 
 ## Zero-downtime rollouts
 
@@ -439,14 +473,16 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `blockAssets.publicUrl`                     | `''`                           | The public base URL of the object storage. When set, block assets are served from `<publicUrl>/<bucket>/<key>` instead of the API.        |
 | `blockAssets.migration.enabled`             | `true`                         | Run the job that moves database-stored block assets to object storage after each install and upgrade.                                     |
 | `blockAssets.migration.batch`               | `100`                          | The number of block assets that job migrates per database batch.                                                                          |
-| `minio`                                     |                                | Values passed into the bundled Bitnami MinIO dependency chart.                                                                            |
-| `minio.enabled`                             | `true`                         | Set this to false explicitly to bring your own S3 compatible object storage.                                                              |
-| `minio.fullnameOverride`                    | `appsemble-minio`              | The name used for the bundled MinIO service.                                                                                              |
-| `minio.auth.existingSecret`                 | `s3`                           | The secret with `host`, `port`, `secure`, `access-key` and `secret-key`. The bundled MinIO uses the keys as its root credentials.         |
-| `minio.apiIngress.enabled`                  | `true`                         | Expose the MinIO API through an ingress. When enabled, Appsemble connects to `minio.apiIngress.hostname` on port 443.                     |
-| `minio.apiIngress.hostname`                 | `nil`                          | The host name of the MinIO API ingress.                                                                                                   |
-| `minio.ingress.enabled`                     | `true`                         | Expose the MinIO console through an ingress.                                                                                              |
-| `minio.ingress.hostname`                    | `nil`                          | The host name of the MinIO console ingress.                                                                                               |
+| `seaweedfs`                                 |                                | Values passed into the bundled SeaweedFS dependency chart.                                                                                |
+| `seaweedfs.enabled`                         | `true`                         | Set this to false explicitly to bring your own S3 compatible object storage.                                                              |
+| `seaweedfs.fullnameOverride`                | `appsemble-seaweedfs`          | The name used for the bundled SeaweedFS service.                                                                                          |
+| `seaweedfs.s3.credentials.admin`            |                                | The `existingSecret`, `accessKeyKey` and `secretKeyKey` of the S3 credentials secret. SeaweedFS uses them as its admin credentials.       |
+| `seaweedfs.allInOne.data.type`              | `persistentVolumeClaim`        | How the SeaweedFS data volume is provisioned. Use `emptyDir` for throwaway installations.                                                 |
+| `seaweedfs.allInOne.data.size`              | `8Gi`                          | The size of the SeaweedFS data volume.                                                                                                    |
+| `seaweedfs.allInOne.data.storageClass`      | `nil`                          | The storage class of the SeaweedFS data volume. Defaults to the cluster default.                                                          |
+| `seaweedfs.allInOne.s3.createBuckets`       | `[]`                           | Buckets to create on install. Needed for the single bucket layout, where the server never creates one.                                    |
+| `seaweedfs.s3.ingress.enabled`              | `false`                        | Expose the SeaweedFS S3 API through an ingress. Needed to serve block assets from `blockAssets.publicUrl`.                                |
+| `seaweedfs.s3.ingress.host`                 | `nil`                          | The host name of the SeaweedFS S3 ingress.                                                                                                |
 | `backups.enabled`                           | `true`                         | Deploy the CronJob that backs up the main and app databases to object storage.                                                            |
 | `backups.bucket`                            | `appsemble-backups-exampleenv` | The pre-provisioned bucket to store database backups in.                                                                                  |
 | `backups.filename`                          | `appsemble_backup`             | The prefix of the backup files before their timestamp.                                                                                    |
@@ -458,7 +494,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `backups.existingSecret`                    | `backups-secret`               | The secret that holds the `access-key` and `secret-key` of the backups object storage.                                                    |
 | `assetsBackups.enabled`                     | `false`                        | Deploy the CronJob that syncs app assets to the backups object storage with rclone.                                                       |
 | `assetsBackups.schedule`                    | `20 2 * * *`                   | The cron schedule of the asset backup job.                                                                                                |
-| `assetsBackups.sourceEndpoint`              | `null`                         | The endpoint of the object storage to back up. Derived from the MinIO values when unset.                                                  |
+| `assetsBackups.sourceEndpoint`              | `null`                         | The endpoint of the object storage to back up. Derived from the SeaweedFS values when unset.                                              |
 | `assetsBackups.sourceRegion`                | `fsn1`                         | The region of the object storage to back up.                                                                                              |
 | `assetsBackups.destinationRegion`           | `fsn1`                         | The region of the backups object storage.                                                                                                 |
 | `assetsBackups.prefix`                      | `assets/app-buckets`           | The key prefix under `backups.bucket` to store asset backups in.                                                                          |
@@ -475,16 +511,22 @@ node drain or other voluntary disruption cannot evict every replica at once.
 
 ## Production durability recommendations
 
-For production environments with significant asset storage in MinIO:
+For production environments with significant asset storage in the bundled object store:
 
-- set `minio.persistence.size` to at least `50Gi`.
-- set `minio.persistence.storageClass` to a retained storage class (for Hetzner:
+- set `seaweedfs.allInOne.data.size` to at least `50Gi`. SeaweedFS reclaims the space of deleted
+  objects by vacuuming its volumes, so leave headroom above the live object size.
+- set `seaweedfs.allInOne.data.storageClass` to a retained storage class (for Hetzner:
   `hetzner-volumes-retain`).
-- set the MinIO PVC annotation `helm.sh/resource-policy: keep`.
+- set the SeaweedFS PVC annotation `helm.sh/resource-policy: keep`.
+- raise `seaweedfs.volume.dataDirs[0].maxVolumes` above the number of apps. SeaweedFS keeps a
+  separate set of volumes per bucket and the bucket per app layout gives every app its own bucket,
+  one volume per bucket under the chart's `master.volume_growth` setting. Volumes are created on
+  demand and stay sparse, so the ceiling costs nothing until it is used, but reaching it fails
+  writes for new apps.
 - set `postgresql.primary.persistence.storageClass` to the same retained class.
 - set the PostgreSQL PVC annotation `helm.sh/resource-policy: keep`.
 - keep `backup-production-data` enabled for database backups.
-- enable `assetsBackups.enabled=true` for MinIO app-asset backups (incremental daily + monthly full
+- enable `assetsBackups.enabled=true` for app-asset backups (incremental daily + monthly full
   snapshots).
 
 Valkey persistence is disabled by default because Appsemble uses it for disposable runtime data.
@@ -493,12 +535,13 @@ Only enable Valkey persistence when it is used for durable queues or state.
 Example:
 
 ```yaml
-minio:
-  persistence:
-    size: 50Gi
-    storageClass: hetzner-volumes-retain
-    annotations:
-      helm.sh/resource-policy: keep
+seaweedfs:
+  allInOne:
+    data:
+      size: 50Gi
+      storageClass: hetzner-volumes-retain
+      annotations:
+        helm.sh/resource-policy: keep
 postgresql:
   primary:
     persistence:
@@ -519,16 +562,16 @@ Recommended backup object layout within each environment backup bucket:
 - SQL backups:
   - `sql/main/<filename>_<timestamp>.sql.gz`
   - `sql/apps/<app-id>/<filename>_<timestamp>.sql.gz`
-- MinIO app asset backups:
+- App asset backups:
   - `assets/app-buckets/current/app-<id>/...`
   - `assets/app-buckets/archive/<run-id>/app-<id>/...`
   - `assets/app-buckets/snapshots/<yyyy-mm-01>/app-<id>/...`
 
-To restore MinIO app asset backups, run `sh scripts/s3-assets-restore.sh` with `BACKUP_S3_*`
-pointing at the backup object storage and `RESTORE_S3_*` pointing at the MinIO/S3 target. The script
-restores `current` by default. Set `RESTORE_SOURCE=snapshot` and `SNAPSHOT_ID=<yyyy-mm-01>` to
-restore a monthly full snapshot. By default it copies objects without deleting extra objects in the
-target; set `DELETE_EXTRA=true` to make the target exactly match the backup source. On a
+To restore app asset backups, run `sh scripts/s3-assets-restore.sh` with `BACKUP_S3_*` pointing at
+the backup object storage and `RESTORE_S3_*` pointing at the object storage to restore into. The
+script restores `current` by default. Set `RESTORE_SOURCE=snapshot` and `SNAPSHOT_ID=<yyyy-mm-01>`
+to restore a monthly full snapshot. By default it copies objects without deleting extra objects in
+the target; set `DELETE_EXTRA=true` to make the target exactly match the backup source. On a
 single-bucket installation, set `S3_BUCKET` to the same value as `s3.bucket` so each backup is
 restored into its `apps/<id>/` prefix.
 

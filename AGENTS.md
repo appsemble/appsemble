@@ -26,8 +26,8 @@ all-ESM, Node >= 24. The current block/package version lives in `packages/cli/pa
 
 ## Run it
 
-- `docker compose up -d` — backing services (Postgres :5432, test DB :54321, Valkey :6379, MinIO
-  :9000), credentials `admin`/`password`.
+- `docker compose up -d` — backing services (Postgres :5432, test DB :54321, Valkey :6379, SeaweedFS
+  :8333), credentials `admin`/`password`.
 - `npm start` — dev server at `http://localhost:9999`; `npm run appsemble -- <cmd>` for the CLI
   (login, migrate, publish…).
 - First run: register at `/register` (the verification link prints to the server logs), create the

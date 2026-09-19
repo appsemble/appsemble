@@ -103,7 +103,7 @@
     },
     "s3": {
       "type": "object",
-      "description": "Configuration for the S3 compatible object storage that holds app and block assets. The endpoint and credentials come from the `minio.auth.existingSecret` secret.",
+      "description": "Configuration for the S3 compatible object storage that holds app and block assets. The endpoint and credentials come from the `seaweedfs.s3.credentials.admin.existingSecret` secret.",
       "additionalProperties": false,
       "properties": {
         "bucket": {
@@ -726,7 +726,7 @@
     "mailpit": {
       "type": "object"
     },
-    "minio": {
+    "seaweedfs": {
       "type": "object"
     },
     "backups": {
@@ -763,7 +763,7 @@
     },
     "assetsBackups": {
       "type": "object",
-      "description": "Configuration for MinIO app-asset object backups.",
+      "description": "Configuration for app-asset object backups.",
       "additionalProperties": false,
       "required": ["enabled"],
       "properties": {
@@ -777,7 +777,7 @@
         },
         "sourceEndpoint": {
           "type": ["string", "null"],
-          "description": "Optional explicit source S3 endpoint; if omitted, it is derived from MinIO settings."
+          "description": "Optional explicit source S3 endpoint; if omitted, it is derived from the SeaweedFS settings."
         },
         "sourceRegion": {
           "type": "string"
