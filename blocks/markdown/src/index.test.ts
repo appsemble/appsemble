@@ -76,6 +76,17 @@ it.each([undefined, null])(
   },
 );
 
+it('stops loading without rendering a placeholder when the data event has no data', async () => {
+  const { node, update } = await setup(null);
+
+  expect(node.classList.contains('appsemble-loader')).toBe(true);
+
+  update(null);
+
+  expect(node.classList.contains('appsemble-loader')).toBe(false);
+  expect(node.textContent).toBe('');
+});
+
 it('renders initial content without requiring a data listener', async () => {
   const { node } = await setup({ content: 'Open **Bluetooth settings**.' }, false);
 
