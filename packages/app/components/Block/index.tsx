@@ -130,7 +130,7 @@ export function Block({
   const blockName = normalizeBlockName(block.type);
   const manifest = blockManifests.find((m) => m.name === blockName && m.version === block.version);
 
-  const [isMobile, setIsMobile] = useState<boolean | undefined>();
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
 
   useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
@@ -138,7 +138,6 @@ export function Block({
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
     mql.addEventListener('change', onChange);
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     return () => mql.removeEventListener('change', onChange);
   }, []);
 
@@ -245,7 +244,7 @@ export function Block({
       menu(items, header) {
         setBlockMenu({ items, header, path: prefix });
       },
-      isMobile: Boolean(isMobile),
+      isMobile,
     };
 
     (async () => {

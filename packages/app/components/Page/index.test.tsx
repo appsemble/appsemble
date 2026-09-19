@@ -19,13 +19,15 @@ import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistration
 
 let mock: MockAdapter;
 let blockRoots: HTMLElement[];
+let mobileStates: boolean[];
 let blockVersion = 0;
 
-function loadBlock({ data, shadowRoot }: BootstrapParams): void {
+function loadBlock({ data, shadowRoot, utils }: BootstrapParams): void {
   const output = document.createElement('output');
   output.textContent = (data as { person?: { name: string } })?.person?.name ?? 'No page data';
   shadowRoot.append(output);
   blockRoots.push(shadowRoot as unknown as HTMLElement);
+  mobileStates.push(utils.isMobile);
 }
 
 function renderPage(pageDefinition?: Partial<PageDefinition>): void {
@@ -81,6 +83,7 @@ function queryPageData(name: string): HTMLElement | undefined {
 
 beforeEach(() => {
   blockRoots = [];
+  mobileStates = [];
   mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
   const stylesheet = document.createElement('link');
   stylesheet.id = 'bulma-style-app';
@@ -190,5 +193,13 @@ describe('page initial data', () => {
   it('should initialize blocks on a page without an onLoad action', async () => {
     renderPage({ actions: undefined });
     await waitFor(() => expect(queryPageData('No page data')).toBeDefined());
+  });
+
+  it('should initialize blocks with the mobile state of the viewport', async () => {
+    vi.stubGlobal('innerWidth', 320);
+    mock.onGet('https://example.com/home').reply(200, { person: { name: 'Ada' } });
+    renderPage();
+    await waitFor(() => expect(queryPageData('Ada')).toBeDefined());
+    expect(mobileStates).toStrictEqual([true]);
   });
 });
