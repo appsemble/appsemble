@@ -6,6 +6,7 @@ import { createGunzip } from 'node:zlib';
 import { getS3File, initS3Client, logger } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
+import { backupsBuilder } from './builder/backups.js';
 import { databaseBuilder } from './builder/database.js';
 import { App, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
@@ -33,7 +34,9 @@ export interface RestoreDataFromBackupOptions {
   backupsAccessKey: string;
   backupsBucket: string;
   backupsHost: string;
+  backupsPathStyle?: boolean;
   backupsPort: number | undefined;
+  backupsRegion?: string;
   backupsSecretKey: string;
   backupsSecure: boolean;
   databaseHost: string;
@@ -49,7 +52,7 @@ export interface RestoreDataFromBackupOptions {
 }
 
 export function builder(yargs: Argv): Argv {
-  return databaseBuilder(yargs).option('restoreBackupFilename', {
+  return backupsBuilder(databaseBuilder(yargs)).option('restoreBackupFilename', {
     type: 'string',
     describe:
       'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz',
@@ -134,7 +137,9 @@ export async function restoreDataFromBackup({
   backupsAccessKey,
   backupsBucket,
   backupsHost,
+  backupsPathStyle,
   backupsPort,
+  backupsRegion,
   backupsSecretKey,
   backupsSecure,
   databaseHost,
@@ -187,6 +192,9 @@ export async function restoreDataFromBackup({
       useSSL: backupsSecure,
       accessKey: backupsAccessKey,
       secretKey: backupsSecretKey,
+      region: backupsRegion,
+      pathStyle: backupsPathStyle,
+      bucket: backupsBucket,
     });
   } catch (error: unknown) {
     logger.warn(`S3Error: ${error}`);
@@ -264,7 +272,9 @@ export async function handler(): Promise<void> {
     backupsAccessKey: argv.backupsAccessKey,
     backupsBucket: argv.backupsBucket,
     backupsHost: argv.backupsHost,
+    backupsPathStyle: argv.backupsPathStyle,
     backupsPort: argv.backupsPort,
+    backupsRegion: argv.backupsRegion,
     backupsSecretKey: argv.backupsSecretKey,
     backupsSecure: argv.backupsSecure ?? true,
     databaseHost: argv.databaseHost,

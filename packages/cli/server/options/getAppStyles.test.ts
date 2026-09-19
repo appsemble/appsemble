@@ -15,14 +15,11 @@ function createParams(coreStyle: string, sharedStyle: string): GetAppSubEntityPa
 describe('getAppStyles', () => {
   it('should resolve asset functions to app asset URLs on the development API', async () => {
     const styles = await getAppStyles(
-      createParams(
-        "@font-face{src:url(asset('brand.woff2'))}",
-        "p{background:url(asset('paper'))}",
-      ),
+      createParams("@font-face{src:asset('brand-woff2')}", "p{background:asset('paper')}"),
     );
 
     expect(styles).toStrictEqual({
-      coreStyle: "@font-face{src:url('http://localhost:9191/api/apps/1/assets/brand.woff2')}",
+      coreStyle: "@font-face{src:url('http://localhost:9191/api/apps/1/assets/brand-woff2')}",
       sharedStyle: "p{background:url('http://localhost:9191/api/apps/1/assets/paper')}",
     });
   });

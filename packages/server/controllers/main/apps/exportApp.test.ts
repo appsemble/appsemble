@@ -541,6 +541,7 @@ describe('exportApp', () => {
       endPoint: '127.0.0.1',
       port: (storage.address() as AddressInfo).port,
       useSSL: false,
+      bucket: process.env.S3_BUCKET,
     });
 
     try {
@@ -572,6 +573,7 @@ describe('exportApp', () => {
         endPoint: process.env.S3_HOST || 'localhost',
         port: Number(process.env.S3_PORT) || 9009,
         useSSL: false,
+        bucket: process.env.S3_BUCKET,
       });
     }
   });

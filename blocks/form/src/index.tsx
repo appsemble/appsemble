@@ -360,6 +360,7 @@ bootstrap(
       const receiveFields = (d: FieldEventParameters): void => {
         setFieldsLoading(true);
         setFields(d.fields);
+        setLastChanged(null);
 
         const newDefaultValues = generateDefaultValues(d.fields);
 
@@ -387,6 +388,7 @@ bootstrap(
         const newValues = { ...defaultValues, ...d };
         setDataLoading(false);
         setValues(newValues);
+        setLastChanged(null);
 
         const requirementErrors = new Map<number, string | null>();
         Promise.all(

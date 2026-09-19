@@ -76,7 +76,10 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
     [page],
   );
 
-  const pages = getNavPages(appDefinition, appMemberRoles, appMemberSelectedGroup);
+  const pages = useMemo(
+    () => getNavPages(appDefinition, appMemberRoles, appMemberSelectedGroup),
+    [appDefinition, appMemberRoles, appMemberSelectedGroup],
+  );
 
   let navigationElement: ReactNode;
   const showMenu = shouldShowMenu(appDefinition, appMemberRoles, appMemberSelectedGroup, pathname);

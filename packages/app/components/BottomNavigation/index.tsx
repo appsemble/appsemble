@@ -8,7 +8,7 @@ import {
 import { Button, Icon } from '@appsemble/react-components';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { NavLink, useLocation, useParams } from 'react-router-dom';
+import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
 import { usePWAInstall } from 'react-use-pwa-install';
 
 import './index.css';
@@ -16,6 +16,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { shouldShowMenu } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
+import { useActiveNavigation } from '../../utils/useActiveNavigation.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -39,6 +40,8 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { definition } = useAppDefinition();
   const { formatMessage } = useIntl();
   const install = usePWAInstall();
+
+  const getCurrent = useActiveNavigation(pages, false);
 
   const showMenu = useMemo(
     () => shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname),
@@ -69,15 +72,13 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
             // @ts-expect-error 2345 argument of type is not assignable to parameter of type
             // (strictNullChecks)
             const count = remap(page.badgeCount, null, remapperContext) as number;
+            const current = getCurrent(page);
 
             return (
               <li className="bottom-nav-item" key={page.name}>
-                <NavLink
-                  className={({ isActive }) =>
-                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
-                      isActive && 'is-active'
-                    }`
-                  }
+                <Link
+                  aria-current={current}
+                  className={`bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${current ? 'is-active' : ''}`}
                   title={navName as string}
                   to={`${url}/${getPagePathSegment(page)}`}
                 >
@@ -97,7 +98,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                       <span className="tag is-rounded ml-1 is-success">{count}</span>
                     ) : null}
                   </div>
-                </NavLink>
+                </Link>
               </li>
             );
           })}

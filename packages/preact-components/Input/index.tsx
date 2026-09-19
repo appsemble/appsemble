@@ -43,7 +43,8 @@ export interface InputProps extends Omit<
    *
    */
   // XXX 'date' should be removed.
-  type?: 'color' | 'date' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url';
+  type?:
+    'color' | 'date' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'time' | 'url';
 
   /**
    * The ref to use for the error link

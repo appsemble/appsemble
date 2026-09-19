@@ -40,8 +40,10 @@ interface InitValkeyClientOptions {
 /**
  * Initializes the singleton Valkey client instance.
  *
+ * The client reconnects on its own when Valkey is unreachable, at startup or later.
+ *
  * @param opts Parameters for initializing the Valkey client.
- * @returns The initialized Valkey client instance, or undefined if Valkey is not configured.
+ * @returns The Valkey client instance, or undefined if Valkey is not configured.
  */
 export async function initValkeyClient(opts: InitValkeyClientOptions): Promise<Redis | undefined> {
   // If Valkey is not configured (e.g., local dev without it), degrade gracefully
@@ -53,30 +55,34 @@ export async function initValkeyClient(opts: InitValkeyClientOptions): Promise<R
     return valkeyClient;
   }
 
-  let client: Redis | undefined;
+  const client = new Redis({
+    enableOfflineQueue: false,
+    host: opts.host,
+    lazyConnect: true,
+    password: opts.password,
+    port: opts.port,
+    // Keep reconnecting; with the offline queue disabled, commands fail fast in between attempts.
+    retryStrategy: (times) => Math.min(times * 200, 5000),
+    tls: opts.tls ? {} : undefined,
+    username: opts.password ? opts.username : undefined,
+  });
+  client.on('error', (error: Error) => {
+    logger.warn(`Valkey client error: ${error}`);
+  });
+  client.on('reconnecting', (delay: number) => {
+    logger.warn(`Valkey connection closed, reconnecting in ${delay} ms`);
+  });
+  client.on('ready', () => {
+    logger.info('Valkey client connected.');
+  });
+  valkeyClient = client;
   try {
-    client = new Redis({
-      enableOfflineQueue: false,
-      host: opts.host,
-      lazyConnect: true,
-      password: opts.password,
-      port: opts.port,
-      retryStrategy: () => null,
-      tls: opts.tls ? {} : undefined,
-      username: opts.password ? opts.username : undefined,
-    });
-    client.on('error', (error: Error) => {
-      logger.warn(`Valkey client error: ${error}`);
-    });
     await client.connect();
-    valkeyClient = client;
-    logger.info('Valkey client initialized successfully.');
-    return valkeyClient;
-  } catch (error) {
-    client?.disconnect();
-    logger.error('Failed to initialize Valkey client:', error);
-    throw error;
+  } catch {
+    // The client keeps reconnecting in the background, so the failure is not fatal.
+    logger.warn('Valkey is unreachable at startup, retrying in the background.');
   }
+  return valkeyClient;
 }
 
 /**

@@ -1,0 +1,16 @@
+{
+  "app": {
+    "app.roles.User": "",
+    "app.roles.User.description": "",
+    "description": "",
+    "name": "",
+    "pages.notes": ""
+  },
+  "messageIds": {
+    "body": "",
+    "cancel": "",
+    "configDelete": "",
+    "confirmDelete": "",
+    "title": ""
+  }
+}

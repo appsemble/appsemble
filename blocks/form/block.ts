@@ -1319,9 +1319,11 @@ export interface StringField extends AbstractField, InlineField {
   defaultValue?: string;
 
   /**
-   * The format to use for validation.
+   * The native input format to use for validation.
+   *
+   * The `time` format represents local time as an `HH:mm` string.
    */
-  format?: 'email' | 'password' | 'url';
+  format?: 'email' | 'password' | 'time' | 'url';
 
   /**
    * Whether the string field should be multiline or not.
@@ -1598,7 +1600,8 @@ declare module '@appsemble/sdk' {
     /**
      * This event is emitted every time a change is made to the form.
      *
-     * The data received in the entire form data.
+     * The payload contains `values` with the entire form data and `lastChanged` with the name of
+     * the field edited by the user. External data and field updates set `lastChanged` to `null`.
      */
     change: never;
   }

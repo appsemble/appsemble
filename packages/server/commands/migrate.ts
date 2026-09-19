@@ -48,6 +48,9 @@ export async function handler(): Promise<void> {
       useSSL: argv.s3Secure,
       accessKey: argv.s3AccessKey,
       secretKey: argv.s3SecretKey,
+      region: argv.s3Region,
+      pathStyle: argv.s3PathStyle,
+      bucket: argv.s3Bucket,
     });
   } catch (error: unknown) {
     logger.warn(`S3Error: ${error}`);

@@ -656,3 +656,16 @@ export async function dropAndCloseAllAppDBs(): Promise<void> {
     activeTeardown = undefined;
   }
 }
+
+/**
+ * Close the main database connection pool and those of every app database open in this process.
+ *
+ * Used when the process shuts down, so the connections are released rather than dropped by the
+ * kernel when it exits.
+ */
+export async function closeDBs(): Promise<void> {
+  const appDBsToClose = [...appDBs.values()];
+  appDBs.clear();
+  await Promise.all(appDBsToClose.map(({ sequelize }) => sequelize.close()));
+  await db?.close();
+}

@@ -8,12 +8,13 @@ import {
 import { Button, Icon } from '@appsemble/react-components';
 import { type ReactNode, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { NavLink, useParams } from 'react-router-dom';
+import { Link, NavLink, useParams } from 'react-router-dom';
 import { usePWAInstall } from 'react-use-pwa-install';
 
 import styles from './index.module.css';
 import { getNavPages, shouldShowPage } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
+import { useActiveNavigation } from '../../utils/useActiveNavigation.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -45,6 +46,8 @@ export function TopNavigation(): ReactNode {
     [definition, appMemberRoles, appMemberSelectedGroup],
   );
 
+  const getCurrent = useActiveNavigation(pages, true);
+
   const createRemapperContext = (name: string): RemapperContext =>
     ({
       appId,
@@ -75,10 +78,12 @@ export function TopNavigation(): ReactNode {
     const count = page.badgeCount
       ? (remap(page.badgeCount, null, createRemapperContext(navName as string)) as number)
       : undefined;
+    const current = getCurrent(page);
 
     return (
-      <NavLink
-        className={({ isActive }) => `navbar-item ${isActive ? styles.active : ''}`}
+      <Link
+        aria-current={current}
+        className={`navbar-item ${current ? styles.active : ''}`}
         key={page.name}
         onClick={closeMenu}
         title={navName as string}
@@ -87,7 +92,7 @@ export function TopNavigation(): ReactNode {
         {page.icon ? <Icon icon={page.icon} /> : null}
         <span>{navName}</span>
         {count ? <span className="tag is-rounded ml-1 is-success">{count}</span> : null}
-      </NavLink>
+      </Link>
     );
   };
 
@@ -101,6 +106,7 @@ export function TopNavigation(): ReactNode {
         return null;
       }
       const isOpen = openDropdown === page.name;
+      const current = getCurrent(page);
 
       return (
         <div
@@ -108,15 +114,16 @@ export function TopNavigation(): ReactNode {
           key={page.name}
         >
           <button
+            aria-current={current}
             aria-expanded={isOpen}
-            className={`navbar-link ${styles.dropdownButton}`}
+            className={`navbar-link ${styles.dropdownButton} ${current ? styles.active : ''}`}
             onClick={() => setOpenDropdown((open) => (open === page.name ? undefined : page.name))}
             type="button"
           >
             {page.icon ? <Icon icon={page.icon} /> : null}
             <span>{navName}</span>
           </button>
-          <div className="navbar-dropdown">{children.map((child) => renderLink(child))}</div>
+          <div className="navbar-dropdown">{children.map((child) => renderItem(child))}</div>
         </div>
       );
     }

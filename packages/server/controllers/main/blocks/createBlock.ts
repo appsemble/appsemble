@@ -5,6 +5,7 @@ import {
 } from '@appsemble/lang-sdk';
 import {
   assertKoaCondition,
+  getBlockAssetLocation,
   handleValidatorResult,
   logger,
   isValidBlockAssetFilename,
@@ -27,11 +28,7 @@ import {
 } from '../../../models/index.js';
 import { type PublishBlockBody } from '../../../types/index.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
-import {
-  deleteBlockAssetObjects,
-  getBlockAssetsBucketName,
-  getBlockAssetStorageKey,
-} from '../../../utils/blockAssets.js';
+import { deleteBlockAssetObjects, getBlockAssetStorageKey } from '../../../utils/blockAssets.js';
 import { blockVersionToJson } from '../../../utils/block.js';
 
 export async function createBlock(ctx: Context): Promise<void> {
@@ -164,7 +161,8 @@ export async function createBlock(ctx: Context): Promise<void> {
           version,
         });
 
-        await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength, {
+        const { bucket, key } = getBlockAssetLocation(storageKey);
+        await uploadS3File(bucket, key, content, content.byteLength, {
           'Cache-Control': 'public,max-age=31536000,immutable',
           'Content-Type': file.mime ?? 'application/octet-stream',
         });

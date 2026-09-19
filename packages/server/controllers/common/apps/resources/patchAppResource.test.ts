@@ -909,7 +909,7 @@ describe('patchAppResource', () => {
 
   it('should log and ignore s3 deletion failures during cleanup', async () => {
     const error = new Error('s3 failed');
-    vi.spyOn(nodeUtils, 'deleteS3Files').mockRejectedValue(error);
+    vi.spyOn(nodeUtils, 'deleteAppAssetObjects').mockRejectedValue(error);
     const loggerSpy = vi
       .spyOn(nodeUtils.logger, 'error')
       .mockImplementation(() => nodeUtils.logger);
@@ -943,7 +943,7 @@ describe('patchAppResource', () => {
           throw new Error('transaction failed');
         }) as any;
       });
-    const deleteSpy = vi.spyOn(nodeUtils, 'deleteS3Files').mockResolvedValue();
+    const deleteSpy = vi.spyOn(nodeUtils, 'deleteAppAssetObjects').mockResolvedValue();
 
     authorizeStudio();
     const response = await request.patch(
@@ -954,7 +954,7 @@ describe('patchAppResource', () => {
     expect(response.status).toBe(500);
     expect(transactionSpy).toHaveBeenCalledWith(expect.any(Function));
     expect(deleteSpy).toHaveBeenCalledWith(
-      `app-${app.id}`,
+      app.id,
       expect.arrayContaining([expect.stringMatching(uuid4Pattern)]),
     );
   });

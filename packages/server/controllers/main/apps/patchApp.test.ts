@@ -2468,7 +2468,7 @@ describe('patchApp', () => {
     `);
   });
 
-  it('should keep rejected traversal and encoded-slash asset ids unchanged when updating an app', async () => {
+  it('should reject invalid asset references when updating an app', async () => {
     const app = await App.create({
       path: 'bar',
       definition: { name: 'Test App', defaultPage: 'Test Page' },
@@ -2481,18 +2481,12 @@ describe('patchApp', () => {
     const response = await request.patch(
       `/api/apps/${app.id}`,
       createFormData({
-        coreStyle:
-          "a{background-image:url(asset('../admin'))}b{background-image:url(asset('a%2fb'))}",
+        coreStyle: "a{background-image:asset('../admin')}b{background-image:asset('a%2fb')}",
       }),
     );
 
-    const coreStyle = await request.get(`/api/apps/${app.id}/style/core`);
-
-    expect(response.status).toBe(200);
-    expect(coreStyle.data).toBe(
-      "a{background-image:url(asset('../admin'))}b{background-image:url(asset('a%2fb'))}",
-    );
-    expect(coreStyle.data).not.toContain('http://localhost/api/apps/');
+    expect(response.status).toBe(400);
+    expect(response.data.message).toBe('Provided CSS was invalid.');
   });
 
   it("should create a new app member with role `cron` if doesn't exist already", async () => {

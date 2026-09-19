@@ -37,6 +37,7 @@ function mockProviders(): void {
     logout: vi.fn(),
   } as never);
   vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
+    appMessageIds: [],
     getAppMessage: ({ defaultMessage }: { defaultMessage: string }) => ({
       format: () => defaultMessage,
     }),

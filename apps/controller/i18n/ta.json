@@ -1,0 +1,12 @@
+{
+  "app": {
+    "description": "",
+    "name": "",
+    "pages.example-page-a": ""
+  },
+  "messageIds": {
+    "firstNumber": "",
+    "operation": "",
+    "secondNumber": ""
+  }
+}
