@@ -116,6 +116,31 @@ helm install --name my-appsemble appsemble/appsemble \
 Make sure `ingress.host` resolves to the ingress controller with both `A` and `AAAA` records. Point
 `*.ingress.host` to the same place, preferably with a wildcard `CNAME` to the apex host.
 
+Appsemble creates an ingress per organization which serves `<organization>.ingress.host` and
+`*.<organization>.ingress.host`. Both host names need a DNS record of their own. The certificate of
+that ingress covers a wildcard host, so cert-manager validates it with a DNS01 challenge, and the
+challenge record makes `<organization>.ingress.host` exist in the zone, after which the wildcard
+record on `ingress.host` no longer resolves anything below it. Set the `dns` values to let Appsemble
+create an `A` and `AAAA` record for both host names of every organization:
+
+```sh
+helm install my-appsemble appsemble/appsemble \
+--set "dns.provider=desec" \
+--set "dns.zone=example.com" \
+--set "dns.secret=appsemble-dns" \
+--set "dns.targets={203.0.113.10,2001:db8::10}"
+# ...
+```
+
+`dns.zone` is the zone which contains `ingress.host`, `dns.targets` are the addresses of the ingress
+controller, and `dns.secret` names a secret which holds the API token of the provider under the key
+`dns-token`. Appsemble writes the records when an organization is created, removes them when it is
+deleted, and writes the records of all organizations in the `reconcile-dns` job.
+
+Restrict the token to the records Appsemble manages. For deSEC, give it token policies which allow
+writing `A` and `AAAA` record sets in `dns.zone` and nothing else, so it cannot touch the
+`_acme-challenge` records of cert-manager or the records of custom domains in the same zone.
+
 ## Use HTTPS configured elsewhere
 
 If you’re not using `cert-manager` and can’t add the `ingress.tls`, `ingress.tlsSecretName`, and

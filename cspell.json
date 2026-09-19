@@ -217,6 +217,8 @@
     "regclass",
     "relkind",
     "tableoid",
-    "pkey"
+    "pkey",
+    "desec",
+    "rrsets"
   ]
 }

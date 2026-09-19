@@ -105,6 +105,26 @@ export interface Argv {
    */
   clusterIssuer?: string;
 
+  /**
+   * The provider which serves the DNS zone of the deployment.
+   */
+  dnsProvider?: string;
+
+  /**
+   * The name of the DNS zone which contains the organization host names.
+   */
+  dnsZone?: string;
+
+  /**
+   * The token used to authenticate with the API of the DNS provider.
+   */
+  dnsToken?: string;
+
+  /**
+   * The IP addresses the organization host names resolve to, comma separated.
+   */
+  dnsTargets?: string;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Database                                                                                     //
   // //////////////////////////////////////////////////////////////////////////////////////////// //

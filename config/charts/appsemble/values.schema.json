@@ -120,6 +120,54 @@
         }
       }
     },
+    "dns": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "type": "string",
+          "description": "The provider which serves the DNS zone of the organization host names.",
+          "enum": ["", "desec"]
+        },
+        "zone": {
+          "type": "string",
+          "description": "The name of the DNS zone which contains the organization host names."
+        },
+        "secret": {
+          "type": "string",
+          "description": "The name of the secret which holds the API token of the DNS provider under the key dns-token."
+        },
+        "targets": {
+          "type": "array",
+          "description": "The IP addresses the organization host names resolve to.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "provider": {
+            "minLength": 1
+          }
+        },
+        "required": ["provider"]
+      },
+      "then": {
+        "properties": {
+          "zone": {
+            "minLength": 1
+          },
+          "secret": {
+            "minLength": 1
+          },
+          "targets": {
+            "minItems": 1
+          }
+        },
+        "required": ["zone", "secret", "targets"]
+      }
+    },
     "blockAssets": {
       "type": "object",
       "additionalProperties": false,
