@@ -562,16 +562,16 @@ Recommended backup object layout within each environment backup bucket:
 - SQL backups:
   - `sql/main/<filename>_<timestamp>.sql.gz`
   - `sql/apps/<app-id>/<filename>_<timestamp>.sql.gz`
-- MinIO app asset backups:
+- App asset backups:
   - `assets/app-buckets/current/app-<id>/...`
   - `assets/app-buckets/archive/<run-id>/app-<id>/...`
   - `assets/app-buckets/snapshots/<yyyy-mm-01>/app-<id>/...`
 
-To restore MinIO app asset backups, run `sh scripts/s3-assets-restore.sh` with `BACKUP_S3_*`
-pointing at the backup object storage and `RESTORE_S3_*` pointing at the MinIO/S3 target. The script
-restores `current` by default. Set `RESTORE_SOURCE=snapshot` and `SNAPSHOT_ID=<yyyy-mm-01>` to
-restore a monthly full snapshot. By default it copies objects without deleting extra objects in the
-target; set `DELETE_EXTRA=true` to make the target exactly match the backup source. On a
+To restore app asset backups, run `sh scripts/s3-assets-restore.sh` with `BACKUP_S3_*` pointing at
+the backup object storage and `RESTORE_S3_*` pointing at the object storage to restore into. The
+script restores `current` by default. Set `RESTORE_SOURCE=snapshot` and `SNAPSHOT_ID=<yyyy-mm-01>`
+to restore a monthly full snapshot. By default it copies objects without deleting extra objects in
+the target; set `DELETE_EXTRA=true` to make the target exactly match the backup source. On a
 single-bucket installation, set `S3_BUCKET` to the same value as `s3.bucket` so each backup is
 restored into its `apps/<id>/` prefix.
 
