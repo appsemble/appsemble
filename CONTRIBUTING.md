@@ -208,6 +208,15 @@ To run tests for a single file, run
 npm test -- path/to/file
 ```
 
+The server and CLI tests store assets in the `s3-test` service of the Docker Compose configuration,
+in a bucket per app. To run them in the single-bucket layout, where one pre-created bucket holds
+every object under a prefix, create the bucket once and pass its name.
+
+```sh
+docker compose exec s3-test sh -c "echo 's3.bucket.create -name appsemble' | weed shell"
+S3_BUCKET=appsemble npm test -- packages/server packages/cli --no-file-parallelism
+```
+
 Appsemble uses test snapshots to assert large serializable objects like block manifests, HTTP
 responses and some react-components. These need
 [manual updating](https://jestjs.io/docs/snapshot-testing#are-snapshots-written-automatically-on-continuous-integration-ci-systems)
