@@ -12,6 +12,7 @@ spec:
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
+      backoffLimit: 2
       template:
         metadata:
           annotations:
