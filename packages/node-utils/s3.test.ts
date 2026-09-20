@@ -326,7 +326,7 @@ describe('uploadS3File', () => {
       ContentType: 'application/gzip',
       Key: 'asset-id',
     });
-    expect(Buffer.concat(parts)).toStrictEqual(content);
+    expect(Buffer.concat(parts).equals(content)).toBe(true);
   });
 
   it('fails if a stream upload loses its bucket after consuming the stream', async () => {
