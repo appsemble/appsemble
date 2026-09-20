@@ -1,4 +1,4 @@
-import { uploadS3File } from '@appsemble/node-utils';
+import { getAppAssetLocation, uploadS3File } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -64,7 +64,8 @@ describe('deleteAppAsset', () => {
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, asset.id, Buffer.from('buffer'));
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
@@ -78,7 +79,8 @@ describe('deleteAppAsset', () => {
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, asset.id, Buffer.from('buffer'));
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     authorizeStudio();
     const assetId = asset.id;

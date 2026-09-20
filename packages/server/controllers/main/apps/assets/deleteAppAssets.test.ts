@@ -1,4 +1,4 @@
-import { createFormData, uploadS3File } from '@appsemble/node-utils';
+import { createFormData, getAppAssetLocation, uploadS3File } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
@@ -66,17 +66,18 @@ describe('deleteAppAssets', () => {
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetA.id, Buffer.from('buffer'));
     const assetB = await Asset.create({
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetB.id, Buffer.from('buffer'));
     const assetC = await Asset.create({
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetC.id, Buffer.from('buffer'));
+    for (const asset of [assetA, assetB, assetC]) {
+      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      await uploadS3File(bucket, key, Buffer.from('buffer'));
+    }
 
     authorizeStudio();
     const assetsResponse = await request.get(`/api/apps/${app.id}/assets`);
@@ -140,17 +141,18 @@ describe('deleteAppAssets', () => {
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetA.id, Buffer.from('buffer'));
     const assetB = await Asset.create({
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetB.id, Buffer.from('buffer'));
     const assetC = await Asset.create({
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetC.id, Buffer.from('buffer'));
+    for (const asset of [assetA, assetB, assetC]) {
+      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      await uploadS3File(bucket, key, Buffer.from('buffer'));
+    }
 
     const assetIds = [assetA.id, assetB.id];
     authorizeStudio();
@@ -184,17 +186,18 @@ describe('deleteAppAssets', () => {
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetA.id, Buffer.from('buffer'));
     const assetB = await Asset.create({
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetB.id, Buffer.from('buffer'));
     const assetC = await Asset.create({
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetC.id, Buffer.from('buffer'));
+    for (const asset of [assetA, assetB, assetC]) {
+      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      await uploadS3File(bucket, key, Buffer.from('buffer'));
+    }
     const assetAId = assetA.id;
     const assetBId = assetB.id;
 
@@ -269,17 +272,18 @@ describe('deleteAppAssets', () => {
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetA.id, Buffer.from('buffer'));
     const assetB = await Asset.create({
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetB.id, Buffer.from('buffer'));
     const assetC = await Asset.create({
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    await uploadS3File(`app-${app.id}`, assetC.id, Buffer.from('buffer'));
+    for (const asset of [assetA, assetB, assetC]) {
+      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      await uploadS3File(bucket, key, Buffer.from('buffer'));
+    }
 
     authorizeStudio();
     const assetsResponse = await request.get(`/api/apps/${app.id}/assets`);
