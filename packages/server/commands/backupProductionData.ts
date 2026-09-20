@@ -1,8 +1,9 @@
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { createGzip } from 'node:zlib';
 
-import { initS3Client, logger, uploadS3File } from '@appsemble/node-utils';
+import { deleteS3File, initS3Client, logger, uploadS3File } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { backupsBuilder } from './builder/backups.js';
@@ -16,8 +17,89 @@ import { handleDBError } from '../utils/sqlUtils.js';
 export const command = 'backup-production-data';
 export const description = 'Backs up data from the main database and app databases.';
 
+/**
+ * The backoff between attempts to dump one database.
+ *
+ * `delays` holds the wait in milliseconds before each retry, so a database is dumped at most
+ * `delays.length + 1` times. Tests replace `wait` to run the retries without waiting.
+ */
+export const backoff = {
+  delays: [5000, 30_000, 120_000],
+  wait: (milliseconds: number): Promise<void> => sleep(milliseconds),
+};
+
 export function builder(yargs: Argv): Argv {
   return backupsBuilder(databaseBuilder(yargs));
+}
+
+/**
+ * Stream one `pg_dump` through gzip into an S3 object.
+ *
+ * Each end of the pipeline is torn down when the other end fails, and the object is removed when
+ * a failed dump was committed anyway. The `Upload` of `@aws-sdk/lib-storage` keeps its in-flight
+ * requests going after `abort()`, so a failed dump closes the upload source instead: the upload
+ * then settles before the object is deleted, and a multipart upload is aborted rather than
+ * completed.
+ *
+ * @param connectionString The Postgres URI of the database to dump.
+ * @param bucket The bucket to store the dump in.
+ * @param key The key of the dump object.
+ */
+async function dumpDatabaseToS3(
+  connectionString: string,
+  bucket: string,
+  key: string,
+): Promise<void> {
+  const dump = spawn('pg_dump', [`--dbname=${connectionString}`], {
+    stdio: ['pipe', 'pipe', 'pipe'],
+  });
+  const gzip = createGzip();
+
+  let stderr = '';
+  dump.stderr.on('data', (chunk) => {
+    stderr += String(chunk);
+  });
+
+  let failure: unknown;
+  const uploaded = uploadS3File(bucket, key, dump.stdout.pipe(gzip)).then(
+    () => true,
+    (error: unknown) => {
+      failure ??= error;
+      // Without this pg_dump sits blocked on its pipe, holding a COPY on the database.
+      dump.kill('SIGKILL');
+      gzip.destroy();
+      return false;
+    },
+  );
+  const exited = once(dump, 'close').then(
+    ([code, signal]) => {
+      if (code === 0) {
+        return;
+      }
+      if (failure == null) {
+        const reason = signal ? `signal ${signal}` : `code ${code}`;
+        failure = new Error(
+          `pg_dump exited with ${reason}: ${stderr.trim() || '(no stderr output)'}`,
+        );
+      }
+      gzip.destroy();
+    },
+    (error: unknown) => {
+      // The process could not be spawned; closing the upload source lets the upload settle.
+      failure ??= error;
+      gzip.destroy();
+    },
+  );
+  const [committed] = await Promise.all([uploaded, exited]);
+
+  if (failure == null) {
+    return;
+  }
+  if (committed) {
+    // The dump finished uploading before pg_dump reported its failure.
+    await deleteS3File(bucket, key);
+  }
+  throw failure;
 }
 
 async function backupDatabaseToS3(
@@ -27,27 +109,24 @@ async function backupDatabaseToS3(
 ): Promise<void> {
   logger.info(`Backing up ${bucket}/${key}`);
 
-  const dump = spawn('pg_dump', [`--dbname=${connectionString}`], {
-    stdio: ['pipe', 'pipe', 'pipe'],
-  });
-  const gzip = createGzip();
-  const stream = dump.stdout.pipe(gzip);
-
-  let stderr = '';
-  dump.stderr.on('data', (chunk) => {
-    const text = String(chunk);
-    stderr += text;
-  });
-
-  const dumpExited = once(dump, 'close').then(([code]) => {
-    if (code !== 0) {
-      const message = stderr.trim() || '(no stderr output)';
-      throw new Error(`pg_dump exited with code ${code}: ${message}`);
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      await dumpDatabaseToS3(connectionString, bucket, key);
+      logger.info(`Backup uploaded: ${key}`);
+      return;
+    } catch (error) {
+      if (attempt >= backoff.delays.length) {
+        throw error;
+      }
+      const delay = backoff.delays[attempt];
+      logger.warn(`Backup of ${key} failed, retrying in ${delay / 1000} s:`, error);
+      await backoff.wait(delay);
     }
-  });
+  }
+}
 
-  await Promise.all([uploadS3File(bucket, key, stream), dumpExited]);
-  logger.info(`Backup uploaded: ${key}`);
+function describeError(error: unknown): string {
+  return (error instanceof Error ? error.message : String(error)).replaceAll(/\s+/g, ' ');
 }
 
 export async function handler(): Promise<void> {
@@ -91,7 +170,7 @@ export async function handler(): Promise<void> {
     dbPort: argv.databasePort,
   });
 
-  let failed = false;
+  const failures = new Map<string, unknown>();
 
   // Backup main database
   try {
@@ -106,7 +185,7 @@ export async function handler(): Promise<void> {
     });
     await backupDatabaseToS3(mainDbUrl, argv.backupsBucket, key);
   } catch (err) {
-    failed = true;
+    failures.set('main', err);
     logger.error('Failed to back up main database:', err);
   }
 
@@ -134,11 +213,19 @@ export async function handler(): Promise<void> {
       const key = `sql/apps/${app.id}/${argv.backupsFilename}_${timestamp}.sql.gz`;
       await backupDatabaseToS3(appDbUrl, argv.backupsBucket, key);
     } catch (err) {
-      failed = true;
+      failures.set(`app ${app.id}`, err);
       logger.error(`Failed to back up app ${app.id} database:`, err);
     }
   }
 
   await db.close();
-  process.exit(failed ? 1 : 0);
+  if (failures.size) {
+    // A single line, so one grep of the log tells which databases lack a backup and why.
+    logger.error(
+      `Backup failed for ${failures.size} of ${apps.length + 1} databases: ${[...failures]
+        .map(([database, error]) => `${database} (${describeError(error)})`)
+        .join('; ')}`,
+    );
+  }
+  process.exit(failures.size ? 1 : 0);
 }

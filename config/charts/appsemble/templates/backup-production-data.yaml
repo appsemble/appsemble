@@ -7,11 +7,17 @@ metadata:
     {{ include "appsemble.labels" . }}
 spec:
   schedule: 0 1 * * * # Run every day at 01:00
+  concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
+      backoffLimit: 2
+      # A clean run takes about half an hour; the per-database retries make a run against an
+      # unreachable object store take days, so bound the Job instead of letting it overlap the
+      # next night.
+      activeDeadlineSeconds: 21600
       template:
         metadata:
           annotations:
