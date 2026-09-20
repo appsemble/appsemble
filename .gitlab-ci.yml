@@ -510,7 +510,7 @@ test node:
           }
           JSON
           exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
-  variables:
+  variables: &test-node-variables
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
@@ -537,6 +537,89 @@ test node:
       coverage_report:
         coverage_format: cobertura
         path: coverage/cobertura-coverage.xml
+
+# Run the tests that touch object storage in the single-bucket layout. `test node` runs them in the
+# bucket-per-app layout, where an admin identity creates a bucket per app on demand.
+test node single bucket:
+  extends: .npm
+  services:
+    - name: postgres:17
+      alias: postgres
+    - name: valkey/valkey:9.1.2
+      alias: valkey
+      command: ['valkey-server', '--requirepass', 'password']
+    # The single-bucket layout: the bucket and a user that can only touch its objects are
+    # provisioned before SeaweedFS listens on the port the job connects to. Block assets are
+    # served through the server here, so the bucket stays private.
+    - &seaweedfs-single-bucket
+      name: chrislusf/seaweedfs:4.47
+      alias: s3
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          set -eu
+          cat > /etc/seaweedfs/s3.json <<'JSON'
+          {
+            "identities": [
+              {
+                "name": "appsemble-server",
+                "credentials": [
+                  { "accessKey": "appsemble-server", "secretKey": "appsemble-server-secret" }
+                ],
+                "actions": [
+                  "Read:appsemble",
+                  "Write:appsemble",
+                  "List:appsemble",
+                  "Tagging:appsemble"
+                ]
+              }
+            ]
+          }
+          JSON
+          weed server -dir=/data -s3 -s3.port=8334 -s3.config=/etc/seaweedfs/s3.json &
+          weed_pid=$!
+          until echo 's3.bucket.list' | weed shell >/dev/null 2>&1; do
+            sleep 1
+          done
+          echo 's3.bucket.create -name appsemble' | weed shell
+          kill "$weed_pid"
+          wait "$weed_pid" || true
+          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
+  variables:
+    <<: *test-node-variables
+    S3_BUCKET: appsemble
+    S3_ACCESS_KEY: appsemble-server
+    S3_SECRET_KEY: appsemble-server-secret
+  stage: test
+  script:
+    - npm test -- --no-file-parallelism
+      packages/cli/lib/app.test.ts
+      packages/cli/lib/asset.test.ts
+      packages/server/commands/migrateBlockAssetsToS3.test.ts
+      packages/server/controllers/apps/actions/index.test.ts
+      packages/server/controllers/common/apps/assets/getAppAssetById.test.ts
+      packages/server/controllers/common/apps/assets/getOriginalAppAsset.test.ts
+      packages/server/controllers/common/apps/resources/createAppResource.test.ts
+      packages/server/controllers/common/apps/resources/patchAppResource.test.ts
+      packages/server/controllers/common/apps/resources/updateAppResource.test.ts
+      packages/server/controllers/common/apps/resources/updateAppResources.test.ts
+      packages/server/controllers/common/blocks/versions/assets/getBlockVersionAsset.test.ts
+      packages/server/controllers/main/apps/assets/createAppAsset.test.ts
+      packages/server/controllers/main/apps/assets/deleteAppAsset.test.ts
+      packages/server/controllers/main/apps/assets/deleteAppAssets.test.ts
+      packages/server/controllers/main/apps/createAppFromTemplate.test.ts
+      packages/server/controllers/main/apps/exportApp.test.ts
+      packages/server/controllers/main/apps/reseedDemoApp.test.ts
+      packages/server/controllers/main/blocks/createBlock.test.ts
+      packages/server/controllers/main/blocks/versions/deleteBlockVersion.test.ts
+      packages/server/controllers/main/organizations/apps/importApp.test.ts
+      packages/server/options/getBlockAsset.test.ts
+      packages/server/routes/appRouter/blockAssetHandler.test.ts
+      packages/server/utils/block.test.ts
+      packages/server/utils/blockAssets.test.ts
+  artifacts:
+    reports:
+      junit: junit.xml
 
 # Check type validity for our TypeScript files.
 tsc:
@@ -733,42 +816,10 @@ e2e node:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    # The single-bucket layout: the bucket and a user that can only touch its objects are
-    # provisioned before SeaweedFS listens on the port the job connects to. Block assets are
-    # served through the server here, so the bucket stays private.
-    - name: chrislusf/seaweedfs:4.47
-      alias: s3
-      entrypoint: ['sh', '-c']
-      command:
-        - |
-          set -eu
-          cat > /etc/seaweedfs/s3.json <<'JSON'
-          {
-            "identities": [
-              {
-                "name": "appsemble-server",
-                "credentials": [
-                  { "accessKey": "appsemble-server", "secretKey": "appsemble-server-secret" }
-                ],
-                "actions": [
-                  "Read:appsemble",
-                  "Write:appsemble",
-                  "List:appsemble",
-                  "Tagging:appsemble"
-                ]
-              }
-            ]
-          }
-          JSON
-          weed server -dir=/data -s3 -s3.port=8334 -s3.config=/etc/seaweedfs/s3.json &
-          weed_pid=$!
-          until echo 's3.bucket.list' | weed shell >/dev/null 2>&1; do
-            sleep 1
-          done
-          echo 's3.bucket.create -name appsemble' | weed shell
-          kill "$weed_pid"
-          wait "$weed_pid" || true
-          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
+    # The end-to-end suite runs in the single-bucket layout, the layout review environments and
+    # the Helm chart deploy. `test node` covers the bucket-per-app layout and
+    # `test node single bucket` covers this layout at the unit level.
+    - *seaweedfs-single-bucket
     - name: valkey/valkey:9.1.2
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
