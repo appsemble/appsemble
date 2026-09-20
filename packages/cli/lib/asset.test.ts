@@ -1,4 +1,9 @@
-import { getS3FileBuffer, readFixture, resolveFixture } from '@appsemble/node-utils';
+import {
+  getAppAssetLocation,
+  getS3FileBuffer,
+  readFixture,
+  resolveFixture,
+} from '@appsemble/node-utils';
 import { createServer, createTestUser, models, setArgv } from '@appsemble/server';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
@@ -74,9 +79,8 @@ describe('asset', () => {
           mime: 'image/png',
         }),
       );
-      expect(await getS3FileBuffer(`app-${app.id}`, asset.id)).toStrictEqual(
-        await readFixture('apps/tux.png'),
-      );
+      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      expect(await getS3FileBuffer(bucket, key)).toStrictEqual(await readFixture('apps/tux.png'));
     });
 
     it('should throw an error if the app does not exist', async () => {

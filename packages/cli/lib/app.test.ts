@@ -2,7 +2,12 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { getS3FileBuffer, readFixture, resolveFixture } from '@appsemble/node-utils';
+import {
+  getAppAssetLocation,
+  getS3FileBuffer,
+  readFixture,
+  resolveFixture,
+} from '@appsemble/node-utils';
 import {
   createServer,
   createTestDBWithUser,
@@ -644,7 +649,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData]);
     });
 
@@ -841,7 +851,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData, tuxData]);
       const appCollectionApp = (await AppCollectionApp.findOne())!;
       expect(appCollectionApp.AppId).toBe(1);
@@ -1009,7 +1024,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/variants/tux/assets/small-tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData]);
     });
 
@@ -1558,7 +1578,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData]);
     });
 
@@ -1744,7 +1769,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData, tuxData]);
       // TODO: not yet implemented
       // const appCollectionApp = await AppCollectionApp.findOne();

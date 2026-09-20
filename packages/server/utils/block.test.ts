@@ -74,24 +74,29 @@ describe('syncBlock', () => {
     }
   });
 
-  it('should synchronize block assets directly from their public file URLs', async () => {
-    expect.hasAssertions();
-    const sourceStorageKey = `source/${filename}`;
-    await ensureBlockAssetsBucketPublicRead();
-    const { bucket, key } = getBlockAssetLocation(sourceStorageKey);
-    await uploadS3File(bucket, key, content, content.byteLength, {
-      'Content-Type': 'application/javascript',
-    });
-    const fileUrl = `${blockAssetsBaseUrl}/${bucket}/${key}`;
-    mock.onGet(blockUrl).reply(200, createManifest({ [filename]: fileUrl }));
-    mock.onGet(legacyAssetUrl).reply(200, Buffer.from('legacy endpoint content'), {
-      'content-type': 'application/javascript',
-    });
+  // The bucket-per-app layout makes the block assets bucket public. The single-bucket layout keeps
+  // the bucket private, so its file URLs are only reachable through the server.
+  it.skipIf(process.env.S3_BUCKET)(
+    'should synchronize block assets directly from their public file URLs',
+    async () => {
+      expect.hasAssertions();
+      const sourceStorageKey = `source/${filename}`;
+      await ensureBlockAssetsBucketPublicRead();
+      const { bucket, key } = getBlockAssetLocation(sourceStorageKey);
+      await uploadS3File(bucket, key, content, content.byteLength, {
+        'Content-Type': 'application/javascript',
+      });
+      const fileUrl = `${blockAssetsBaseUrl}/${bucket}/${key}`;
+      mock.onGet(blockUrl).reply(200, createManifest({ [filename]: fileUrl }));
+      mock.onGet(legacyAssetUrl).reply(200, Buffer.from('legacy endpoint content'), {
+        'content-type': 'application/javascript',
+      });
 
-    await syncBlock({ OrganizationId: organizationId, name: blockName, version: blockVersion });
+      await syncBlock({ OrganizationId: organizationId, name: blockName, version: blockVersion });
 
-    await expectSynchronizedAsset();
-  });
+      await expectSynchronizedAsset();
+    },
+  );
 
   it('should fall back to the remote block asset endpoint when file URLs are unavailable', async () => {
     expect.hasAssertions();

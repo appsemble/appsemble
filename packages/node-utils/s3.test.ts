@@ -1,8 +1,12 @@
+import dns from 'node:dns';
+import { createServer, type IncomingMessage, type Server } from 'node:http';
+import { type AddressInfo } from 'node:net';
 import { Readable } from 'node:stream';
 import { buffer as streamToBuffer } from 'node:stream/consumers';
 
 import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
-import { beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import axios from 'axios';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { logger } from './logger.js';
 import {
@@ -12,8 +16,10 @@ import {
   deleteS3Files,
   getAppAssetLocation,
   getBlockAssetLocation,
+  getS3FileBuffer,
   getS3FileStats,
   initS3Client,
+  listS3Files,
   setS3BucketPolicy,
   uploadS3File,
 } from './s3.js';
@@ -320,7 +326,7 @@ describe('uploadS3File', () => {
       ContentType: 'application/gzip',
       Key: 'asset-id',
     });
-    expect(Buffer.concat(parts)).toStrictEqual(content);
+    expect(Buffer.concat(parts).equals(content)).toBe(true);
   });
 
   it('fails if a stream upload loses its bucket after consuming the stream', async () => {
@@ -416,5 +422,144 @@ describe('deleteS3File', () => {
     send.mockRejectedValueOnce(error);
 
     await expect(deleteS3File('app-1216', 'asset-id')).rejects.toBe(error);
+  });
+});
+
+describe('object store', () => {
+  const store = {
+    accessKey: process.env.S3_ACCESS_KEY || 'admin',
+    secretKey: process.env.S3_SECRET_KEY || 'password',
+    endPoint: process.env.S3_HOST || 'localhost',
+    port: Number(process.env.S3_PORT) || 9009,
+    useSSL: false,
+  };
+
+  beforeEach(async () => {
+    send.mockRestore();
+    initS3Client(store);
+    await clearAllS3Buckets();
+  });
+
+  it('creates a missing bucket in the bucket-per-app layout before applying its policy', async () => {
+    await expect(listS3Files('policy-bucket')).rejects.toMatchObject({ name: 'NoSuchBucket' });
+
+    await setS3BucketPolicy(
+      'policy-bucket',
+      JSON.stringify({
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: '*',
+            Action: ['s3:GetObject'],
+            Resource: ['arn:aws:s3:::policy-bucket/*'],
+          },
+        ],
+      }),
+    );
+
+    expect(await listS3Files('policy-bucket')).toStrictEqual([]);
+    await uploadS3File('policy-bucket', 'public.txt', 'readable by anyone');
+    const { data, status } = await axios.get(
+      `http://${store.endPoint}:${store.port}/policy-bucket/public.txt`,
+    );
+    expect(status).toBe(200);
+    expect(data).toBe('readable by anyone');
+  });
+
+  it('lists only the keys under the requested prefix', async () => {
+    await uploadS3File('objects', 'apps/1/first', 'first');
+    await uploadS3File('objects', 'apps/1/second', 'second');
+    await uploadS3File('objects', 'blocks/form.js', 'form');
+
+    const files = await listS3Files('objects', 'apps/');
+
+    expect(files.map(({ key }) => key)).toStrictEqual(['apps/1/first', 'apps/1/second']);
+    expect(files.map(({ size }) => size)).toStrictEqual([5, 6]);
+  });
+});
+
+describe('requests', () => {
+  interface RecordedRequest {
+    headers: IncomingMessage['headers'];
+    method: string;
+    path: string;
+  }
+
+  let server: Server;
+  let port: number;
+  let requests: RecordedRequest[];
+
+  beforeEach(async () => {
+    send.mockRestore();
+    requests = [];
+    server = createServer((request, response) => {
+      requests.push({
+        headers: request.headers,
+        method: request.method!,
+        path: new URL(request.url!, 'http://localhost').pathname,
+      });
+      request.resume();
+      request.on('end', () => {
+        response.writeHead(200, { ETag: '"etag"' });
+        response.end(request.method === 'GET' ? 'payload' : undefined);
+      });
+    });
+    await new Promise<void>((resolve) => {
+      server.listen(0, '127.0.0.1', resolve);
+    });
+    ({ port } = server.address() as AddressInfo);
+    // Every host name, including a bucket subdomain of the endpoint, resolves to the local server.
+    vi.spyOn(dns, 'lookup').mockImplementation(((
+      hostname: string,
+      options: { all?: boolean },
+      callback: (error: null, address: unknown, family?: number) => void,
+    ) => {
+      if (options.all) {
+        return callback(null, [{ address: '127.0.0.1', family: 4 }]);
+      }
+      return callback(null, '127.0.0.1', 4);
+    }) as typeof dns.lookup);
+  });
+
+  afterEach(async () => {
+    server.closeAllConnections();
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+  });
+
+  it('adds no checksums to uploads and downloads', async () => {
+    initS3Client({ ...credentials, port, bucket: 'objects' });
+
+    await uploadS3File('objects', 'apps/1/asset', 'payload');
+    expect(await getS3FileBuffer('objects', 'apps/1/asset')).toStrictEqual(Buffer.from('payload'));
+
+    expect(requests.map(({ method }) => method)).toStrictEqual(['PUT', 'GET']);
+    for (const { headers } of requests) {
+      expect(Object.keys(headers)).not.toContainEqual(
+        expect.stringMatching(/^x-amz-(checksum-|sdk-checksum-algorithm$|trailer$)/),
+      );
+    }
+  });
+
+  it('addresses the bucket in the request path by default', async () => {
+    initS3Client({ ...credentials, port, bucket: 'objects' });
+
+    await uploadS3File('objects', 'apps/1/asset', 'payload');
+
+    expect(requests).toMatchObject([
+      { path: '/objects/apps/1/asset', headers: { host: `localhost:${port}` } },
+    ]);
+  });
+
+  it('addresses the bucket as a virtual host when path style is off', async () => {
+    initS3Client({ ...credentials, port, pathStyle: false, bucket: 'objects' });
+
+    await uploadS3File('objects', 'apps/1/asset', 'payload');
+
+    expect(requests).toMatchObject([
+      { path: '/apps/1/asset', headers: { host: `objects.localhost:${port}` } },
+    ]);
   });
 });
