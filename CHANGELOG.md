@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.39.2](https://gitlab.com/appsemble/appsemble/-/releases/0.39.2)] - 2026-09-20
+
+### Fixed
+
+- Server: Empty and archive the backup of an app that lost all its assets in the single-bucket
+  layout.
+- Server: Initialize the S3 client in the run-cronjobs command so cron actions can read and write
+  assets.
+
 ## \[[0.39.1](https://gitlab.com/appsemble/appsemble/-/releases/0.39.1)] - 2026-09-19
 
 ### Added
