@@ -596,6 +596,7 @@ test node single bucket:
       packages/cli/lib/app.test.ts
       packages/cli/lib/asset.test.ts
       packages/server/commands/migrateBlockAssetsToS3.test.ts
+      packages/server/commands/runCronJobs.test.ts
       packages/server/controllers/apps/actions/index.test.ts
       packages/server/controllers/common/apps/assets/getAppAssetById.test.ts
       packages/server/controllers/common/apps/assets/getOriginalAppAsset.test.ts
