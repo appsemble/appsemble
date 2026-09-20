@@ -2,7 +2,7 @@
 
 set -eu
 
-SRC_REMOTE_NAME="${SRC_REMOTE_NAME:-appsemble-minio-src}"
+SRC_REMOTE_NAME="${SRC_REMOTE_NAME:-appsemble-assets-src}"
 DST_REMOTE_NAME="${DST_REMOTE_NAME:-appsemble-assets-dst}"
 
 SRC_S3_ENDPOINT="${SRC_S3_ENDPOINT:?Please set SRC_S3_ENDPOINT, e.g. https://api.minio.appsemble.app}"
