@@ -4,10 +4,11 @@ import { createServer, request, type Server } from 'node:http';
 import { type AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { gunzipSync } from 'node:zlib';
 
 import {
-  deleteS3File,
+  deleteS3Files,
   getS3FileBuffer,
   initS3Client,
   listS3Files,
@@ -65,13 +66,19 @@ async function fakePgDump(body: string): Promise<void> {
   });
 }
 
-function connectDirectly(): void {
+/**
+ * Point the module-level S3 client at the object store, bypassing the proxy.
+ *
+ * @param singleBucket The single bucket to configure, or `undefined` for the bucket-per-app layout.
+ */
+function connectDirectly(singleBucket?: string): void {
   initS3Client({
     accessKey: 'admin',
     secretKey: 'password',
     endPoint: s3Host,
     port: s3Port,
     useSSL: false,
+    bucket: singleBucket,
   });
 }
 
@@ -159,7 +166,10 @@ describe('backupProductionData', () => {
     // A single-bucket S3 client expects its bucket to exist.
     connectDirectly();
     await uploadS3File(bucket, 'placeholder', 'x');
-    await deleteS3File(bucket, 'placeholder');
+    await deleteS3Files(
+      bucket,
+      (await listS3Files(bucket)).map(({ key }) => key),
+    );
 
     setArgv({
       aesSecret: 'aes-secret',
@@ -193,6 +203,9 @@ describe('backupProductionData', () => {
   afterEach(async () => {
     failingPrefix = undefined;
     vi.unstubAllEnvs();
+    // The command and `connectDirectly` replace the module-level client; put back the layout the
+    // vitest setup configured, so its `clearAllS3Buckets` acts on that layout.
+    connectDirectly(process.env.S3_BUCKET);
     for (const pid of await fakePgDumpPids()) {
       if (isRunning(pid)) {
         process.kill(pid, 'SIGKILL');
@@ -243,6 +256,46 @@ describe('backupProductionData', () => {
     expect(waited).toStrictEqual([5000, 30_000, 120_000]);
     expect(summaryLines(errors)).toStrictEqual([
       'Backup failed for 1 of 3 databases: app 2 (pg_dump exited with code 1: pg_dump: error: connection to server failed: FATAL: database "app-2" does not exist)',
+    ]);
+  });
+
+  it('should delete a dump that was uploaded before pg_dump failed', async () => {
+    await fakePgDump(`
+      echo "-- dump of $database"
+      if [ "$database" = appsemble ]; then
+        exec >&-
+        sleep 0.2
+        exit 1
+      fi`);
+    const errors = vi.spyOn(logger, 'error');
+
+    await handler();
+
+    expect(exitCode).toBe(1);
+    expect(await dumpsUnder('sql/main/')).toStrictEqual([]);
+    expect(await dumpsUnder('sql/apps/1/')).toStrictEqual(['-- dump of app-1\n']);
+    expect(await dumpsUnder('sql/apps/2/')).toStrictEqual(['-- dump of app-2\n']);
+    expect(waited).toStrictEqual([5000, 30_000, 120_000]);
+    expect(summaryLines(errors)).toStrictEqual([
+      'Backup failed for 1 of 3 databases: main (pg_dump exited with code 1: (no stderr output))',
+    ]);
+  });
+
+  it('should leave no object when pg_dump cannot be spawned', async () => {
+    vi.stubEnv('PATH', binDir);
+    const errors = vi.spyOn(logger, 'error');
+
+    await handler();
+    // An upload that outlives its failed attempt commits its empty gzip within milliseconds.
+    await sleep(200);
+
+    expect(exitCode).toBe(1);
+    expect(await dumpsUnder('sql/')).toStrictEqual([]);
+    expect(waited).toStrictEqual([
+      5000, 30_000, 120_000, 5000, 30_000, 120_000, 5000, 30_000, 120_000,
+    ]);
+    expect(summaryLines(errors)).toStrictEqual([
+      'Backup failed for 3 of 3 databases: main (spawn pg_dump ENOENT); app 1 (spawn pg_dump ENOENT); app 2 (spawn pg_dump ENOENT)',
     ]);
   });
 

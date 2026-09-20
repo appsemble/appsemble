@@ -71,18 +71,25 @@ async function dumpDatabaseToS3(
       return false;
     },
   );
-  const exited = once(dump, 'close').then(([code, signal]) => {
-    if (code === 0) {
-      return;
-    }
-    if (failure == null) {
-      const reason = signal ? `signal ${signal}` : `code ${code}`;
-      failure = new Error(
-        `pg_dump exited with ${reason}: ${stderr.trim() || '(no stderr output)'}`,
-      );
-    }
-    gzip.destroy();
-  });
+  const exited = once(dump, 'close').then(
+    ([code, signal]) => {
+      if (code === 0) {
+        return;
+      }
+      if (failure == null) {
+        const reason = signal ? `signal ${signal}` : `code ${code}`;
+        failure = new Error(
+          `pg_dump exited with ${reason}: ${stderr.trim() || '(no stderr output)'}`,
+        );
+      }
+      gzip.destroy();
+    },
+    (error: unknown) => {
+      // The process could not be spawned; closing the upload source lets the upload settle.
+      failure ??= error;
+      gzip.destroy();
+    },
+  );
   const [committed] = await Promise.all([uploaded, exited]);
 
   if (failure == null) {
