@@ -82,7 +82,7 @@ log "Configuring rclone remotes"
 configure_remote "$SRC_REMOTE_NAME" "$SRC_S3_ENDPOINT" "$SRC_S3_ACCESS_KEY" "$SRC_S3_SECRET_KEY" "$SRC_S3_REGION"
 configure_remote "$DST_REMOTE_NAME" "$DST_S3_ENDPOINT" "$DST_S3_ACCESS_KEY" "$DST_S3_SECRET_KEY" "$DST_S3_REGION"
 
-log "Discovering source buckets"
+log "Discovering source apps"
 if [ -n "$S3_BUCKET" ]; then
   rclone lsf "${SRC_REMOTE_NAME}:${S3_BUCKET}/apps" --dirs-only |
     sed 's:/$::' |
@@ -97,12 +97,22 @@ else
 fi
 
 if [ ! -s "$BUCKET_LIST_FILE" ]; then
-  log "No app-* buckets found. Aborting."
+  log "No apps found in the source. Aborting."
   exit 1
 fi
 
+if [ -n "$S3_BUCKET" ]; then
+  # An apps/<id>/ prefix stops existing with its last object, so an app whose assets were all
+  # deleted is only known from its backup. Syncing it from the missing prefix empties its backup
+  # and archives the objects, like the sync of an emptied bucket in the bucket-per-app layout.
+  rclone lsf "${DST_REMOTE_NAME}:${DST_S3_BUCKET}/${BACKUP_PREFIX}/current" --dirs-only |
+    sed 's:/$::' |
+    grep -E '^app-[0-9]+$' |
+    sort -u - "$BUCKET_LIST_FILE" -o "$BUCKET_LIST_FILE"
+fi
+
 BUCKET_COUNT="$(wc -l < "$BUCKET_LIST_FILE" | tr -d ' ')"
-log "Found ${BUCKET_COUNT} asset buckets"
+log "Found ${BUCKET_COUNT} apps to back up"
 log "Run id: $RUN_ID"
 log "Log file: $LOG_FILE"
 
