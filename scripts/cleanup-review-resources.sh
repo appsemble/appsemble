@@ -30,6 +30,8 @@ purge_release() {
   echo "[review-cleanup] deleting $rel ($3)"
   helm delete "$rel" --no-hooks --ignore-not-found || true
   kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=$rel" --ignore-not-found=true || true
+  # The CloudNativePG cluster takes its PVCs and generated secrets with it.
+  kubectl delete cluster.postgresql.cnpg.io --selector "app.kubernetes.io/instance=$rel" --ignore-not-found=true || true
   kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=$rel" --ignore-not-found=true || true
   # Drops the helm release record, which is what clears releases wedged in
   # "uninstalling" so they stop counting against the capacity limit.

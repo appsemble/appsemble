@@ -132,7 +132,8 @@ First, create a Kubernetes namespace.
 kubectl create namespace appsemble
 ```
 
-Then, setup the required secrets as described in the README.
+Then, create a PostgreSQL cluster as described on the [PostgreSQL](../deployment/postgresql.md) page
+(a single instance is enough) and setup the required secrets as described in the README.
 
 - when creating secrets, you can leave SMTP secrets empty like this: `host=`
   - **you still need to create the SMTP secret** - the Appsemble chart needs that secret defined to
@@ -147,7 +148,6 @@ helm install \
     --namespace appsemble \
     appsemble `# name with which the deployment will be registered in helm` \
     appsemble/appsemble \
-    --set 'global.postgresql.auth.existingSecret=postgresql-secret' \
     --set 'ingress.host=appsemble' `# absolutely necessary, this is the hostname you'll access the studio from` \
     `# if you don’t want to use SSL locally` \
     --set  'ingress.annotations.nginx\.ingress\.kubernetes\.io/ssl-redirect="false"' \
@@ -480,13 +480,13 @@ helm uninstall <chart-name> --debug --no-hooks
 
 This might result in data loss/broken state, _don’t run anywhere except locally_
 
-### Removing `PersistentVolumeClaim`s
+### Clearing the database
 
-If you want to clear data, or if you’re having problems with `bitnami/postgresql` (e.g.
-`mkdir: cannot create directory ‘/bitnami/postgresql/data’: Permission denied`)
+Deleting the CloudNativePG cluster removes its volume as well; apply the manifest again for an empty
+database.
 
 ```sh
-kubectl -n appsemble delete pvc data-appsemble-postgresql-0
+kubectl -n appsemble delete cluster.postgresql.cnpg.io appsemble-postgresql
 ```
 
 ### HTTP error `413 Request Entity Too Large`

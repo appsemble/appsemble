@@ -1307,7 +1307,7 @@ update dependencies:
     auto_stop_in: 1 week
   variables:
     GIT_STRATEGY: fetch
-    # Matches the chart default global.postgresql.auth.username.
+    # Matches the chart default postgresql.auth.username.
     POSTGRES_APP_USER: appsemble
   retry:
     max: 1
@@ -1321,13 +1321,14 @@ update dependencies:
     - ./scripts/cleanup-review-resources.sh
     - ./scripts/pre-review-capacity-check.sh
     - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
+    - ./scripts/deploy-review-postgresql.sh
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-valkey --from-literal "password=$(openssl rand -base64 30)"
     # PgBouncer setup, auth file generation
     - |
-      POSTGRES_PASSWORD="$(kubectl get secret postgresql-secret -o jsonpath='{.data.password}' | base64 -d)"
+      POSTGRES_PASSWORD="$(kubectl get secret review-$CI_MERGE_REQUEST_IID-postgresql-app -o jsonpath='{.data.password}' | base64 -d)"
 
       printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
     - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt
@@ -1361,7 +1362,6 @@ update dependencies:
         --enabled-events invoice.payment_succeeded \
         --api-key "$STRIPE_API_SECRET_KEY" | jq -r '.secret')
     - kubectl create secret generic stripe-webhook-secret-$CI_MERGE_REQUEST_IID --from-literal=stripe-webhook-secret="$STRIPE_WEBHOOK_SECRET"
-    # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
     # --wait (not --atomic): on failure leave the release for the next deploy to
     # clean up, instead of triggering an uninstall whose pre-delete cleanup hook
     # hangs against the un-migrated database and turns failures into ~60m jobs.
@@ -1383,10 +1383,8 @@ update dependencies:
       --set "ingress.tlsSecretName=review-$CI_MERGE_REQUEST_IID-tls"
       --set "ingress.tlsWildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
       --set "migrateTo=next"
-      --set "global.postgresql.auth.existingSecret=postgresql-secret"
-      --set "postgresql.primary.persistence.enabled=false"
-      --set "postgresql.primary.resources.requests.memory=256Mi"
-      --set "postgresql.primary.resources.limits.memory=512Mi"
+      --set "postgresql.host=review-$CI_MERGE_REQUEST_IID-postgresql-rw"
+      --set "postgresql.auth.existingSecret=review-$CI_MERGE_REQUEST_IID-postgresql-app"
       --set "resources.deployment.requests.cpu=250m"
       --set "resources.deployment.requests.memory=1Gi"
       --set "provision.organization.id=appsemble"
@@ -1397,7 +1395,6 @@ update dependencies:
       --set "provision.user.name=$BOT_ACCOUNT_NAME"
       --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.user.timezone=Europe/Amsterdam"
-      --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.review}"
@@ -1468,7 +1465,7 @@ staging:
     url: https://appsemble.eu
   variables:
     GIT_STRATEGY: none
-    # Matches the chart default global.postgresql.auth.username.
+    # Matches the chart default postgresql.auth.username.
     POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
@@ -1476,7 +1473,6 @@ staging:
     - helm delete staging --no-hooks || true
     # Replaces the skipped pre-delete cleanup hook: remove server-created app ingresses and TLS secrets
     - kubectl delete ingress,secret -l app.kubernetes.io/managed-by=staging-appsemble || true
-    - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
     - kubectl delete namespace "companion-containers-staging" || true
     - kubectl delete secret staging-mailpit-tls || true
     - apk add --no-cache openssl
@@ -1486,9 +1482,11 @@ staging:
     - '[ -n "$STAGING_BACKUPS_HOST" ] || { echo "Please set STAGING_BACKUPS_HOST for staging backup destination" >&2; exit 1; }'
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
+    # The CloudNativePG cluster lives outside the release (appsemble/infra), so the data survives a redeploy.
+    - kubectl wait --for=condition=Ready cluster.postgresql.cnpg.io/staging-postgresql --timeout=1m
     # PgBouncer auth file, generated from the PostgreSQL user password
     - |
-      POSTGRES_PASSWORD="$(kubectl get secret postgresql-secret -o jsonpath='{.data.password}' | base64 -d)"
+      POSTGRES_PASSWORD="$(kubectl get secret staging-postgresql-app -o jsonpath='{.data.password}' | base64 -d)"
 
       printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
     - kubectl create secret generic staging-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
@@ -1498,7 +1496,8 @@ staging:
       --timeout 30m0s
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
-      --set "global.postgresql.auth.existingSecret=postgresql-secret"
+      --set "postgresql.host=staging-postgresql-rw"
+      --set "postgresql.auth.existingSecret=staging-postgresql-app"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=staging"
@@ -1517,12 +1516,8 @@ staging:
       --set "migrateTo=next"
       --set "oauthSecret=oauth2"
       --set "skipCustomDomains=true"
-      --set "postgresql.fullnameOverride=staging-postgresql"
       --set 'seaweedfs.allInOne.data.size=20Gi'
-      --set "postgresql.primary.resources.requests.cpu=250m"
-      --set "postgresql.primary.resources.requests.memory=1Gi"
-      --set "postgresql.primary.resources.limits.cpu=1"
-      --set "postgresql.primary.resources.limits.memory=2Gi"
+      --set "seaweedfs.allInOne.data.annotations.helm\\.sh/resource-policy=keep"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
@@ -1546,6 +1541,7 @@ staging:
       --set "valkey.fullnameOverride=staging-valkey"
       --set "valkey.auth.usersExistingSecret=valkey"
       --set "pgbouncer.enabled=true"
+      --set "pgbouncer.replicaCount=2"
       --set "pgbouncer.auth.existingSecret=staging-pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=50m"
       --set "valkey.resources.requests.memory=64Mi"
@@ -1576,7 +1572,7 @@ production:
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
-    # Matches the chart default global.postgresql.auth.username.
+    # Matches the chart default postgresql.auth.username.
     POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:production"
@@ -1611,6 +1607,8 @@ production:
     - rm mailpit.key mailpit.crt
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
+    # The CloudNativePG cluster lives outside the release (appsemble/infra).
+    - kubectl wait --for=condition=Ready "cluster.postgresql.cnpg.io/$POSTGRESQL_CLUSTER" --timeout=1m
     # PgBouncer auth file, generated from the PostgreSQL user password
     - |
       POSTGRES_PASSWORD="$(kubectl get secret "$POSTGRESQL_SECRET" -o jsonpath='{.data.password}' | base64 -d)"
@@ -1619,30 +1617,14 @@ production:
     - kubectl create secret generic pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
     - rm pgbouncer-userlist.txt
     - kubectl rollout restart deployment appsemble-mailpit || true
-    # PostgreSQL performance tuning for the 2Gi production container, applied
-    # through the bitnami subchart's extendedConfiguration (override.conf).
-    # shared_buffers is ~25% of the container limit; work_mem is raised to cut
-    # temp-file spilling on sorts/hashes across the many per-app databases; and
-    # effective_cache_size reflects the real cgroup budget rather than the
-    # subchart default of 4GB. The shared_preload_libraries and pg_stat_statements
-    # settings match the chart default so pgaudit and pg_stat_statements keep
-    # working; extendedConfiguration is a single value, so it is set in full here.
-    - |
-      cat > postgresql-tuning.conf <<'EOF'
-      shared_preload_libraries = 'pgaudit,pg_stat_statements'
-      pg_stat_statements.max = 10000
-      pg_stat_statements.track = all
-      shared_buffers = 512MB
-      effective_cache_size = 1536MB
-      work_mem = 16MB
-      EOF
     - helm upgrade appsemble appsemble/appsemble
       --debug
       --timeout 30m
       --version "$CI_COMMIT_TAG"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
-      --set "global.postgresql.auth.existingSecret=$POSTGRESQL_SECRET"
+      --set "postgresql.host=$POSTGRESQL_CLUSTER-rw"
+      --set "postgresql.auth.existingSecret=$POSTGRESQL_SECRET"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=1G"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/force-ssl-redirect=\"true\""
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/ssl-redirect=\"true\""
@@ -1656,8 +1638,6 @@ production:
       --set "ingress.tlsSecretName=appsemble-tls"
       --set "ingress.tlsWildcardSecretName=appsemble-tls-wildcard"
       --set "oauthSecret=oauth2"
-      --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
-      --set "postgresql.enabled=true"
       --set 'postgresSSL=false'
       --set 'seaweedfs.allInOne.data.size=50Gi'
       --set "seaweedfs.allInOne.resources.requests.cpu=250m"
@@ -1666,11 +1646,6 @@ production:
       --set "seaweedfs.allInOne.resources.limits.memory=3Gi"
       --set "seaweedfs.allInOne.data.storageClass=hetzner-volumes-retain"
       --set "seaweedfs.allInOne.data.annotations.helm\\.sh/resource-policy=keep"
-      --set "postgresql.primary.resources.requests.cpu=250m"
-      --set "postgresql.primary.resources.requests.memory=1Gi"
-      --set "postgresql.primary.resources.limits.cpu=1"
-      --set "postgresql.primary.resources.limits.memory=2Gi"
-      --set-file "postgresql.primary.extendedConfiguration=postgresql-tuning.conf"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "replicaCount=2"
@@ -1694,6 +1669,7 @@ production:
       --set "valkey.fullnameOverride=appsemble-valkey"
       --set "valkey.auth.usersExistingSecret=valkey"
       --set "pgbouncer.enabled=true"
+      --set "pgbouncer.replicaCount=2"
       --set "pgbouncer.auth.existingSecret=pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=100m"
       --set "valkey.resources.requests.memory=128Mi"

@@ -92,28 +92,28 @@ through PgBouncer when it is enabled.
 */}}
 {{- define "appsemble.postgres" -}}
 - name: DATABASE_HOST
-  value: {{ ternary (include "appsemble.pgbouncer.fullname" .) .Values.postgresql.fullnameOverride .Values.pgbouncer.enabled | quote }}
+  value: {{ ternary (include "appsemble.pgbouncer.fullname" .) .Values.postgresql.host .Values.pgbouncer.enabled | quote }}
 {{ if .Values.postgresSSL }}
 - name: DATABASE_SSL
   value: 'true'
 {{ end }}
 - name: DATABASE_PORT
-  value: {{ ternary .Values.pgbouncer.service.port .Values.global.postgresql.service.ports.postgresql .Values.pgbouncer.enabled | quote }}
+  value: {{ ternary .Values.pgbouncer.service.port .Values.postgresql.port .Values.pgbouncer.enabled | quote }}
 {{ if .Values.pgbouncer.enabled }}
 - name: DATABASE_DIRECT_HOST
-  value: {{ .Values.postgresql.fullnameOverride | quote }}
+  value: {{ .Values.postgresql.host | quote }}
 - name: DATABASE_DIRECT_PORT
-  value: {{ .Values.global.postgresql.service.ports.postgresql | quote }}
+  value: {{ .Values.postgresql.port | quote }}
 {{ end }}
 - name: DATABASE_NAME
-  value: {{ .Values.global.postgresql.auth.database | quote }}
+  value: {{ .Values.postgresql.auth.database | quote }}
 - name: DATABASE_USER
-  value: {{ .Values.global.postgresql.auth.username | quote }}
+  value: {{ .Values.postgresql.auth.username | quote }}
 - name: DATABASE_PASSWORD
   valueFrom:
     secretKeyRef:
-      name: {{ .Values.global.postgresql.auth.existingSecret | quote }}
-      key: {{ .Values.global.postgresql.auth.secretKeys.userPasswordKey | quote }}
+      name: {{ .Values.postgresql.auth.existingSecret | quote }}
+      key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey | quote }}
 {{- end -}}
 
 {{/*

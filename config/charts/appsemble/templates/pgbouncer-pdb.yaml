@@ -1,0 +1,15 @@
+{{- if and .Values.pgbouncer.enabled (gt (int .Values.pgbouncer.replicaCount) 1) }}
+# Keeps a node drain or other voluntary disruption from evicting every PgBouncer replica at once.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "appsemble.pgbouncer.fullname" . }}
+  labels:
+    {{ include "appsemble.labels" . }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+      app.kubernetes.io/name: {{ include "appsemble.name" . }}-pgbouncer
+{{- end }}
