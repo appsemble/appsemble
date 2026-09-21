@@ -245,3 +245,59 @@ it.each(['data', 'fields'] as const)(
     );
   },
 );
+
+it('should submit the markdown typed right before the submit', async () => {
+  const onSubmit = vi.fn();
+  const container = document.createElement('div');
+  const params = {
+    ...getDefaultBootstrapParams(),
+    actions: {
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+      onSubmit,
+    },
+    events: {
+      emit: { change: vi.fn() },
+      on: {
+        data: vi.fn(() => false),
+        fields: vi.fn(() => false),
+      },
+      off: { fields: vi.fn() },
+    },
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          label: 'Description',
+          name: 'description',
+          requirements: [{ required: true }],
+          type: 'markdown',
+        },
+      ],
+      skipInitialLoad: true,
+    },
+  } as unknown as BootstrapParams;
+
+  await mount(params);
+
+  await waitFor(() =>
+    expect(container.querySelector('.ProseMirror p')).toBeInstanceOf(HTMLParagraphElement),
+  );
+  const paragraph = container.querySelector('.ProseMirror p') as HTMLParagraphElement;
+
+  // Type the way a browser does: change the editable DOM, which the editor observes.
+  paragraph.textContent = 'A new product is available.';
+  // One event loop turn: the editor reports the change and the form re-renders in that time.
+  await new Promise((resolve) => {
+    setTimeout(resolve, 0);
+  });
+
+  const form = container.querySelector('form') as HTMLFormElement;
+  form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+  await waitFor(() =>
+    expect(onSubmit).toHaveBeenCalledWith({
+      $thumbnails: [],
+      description: expect.stringMatching(/^A new product is available\.\s*$/),
+    }),
+  );
+});
