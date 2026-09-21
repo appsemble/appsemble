@@ -1,6 +1,6 @@
 import querystring from 'node:querystring';
 
-import { assertKoaCondition, logger } from '@appsemble/node-utils';
+import { logger } from '@appsemble/node-utils';
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
 import { type Context } from 'koa';
@@ -19,6 +19,7 @@ import {
 } from '../../utils/appMemberRefreshSession.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { GrantError, hasScope } from '../../utils/oauth2.js';
+import { type TotpChallenge, requireTotp } from '../../utils/totp.js';
 
 function checkTokenRequestParameters(
   query: Record<string, string[] | string | undefined>,
@@ -33,6 +34,24 @@ function checkTokenRequestParameters(
     }
   }
   return query as Record<string, string>;
+}
+
+/**
+ * Reject a grant whose first authentication factor checks out, but which may not be issued a
+ * session until a second factor has been verified.
+ *
+ * The body follows the OAuth2 error shape, which is why it’s snake_case where the other TOTP
+ * endpoints aren’t.
+ *
+ * @param challenge The TOTP challenge to hand to the client.
+ */
+function throwTotpRequiredGrant(challenge: TotpChallenge): never {
+  throw new GrantError('totp_required', 400, {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    totp_enabled: challenge.totpEnabled,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    totp_token: challenge.totpToken,
+  });
 }
 
 /**
@@ -81,9 +100,12 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           throw new GrantError('invalid_client');
         }
         const appId = Number(match[1]);
-        const app = await App.findByPk(appId);
-        assertKoaCondition(app != null, ctx, 404, 'App not found');
-        const { OAuth2AuthorizationCode } = await getAppDB(appId);
+        const app = await App.findByPk(appId, { attributes: ['demoMode', 'id', 'totp'] });
+        // Never fall back to a permissive TOTP setting for an app which doesn’t exist.
+        if (!app) {
+          throw new GrantError('invalid_client');
+        }
+        const { AppMember, OAuth2AuthorizationCode } = await getAppDB(appId);
         const authorizationCode = await OAuth2AuthorizationCode.findOne({
           attributes: ['expires', 'scope', 'AppMemberId'],
           where: { code, redirectUri },
@@ -104,6 +126,16 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
         createRefreshSessionForAppId = appId;
         scope = requestedScope;
         sub = authorizationCode.AppMemberId;
+        const codeAppMember = await AppMember.findByPk(sub, {
+          attributes: ['id', 'totpEnabled'],
+        });
+        if (!codeAppMember) {
+          throw new GrantError('invalid_client');
+        }
+        const codeChallenge = requireTotp(app, codeAppMember, { aud, scope });
+        if (codeChallenge) {
+          throwTotpRequiredGrant(codeChallenge);
+        }
         break;
       }
       case 'client_credentials': {
@@ -186,7 +218,11 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           username,
         } = checkTokenRequestParameters(query, ['client_id', 'username', 'password', 'scope']);
         const appId = Number(clientId.replace('app:', ''));
-        const app = await App.findByPk(appId, { attributes: ['totp'] });
+        const app = await App.findByPk(appId, { attributes: ['demoMode', 'id', 'totp'] });
+        // Never fall back to a permissive TOTP setting for an app which doesn’t exist.
+        if (!app) {
+          throw new GrantError('invalid_client');
+        }
         const { AppMember } = await getAppDB(appId);
         const appMember = await AppMember.findOne({
           where: { email: username.toLowerCase() },
@@ -197,29 +233,14 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           throw new GrantError('invalid_client');
         }
 
-        // Check if TOTP verification is required
-        const totpSetting = app?.totp ?? 'disabled';
-        const memberHasTotpEnabled = appMember.totpEnabled ?? false;
-
-        // TOTP is required if:
-        // 1. App setting is 'required' (everyone must use TOTP), OR
-        // 2. App setting is 'enabled' and the member has TOTP enabled
-        if (totpSetting === 'required' || (totpSetting === 'enabled' && memberHasTotpEnabled)) {
-          // Return a response indicating TOTP verification is needed
-          // Include totpEnabled so client knows whether to show verification or setup
-          ctx.status = 200;
-          ctx.body = {
-            totpRequired: true,
-            totpEnabled: memberHasTotpEnabled,
-            memberId: appMember.id,
-          };
-          return;
-        }
-
         aud = clientId;
         sub = appMember.id;
         scope = requestedScope;
         createRefreshSessionForAppId = appId;
+        const passwordChallenge = requireTotp(app, appMember, { aud, scope });
+        if (passwordChallenge) {
+          throwTotpRequiredGrant(passwordChallenge);
+        }
         break;
       }
       case 'urn:ietf:params:oauth:grant-type:demo-login': {
@@ -302,7 +323,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
   } catch (error: unknown) {
     if (error instanceof GrantError) {
       ctx.status = error.status;
-      ctx.body = { error: error.message };
+      ctx.body = { error: error.message, ...error.data };
       return;
     }
     throw error;

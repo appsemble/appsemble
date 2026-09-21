@@ -90,6 +90,16 @@ export class AppMemberGlobal extends Model {
 
   declare totpEnabled: boolean;
 
+  declare totpLastCounter?: number | null;
+
+  declare totpFailedAttempts: number;
+
+  declare totpLockedUntil?: Date | null;
+
+  declare totpConsumedJti?: string | null;
+
+  declare totpVerifiedAt?: Date | null;
+
   declare userId?: string;
 
   declare created: Date;
@@ -517,6 +527,27 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
     @Default(false)
     @Column(DataType.BOOLEAN)
     declare totpEnabled: boolean;
+
+    @AllowNull(true)
+    @Column(DataType.INTEGER)
+    declare totpLastCounter?: number | null;
+
+    @AllowNull(false)
+    @Default(0)
+    @Column(DataType.INTEGER)
+    declare totpFailedAttempts: number;
+
+    @AllowNull(true)
+    @Column(DataType.DATE)
+    declare totpLockedUntil?: Date | null;
+
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    declare totpConsumedJti?: string | null;
+
+    @AllowNull(true)
+    @Column(DataType.DATE)
+    declare totpVerifiedAt?: Date | null;
 
     @CreatedAt
     declare created: Date;

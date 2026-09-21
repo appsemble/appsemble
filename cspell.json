@@ -206,6 +206,8 @@
     "totp",
     "Totp",
     "otpauth",
+    "otplib",
+    "Otplib",
     "reencrypted",
     "datname",
     "securitytxt",
