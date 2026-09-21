@@ -594,7 +594,8 @@ test node single bucket:
   script:
     # Every test file that names an export of the object storage modules, except the backup test,
     # which needs the admin identity to create its own bucket.
-    - exports=$(sed -nE 's/^export (async )?function (\w+).*/\2/p' packages/node-utils/s3.ts packages/node-utils/assets.ts | paste -sd '|')
+    - exports=$(sed -nE 's/^export (async )?function (\w+).*/\2/p; s/^export const (\w+).*/\1/p' packages/node-utils/s3.ts packages/node-utils/assets.ts | paste -sd '|')
+    - test -n "$exports"
     - files=$(grep -rlw -E "$exports" --include='*.test.ts' --exclude-dir=node_modules packages/cli packages/server | grep -vxF packages/server/commands/backupProductionData.test.ts)
     - test -n "$files"
     - echo "$files"
