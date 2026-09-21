@@ -250,6 +250,22 @@ describe('backupProductionData', () => {
     expect(await leftoverDumpDirectories()).toStrictEqual([]);
   });
 
+  it('should hold one dump in scratch space at a time', async () => {
+    // Each fake records how many dumps the scratch directory holds when it starts: at most its
+    // own, once the previous database's dump has been uploaded and removed.
+    const countsFile = join(binDir, 'counts');
+    await fakePgDump(`
+      ls "$TMPDIR"/backup-production-data-*/ | wc -l >> '${countsFile}'
+      echo "-- dump of $database"`);
+
+    await handler();
+
+    expect(exitCode).toBe(0);
+    const counts = (await readFile(countsFile, 'utf8')).split('\n').filter(Boolean).map(Number);
+    expect(counts).toHaveLength(3);
+    expect(Math.max(...counts)).toBeLessThanOrEqual(1);
+  });
+
   it('should leave no object for a database pg_dump cannot dump', async () => {
     await fakePgDump(`
       if [ "$database" = app-2 ]; then
