@@ -98,6 +98,8 @@ export class AppMemberGlobal extends Model {
 
   declare totpConsumedJti?: string | null;
 
+  declare totpVerifiedAt?: Date | null;
+
   declare userId?: string;
 
   declare created: Date;
@@ -542,6 +544,10 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
     @AllowNull(true)
     @Column(DataType.STRING)
     declare totpConsumedJti?: string | null;
+
+    @AllowNull(true)
+    @Column(DataType.DATE)
+    declare totpVerifiedAt?: Date | null;
 
     @CreatedAt
     declare created: Date;

@@ -86,8 +86,9 @@ describe('loginAppMemberWithEmail', () => {
     vi.useRealTimers();
   });
 
-  it('should return tokens when the app does not use TOTP', async () => {
+  it('should return tokens for the app member linked to the studio user', async () => {
     const appMember = await createTestAppMember(app.id);
+    await appMember.update({ userId: user.id });
 
     const response = await request.post(`/api/apps/${app.id}/auth/email/login`, {}, authorization);
 
@@ -99,8 +100,7 @@ describe('loginAppMemberWithEmail', () => {
         token_type: 'bearer',
       },
     });
-    // The session belongs to the app member owning the email, not to the studio user which
-    // authenticated.
+    // The session belongs to the linked app member, not to the studio user which authenticated.
     expect(jwt.decode(response.data.access_token)).toMatchObject({ sub: appMember.id });
   });
 
@@ -113,9 +113,23 @@ describe('loginAppMemberWithEmail', () => {
     });
   });
 
+  it('should refuse an app member with the same email which is linked to another user', async () => {
+    const other = await createTestUser('other@example.com');
+    const appMember = await createTestAppMember(app.id);
+    await appMember.update({ userId: other.id });
+
+    const response = await request.post(`/api/apps/${app.id}/auth/email/login`, {}, authorization);
+
+    expect(response).toMatchObject({
+      status: 401,
+      data: { error: 'Unauthorized', message: 'App member not found', statusCode: 401 },
+    });
+  });
+
   it('should not challenge a member who has not opted in on an app where TOTP is optional', async () => {
     await app.update({ totp: 'enabled' });
-    await createTestAppMember(app.id);
+    const appMember = await createTestAppMember(app.id);
+    await appMember.update({ userId: user.id });
 
     const response = await request.post(`/api/apps/${app.id}/auth/email/login`, {}, authorization);
 
@@ -125,7 +139,7 @@ describe('loginAppMemberWithEmail', () => {
   it('should challenge a member who opted in on an app where TOTP is optional', async () => {
     await app.update({ totp: 'enabled' });
     const appMember = await createTestAppMember(app.id);
-    await appMember.update({ totpEnabled: true });
+    await appMember.update({ totpEnabled: true, userId: user.id });
 
     const response = await request.post(`/api/apps/${app.id}/auth/email/login`, {}, authorization);
 
@@ -144,6 +158,7 @@ describe('loginAppMemberWithEmail', () => {
   it('should enforce TOTP before issuing tokens', async () => {
     await app.update({ totp: 'required' });
     const appMember = await createTestAppMember(app.id);
+    await appMember.update({ userId: user.id });
 
     const response = await request.post(`/api/apps/${app.id}/auth/email/login`, {}, authorization);
 

@@ -38,7 +38,7 @@ export async function verifyAppMemberTotp(ctx: Context): Promise<void> {
     'TOTP is not enabled for this member',
   );
 
-  assertUnusedTotpPendingToken(ctx, pending, member.totpConsumedJti);
+  assertUnusedTotpPendingToken(ctx, pending, member);
 
   // Accepting the code spends the pending token along with it, in the same statement.
   await assertTotpToken(ctx, member, token, 401, jti);

@@ -58,25 +58,29 @@ export function authentication(): SecurityOptions {
   const { host, secret } = argv;
 
   return {
+    // @ts-expect-error Messed up
     async basic(email: string, password: string) {
-      const normalizedEmail = email.toLowerCase();
-      // @ts-expect-error Messed up
-      const { User: user } = await EmailAuthorization.findOne({
+      const emailAuthorization = await EmailAuthorization.findOne({
         include: [
           {
             model: User,
             attributes: ['id', 'password'],
           },
         ],
-        where: { email: normalizedEmail },
+        // An unverified email may have been claimed by anyone, so it can’t prove who is logging in.
+        where: { email: email.toLowerCase(), verified: true },
       });
+
+      const user = emailAuthorization?.User;
+      // A user who signed up through a third party login has no password to compare against.
+      if (!user?.password) {
+        return null;
+      }
 
       const isValidPassword = await compare(password, user.password);
 
       if (isValidPassword) {
-        // The email which was authenticated with. A user may own several, and this is the one
-        // identifying them within an app, so it can’t be derived from the user afterwards.
-        return Object.assign(user, { email: normalizedEmail });
+        return user;
       }
 
       return null;

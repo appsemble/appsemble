@@ -136,7 +136,7 @@ async function registerFailedTotpAttempt(member: AppMember, now: number): Promis
  * A code is only accepted once. Codes for a counter which has already been used are rejected, even
  * though they are still within the verification window. Too many rejected codes lock the app member
  * out for a while. Accepting a code also consumes the pending token of the login it completes, if
- * there is one.
+ * there is one, and a pending token which has already been consumed rejects the code.
  *
  * @param ctx The Koa context used to throw the error response.
  * @param member The app member whose code to verify. Must have a TOTP secret.
@@ -167,19 +167,34 @@ export async function assertTotpToken(
 
   if (counter != null) {
     const AppMemberModel = member.constructor as Repository<AppMember>;
-    // Consuming the counter is what rejects a replay, so the check has to be part of the update.
-    // Codes sent in parallel then race for the same counter, and only one of them can win.
+    // Consuming the counter and the pending token is what rejects a replay, so both checks have to
+    // be part of the update. Requests sent in parallel then race for the same counter or the same
+    // pending token, and only one of them can win.
     const [accepted] = await AppMemberModel.update(
       {
         totpFailedAttempts: 0,
         totpLastCounter: counter,
         totpLockedUntil: null,
-        ...(consumedJti == null ? {} : { totpConsumedJti: consumedJti }),
+        ...(consumedJti == null
+          ? {}
+          : { totpConsumedJti: consumedJti, totpVerifiedAt: new Date(now) }),
       },
       {
         where: {
           id: member.id,
-          [Op.or]: [{ totpLastCounter: null }, { totpLastCounter: { [Op.lt]: counter } }],
+          [Op.and]: [
+            { [Op.or]: [{ totpLastCounter: null }, { totpLastCounter: { [Op.lt]: counter } }] },
+            ...(consumedJti == null
+              ? []
+              : [
+                  {
+                    [Op.or]: [
+                      { totpConsumedJti: null },
+                      { totpConsumedJti: { [Op.ne]: consumedJti } },
+                    ],
+                  },
+                ]),
+          ],
         },
       },
     );

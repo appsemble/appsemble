@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { type Context } from 'koa';
 
 import { argv } from './argv.js';
+import { type AppMember } from '../models/index.js';
 
 /**
  * How long a pending TOTP token is valid, in seconds.
@@ -32,6 +33,11 @@ interface Options {
 }
 
 export interface TotpPendingPayload {
+  /**
+   * The time this token was issued, in seconds since the epoch.
+   */
+  iat: number;
+
   /**
    * The unique id of this token, which is what makes it single use.
    */
@@ -109,31 +115,37 @@ export function verifyTotpPendingToken(
   if (
     payload.token_use !== 'totp_pending' ||
     typeof payload.sub !== 'string' ||
-    typeof payload.jti !== 'string'
+    typeof payload.jti !== 'string' ||
+    typeof payload.iat !== 'number'
   ) {
     throwKoaError(ctx, 401, 'Invalid pending TOTP token');
   }
 
-  return { jti: payload.jti, scope: payload.scope, sub: payload.sub };
+  return { iat: payload.iat, jti: payload.jti, scope: payload.scope, sub: payload.sub };
 }
 
 /**
  * Reject a pending TOTP token which has already been exchanged for tokens.
  *
- * Exchanging a pending token records its id on the app member, so presenting that same token again
- * is rejected. Tracking the id rather than the time of the last verification is what keeps a token
- * issued in the same second as a verification usable.
+ * Exchanging a pending token records its id and the time of the exchange on the app member. The
+ * same token is rejected by its id, and any token issued before the exchange is rejected by its
+ * issue time, which is what stops an older token from being spent after a newer one. The issue
+ * time has whole second precision, so a token issued in the same second as the exchange stays
+ * usable.
  *
  * @param ctx The Koa context used to throw the error response.
  * @param payload The payload of the pending TOTP token.
- * @param consumedJti The id of the pending token the app member last exchanged, if any.
+ * @param member The app member the token was issued for.
  */
 export function assertUnusedTotpPendingToken(
   ctx: Context,
-  { jti }: TotpPendingPayload,
-  consumedJti?: string | null,
+  { iat, jti }: TotpPendingPayload,
+  member: Pick<AppMember, 'totpConsumedJti' | 'totpVerifiedAt'>,
 ): void {
-  if (consumedJti && jti === consumedJti) {
+  if (
+    jti === member.totpConsumedJti ||
+    (member.totpVerifiedAt != null && member.totpVerifiedAt.getTime() >= (iat + 1) * 1000)
+  ) {
     throwKoaError(ctx, 401, 'Pending TOTP token has already been used');
   }
 }

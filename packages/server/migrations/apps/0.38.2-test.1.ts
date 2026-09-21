@@ -9,6 +9,7 @@ export const key = '0.38.2-test.1';
  * - Add `totpFailedAttempts` column to `AppMember` table to count consecutive bad TOTP codes.
  * - Add `totpLockedUntil` column to `AppMember` table to throttle TOTP brute forcing.
  * - Add `totpConsumedJti` column to `AppMember` table to make pending TOTP tokens single use.
+ * - Add `totpVerifiedAt` column to `AppMember` table to reject older pending TOTP tokens.
  *
  * @param transaction Sequelize transaction
  * @param db The Sequelize Database.
@@ -60,6 +61,17 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
+
+  logger.info('Adding `totpVerifiedAt` column to `AppMember` table');
+  await queryInterface.addColumn(
+    'AppMember',
+    'totpVerifiedAt',
+    {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    { transaction },
+  );
 }
 
 /**
@@ -68,6 +80,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Remove `totpFailedAttempts` column from `AppMember` table.
  * - Remove `totpLockedUntil` column from `AppMember` table.
  * - Remove `totpConsumedJti` column from `AppMember` table.
+ * - Remove `totpVerifiedAt` column from `AppMember` table.
  *
  * @param transaction Sequelize transaction
  * @param db The Sequelize Database.
@@ -86,4 +99,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
 
   logger.info('Removing `totpConsumedJti` column from `AppMember` table');
   await queryInterface.removeColumn('AppMember', 'totpConsumedJti', { transaction });
+
+  logger.info('Removing `totpVerifiedAt` column from `AppMember` table');
+  await queryInterface.removeColumn('AppMember', 'totpVerifiedAt', { transaction });
 }

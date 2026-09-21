@@ -440,6 +440,32 @@ describe('verifyAppMemberTotp', () => {
     `);
   });
 
+  it('should reject a pending TOTP token issued before a newer one was spent', async () => {
+    const secret = authenticator.generateSecret();
+    const appMember = await createTestAppMember(app.id);
+    await appMember.update({ totpEnabled: true, totpSecret: encrypt(secret, 'test') });
+    const older = pendingToken(app.id, appMember.id);
+
+    vi.setSystemTime(1000);
+    const newer = await request.post(`/api/apps/${app.id}/auth/totp/verify`, {
+      token: authenticator.generate(secret),
+      totpToken: pendingToken(app.id, appMember.id),
+    });
+    expect(newer.status).toBe(200);
+
+    // A fresh code, so only the older pending token can reject this request.
+    vi.setSystemTime(30 * 1000);
+    const response = await request.post(`/api/apps/${app.id}/auth/totp/verify`, {
+      token: authenticator.generate(secret),
+      totpToken: older,
+    });
+
+    expect(response).toMatchObject({
+      status: 401,
+      data: { message: 'Pending TOTP token has already been used' },
+    });
+  });
+
   it('should accept a pending TOTP token issued right after a verification', async () => {
     const secret = authenticator.generateSecret();
     const appMember = await createTestAppMember(app.id);

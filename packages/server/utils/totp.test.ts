@@ -85,6 +85,29 @@ describe('assertTotpToken', () => {
     expect((await AppMember.findByPk(appMember.id))?.totpLastCounter).toBe(0);
   });
 
+  it('should spend a pending token only once when codes are verified concurrently', async () => {
+    const { AppMember } = await getAppDB(app.id);
+    vi.spyOn(Date, 'now').mockReturnValue(0);
+    // Codes for two different counters, both within the verification window, so only the pending
+    // token they share can reject one of them.
+    const codes = [
+      authenticator.clone({ epoch: 0 }).generate(secret),
+      authenticator.clone({ epoch: 30_000 }).generate(secret),
+    ];
+    // Both requests read the member before either of them spends the token.
+    const members = await Promise.all(codes.map(() => AppMember.findByPk(appMember.id)));
+
+    const results = await Promise.allSettled(
+      codes.map((code, index) =>
+        assertTotpToken(createContext(), members[index]!, code, 401, 'jti'),
+      ),
+    );
+
+    expect(results.filter((result) => result.status === 'fulfilled')).toHaveLength(1);
+    expect(results.filter((result) => result.status === 'rejected')).toHaveLength(1);
+    expect((await AppMember.findByPk(appMember.id))?.totpConsumedJti).toBe('jti');
+  });
+
   it('should register the lockout in the same statement as the failed attempt', async () => {
     const { AppMember } = await getAppDB(app.id);
     const now = Date.UTC(2000, 0, 1);

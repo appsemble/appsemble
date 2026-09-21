@@ -44,7 +44,7 @@ export async function verifyAppMemberTotpSetup(ctx: Context): Promise<void> {
   assertKoaCondition(!member.totpEnabled, ctx, 400, 'TOTP is already enabled');
 
   if (pending) {
-    assertUnusedTotpPendingToken(ctx, pending, member.totpConsumedJti);
+    assertUnusedTotpPendingToken(ctx, pending, member);
   }
 
   // Accepting the code spends the pending token along with it, in the same statement.

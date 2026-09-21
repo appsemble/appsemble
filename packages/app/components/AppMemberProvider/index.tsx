@@ -17,7 +17,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
@@ -127,6 +127,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   const { pathname } = useLocation();
   const isOAuth2Callback = /(^|\/)Callback$/.test(pathname);
   const navigate = useNavigate();
+  const { lang } = useParams<{ lang: string }>();
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
@@ -316,6 +317,16 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
             totpToken: challenge.totpToken,
           },
         }));
+        // Only the login page renders the second step, so a login started anywhere else, such as
+        // registering or an app member action, has to move there to be completed.
+        if (!/(^|\/)Login$/.test(pathname)) {
+          navigate({
+            pathname: `/${lang}/Login`,
+            search: params.redirect
+              ? String(new URLSearchParams({ redirect: params.redirect }))
+              : '',
+          });
+        }
         return null;
       }
 
@@ -332,7 +343,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       applyTokenExpiration(accessToken, requestId);
       return auth;
     },
-    [applyTokenExpiration, isLatestAuthRequest],
+    [applyTokenExpiration, isLatestAuthRequest, lang, navigate, pathname],
   );
 
   /**

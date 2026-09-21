@@ -10,22 +10,22 @@ import { requireTotp, throwTotpRequired } from '../../../../utils/totp.js';
 export async function loginAppMemberWithEmail(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
+    user,
   } = ctx;
 
   // This endpoint authenticates with basic auth, which verifies studio credentials. The subject of
   // that is a studio user, not the app member the session is created for.
-  const credentials = ctx.users?.basic;
-  assertKoaCondition(credentials != null, ctx, 401, 'User is not authenticated');
+  assertKoaCondition(user != null, ctx, 401, 'User is not authenticated');
 
   const app = await App.findByPk(appId, { attributes: ['demoMode', 'totp'] });
   // Never fall back to a permissive TOTP setting for an app which doesn’t exist.
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const { AppMember } = await getAppDB(appId);
-  // The app member is the one owning the email which was authenticated with. Without one there is
+  // The app member is the one linked to the studio user which authenticated. Without one there is
   // nothing to issue a session for, and no second factor to check.
   const appMember = await AppMember.findOne({
-    where: { email: credentials.email.toLowerCase() },
+    where: { userId: user.id },
     attributes: ['id', 'totpEnabled'],
   });
   assertKoaCondition(appMember != null, ctx, 401, 'App member not found');
