@@ -46,6 +46,10 @@ function describeTokenError(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+function escapeMarkdown(value: string): string {
+  return value.replaceAll(/([!#()*+.<>[\\\]_`{|}~-])/g, '\\$1');
+}
+
 /**
  * Record a failed token request on the service secret and email the organization owners.
  *
@@ -71,7 +75,9 @@ async function recordTokenError(
     { lastTokenError, lastTokenErrorAt: now, lastTokenErrorNotifiedAt: now },
     {
       where: {
+        accessToken: serviceSecret.accessToken ?? null,
         id: serviceSecret.id,
+        secret: serviceSecret.secret,
         [Op.or]: [
           { lastTokenErrorNotifiedAt: null },
           {
@@ -86,7 +92,13 @@ async function recordTokenError(
   if (!notify) {
     await AppServiceSecret.update(
       { lastTokenError, lastTokenErrorAt: now },
-      { where: { id: serviceSecret.id } },
+      {
+        where: {
+          accessToken: serviceSecret.accessToken ?? null,
+          id: serviceSecret.id,
+          secret: serviceSecret.secret,
+        },
+      },
     );
     return;
   }
@@ -110,7 +122,7 @@ async function recordTokenError(
             appName: app.definition.name,
             secretName: serviceSecret.name || serviceSecret.urlPatterns,
             tokenUrl: serviceSecret.tokenUrl!,
-            error: lastTokenError,
+            error: escapeMarkdown(lastTokenError),
             link: (text) => `[${text}](${argv.host}/apps/${app.id}/secrets)`,
           },
         });
@@ -273,7 +285,12 @@ export async function applyAppServiceSecrets({
             logger.verbose(`Failed to fetch token from ${serviceSecret.tokenUrl}`);
             logger.error(error);
             logger.error(String(error));
-            await recordTokenError(context, app, AppServiceSecret, serviceSecret, error);
+            try {
+              await recordTokenError(context, app, AppServiceSecret, serviceSecret, error);
+            } catch (recordError) {
+              logger.error(`Failed to record token error for service secret ${serviceSecret.id}`);
+              logger.error(recordError);
+            }
           }
 
           let updatedSecret;
@@ -290,7 +307,10 @@ export async function applyAppServiceSecrets({
                     lastTokenError: null,
                     lastTokenErrorAt: null,
                   },
-                  { where: { id: serviceSecret.id }, returning: true },
+                  {
+                    where: { id: serviceSecret.id, secret: serviceSecret.secret },
+                    returning: true,
+                  },
                 )
               )[1][0];
             } catch (error) {

@@ -59,6 +59,7 @@ export const AppServiceSecret: OpenAPIV3.NonArraySchemaObject = {
     },
     lastTokenError: {
       type: 'string',
+      nullable: true,
       description:
         'The provider’s message for the most recent failed client-credentials token request.',
       readOnly: true,
@@ -66,6 +67,7 @@ export const AppServiceSecret: OpenAPIV3.NonArraySchemaObject = {
     lastTokenErrorAt: {
       type: 'string',
       format: 'date-time',
+      nullable: true,
       description: 'When the most recent client-credentials token request failed.',
       readOnly: true,
     },
