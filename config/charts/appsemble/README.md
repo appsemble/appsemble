@@ -602,7 +602,7 @@ Recommended backup object layout within each environment backup bucket:
   - `assets/app-buckets/archive/<run-id>/app-<id>/...`
   - `assets/app-buckets/snapshots/<yyyy-mm-01>/app-<id>/...`
 
-The SQL backup job uploads each dump in parts and aborts the upload when it fails. While the object
+The backup jobs upload large objects in parts and abort an upload that fails. While the object
 storage is unreachable the abort fails too, and the parts stay behind as an incomplete multipart
 upload: invisible to listings, billed as storage. Set a lifecycle rule on the backups bucket with
 `AbortIncompleteMultipartUpload` and `DaysAfterInitiation: 1`, which Hetzner Object Storage accepts,
