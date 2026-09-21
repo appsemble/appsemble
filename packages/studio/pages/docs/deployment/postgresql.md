@@ -72,7 +72,8 @@ metadata:
   name: appsemble-postgresql
 spec:
   instances: 2
-  imageName: ghcr.io/cloudnative-pg/postgresql:17.11-minimal-trixie
+  # The standard image ships every locale; the minimal one only knows C.
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.11-standard-trixie
   # Voluntary disruptions such as a node drain never take the last instance down.
   enablePDB: true
   # A restart of the primary, for a new image or a changed setting, promotes the replica first.
@@ -82,6 +83,9 @@ spec:
     initdb:
       database: appsemble
       owner: appsemble
+      # The collation of the bundled chart of earlier releases, so sorting stays the same.
+      localeCollate: en_US.UTF-8
+      localeCType: en_US.UTF-8
   managed:
     roles:
       # The owner role which initdb created, extended with the right to create the app databases.
@@ -222,8 +226,10 @@ with a logical dump over the network, so the data moves with a short write freez
 of the volume. Give the new cluster a name other than the old `postgresql.fullnameOverride`
 (`appsemble-postgresql` by default): the operator names its ServiceAccount after the cluster and
 adopts an existing one, and the one of the old chart has token automount disabled, which leaves the
-new instances without API access. The example below uses `appsemble-cnpg`. With the old release
-still running:
+new instances without API access. The example below uses `appsemble-cnpg`. Keep the `standard` image
+and the `en_US.UTF-8` locale of the manifest above: the import recreates every app database with the
+collation it has on the old server, which is `en_US.UTF-8`, and fails on an image without that
+locale. With the old release still running:
 
 1. Install the operator and create the secrets the new cluster uses: a `kubernetes.io/basic-auth`
    secret for the `appsemble` role with its current password, so the passwords which apps store for
@@ -269,10 +275,21 @@ still running:
 
 4. When the cluster is `Ready`, compare both sides: the number of databases in `pg_database` and the
    row counts of a few tables.
-5. Keep the old StatefulSet as a rollback point while the chart moves away from it: annotate it, its
+5. Point the apps at the new host. Every `App` row stores the host of its database, and the server
+   only manages databases whose host equals its own `DATABASE_HOST`, so rows which still name the
+   old service would keep using the old StatefulSet. In the `appsemble` database of the new cluster:
+
+   ```sql
+   UPDATE "App" SET "dbHost" = 'appsemble-cnpg-rw' WHERE "dbHost" = 'appsemble-postgresql';
+   ```
+
+   With PgBouncer enabled the rows name the PgBouncer service, which does not change; check with
+   `SELECT "dbHost", count(*) FROM "App" GROUP BY 1`.
+
+6. Keep the old StatefulSet as a rollback point while the chart moves away from it: annotate it, its
    services, ServiceAccount, ConfigMaps and TLS secret with `helm.sh/resource-policy: keep`, so the
    upgrade leaves them in place.
-6. Upgrade the chart with `postgresql.host=appsemble-cnpg-rw` and
+7. Upgrade the chart with `postgresql.host=appsemble-cnpg-rw` and
    `postgresql.auth.existingSecret=appsemble-cnpg-app`, then scale the Deployment back up. To roll
    back, upgrade to the previous chart version with its values again, which adopts the kept objects
    (`helm rollback` does not). Delete the old StatefulSet and its volume after the retention period.

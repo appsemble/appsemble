@@ -19,11 +19,14 @@ metadata:
 spec:
   instances: 1
   enablePDB: false
-  imageName: ghcr.io/cloudnative-pg/postgresql:17.11-minimal-trixie
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.11-standard-trixie
   bootstrap:
     initdb:
       database: appsemble
       owner: appsemble
+      # The collation of appsemble.app and of the bundled chart of earlier releases.
+      localeCollate: en_US.UTF-8
+      localeCType: en_US.UTF-8
   managed:
     roles:
       - name: appsemble

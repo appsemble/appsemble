@@ -43,9 +43,12 @@ data:
     max_client_conn = {{ .Values.pgbouncer.maxClientConn }}
     default_pool_size = {{ .Values.pgbouncer.defaultPoolSize }}
     max_db_connections = {{ .Values.pgbouncer.maxDbConnections }}
-    ; The budget is shared by the replicas, which all authenticate as the same user. Never 0, which
-    ; PgBouncer reads as unlimited.
-    max_user_connections = {{ max 1 (div .Values.pgbouncer.maxUserConnections .Values.pgbouncer.replicaCount) }}
+    ; The budget is shared by the replicas, which all authenticate as the same user. A share of 0
+    ; would mean unlimited to PgBouncer, so the split must leave every replica at least one.
+    {{- if lt (int .Values.pgbouncer.maxUserConnections) (int .Values.pgbouncer.replicaCount) }}
+    {{- fail "pgbouncer.maxUserConnections must be at least pgbouncer.replicaCount" }}
+    {{- end }}
+    max_user_connections = {{ div (int .Values.pgbouncer.maxUserConnections) (int .Values.pgbouncer.replicaCount) }}
     server_idle_timeout = 30
     ignore_startup_parameters = extra_float_digits
 {{- end }}
