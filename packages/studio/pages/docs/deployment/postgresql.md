@@ -219,7 +219,11 @@ remain the easiest way to restore a single app.
 
 Earlier chart versions bundled a Bitnami PostgreSQL StatefulSet. CloudNativePG imports its databases
 with a logical dump over the network, so the data moves with a short write freeze rather than a copy
-of the volume. With the old release still running:
+of the volume. Give the new cluster a name other than the old `postgresql.fullnameOverride`
+(`appsemble-postgresql` by default): the operator names its ServiceAccount after the cluster and
+adopts an existing one, and the one of the old chart has token automount disabled, which leaves the
+new instances without API access. The example below uses `appsemble-cnpg`. With the old release
+still running:
 
 1. Install the operator and create the secrets the new cluster uses: a `kubernetes.io/basic-auth`
    secret for the `appsemble` role with its current password, so the passwords which apps store for
@@ -227,7 +231,7 @@ of the volume. With the old release still running:
    of the old StatefulSet, which the import connects with.
 
    ```sh
-   kubectl create secret generic appsemble-postgresql-app --type kubernetes.io/basic-auth \
+   kubectl create secret generic appsemble-cnpg-app --type kubernetes.io/basic-auth \
      --from-literal username=appsemble \
      --from-literal "password=$(kubectl get secret postgresql-secret -o jsonpath='{.data.password}' | base64 -d)"
    ```
@@ -244,7 +248,7 @@ of the volume. With the old release still running:
          database: appsemble
          owner: appsemble
          secret:
-           name: appsemble-postgresql-app
+           name: appsemble-cnpg-app
          import:
            type: monolith
            databases: ['*']
@@ -266,7 +270,9 @@ of the volume. With the old release still running:
 4. When the cluster is `Ready`, compare both sides: the number of databases in `pg_database` and the
    row counts of a few tables.
 5. Keep the old StatefulSet as a rollback point while the chart moves away from it: annotate it, its
-   services and its volume claim with `helm.sh/resource-policy: keep`, so the upgrade leaves them in
-   place.
-6. Upgrade the chart with the `postgresql.host` of the new cluster, then scale the Deployment back
-   up. Delete the old StatefulSet and its volume after the retention period.
+   services, ServiceAccount, ConfigMaps and TLS secret with `helm.sh/resource-policy: keep`, so the
+   upgrade leaves them in place.
+6. Upgrade the chart with `postgresql.host=appsemble-cnpg-rw` and
+   `postgresql.auth.existingSecret=appsemble-cnpg-app`, then scale the Deployment back up. To roll
+   back, upgrade to the previous chart version with its values again, which adopts the kept objects
+   (`helm rollback` does not). Delete the old StatefulSet and its volume after the retention period.

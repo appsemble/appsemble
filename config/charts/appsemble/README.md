@@ -22,7 +22,7 @@ the `postgresql.host`, `postgresql.port` and `postgresql.auth` values, given a s
 password of a role which owns the `appsemble` database and may create databases:
 
 ```sh
-kubectl create secret generic postgresql-secret \
+kubectl create secret generic appsemble-postgresql-app \
   --from-literal 'password=my-password'
 ```
 
