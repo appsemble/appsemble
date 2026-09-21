@@ -592,32 +592,13 @@ test node single bucket:
     S3_SECRET_KEY: appsemble-server-secret
   stage: test
   script:
-    - npm test -- --no-file-parallelism
-      packages/cli/lib/app.test.ts
-      packages/cli/lib/asset.test.ts
-      packages/server/commands/migrateBlockAssetsToS3.test.ts
-      packages/server/commands/runCronJobs.test.ts
-      packages/server/controllers/apps/actions/index.test.ts
-      packages/server/controllers/common/apps/assets/getAppAssetById.test.ts
-      packages/server/controllers/common/apps/assets/getOriginalAppAsset.test.ts
-      packages/server/controllers/common/apps/resources/createAppResource.test.ts
-      packages/server/controllers/common/apps/resources/patchAppResource.test.ts
-      packages/server/controllers/common/apps/resources/updateAppResource.test.ts
-      packages/server/controllers/common/apps/resources/updateAppResources.test.ts
-      packages/server/controllers/common/blocks/versions/assets/getBlockVersionAsset.test.ts
-      packages/server/controllers/main/apps/assets/createAppAsset.test.ts
-      packages/server/controllers/main/apps/assets/deleteAppAsset.test.ts
-      packages/server/controllers/main/apps/assets/deleteAppAssets.test.ts
-      packages/server/controllers/main/apps/createAppFromTemplate.test.ts
-      packages/server/controllers/main/apps/exportApp.test.ts
-      packages/server/controllers/main/apps/reseedDemoApp.test.ts
-      packages/server/controllers/main/blocks/createBlock.test.ts
-      packages/server/controllers/main/blocks/versions/deleteBlockVersion.test.ts
-      packages/server/controllers/main/organizations/apps/importApp.test.ts
-      packages/server/options/getBlockAsset.test.ts
-      packages/server/routes/appRouter/blockAssetHandler.test.ts
-      packages/server/utils/block.test.ts
-      packages/server/utils/blockAssets.test.ts
+    # Every test file that names an export of the object storage modules, except the backup test,
+    # which needs the admin identity to create its own bucket.
+    - exports=$(sed -nE 's/^export (async )?function (\w+).*/\2/p' packages/node-utils/s3.ts packages/node-utils/assets.ts | paste -sd '|')
+    - files=$(grep -rlw -E "$exports" --include='*.test.ts' --exclude-dir=node_modules packages/cli packages/server | grep -vxF packages/server/commands/backupProductionData.test.ts)
+    - test -n "$files"
+    - echo "$files"
+    - npm test -- --no-file-parallelism $files
   artifacts:
     reports:
       junit: junit.xml
