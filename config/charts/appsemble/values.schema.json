@@ -806,6 +806,10 @@
         "existingSecret": {
           "type": "string",
           "description": "The name of the existing kubernetes secret to get the access key and secret key from. Must contain access-key and secret-key"
+        },
+        "tmpSizeLimit": {
+          "type": "string",
+          "description": "The scratch space each database is dumped to before it is uploaded. Must exceed the gzipped dump of the largest database."
         }
       }
     },

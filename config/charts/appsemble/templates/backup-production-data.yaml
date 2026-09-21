@@ -43,4 +43,12 @@ spec:
                       key: aes-secret
 {{ include "appsemble.postgres" . | indent 16 }}
 {{ include "appsemble.backups" . | indent 16 }}
+              volumeMounts:
+                - name: tmp-volume
+                  mountPath: /tmp
+          volumes:
+            # Each database is dumped here before it is uploaded.
+            - name: tmp-volume
+              emptyDir:
+                sizeLimit: {{ .Values.backups.tmpSizeLimit }}
 {{ end }}

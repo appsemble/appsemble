@@ -336,6 +336,9 @@ backups:
   region: us-east-1
   pathStyle: true
   existingSecret: backups-secret
+  # The scratch space each database is dumped to before it is uploaded. Must exceed the gzipped
+  # dump of the largest database, or the job is evicted mid-dump.
+  tmpSizeLimit: 8Gi
 
 assetsBackups:
   enabled: false

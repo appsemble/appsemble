@@ -1,9 +1,14 @@
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import { createReadStream, createWriteStream } from 'node:fs';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { pipeline } from 'node:stream/promises';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { createGzip } from 'node:zlib';
 
-import { deleteS3File, initS3Client, logger, uploadS3File } from '@appsemble/node-utils';
+import { initS3Client, logger, uploadS3File } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { backupsBuilder } from './builder/backups.js';
@@ -18,9 +23,9 @@ export const command = 'backup-production-data';
 export const description = 'Backs up data from the main database and app databases.';
 
 /**
- * The backoff between attempts to dump one database.
+ * The backoff between attempts at one step, dumping or uploading a database.
  *
- * `delays` holds the wait in milliseconds before each retry, so a database is dumped at most
+ * `delays` holds the wait in milliseconds before each retry, so a step runs at most
  * `delays.length + 1` times. Tests replace `wait` to run the retries without waiting.
  */
 export const backoff = {
@@ -33,95 +38,74 @@ export function builder(yargs: Argv): Argv {
 }
 
 /**
- * Stream one `pg_dump` through gzip into an S3 object.
- *
- * Each end of the pipeline is torn down when the other end fails, and the object is removed when
- * a failed dump was committed anyway. The `Upload` of `@aws-sdk/lib-storage` keeps its in-flight
- * requests going after `abort()`, so a failed dump closes the upload source instead: the upload
- * then settles before the object is deleted, and a multipart upload is aborted rather than
- * completed.
+ * Dump one database through gzip into a file.
  *
  * @param connectionString The Postgres URI of the database to dump.
- * @param bucket The bucket to store the dump in.
- * @param key The key of the dump object.
+ * @param path The file to write the gzipped dump to.
  */
-async function dumpDatabaseToS3(
-  connectionString: string,
-  bucket: string,
-  key: string,
-): Promise<void> {
+async function dumpDatabase(connectionString: string, path: string): Promise<void> {
   const dump = spawn('pg_dump', [`--dbname=${connectionString}`], {
-    stdio: ['pipe', 'pipe', 'pipe'],
+    stdio: ['ignore', 'pipe', 'pipe'],
   });
-  const gzip = createGzip();
 
   let stderr = '';
   dump.stderr.on('data', (chunk) => {
     stderr += String(chunk);
   });
 
-  let failure: unknown;
-  const uploaded = uploadS3File(bucket, key, dump.stdout.pipe(gzip)).then(
-    () => true,
-    (error: unknown) => {
-      failure ??= error;
-      // Without this pg_dump sits blocked on its pipe, holding a COPY on the database.
-      dump.kill('SIGKILL');
-      gzip.destroy();
-      return false;
-    },
-  );
-  const exited = once(dump, 'close').then(
-    ([code, signal]) => {
-      if (code === 0) {
-        return;
-      }
-      if (failure == null) {
-        const reason = signal ? `signal ${signal}` : `code ${code}`;
-        failure = new Error(
-          `pg_dump exited with ${reason}: ${stderr.trim() || '(no stderr output)'}`,
-        );
-      }
-      gzip.destroy();
-    },
-    (error: unknown) => {
-      // The process could not be spawned; closing the upload source lets the upload settle.
-      failure ??= error;
-      gzip.destroy();
-    },
-  );
-  const [committed] = await Promise.all([uploaded, exited]);
-
-  if (failure == null) {
-    return;
+  const [[code, signal]] = await Promise.all([
+    once(dump, 'close'),
+    pipeline(dump.stdout, createGzip(), createWriteStream(path)),
+  ]);
+  if (code !== 0) {
+    const reason = signal ? `signal ${signal}` : `code ${code}`;
+    throw new Error(`pg_dump exited with ${reason}: ${stderr.trim() || '(no stderr output)'}`);
   }
-  if (committed) {
-    // The dump finished uploading before pg_dump reported its failure.
-    await deleteS3File(bucket, key);
-  }
-  throw failure;
 }
 
-async function backupDatabaseToS3(
-  connectionString: string,
-  bucket: string,
-  key: string,
-): Promise<void> {
-  logger.info(`Backing up ${bucket}/${key}`);
-
+async function withRetries(step: string, action: () => Promise<void>): Promise<void> {
   for (let attempt = 0; ; attempt += 1) {
     try {
-      await dumpDatabaseToS3(connectionString, bucket, key);
-      logger.info(`Backup uploaded: ${key}`);
+      await action();
       return;
     } catch (error) {
       if (attempt >= backoff.delays.length) {
         throw error;
       }
       const delay = backoff.delays[attempt];
-      logger.warn(`Backup of ${key} failed, retrying in ${delay / 1000} s:`, error);
+      logger.warn(`${step} failed, retrying in ${delay / 1000} s:`, error);
       await backoff.wait(delay);
     }
+  }
+}
+
+/**
+ * Dump one database to a file, then upload the file.
+ *
+ * Nothing touches the object store before `pg_dump` has exited successfully, so no partial dump
+ * is ever committed, `pg_dump` never waits on the network, and a retried upload costs egress only.
+ *
+ * @param connectionString The Postgres URI of the database to dump.
+ * @param bucket The bucket to store the dump in.
+ * @param key The key of the dump object.
+ * @param directory The directory to hold the dump until it is uploaded.
+ */
+async function backupDatabaseToS3(
+  connectionString: string,
+  bucket: string,
+  key: string,
+  directory: string,
+): Promise<void> {
+  logger.info(`Backing up ${bucket}/${key}`);
+  const path = join(directory, key.replaceAll('/', '-'));
+
+  try {
+    await withRetries(`Dump of ${key}`, () => dumpDatabase(connectionString, path));
+    // A stream of unknown length goes up in parts, which the client retries one at a time.
+    await withRetries(`Upload of ${key}`, () => uploadS3File(bucket, key, createReadStream(path)));
+    logger.info(`Backup uploaded: ${key}`);
+  } finally {
+    await rm(path, { force: true });
   }
 }
 
@@ -165,6 +149,7 @@ export async function handler(): Promise<void> {
   }
 
   const timestamp = new Date().toISOString().replaceAll(/[.:TZ-]/g, '');
+  const directory = await mkdtemp(join(tmpdir(), 'backup-production-data-'));
   const directDatabase = getDirectPostgresConnection({
     dbHost: argv.databaseHost,
     dbPort: argv.databasePort,
@@ -183,7 +168,7 @@ export async function handler(): Promise<void> {
       dbName: argv.databaseName,
       ssl: argv.databaseSsl,
     });
-    await backupDatabaseToS3(mainDbUrl, argv.backupsBucket, key);
+    await backupDatabaseToS3(mainDbUrl, argv.backupsBucket, key, directory);
   } catch (err) {
     failures.set('main', err);
     logger.error('Failed to back up main database:', err);
@@ -211,7 +196,7 @@ export async function handler(): Promise<void> {
       });
 
       const key = `sql/apps/${app.id}/${argv.backupsFilename}_${timestamp}.sql.gz`;
-      await backupDatabaseToS3(appDbUrl, argv.backupsBucket, key);
+      await backupDatabaseToS3(appDbUrl, argv.backupsBucket, key, directory);
     } catch (err) {
       failures.set(`app ${app.id}`, err);
       logger.error(`Failed to back up app ${app.id} database:`, err);
@@ -219,6 +204,7 @@ export async function handler(): Promise<void> {
   }
 
   await db.close();
+  await rm(directory, { recursive: true, force: true });
   if (failures.size) {
     // A single line, so one grep of the log tells which databases lack a backup and why.
     logger.error(
