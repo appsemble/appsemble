@@ -1,10 +1,9 @@
 import { once } from 'node:events';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer, request, type Server } from 'node:http';
 import { type AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { setTimeout as sleep } from 'node:timers/promises';
 import { gunzipSync } from 'node:zlib';
 
 import {
@@ -55,15 +54,17 @@ let exitCode: number | string | null | undefined;
 /**
  * Put a fake `pg_dump` in front of the real one on `PATH`.
  *
- * The script receives the connection URI as its only argument and has the database name in
- * `$database`.
+ * The script receives the connection URI as its only argument, has the database name in
+ * `$database` and records its process id, so a test can count the dumps that ran.
  *
  * @param body The shell commands to run for a dump.
  */
 async function fakePgDump(body: string): Promise<void> {
-  await writeFile(join(binDir, 'pg_dump'), `#!/bin/sh\ndatabase=\${1##*/}\n${body}\n`, {
-    mode: 0o755,
-  });
+  await writeFile(
+    join(binDir, 'pg_dump'),
+    `#!/bin/sh\ndatabase=\${1##*/}\necho $$ >> '${pidFile}'\n${body}\n`,
+    { mode: 0o755 },
+  );
 }
 
 /**
@@ -97,6 +98,13 @@ async function dumpsUnder(prefix: string): Promise<string[]> {
 async function fakePgDumpPids(): Promise<number[]> {
   const content = await readFile(pidFile, 'utf8').catch(() => '');
   return content.split('\n').filter(Boolean).map(Number);
+}
+
+/**
+ * @returns The names of the dump directories the command left in the temporary directory.
+ */
+async function leftoverDumpDirectories(): Promise<string[]> {
+  return (await readdir(binDir)).filter((name) => name.startsWith('backup-production-data-'));
 }
 
 /**
@@ -148,9 +156,11 @@ describe('backupProductionData', () => {
   });
 
   beforeEach(async () => {
-    binDir = await mkdtemp(join(tmpdir(), 'backup-production-data-'));
+    binDir = await mkdtemp(join(tmpdir(), 'backup-production-data-test-'));
     pidFile = join(binDir, 'pids');
     vi.stubEnv('PATH', `${binDir}:${process.env.PATH}`);
+    // The command dumps into the temporary directory, so leftovers show up next to the fake.
+    vi.stubEnv('TMPDIR', binDir);
     failingPrefix = undefined;
     waited = [];
     vi.spyOn(backoff, 'wait').mockImplementation((milliseconds) => {
@@ -220,7 +230,7 @@ describe('backupProductionData', () => {
     await once(proxy, 'close');
   });
 
-  it('should retry a database whose upload fails and back up every database', async () => {
+  it('should retry a failed upload without dumping again and back up every database', async () => {
     await fakePgDump('echo "-- dump of $database"');
     failingPrefix = '/sql/apps/2/';
     vi.mocked(backoff.wait).mockImplementation((milliseconds) => {
@@ -236,6 +246,24 @@ describe('backupProductionData', () => {
     expect(await dumpsUnder('sql/apps/1/')).toStrictEqual(['-- dump of app-1\n']);
     expect(await dumpsUnder('sql/apps/2/')).toStrictEqual(['-- dump of app-2\n']);
     expect(waited).toStrictEqual([5000]);
+    expect(await fakePgDumpPids()).toHaveLength(3);
+    expect(await leftoverDumpDirectories()).toStrictEqual([]);
+  });
+
+  it('should hold one dump in scratch space at a time', async () => {
+    // Each fake records how many dumps the scratch directory holds when it starts: at most its
+    // own, once the previous database's dump has been uploaded and removed.
+    const countsFile = join(binDir, 'counts');
+    await fakePgDump(`
+      ls "$TMPDIR"/backup-production-data-*/ | wc -l >> '${countsFile}'
+      echo "-- dump of $database"`);
+
+    await handler();
+
+    expect(exitCode).toBe(0);
+    const counts = (await readFile(countsFile, 'utf8')).split('\n').filter(Boolean).map(Number);
+    expect(counts).toHaveLength(3);
+    expect(Math.max(...counts)).toBeLessThanOrEqual(1);
   });
 
   it('should leave no object for a database pg_dump cannot dump', async () => {
@@ -257,9 +285,10 @@ describe('backupProductionData', () => {
     expect(summaryLines(errors)).toStrictEqual([
       'Backup failed for 1 of 3 databases: app 2 (pg_dump exited with code 1: pg_dump: error: connection to server failed: FATAL: database "app-2" does not exist)',
     ]);
+    expect(await leftoverDumpDirectories()).toStrictEqual([]);
   });
 
-  it('should delete a dump that was uploaded before pg_dump failed', async () => {
+  it('should leave no object when pg_dump fails after writing its output', async () => {
     await fakePgDump(`
       echo "-- dump of $database"
       if [ "$database" = appsemble ]; then
@@ -286,8 +315,6 @@ describe('backupProductionData', () => {
     const errors = vi.spyOn(logger, 'error');
 
     await handler();
-    // An upload that outlives its failed attempt commits its empty gzip within milliseconds.
-    await sleep(200);
 
     expect(exitCode).toBe(1);
     expect(await dumpsUnder('sql/')).toStrictEqual([]);
@@ -299,25 +326,18 @@ describe('backupProductionData', () => {
     ]);
   });
 
-  it('should stop pg_dump when its upload keeps failing', async () => {
-    await fakePgDump(`
-      if [ "$database" = app-2 ]; then
-        echo $$ >> '${pidFile}'
-        exec cat /dev/urandom
-      fi
-      echo "-- dump of $database"`);
+  it('should give up on a database whose upload keeps failing without dumping it again', async () => {
+    await fakePgDump('echo "-- dump of $database"');
     failingPrefix = '/sql/apps/2/';
     const errors = vi.spyOn(logger, 'error');
 
     await handler();
 
     expect(exitCode).toBe(1);
-    const pids = await fakePgDumpPids();
-    expect(pids).toHaveLength(4);
-    expect(pids.filter((pid) => isRunning(pid))).toStrictEqual([]);
     expect(await dumpsUnder('sql/apps/1/')).toStrictEqual(['-- dump of app-1\n']);
     expect(await dumpsUnder('sql/apps/2/')).toStrictEqual([]);
     expect(waited).toStrictEqual([5000, 30_000, 120_000]);
+    expect(await fakePgDumpPids()).toHaveLength(3);
     expect(summaryLines(errors)).toStrictEqual([
       expect.stringMatching(/^Backup failed for 1 of 3 databases: app 2 \(.+\)$/),
     ]);
