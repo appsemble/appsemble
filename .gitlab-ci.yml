@@ -1405,6 +1405,7 @@ update dependencies:
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
       --set "seaweedfs.fullnameOverride=review-$CI_MERGE_REQUEST_IID-seaweedfs"
+      --set "seaweedfs.global.seaweedfs.serviceAccountName=review-$CI_MERGE_REQUEST_IID-seaweedfs"
       --set "seaweedfs.allInOne.data.type=emptyDir"
       --set "seaweedfs.allInOne.s3.createBuckets[0].name=appsemble"
       --set "s3.bucket=appsemble"
