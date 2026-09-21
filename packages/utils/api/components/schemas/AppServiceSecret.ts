@@ -57,5 +57,17 @@ export const AppServiceSecret: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: 'The custom certificate authority.',
     },
+    lastTokenError: {
+      type: 'string',
+      description:
+        'The provider’s message for the most recent failed client-credentials token request.',
+      readOnly: true,
+    },
+    lastTokenErrorAt: {
+      type: 'string',
+      format: 'date-time',
+      description: 'When the most recent client-credentials token request failed.',
+      readOnly: true,
+    },
   },
 };

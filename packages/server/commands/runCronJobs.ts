@@ -133,7 +133,7 @@ export async function handler(): Promise<void> {
           mailer,
           data: null,
           options,
-          context: {} as any,
+          context: { mailer } as any,
         });
       }
     } catch (error: unknown) {

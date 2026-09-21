@@ -1,12 +1,21 @@
 import { type EmailActionDefinition } from '@appsemble/lang-sdk';
 import { version } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import axios, { type InternalAxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { type ParameterizedContext } from 'koa';
+import { type Transporter } from 'nodemailer';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, getAppDB, Organization, type User } from '../models/index.js';
+import {
+  App,
+  type AppMember,
+  getAppDB,
+  Organization,
+  OrganizationMember,
+  type User,
+} from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
@@ -1252,6 +1261,202 @@ describe('applyAppServiceSecrets', () => {
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
+    });
+  });
+
+  describe('client credentials token failures', () => {
+    const day = 24 * 60 * 60 * 1e3;
+    const invalidClient = {
+      error: 'invalid_client',
+      error_description: 'AADSTS7000215: Invalid client secret provided.',
+    };
+    let tokenStatus: number;
+    let tokenBody: unknown;
+    let tokenServer: AxiosTestInstance;
+    let tokenUrl: string;
+    let sendMail: ReturnType<typeof vi.fn>;
+    let member: AppMember;
+
+    beforeEach(async () => {
+      const { AppMember } = await getAppDB(app.id);
+      member = await AppMember.create({
+        email: user.primaryEmail,
+        userId: user.id,
+        role: 'Admin',
+      });
+      authorizeAppMember(app, member);
+      await OrganizationMember.create({
+        OrganizationId: 'org',
+        UserId: user.id,
+        role: PredefinedOrganizationRole.Owner,
+      });
+      sendMail = vi.fn();
+      server.context.mailer.transport = { sendMail } as Partial<Transporter> as Transporter;
+      tokenServer = await createInstance(
+        new Koa().use((ctx) => {
+          ctx.status = tokenStatus;
+          ctx.body = tokenBody;
+        }),
+      );
+      tokenUrl = `${tokenServer.defaults.baseURL}oauth/token`;
+    });
+
+    afterEach(async () => {
+      await tokenServer.close();
+    });
+
+    /**
+     * Proxy the `get` request action while the token endpoint answers as configured.
+     *
+     * @param status The status the token endpoint answers with.
+     * @param body The body the token endpoint answers with.
+     * @returns The proxied response and the outgoing request config.
+     */
+    async function proxyGet(
+      status: number,
+      body: unknown,
+    ): Promise<{ status: number; outgoing?: InternalAxiosRequestConfig }> {
+      tokenStatus = status;
+      tokenBody = body;
+      let outgoing: InternalAxiosRequestConfig | undefined;
+      const requestInterceptor = axios.interceptors.request.use((config) => {
+        if (config.url === proxiedRequest.defaults.baseURL) {
+          outgoing = config;
+        }
+        return config;
+      });
+      try {
+        const response = await request.get(
+          '/api/apps/1/actions/pages.0.blocks.0.actions.get?data={}',
+        );
+        return { status: response.status, outgoing };
+      } finally {
+        axios.interceptors.request.eject(requestInterceptor);
+      }
+    }
+
+    it('should record the provider error on the secret and email the organization owners', async () => {
+      const { AppServiceSecret } = await getAppDB(app.id);
+      const secret = await AppServiceSecret.create({
+        name: 'Graph',
+        urlPatterns: proxiedRequest.defaults.baseURL,
+        authenticationMethod: 'client-credentials',
+        identifier: 'id',
+        secret: encrypt('expired', argv.aesSecret),
+        tokenUrl,
+      });
+
+      const { outgoing, status } = await proxyGet(401, invalidClient);
+
+      expect(status).toBe(418);
+      expect(outgoing?.headers.Authorization).toBeUndefined();
+
+      await secret.reload();
+      expect(secret.lastTokenError).toBe(invalidClient.error_description);
+      expect(secret.lastTokenErrorAt).toStrictEqual(new Date());
+
+      expect(sendMail).toHaveBeenCalledTimes(1);
+      const [email] = sendMail.mock.calls[0];
+      expect(email.to).toBe('Test User <test@example.com>');
+      expect(email.subject).toBeTruthy();
+      expect(email.text).toContain(invalidClient.error_description);
+      expect(email.text).toContain('Test app');
+      expect(email.text).toContain('Graph');
+      expect(email.text).toContain(tokenUrl);
+      expect(email.text).toContain(`http://localhost/apps/${app.id}/secrets`);
+    });
+
+    it('should record transport errors without a provider response', async () => {
+      const { AppServiceSecret } = await getAppDB(app.id);
+      const secret = await AppServiceSecret.create({
+        urlPatterns: proxiedRequest.defaults.baseURL,
+        authenticationMethod: 'client-credentials',
+        identifier: 'id',
+        secret: encrypt('secret', argv.aesSecret),
+        tokenUrl,
+      });
+      await tokenServer.close();
+
+      await proxyGet(500, {});
+
+      await secret.reload();
+      expect(secret.lastTokenError).toMatch(/ECONNREFUSED/);
+      expect(sendMail).toHaveBeenCalledTimes(1);
+      expect(sendMail.mock.calls[0][0].text).toMatch(/ECONNREFUSED/);
+    });
+
+    it('should not change the proxied response when the notification cannot be sent', async () => {
+      const { AppServiceSecret } = await getAppDB(app.id);
+      const secret = await AppServiceSecret.create({
+        urlPatterns: proxiedRequest.defaults.baseURL,
+        authenticationMethod: 'client-credentials',
+        identifier: 'id',
+        secret: encrypt('expired', argv.aesSecret),
+        tokenUrl,
+      });
+      sendMail.mockRejectedValue(new Error('SMTP down'));
+
+      const { status } = await proxyGet(401, invalidClient);
+
+      expect(status).toBe(418);
+      await secret.reload();
+      expect(secret.lastTokenError).toBe(invalidClient.error_description);
+    });
+
+    it('should email the organization owners at most once per day per secret', async () => {
+      const { AppServiceSecret } = await getAppDB(app.id);
+      const secret = await AppServiceSecret.create({
+        name: 'Graph',
+        urlPatterns: proxiedRequest.defaults.baseURL,
+        authenticationMethod: 'client-credentials',
+        identifier: 'id',
+        secret: encrypt('expired', argv.aesSecret),
+        tokenUrl,
+      });
+      const firstFailure = new Date();
+
+      expect((await proxyGet(401, invalidClient)).status).toBe(418);
+      vi.advanceTimersByTime(day - 1e3);
+      // The app member's access token has expired along with the clock.
+      authorizeAppMember(app, member);
+      expect((await proxyGet(400, { error: 'invalid_grant' })).status).toBe(418);
+
+      expect(sendMail).toHaveBeenCalledTimes(1);
+      await secret.reload();
+      expect(secret.lastTokenError).toBe('invalid_grant');
+      expect(secret.lastTokenErrorAt).toStrictEqual(new Date());
+      expect(secret.lastTokenErrorNotifiedAt).toStrictEqual(firstFailure);
+
+      vi.advanceTimersByTime(2e3);
+      expect((await proxyGet(401, invalidClient)).status).toBe(418);
+
+      expect(sendMail).toHaveBeenCalledTimes(2);
+      await secret.reload();
+      expect(secret.lastTokenErrorNotifiedAt).toStrictEqual(new Date());
+    });
+
+    it('should clear the recorded error once a token request succeeds', async () => {
+      const { AppServiceSecret } = await getAppDB(app.id);
+      const notifiedAt = new Date(Date.now() - 60 * 1e3);
+      const secret = await AppServiceSecret.create({
+        urlPatterns: proxiedRequest.defaults.baseURL,
+        authenticationMethod: 'client-credentials',
+        identifier: 'id',
+        secret: encrypt('renewed', argv.aesSecret),
+        tokenUrl,
+        lastTokenError: invalidClient.error_description,
+        lastTokenErrorAt: notifiedAt,
+        lastTokenErrorNotifiedAt: notifiedAt,
+      });
+
+      const { outgoing } = await proxyGet(200, { access_token: 'abcd', expires_in: 3600 });
+
+      expect(outgoing?.headers.Authorization).toBe('Bearer abcd');
+      await secret.reload();
+      expect(secret.lastTokenError).toBeNull();
+      expect(secret.lastTokenErrorAt).toBeNull();
+      expect(secret.lastTokenErrorNotifiedAt).toStrictEqual(notifiedAt);
+      expect(sendMail).not.toHaveBeenCalled();
     });
   });
 });
