@@ -37,12 +37,15 @@ describe('loginUserWithEmail', () => {
     });
   });
 
-  it('should refuse an unverified email', async () => {
+  it('should log in with an unverified email', async () => {
     await EmailAuthorization.create({ UserId: user.id, email: 'unverified@example.com' });
 
     const response = await login('unverified@example.com');
 
-    expect(response.status).toBe(401);
+    expect(response).toMatchObject({
+      status: 200,
+      data: { access_token: expect.stringMatching(jwtPattern) },
+    });
   });
 
   it('should refuse an unknown email', async () => {

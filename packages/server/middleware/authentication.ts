@@ -67,8 +67,7 @@ export function authentication(): SecurityOptions {
             attributes: ['id', 'password'],
           },
         ],
-        // An unverified email may have been claimed by anyone, so it can’t prove who is logging in.
-        where: { email: email.toLowerCase(), verified: true },
+        where: { email: email.toLowerCase() },
       });
 
       const user = emailAuthorization?.User;

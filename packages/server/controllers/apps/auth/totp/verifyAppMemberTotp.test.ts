@@ -290,7 +290,7 @@ describe('verifyAppMemberTotp', () => {
 
       {
         "error": "Unauthorized",
-        "message": "Invalid TOTP token",
+        "message": "TOTP token already used",
         "statusCode": 401,
       }
     `);
@@ -519,7 +519,7 @@ describe('verifyAppMemberTotp', () => {
 
     expect(replay).toMatchObject({
       status: 401,
-      data: { message: 'Invalid TOTP token' },
+      data: { message: 'TOTP token already used' },
     });
     expect((await AppMember.findByPk(appMember.id))?.totpLastCounter).toBe(0);
   });

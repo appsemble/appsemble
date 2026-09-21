@@ -79,7 +79,7 @@ describe('assertTotpToken', () => {
     const replayMember = (await AppMember.findByPk(appMember.id))!;
     vi.spyOn(Date, 'now').mockReturnValue(30_001);
     await expect(assertTotpToken(createContext(), replayMember, token, 401)).rejects.toThrow(
-      'Invalid TOTP token',
+      'TOTP token already used',
     );
     vi.restoreAllMocks();
     expect((await AppMember.findByPk(appMember.id))?.totpLastCounter).toBe(0);
@@ -106,6 +106,29 @@ describe('assertTotpToken', () => {
     expect(results.filter((result) => result.status === 'fulfilled')).toHaveLength(1);
     expect(results.filter((result) => result.status === 'rejected')).toHaveLength(1);
     expect((await AppMember.findByPk(appMember.id))?.totpConsumedJti).toBe('jti');
+  });
+
+  it('should not count a replayed code as a failed attempt', async () => {
+    const { AppMember } = await getAppDB(app.id);
+    vi.spyOn(Date, 'now').mockReturnValue(0);
+    const token = authenticator.clone({ epoch: 0 }).generate(secret);
+    await assertTotpToken(createContext(), (await AppMember.findByPk(appMember.id))!, token, 401);
+
+    for (let replay = 0; replay < 5; replay += 1) {
+      await expect(
+        assertTotpToken(createContext(), (await AppMember.findByPk(appMember.id))!, token, 401),
+      ).rejects.toThrow('TOTP token already used');
+    }
+
+    const updated = await AppMember.findByPk(appMember.id);
+    expect(updated?.totpFailedAttempts).toBe(0);
+    expect(updated?.totpLockedUntil).toBeNull();
+
+    // A wrong code still counts.
+    await expect(
+      assertTotpToken(createContext(), (await AppMember.findByPk(appMember.id))!, '000000', 401),
+    ).rejects.toThrow('Invalid TOTP token');
+    expect((await AppMember.findByPk(appMember.id))?.totpFailedAttempts).toBe(1);
   });
 
   it('should register the lockout in the same statement as the failed attempt', async () => {
