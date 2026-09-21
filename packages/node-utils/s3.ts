@@ -65,6 +65,14 @@ export interface InitS3ClientParams {
    * on demand.
    */
   bucket?: string;
+
+  /**
+   * The time in milliseconds a request may go without socket activity before it fails with a
+   * `TimeoutError`, which the client retries.
+   *
+   * When unset, a stalled connection lasts until the operating system gives up on it.
+   */
+  socketTimeout?: number;
 }
 
 export function initS3Client({
@@ -75,6 +83,7 @@ export function initS3Client({
   port = 9000,
   region = 'us-east-1',
   secretKey,
+  socketTimeout,
   useSSL = true,
 }: InitS3ClientParams): void {
   try {
@@ -87,6 +96,7 @@ export function initS3Client({
       // S3-compatible stores that do not implement flexible checksums.
       requestChecksumCalculation: 'WHEN_REQUIRED',
       responseChecksumValidation: 'WHEN_REQUIRED',
+      ...(socketTimeout && { requestHandler: { socketTimeout } }),
     });
     s3Bucket = bucket || undefined;
     s3Region = region;

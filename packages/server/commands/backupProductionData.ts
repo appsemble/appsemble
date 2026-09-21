@@ -158,6 +158,9 @@ export async function handler(): Promise<void> {
       region: argv.backupsRegion,
       pathStyle: argv.backupsPathStyle,
       bucket: argv.backupsBucket,
+      // A part whose connection goes quiet for a minute fails and is retried, where the operating
+      // system's TCP timeout takes up to half an hour.
+      socketTimeout: 60_000,
     });
   } catch (error: unknown) {
     logger.warn(`S3Error: ${error}`);

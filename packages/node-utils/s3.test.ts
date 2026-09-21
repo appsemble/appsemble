@@ -489,10 +489,12 @@ describe('requests', () => {
   let server: Server;
   let port: number;
   let requests: RecordedRequest[];
+  let responds: boolean;
 
   beforeEach(async () => {
     send.mockRestore();
     requests = [];
+    responds = true;
     server = createServer((request, response) => {
       requests.push({
         headers: request.headers,
@@ -501,6 +503,9 @@ describe('requests', () => {
       });
       request.resume();
       request.on('end', () => {
+        if (!responds) {
+          return;
+        }
         response.writeHead(200, { ETag: '"etag"' });
         response.end(request.method === 'GET' ? 'payload' : undefined);
       });
@@ -561,5 +566,16 @@ describe('requests', () => {
     expect(requests).toMatchObject([
       { path: '/apps/1/asset', headers: { host: `objects.localhost:${port}` } },
     ]);
+  });
+
+  it('fails a request whose connection stays idle for the socket timeout and retries it', async () => {
+    initS3Client({ ...credentials, port, bucket: 'objects', socketTimeout: 200 });
+    responds = false;
+
+    await expect(uploadS3File('objects', 'apps/1/asset', 'payload')).rejects.toMatchObject({
+      name: 'TimeoutError',
+    });
+
+    expect(requests.map(({ method }) => method)).toStrictEqual(['PUT', 'PUT', 'PUT']);
   });
 });
