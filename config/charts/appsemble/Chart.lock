@@ -1,7 +1,4 @@
 dependencies:
-- name: postgresql
-  repository: https://charts.bitnami.com/bitnami
-  version: 16.7.27
 - name: mailpit
   repository: https://jouve.github.io/charts
   version: 0.36.0
@@ -11,5 +8,5 @@ dependencies:
 - name: valkey
   repository: https://valkey.io/valkey-helm
   version: 0.12.0
-digest: sha256:24c2606e5e47c497ffb966bb5de6cf1d4722ee73b763925d195e305679cc5a39
-generated: "2026-09-18T22:36:30.656180885+02:00"
+digest: sha256:5ce3ed9b257b1552fe7fd326e604e7eb13057adb7544812c65a222b5b92dc7fc
+generated: "2026-09-21T14:36:21.099147627+02:00"

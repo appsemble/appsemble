@@ -18,10 +18,6 @@ sources:
   - https://gitlab.com/appsemble/appsemble
   - https://gitlab.com/appsemble/charts
 dependencies:
-  - name: postgresql
-    version: 16.7.27
-    repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
   - name: mailpit
     version: 0.36.0
     repository: https://jouve.github.io/charts
