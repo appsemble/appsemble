@@ -62,9 +62,7 @@ exports[`should render a list item component 1`] = `
         >
           <span
             class="icon is-align-items-center p-4 box"
-          >
-            <i />
-          </span>
+          />
         </div>
       </div>
       <div

@@ -20,6 +20,26 @@ export type SettingName = 'email' | 'languages' | 'name' | 'password' | 'phoneNu
 
 export type AppContentSecurityPolicy = Record<string, string[]>;
 
+/**
+ * A reference to an icon.
+ *
+ * A bare name refers to a Font Awesome icon. A name prefixed with `icon:` refers to a key in the
+ * app’s `icons` registry, which maps it to an uploaded SVG asset.
+ */
+export type IconReference = IconName | `icon:${string}`;
+
+export interface IconRegistryEntry {
+  /**
+   * The name of the app-level asset holding the icon’s SVG artwork.
+   */
+  asset: string;
+}
+
+/**
+ * A mapping of semantic icon keys to the assets holding their artwork.
+ */
+export type IconRegistry = Record<string, IconRegistryEntry>;
+
 export interface AppDefinition {
   /**
    * The name of the app.
@@ -207,6 +227,13 @@ export interface AppDefinition {
   theme?: Partial<Theme>;
 
   /**
+   * Custom icons that may be referenced as `icon:<key>` from pages, blocks, and login buttons.
+   *
+   * Each key maps to an app-level SVG asset by name.
+   */
+  icons?: IconRegistry;
+
+  /**
    * Extra content security policy source expressions for the published app page.
    *
    * If specified, the published app page uses a stricter default CSP for broad directives such as
@@ -303,11 +330,12 @@ export interface BasePageDefinition {
   roles?: ViewRole[];
 
   /**
-   * An optional icon from the fontawesome icon set
+   * An optional icon from the Font Awesome icon set, or an `icon:<key>` reference to the app’s
+   * `icons` registry.
    *
    * This will be displayed in the navigation menu.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * Page parameters can be used for linking to a page that should display a single resource.

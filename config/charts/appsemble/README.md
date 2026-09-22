@@ -12,7 +12,7 @@ kubectl create secret generic appsemble \
   --from-literal "aes-secret=$(openssl rand -base64 32)"
 ```
 
-Appsemble needs a PostgreSQL 17 server, which the chart does not bundle. Run it with
+Appsemble needs a PostgreSQL 17 or 18 server, which the chart does not bundle. Run it with
 [CloudNativePG](https://cloudnative-pg.io) as described in the
 [PostgreSQL documentation](https://appsemble.app/docs/deployment/postgresql). A `Cluster` named
 `appsemble-postgresql` with an application database and owner named `appsemble` matches the chart

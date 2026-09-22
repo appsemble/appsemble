@@ -20,6 +20,7 @@ continue on this basic app to add more advanced features.
 - [Controller](controller.md)
 - [Cron jobs](cron.mdx)
 - [Custom CSS](custom-css.md)
+- [Custom Icons](custom-icons.md)
 - [DNS](dns.md)
 - [Events](events.md)
 - [Expiring resources](expiring-resources.md)

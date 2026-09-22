@@ -5,6 +5,7 @@ import { AppValidator } from './BasicValidator.js';
 import {
   type AppDefinition,
   type BasicPageDefinition,
+  type BlockManifest,
   type CustomAppGuestPermission,
   type CustomAppPermission,
   type FlowPageDefinition,
@@ -5103,5 +5104,237 @@ describe('validateAppDefinition', () => {
         'gridArea',
       ]),
     );
+  });
+
+  describe('icons', () => {
+    const iconBlock: BlockManifest = {
+      name: '@appsemble/test',
+      version: '1.2.3',
+      files: [],
+      languages: [],
+      parameters: {
+        type: 'object',
+        properties: {
+          icon: { type: 'string', format: 'icon' },
+          label: { type: 'string' },
+          dynamic: { format: 'remapper' },
+          buttons: {
+            type: 'array',
+            items: { $ref: '#/definitions/Button' },
+          },
+          nested: {
+            type: 'object',
+            additionalProperties: { $ref: '#/definitions/Button' },
+          },
+          either: {
+            anyOf: [{ type: 'string', format: 'icon' }, { format: 'remapper' }],
+          },
+        },
+        definitions: {
+          Button: {
+            type: 'object',
+            properties: {
+              icon: { type: 'string', format: 'icon' },
+              title: { type: 'string' },
+            },
+          },
+        },
+      },
+    };
+
+    it('should accept a registry and references to it', async () => {
+      const app = createTestApp();
+      app.icons = { dossier: { asset: 'dossier-icon' }, shared: { asset: 'dossier-icon' } };
+      Object.assign(app.pages[0], { icon: 'icon:dossier' });
+      app.pages[1].icon = 'home';
+      (app.pages[0] as BasicPageDefinition).blocks.push({
+        type: 'test',
+        version: '1.2.3',
+        parameters: {
+          icon: 'icon:shared',
+          label: 'icon:not-an-icon-field',
+          dynamic: { 'string.format': { template: 'icon:{key}' } },
+          buttons: [{ icon: 'icon:dossier' }, { icon: 'circle-check' }],
+        },
+      });
+
+      const result = await validateAppDefinition(app, () => [iconBlock]);
+
+      expect(result.errors).toStrictEqual([]);
+    });
+
+    it('should accept an app without a registry', async () => {
+      const app = createTestApp();
+      app.pages[0].icon = 'home';
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toStrictEqual([]);
+    });
+
+    it('should report invalid registry keys', async () => {
+      const app = createTestApp();
+      app.icons = { Dossier: { asset: 'dossier-icon' } };
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError(
+          'is not a valid icon key; use lower case letters, digits, and single hyphens',
+          'Dossier',
+          undefined,
+          ['icons', 'Dossier'],
+        ),
+      ]);
+    });
+
+    it('should report page icons referencing unknown keys', async () => {
+      const app = createTestApp();
+      app.icons = { dossier: { asset: 'dossier-icon' } };
+      Object.assign(app.pages[0], { icon: 'icon:missing' });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError(
+          'references the unknown icon key “missing”',
+          'icon:missing',
+          undefined,
+          ['pages', 0, 'icon'],
+        ),
+      ]);
+    });
+
+    it('should report page icons referencing keys without a registry', async () => {
+      const app = createTestApp();
+      Object.assign(app.pages[2], { icon: 'icon:dossier' });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError(
+          'references the unknown icon key “dossier”',
+          'icon:dossier',
+          undefined,
+          ['pages', 2, 'icon'],
+        ),
+      ]);
+    });
+
+    it('should not fall back to Font Awesome for unknown keys', async () => {
+      const app = createTestApp();
+      app.icons = { dossier: { asset: 'dossier-icon' } };
+      Object.assign(app.pages[0], { icon: 'icon:home' });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toHaveLength(1);
+    });
+
+    it('should leave syntax errors to the schema validation', async () => {
+      const app = createTestApp();
+      Object.assign(app.pages[0], { icon: 'asset:dossier' });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toStrictEqual([]);
+    });
+
+    it('should report nested block parameters referencing unknown keys', async () => {
+      const app = createTestApp();
+      app.icons = { dossier: { asset: 'dossier-icon' } };
+      (app.pages[0] as BasicPageDefinition).blocks.push({
+        type: 'test',
+        version: '1.2.3',
+        parameters: {
+          icon: 'icon:missing',
+          label: 'icon:missing',
+          buttons: [{ icon: 'icon:dossier' }, { icon: 'icon:other', title: 'icon:other' }],
+          nested: { first: { icon: 'icon:nested' } },
+          either: 'icon:either',
+        },
+      });
+
+      const result = await validateAppDefinition(app, () => [iconBlock]);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError(
+          'references the unknown icon key “missing”',
+          'icon:missing',
+          undefined,
+          ['pages', 0, 'blocks', 0, 'parameters', 'icon'],
+        ),
+        new ValidationError('references the unknown icon key “other”', 'icon:other', undefined, [
+          'pages',
+          0,
+          'blocks',
+          0,
+          'parameters',
+          'buttons',
+          1,
+          'icon',
+        ]),
+        new ValidationError('references the unknown icon key “nested”', 'icon:nested', undefined, [
+          'pages',
+          0,
+          'blocks',
+          0,
+          'parameters',
+          'nested',
+          'first',
+          'icon',
+        ]),
+        new ValidationError('references the unknown icon key “either”', 'icon:either', undefined, [
+          'pages',
+          0,
+          'blocks',
+          0,
+          'parameters',
+          'either',
+        ]),
+      ]);
+    });
+
+    it('should report block parameters with invalid icon syntax', async () => {
+      const app = createTestApp();
+      (app.pages[0] as BasicPageDefinition).blocks.push({
+        type: 'test',
+        version: '1.2.3',
+        parameters: { icon: 'asset:dossier' },
+      });
+
+      const result = await validateAppDefinition(app, () => [iconBlock]);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError('does not conform to the "icon" format', 'asset:dossier', undefined, [
+          'pages',
+          0,
+          'blocks',
+          0,
+          'parameters',
+          'icon',
+        ]),
+      ]);
+    });
+
+    it('should check block icons in tabs and flow steps', async () => {
+      const app = createTestApp();
+      (app.pages[2] as TabsPageDefinition).tabs![0].blocks.push({
+        type: 'test',
+        version: '1.2.3',
+        parameters: { icon: 'icon:missing' },
+      });
+
+      const result = await validateAppDefinition(app, () => [iconBlock]);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError(
+          'references the unknown icon key “missing”',
+          'icon:missing',
+          undefined,
+          ['pages', 2, 'tabs', 0, 'blocks', 0, 'parameters', 'icon'],
+        ),
+      ]);
+    });
   });
 });

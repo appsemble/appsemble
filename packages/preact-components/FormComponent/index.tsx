@@ -1,4 +1,4 @@
-import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconReference } from '@appsemble/lang-sdk';
 import classNames from 'classnames';
 import { cloneElement, type ComponentChild, isValidElement, type VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
@@ -36,9 +36,9 @@ export interface SharedFormComponentProps {
   help?: ComponentChild;
 
   /**
-   * A fontawesome icon to render on the left side of the input.
+   * A Font Awesome icon or an `icon:<key>` reference to render on the left side of the input.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * An optional id for the HTML element. If not set, this will fall back to `name`.

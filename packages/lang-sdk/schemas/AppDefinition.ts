@@ -94,6 +94,16 @@ The most basic resource has a \`schema\` property and defines the minimal securi
     theme: {
       $ref: '#/components/schemas/Theme',
     },
+    icons: {
+      type: 'object',
+      description: `Custom icons that can be referenced as \`icon:<key>\` wherever an icon is accepted.
+
+Each key names an app-level SVG asset by its name. Keys and asset names must consist of lower case
+letters, digits, and single hyphens. Keys are case-sensitive, and \`icon:<key>\` never falls back
+to a Font Awesome icon.
+`,
+      additionalProperties: { $ref: '#/components/schemas/IconRegistryEntryDefinition' },
+    },
     contentSecurityPolicy: {
       type: 'object',
       description: `Additional CSP source expressions for the published app page.

@@ -2,6 +2,102 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.1](https://gitlab.com/appsemble/appsemble/-/releases/0.40.1)] - 2026-09-22
+
+## \[[0.40.0](https://gitlab.com/appsemble/appsemble/-/releases/0.40.0)] - 2026-09-22
+
+### Added
+
+- Block(`action-button`): Support `icon:<key>` references to custom app icons in the `icon`
+  parameter.
+- Block(`button-list`): Support `icon:<key>` references to custom app icons in the `icon` parameter
+  of buttons.
+- Block(`cards`): Support `icon:<key>` references to custom app icons in button and dropdown icons.
+- Block(`control-buttons`): Support `icon:<key>` references to custom app icons in the `back.icon`
+  and `forward.icon` parameters.
+- Block(`detail-viewer`): Support `icon:<key>` references to custom app icons in string field icons.
+- Block(`feed`): Support `icon:<key>` references to custom app icons in dropdown and dropdown option
+  icons.
+- Block(`filter`): Support `icon:<key>` references to custom app icons in the `icon` parameters.
+- Block(`footer`): Support `icon:<key>` references to custom app icons in button icons.
+- Block(`form`): Support `icon:<key>` references to custom app icons in field and button icons.
+- Block(`list`): Support `icon:<key>` references to custom app icons in button, dropdown and field
+  icons.
+- Block(`stats`): Support `icon:<key>` references to custom app icons in the `icon` parameter of
+  fields.
+- Block(`table`): Support `icon:<key>` references to custom app icons in button and dropdown icons.
+- Block(`tiles`): Support `icon:<key>` references to custom app icons in the `icon` parameter.
+- App: Render custom icons from the app’s `icons` registry in the navigation, login buttons, and
+  blocks.
+- Block-interaction-tests: Add `resolveIcon` and `icon` to the default block utils.
+- Cli: Emit the `icon` schema format for block parameters typed as `IconReference`.
+- Lang-sdk: Add the `icons` registry and `icon:<key>` references for custom SVG icons.
+- Node-utils: Add a `socketTimeout` option to `initS3Client` that fails and retries a request whose
+  connection goes idle.
+- Preact-components: Render `icon:<key>` references to custom icons in the `Icon` component.
+- React-components: Add the `IconProvider` component and render `icon:<key>` references in the
+  `Icon` component.
+- Sdk: Add the `utils.icon` and `utils.resolveIcon` block utilities for rendering icon references.
+- Sdk: Export the `IconReference`, `IconRegistry`, and `IconRegistryEntry` types.
+- Server: Add `pgbouncer.replicaCount` to run several PgBouncer replicas, spread across nodes and
+  guarded by a PodDisruptionBudget, which share the `pgbouncer.maxUserConnections` budget.
+- Server: Add the `APP_VALIDATION_FAILED` code to app validation error responses.
+- Server: Alert organization owners about failed client-credentials token requests.
+- Server: Mount a scratch volume of `backups.tmpSizeLimit` (default 8Gi) at `/tmp` on the
+  backup-production-data CronJob to hold each dump until it is uploaded.
+- Server: Reject app updates which remove an icon key used by an OAuth2 or SAML secret.
+- Server: Validate `icon:<key>` references in OAuth2 and SAML secrets against the app’s `icons`
+  registry.
+- Studio: Document custom icons and the `utils.icon` block utility.
+- Studio: Document running PostgreSQL for Appsemble with CloudNativePG, including high availability,
+  backups and the move from the bundled chart.
+- Studio: Render custom icons from the app’s `icons` registry in the app secrets pages.
+- Studio: Show server validation errors for SSO secrets and app definition publishing.
+- Studio: Show the last failed token request of a service secret on the app secrets page.
+- Types: Add the `APP_VALIDATION_FAILED` error code constant.
+- Web-utils: Add icon resolution, sizing, and DOM rendering utilities for custom icons.
+
+### Changed
+
+- Lang-sdk: Accept `icon:<key>` references in the `icon` of pages.
+- Preact-components: Accept `icon:<key>` references in the `icon` prop of `Button`, `Dropdown`,
+  `FormComponent`, `IconCheckbox` and `RadioButton`.
+- Sdk: Accept `icon:<key>` references in the `icon` of block menu items.
+- Server: Dump each database to a file in backup-production-data before uploading it, so a retried
+  upload does not run pg\_dump again and pg\_dump never waits on the network.
+- Server: Fail a backup upload part in backup-production-data after a minute without socket activity
+  instead of waiting for the TCP timeout.
+- Server: Limit backup-production-data to two reruns, a six hour deadline and one Job at a time on
+  its CronJob.
+- Studio: Generate `home` instead of a Font Awesome class string as the example for icon parameters.
+- Types: Type the `icon` of SSO secrets as an icon reference.
+- Utils: Use the `icon` format for the OAuth2 and SAML secret icon schemas.
+
+### Removed
+
+- Server: Remove the bundled Bitnami PostgreSQL dependency chart. The chart connects to an existing
+  PostgreSQL 17 server through `postgresql.host`, `postgresql.port` and `postgresql.auth`, which
+  replace `global.postgresql.auth` and `postgresql.fullnameOverride`; CloudNativePG is the
+  documented way to run it. The upgrade removes the PostgreSQL StatefulSet from the release, so move
+  the data across first: the PostgreSQL deployment documentation describes the migration under
+  "Moving from the bundled PostgreSQL chart".
+
+### Fixed
+
+- Block(`form`): Report markdown field edits immediately so a quick submit sees the typed text.
+- Server: Assign the selected role when adding a new demo member to existing groups.
+- Server: Include soft-deleted apps in `migrate`, `backup-production-data` and
+  `restore-data-from-backup`, so an app restored within the retention period runs on the current
+  schema and is in the backups.
+- Server: Retry each database dump in backup-production-data and stop pg\_dump and the upload
+  cleanly when the other side fails.
+
+### Security
+
+- Server: Allow logging in with an unverified email, so users who lost the verification email can
+  resend it from the studio.
+- Server: Reject a replayed TOTP code as already used without counting it towards the lockout.
+
 ## \[[0.39.2](https://gitlab.com/appsemble/appsemble/-/releases/0.39.2)] - 2026-09-20
 
 ### Fixed

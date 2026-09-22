@@ -91,7 +91,7 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
                 className={`${styles.content} ${styles[message.layout || 'bottom']}`}
                 color={message.color || 'danger'}
               >
-                <span>{message?.body}</span>
+                <span className={styles.body}>{message?.body}</span>
                 {message.dismissable ? (
                   <button
                     aria-label={formatMessage(messages.dismiss)}

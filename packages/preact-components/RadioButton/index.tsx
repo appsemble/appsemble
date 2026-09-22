@@ -1,4 +1,4 @@
-import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconReference } from '@appsemble/lang-sdk';
 import { type ComponentChild, type JSX, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
@@ -32,7 +32,7 @@ interface RadioButtonProps<T> extends Omit<
   /**
    * The icon to render.
    */
-  readonly icon?: IconName;
+  readonly icon?: IconReference;
 
   /**
    * Whether or not the radio button is disabled.
@@ -89,7 +89,7 @@ export function RadioButton<T>({
         value={valueToString(value)}
       />
       <label htmlFor={id}>
-        {icon ? <Icon className={styles.icon} icon={icon as IconName} /> : null}
+        {icon ? <Icon className={styles.icon} icon={icon} /> : null}
         {children}
       </label>
     </div>
