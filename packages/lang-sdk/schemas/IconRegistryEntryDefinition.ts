@@ -1,6 +1,6 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { iconNamePattern } from '../icons.js';
+import { normalized } from '../constants/index.js';
 
 export const IconRegistryEntryDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
@@ -10,7 +10,7 @@ export const IconRegistryEntryDefinition: OpenAPIV3.NonArraySchemaObject = {
   properties: {
     asset: {
       type: 'string',
-      pattern: iconNamePattern.source,
+      pattern: normalized.source,
       description: `The name of the app-level asset holding the icon’s SVG artwork.
 
 This is an asset name, not a URL or asset ID. The asset doesn’t need to exist when the app is

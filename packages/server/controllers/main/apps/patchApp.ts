@@ -179,7 +179,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         'App validation failed',
         APP_VALIDATION_FAILED,
       );
-      const ssoIconErrors = await validateStoredSsoIcons(appId, definition);
+      const ssoIconErrors = await validateStoredSsoIcons(appId, dbApp.definition, definition);
       if (ssoIconErrors.length) {
         throwKoaError(ctx, 400, 'App validation failed', {
           code: APP_VALIDATION_FAILED,

@@ -36,7 +36,7 @@ export function ListButton({
           {image ? (
             <img alt={alt} src={image} />
           ) : icon ? (
-            <Icon color="dark" icon={icon} iconSize="3x" />
+            <Icon color="dark" icon={icon} iconSize="3x" size="large" />
           ) : null}
         </figure>
         <div className={`ml-4 ${styles.content}`}>

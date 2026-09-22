@@ -1739,19 +1739,12 @@ function validateIcons({ icons }: AppDefinition, report: Report): void {
   if (!icons) {
     return;
   }
-  for (const [key, entry] of Object.entries(icons)) {
+  for (const key of Object.keys(icons)) {
     if (!isValidIconName(key)) {
       report(key, 'is not a valid icon key; use lower case letters, digits, and single hyphens', [
         'icons',
         key,
       ]);
-    }
-    if (!isValidIconName(entry?.asset)) {
-      report(
-        entry?.asset,
-        'is not a valid asset name; use lower case letters, digits, and single hyphens',
-        ['icons', key, 'asset'],
-      );
     }
   }
 }

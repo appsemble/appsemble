@@ -5172,12 +5172,9 @@ describe('validateAppDefinition', () => {
       expect(result.errors).toStrictEqual([]);
     });
 
-    it('should report invalid registry keys and asset names once', async () => {
+    it('should report invalid registry keys', async () => {
       const app = createTestApp();
-      app.icons = { Dossier: { asset: 'dossier-icon' }, ok: { asset: 'Dossier Icon.svg' } };
-      // References to a key with an invalid asset name are valid references.
-      Object.assign(app.pages[0], { icon: 'icon:ok' });
-      Object.assign(app.pages[1], { icon: 'icon:ok' });
+      app.icons = { Dossier: { asset: 'dossier-icon' } };
 
       const result = await validateAppDefinition(app, () => []);
 
@@ -5187,12 +5184,6 @@ describe('validateAppDefinition', () => {
           'Dossier',
           undefined,
           ['icons', 'Dossier'],
-        ),
-        new ValidationError(
-          'is not a valid asset name; use lower case letters, digits, and single hyphens',
-          'Dossier Icon.svg',
-          undefined,
-          ['icons', 'ok', 'asset'],
         ),
       ]);
     });

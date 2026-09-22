@@ -28,16 +28,25 @@ export function getSsoIconError(icon: unknown, definition: AppDefinition): strin
 /**
  * Check that a new app definition keeps every icon key used by the stored SSO settings of an app.
  *
- * Stored icons which aren’t custom icon references are ignored.
+ * Stored icons which aren’t custom icon references are ignored. The SSO settings are only queried
+ * when the new definition drops a key of the stored definition.
  *
  * @param appId The ID of the app being updated.
+ * @param previous The stored app definition.
  * @param definition The new app definition.
  * @returns Validation errors naming the SSO settings which use a removed key.
  */
 export async function validateStoredSsoIcons(
   appId: number,
+  previous: AppDefinition,
   definition: AppDefinition,
 ): Promise<ValidationError[]> {
+  const keepsAllKeys = Object.keys(previous.icons ?? {}).every(
+    (key) => definition.icons && has(definition.icons, key),
+  );
+  if (keepsAllKeys) {
+    return [];
+  }
   const { AppOAuth2Secret, AppSamlSecret } = await getAppDB(appId);
   const where = { icon: { [Op.startsWith]: 'icon:' } };
   const [oauth2Secrets, samlSecrets] = await Promise.all([

@@ -69,7 +69,6 @@ export class BlockExampleValidator {
     this.validator = new BaseValidatorFactory({
       schemas: allSchemas,
       customFormats: {
-        ...BaseValidatorFactory.defaultCustomFormats,
         fontawesome: () => true,
         remapper: () => true,
         action: () => true,
@@ -163,7 +162,6 @@ export class BlockParamInstanceValidator {
     this.validator = new BaseValidatorFactory({
       schemas: {},
       customFormats: {
-        ...BaseValidatorFactory.defaultCustomFormats,
         // TODO: validate more
         fontawesome: () => true,
         // TODO: validate more
@@ -205,7 +203,6 @@ export class BlockParamSchemaValidator {
     this.validator = new BaseValidatorFactory({
       schemas: allSchemas,
       customFormats: {
-        ...BaseValidatorFactory.defaultCustomFormats,
         fontawesome: () => true,
         remapper: () => true,
         action: () => true,
@@ -230,9 +227,6 @@ export class AppValidator {
   constructor() {
     this.validator = new BaseValidatorFactory({
       schemas: allSchemas,
-      customFormats: {
-        ...BaseValidatorFactory.defaultCustomFormats,
-      },
     }).build();
   }
 
@@ -251,9 +245,6 @@ export class RemapperValidator {
   constructor() {
     this.validator = new BaseValidatorFactory({
       schemas: allSchemas,
-      customFormats: {
-        ...BaseValidatorFactory.defaultCustomFormats,
-      },
     }).build();
   }
 

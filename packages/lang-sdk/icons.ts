@@ -1,5 +1,6 @@
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 
+import { normalized } from './constants/index.js';
 import { has } from './miscellaneous.js';
 import { type IconReference, type IconRegistry } from './types/index.js';
 
@@ -9,20 +10,13 @@ import { type IconReference, type IconRegistry } from './types/index.js';
 export const customIconPrefix = 'icon:';
 
 /**
- * The pattern icon registry keys and the asset names they map to must match.
- *
- * This matches the asset names produced by the CLI and Studio upload flows.
- */
-export const iconNamePattern = /^[\da-z]+(?:-[\da-z]+)*$/;
-
-/**
  * Check whether a value is a valid icon registry key or icon asset name.
  *
  * @param name The value to check.
  * @returns Whether the value matches the icon name grammar.
  */
 export function isValidIconName(name: unknown): name is string {
-  return typeof name === 'string' && iconNamePattern.test(name);
+  return typeof name === 'string' && normalized.test(name);
 }
 
 export type ParsedIconReference =
@@ -51,7 +45,7 @@ export function parseIconReference(reference: unknown): ParsedIconReference {
     if (!isValidIconName(key)) {
       return {
         type: 'invalid',
-        reason: `has the invalid icon key “${key}”; keys must match ${iconNamePattern.source}`,
+        reason: `has the invalid icon key “${key}”; keys must match ${normalized.source}`,
       };
     }
     return { type: 'custom', key };
