@@ -1455,6 +1455,7 @@ stop review:
 staging:
   image: dtzar/helm-kubectl:3
   stage: deploy
+  timeout: 2 hours 30 minutes
   needs:
     - build docker image
     - job: helm package
@@ -1496,7 +1497,7 @@ staging:
     - rm pgbouncer-userlist.txt
     - helm install staging ./public/appsemble-*.tgz
       --atomic
-      --timeout 90m
+      --timeout 120m
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "postgresql.host=staging-postgresql-rw"
