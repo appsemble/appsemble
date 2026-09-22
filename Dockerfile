@@ -93,12 +93,15 @@ RUN rm -r package-lock.json
 # Setup the production docker image.
 FROM node:24-trixie-slim
 
-# Install postgresql-client for pg_dump (used by backup-production-data command)
+# Install PostgreSQL 18 client tools for pg_dump (used by backup-production-data command)
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
   rm -f /etc/apt/apt.conf.d/docker-clean \
   && apt-get update \
-  && apt-get install --yes --no-install-recommends postgresql-client \
+  && apt-get install --yes --no-install-recommends ca-certificates postgresql-common \
+  && /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y \
+  && apt-get update \
+  && apt-get install --yes --no-install-recommends postgresql-client-18 \
     libaom3 libarchive13t64 libcgif0 libde265-0 libexif12 libexpat1 libfontconfig1 \
     libglib2.0-0t64 libhwy1t64 libimagequant0 libjpeg62-turbo liblcms2-2 \
     libpango-1.0-0 libpangocairo-1.0-0 libpng16-16t64 librsvg2-2 \

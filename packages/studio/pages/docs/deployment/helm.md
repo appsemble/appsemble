@@ -4,7 +4,7 @@
 
 - A working Kubernetes cluster
 - [Helm](https://helm.sh)
-- A PostgreSQL 17 server, see [PostgreSQL](/docs/deployment/postgresql) for running it with
+- A PostgreSQL 17 or later server, see [PostgreSQL](/docs/deployment/postgresql) for running it with
   CloudNativePG
 - (Optional) [Cert-manager](https://cert-manager.io) for automatic TLS certificate management
 
