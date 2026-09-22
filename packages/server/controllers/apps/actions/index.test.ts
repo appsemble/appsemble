@@ -1,7 +1,7 @@
 import { gzipSync } from 'node:zlib';
 
 import { type EmailActionDefinition } from '@appsemble/lang-sdk';
-import { uploadS3File, version } from '@appsemble/node-utils';
+import { getAppAssetLocation, uploadS3File, version } from '@appsemble/node-utils';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { type ParameterizedContext } from 'koa';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -679,7 +679,8 @@ describe('actions', () => {
         mime: 'application/json',
         filename: 'test.json',
       });
-      await uploadS3File(`app-${1}`, asset.id, buffer);
+      const { bucket, key } = getAppAssetLocation(1, asset.id);
+      await uploadS3File(bucket, key, buffer);
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
         to: 'test@example.com',
         body: 'Body',
@@ -786,7 +787,8 @@ describe('actions', () => {
         mime: 'text/plain',
         filename: 'test.txt',
       });
-      await uploadS3File(`app-${1}`, asset.id, buffer);
+      const { bucket, key } = getAppAssetLocation(1, asset.id);
+      await uploadS3File(bucket, key, buffer);
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
         to: 'test@example.com',
         body: 'Body',
@@ -833,12 +835,14 @@ describe('actions', () => {
         filename: 'test.txt',
         name: 'test',
       });
-      await uploadS3File(`app-${1}`, asset.id, buffer);
       const asset2 = await Asset.create({
         mime: 'text/plain',
         filename: 'test2.txt',
       });
-      await uploadS3File(`app-${1}`, asset2.id, buffer);
+      for (const { id } of [asset, asset2]) {
+        const { bucket, key } = getAppAssetLocation(1, id);
+        await uploadS3File(bucket, key, buffer);
+      }
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
         to: 'test@example.com',
         body: 'Body',

@@ -148,6 +148,41 @@ describe('registerAppMemberWithEmail', () => {
     expect(await compare('password', m.password!)).toBe(true);
   });
 
+  it('should return a TOTP challenge instead of tokens on apps which require TOTP', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+    await app.update({ totp: 'required' });
+
+    const response = await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    // The same challenge shape every other non OAuth2 endpoint responds with.
+    expect(response).toMatchObject({
+      status: 401,
+      data: {
+        error: 'Unauthorized',
+        message: 'TOTP verification required',
+        statusCode: 401,
+        data: {
+          totpRequired: true,
+          totpEnabled: false,
+          totpToken: expect.stringMatching(jwtPattern),
+        },
+      },
+    });
+    // The account exists, but it doesn’t get a session until the second factor is enrolled.
+    expect(response.data).not.toHaveProperty('access_token');
+    expect(response.headers).not.toHaveProperty('set-cookie');
+
+    const { AppMember } = await getAppDB(app.id);
+    expect(await AppMember.count({ where: { email: 'test@example.com' } })).toBe(1);
+  });
+
   it('should accept a display name', async () => {
     const app = await createDefaultAppWithSecurity(organization);
 

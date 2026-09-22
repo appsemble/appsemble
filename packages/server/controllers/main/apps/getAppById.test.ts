@@ -80,49 +80,23 @@ describe('getAppById', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "OrganizationId": "testorganization",
-        "OrganizationName": "Test Organization",
-        "controllerCode": null,
-        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
-        "demoMode": false,
-        "displayAppMemberName": false,
-        "displayInstallationPrompt": false,
         "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": "unlocked",
-        "metaPixelID": null,
-        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "showAppDefinition": false,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "skipGroupInvites": false,
-        "supportedLanguages": null,
-        "template": false,
-        "totp": "disabled",
-        "visibility": "unlisted",
       }
     `);
   });
 
-  it('should fetch an app even if the app definition visibility is false and user is not a member of the organization', async () => {
+  it('should minimize unlisted app metadata for users without organization permissions', async () => {
     const organization2 = await Organization.create({
       id: 'test-org',
       name: 'Test Organization 2',
@@ -135,6 +109,7 @@ describe('getAppById', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization2.id,
         showAppDefinition: false,
+        controllerCode: 'export default {}',
       },
       { raw: true },
     );
@@ -145,8 +120,34 @@ describe('getAppById', () => {
       data: {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
-        OrganizationId: organization2.id,
-        showAppDefinition: false,
+      },
+    });
+    expect(response.data).not.toHaveProperty('OrganizationId');
+    expect(response.data).not.toHaveProperty('controllerCode');
+    expect(response.data).not.toHaveProperty('showAppDefinition');
+  });
+
+  it('should deny private apps to users without organization permissions', async () => {
+    const organization2 = await Organization.create({
+      id: 'test-org',
+      name: 'Test Organization 2',
+    });
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization2.id,
+      visibility: 'private',
+    });
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}`);
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        message: 'User is not a member of this organization.',
       },
     });
   });
@@ -171,45 +172,18 @@ describe('getAppById', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "OrganizationId": "testorganization",
-        "OrganizationName": "Test Organization",
-        "controllerCode": null,
-        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
-        "demoMode": false,
-        "displayAppMemberName": false,
-        "displayInstallationPrompt": false,
         "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": "unlocked",
-        "metaPixelID": null,
-        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "showAppDefinition": false,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "skipGroupInvites": false,
-        "supportedLanguages": null,
-        "template": false,
-        "totp": "disabled",
-        "version": 2,
-        "visibility": "unlisted",
       }
     `);
   });
@@ -232,44 +206,18 @@ describe('getAppById', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "OrganizationId": "testorganization",
-        "OrganizationName": "Test Organization",
-        "controllerCode": null,
-        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
-        "demoMode": false,
-        "displayAppMemberName": false,
-        "displayInstallationPrompt": false,
         "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
         "hasIcon": true,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
-        "locked": "unlocked",
-        "metaPixelID": null,
-        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "showAppDefinition": false,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "skipGroupInvites": false,
-        "supportedLanguages": null,
-        "template": false,
-        "totp": "disabled",
-        "visibility": "unlisted",
       }
     `);
   });
@@ -295,44 +243,18 @@ describe('getAppById', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "OrganizationId": "testorganization",
-        "OrganizationName": "Test Organization",
-        "controllerCode": null,
-        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
-        "demoMode": false,
-        "displayAppMemberName": false,
-        "displayInstallationPrompt": false,
         "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
         "iconUrl": "/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
-        "locked": "unlocked",
-        "metaPixelID": null,
-        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "showAppDefinition": false,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "skipGroupInvites": false,
-        "supportedLanguages": null,
-        "template": false,
-        "totp": "disabled",
-        "visibility": "unlisted",
       }
     `);
   });
@@ -354,46 +276,47 @@ describe('getAppById', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "OrganizationId": "testorganization",
-        "OrganizationName": "Test Organization",
-        "controllerCode": null,
-        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
-        "demoMode": false,
-        "displayAppMemberName": false,
-        "displayInstallationPrompt": false,
         "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": "unlocked",
-        "metaPixelID": null,
-        "msClarityID": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "showAppDefinition": false,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "skipGroupInvites": false,
-        "supportedLanguages": null,
-        "template": false,
-        "totp": "disabled",
-        "visibility": "unlisted",
       }
     `);
+  });
+
+  it('should minimize anonymous metadata for unlisted apps when showAppDefinition is true', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      showAppDefinition: true,
+    });
+    const response = await request.get(`/api/apps/${app.id}`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: app.id,
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        yaml: 'name: Test App\ndefaultPage: Test Page\n',
+      },
+    });
+    expect(response.data).not.toHaveProperty('OrganizationId');
+    expect(response.data).not.toHaveProperty('OrganizationName');
+    expect(response.data).not.toHaveProperty('showAppDefinition');
+    expect(response.data).not.toHaveProperty('showAppsembleLogin');
+    expect(response.data).not.toHaveProperty('visibility');
   });
 
   it('should show the app definition of showAppDefinition is true', async () => {

@@ -6,7 +6,7 @@ import { useCallback, useMemo } from 'preact/hooks';
 
 import { type DateTimeField, type InputProps } from '../../../block.js';
 import { useLocale } from '../../hooks/useLocale.js';
-import { extractDate } from '../../utils/extractDate.js';
+import { extractDateBoundary } from '../../utils/extractDate.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import {
   getDisabledDays,
@@ -47,11 +47,11 @@ export function DateTimeInput({
   );
 
   const maxDate = useMemo(
-    () => extractDate(getMaxDate(field, utils, formValues)),
+    () => extractDateBoundary(getMaxDate(field, utils, formValues), 'end'),
     [field, utils, formValues],
   );
   const minDate = useMemo(
-    () => extractDate(getMinDate(field, utils, formValues)),
+    () => extractDateBoundary(getMinDate(field, utils, formValues), 'start'),
     [field, utils, formValues],
   );
   const minTime = useMemo(() => getMinTime(field), [field]);

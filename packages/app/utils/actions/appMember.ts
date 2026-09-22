@@ -5,6 +5,7 @@ import axios from 'axios';
 
 import { type ActionCreator } from './index.js';
 import { apiUrl, appId } from '../settings.js';
+import { getTotpChallenge } from '../totp.js';
 
 export const appMemberRegister: ActionCreator<'app.member.register'> = ({
   definition,
@@ -50,7 +51,15 @@ export const appMemberRegister: ActionCreator<'app.member.register'> = ({
 
     assignAppMemberProperties(properties, formData);
 
-    await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
+    try {
+      await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
+    } catch (error: unknown) {
+      // On apps which require TOTP the account is created without a session. Logging in below
+      // raises the same challenge, which is where it’s handled.
+      if (!getTotpChallenge(error)) {
+        throw error;
+      }
+    }
 
     if (login) {
       await passwordLogin({ username: email, password });

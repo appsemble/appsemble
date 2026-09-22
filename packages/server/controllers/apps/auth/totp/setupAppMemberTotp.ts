@@ -5,11 +5,14 @@ import { authenticator } from 'otplib';
 import { App, getAppDB } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
 import { encrypt } from '../../../../utils/crypto.js';
+import { verifyTotpPendingToken } from '../../../../utils/totpPendingToken.js';
 
 export async function setupAppMemberTotp(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
-    request: { body },
+    request: {
+      body: { totpToken },
+    },
     user: appMember,
   } = ctx;
 
@@ -20,22 +23,13 @@ export async function setupAppMemberTotp(ctx: Context): Promise<void> {
   assertKoaCondition(!app.demoMode, ctx, 400, 'TOTP is not available for demo mode apps');
   assertKoaCondition(app.totp !== 'disabled', ctx, 400, 'TOTP is not enabled for this app');
 
-  const { AppMember } = await getAppDB(appId);
-
-  // Allow memberId from body for unauthenticated setup during login flow
-  // This is only allowed when TOTP is required (to prevent abuse)
-  const memberId = appMember?.id || (body as { memberId?: string })?.memberId;
+  // During the login flow the app member has verified their password, but has no access token yet.
+  // The pending token issued by that first step is what identifies them here.
+  const memberId =
+    appMember?.id ?? (totpToken ? verifyTotpPendingToken(ctx, appId, totpToken).sub : null);
   assertKoaCondition(memberId != null, ctx, 401, 'User is not authenticated');
 
-  // If using memberId from body (unauthenticated), verify TOTP is required
-  if (!appMember && (body as { memberId?: string })?.memberId) {
-    assertKoaCondition(
-      app.totp === 'required',
-      ctx,
-      403,
-      'Unauthenticated TOTP setup is only allowed when TOTP is required',
-    );
-  }
+  const { AppMember } = await getAppDB(appId);
 
   const member = await AppMember.findByPk(memberId);
   assertKoaCondition(member != null, ctx, 404, 'App member not found');
@@ -43,8 +37,9 @@ export async function setupAppMemberTotp(ctx: Context): Promise<void> {
 
   const secret = authenticator.generateSecret();
 
-  // Store the secret encrypted (not enabled yet until verified)
-  await member.update({ totpSecret: encrypt(secret, argv.aesSecret) });
+  // Store the secret encrypted (not enabled yet until verified). The replay counter belongs to the
+  // previous secret, so it’s reset along with it.
+  await member.update({ totpSecret: encrypt(secret, argv.aesSecret), totpLastCounter: null });
 
   // Generate otpauth URL for QR code
   const appName = app.definition.name || `App ${appId}`;

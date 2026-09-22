@@ -25,6 +25,8 @@ workflow:
     - if: $CI_MERGE_REQUEST_ID
     # By default, run jobs for every commit on main.
     - if: $CI_COMMIT_BRANCH == 'main'
+    # By default, run jobs for every hotfix branch.
+    - if: $CI_COMMIT_BRANCH =~ /^hotfix\/[0-9A-Za-z-]+$/
     # By default, run jobs for every commit on staging.
     - if: $CI_COMMIT_BRANCH == 'staging'
     # By default, run jobs for every tag
@@ -57,7 +59,7 @@ workflow:
   extends: .npm
   stage: publish
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'main' || $CI_COMMIT_BRANCH =~ /^hotfix\/[0-9A-Za-z-]+$/
       when: manual
   allow_failure: true
   script:
@@ -65,8 +67,28 @@ workflow:
     - apt-get install --yes git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
     - |
-      if [ -n "$IDENTIFIER" ]; then
-        npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
+      resolve_identifier_from_branch_name() {
+        case "$CI_COMMIT_REF_NAME" in
+          hotfix/*)
+            printf '%s\n' "${CI_COMMIT_REF_NAME##*/}" |
+              sed -nE 's/^([0-9A-Za-z-]+)$/\1/p'
+            ;;
+        esac
+      }
+
+      if [ "$INCREMENT" = 'prerelease' ]; then
+        if [ "$CI_COMMIT_REF_NAME" = 'main' ]; then
+          RELEASE_IDENTIFIER='test'
+        else
+          RELEASE_IDENTIFIER="$(resolve_identifier_from_branch_name)"
+        fi
+        if [ -z "$RELEASE_IDENTIFIER" ]; then
+          echo 'No pre-release identifier resolved.'
+          echo 'Use main for test prereleases or a hotfix/<identifier> branch for custom prereleases.'
+          exit 1
+        fi
+        echo "Using pre-release identifier: $RELEASE_IDENTIFIER"
+        npm run scripts -- release "$INCREMENT" --identifier "$RELEASE_IDENTIFIER"
       else
         npm run scripts -- release "$INCREMENT"
       fi
@@ -82,34 +104,16 @@ workflow:
     - git add .
     - git commit --message "$MESSAGE" --cleanup whitespace --gpg-sign
     - git tag "$VERSION" --message "$MESSAGE" --cleanup whitespace --sign
-    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:main
+    - RELEASE_TARGET_BRANCH="$CI_COMMIT_REF_NAME"
+    - 'echo "Pushing release commit to branch: $RELEASE_TARGET_BRANCH"'
+    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:"$RELEASE_TARGET_BRANCH"
     - |
       if [ $? -eq 0 ]; then
-        echo "Code push successful. Pushing tags..."
+        echo "Code push to $RELEASE_TARGET_BRANCH successful. Pushing tags..."
         git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" --tags
       else
-        echo "Push to main branch failed. Tags will not be pushed."
+        echo "Code push to $RELEASE_TARGET_BRANCH failed. Tags will not be pushed."
       fi
-
-###################################################################################################
-#  Auto-approve Renovate MRs                                                                      #
-###################################################################################################
-
-# Automatically approve merge requests from Renovate bot after build succeeds
-auto-approve-renovate:
-  stage: test
-  image: alpine:latest
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\// && $CI_MERGE_REQUEST_APPROVED != "true"
-  needs:
-    - npm_ci
-    - build docker image
-  script:
-    - apk add --no-cache curl
-    - |
-      curl --fail --request POST \
-        --header "PRIVATE-TOKEN: $GITLAB_APPROVAL_TOKEN" \
-        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/approve"
 
 # Enable auto-merge on the open Weblate merge requests. This runs from a scheduled pipeline on
 # main, where the protected GITLAB_ACCESS_TOKEN is available; set AUTO_MERGE_WEBLATE on that
@@ -172,6 +176,19 @@ secret-scan-mr:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
+trufflehog:
+  stage: security
+  image: alpine:latest
+  variables:
+    TRUFFLEHOG_VERSION: v3.97.0
+  before_script:
+    - apk add --no-cache curl git
+    - curl --fail --silent --show-error --location "https://raw.githubusercontent.com/trufflesecurity/trufflehog/$TRUFFLEHOG_VERSION/scripts/install.sh" | sh -s -- -b /usr/local/bin "$TRUFFLEHOG_VERSION"
+  script:
+    - trufflehog git file://. --results=verified --fail --since-commit "$CI_MERGE_REQUEST_DIFF_BASE_SHA" --branch "$CI_COMMIT_SHA"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
 ###################################################################################################
 #  Build Stage                                                                                    #
 ###################################################################################################
@@ -205,10 +222,14 @@ build docker image:
       -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
       --cache-from "type=registry,ref=$CACHE_IMAGE"
       --cache-from "type=registry,ref=$CI_REGISTRY_IMAGE/cache:main"
-      --cache-to "type=registry,ref=$CACHE_IMAGE,mode=min"
+      --cache-to "type=registry,ref=$CACHE_IMAGE,mode=max"
       --build-arg "version=$CI_COMMIT_REF_NAME"
       --build-arg "date=$CI_JOB_STARTED_AT"
+      --build-arg "commit=$CI_COMMIT_SHA"
       --load .
+    - docker run --rm --entrypoint node
+      --mount "type=bind,source=$CI_PROJECT_DIR/config,target=/app/config,readonly"
+      "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --test config/bin/check-image-formats.mjs
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
     # Extract dist/ from the built image for sourcemap uploads to Sentry
     - mkdir -p dist
@@ -238,12 +259,24 @@ seed database:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    - name: minio/minio:latest
-      alias: minio
-      entrypoint: ['sh', '-c', 'minio server /data']
-      variables:
-        MINIO_ROOT_USER: admin
-        MINIO_ROOT_PASSWORD: password
+    - name: chrislusf/seaweedfs:4.47
+      alias: s3
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          set -eu
+          cat > /etc/seaweedfs/s3.json <<'JSON'
+          {
+            "identities": [
+              {
+                "name": "admin",
+                "credentials": [{ "accessKey": "admin", "secretKey": "password" }],
+                "actions": ["Admin", "Read", "Write"]
+              }
+            ]
+          }
+          JSON
+          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
       entrypoint: ['sh', '-c']
@@ -263,7 +296,8 @@ seed database:
         DATABASE_NAME: appsemble
         DATABASE_USER: admin
         DATABASE_PASSWORD: password
-        S3_HOST: minio
+        S3_HOST: s3
+        S3_PORT: 8333
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
@@ -284,7 +318,8 @@ seed database:
       --website https://appsemble.com
     - npm run appsemble -- block publish 'blocks/*'
     - npm run scripts -- sync-object-storage-bucket export seeded-object-storage
-      --s3-host minio
+      --s3-host s3
+      --s3-port 8333
       --s3-secure=false
       --s3-access-key admin
       --s3-secret-key password
@@ -454,16 +489,28 @@ test node:
   services:
     - name: postgres:17
       alias: postgres
-    - name: valkey/valkey:9.1.1
+    - name: valkey/valkey:9.1.2
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
-    - name: minio/minio:latest
-      alias: minio
-      command: ['server', '/data']
-      variables:
-        MINIO_ROOT_USER: admin
-        MINIO_ROOT_PASSWORD: password
-  variables:
+    - name: chrislusf/seaweedfs:4.47
+      alias: s3
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          set -eu
+          cat > /etc/seaweedfs/s3.json <<'JSON'
+          {
+            "identities": [
+              {
+                "name": "admin",
+                "credentials": [{ "accessKey": "admin", "secretKey": "password" }],
+                "actions": ["Admin", "Read", "Write"]
+              }
+            ]
+          }
+          JSON
+          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
+  variables: &test-node-variables
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
@@ -472,8 +519,8 @@ test node:
     DATABASE_PORT: 5432
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
-    S3_HOST: 'minio'
-    S3_PORT: 9000
+    S3_HOST: 's3'
+    S3_PORT: 8333
     VALKEY_HOST: 'valkey'
     VALKEY_PORT: 6379
     VALKEY_USERNAME: default
@@ -490,6 +537,72 @@ test node:
       coverage_report:
         coverage_format: cobertura
         path: coverage/cobertura-coverage.xml
+
+# Run the tests that touch object storage in the single-bucket layout. `test node` runs them in the
+# bucket-per-app layout, where an admin identity creates a bucket per app on demand.
+test node single bucket:
+  extends: .npm
+  services:
+    - name: postgres:17
+      alias: postgres
+    - name: valkey/valkey:9.1.2
+      alias: valkey
+      command: ['valkey-server', '--requirepass', 'password']
+    # The single-bucket layout: the bucket and a user that can only touch its objects are
+    # provisioned before SeaweedFS listens on the port the job connects to. Block assets are
+    # served through the server here, so the bucket stays private.
+    - &seaweedfs-single-bucket
+      name: chrislusf/seaweedfs:4.47
+      alias: s3
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          set -eu
+          cat > /etc/seaweedfs/s3.json <<'JSON'
+          {
+            "identities": [
+              {
+                "name": "appsemble-server",
+                "credentials": [
+                  { "accessKey": "appsemble-server", "secretKey": "appsemble-server-secret" }
+                ],
+                "actions": [
+                  "Read:appsemble",
+                  "Write:appsemble",
+                  "List:appsemble",
+                  "Tagging:appsemble"
+                ]
+              }
+            ]
+          }
+          JSON
+          weed server -dir=/data -s3 -s3.port=8334 -s3.config=/etc/seaweedfs/s3.json &
+          weed_pid=$!
+          until echo 's3.bucket.list' | weed shell >/dev/null 2>&1; do
+            sleep 1
+          done
+          echo 's3.bucket.create -name appsemble' | weed shell
+          kill "$weed_pid"
+          wait "$weed_pid" || true
+          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
+  variables:
+    <<: *test-node-variables
+    S3_BUCKET: appsemble
+    S3_ACCESS_KEY: appsemble-server
+    S3_SECRET_KEY: appsemble-server-secret
+  stage: test
+  script:
+    # Every test file that names an export of the object storage modules, except the backup test,
+    # which needs the admin identity to create its own bucket.
+    - exports=$(sed -nE 's/^export (async )?function (\w+).*/\2/p; s/^export const (\w+).*/\1/p' packages/node-utils/s3.ts packages/node-utils/assets.ts | paste -sd '|')
+    - test -n "$exports"
+    - files=$(grep -rlw -E "$exports" --include='*.test.ts' --exclude-dir=node_modules packages/cli packages/server | grep -vxF packages/server/commands/backupProductionData.test.ts)
+    - test -n "$files"
+    - echo "$files"
+    - npm test -- --no-file-parallelism $files
+  artifacts:
+    reports:
+      junit: junit.xml
 
 # Check type validity for our TypeScript files.
 tsc:
@@ -594,12 +707,24 @@ validate snippets:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    - name: minio/minio:latest
-      alias: minio
-      entrypoint: ['sh', '-c', 'minio server /data']
-      variables:
-        MINIO_ROOT_USER: admin
-        MINIO_ROOT_PASSWORD: password
+    - name: chrislusf/seaweedfs:4.47
+      alias: s3
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          set -eu
+          cat > /etc/seaweedfs/s3.json <<'JSON'
+          {
+            "identities": [
+              {
+                "name": "admin",
+                "credentials": [{ "accessKey": "admin", "secretKey": "password" }],
+                "actions": ["Admin", "Read", "Write"]
+              }
+            ]
+          }
+          JSON
+          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
       entrypoint: ['sh', '-c']
@@ -619,7 +744,8 @@ validate snippets:
         DATABASE_NAME: appsemble
         DATABASE_USER: admin
         DATABASE_PASSWORD: password
-        S3_HOST: minio
+        S3_HOST: s3
+        S3_PORT: 8333
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
@@ -627,7 +753,8 @@ validate snippets:
   script:
     - npm run appsemble -- config set remote 'http://appsemble:9999'
     - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
-      --s3-host minio
+      --s3-host s3
+      --s3-port 8333
       --s3-secure=false
       --s3-access-key admin
       --s3-secret-key password
@@ -672,13 +799,11 @@ e2e node:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    - name: minio/minio:latest
-      alias: minio
-      entrypoint: ['sh', '-c', 'minio server /data']
-      variables:
-        MINIO_ROOT_USER: admin
-        MINIO_ROOT_PASSWORD: password
-    - name: valkey/valkey:9.1.1
+    # The end-to-end suite runs in the single-bucket layout, the layout review environments and
+    # the Helm chart deploy. `test node` covers the bucket-per-app layout and
+    # `test node single bucket` covers this layout at the unit level.
+    - *seaweedfs-single-bucket
+    - name: valkey/valkey:9.1.2
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
@@ -707,10 +832,12 @@ e2e node:
         DATABASE_NAME: appsemble
         DATABASE_USER: admin
         DATABASE_PASSWORD: password
-        S3_HOST: minio
+        S3_HOST: s3
+        S3_PORT: 8333
         S3_SECURE: false
-        S3_ACCESS_KEY: admin
-        S3_SECRET_KEY: password
+        S3_BUCKET: appsemble
+        S3_ACCESS_KEY: appsemble-server
+        S3_SECRET_KEY: appsemble-server-secret
         migrateTo: next
         E2E: true
   script:
@@ -723,11 +850,12 @@ e2e node:
     - npm --workspace @appsemble/utils run prepack
     - npm --workspace @appsemble/node-utils run prepack
     - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
-      --s3-host minio
+      --s3-host s3
+      --s3-port 8333
       --s3-secure=false
-      --s3-access-key admin
-      --s3-secret-key password
-      --public-read
+      --s3-bucket appsemble
+      --s3-access-key appsemble-server
+      --s3-secret-key appsemble-server-secret
     - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
   parallel: 6
   artifacts:
@@ -774,12 +902,24 @@ e2e keycloak:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    - name: minio/minio:latest
-      alias: minio
-      entrypoint: ['sh', '-c', 'minio server /data']
-      variables:
-        MINIO_ROOT_USER: admin
-        MINIO_ROOT_PASSWORD: password
+    - name: chrislusf/seaweedfs:4.47
+      alias: s3
+      entrypoint: ['sh', '-c']
+      command:
+        - |
+          set -eu
+          cat > /etc/seaweedfs/s3.json <<'JSON'
+          {
+            "identities": [
+              {
+                "name": "admin",
+                "credentials": [{ "accessKey": "admin", "secretKey": "password" }],
+                "actions": ["Admin", "Read", "Write"]
+              }
+            ]
+          }
+          JSON
+          exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     - name: quay.io/keycloak/keycloak:26.6.1
       alias: keycloak
       command: ['start-dev', '--http-enabled=true', '--hostname-strict=false']
@@ -806,7 +946,8 @@ e2e keycloak:
         DATABASE_NAME: appsemble
         DATABASE_USER: admin
         DATABASE_PASSWORD: password
-        S3_HOST: minio
+        S3_HOST: s3
+        S3_PORT: 8333
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
@@ -820,7 +961,8 @@ e2e keycloak:
     - npm --workspace @appsemble/utils run prepack
     - npm --workspace @appsemble/node-utils run prepack
     - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
-      --s3-host minio
+      --s3-host s3
+      --s3-port 8333
       --s3-secure=false
       --s3-access-key admin
       --s3-secret-key password
@@ -1086,12 +1228,14 @@ sentry release:
     - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
     - sentry-cli releases files "$CI_COMMIT_TAG" upload-sourcemaps dist/
 
-# Create a test pre-release
+# Create a pre-release. By default this creates a test release.
+# Branch behavior:
+# - main -> test prerelease identifier
+# - hotfix/<name> -> <name> prerelease identifier
 release test:
   extends: .release
   variables:
     INCREMENT: prerelease
-    IDENTIFIER: test
 
 # Create a patch release
 release patch:
@@ -1160,9 +1304,10 @@ update dependencies:
     name: review/$CI_MERGE_REQUEST_IID
     url: https://$CI_MERGE_REQUEST_IID.appsemble.review
     on_stop: stop review
+    auto_stop_in: 1 week
   variables:
     GIT_STRATEGY: fetch
-    # Matches the chart default global.postgresql.auth.username.
+    # Matches the chart default postgresql.auth.username.
     POSTGRES_APP_USER: appsemble
   retry:
     max: 1
@@ -1176,13 +1321,14 @@ update dependencies:
     - ./scripts/cleanup-review-resources.sh
     - ./scripts/pre-review-capacity-check.sh
     - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
+    - ./scripts/deploy-review-postgresql.sh
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-valkey --from-literal "password=$(openssl rand -base64 30)"
     # PgBouncer setup, auth file generation
     - |
-      POSTGRES_PASSWORD="$(kubectl get secret postgresql-secret -o jsonpath='{.data.password}' | base64 -d)"
+      POSTGRES_PASSWORD="$(kubectl get secret review-$CI_MERGE_REQUEST_IID-postgresql-app -o jsonpath='{.data.password}' | base64 -d)"
 
       printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
     - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt
@@ -1216,7 +1362,6 @@ update dependencies:
         --enabled-events invoice.payment_succeeded \
         --api-key "$STRIPE_API_SECRET_KEY" | jq -r '.secret')
     - kubectl create secret generic stripe-webhook-secret-$CI_MERGE_REQUEST_IID --from-literal=stripe-webhook-secret="$STRIPE_WEBHOOK_SECRET"
-    # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
     # --wait (not --atomic): on failure leave the release for the next deploy to
     # clean up, instead of triggering an uninstall whose pre-delete cleanup hook
     # hangs against the un-migrated database and turns failures into ~60m jobs.
@@ -1224,6 +1369,7 @@ update dependencies:
       --debug
       --wait
       --timeout 30m0s
+      --set "cronjob.platform.enabled=false"
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
@@ -1237,10 +1383,10 @@ update dependencies:
       --set "ingress.tlsSecretName=review-$CI_MERGE_REQUEST_IID-tls"
       --set "ingress.tlsWildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
       --set "migrateTo=next"
-      --set "global.postgresql.auth.existingSecret=postgresql-secret"
-      --set "postgresql.primary.persistence.enabled=false"
-      --set "postgresql.primary.resources.requests.memory=256Mi"
-      --set "postgresql.primary.resources.limits.memory=512Mi"
+      --set "postgresql.host=review-$CI_MERGE_REQUEST_IID-postgresql-rw"
+      --set "postgresql.auth.existingSecret=review-$CI_MERGE_REQUEST_IID-postgresql-app"
+      --set "resources.deployment.requests.cpu=250m"
+      --set "resources.deployment.requests.memory=1Gi"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
@@ -1249,20 +1395,17 @@ update dependencies:
       --set "provision.user.name=$BOT_ACCOUNT_NAME"
       --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.user.timezone=Europe/Amsterdam"
-      --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.review}"
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
-      --set "minio.persistence.enabled=false"
-      --set "minio.fullnameOverride=review-$CI_MERGE_REQUEST_IID-minio"
-      --set "minio.ingress.hostname=console.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
-      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-review"
-      --set "minio.apiIngress.hostname=api.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
-      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-review"
-      --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "seaweedfs.fullnameOverride=review-$CI_MERGE_REQUEST_IID-seaweedfs"
+      --set "seaweedfs.global.seaweedfs.serviceAccountName=review-$CI_MERGE_REQUEST_IID-seaweedfs"
+      --set "seaweedfs.allInOne.data.type=emptyDir"
+      --set "seaweedfs.allInOne.s3.createBuckets[0].name=appsemble"
+      --set "s3.bucket=appsemble"
       --set "valkey.fullnameOverride=review-$CI_MERGE_REQUEST_IID-valkey"
       --set "valkey.auth.usersExistingSecret=review-$CI_MERGE_REQUEST_IID-valkey"
       --set "valkey.resources.requests.cpu=25m"
@@ -1323,7 +1466,7 @@ staging:
     url: https://appsemble.eu
   variables:
     GIT_STRATEGY: none
-    # Matches the chart default global.postgresql.auth.username.
+    # Matches the chart default postgresql.auth.username.
     POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
@@ -1331,8 +1474,9 @@ staging:
     - helm delete staging --no-hooks || true
     # Replaces the skipped pre-delete cleanup hook: remove server-created app ingresses and TLS secrets
     - kubectl delete ingress,secret -l app.kubernetes.io/managed-by=staging-appsemble || true
-    - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
-    - kubectl delete namespace "companion-containers-staging" || true
+    # helm delete only starts the termination of the companion namespace; wait for it to be gone,
+    # or the install fails creating the companion Role in a terminating namespace.
+    - kubectl delete namespace "companion-containers-staging-appsemble" --ignore-not-found --timeout=5m || true
     - kubectl delete secret staging-mailpit-tls || true
     - apk add --no-cache openssl
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=staging-appsemble-mailpit-smtp" -addext "subjectAltName=DNS:staging-appsemble-mailpit-smtp"
@@ -1341,19 +1485,22 @@ staging:
     - '[ -n "$STAGING_BACKUPS_HOST" ] || { echo "Please set STAGING_BACKUPS_HOST for staging backup destination" >&2; exit 1; }'
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
+    # The CloudNativePG cluster lives outside the release (appsemble/infra), so the data survives a redeploy.
+    - kubectl wait --for=condition=Ready cluster.postgresql.cnpg.io/staging-postgresql --timeout=1m
     # PgBouncer auth file, generated from the PostgreSQL user password
     - |
-      POSTGRES_PASSWORD="$(kubectl get secret postgresql-secret -o jsonpath='{.data.password}' | base64 -d)"
+      POSTGRES_PASSWORD="$(kubectl get secret staging-postgresql-app -o jsonpath='{.data.password}' | base64 -d)"
 
       printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
     - kubectl create secret generic staging-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
     - rm pgbouncer-userlist.txt
     - helm install staging ./public/appsemble-*.tgz
       --atomic
-      --timeout 30m0s
+      --timeout 90m
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
-      --set "global.postgresql.auth.existingSecret=postgresql-secret"
+      --set "postgresql.host=staging-postgresql-rw"
+      --set "postgresql.auth.existingSecret=staging-postgresql-app"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=staging"
@@ -1372,12 +1519,8 @@ staging:
       --set "migrateTo=next"
       --set "oauthSecret=oauth2"
       --set "skipCustomDomains=true"
-      --set "postgresql.fullnameOverride=staging-postgresql"
-      --set 'minio.persistence.size=20Gi'
-      --set "postgresql.primary.resources.requests.cpu=250m"
-      --set "postgresql.primary.resources.requests.memory=1Gi"
-      --set "postgresql.primary.resources.limits.cpu=1"
-      --set "postgresql.primary.resources.limits.memory=2Gi"
+      --set 'seaweedfs.allInOne.data.size=20Gi'
+      --set "seaweedfs.allInOne.data.annotations.helm\\.sh/resource-policy=keep"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
@@ -1397,15 +1540,11 @@ staging:
       --set "quotas.appEmail.alertOrganizationOwner=true"
       --set "mailpit.mailpit.smtp.tls.secretName=staging-mailpit-tls"
       --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
-      --set "minio.fullnameOverride=staging-minio"
-      --set "minio.ingress.hostname=console.minio.appsemble.eu"
-      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-staging"
-      --set "minio.apiIngress.hostname=api.minio.appsemble.eu"
-      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-staging"
-      --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "seaweedfs.fullnameOverride=staging-seaweedfs"
       --set "valkey.fullnameOverride=staging-valkey"
       --set "valkey.auth.usersExistingSecret=valkey"
       --set "pgbouncer.enabled=true"
+      --set "pgbouncer.replicaCount=2"
       --set "pgbouncer.auth.existingSecret=staging-pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=50m"
       --set "valkey.resources.requests.memory=64Mi"
@@ -1433,13 +1572,14 @@ production:
     - publish docker
     - publish helm
   rules:
-    - if: $CI_COMMIT_TAG
+    # Deploy stable and test prerelease tags; hotfix prerelease tags skip production.
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+(-test\.\d+)?$/'
   environment:
     name: production
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
-    # Matches the chart default global.postgresql.auth.username.
+    # Matches the chart default postgresql.auth.username.
     POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:production"
@@ -1474,6 +1614,8 @@ production:
     - rm mailpit.key mailpit.crt
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
+    # The CloudNativePG cluster lives outside the release (appsemble/infra).
+    - kubectl wait --for=condition=Ready "cluster.postgresql.cnpg.io/$POSTGRESQL_CLUSTER" --timeout=1m
     # PgBouncer auth file, generated from the PostgreSQL user password
     - |
       POSTGRES_PASSWORD="$(kubectl get secret "$POSTGRESQL_SECRET" -o jsonpath='{.data.password}' | base64 -d)"
@@ -1482,30 +1624,14 @@ production:
     - kubectl create secret generic pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
     - rm pgbouncer-userlist.txt
     - kubectl rollout restart deployment appsemble-mailpit || true
-    # PostgreSQL performance tuning for the 2Gi production container, applied
-    # through the bitnami subchart's extendedConfiguration (override.conf).
-    # shared_buffers is ~25% of the container limit; work_mem is raised to cut
-    # temp-file spilling on sorts/hashes across the many per-app databases; and
-    # effective_cache_size reflects the real cgroup budget rather than the
-    # subchart default of 4GB. The shared_preload_libraries and pg_stat_statements
-    # settings match the chart default so pgaudit and pg_stat_statements keep
-    # working; extendedConfiguration is a single value, so it is set in full here.
-    - |
-      cat > postgresql-tuning.conf <<'EOF'
-      shared_preload_libraries = 'pgaudit,pg_stat_statements'
-      pg_stat_statements.max = 10000
-      pg_stat_statements.track = all
-      shared_buffers = 512MB
-      effective_cache_size = 1536MB
-      work_mem = 16MB
-      EOF
     - helm upgrade appsemble appsemble/appsemble
       --debug
       --timeout 30m
       --version "$CI_COMMIT_TAG"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
-      --set "global.postgresql.auth.existingSecret=$POSTGRESQL_SECRET"
+      --set "postgresql.host=$POSTGRESQL_CLUSTER-rw"
+      --set "postgresql.auth.existingSecret=$POSTGRESQL_SECRET"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=1G"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/force-ssl-redirect=\"true\""
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/ssl-redirect=\"true\""
@@ -1519,17 +1645,14 @@ production:
       --set "ingress.tlsSecretName=appsemble-tls"
       --set "ingress.tlsWildcardSecretName=appsemble-tls-wildcard"
       --set "oauthSecret=oauth2"
-      --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
-      --set "postgresql.enabled=true"
       --set 'postgresSSL=false'
-      --set 'minio.persistence.size=50Gi'
-      --set "minio.persistence.storageClass=hetzner-volumes-retain"
-      --set "minio.persistence.annotations.helm\\.sh/resource-policy=keep"
-      --set "postgresql.primary.resources.requests.cpu=250m"
-      --set "postgresql.primary.resources.requests.memory=1Gi"
-      --set "postgresql.primary.resources.limits.cpu=1"
-      --set "postgresql.primary.resources.limits.memory=2Gi"
-      --set-file "postgresql.primary.extendedConfiguration=postgresql-tuning.conf"
+      --set 'seaweedfs.allInOne.data.size=50Gi'
+      --set "seaweedfs.allInOne.resources.requests.cpu=250m"
+      --set "seaweedfs.allInOne.resources.requests.memory=512Mi"
+      --set "seaweedfs.allInOne.resources.limits.cpu=1"
+      --set "seaweedfs.allInOne.resources.limits.memory=3Gi"
+      --set "seaweedfs.allInOne.data.storageClass=hetzner-volumes-retain"
+      --set "seaweedfs.allInOne.data.annotations.helm\\.sh/resource-policy=keep"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "replicaCount=2"
@@ -1542,14 +1665,18 @@ production:
       --set "quotas.appEmail.alertOrganizationOwner=true"
       --set "mailpit.mailpit.smtp.tls.secretName=appsemble-mailpit-tls"
       --set "blockAssets.publicUrl=https://api.minio.appsemble.app"
-      --set "minio.ingress.hostname=console.minio.appsemble.app"
-      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
-      --set "minio.apiIngress.hostname=api.minio.appsemble.app"
-      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
-      --set "minio.apiIngress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "seaweedfs.fullnameOverride=appsemble-seaweedfs"
+      --set "seaweedfs.s3.ingress.enabled=true"
+      --set "seaweedfs.s3.ingress.className=nginx"
+      --set "seaweedfs.s3.ingress.host=api.minio.appsemble.app"
+      --set "seaweedfs.s3.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
+      --set "seaweedfs.s3.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=256m"
+      --set "seaweedfs.s3.ingress.tls[0].secretName=api.minio.appsemble.app-tls"
+      --set "seaweedfs.s3.ingress.tls[0].hosts[0]=api.minio.appsemble.app"
       --set "valkey.fullnameOverride=appsemble-valkey"
       --set "valkey.auth.usersExistingSecret=valkey"
       --set "pgbouncer.enabled=true"
+      --set "pgbouncer.replicaCount=2"
       --set "pgbouncer.auth.existingSecret=pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=100m"
       --set "valkey.resources.requests.memory=128Mi"
@@ -1642,7 +1769,7 @@ provision production:
   extends: .npm
   stage: provision
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+(-test\.\d+)?$/'
   needs:
     - production
     - npm_ci

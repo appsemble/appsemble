@@ -1,6 +1,7 @@
 import { getAppBlocks, type IdentifiableBlock, parseBlockName } from '@appsemble/lang-sdk';
 import {
   getBlockAssetDownloadUrl,
+  getBlockAssetLocation,
   getSSRFProtectedAgents,
   isValidBlockAssetFilename,
   logger,
@@ -15,7 +16,6 @@ import { argv } from './argv.js';
 import {
   deleteBlockAssetObjects,
   getBlockAssetFileUrls,
-  getBlockAssetsBucketName,
   getBlockAssetStorageKey,
 } from './blockAssets.js';
 import { App, BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
@@ -122,7 +122,11 @@ export async function syncBlock({
           httpsAgent,
           responseType: 'arraybuffer',
         });
-        const [mime] = headers['content-type'].split(';');
+        const contentType = headers['content-type'];
+        if (typeof contentType !== 'string') {
+          throw new TypeError(`Invalid content type for block asset ${downloadUrl}`);
+        }
+        const [mime] = contentType.split(';');
         const buffer = Buffer.from(content);
         const storageKey = getBlockAssetStorageKey({
           blockName: name,
@@ -132,7 +136,8 @@ export async function syncBlock({
           version,
         });
 
-        await uploadS3File(getBlockAssetsBucketName(), storageKey, buffer, buffer.byteLength, {
+        const { bucket, key } = getBlockAssetLocation(storageKey);
+        await uploadS3File(bucket, key, buffer, buffer.byteLength, {
           'Cache-Control': 'public,max-age=31536000,immutable',
           'Content-Type': mime,
         });

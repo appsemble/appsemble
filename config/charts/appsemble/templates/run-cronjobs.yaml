@@ -12,6 +12,7 @@ spec:
   failedJobsHistoryLimit: {{ mul 24 .Values.cronjob.jobsHistoryLimit }}
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
       template:
         metadata:
           annotations:
@@ -31,6 +32,7 @@ spec:
                 - -vv
               env:
 {{ include "appsemble.postgres" . | indent 16 }}
+{{ include "appsemble.s3" . | indent 16 }}
 {{ include "appsemble.valkey" . | indent 16 }}
 {{ include "appsemble.sentry" . | indent 16 }}
                 - name: HOST

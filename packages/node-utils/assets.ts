@@ -2,17 +2,16 @@ import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 
 import { type Context } from 'koa';
-import { type BucketItemStat } from 'minio';
 
 import { logger } from './logger.js';
-import { uploadS3File } from './s3.js';
+import { getAppAssetLocation, type S3FileStats, uploadS3File } from './s3.js';
 import { removeUploads } from './uploads.js';
 
 export function setAssetHeaders(
   ctx: Context,
   mime: string,
   filename: string | null,
-  stats?: BucketItemStat,
+  stats?: S3FileStats,
 ): void {
   ctx.set('content-type', mime || 'application/octet-stream');
   if (filename) {
@@ -53,7 +52,8 @@ export async function uploadAsset(appId: number, asset: AssetToUpload): Promise<
   try {
     const stats = await stat(path);
     const stream = createReadStream(path);
-    await uploadS3File(`app-${appId}`, id, stream, stats.size);
+    const { bucket, key } = getAppAssetLocation(appId, id);
+    await uploadS3File(bucket, key, stream, stats.size);
   } catch (error) {
     logger.error(error);
     throw error;

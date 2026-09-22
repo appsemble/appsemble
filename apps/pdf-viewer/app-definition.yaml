@@ -1,0 +1,9 @@
+name: pdf-viewer
+defaultPage: PDF Viewer
+pages:
+  - name: PDF Viewer
+    blocks:
+      - type: pdf-viewer
+        version: 0.39.2
+        parameters:
+          url: my-pdf

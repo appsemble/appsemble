@@ -15,6 +15,7 @@ import { argv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { configureDNS } from '../utils/dns/index.js';
 import { migrate } from '../utils/migrate.js';
+import { shutdown } from '../utils/shutdown.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 import { syncTrainings } from '../utils/syncTrainings.js';
 import { initValkeyClient } from '../utils/valkey.js';
@@ -124,6 +125,20 @@ export function builder(yargs: Argv): Argv {
       desc: 'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
       implies: ['service-name'],
     })
+    .option('dns-provider', {
+      desc: 'The provider which serves the DNS zone of the deployment.',
+      choices: ['desec'],
+      implies: ['dns-zone', 'dns-token', 'dns-targets'],
+    })
+    .option('dns-zone', {
+      desc: 'The name of the DNS zone which contains the organization host names.',
+    })
+    .option('dns-token', {
+      desc: 'The token used to authenticate with the API of the DNS provider.',
+    })
+    .option('dns-targets', {
+      desc: 'The IP addresses the organization host names resolve to, comma separated.',
+    })
     .option('host', {
       desc: 'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
       required: true,
@@ -187,25 +202,22 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
       useSSL: argv.s3Secure,
       accessKey: argv.s3AccessKey,
       secretKey: argv.s3SecretKey,
+      region: argv.s3Region,
+      pathStyle: argv.s3PathStyle,
+      bucket: argv.s3Bucket,
     });
   } catch (error: unknown) {
     logger.warn(`S3Error: ${error}`);
     logger.warn('Features related to file uploads will not work correctly!');
   }
 
-  const opts = {
+  await initValkeyClient({
     host: argv.valkeyHost,
     port: argv.valkeyPort,
     username: argv.valkeyUsername,
     password: argv.valkeyPassword,
     tls: argv.valkeyTls,
-  };
-  try {
-    await initValkeyClient(opts);
-  } catch (error: unknown) {
-    logger.warn(`ValkeyError: ${error}`);
-    logger.warn('Valkey-related features will not work correctly!');
-  }
+  });
 
   if (argv.migrateTo) {
     const db = getDB();
@@ -253,5 +265,18 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
   httpServer.listen(argv.port || PORT, '::', () => {
     logger.info(asciiLogo);
     logger.info(api(version, argv).info.description);
+  });
+
+  process.once('SIGTERM', async () => {
+    logger.info('Received SIGTERM, draining');
+    try {
+      await shutdown(httpServer);
+    } catch (error) {
+      logger.error(error as Error);
+    } finally {
+      // The process logs unhandled rejections rather than exiting on them, so a failed shutdown
+      // would otherwise leave it running until the termination grace period kills it.
+      process.exit();
+    }
   });
 }

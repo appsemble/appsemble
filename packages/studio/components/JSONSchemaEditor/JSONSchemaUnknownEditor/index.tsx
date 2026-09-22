@@ -6,6 +6,7 @@ import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
 import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function JSONSchemaUnknownEditor({
+  error,
   name,
   onChange,
   prefix,
@@ -15,6 +16,7 @@ export function JSONSchemaUnknownEditor({
 }: CommonJSONSchemaEditorProps<any>): ReactNode {
   return (
     <JSONField
+      error={error}
       help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       name={name}

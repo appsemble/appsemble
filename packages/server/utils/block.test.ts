@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { type AddressInfo } from 'node:net';
 
-import { getS3FileBuffer, uploadS3File } from '@appsemble/node-utils';
+import { getBlockAssetLocation, getS3FileBuffer, uploadS3File } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -9,7 +9,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { setArgv } from './argv.js';
 import { syncBlock } from './block.js';
-import { ensureBlockAssetsBucketPublicRead, getBlockAssetsBucketName } from './blockAssets.js';
+import { ensureBlockAssetsBucketPublicRead } from './blockAssets.js';
 import { BlockAsset, BlockVersion, Organization } from '../models/index.js';
 
 const organizationId = 'test';
@@ -47,9 +47,8 @@ async function expectSynchronizedAsset(): Promise<void> {
   });
 
   expect(blockAsset?.storageKey).toContain(`/${blockAsset!.BlockVersionId}/`);
-  expect(await getS3FileBuffer(getBlockAssetsBucketName(), blockAsset!.storageKey!)).toStrictEqual(
-    content,
-  );
+  const { bucket, key } = getBlockAssetLocation(blockAsset!.storageKey!);
+  expect(await getS3FileBuffer(bucket, key)).toStrictEqual(content);
 }
 
 describe('syncBlock', () => {
@@ -60,7 +59,9 @@ describe('syncBlock', () => {
       remote,
       secret: 'test',
     });
-    mock = new MockAdapter(axios, { onNoMatch: 'passthrough' });
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0], {
+      onNoMatch: 'passthrough',
+    });
     await Organization.create({ id: organizationId, name: 'Test' });
   });
 
@@ -73,23 +74,29 @@ describe('syncBlock', () => {
     }
   });
 
-  it('should synchronize block assets directly from their public file URLs', async () => {
-    expect.hasAssertions();
-    const sourceStorageKey = `source/${filename}`;
-    await ensureBlockAssetsBucketPublicRead();
-    await uploadS3File(getBlockAssetsBucketName(), sourceStorageKey, content, content.byteLength, {
-      'Content-Type': 'application/javascript',
-    });
-    const fileUrl = `${blockAssetsBaseUrl}/${getBlockAssetsBucketName()}/${sourceStorageKey}`;
-    mock.onGet(blockUrl).reply(200, createManifest({ [filename]: fileUrl }));
-    mock.onGet(legacyAssetUrl).reply(200, Buffer.from('legacy endpoint content'), {
-      'content-type': 'application/javascript',
-    });
+  // The bucket-per-app layout makes the block assets bucket public. The single-bucket layout keeps
+  // the bucket private, so its file URLs are only reachable through the server.
+  it.skipIf(process.env.S3_BUCKET)(
+    'should synchronize block assets directly from their public file URLs',
+    async () => {
+      expect.hasAssertions();
+      const sourceStorageKey = `source/${filename}`;
+      await ensureBlockAssetsBucketPublicRead();
+      const { bucket, key } = getBlockAssetLocation(sourceStorageKey);
+      await uploadS3File(bucket, key, content, content.byteLength, {
+        'Content-Type': 'application/javascript',
+      });
+      const fileUrl = `${blockAssetsBaseUrl}/${bucket}/${key}`;
+      mock.onGet(blockUrl).reply(200, createManifest({ [filename]: fileUrl }));
+      mock.onGet(legacyAssetUrl).reply(200, Buffer.from('legacy endpoint content'), {
+        'content-type': 'application/javascript',
+      });
 
-    await syncBlock({ OrganizationId: organizationId, name: blockName, version: blockVersion });
+      await syncBlock({ OrganizationId: organizationId, name: blockName, version: blockVersion });
 
-    await expectSynchronizedAsset();
-  });
+      await expectSynchronizedAsset();
+    },
+  );
 
   it('should fall back to the remote block asset endpoint when file URLs are unavailable', async () => {
     expect.hasAssertions();

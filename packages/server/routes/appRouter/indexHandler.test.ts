@@ -606,6 +606,10 @@ describe('indexHandler', () => {
         defaultLanguage: 'nl',
         defaultPage: 'Home',
         layout: {
+          breakpoints: {
+            desktop: 1024,
+            tablet: 640,
+          },
           login: 'navbar',
           settings: 'navigation',
           feedback: 'navigation',
@@ -613,6 +617,14 @@ describe('indexHandler', () => {
           debug: 'navigation',
           enabledSettings: ['name', 'email', 'phoneNumber'],
           navigation: 'left-menu',
+          navbar: {
+            desktop: {
+              layout: {
+                columns: 3,
+                template: ['logo logo logo', 'name navigation controls'],
+              },
+            },
+          },
           logo: {
             position: 'navbar',
             asset: 'logo',
@@ -707,6 +719,10 @@ describe('indexHandler', () => {
       defaultLanguage: 'nl',
       defaultPage: 'Home',
       layout: {
+        breakpoints: {
+          desktop: 1024,
+          tablet: 640,
+        },
         debug: 'navigation',
         enabledSettings: ['name', 'email', 'phoneNumber'],
         feedback: 'navigation',
@@ -722,6 +738,14 @@ describe('indexHandler', () => {
           asset: 'logo',
         },
         navigation: 'left-menu',
+        navbar: {
+          desktop: {
+            layout: {
+              columns: 3,
+              template: ['logo logo logo', 'name navigation controls'],
+            },
+          },
+        },
         settings: 'navigation',
         titleBarText: 'appName',
       },

@@ -94,6 +94,15 @@ rendered as side navigation.
       type: 'string',
       enum: ['appName', 'pageName'],
     },
+    breadcrumbs: {
+      type: 'boolean',
+      default: false,
+      description: `Whether to display a breadcrumb trail below the title bar.
+
+The trail is built from the \`parent\` of each page. A grid layout that names a \`breadcrumbs\`
+template area renders the trail in that area instead.
+`,
+    },
     hideTitleBar: {
       description: 'Whether to hide the title bar',
       type: 'boolean',
@@ -106,6 +115,20 @@ Only applies when \`navigation\` is set to \`top\`.
 `,
       type: 'boolean',
       default: false,
+    },
+    navbar: {
+      $ref: '#/components/schemas/NavbarLayoutDefinition',
+      description: `Responsive grid layout for the top navigation header.
+
+Only applies when \`navigation\` is set to \`top\` and cannot be combined with \`stackedHeader\`.
+`,
+    },
+    breakpoints: {
+      $ref: '#/components/schemas/GridBreakpointsDefinition',
+      description: `Minimum viewport widths in pixels at which the tablet and desktop grid layouts apply.
+
+Applies to every responsive grid layout in the app, including pages and the navbar.
+`,
     },
     hideGroupDropdown: {
       description: `Whether to hide the group dropdown.

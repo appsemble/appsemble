@@ -1,4 +1,4 @@
-import { uploadS3File } from '@appsemble/node-utils';
+import { getAppAssetLocation, uploadS3File } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import sharp from 'sharp';
@@ -81,7 +81,8 @@ describe('getOriginalAppAsset', () => {
       .png()
       .toBuffer();
 
-    await uploadS3File(`app-${app.id}`, asset.id, image);
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, image);
 
     authorizeStudio(user);
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}/download`, {
@@ -116,7 +117,8 @@ describe('getOriginalAppAsset', () => {
       .png()
       .toBuffer();
 
-    await uploadS3File(`app-${app.id}`, asset.id, image);
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, image);
 
     const appMember = await createTestAppMember(app.id, user.primaryEmail);
     authorizeAppMember(app, appMember);
@@ -133,6 +135,35 @@ describe('getOriginalAppAsset', () => {
       }),
     });
     expect(Buffer.from(response.data)).toStrictEqual(image);
+  });
+
+  it('should sandbox an original SVG download against embedded scripts.', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/svg+xml',
+      filename: 'logo.svg',
+    });
+
+    const svg = Buffer.from(
+      '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>',
+    );
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, svg);
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}/download`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/svg+xml',
+        'content-disposition': 'inline; filename="logo.svg"',
+        'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+    });
+    expect(Buffer.from(response.data)).toStrictEqual(svg);
   });
 
   it('should allow public original downloads.', async () => {
@@ -152,7 +183,8 @@ describe('getOriginalAppAsset', () => {
       .png()
       .toBuffer();
 
-    await uploadS3File(`app-${app.id}`, asset.id, image);
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, image);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}/download`, {
       responseType: 'arraybuffer',

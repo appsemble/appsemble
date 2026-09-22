@@ -1,0 +1,7 @@
+{
+  "app": {
+    "description": "PDF-weergave-app",
+    "name": "PDF Kijker",
+    "pages.pdf-viewer": "PDF Kijker"
+  }
+}

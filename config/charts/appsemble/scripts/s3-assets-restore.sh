@@ -8,14 +8,15 @@ set -eu
 #   ${BACKUP_S3_BUCKET}/${BACKUP_PREFIX}/current/app-<id>/...
 #   ${BACKUP_S3_BUCKET}/${BACKUP_PREFIX}/snapshots/<yyyy-mm-01>/app-<id>/...
 #
-# RESTORE_S3_* points at the MinIO/S3 account where app-<id> buckets should be restored.
+# RESTORE_S3_* points at the object storage account where app-<id> buckets should be restored. With
+# S3_BUCKET set, each backup is restored into the apps/<id>/ prefix of that bucket instead.
 #
 # For convenience, the backup script's original variable names are also accepted:
 #   DST_S3_* is used as the backup source fallback.
 #   SRC_S3_* is used as the restore target fallback.
 
 BACKUP_REMOTE_NAME="${BACKUP_REMOTE_NAME:-appsemble-assets-backup}"
-RESTORE_REMOTE_NAME="${RESTORE_REMOTE_NAME:-appsemble-minio-restore}"
+RESTORE_REMOTE_NAME="${RESTORE_REMOTE_NAME:-appsemble-assets-restore}"
 
 BACKUP_S3_ENDPOINT="${BACKUP_S3_ENDPOINT:-${DST_S3_ENDPOINT:-}}"
 BACKUP_S3_BUCKET="${BACKUP_S3_BUCKET:-${DST_S3_BUCKET:-}}"
@@ -27,6 +28,7 @@ RESTORE_S3_ENDPOINT="${RESTORE_S3_ENDPOINT:-${SRC_S3_ENDPOINT:-}}"
 RESTORE_S3_ACCESS_KEY="${RESTORE_S3_ACCESS_KEY:-${SRC_S3_ACCESS_KEY:-}}"
 RESTORE_S3_SECRET_KEY="${RESTORE_S3_SECRET_KEY:-${SRC_S3_SECRET_KEY:-}}"
 RESTORE_S3_REGION="${RESTORE_S3_REGION:-${SRC_S3_REGION:-us-east-1}}"
+S3_BUCKET="${S3_BUCKET:-}"
 
 : "${BACKUP_S3_ENDPOINT:?Please set BACKUP_S3_ENDPOINT or DST_S3_ENDPOINT}"
 : "${BACKUP_S3_BUCKET:?Please set BACKUP_S3_BUCKET or DST_S3_BUCKET}"
@@ -187,9 +189,13 @@ while IFS= read -r bucket; do
   [ -n "$bucket" ] || continue
 
   src="${backup_root}/${bucket}"
-  dst="${RESTORE_REMOTE_NAME}:${bucket}"
+  if [ -n "$S3_BUCKET" ]; then
+    dst="${RESTORE_REMOTE_NAME}:${S3_BUCKET}/apps/${bucket#app-}"
+  else
+    dst="${RESTORE_REMOTE_NAME}:${bucket}"
+  fi
 
-  if [ "$CREATE_BUCKETS" = "true" ] && [ "$DRY_RUN" != "true" ]; then
+  if [ -z "$S3_BUCKET" ] && [ "$CREATE_BUCKETS" = "true" ] && [ "$DRY_RUN" != "true" ]; then
     log "Ensuring restore bucket exists: ${bucket}"
     rclone mkdir "$dst" \
       --log-file "$LOG_FILE" \

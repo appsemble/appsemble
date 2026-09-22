@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { type VNode } from 'preact';
+import { lazy, Suspense } from 'preact/compat';
 import {
   type Dispatch,
   type MutableRef,
@@ -20,7 +21,6 @@ import { Fieldset } from '../Fieldset/index.js';
 import { FileInput } from '../FileInput/index.js';
 import { GeoCoordinatesInput } from '../GeoCoordinatesInput/index.js';
 import { ListInput } from '../ListInput/index.js';
-import { MarkdownInput } from '../MarkdownInput/index.js';
 import { NumberInput } from '../NumberInput/index.js';
 import { RadioInput } from '../RadioInput/index.js';
 import { RangeInput } from '../RangeInput/index.js';
@@ -28,6 +28,10 @@ import { SelectionInput } from '../SelectionInput/index.js';
 import { StaticField } from '../StaticField/index.js';
 import { StringInput } from '../StringInput/index.js';
 import { TagsInput } from '../TagsInput/index.js';
+
+const MarkdownInput = lazy(() =>
+  import('../MarkdownInput/index.js').then((module) => ({ default: module.MarkdownInput })),
+);
 
 interface FormInputProps extends Omit<InputProps<any, Field>, 'dirty' | 'errorLinkRef'> {
   readonly formDataLoading: boolean;
@@ -220,13 +224,15 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
       );
     case 'markdown':
       return (
-        <MarkdownInput
-          dirty={dirty}
-          errorLinkRef={errorLinkRef}
-          field={field}
-          onChange={handleChange}
-          {...props}
-        />
+        <Suspense fallback={<progress className="progress is-small is-primary" />}>
+          <MarkdownInput
+            dirty={dirty}
+            errorLinkRef={errorLinkRef}
+            field={field}
+            onChange={handleChange}
+            {...props}
+          />
+        </Suspense>
       );
     default:
   }

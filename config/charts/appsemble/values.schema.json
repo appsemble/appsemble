@@ -6,6 +6,14 @@
     "replicaCount": {
       "type": "integer"
     },
+    "preStopSleepSeconds": {
+      "type": "integer",
+      "description": "How long a stopping pod keeps answering before it is sent SIGTERM, so its removal from the Service endpoints has propagated by then."
+    },
+    "terminationGracePeriodSeconds": {
+      "type": "integer",
+      "description": "How long a pod may take to stop before it is killed. Must cover `preStopSleepSeconds` plus the longest request."
+    },
     "image": {
       "type": "object",
       "additionalProperties": false,
@@ -91,6 +99,73 @@
           "type": "string",
           "description": "The secret name to use to configure TLS for the direct wildcard host."
         }
+      }
+    },
+    "s3": {
+      "type": "object",
+      "description": "Configuration for the S3 compatible object storage that holds app and block assets. The endpoint and credentials come from the `seaweedfs.s3.credentials.admin.existingSecret` secret.",
+      "additionalProperties": false,
+      "properties": {
+        "bucket": {
+          "type": "string",
+          "description": "The single, pre-provisioned bucket that holds all app and block assets. App assets are stored under `apps/<appId>/` and block assets under `blocks/`. When empty, every app gets its own `app-<appId>` bucket and block assets live in the `appsemble-block-assets` bucket, both created on demand."
+        },
+        "region": {
+          "type": "string",
+          "description": "The region to sign object storage requests for."
+        },
+        "pathStyle": {
+          "type": "boolean",
+          "description": "Whether to address buckets in the URL path instead of as a subdomain of the endpoint."
+        }
+      }
+    },
+    "dns": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "type": "string",
+          "description": "The provider which serves the DNS zone of the organization host names.",
+          "enum": ["", "desec"]
+        },
+        "zone": {
+          "type": "string",
+          "description": "The name of the DNS zone which contains the organization host names."
+        },
+        "secret": {
+          "type": "string",
+          "description": "The name of the secret which holds the API token of the DNS provider under the key dns-token."
+        },
+        "targets": {
+          "type": "array",
+          "description": "The IP addresses the organization host names resolve to.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "provider": {
+            "minLength": 1
+          }
+        },
+        "required": ["provider"]
+      },
+      "then": {
+        "properties": {
+          "zone": {
+            "minLength": 1
+          },
+          "secret": {
+            "minLength": 1
+          },
+          "targets": {
+            "minItems": 1
+          }
+        },
+        "required": ["zone", "secret", "targets"]
       }
     },
     "blockAssets": {
@@ -328,6 +403,11 @@
         "jobsHistoryLimit": {
           "type": "integer",
           "description": "How long to keep logs for cronjobs in days."
+        },
+        "ttlSecondsAfterFinished": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Seconds after a cronjob's Job finishes before Kubernetes automatically deletes it."
         }
       }
     },
@@ -381,7 +461,49 @@
       "type": "object"
     },
     "postgresql": {
-      "type": "object"
+      "type": "object",
+      "description": "The PostgreSQL server Appsemble connects to.",
+      "additionalProperties": false,
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "The PostgreSQL host, such as the -rw service of a CloudNativePG Cluster."
+        },
+        "port": {
+          "type": "integer",
+          "description": "The PostgreSQL port.",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "auth": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "existingSecret": {
+              "type": "string",
+              "description": "The secret from which to read the PostgreSQL password."
+            },
+            "username": {
+              "type": "string",
+              "description": "The name of the PostgreSQL user."
+            },
+            "database": {
+              "type": "string",
+              "description": "The name of the PostgreSQL database."
+            },
+            "secretKeys": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "userPasswordKey": {
+                  "type": "string",
+                  "description": "The key in postgresql.auth.existingSecret containing the password."
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "valkey": {
       "type": "object",
@@ -428,6 +550,11 @@
         "enabled": {
           "type": "boolean",
           "description": "Whether to deploy PgBouncer between Appsemble and PostgreSQL."
+        },
+        "replicaCount": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of PgBouncer replicas. Above 1, a PodDisruptionBudget keeps one available and pgbouncer.maxUserConnections is shared between them."
         },
         "image": {
           "type": "object",
@@ -562,7 +689,7 @@
         "maxUserConnections": {
           "type": "integer",
           "minimum": 1,
-          "description": "Maximum number of server connections PgBouncer opens per database user across all database pools. Keep this below PostgreSQL's non-reserved connection budget after direct and other clients."
+          "description": "Maximum number of server connections PgBouncer opens per database user across all pools and replicas. Keep this below PostgreSQL's non-reserved connection budget after direct and other clients."
         }
       }
     },
@@ -694,7 +821,7 @@
     "mailpit": {
       "type": "object"
     },
-    "minio": {
+    "seaweedfs": {
       "type": "object"
     },
     "backups": {
@@ -715,9 +842,21 @@
         "host": { "type": "string" },
         "port": { "type": "number" },
         "secure": { "type": "boolean" },
+        "region": {
+          "type": "string",
+          "description": "The region to sign backup object storage requests for."
+        },
+        "pathStyle": {
+          "type": "boolean",
+          "description": "Whether to address the backups bucket in the URL path instead of as a subdomain of the endpoint."
+        },
         "existingSecret": {
           "type": "string",
           "description": "The name of the existing kubernetes secret to get the access key and secret key from. Must contain access-key and secret-key"
+        },
+        "tmpSizeLimit": {
+          "type": "string",
+          "description": "The scratch space each database is dumped to before it is uploaded. Must exceed the gzipped dump of the largest database."
         }
       }
     },
@@ -747,7 +886,7 @@
     },
     "assetsBackups": {
       "type": "object",
-      "description": "Configuration for MinIO app-asset object backups.",
+      "description": "Configuration for app-asset object backups.",
       "additionalProperties": false,
       "required": ["enabled"],
       "properties": {
@@ -761,7 +900,7 @@
         },
         "sourceEndpoint": {
           "type": ["string", "null"],
-          "description": "Optional explicit source S3 endpoint; if omitted, it is derived from MinIO settings."
+          "description": "Optional explicit source S3 endpoint; if omitted, it is derived from the SeaweedFS settings."
         },
         "sourceRegion": {
           "type": "string"

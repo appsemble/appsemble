@@ -1,4 +1,4 @@
-import { assertKoaCondition, deleteS3File } from '@appsemble/node-utils';
+import { assertKoaCondition, deleteAppAssetObjects } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -34,5 +34,5 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
 
   await asset.destroy();
 
-  await deleteS3File(`app-${appId}`, assetId);
+  await deleteAppAssetObjects(appId, [assetId]);
 }

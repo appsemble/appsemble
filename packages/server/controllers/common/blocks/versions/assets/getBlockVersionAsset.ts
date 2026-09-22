@@ -1,8 +1,13 @@
-import { assertKoaCondition, getS3File, getS3FileStats, logger } from '@appsemble/node-utils';
+import {
+  assertKoaCondition,
+  getBlockAssetLocation,
+  getS3File,
+  getS3FileStats,
+  logger,
+} from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { BlockAsset, BlockVersion } from '../../../../../models/index.js';
-import { getBlockAssetsBucketName } from '../../../../../utils/blockAssets.js';
 
 export async function getBlockVersionAsset(ctx: Context): Promise<void> {
   const {
@@ -26,8 +31,9 @@ export async function getBlockVersionAsset(ctx: Context): Promise<void> {
 
   if (asset.storageKey) {
     try {
-      const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
-      const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
+      const { bucket, key } = getBlockAssetLocation(asset.storageKey);
+      const stats = await getS3FileStats(bucket, key);
+      const stream = await getS3File(bucket, key);
 
       if (stream) {
         ctx.set('Cache-Control', 'public,max-age=31536000,immutable');

@@ -58,9 +58,9 @@ export function authentication(): SecurityOptions {
   const { host, secret } = argv;
 
   return {
+    // @ts-expect-error Messed up
     async basic(email: string, password: string) {
-      // @ts-expect-error Messed up
-      const { User: user } = await EmailAuthorization.findOne({
+      const emailAuthorization = await EmailAuthorization.findOne({
         include: [
           {
             model: User,
@@ -69,6 +69,12 @@ export function authentication(): SecurityOptions {
         ],
         where: { email: email.toLowerCase() },
       });
+
+      const user = emailAuthorization?.User;
+      // A user who signed up through a third party login has no password to compare against.
+      if (!user?.password) {
+        return null;
+      }
 
       const isValidPassword = await compare(password, user.password);
 

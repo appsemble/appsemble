@@ -43,7 +43,7 @@ export async function createAppGroup(ctx: Context): Promise<void> {
       demoMembers.map((member) => ({
         GroupId: group.id,
         demo: true,
-        role: member.role,
+        role: member.roles[0],
         AppMemberId: member.id,
       })),
     );

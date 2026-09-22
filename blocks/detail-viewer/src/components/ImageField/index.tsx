@@ -14,20 +14,19 @@ interface ImageFieldProps {
 }
 
 export function ImageField({
-  field: { hide: conceal, rounded = false, size = 128 },
+  field: { rounded = false, size = 128 },
   label,
   name,
   source,
-}: ImageFieldProps): VNode | null {
+}: ImageFieldProps): VNode {
   const { utils } = useBlock();
   const modal = useToggle();
   const img = source as string;
   const src = /^(https?:)?\/\//.test(img) ? img : utils.asset(img);
 
   const alt = (label || utils.remap(name, source)) as string;
-  const hide = utils.remap(conceal, source);
 
-  return hide ? null : (
+  return (
     <>
       <button className={`${styles.button} ${styles.root}`} onClick={modal.enable} type="button">
         <figure className={`image mr-3 is-${size}x${size} ${styles.root}`}>

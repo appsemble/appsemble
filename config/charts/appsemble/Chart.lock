@@ -1,15 +1,12 @@
 dependencies:
-- name: postgresql
-  repository: https://charts.bitnami.com/bitnami
-  version: 16.7.27
 - name: mailpit
   repository: https://jouve.github.io/charts
-  version: 0.35.0
-- name: minio
-  repository: https://charts.bitnami.com/bitnami
-  version: 14.10.5
+  version: 0.37.0
+- name: seaweedfs
+  repository: https://seaweedfs.github.io/seaweedfs/helm
+  version: 4.47.0
 - name: valkey
   repository: https://valkey.io/valkey-helm
-  version: 0.11.0
-digest: sha256:b3df694a072d8d23b52794e37205ae4c481a5093235d66550bdff6e8899148aa
-generated: "2026-08-08T04:25:21.641431811Z"
+  version: 0.12.0
+digest: sha256:c7cdd46700b4fb3b6e85066f2bf320750f87303256f49a09bf7a880f3314bf9a
+generated: "2026-09-22T04:17:28.020461054Z"
