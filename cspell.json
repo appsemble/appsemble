@@ -196,6 +196,7 @@
     "nosniff",
     "typname",
     "psql",
+    "pgbouncer",
     "formcomp",
     "Klokgebouw",
     "DATEONLY",
