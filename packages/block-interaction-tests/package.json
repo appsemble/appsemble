@@ -30,6 +30,7 @@
     "@appsemble/preact": "0.39.2",
     "@appsemble/sdk": "0.39.2",
     "@appsemble/utils": "0.39.2",
+    "@appsemble/web-utils": "0.39.2",
     "@types/node": "22.20.4",
     "preact": "^10.0.0"
   },

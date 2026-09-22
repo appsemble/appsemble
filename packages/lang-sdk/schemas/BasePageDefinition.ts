@@ -50,9 +50,11 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
     },
     icon: {
       type: 'string',
-      description: `An optional icon from the fontawesome icon set
+      format: 'icon',
+      description: `An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 `,
     },
     parent: {

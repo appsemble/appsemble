@@ -482,6 +482,7 @@
   "studio.86RD6b": "Pilih file…",
   "studio.8DCbBc": "Terdapat masalah saat membatalkan langganan Anda.",
   "studio.8OHgiT": "Terdapat masalah saat memuat akun yang terhubung. Silakan coba lagi.",
+  "studio.8TH0bj": "",
   "studio.8b9Mkg": "Memberikan akses jika pengguna tersebut adalah orang yang sama dengan yang membuat sumber daya tersebut.",
   "studio.8bBf+m": "Nilai minimum",
   "studio.8bhBiJ": "Kode telah berhasil disalin ke papan klip",
@@ -621,7 +622,6 @@
   "studio.FTFqXw": "Tidak ada file yang dipilih",
   "studio.FUKP1D": "Izin untuk menghapus anggota grup.",
   "studio.FayXzX": "Sematkan aplikasi ini di bagian atas koleksi",
-  "studio.Fb3/VH": "Ikon FontAwesome yang akan ditampilkan pada tombol login",
   "studio.Fd+cQF": "Blok-blok berikut ini menggunakan peran \"{roleName}\":",
   "studio.FfObOV": "String adalah urutan karakter apa pun (huruf, angka, simbol, tanda baca, dll.)",
   "studio.FflmjG": "Memuat grup…",
@@ -1113,6 +1113,7 @@
   "studio.dt/e+s": "Kata sandi telah berhasil diubah.",
   "studio.du1laW": "Tidak pernah",
   "studio.dujvfw": "Memberikan akses kepada semua orang, bahkan pengguna yang belum masuk (belum login).",
+  "studio.dvSaSh": "",
   "studio.e/r+2g": "Apakah Anda yakin ingin menghapus koleksi aplikasi ini? Tindakan ini tidak dapat dibatalkan.",
   "studio.e/yUi3": "Lihat langsung",
   "studio.e1Z7f/": "Lapisan Ubin",
@@ -1526,5 +1527,6 @@
   "studio.zji8KM": "Apakah Anda mengizinkan {app} untuk melakukan tindakan berikut atas nama Anda?",
   "studio.zo9Szm": "Penghapusan koleksi aplikasi tidak dapat dibatalkan.",
   "studio.zoSzG+": "Beralih ke Editor GUI",
-  "studio.zwurmB": "Cookie"
+  "studio.zwurmB": "Cookie",
+  "studio.zzKGTH": ""
 }

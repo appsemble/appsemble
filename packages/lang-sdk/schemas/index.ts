@@ -132,3 +132,4 @@ export * from './NavbarDeviceGridLayoutDefinition.js';
 export * from './NavbarLayoutDefinition.js';
 export * from './PageLayoutDefinition.js';
 export * from './PageParentDefinition.js';
+export * from './IconRegistryEntryDefinition.js';

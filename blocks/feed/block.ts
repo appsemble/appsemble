@@ -1,4 +1,4 @@
-import { type BulmaColor, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type IconName, type IconReference, type Remapper } from '@appsemble/sdk';
 
 interface Reply {
   /**
@@ -92,8 +92,11 @@ export interface Dropdown {
 
   /**
    * The icon to show in the dropdown button.
+   *
+   * This can be a [Font Awesome icon](https://fontawesome.com/icons?m=free) name or an
+   * `icon:<key>` reference to an icon from the app’s `icons` registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The list of options to display. Must have at least 1 option.
@@ -111,8 +114,11 @@ export interface DropdownOption {
 
   /**
    * The icon to show in the option.
+   *
+   * This can be a [Font Awesome icon](https://fontawesome.com/icons?m=free) name or an
+   * `icon:<key>` reference to an icon from the app’s `icons` registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The action that will be called when selecting this option.

@@ -1,5 +1,5 @@
+import { type IconReference } from '@appsemble/lang-sdk';
 import { type BulmaColor, type BulmaSize } from '@appsemble/types';
-import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type ComponentChild, type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
@@ -44,7 +44,7 @@ type CheckboxProps = Omit<
    */
   size?: BulmaSize;
 
-  icon?: IconName;
+  icon?: IconReference;
 };
 
 /**
@@ -87,7 +87,7 @@ export const IconCheckbox = forwardRef<HTMLInputElement, CheckboxProps>(
           type="checkbox"
         />
         <label className={classNames(styles[size], color ? styles[color] : null)} htmlFor={id}>
-          {icon ? <Icon icon={icon as IconName} /> : null}
+          {icon ? <Icon icon={icon} /> : null}
           {label}
         </label>
       </span>

@@ -482,6 +482,7 @@
   "studio.86RD6b": "Bestand kiezen…",
   "studio.8DCbBc": "Er is een probleem opgetreden bij het opzeggen van uw abonnement.",
   "studio.8OHgiT": "Er is een probleem opgetreden bij het laden van uw gekoppelde accounts. Probeer het nog eens.",
+  "studio.8TH0bj": "Er is iets misgegaan bij het opslaan van het geheim",
   "studio.8b9Mkg": "Verleent toegang als de gebruiker dezelfde is als degene die de resource heeft aangemaakt.",
   "studio.8bBf+m": "Minimale waarde",
   "studio.8bhBiJ": "De code is succesvol naar het klembord gekopieerd",
@@ -621,7 +622,6 @@
   "studio.FTFqXw": "Er is geen bestand geselecteerd",
   "studio.FUKP1D": "De bevoegdheid om groepsleden te verwijderen.",
   "studio.FayXzX": "App bovenaan de verzameling vastzetten",
-  "studio.Fb3/VH": "Het FontAwesome-pictogram dat op de inlogknop wordt weergegeven",
   "studio.Fd+cQF": "De volgende blokken maken gebruik van de rol \"{roleName}\":",
   "studio.FfObOV": "Een tekenreeks is een willekeurige reeks tekens (letters, cijfers, symbolen, leestekens, enz.)",
   "studio.FflmjG": "Groepen worden geladen…",
@@ -1113,6 +1113,7 @@
   "studio.dt/e+s": "Wachtwoord succesvol gewijzigd.",
   "studio.du1laW": "Nooit",
   "studio.dujvfw": "Biedt toegang aan iedereen, zelfs aan gebruikers die niet zijn ingelogd.",
+  "studio.dvSaSh": "De app-definitie is ongeldig:\n{errors}",
   "studio.e/r+2g": "Weet u zeker dat u deze app-collectie wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
   "studio.e/yUi3": "Bekijk live",
   "studio.e1Z7f/": "Tegel-lagen",
@@ -1526,5 +1527,6 @@
   "studio.zji8KM": "Wilt u {app} toestaan de volgende acties namens u uit te voeren?",
   "studio.zo9Szm": "Het verwijderen van een app-collectie kan niet ongedaan worden gemaakt.",
   "studio.zoSzG+": "Overschakelen naar de GUI-editor",
-  "studio.zwurmB": "Cookie"
+  "studio.zwurmB": "Cookie",
+  "studio.zzKGTH": "Het Font Awesome-pictogram dat op de inlogknop wordt weergegeven, of een `icon:`-verwijzing naar een sleutel uit het `icons`-register van de app"
 }

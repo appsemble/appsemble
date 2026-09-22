@@ -15,6 +15,7 @@ import {
   writeData,
 } from '@appsemble/node-utils';
 import {
+  APP_VALIDATION_FAILED,
   type App,
   type AppConfigEntryDefinition,
   type AppLock,
@@ -1418,7 +1419,9 @@ export async function publishApp({
     if (!axios.isAxiosError(error)) {
       throw error;
     }
-    if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
+    if (
+      (error.response?.data as { data?: { code?: string } })?.data?.code !== APP_VALIDATION_FAILED
+    ) {
       throw error;
     }
     throw new AppsembleError(
@@ -1854,7 +1857,9 @@ export async function updateApp({
     if (!axios.isAxiosError(error)) {
       throw error;
     }
-    if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
+    if (
+      (error.response?.data as { data?: { code?: string } })?.data?.code !== APP_VALIDATION_FAILED
+    ) {
       throw error;
     }
     throw new AppsembleError(

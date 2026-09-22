@@ -114,8 +114,8 @@ export const generateData = (
     return Array.isArray(firstArray[0]) ? firstArray[0] : firstArray;
   }
   if (schema.type === 'string') {
-    if (schema.format === 'fontawesome') {
-      return 'fas fa-home';
+    if (schema.format === 'fontawesome' || schema.format === 'icon') {
+      return 'home';
     }
     if (schema.const) {
       return schema.const;

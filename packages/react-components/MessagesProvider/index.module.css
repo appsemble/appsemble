@@ -20,6 +20,10 @@
   transition: opacity 300ms ease-in;
 }
 
+.body {
+  white-space: pre-line;
+}
+
 .content {
   min-height: 64px;
   position: fixed;

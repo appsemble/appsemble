@@ -1,4 +1,4 @@
-import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconReference, type Remapper } from '@appsemble/sdk';
 
 export interface Button {
   /**
@@ -13,7 +13,7 @@ export interface Button {
    *
    * Will not render if undefined.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * When set to true, icon will be located on the right side of the button in the list.

@@ -32,6 +32,8 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@appsemble/lang-sdk": "0.39.2",
+    "@appsemble/sdk": "0.39.2",
     "@appsemble/types": "0.39.2",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@sentry/browser": "^10.0.0",

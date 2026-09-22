@@ -1,4 +1,4 @@
-import { type IconName, type Remapper } from '@appsemble/sdk';
+import { type IconReference, type Remapper } from '@appsemble/sdk';
 
 /**
  * An object describing what a stats field looks like.
@@ -10,9 +10,10 @@ export interface Field {
   value: Remapper;
 
   /**
-   * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render.
+   * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render, or an `icon:<key>`
+   * reference to an icon from the app’s `icons` registry.
    */
-  icon: IconName;
+  icon: IconReference;
 
   /**
    * The label to render.

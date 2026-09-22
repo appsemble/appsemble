@@ -482,6 +482,7 @@
   "studio.86RD6b": "Choisissez un fichier…",
   "studio.8DCbBc": "Un problème est survenu lors de l'annulation de votre abonnement.",
   "studio.8OHgiT": "Un problème est survenu lors du chargement de vos comptes connectés. Veuillez réessayer.",
+  "studio.8TH0bj": "",
   "studio.8b9Mkg": "Elle accorde l'accès si l'utilisateur est bien celui qui a créé la ressource.",
   "studio.8bBf+m": "Valeur minimale",
   "studio.8bhBiJ": "Le code a été copié dans le presse-papiers.",
@@ -621,7 +622,6 @@
   "studio.FTFqXw": "Aucun fichier sélectionné",
   "studio.FUKP1D": "Autorisation de supprimer des membres d'un groupe.",
   "studio.FayXzX": "Épingler l'application en haut de la collection",
-  "studio.Fb3/VH": "L'icône FontAwesome qui s'affichera sur le bouton de connexion",
   "studio.Fd+cQF": "Les blocs suivants utilisent le rôle «{roleName} » :",
   "studio.FfObOV": "Une chaîne de caractères est une séquence de caractères (lettres, chiffres, symboles, signes de ponctuation, etc.).",
   "studio.FflmjG": "Chargement des groupes…",
@@ -1113,6 +1113,7 @@
   "studio.dt/e+s": "Mot de passe modifié avec succès.",
   "studio.du1laW": "Jamais",
   "studio.dujvfw": "Elle est accessible à tous, même aux utilisateurs qui ne sont pas connectés.",
+  "studio.dvSaSh": "",
   "studio.e/r+2g": "Êtes-vous sûr de vouloir supprimer cette collection d'applications ? Cette action est irréversible.",
   "studio.e/yUi3": "Voir en direct",
   "studio.e1Z7f/": "Couches de tuiles",
@@ -1526,5 +1527,6 @@
   "studio.zji8KM": "Autorisez-vous {app} à effectuer les actions suivantes en votre nom ?",
   "studio.zo9Szm": "La suppression d'une collection d'applications est irréversible.",
   "studio.zoSzG+": "Passer à l'éditeur graphique",
-  "studio.zwurmB": "Cookie"
+  "studio.zwurmB": "Cookie",
+  "studio.zzKGTH": ""
 }

@@ -1,5 +1,5 @@
+import { type IconReference } from '@appsemble/lang-sdk';
 import { type BulmaColor } from '@appsemble/types';
-import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type MouseEventHandler, type ReactNode } from 'react';
 
@@ -25,7 +25,7 @@ interface MenuButtonItemProps {
   /**
    * The icon to render.
    */
-  readonly icon?: IconName;
+  readonly icon?: IconReference;
 
   /**
    * The color for the icon.

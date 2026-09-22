@@ -1,4 +1,4 @@
-import { type BulmaColor, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type IconName, type IconReference, type Remapper } from '@appsemble/sdk';
 
 interface AbstractField {
   /**
@@ -152,8 +152,11 @@ export interface StringField extends AbstractField {
 
   /**
    * The icon to be used.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 }
 
 /**

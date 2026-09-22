@@ -1,4 +1,4 @@
-import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconReference, type Remapper } from '@appsemble/sdk';
 
 /**
  * An object representing how a data field should be displayed.
@@ -22,8 +22,11 @@ export interface Field {
    * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
    *
    * Will not render if undefined.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 }
 
 /**
@@ -66,8 +69,11 @@ export interface Button {
    * An FontAwesome icon to display inside of the button.
    *
    * This is the only thing visible on mobile so it's required
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon: IconName;
+  icon: IconReference;
 
   /**
    * When set to true, the ‘light’ set of Bulma colors are used.
@@ -136,8 +142,11 @@ export interface Dropdown {
 
   /**
    * The icon to show in the dropdown button.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The list of options to display. Must have at least 1 option.
@@ -155,8 +164,11 @@ export interface DropdownOption {
 
   /**
    * The icon to show in the option.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The action that will be called when selecting this option.
@@ -243,8 +255,11 @@ interface HeaderWithIcon {
    * The icon that is shown in the header before the titles.
    *
    * Cannot be set in combination with image.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon: IconName;
+  icon: IconReference;
 }
 
 interface HeaderWithAssetIcon {

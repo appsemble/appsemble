@@ -1,4 +1,4 @@
-import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconReference, type Remapper } from '@appsemble/sdk';
 import { type MutableRef } from 'preact/hooks';
 
 export enum Requirement {
@@ -369,8 +369,11 @@ export interface Choice {
 
   /**
    * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed in the option.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The value to use when selecting the option.
@@ -440,8 +443,11 @@ export interface SelectionChoiceField {
    * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
    *
    * Will not render if undefined.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 }
 
 /**
@@ -464,8 +470,11 @@ export interface SelectionChoice {
    * The icon that displays in front of the header.
    *
    * Will not render if undefined.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * A list of fields to display.
@@ -503,8 +512,11 @@ interface AbstractField {
   /**
    * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
    * the label.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The label displayed next to the field.

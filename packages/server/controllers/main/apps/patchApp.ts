@@ -10,10 +10,11 @@ import {
   handleValidatorResult,
   logger,
   replaceAssetFunctions,
+  throwKoaError,
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/types';
+import { APP_VALIDATION_FAILED, OrganizationPermission } from '@appsemble/types';
 import { validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
@@ -41,6 +42,7 @@ import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
+import { validateStoredSsoIcons } from '../../../utils/icons.js';
 import { syncAppDefinitionIndexes } from '../../../utils/appDefinitionIndexes.js';
 import { assertResourceSchemaCompatibility } from '../../../utils/resourceSchemaCompatibility.js';
 import { createAppBuildManifest, pruneAppBuildSnapshots } from '../../../utils/appBuildManifest.js';
@@ -161,7 +163,12 @@ export async function patchApp(ctx: Context): Promise<void> {
       const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
 
       const appValidator = new AppValidator();
-      handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
+      handleValidatorResult(
+        ctx,
+        appValidator.validateApp(definition),
+        'App validation failed',
+        APP_VALIDATION_FAILED,
+      );
       handleValidatorResult(
         ctx,
         await validateAppDefinition(
@@ -170,7 +177,15 @@ export async function patchApp(ctx: Context): Promise<void> {
           controllerImplementations ? JSON.parse(controllerImplementations) : undefined,
         ),
         'App validation failed',
+        APP_VALIDATION_FAILED,
       );
+      const ssoIconErrors = await validateStoredSsoIcons(appId, dbApp.definition, definition);
+      if (ssoIconErrors.length) {
+        throwKoaError(ctx, 400, 'App validation failed', {
+          code: APP_VALIDATION_FAILED,
+          errors: ssoIconErrors,
+        });
+      }
 
       result.definition = definition;
       if (definition.cron && definition.security?.cron) {

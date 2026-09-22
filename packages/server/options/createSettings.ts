@@ -62,6 +62,7 @@ function sanitizeAppDefinitionForPublicSettings(
     controller: definition.controller,
     defaultLanguage: definition.defaultLanguage,
     defaultPage: definition.defaultPage,
+    icons: definition.icons,
     layout: definition.layout
       ? {
           breadcrumbs: definition.layout.breadcrumbs,

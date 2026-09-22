@@ -1,4 +1,4 @@
-import { type BulmaColor, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type IconReference, type Remapper } from '@appsemble/sdk';
 
 export interface FooterItem {
   /**
@@ -8,8 +8,11 @@ export interface FooterItem {
 
   /**
    * Icon to be rendered next to the item.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * Action to fire when user clicks on the link.

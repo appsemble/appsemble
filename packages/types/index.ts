@@ -5,12 +5,12 @@ import {
   type AppRole,
   type BlockManifest,
   type EventType,
+  type IconReference,
   type ProjectConfig,
   type ProjectImplementations,
   type ProjectManifest,
   type Remapper,
 } from '@appsemble/lang-sdk';
-import { type IconName } from '@fortawesome/fontawesome-common-types';
 
 import { type AppVisibility } from './app.js';
 import { type PredefinedOrganizationRole } from './roles.js';
@@ -23,6 +23,7 @@ export * from './bulma.js';
 export * from './appCollection.js';
 export * from './cli.js';
 export * from './e2e.js';
+export * from './errors.js';
 export * from './snapshot.js';
 export * from './resource.js';
 export * from './saml.js';
@@ -125,7 +126,7 @@ export interface AppLoginRoleMapping {
 export interface SSOConfiguration {
   type: 'oauth2' | 'saml';
   url: string;
-  icon: IconName;
+  icon: IconReference;
   name: string;
 }
 
@@ -861,7 +862,7 @@ export interface OAuth2Provider {
   /**
    * A Font Awesome icon which represents the OAuth2 provider.
    */
-  icon: IconName;
+  icon: IconReference;
 
   /**
    * A display name which represents the OAuth2 provider.
@@ -1034,7 +1035,7 @@ export interface WritableAppSamlSecret {
   /**
    * The icon that will be displayed on the login button.
    */
-  icon: IconName;
+  icon: IconReference;
 
   /**
    * The certificate of the identity provider.

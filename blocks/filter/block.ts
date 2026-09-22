@@ -1,4 +1,4 @@
-import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconReference, type Remapper } from '@appsemble/sdk';
 import { type JSX } from 'preact/jsx-runtime';
 
 export interface EnumOption {
@@ -26,8 +26,11 @@ export interface ButtonOption {
 
   /**
    * An icon to render on the button.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon: IconName;
+  icon: IconReference;
 }
 
 export interface AbstractField<T extends string, D> {
@@ -49,8 +52,11 @@ export interface AbstractField<T extends string, D> {
   /**
    * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
    * the label.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The filter to apply by default.
@@ -208,9 +214,12 @@ declare module '@appsemble/sdk' {
     /**
      * The name of the fontawesome icon to display on the button to open the filter modal.
      *
+     * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+     * registry.
+     *
      * @default 'filter'
      */
-    icon?: IconName;
+    icon?: IconReference;
 
     /**
      * Whether the button that opens the modal should be hidden.

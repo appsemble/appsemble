@@ -37,11 +37,7 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
         });
         node.title = (utils.remap(title, data) as string) ?? '';
         if (!iconSide && icon) {
-          node.append(
-            <span className="icon">
-              <i className={utils.fa(icon)} />
-            </span>,
-          );
+          node.append(utils.icon(icon));
         }
 
         const createNode = (newData: unknown): ChildNode => {
@@ -84,11 +80,7 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
         });
 
         if (iconSide && icon) {
-          node.append(
-            <span className="icon">
-              <i className={utils.fa(icon)} />
-            </span>,
-          );
+          node.append(utils.icon(icon));
         }
         return node;
       },
