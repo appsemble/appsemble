@@ -1474,7 +1474,9 @@ staging:
     - helm delete staging --no-hooks || true
     # Replaces the skipped pre-delete cleanup hook: remove server-created app ingresses and TLS secrets
     - kubectl delete ingress,secret -l app.kubernetes.io/managed-by=staging-appsemble || true
-    - kubectl delete namespace "companion-containers-staging" || true
+    # helm delete only starts the termination of the companion namespace; wait for it to be gone,
+    # or the install fails creating the companion Role in a terminating namespace.
+    - kubectl delete namespace "companion-containers-staging-appsemble" --ignore-not-found --timeout=5m || true
     - kubectl delete secret staging-mailpit-tls || true
     - apk add --no-cache openssl
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=staging-appsemble-mailpit-smtp" -addext "subjectAltName=DNS:staging-appsemble-mailpit-smtp"
