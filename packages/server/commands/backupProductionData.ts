@@ -180,8 +180,10 @@ export async function handler(): Promise<void> {
   // TODO add logic based on organization subscriptions to skip some apps
 
   // Backup app databases
+  // Soft-deleted apps keep their database, which a restore must be able to bring back.
   const apps = await App.findAll({
     attributes: ['id', 'dbName', 'dbUser', 'dbPassword', 'dbHost', 'dbPort'],
+    paranoid: false,
   });
 
   for (const app of apps) {

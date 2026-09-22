@@ -250,6 +250,24 @@ describe('backupProductionData', () => {
     expect(await leftoverDumpDirectories()).toStrictEqual([]);
   });
 
+  it('should back up the database of a soft-deleted app', async () => {
+    await fakePgDump('echo "-- dump of $database"');
+    const app = await App.create({
+      id: 3,
+      OrganizationId: 'test-org',
+      path: 'app-3',
+      definition: { name: 'App 3' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+    });
+    await app.destroy();
+
+    await handler();
+
+    expect(exitCode).toBe(0);
+    expect(await dumpsUnder('sql/apps/3/')).toStrictEqual(['-- dump of app-3\n']);
+  });
+
   it('should hold one dump in scratch space at a time', async () => {
     // Each fake records how many dumps the scratch directory holds when it starts: at most its
     // own, once the previous database's dump has been uploaded and removed.

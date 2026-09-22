@@ -1,6 +1,6 @@
 import { AppsembleError, initS3Client, logger, version } from '@appsemble/node-utils';
 import semver from 'semver';
-import { QueryTypes } from 'sequelize';
+import { QueryTypes, type Sequelize } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
@@ -19,6 +19,32 @@ export function builder(yargs: Argv): Argv {
     desc: 'The database version to migrate to.',
     default: version,
   });
+}
+
+/**
+ * Migrate every app database, including those of soft-deleted apps, so they can still be restored.
+ *
+ * @param db The main database.
+ */
+export async function migrateAppDatabases(db: Sequelize): Promise<void> {
+  const apps = await App.findAll({ attributes: ['definition', 'id'], paranoid: false });
+  for (const app of apps) {
+    const { sequelize: appDB } = await getAppDB(app.id, db);
+    const [{ relkind }] = await appDB.query<{ relkind: string }>(
+      `SELECT relkind FROM pg_class WHERE relname = 'Resource'`,
+      { type: QueryTypes.SELECT },
+    );
+    if (relkind === 'p') {
+      await appDB.transaction((transaction) =>
+        syncAppDefinitionIndexes({
+          resources: app.definition.resources,
+          sequelize: appDB,
+          transaction,
+        }),
+      );
+    }
+    await closeAppDB(app.id);
+  }
 }
 
 export async function handler(): Promise<void> {
@@ -58,24 +84,7 @@ export async function handler(): Promise<void> {
   }
 
   await migrate(db, migrateTo, migrations);
-  const apps = await App.findAll({ attributes: ['definition', 'id'] });
-  for (const app of apps) {
-    const { sequelize: appDB } = await getAppDB(app.id, db);
-    const [{ relkind }] = await appDB.query<{ relkind: string }>(
-      `SELECT relkind FROM pg_class WHERE relname = 'Resource'`,
-      { type: QueryTypes.SELECT },
-    );
-    if (relkind === 'p') {
-      await appDB.transaction((transaction) =>
-        syncAppDefinitionIndexes({
-          resources: app.definition.resources,
-          sequelize: appDB,
-          transaction,
-        }),
-      );
-    }
-    await closeAppDB(app.id);
-  }
+  await migrateAppDatabases(db);
   await db.close();
   process.exit();
 }
