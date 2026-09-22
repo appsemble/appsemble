@@ -15,6 +15,7 @@ import {
   type Theme,
 } from '@appsemble/sdk';
 import { defaultLocale, has } from '@appsemble/utils';
+import { createIconElement, resolveIcon } from '@appsemble/web-utils';
 
 export function remapWithContext(
   remapper: Remapper,
@@ -54,6 +55,11 @@ export function getDefaultUtils(): BlockUtils {
     },
     fa(icon) {
       return icon;
+    },
+    // Without a registry this resolves like an app without custom icons does.
+    resolveIcon,
+    icon(reference, options) {
+      return createIconElement(resolveIcon(reference), options);
     },
     // @ts-expect-error strictNullChecks not assignable to type
     remap: remapWithContext,

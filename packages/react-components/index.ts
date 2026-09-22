@@ -22,6 +22,7 @@ export * from './FormComponent/index.js';
 export * from './FormOutput/index.js';
 export * from './Icon/index.js';
 export * from './IconButton/index.js';
+export * from './IconProvider/index.js';
 export * from './Input/index.js';
 export * from './InputField/index.js';
 export * from './Join/index.js';

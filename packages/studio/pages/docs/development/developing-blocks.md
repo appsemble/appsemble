@@ -8,6 +8,7 @@ This document will guide you through the process of creating your first block.
 - [Create Your First Block](#create-your-first-block)
 - [Testing the Block](#testing-the-block)
 - [Modifying the Block](#modifying-the-block)
+- [Rendering Icons](#rendering-icons)
 - [Further Reading](#further-reading)
 
 ## Initialize the Project
@@ -288,11 +289,58 @@ bootstrap(({ actions, data, events, pageParameters, parameters, shadowRoot, util
 The event will be emitted to all blocks on the page. Go on and add a second `@your-org/test` block
 to the page to see the event is received by both blocks.
 
+## Rendering Icons
+
+Blocks often let app developers pick an icon, for example for a button. Type such parameters as
+`IconReference` instead of `IconName`. This accepts a Font Awesome icon name as well as an
+`icon:<key>` reference to a [custom icon](../guides/custom-icons.md) of the app, and the generated
+JSON schema uses the `icon` format so Studio validates the value against the app’s icon registry.
+
+```ts copy filename="block.ts"
+import { type IconReference } from '@appsemble/sdk';
+
+declare module '@appsemble/sdk' {
+  interface Parameters {
+    /**
+     * The icon to display on the button.
+     */
+    icon?: IconReference;
+  }
+}
+```
+
+Render the icon with `utils.icon()`. It returns a `.icon` wrapper element containing either a Font
+Awesome glyph or an image of the custom icon, so the block doesn’t need to know which kind of icon
+it received. Each call creates a new element; replace it when the reference changes. Custom icons
+fill the wrapper, so pass the Bulma `size` option to size them; `iconSize` only affects Font Awesome
+glyphs.
+
+```ts copy
+bootstrap(({ parameters, utils }) => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.classList.add('button');
+  if (parameters.icon) {
+    button.append(utils.icon(parameters.icon, { size: 'small' }));
+  }
+  return button;
+});
+```
+
+Blocks written with Preact can use the `Icon` component from `@appsemble/preact-components`, which
+accepts the same references. If a block needs more control, `utils.resolveIcon()` returns either a
+Font Awesome name to pass to `utils.fa()`, the URL of the custom icon image, or an invalid result
+for references which don’t resolve.
+
+Custom icons are rendered as decorative images, so make sure the control containing the icon has an
+accessible name of its own, such as a label or a `title` attribute. Icons which are hardcoded in the
+block, for example a chevron to collapse a section, can keep using `IconName` and `utils.fa()`.
+
 ## Further Reading
 
 To get a better idea of how blocks work, or for inspiration of what blocks can be created, please
 have a look at the
-[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.39.2/blocks).
+[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.40.1/blocks).
 For example, if you want to create a block to display a set of dynamically loaded data, have a look
 at the `table` or `tiles` block. If you’re interested in displaying a single entity, have a look at
 the `detail-viewer` or `stats` block. If you would like to create a block to process data based on

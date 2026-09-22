@@ -482,6 +482,7 @@
   "studio.86RD6b": "Vælg fil…",
   "studio.8DCbBc": "Der opstod et problem ved annulleringen af dit abonnement.",
   "studio.8OHgiT": "Der opstod et problem med indlæsningen af dine tilknyttede konti. Prøv venligst igen.",
+  "studio.8TH0bj": "",
   "studio.8b9Mkg": "Giver adgang, hvis brugeren er den samme som den, der oprettede ressourcen.",
   "studio.8bBf+m": "Minimumsværdi",
   "studio.8bhBiJ": "Koden er kopieret til udklipsholderen",
@@ -621,7 +622,6 @@
   "studio.FTFqXw": "Der er ikke valgt nogen fil",
   "studio.FUKP1D": "Tilladelse til at fjerne gruppemedlemmer.",
   "studio.FayXzX": "Fastgør appen øverst i samlingen",
-  "studio.Fb3/VH": "FontAwesome-ikonet, der vises på login-knappen",
   "studio.Fd+cQF": "Følgende blokke bruger rollen \"{roleName}\":",
   "studio.FfObOV": "En streng er en vilkårlig rækkefølge af tegn (bogstaver, tal, symboler, tegnsætning osv.)",
   "studio.FflmjG": "Indlæser grupper…",
@@ -1113,6 +1113,7 @@
   "studio.dt/e+s": "Adgangskoden er blevet ændret.",
   "studio.du1laW": "Aldrig",
   "studio.dujvfw": "Giver adgang til alle, selv brugere, der ikke er logget ind.",
+  "studio.dvSaSh": "",
   "studio.e/r+2g": "Er du sikker på, at du vil slette denne app-samling? Denne handling kan ikke fortrydes.",
   "studio.e/yUi3": "Se live",
   "studio.e1Z7f/": "Fliselag",
@@ -1526,5 +1527,6 @@
   "studio.zji8KM": "Vil du give {app} tilladelse til at udføre følgende handlinger på dine vegne?",
   "studio.zo9Szm": "Sletning af en app-samling kan ikke fortrydes.",
   "studio.zoSzG+": "Skift til GUI-editoren",
-  "studio.zwurmB": "Cookie"
+  "studio.zwurmB": "Cookie",
+  "studio.zzKGTH": ""
 }

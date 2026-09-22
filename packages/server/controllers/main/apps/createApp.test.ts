@@ -1499,6 +1499,7 @@ describe('createApp', () => {
 
       {
         "data": {
+          "code": "APP_VALIDATION_FAILED",
           "errors": [
             {
               "instance": "@non/existent",
@@ -1546,6 +1547,7 @@ describe('createApp', () => {
 
       {
         "data": {
+          "code": "APP_VALIDATION_FAILED",
           "errors": [
             {
               "instance": "test",
@@ -1595,6 +1597,7 @@ describe('createApp', () => {
 
       {
         "data": {
+          "code": "APP_VALIDATION_FAILED",
           "errors": [
             {
               "instance": "invalid",
@@ -2308,6 +2311,7 @@ describe('createApp', () => {
 
         {
           "data": {
+            "code": "APP_VALIDATION_FAILED",
             "errors": [
               {
                 "instance": "upstream",
@@ -2362,6 +2366,7 @@ describe('createApp', () => {
 
         {
           "data": {
+            "code": "APP_VALIDATION_FAILED",
             "errors": [
               {
                 "instance": "upstream",
@@ -2416,6 +2421,7 @@ describe('createApp', () => {
 
         {
           "data": {
+            "code": "APP_VALIDATION_FAILED",
             "errors": [
               {
                 "instance": "upstream",
@@ -2652,6 +2658,7 @@ describe('createApp', () => {
 
       {
         "data": {
+          "code": "APP_VALIDATION_FAILED",
           "errors": [
             {
               "argument": "name",
@@ -2738,6 +2745,18 @@ describe('createApp', () => {
       ",
                     "maxLength": 80,
                     "type": "string",
+                  },
+                  "icons": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/IconRegistryEntryDefinition",
+                    },
+                    "description": "Custom icons that can be referenced as \`icon:<key>\` wherever an icon is accepted.
+
+      Each key names an app-level SVG asset by its name. Keys and asset names must consist of lower case
+      letters, digits, and single hyphens. Keys are case-sensitive, and \`icon:<key>\` never falls back
+      to a Font Awesome icon.
+      ",
+                    "type": "object",
                   },
                   "layout": {
                     "$ref": "#/components/schemas/AppLayoutDefinition",

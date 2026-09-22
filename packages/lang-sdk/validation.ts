@@ -19,6 +19,7 @@ import {
   getGridTemplateAreas,
   gridDeviceOrder,
 } from './gridUtils.js';
+import { isValidIconName, parseIconReference } from './icons.js';
 import { iterAction, iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { normalize } from './normalize.js';
@@ -1734,6 +1735,130 @@ function validateResourceReferences(definition: AppDefinition, report: Report): 
   }
 }
 
+function validateIcons({ icons }: AppDefinition, report: Report): void {
+  if (!icons) {
+    return;
+  }
+  for (const key of Object.keys(icons)) {
+    if (!isValidIconName(key)) {
+      report(key, 'is not a valid icon key; use lower case letters, digits, and single hyphens', [
+        'icons',
+        key,
+      ]);
+    }
+  }
+}
+
+/**
+ * Collect the string values of an instance which its schema marks with the given format.
+ *
+ * Schema references, nested objects, arrays, and composition keywords are followed.
+ *
+ * @param instance The value to inspect.
+ * @param schema The schema describing the value.
+ * @param root The root schema, used to resolve local `$ref`s to its definitions.
+ * @param format The format to look for.
+ * @param path The path of the instance, used for reporting.
+ * @param found The collected values, keyed by their JSON path.
+ */
+function collectFormattedStrings(
+  instance: unknown,
+  schema: Schema | undefined,
+  root: Schema,
+  format: string,
+  path: Prefix,
+  found: Map<string, [Prefix, string]>,
+): void {
+  if (!schema || typeof schema !== 'object') {
+    return;
+  }
+  if (schema.$ref) {
+    const match = /^#\/definitions\/(.+)$/.exec(schema.$ref);
+    if (match) {
+      collectFormattedStrings(
+        instance,
+        root.definitions?.[decodeURIComponent(match[1])],
+        root,
+        format,
+        path,
+        found,
+      );
+    }
+    return;
+  }
+  if (typeof instance === 'string') {
+    if (schema.format === format) {
+      found.set(JSON.stringify(path), [path, instance]);
+    }
+  } else if (Array.isArray(instance)) {
+    for (const [index, item] of instance.entries()) {
+      const itemSchema = Array.isArray(schema.items)
+        ? (schema.items[index] ??
+          (typeof schema.additionalItems === 'object' ? schema.additionalItems : undefined))
+        : schema.items;
+      collectFormattedStrings(item, itemSchema, root, format, [...path, index], found);
+    }
+  } else if (typeof instance === 'object' && instance) {
+    for (const [key, value] of Object.entries(instance)) {
+      const propertySchema = has(schema.properties, key)
+        ? schema.properties![key]
+        : (Object.entries(schema.patternProperties ?? {}).find(([pattern]) =>
+            new RegExp(pattern).test(key),
+          )?.[1] ??
+          (typeof schema.additionalProperties === 'object'
+            ? schema.additionalProperties
+            : undefined));
+      collectFormattedStrings(value, propertySchema, root, format, [...path, key], found);
+    }
+  }
+  for (const branches of [schema.anyOf, schema.oneOf, schema.allOf]) {
+    for (const branch of branches ?? []) {
+      collectFormattedStrings(instance, branch, root, format, path, found);
+    }
+  }
+}
+
+function validateIconReferences(
+  definition: AppDefinition,
+  blockVersions: Map<string, Map<string, BlockManifest>>,
+  report: Report,
+): void {
+  const check = (reference: string, path: Prefix): void => {
+    // Syntax errors are reported by the schema validation and invalid registry entries by
+    // validateIcons; only check registry membership here.
+    const parsed = parseIconReference(reference);
+    if (parsed.type === 'custom' && !has(definition.icons, parsed.key)) {
+      report(reference, `references the unknown icon key “${parsed.key}”`, path);
+    }
+  };
+
+  iterApp(definition, {
+    onPage(page, path) {
+      if (typeof page.icon === 'string') {
+        check(page.icon, [...path, 'icon']);
+      }
+    },
+    onBlock(block, path) {
+      const version = blockVersions.get(normalizeBlockName(block.type))?.get(block.version);
+      if (!version?.parameters || !block.parameters) {
+        return;
+      }
+      const found = new Map<string, [Prefix, string]>();
+      collectFormattedStrings(
+        block.parameters,
+        version.parameters,
+        version.parameters,
+        'icon',
+        [...path, 'parameters'],
+        found,
+      );
+      for (const [iconPath, reference] of found.values()) {
+        check(reference, iconPath);
+      }
+    },
+  });
+}
+
 function validateLanguage({ defaultLanguage }: AppDefinition, report: Report): void {
   if (defaultLanguage != null && !languageTags.check(defaultLanguage)) {
     report(defaultLanguage, 'is not a valid language code', ['defaultLanguage']);
@@ -2347,6 +2472,8 @@ export async function validateAppDefinition(
     validateCronJobs(clonedDefinition, report);
     validateDefaultPage(clonedDefinition, report);
     validateHooks(clonedDefinition, report);
+    validateIcons(clonedDefinition, report);
+    validateIconReferences(clonedDefinition, blockVersionMap, report);
     validateLanguage(clonedDefinition, report);
     validateResourceReferences(clonedDefinition, report);
     validateMembersSchema(clonedDefinition, report);

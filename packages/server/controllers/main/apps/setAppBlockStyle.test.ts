@@ -329,6 +329,7 @@ describe('setAppBlockStyle', () => {
 
       {
         "data": {
+          "code": "APP_VALIDATION_FAILED",
           "errors": [
             {
               "instance": "test",

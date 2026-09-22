@@ -64,6 +64,9 @@ These are more defined [here](../guides/page-types.md).
 There are a couple of options available to change how the page is shown in the navigation menus:
 
 - **hideName**: Whether or not the page name should be displayed in the **app bar**.
+- **icon**: A [Font Awesome icon](https://fontawesome.com/icons?m=free) name displayed next to the
+  page name in the navigation menus, or an `icon:<key>` reference to a
+  [custom icon](../guides/custom-icons.md) of the app.
 - **navTitle**: The name of the page in the navigation menu
 - **hideNavTitle**: Whether or not the page should be displayed in navigational menus. False by
   default

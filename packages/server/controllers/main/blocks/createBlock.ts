@@ -107,7 +107,7 @@ export async function createBlock(ctx: Context): Promise<void> {
     throwKoaError(
       ctx,
       409,
-      `Version ${blockVersion.version} is equal to or lower than the already existing ${name}@${version}.`,
+      `Version ${version} is equal to or lower than the already existing ${name}@${blockVersion.version}.`,
     );
   }
 

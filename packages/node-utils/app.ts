@@ -231,7 +231,7 @@ export async function patchDefinition(
         doc.setIn(key, createPatchValue(doc, value));
       }
     }
-    const prettierOptions = (await resolveConfig(path, { editorconfig: true }))!;
+    const prettierOptions = (await resolveConfig(path, { editorconfig: true })) ?? {};
     prettierOptions.parser = 'yaml';
     await writeFile(path, await format(String(doc), prettierOptions));
     logger.verbose(`Successfully updated ${path}`);

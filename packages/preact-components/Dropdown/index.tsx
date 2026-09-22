@@ -1,4 +1,4 @@
-import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconReference } from '@appsemble/lang-sdk';
 import classNames from 'classnames';
 import { type ComponentChild, type ComponentChildren, type VNode } from 'preact';
 import { type MutableRef, useCallback, useRef } from 'preact/hooks';
@@ -32,7 +32,7 @@ interface DropdownProps {
   /**
    * The icon to display next to the label.
    */
-  readonly icon?: IconName;
+  readonly icon?: IconReference;
 
   /**
    * Whether to render the dropdown trigger as a button.

@@ -1,10 +1,10 @@
 # PostgreSQL
 
-Appsemble stores its data in PostgreSQL 17: the `appsemble` database, plus one database per app
-which the server creates on demand as `app-<id>`. The Helm chart does not bundle PostgreSQL. Run it
-with [CloudNativePG](https://cloudnative-pg.io), the Kubernetes operator which takes care of
+Appsemble stores its data in PostgreSQL 17 or 18: the `appsemble` database, plus one database per
+app which the server creates on demand as `app-<id>`. The Helm chart does not bundle PostgreSQL. Run
+it with [CloudNativePG](https://cloudnative-pg.io), the Kubernetes operator which takes care of
 replication, failover, rolling updates and backups, and point the chart at the cluster it manages.
-This page describes that setup. Any other PostgreSQL 17 server works as well, as long as it meets
+This page describes that setup. Any PostgreSQL 17 or 18 server works as well, as long as it meets
 the requirements below.
 
 ## Table of contents
@@ -73,7 +73,7 @@ metadata:
 spec:
   instances: 2
   # The standard image ships every locale; the minimal one only knows C.
-  imageName: ghcr.io/cloudnative-pg/postgresql:17.11-standard-trixie
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.6-standard-trixie
   # Voluntary disruptions such as a node drain never take the last instance down.
   enablePDB: true
   # A restart of the primary, for a new image or a changed setting, promotes the replica first.

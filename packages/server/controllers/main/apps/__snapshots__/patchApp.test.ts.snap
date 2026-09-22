@@ -6,6 +6,7 @@ Content-Type: application/json; charset=utf-8
 
 {
   "data": {
+    "code": "APP_VALIDATION_FAILED",
     "errors": [
       {
         "argument": "version",
@@ -307,10 +308,12 @@ will remain the same until it is manually updated.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -467,10 +470,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -644,10 +649,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -821,10 +828,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -1005,10 +1014,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -1186,10 +1197,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -1367,10 +1380,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -1548,10 +1563,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -1747,10 +1764,12 @@ pages:
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -1950,10 +1969,12 @@ pages:
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -2153,10 +2174,12 @@ pages:
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -2347,6 +2370,7 @@ Content-Type: application/json; charset=utf-8
 
 {
   "data": {
+    "code": "APP_VALIDATION_FAILED",
     "errors": [
       {
         "argument": "version",
@@ -2648,10 +2672,12 @@ will remain the same until it is manually updated.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -2808,10 +2834,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -2985,10 +3013,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -3162,10 +3192,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -3346,10 +3378,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -3527,10 +3561,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -3708,10 +3744,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -3889,10 +3927,12 @@ instructed to contact the app owner to get permissions.
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -4088,10 +4128,12 @@ pages:
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -4291,10 +4333,12 @@ pages:
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {
@@ -4494,10 +4538,12 @@ pages:
               "type": "boolean",
             },
             "icon": {
-              "description": "An optional icon from the fontawesome icon set
+              "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu.
+This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
+\`icons\` registry.
 ",
+              "format": "icon",
               "type": "string",
             },
             "name": {

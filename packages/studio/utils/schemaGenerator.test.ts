@@ -33,6 +33,11 @@ it('should return empty string', () => {
   expect(result).toBe('');
 });
 
+it('icon properties should return an icon name', () => {
+  expect(generateData(null, { type: 'string', format: 'icon' })).toBe('home');
+  expect(generateData(null, { type: 'string', format: 'fontawesome' })).toBe('home');
+});
+
 it('Boolean property should return false', () => {
   const result = generateData(null, { type: 'boolean' });
   expect(result).toBe(false);
