@@ -25,4 +25,8 @@ export const messages = defineMessages({
     id: 'studio.rWPtv+',
     defaultMessage: 'Query parameter',
   },
+  tokenError: {
+    id: 'studio.twPhRk',
+    defaultMessage: 'Token request failed on {date}: {error}',
+  },
 });

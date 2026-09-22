@@ -10,6 +10,8 @@ export const key = '0.39.3';
  * - Add `totpLockedUntil` column to `AppMember` table to throttle TOTP brute forcing.
  * - Add `totpConsumedJti` column to `AppMember` table to make pending TOTP tokens single use.
  * - Add `totpVerifiedAt` column to `AppMember` table to reject older pending TOTP tokens.
+ * - Add `lastTokenError`, `lastTokenErrorAt` and `lastTokenErrorNotifiedAt` columns to
+ * `AppServiceSecret` table to record and report failed client-credentials token requests.
  *
  * @param transaction Sequelize transaction
  * @param db The Sequelize Database.
@@ -72,6 +74,39 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
+
+  logger.info('Adding `lastTokenError` column to `AppServiceSecret` table');
+  await queryInterface.addColumn(
+    'AppServiceSecret',
+    'lastTokenError',
+    {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    { transaction },
+  );
+
+  logger.info('Adding `lastTokenErrorAt` column to `AppServiceSecret` table');
+  await queryInterface.addColumn(
+    'AppServiceSecret',
+    'lastTokenErrorAt',
+    {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    { transaction },
+  );
+
+  logger.info('Adding `lastTokenErrorNotifiedAt` column to `AppServiceSecret` table');
+  await queryInterface.addColumn(
+    'AppServiceSecret',
+    'lastTokenErrorNotifiedAt',
+    {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    { transaction },
+  );
 }
 
 /**
@@ -81,6 +116,8 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Remove `totpLockedUntil` column from `AppMember` table.
  * - Remove `totpConsumedJti` column from `AppMember` table.
  * - Remove `totpVerifiedAt` column from `AppMember` table.
+ * - Remove `lastTokenError`, `lastTokenErrorAt` and `lastTokenErrorNotifiedAt` columns from
+ * `AppServiceSecret` table.
  *
  * @param transaction Sequelize transaction
  * @param db The Sequelize Database.
@@ -102,4 +139,15 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
 
   logger.info('Removing `totpVerifiedAt` column from `AppMember` table');
   await queryInterface.removeColumn('AppMember', 'totpVerifiedAt', { transaction });
+
+  logger.info('Removing `lastTokenError` column from `AppServiceSecret` table');
+  await queryInterface.removeColumn('AppServiceSecret', 'lastTokenError', { transaction });
+
+  logger.info('Removing `lastTokenErrorAt` column from `AppServiceSecret` table');
+  await queryInterface.removeColumn('AppServiceSecret', 'lastTokenErrorAt', { transaction });
+
+  logger.info('Removing `lastTokenErrorNotifiedAt` column from `AppServiceSecret` table');
+  await queryInterface.removeColumn('AppServiceSecret', 'lastTokenErrorNotifiedAt', {
+    transaction,
+  });
 }
