@@ -1,1 +1,1 @@
-Install PostgreSQL 18 client tools and require PostgreSQL 17 or later
+Install PostgreSQL 18 client tools and support PostgreSQL 17 and 18

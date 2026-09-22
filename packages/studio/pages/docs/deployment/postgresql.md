@@ -1,10 +1,10 @@
 # PostgreSQL
 
-Appsemble stores its data in PostgreSQL 17 or later: the `appsemble` database, plus one database per
+Appsemble stores its data in PostgreSQL 17 or 18: the `appsemble` database, plus one database per
 app which the server creates on demand as `app-<id>`. The Helm chart does not bundle PostgreSQL. Run
 it with [CloudNativePG](https://cloudnative-pg.io), the Kubernetes operator which takes care of
 replication, failover, rolling updates and backups, and point the chart at the cluster it manages.
-This page describes that setup. Any PostgreSQL 17 or later server works as well, as long as it meets
+This page describes that setup. Any PostgreSQL 17 or 18 server works as well, as long as it meets
 the requirements below.
 
 ## Table of contents
