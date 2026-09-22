@@ -64,6 +64,8 @@ function sanitizeAppDefinitionForPublicSettings(
     defaultPage: definition.defaultPage,
     layout: definition.layout
       ? {
+          breadcrumbs: definition.layout.breadcrumbs,
+          breakpoints: definition.layout.breakpoints,
           debug: definition.layout.debug,
           enabledSettings: definition.layout.enabledSettings,
           feedback: definition.layout.feedback,
@@ -73,6 +75,7 @@ function sanitizeAppDefinitionForPublicSettings(
           login: definition.layout.login,
           logo: definition.layout.logo,
           navigation: definition.layout.navigation,
+          navbar: definition.layout.navbar,
           settings: definition.layout.settings,
           stackedHeader: definition.layout.stackedHeader,
           titleBarText: definition.layout.titleBarText,

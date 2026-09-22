@@ -1,0 +1,7 @@
+{
+  "app": {
+    "description": "PDF viewing app",
+    "name": "PDF Viewer",
+    "pages.pdf-viewer": "PDF Viewer"
+  }
+}

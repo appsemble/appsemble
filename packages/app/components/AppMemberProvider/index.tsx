@@ -17,11 +17,12 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId, development } from '../../utils/settings.js';
+import { getGrantTotpChallenge } from '../../utils/totp.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 axios.defaults.withCredentials = true;
@@ -50,6 +51,11 @@ interface PasswordLoginParams {
 interface AuthorizationCodeLoginParams {
   code: string;
   redirect_uri: string;
+
+  /**
+   * The app page the OAuth2 login was started from, if any.
+   */
+  redirect?: string;
 }
 
 interface DemoLoginParams {
@@ -58,9 +64,13 @@ interface DemoLoginParams {
 }
 
 interface TotpPendingState {
-  memberId: string;
   redirect?: string;
   totpEnabled: boolean;
+
+  /**
+   * The pending TOTP token proving the first authentication factor has been verified.
+   */
+  totpToken: string;
 }
 
 interface LoginState {
@@ -75,6 +85,7 @@ interface AppMemberContext extends LoginState {
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   demoLogin: (props: DemoLoginParams) => Promise<void>;
   totpLogin: (token: string) => Promise<void>;
+  completeTotpLogin: (tokens: TokenResponse) => Promise<void>;
   cancelTotpLogin: () => void;
   logout: () => Promise<void>;
   appMemberInfo: AppMemberInfo;
@@ -104,15 +115,6 @@ interface TokenResponse {
   refresh_token?: string;
 }
 
-/**
- * A response indicating TOTP verification is required.
- */
-interface TotpRequiredResponse {
-  totpRequired: true;
-  totpEnabled: boolean;
-  memberId: string;
-}
-
 // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
 const Context = createContext<AppMemberContext>(null);
 
@@ -125,6 +127,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   const { pathname } = useLocation();
   const isOAuth2Callback = /(^|\/)Callback$/.test(pathname);
   const navigate = useNavigate();
+  const { lang } = useParams<{ lang: string }>();
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
@@ -284,34 +287,54 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         return isLatestAuthRequest(requestId) ? '' : false;
       }
 
-      const { data } = await axios.post<TokenResponse | TotpRequiredResponse>(
-        `${apiUrl}/apps/${appId}/auth/oauth2/token`,
-        new URLSearchParams({
-          client_id: `app:${appId}`,
-          grant_type: grantType,
-          scope: oauth2Scope,
-          ...params,
-        }),
-      );
+      let data: TokenResponse;
+      try {
+        ({ data } = await axios.post<TokenResponse>(
+          `${apiUrl}/apps/${appId}/auth/oauth2/token`,
+          new URLSearchParams({
+            client_id: `app:${appId}`,
+            grant_type: grantType,
+            scope: oauth2Scope,
+            ...params,
+          }),
+        ));
+      } catch (error: unknown) {
+        const challenge = getGrantTotpChallenge(error);
+        if (!challenge) {
+          throw error;
+        }
+        if (!isLatestAuthRequest(requestId)) {
+          return false;
+        }
+        // The credentials check out, but no session exists yet. The pending token is what proves
+        // that first step to the TOTP endpoints. The redirect is carried along, so completing the
+        // second factor still lands on the page the login was started from.
+        setState((prev) => ({
+          ...prev,
+          totpPending: {
+            redirect: params.redirect,
+            totpEnabled: challenge.totpEnabled,
+            totpToken: challenge.totpToken,
+          },
+        }));
+        // Only the login page renders the second step, so a login started anywhere else, such as
+        // registering or an app member action, has to move there to be completed.
+        if (!/(^|\/)Login$/.test(pathname)) {
+          navigate({
+            pathname: `/${lang}/Login`,
+            search: params.redirect
+              ? String(new URLSearchParams({ redirect: params.redirect }))
+              : '',
+          });
+        }
+        return null;
+      }
 
       if (!isLatestAuthRequest(requestId)) {
         return false;
       }
 
-      // Check if TOTP verification is required
-      if ('totpRequired' in data && data.totpRequired) {
-        setState((prev) => ({
-          ...prev,
-          totpPending: {
-            memberId: data.memberId,
-            redirect: params.redirect,
-            totpEnabled: data.totpEnabled ?? false,
-          },
-        }));
-        return null;
-      }
-
-      const { access_token: accessToken, refresh_token: refreshToken } = data as TokenResponse;
+      const { access_token: accessToken, refresh_token: refreshToken } = data;
       const auth = `Bearer ${accessToken}`;
       setAuthorization(auth);
       if (refreshToken) {
@@ -320,7 +343,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       applyTokenExpiration(accessToken, requestId);
       return auth;
     },
-    [applyTokenExpiration, isLatestAuthRequest],
+    [applyTokenExpiration, isLatestAuthRequest, lang, navigate, pathname],
   );
 
   /**
@@ -345,7 +368,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         await hydrateAuthenticatedState(
           requestId,
           auth,
-          (params as unknown as PasswordLoginParams).redirect,
+          (params as { redirect?: string }).redirect,
         );
       } catch (error: unknown) {
         if (isLatestAuthRequest(requestId)) {
@@ -405,6 +428,18 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
    *
    * @param token The TOTP token from the authenticator app.
    */
+  const completeTotpLogin = useCallback(
+    async (data: TokenResponse) => {
+      const requestId = invalidateAuthRequests();
+      refreshTokenRef.current = data.refresh_token;
+      const auth = `Bearer ${data.access_token}`;
+      setAuthorization(auth);
+      applyTokenExpiration(data.access_token, requestId);
+      await hydrateAuthenticatedState(requestId, auth, state.totpPending?.redirect);
+    },
+    [applyTokenExpiration, hydrateAuthenticatedState, invalidateAuthRequests, state.totpPending],
+  );
+
   const totpLogin = useCallback(
     async (token: string) => {
       if (!state.totpPending) {
@@ -414,21 +449,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       const { data } = await axios.post<TokenResponse>(
         `${apiUrl}/api/apps/${appId}/auth/totp/verify`,
         {
-          memberId: state.totpPending.memberId,
           token,
-          scope: oauth2Scope,
+          totpToken: state.totpPending.totpToken,
         },
       );
 
-      const requestId = invalidateAuthRequests();
-      refreshTokenRef.current = data.refresh_token;
-      const auth = `Bearer ${data.access_token}`;
-      setAuthorization(auth);
-      applyTokenExpiration(data.access_token, requestId);
-      const { redirect } = state.totpPending;
-      await hydrateAuthenticatedState(requestId, auth, redirect);
+      await completeTotpLogin(data);
     },
-    [applyTokenExpiration, hydrateAuthenticatedState, invalidateAuthRequests, state.totpPending],
+    [completeTotpLogin, state.totpPending],
   );
 
   /**
@@ -456,36 +484,34 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     });
   }, []);
 
-  // Initialize the login session/
+  // Initialize the login session.
   useEffect(() => {
     // If the app doesn’t have a security definition, don’t even bother initializing anything.
-    if (!definition.security) {
+    if (!definition.security || !isLoading) {
       return;
     }
 
-    if (!appMemberInfo) {
-      if (development) {
-        developmentLogin()
-          .finally(() => setIsLoading(false))
-          .catch(() => {
-            // This can fail if the server is not reachable, but in development this is fine.
-          });
-        return;
-      }
-
-      if (isOAuth2Callback) {
-        setIsLoading(false);
-        return;
-      }
-
-      // Try to resume the session from the refresh token cookie.
-      login('refresh_token', {})
+    if (development) {
+      developmentLogin()
+        .finally(() => setIsLoading(false))
         .catch(() => {
-          // Do nothing. `login` already resets the local session state on failure.
-        })
-        .finally(() => setIsLoading(false));
+          // This can fail if the server is not reachable, but in development this is fine.
+        });
+      return;
     }
-  }, [appMemberInfo, definition, developmentLogin, isOAuth2Callback, login, logout]);
+
+    if (isOAuth2Callback) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Try to resume the session from the refresh token cookie.
+    login('refresh_token', {})
+      .catch(() => {
+        // Do nothing. `login` already resets the local session state on failure.
+      })
+      .finally(() => setIsLoading(false));
+  }, [definition, developmentLogin, isLoading, isOAuth2Callback, login]);
 
   // Handle refreshing access tokens
   useEffect(() => {
@@ -552,6 +578,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       developmentLogin,
       demoLogin,
       totpLogin,
+      completeTotpLogin,
       cancelTotpLogin,
       logout,
       addAppMemberGroup,
@@ -568,6 +595,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       developmentLogin,
       demoLogin,
       totpLogin,
+      completeTotpLogin,
       cancelTotpLogin,
       logout,
       addAppMemberGroup,

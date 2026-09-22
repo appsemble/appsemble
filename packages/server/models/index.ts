@@ -431,9 +431,11 @@ export async function initAppDB(
     closeWhenIdle(appId, replaced.sequelize);
   }
 
+  // Soft-deleted apps keep their database, so it can be migrated and the app restored.
   const app = (await mainDB.models.App.findOne({
     attributes: ['id', 'dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword', 'definition'],
     where: { id: appId },
+    paranoid: false,
     transaction,
   })) as App;
 
@@ -655,4 +657,17 @@ export async function dropAndCloseAllAppDBs(): Promise<void> {
   } finally {
     activeTeardown = undefined;
   }
+}
+
+/**
+ * Close the main database connection pool and those of every app database open in this process.
+ *
+ * Used when the process shuts down, so the connections are released rather than dropped by the
+ * kernel when it exits.
+ */
+export async function closeDBs(): Promise<void> {
+  const appDBsToClose = [...appDBs.values()];
+  appDBs.clear();
+  await Promise.all(appDBsToClose.map(({ sequelize }) => sequelize.close()));
+  await db?.close();
 }

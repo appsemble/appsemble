@@ -227,6 +227,61 @@ describe('appsTokenHandler', () => {
       });
     });
 
+    it('should not issue any token before TOTP has been verified', async () => {
+      const organizationId = `org-${randomUUID()}`;
+      await user.$create('Organization', { id: organizationId });
+      const app = await App.create({
+        OrganizationId: organizationId,
+        definition: '',
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+        totp: 'required',
+      });
+      const appMember = await createTestAppMember(app.id);
+      const { OAuth2AuthorizationCode } = await getAppDB(app.id);
+      await OAuth2AuthorizationCode.create({
+        code: 'totp-code',
+        AppMemberId: appMember.id,
+        expires: new Date('2000-01-01T00:10:00Z'),
+        redirectUri: 'http://foo.bar.localhost:9999/Callback',
+        scope: 'openid',
+      });
+
+      const response = await request.post(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${app.id}`,
+          code: 'totp-code',
+          grant_type: 'authorization_code',
+          redirect_uri: 'http://foo.bar.localhost:9999/Callback',
+          scope: 'openid',
+        }),
+        { headers: { origin: 'http://foo.bar.localhost:9999' } },
+      );
+
+      // The OAuth2 error shape, which is why this is snake_case where the other TOTP endpoints
+      // aren’t.
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          error: 'totp_required',
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          totp_enabled: false,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          totp_token: expect.stringMatching(jwtPattern),
+        },
+      });
+      expect(response.data).not.toHaveProperty('access_token');
+
+      const payload = jwt.decode(response.data.totp_token) as jwt.JwtPayload;
+      expect(payload).toMatchObject({
+        aud: `app:${app.id}`,
+        sub: appMember.id,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'totp_pending',
+      });
+    });
+
     it('should set secure app auth cookies if SSL is enabled', async () => {
       setArgv({ host: 'https://localhost', secret: 'test', ssl: true });
       try {
@@ -335,9 +390,9 @@ describe('appsTokenHandler', () => {
         { headers: { referer: 'http://foo.bar.localhost:9999/' } },
       );
       expect(response).toMatchObject({
-        status: 404,
+        status: 400,
         data: {
-          error: 'Not Found',
+          error: 'invalid_client',
         },
       });
     });
@@ -690,6 +745,101 @@ describe('appsTokenHandler', () => {
         token_use: 'access',
         scope: 'blocks:write',
         sub: user.id,
+      });
+    });
+  });
+
+  describe('password', () => {
+    async function createPasswordApp(totp: 'disabled' | 'enabled' | 'required'): Promise<App> {
+      const organizationId = `org-${randomUUID()}`;
+      await user.$create('Organization', { id: organizationId });
+      return App.create({
+        OrganizationId: organizationId,
+        definition: '',
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+        totp,
+      });
+    }
+
+    it('should return an access token response for valid credentials', async () => {
+      const app = await createPasswordApp('disabled');
+      const appMember = await createTestAppMember(app.id);
+
+      const response = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${app.id}`,
+          grant_type: 'password',
+          password: 'testpassword',
+          scope: 'openid',
+          username: appMember.email,
+        }),
+      );
+
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+          token_type: 'bearer',
+        },
+      });
+    });
+
+    it('should not issue any token before TOTP has been verified', async () => {
+      const app = await createPasswordApp('required');
+      const appMember = await createTestAppMember(app.id);
+
+      const response = await request.post(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${app.id}`,
+          grant_type: 'password',
+          password: 'testpassword',
+          scope: 'openid',
+          username: appMember.email,
+        }),
+      );
+
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          error: 'totp_required',
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          totp_enabled: false,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          totp_token: expect.stringMatching(jwtPattern),
+        },
+      });
+      expect(response.data).not.toHaveProperty('access_token');
+
+      const payload = jwt.decode(response.data.totp_token) as jwt.JwtPayload;
+      expect(payload).toMatchObject({
+        aud: `app:${app.id}`,
+        sub: appMember.id,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        token_use: 'totp_pending',
+      });
+    });
+
+    it('should reject credentials for an app which doesn’t exist', async () => {
+      const response = await request.post(
+        '/apps/1234/auth/oauth2/token',
+        new URLSearchParams({
+          client_id: 'app:1234',
+          grant_type: 'password',
+          password: 'testpassword',
+          scope: 'openid',
+          username: 'test@example.com',
+        }),
+      );
+
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          error: 'invalid_client',
+        },
       });
     });
   });

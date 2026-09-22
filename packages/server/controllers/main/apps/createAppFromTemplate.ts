@@ -1,5 +1,6 @@
 import {
   assertKoaCondition,
+  getAppAssetLocation,
   getS3File,
   getS3FileStats,
   replaceAssetFunctions,
@@ -193,11 +194,13 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
         })),
       );
       for (const templateAsset of templateAssets) {
-        const templateStream = await getS3File(`app-${template.id}`, templateAsset.id);
-        const templateStats = await getS3FileStats(`app-${template.id}`, templateAsset.id);
+        const source = getAppAssetLocation(template.id, templateAsset.id);
+        const templateStream = await getS3File(source.bucket, source.key);
+        const templateStats = await getS3FileStats(source.bucket, source.key);
         const createdAsset = recordAssets.find((asset) => asset.name === templateAsset.name);
         // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-        await uploadS3File(`app-${record.id}`, createdAsset.id, templateStream, templateStats.size);
+        const target = getAppAssetLocation(record.id, createdAsset.id);
+        await uploadS3File(target.bucket, target.key, templateStream, templateStats.size);
       }
     }
 

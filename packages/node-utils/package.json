@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/node-utils",
-  "version": "0.37.5",
+  "version": "0.39.2",
   "description": "NodeJS utilities used by Appsemble internally.",
   "keywords": [
     "app",
@@ -40,9 +40,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.37.5",
-    "@appsemble/types": "0.37.5",
-    "@appsemble/utils": "0.37.5",
+    "@appsemble/lang-sdk": "0.39.2",
+    "@appsemble/types": "0.39.2",
+    "@appsemble/utils": "0.39.2",
+    "@aws-sdk/client-s3": "3.1130.0",
+    "@aws-sdk/lib-storage": "3.1130.0",
     "@formatjs/fast-memoize": "^2.0.0",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@inquirer/prompts": "^8.0.0",
@@ -51,7 +53,7 @@
     "@odata/parser": "^0.2.0",
     "@types/koa": "^2.0.0",
     "axios": "^1.0.0",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "bulma": "=0.9.4",
     "bulma-checkradio": "=2.1.1",
     "bulma-slider": "=2.0.4",
@@ -83,9 +85,8 @@
     "lodash": "^4.0.0",
     "lodash-es": "^4.0.0",
     "logform": "^2.0.0",
-    "memfs": "4.68.1",
+    "memfs": "4.68.2",
     "mime-types": "^2.0.0",
-    "minio": "^8.0.7",
     "mustache": "^4.0.0",
     "openapi-types": "^12.1.3",
     "parse-duration": "^1.0.0",
@@ -93,12 +94,12 @@
     "pg": "^8.16.3",
     "request-filtering-agent": "^3.2.0",
     "sass": "^1.0.0",
-    "sharp": "0.34.5",
+    "sharp": "0.35.4",
     "sort-keys": "^5.0.0",
     "strip-bom": "^5.0.0",
     "type-fest": "^4.0.0",
     "type-is": "^1.6.18",
-    "uuid": "^8.3.2",
+    "uuid": "^14.0.2",
     "webpack": "^5.0.0",
     "webpack-dev-middleware": "^6.0.0",
     "winston": "^3.0.0",
@@ -112,10 +113,9 @@
     "@types/koa-mount": "4.0.5",
     "@types/mustache": "4.2.6",
     "@types/type-is": "1.6.7",
-    "@types/uuid": "10.0.0",
     "axios-mock-adapter": "1.22.0",
-    "axios-test-instance": "7.0.0",
-    "vitest": "4.1.10"
+    "axios-test-instance": "8.0.0",
+    "vitest": "4.1.11"
   },
   "peerDependencies": {
     "prettier": "^3"

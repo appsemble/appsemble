@@ -1,56 +1,424 @@
+import dns from 'node:dns';
+import { createServer, type IncomingMessage, type Server } from 'node:http';
+import { type AddressInfo } from 'node:net';
 import { Readable } from 'node:stream';
 import { buffer as streamToBuffer } from 'node:stream/consumers';
 
-import { S3Error } from 'minio';
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
+import axios from 'axios';
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { logger } from './logger.js';
-import { deleteS3File, deleteS3Files, initS3Client, listS3Objects, uploadS3File } from './s3.js';
+import {
+  clearAllS3Buckets,
+  deleteAppAssetObjects,
+  deleteS3File,
+  deleteS3Files,
+  getAppAssetLocation,
+  getBlockAssetLocation,
+  getS3FileBuffer,
+  getS3FileStats,
+  initS3Client,
+  listS3Files,
+  listS3Objects,
+  setS3BucketPolicy,
+  uploadS3File,
+} from './s3.js';
 
-const { bucketExists, listObjectsV2, makeBucket, putObject, removeObjects, statObject } =
-  vi.hoisted(() => ({
-    bucketExists: vi.fn().mockResolvedValue(true),
-    listObjectsV2: vi.fn(),
-    makeBucket: vi.fn(),
-    putObject: vi.fn(),
-    removeObjects: vi.fn(),
-    statObject: vi.fn(),
-  }));
-
-vi.mock('minio', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('minio')>();
-  return {
-    ...actual,
-    Client: class {
-      bucketExists = bucketExists;
-
-      listObjectsV2 = listObjectsV2;
-
-      makeBucket = makeBucket;
-
-      putObject = putObject;
-
-      removeObjects = removeObjects;
-
-      statObject = statObject;
-    },
-  };
-});
-
-function s3Error(code: string): S3Error {
-  const error = new S3Error('boom');
-  error.code = code;
-  return error;
+interface Command {
+  constructor: { name: string };
+  input: Record<string, unknown>;
 }
 
-beforeAll(() => {
-  initS3Client({ accessKey: 'key', secretKey: 'secret', endPoint: 'localhost', useSSL: false });
+type Send = (command: Command) => Promise<unknown> | unknown;
+
+let send: MockInstance<Send>;
+
+function s3Error(code: string): S3ServiceException {
+  return new S3ServiceException({ name: code, $fault: 'client', $metadata: {} });
+}
+
+function sentCommands(): [string, Record<string, unknown>][] {
+  return send.mock.calls.map(([command]) => [command.constructor.name, command.input]);
+}
+
+function sentCommandNames(): string[] {
+  return sentCommands().map(([name]) => name);
+}
+
+const credentials = { accessKey: 'key', secretKey: 'secret', endPoint: 'localhost', useSSL: false };
+const storageKey = 'appsemble/form/1.0.0/block-version-id/form.js';
+
+beforeEach(() => {
+  send = vi.spyOn(S3Client.prototype as unknown as { send: Send }, 'send').mockResolvedValue({});
+});
+
+describe('bucket-per-app layout', () => {
+  beforeEach(() => {
+    initS3Client(credentials);
+  });
+
+  it('stores app assets in a bucket per app', () => {
+    expect(getAppAssetLocation(1216, 'asset-id')).toStrictEqual({
+      bucket: 'app-1216',
+      key: 'asset-id',
+    });
+  });
+
+  it('stores block assets in the block assets bucket', () => {
+    expect(getBlockAssetLocation(storageKey)).toStrictEqual({
+      bucket: 'appsemble-block-assets',
+      key: storageKey,
+    });
+  });
+
+  it('creates a missing bucket before uploading into it', async () => {
+    send.mockRejectedValueOnce(s3Error('NotFound'));
+
+    await uploadS3File('app-1216', 'asset-id', 'payload');
+
+    expect(sentCommands()).toStrictEqual([
+      ['HeadBucketCommand', { Bucket: 'app-1216' }],
+      ['CreateBucketCommand', { Bucket: 'app-1216' }],
+      ['PutObjectCommand', expect.objectContaining({ Bucket: 'app-1216', Key: 'asset-id' })],
+    ]);
+  });
+
+  it('creates a bucket in the configured region', async () => {
+    initS3Client({ ...credentials, region: 'eu-central-1' });
+    send.mockRejectedValueOnce(s3Error('NotFound'));
+
+    await uploadS3File('app-1216', 'asset-id', 'payload');
+
+    expect(sentCommands()[1]).toStrictEqual([
+      'CreateBucketCommand',
+      {
+        Bucket: 'app-1216',
+        CreateBucketConfiguration: { LocationConstraint: 'eu-central-1' },
+      },
+    ]);
+  });
+
+  it('removes every bucket when clearing', async () => {
+    send.mockImplementation((command: Command) => {
+      switch (command.constructor.name) {
+        case 'ListBucketsCommand':
+          return { Buckets: [{ Name: 'app-1' }, { Name: 'appsemble-block-assets' }] };
+        case 'ListObjectsV2Command':
+          return { Contents: [{ Key: `${command.input.Bucket}-object` }] };
+        default:
+          return {};
+      }
+    });
+
+    await clearAllS3Buckets();
+
+    expect(sentCommands()).toStrictEqual([
+      ['ListBucketsCommand', {}],
+      ['ListObjectsV2Command', expect.objectContaining({ Bucket: 'app-1' })],
+      [
+        'DeleteObjectsCommand',
+        expect.objectContaining({
+          Bucket: 'app-1',
+          Delete: { Objects: [{ Key: 'app-1-object' }], Quiet: true },
+        }),
+      ],
+      ['DeleteBucketCommand', { Bucket: 'app-1' }],
+      ['ListObjectsV2Command', expect.objectContaining({ Bucket: 'appsemble-block-assets' })],
+      ['DeleteObjectsCommand', expect.objectContaining({ Bucket: 'appsemble-block-assets' })],
+      ['DeleteBucketCommand', { Bucket: 'appsemble-block-assets' }],
+    ]);
+  });
+});
+
+describe('single-bucket layout', () => {
+  beforeEach(() => {
+    initS3Client({ ...credentials, bucket: 'objects' });
+  });
+
+  it('stores app assets under a prefix per app', () => {
+    expect(getAppAssetLocation(1216, 'asset-id')).toStrictEqual({
+      bucket: 'objects',
+      key: 'apps/1216/asset-id',
+    });
+  });
+
+  it('stores block assets under the blocks prefix', () => {
+    expect(getBlockAssetLocation(storageKey)).toStrictEqual({
+      bucket: 'objects',
+      key: `blocks/${storageKey}`,
+    });
+  });
+
+  it('uploads without checking or creating buckets', async () => {
+    await uploadS3File('objects', 'apps/1216/asset-id', 'payload');
+
+    expect(sentCommands()).toStrictEqual([
+      [
+        'PutObjectCommand',
+        expect.objectContaining({ Bucket: 'objects', Key: 'apps/1216/asset-id' }),
+      ],
+    ]);
+  });
+
+  it('does not recreate the bucket when an upload reports it missing', async () => {
+    const error = s3Error('NoSuchBucket');
+    send.mockRejectedValueOnce(error);
+
+    await expect(uploadS3File('objects', 'apps/1216/asset-id', 'payload')).rejects.toBe(error);
+    expect(sentCommandNames()).toStrictEqual(['PutObjectCommand']);
+  });
+
+  it('only empties the configured bucket when clearing', async () => {
+    send.mockImplementation((command: Command) =>
+      command.constructor.name === 'ListObjectsV2Command'
+        ? { Contents: [{ Key: 'apps/1/a' }, { Key: 'blocks/b' }] }
+        : {},
+    );
+
+    await clearAllS3Buckets();
+
+    expect(sentCommands()).toStrictEqual([
+      ['ListObjectsV2Command', expect.objectContaining({ Bucket: 'objects' })],
+      [
+        'DeleteObjectsCommand',
+        {
+          Bucket: 'objects',
+          Delete: { Objects: [{ Key: 'apps/1/a' }, { Key: 'blocks/b' }], Quiet: true },
+        },
+      ],
+    ]);
+  });
+
+  it('lists every page of keys before deleting them', async () => {
+    let page = 0;
+    send.mockImplementation((command: Command) => {
+      if (command.constructor.name !== 'ListObjectsV2Command') {
+        return {};
+      }
+      page += 1;
+      return page === 1
+        ? { Contents: [{ Key: 'first' }], NextContinuationToken: 'token' }
+        : { Contents: [{ Key: 'second' }] };
+    });
+
+    await clearAllS3Buckets();
+
+    expect(sentCommands()).toStrictEqual([
+      [
+        'ListObjectsV2Command',
+        { Bucket: 'objects', Prefix: undefined, ContinuationToken: undefined },
+      ],
+      [
+        'ListObjectsV2Command',
+        { Bucket: 'objects', Prefix: undefined, ContinuationToken: 'token' },
+      ],
+      [
+        'DeleteObjectsCommand',
+        {
+          Bucket: 'objects',
+          Delete: { Objects: [{ Key: 'first' }, { Key: 'second' }], Quiet: true },
+        },
+      ],
+    ]);
+  });
+
+  it('deletes app assets under their prefix', async () => {
+    await deleteAppAssetObjects(1216, ['a', 'b']);
+
+    expect(sentCommands()).toStrictEqual([
+      [
+        'DeleteObjectsCommand',
+        {
+          Bucket: 'objects',
+          Delete: { Objects: [{ Key: 'apps/1216/a' }, { Key: 'apps/1216/b' }], Quiet: true },
+        },
+      ],
+    ]);
+  });
+
+  it('sets a bucket policy without creating the bucket', async () => {
+    await setS3BucketPolicy('objects', '{}');
+
+    expect(sentCommands()).toStrictEqual([
+      ['PutBucketPolicyCommand', { Bucket: 'objects', Policy: '{}' }],
+    ]);
+  });
+});
+
+describe('uploadS3File', () => {
+  beforeEach(() => {
+    initS3Client(credentials);
+  });
+
+  it('stores the content type and cache control alongside custom metadata', async () => {
+    await uploadS3File('app-1216', 'asset-id', 'payload', undefined, {
+      'Cache-Control': 'public,max-age=31536000,immutable',
+      'Content-Type': 'text/plain',
+      'x-custom': 'value',
+    });
+
+    expect(sentCommands()).toStrictEqual([
+      ['HeadBucketCommand', { Bucket: 'app-1216' }],
+      [
+        'PutObjectCommand',
+        {
+          Body: 'payload',
+          Bucket: 'app-1216',
+          CacheControl: 'public,max-age=31536000,immutable',
+          ContentLength: 7,
+          ContentType: 'text/plain',
+          Key: 'asset-id',
+          Metadata: { 'x-custom': 'value' },
+        },
+      ],
+    ]);
+  });
+
+  it('sends the size of a stream of known length', async () => {
+    await uploadS3File('app-1216', 'asset-id', Readable.from('payload'), 7);
+
+    expect(sentCommands()).toStrictEqual([
+      ['HeadBucketCommand', { Bucket: 'app-1216' }],
+      [
+        'PutObjectCommand',
+        expect.objectContaining({ Body: expect.any(Readable), ContentLength: 7 }),
+      ],
+    ]);
+  });
+
+  it('sends the full content of a stream of unknown length', async () => {
+    await uploadS3File('app-1216', 'asset-id', Readable.from('payload'));
+
+    const [, [, input]] = sentCommands();
+    expect(Buffer.from(input.Body as Uint8Array).toString()).toBe('payload');
+  });
+
+  it('uploads a stream larger than the part size in parts', async () => {
+    // The gzip'd pg_dump of `backup-production-data` is the stream of unknown length that outgrows
+    // a single request.
+    const parts: Buffer[] = [];
+    send.mockImplementation((command: Command) => {
+      switch (command.constructor.name) {
+        case 'CreateMultipartUploadCommand':
+          return Promise.resolve({ UploadId: 'upload-id' });
+        case 'UploadPartCommand':
+          parts.push(Buffer.from(command.input.Body as Uint8Array));
+          return Promise.resolve({ ETag: `"part-${command.input.PartNumber}"` });
+        default:
+          return Promise.resolve({});
+      }
+    });
+    const content = Buffer.alloc(6 * 1024 * 1024, 'a');
+
+    await uploadS3File('app-1216', 'asset-id', Readable.from(content), undefined, {
+      'Content-Type': 'application/gzip',
+    });
+
+    expect(sentCommandNames()).toStrictEqual([
+      'HeadBucketCommand',
+      'CreateMultipartUploadCommand',
+      'UploadPartCommand',
+      'UploadPartCommand',
+      'CompleteMultipartUploadCommand',
+    ]);
+    expect(sentCommands()[1][1]).toMatchObject({
+      Bucket: 'app-1216',
+      ContentType: 'application/gzip',
+      Key: 'asset-id',
+    });
+    expect(Buffer.concat(parts).equals(content)).toBe(true);
+  });
+
+  it('fails if a stream upload loses its bucket after consuming the stream', async () => {
+    const error = s3Error('NoSuchBucket');
+    send.mockImplementation(async (command: Command) => {
+      if (command.constructor.name === 'PutObjectCommand') {
+        await streamToBuffer(command.input.Body as Readable);
+        throw error;
+      }
+      return {};
+    });
+
+    await expect(uploadS3File('app-1216', 'asset-id', Readable.from('payload'), 7)).rejects.toBe(
+      error,
+    );
+    expect(sentCommandNames()).toStrictEqual(['HeadBucketCommand', 'PutObjectCommand']);
+  });
+});
+
+describe('listS3Objects', () => {
+  beforeEach(() => {
+    initS3Client(credentials);
+  });
+
+  it('lists object details without requesting object metadata', async () => {
+    const lastModified = new Date('2026-08-31T00:00:00Z');
+    send.mockResolvedValue({
+      Contents: [
+        {
+          ETag: 'backup-etag',
+          Key: 'sql/main/backup.sql.gz',
+          LastModified: lastModified,
+          Size: 42,
+        },
+      ],
+    });
+
+    expect(await listS3Objects('backups', 'sql/main/')).toStrictEqual([
+      {
+        etag: 'backup-etag',
+        key: 'sql/main/backup.sql.gz',
+        lastModified,
+        size: 42,
+      },
+    ]);
+    expect(sentCommands()).toStrictEqual([
+      [
+        'ListObjectsV2Command',
+        { Bucket: 'backups', ContinuationToken: undefined, Prefix: 'sql/main/' },
+      ],
+    ]);
+  });
+});
+
+describe('getS3FileStats', () => {
+  beforeEach(() => {
+    initS3Client(credentials);
+  });
+
+  it('exposes the content type and cache control as metadata', async () => {
+    const lastModified = new Date('2026-01-01T00:00:00Z');
+    send.mockResolvedValueOnce({
+      CacheControl: 'public,max-age=31536000,immutable',
+      ContentLength: 7,
+      ContentType: 'text/plain',
+      ETag: '"etag"',
+      LastModified: lastModified,
+      Metadata: { 'x-custom': 'value' },
+    });
+
+    expect(await getS3FileStats('app-1216', 'asset-id')).toStrictEqual({
+      etag: '"etag"',
+      lastModified,
+      metadata: {
+        'cache-control': 'public,max-age=31536000,immutable',
+        'content-type': 'text/plain',
+        'x-custom': 'value',
+      },
+      size: 7,
+    });
+  });
 });
 
 describe('deleteS3Files', () => {
+  beforeEach(() => {
+    initS3Client(credentials);
+  });
+
   it('treats a missing bucket as nothing to delete and warns about it', async () => {
     vi.spyOn(logger, 'warn').mockImplementation(() => logger);
-    removeObjects.mockRejectedValueOnce(s3Error('NoSuchBucket'));
+    send.mockRejectedValueOnce(s3Error('NoSuchBucket'));
 
     expect(await deleteS3Files('app-1216', ['asset-id'])).toBeUndefined();
     expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('app-1216'));
@@ -58,66 +426,192 @@ describe('deleteS3Files', () => {
 
   it('surfaces other S3 errors to the caller', async () => {
     const error = s3Error('AccessDenied');
-    removeObjects.mockRejectedValueOnce(error);
+    send.mockRejectedValueOnce(error);
 
     await expect(deleteS3Files('app-1216', ['asset-id'])).rejects.toBe(error);
+  });
+
+  it('deletes in batches of at most 1000 keys', async () => {
+    const keys = Array.from({ length: 1001 }, (unused, index) => `asset-${index}`);
+
+    await deleteS3Files('app-1216', keys);
+
+    expect(
+      sentCommands().map(([, input]) => (input.Delete as { Objects: unknown[] }).Objects.length),
+    ).toStrictEqual([1000, 1]);
   });
 });
 
 describe('deleteS3File', () => {
+  beforeEach(() => {
+    initS3Client(credentials);
+  });
+
   it('treats a missing bucket as nothing to delete', async () => {
-    removeObjects.mockRejectedValueOnce(s3Error('NoSuchBucket'));
+    send.mockRejectedValueOnce(s3Error('NoSuchBucket'));
 
     expect(await deleteS3File('app-1216', 'asset-id')).toBeUndefined();
   });
 
   it('surfaces other S3 errors to the caller', async () => {
     const error = s3Error('AccessDenied');
-    removeObjects.mockRejectedValueOnce(error);
+    send.mockRejectedValueOnce(error);
 
     await expect(deleteS3File('app-1216', 'asset-id')).rejects.toBe(error);
   });
 });
 
-describe('uploadS3File', () => {
-  it('fails if a stream upload loses its bucket after consuming the stream', async () => {
-    const error = s3Error('NoSuchBucket');
-    putObject.mockImplementationOnce(async (...parameters: [string, string, Readable]) => {
-      await streamToBuffer(parameters[2]);
-      throw error;
-    });
+describe('object store', () => {
+  const store = {
+    accessKey: process.env.S3_ACCESS_KEY || 'admin',
+    secretKey: process.env.S3_SECRET_KEY || 'password',
+    endPoint: process.env.S3_HOST || 'localhost',
+    port: Number(process.env.S3_PORT) || 9009,
+    useSSL: false,
+  };
 
-    await expect(uploadS3File('app-1216', 'asset-id', Readable.from('payload'))).rejects.toBe(
-      error,
+  beforeEach(async () => {
+    send.mockRestore();
+    initS3Client(store);
+    await clearAllS3Buckets();
+  });
+
+  it('creates a missing bucket in the bucket-per-app layout before applying its policy', async () => {
+    await expect(listS3Files('policy-bucket')).rejects.toMatchObject({ name: 'NoSuchBucket' });
+
+    await setS3BucketPolicy(
+      'policy-bucket',
+      JSON.stringify({
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: '*',
+            Action: ['s3:GetObject'],
+            Resource: ['arn:aws:s3:::policy-bucket/*'],
+          },
+        ],
+      }),
     );
+
+    expect(await listS3Files('policy-bucket')).toStrictEqual([]);
+    await uploadS3File('policy-bucket', 'public.txt', 'readable by anyone');
+    const { data, status } = await axios.get(
+      `http://${store.endPoint}:${store.port}/policy-bucket/public.txt`,
+    );
+    expect(status).toBe(200);
+    expect(data).toBe('readable by anyone');
+  });
+
+  it('lists only the keys under the requested prefix', async () => {
+    await uploadS3File('objects', 'apps/1/first', 'first');
+    await uploadS3File('objects', 'apps/1/second', 'second');
+    await uploadS3File('objects', 'blocks/form.js', 'form');
+
+    const files = await listS3Files('objects', 'apps/');
+
+    expect(files.map(({ key }) => key)).toStrictEqual(['apps/1/first', 'apps/1/second']);
+    expect(files.map(({ size }) => size)).toStrictEqual([5, 6]);
   });
 });
 
-describe('listS3Objects', () => {
-  it('lists object details without requesting object metadata', async () => {
-    const lastModified = new Date('2026-08-31T00:00:00Z');
-    listObjectsV2.mockReturnValueOnce(
-      Readable.from(
-        [
-          {
-            etag: 'backup-etag',
-            lastModified,
-            name: 'backup.sql.gz',
-            size: 42,
-          },
-        ],
-        { objectMode: true },
-      ),
-    );
-    statObject.mockRejectedValue(new Error('Unexpected metadata request'));
+describe('requests', () => {
+  interface RecordedRequest {
+    headers: IncomingMessage['headers'];
+    method: string;
+    path: string;
+  }
 
-    expect(await listS3Objects('backups', 'sql/main/')).toStrictEqual([
-      {
-        etag: 'backup-etag',
-        key: 'backup.sql.gz',
-        lastModified,
-        size: 42,
-      },
+  let server: Server;
+  let port: number;
+  let requests: RecordedRequest[];
+  let responds: boolean;
+
+  beforeEach(async () => {
+    send.mockRestore();
+    requests = [];
+    responds = true;
+    server = createServer((request, response) => {
+      requests.push({
+        headers: request.headers,
+        method: request.method!,
+        path: new URL(request.url!, 'http://localhost').pathname,
+      });
+      request.resume();
+      request.on('end', () => {
+        if (!responds) {
+          return;
+        }
+        response.writeHead(200, { ETag: '"etag"' });
+        response.end(request.method === 'GET' ? 'payload' : undefined);
+      });
+    });
+    await new Promise<void>((resolve) => {
+      server.listen(0, '127.0.0.1', resolve);
+    });
+    ({ port } = server.address() as AddressInfo);
+    // Every host name, including a bucket subdomain of the endpoint, resolves to the local server.
+    vi.spyOn(dns, 'lookup').mockImplementation(((
+      hostname: string,
+      options: { all?: boolean },
+      callback: (error: null, address: unknown, family?: number) => void,
+    ) => {
+      if (options.all) {
+        return callback(null, [{ address: '127.0.0.1', family: 4 }]);
+      }
+      return callback(null, '127.0.0.1', 4);
+    }) as typeof dns.lookup);
+  });
+
+  afterEach(async () => {
+    server.closeAllConnections();
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+  });
+
+  it('adds no checksums to uploads and downloads', async () => {
+    initS3Client({ ...credentials, port, bucket: 'objects' });
+
+    await uploadS3File('objects', 'apps/1/asset', 'payload');
+    expect(await getS3FileBuffer('objects', 'apps/1/asset')).toStrictEqual(Buffer.from('payload'));
+
+    expect(requests.map(({ method }) => method)).toStrictEqual(['PUT', 'GET']);
+    for (const { headers } of requests) {
+      expect(Object.keys(headers)).not.toContainEqual(
+        expect.stringMatching(/^x-amz-(checksum-|sdk-checksum-algorithm$|trailer$)/),
+      );
+    }
+  });
+
+  it('addresses the bucket in the request path by default', async () => {
+    initS3Client({ ...credentials, port, bucket: 'objects' });
+
+    await uploadS3File('objects', 'apps/1/asset', 'payload');
+
+    expect(requests).toMatchObject([
+      { path: '/objects/apps/1/asset', headers: { host: `localhost:${port}` } },
     ]);
+  });
+
+  it('addresses the bucket as a virtual host when path style is off', async () => {
+    initS3Client({ ...credentials, port, pathStyle: false, bucket: 'objects' });
+
+    await uploadS3File('objects', 'apps/1/asset', 'payload');
+
+    expect(requests).toMatchObject([
+      { path: '/apps/1/asset', headers: { host: `objects.localhost:${port}` } },
+    ]);
+  });
+
+  it('fails a request whose connection stays idle for the socket timeout and retries it', async () => {
+    initS3Client({ ...credentials, port, bucket: 'objects', socketTimeout: 200 });
+    responds = false;
+
+    await expect(uploadS3File('objects', 'apps/1/asset', 'payload')).rejects.toMatchObject({
+      name: 'TimeoutError',
+    });
+
+    expect(requests.map(({ method }) => method)).toStrictEqual(['PUT', 'PUT', 'PUT']);
   });
 });

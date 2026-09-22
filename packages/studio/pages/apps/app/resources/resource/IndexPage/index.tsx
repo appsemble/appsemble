@@ -5,6 +5,7 @@ import {
   FileUpload,
   Icon,
   ModalCard,
+  type MinimalHTMLElement,
   PaginationNavigator,
   SimpleForm,
   SimpleFormError,
@@ -37,6 +38,11 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { ResourceRow } from './ResourceRow/index.js';
+import {
+  clearValidationErrorsAtPath,
+  normalizeResourceValidationErrors,
+  validateResourceValue,
+} from './validation.js';
 import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../../components/HeaderControl/index.js';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor/index.js';
@@ -44,8 +50,14 @@ import { useApp } from '../../../index.js';
 
 const defaultHiddenProperties = new Set(['$created', '$updated', '$editor']);
 
-interface ResourceUniqueConstraintViolationData {
+interface ResourceErrorData {
   code?: string;
+  errors?: {
+    argument?: unknown;
+    message: string;
+    name?: string;
+    path: (number | string)[];
+  }[];
   fields?: string[];
   resourceType?: string;
 }
@@ -100,6 +112,16 @@ export function IndexPage({
   const [hiddenProperties, setHiddenProperties] = useState(defaultHiddenProperties);
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
   const [advancedOptions, setAdvancedOptions] = useState(defaultAdvancedOptions);
+  const [createClientErrors, setCreateClientErrors] = useState<
+    ReturnType<typeof normalizeResourceValidationErrors>
+  >([]);
+  const [createServerErrors, setCreateServerErrors] = useState<
+    ReturnType<typeof normalizeResourceValidationErrors>
+  >([]);
+  const createErrors = useMemo(
+    () => [...createClientErrors, ...createServerErrors],
+    [createClientErrors, createServerErrors],
+  );
 
   const orderBy = searchParams.get('order') || 'id';
   const orderDirection: 'ASC' | 'DESC' =
@@ -318,24 +340,39 @@ export function IndexPage({
 
   const submitCreate = useCallback(
     async (values: Record<string, Resource>) => {
+      const errors = validateResourceValue(values[resourceName], schema);
+      if (errors.length) {
+        setCreateClientErrors(errors);
+        return;
+      }
+      setCreateClientErrors([]);
+      const assetPaths = new Map<number, (number | string)[]>();
       try {
         const { data } = await axios.post<Resource>(
           resourceURL,
-          serializeResource(values[resourceName]),
+          serializeResource(values[resourceName], (index, path) => assetPaths.set(index, path)),
         );
 
         setResources((resources) => [...resources, data]);
         updatePagination(count + 1);
 
+        setCreateServerErrors([]);
         createModal.disable();
         push({
           body: formatMessage(messages.createSuccess, { id: data.id }),
           color: 'primary',
         });
       } catch (error) {
-        const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintViolationData }>(error)
+        const data = axios.isAxiosError<{ data?: ResourceErrorData }>(error)
           ? error.response?.data?.data
           : undefined;
+
+        if (data?.errors?.length) {
+          setCreateServerErrors(normalizeResourceValidationErrors(data.errors, assetPaths));
+          return;
+        }
+
+        setCreateServerErrors([]);
 
         if (
           data?.code === 'RESOURCE_UNIQUE_CONSTRAINT_VIOLATION' &&
@@ -366,10 +403,36 @@ export function IndexPage({
       push,
       resourceName,
       resourceURL,
+      schema,
       setResources,
       updatePagination,
     ],
   );
+
+  const onCreateChange = useCallback(
+    (event: ChangeEvent<MinimalHTMLElement>, value: Resource) => {
+      if (event.currentTarget && createErrors.length) {
+        setCreateClientErrors(validateResourceValue(value, schema));
+      }
+    },
+    [createErrors.length, schema],
+  );
+
+  const onCreateFieldChange = useCallback((path: (number | string)[]) => {
+    setCreateServerErrors((errors) => clearValidationErrorsAtPath(errors, path));
+  }, []);
+
+  const onCreateOpen = useCallback(() => {
+    setCreateClientErrors([]);
+    setCreateServerErrors([]);
+    createModal.enable();
+  }, [createModal]);
+
+  const onCreateClose = useCallback(() => {
+    setCreateClientErrors([]);
+    setCreateServerErrors([]);
+    createModal.disable();
+  }, [createModal]);
 
   const downloadCsv = useCallback(async () => {
     const newSearchParams = new URLSearchParams({
@@ -447,7 +510,7 @@ export function IndexPage({
         <FormattedMessage {...messages.header} values={{ resourceName }} />
       </HeaderControl>
       <div className={classNames('buttons mb-1 pt-3', styles.buttons)}>
-        <Button className="is-primary" icon="plus-square" onClick={createModal.enable}>
+        <Button className="is-primary" icon="plus-square" onClick={onCreateOpen}>
           <FormattedMessage {...messages.createButton} />
         </Button>
         <Button icon="eye-slash" onClick={hideModal.enable}>
@@ -600,16 +663,23 @@ export function IndexPage({
         footer={
           <SimpleModalFooter
             cancelLabel={<FormattedMessage {...messages.cancelButton} />}
-            onClose={createModal.disable}
+            onClose={onCreateClose}
             submitLabel={<FormattedMessage {...messages.createButton} />}
           />
         }
         isActive={createModal.enabled}
-        onClose={createModal.disable}
+        onClose={onCreateClose}
         onSubmit={submitCreate}
         title={<FormattedMessage {...messages.newTitle} values={{ resource: resourceName }} />}
       >
-        <SimpleFormField component={JSONSchemaEditor} name={resourceName} schema={schema} />
+        <SimpleFormField
+          component={JSONSchemaEditor}
+          errors={createErrors}
+          name={resourceName}
+          onChange={onCreateChange}
+          onFieldChange={onCreateFieldChange}
+          schema={schema}
+        />
       </ModalCard>
       <ModalCard
         component={SimpleForm}

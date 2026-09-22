@@ -30,6 +30,9 @@ purge_release() {
   echo "[review-cleanup] deleting $rel ($3)"
   helm delete "$rel" --no-hooks --ignore-not-found || true
   kubectl delete all,cronjob,ingress,certificate,secret,pvc,configmap,serviceaccount,role,rolebinding,networkpolicy --selector "app.kubernetes.io/instance=$rel" --ignore-not-found=true || true
+  # The CloudNativePG cluster takes its PVCs and generated secrets with it. Foreground cascade
+  # returns only once they are gone, so a redeploy cannot recreate the cluster on top of them.
+  kubectl delete cluster.postgresql.cnpg.io --selector "app.kubernetes.io/instance=$rel" --cascade=foreground --ignore-not-found=true || true
   kubectl delete ingress,certificate,secret --selector "app.kubernetes.io/managed-by=$rel" --ignore-not-found=true || true
   # Drops the helm release record, which is what clears releases wedged in
   # "uninstalling" so they stop counting against the capacity limit.
@@ -99,6 +102,14 @@ helm list -a -o json | jq -r '.[] | select(.name | test("^review-[0-9][0-9]*$"))
     ;;
   esac
   purge_release "$r" "$iid" "$status"
+done
+
+# A cluster without a release is left by a deploy that failed between creating it and helm install.
+for c in $(kubectl get cluster.postgresql.cnpg.io --no-headers -o custom-columns=:metadata.name | grep '^review-[0-9][0-9]*-postgresql$' || true); do
+  iid=${c#review-}
+  iid=${iid%-postgresql}
+  known "$iid" || continue
+  keep "$iid" || kubectl delete cluster.postgresql.cnpg.io "$c" --ignore-not-found=true || true
 done
 
 for n in $(kubectl get namespaces --no-headers -o custom-columns=:metadata.name | grep '^companion-containers-review-[0-9][0-9]*$' || true); do

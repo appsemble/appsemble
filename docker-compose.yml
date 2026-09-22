@@ -44,36 +44,57 @@ services:
     ports:
       - '2345:80'
 
-  # MinIO service for assets
-  minio:
-    image: minio/minio:latest
+  # Object storage for assets, matching the store the Helm chart bundles.
+  s3:
+    image: chrislusf/seaweedfs:4.47
     restart: always
-    environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: password
-    command: server /data --console-address ":9001"
+    entrypoint: ['sh', '-ec']
+    command:
+      - |
+        cat > /etc/seaweedfs/s3.json <<'JSON'
+        {
+          "identities": [
+            {
+              "name": "admin",
+              "credentials": [{ "accessKey": "admin", "secretKey": "password" }],
+              "actions": ["Admin", "Read", "Write"]
+            }
+          ]
+        }
+        JSON
+        exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     ports:
-      - '9000:9000' # MinIO API
-      - '9001:9001' # MinIO Console
+      - '8333:8333'
     volumes:
-      - minio:/data
+      - s3:/data
 
-  # MinIO test service for assets
-  minio-test:
-    image: minio/minio:latest
+  # Object storage for faster test runs.
+  s3-test:
+    image: chrislusf/seaweedfs:4.47
     restart: always
-    environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: password
-    command: server /data
+    entrypoint: ['sh', '-ec']
+    command:
+      - |
+        cat > /etc/seaweedfs/s3.json <<'JSON'
+        {
+          "identities": [
+            {
+              "name": "admin",
+              "credentials": [{ "accessKey": "admin", "secretKey": "password" }],
+              "actions": ["Admin", "Read", "Write"]
+            }
+          ]
+        }
+        JSON
+        exec weed server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=2000
     ports:
-      - '9009:9000'
+      - '9009:8333'
     volumes:
-      - minio-test:/data
+      - s3-test:/data
 
   # A persistent Valkey instance for local development.
   valkey-dev:
-    image: valkey/valkey:9.1.1
+    image: valkey/valkey:9.1.2
     restart: always
     command: valkey-server --requirepass password
     ports:
@@ -81,12 +102,12 @@ services:
 
   # A Valkey instance for faster test runs.
   valkey-test:
-    image: valkey/valkey:9.1.1
+    image: valkey/valkey:9.1.2
     restart: always
     command: valkey-server --requirepass password
     ports:
       - '63791:6379'
 
 volumes:
-  minio:
-  minio-test:
+  s3:
+  s3-test:

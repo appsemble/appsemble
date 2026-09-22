@@ -14,3 +14,4 @@ Compose.
 
 - [Docker compose](/docs/deployment/docker-compose)
 - [Helm](/docs/deployment/helm)
+- [PostgreSQL](/docs/deployment/postgresql)

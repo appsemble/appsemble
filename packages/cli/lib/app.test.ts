@@ -1,6 +1,13 @@
-import { writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-import { getS3FileBuffer, readFixture, resolveFixture } from '@appsemble/node-utils';
+import {
+  getAppAssetLocation,
+  getS3FileBuffer,
+  readFixture,
+  resolveFixture,
+} from '@appsemble/node-utils';
 import {
   createServer,
   createTestDBWithUser,
@@ -19,9 +26,11 @@ import {
   deleteApp,
   patchApp,
   publishApp,
+  publishSeedResources,
   resolveAppIdAndRemote,
   traverseAppDirectory,
   updateApp,
+  uploadMessages,
   writeAppMessages,
 } from './app.js';
 import { initAxios } from './initAxios.js';
@@ -188,6 +197,90 @@ describe('app', () => {
 
   afterAll(() => {
     vi.useRealTimers();
+  });
+
+  describe('publishSeedResources', () => {
+    it.each(['{"foo":42}', '{invalid json'])(
+      'rejects invalid replacement and preserves published resources: %s',
+      async (contents) => {
+        vi.useRealTimers();
+        await authorizeCLI('resources:write', testApp);
+        const app = await App.create({
+          OrganizationId: organization.id,
+          vapidPublicKey: '',
+          vapidPrivateKey: '',
+          definition: {
+            name: 'Seed publication',
+            defaultPage: '',
+            pages: [],
+            resources: {
+              product: {
+                schema: {
+                  type: 'object',
+                  required: ['foo'],
+                  properties: { foo: { type: 'string' } },
+                },
+              },
+            },
+          },
+        });
+        const { Resource } = await getAppDB(app.id);
+        const existing = await Resource.create({
+          type: 'product',
+          data: { foo: 'Heineken' },
+          seed: true,
+        });
+        const path = await mkdtemp(join(tmpdir(), 'seed-publication-'));
+        try {
+          await mkdir(join(path, 'resources'));
+          await writeFile(join(path, 'resources', 'product.json'), contents);
+          await expect(
+            publishSeedResources(path, app.toJSON(), testApp.defaults.baseURL!),
+          ).rejects.toThrow(contents.startsWith('{invalid') ? /Error parsing/ : /400/);
+          expect((await Resource.findByPk(existing.id))?.data).toStrictEqual({ foo: 'Heineken' });
+          expect(await Resource.count()).toBe(1);
+        } finally {
+          await rm(path, { recursive: true, force: true });
+        }
+      },
+    );
+
+    it('publishes every file of a resource type and converts CSV fields', async () => {
+      vi.useRealTimers();
+      await authorizeCLI('resources:write', testApp);
+      const app = await App.create({
+        OrganizationId: organization.id,
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+        definition: {
+          name: 'Seed publication',
+          defaultPage: '',
+          pages: [],
+          resources: {
+            product: {
+              schema: {
+                type: 'object',
+                required: ['foo'],
+                properties: { foo: { type: 'string' }, amount: { type: 'number' } },
+              },
+            },
+          },
+        },
+      });
+      const path = await mkdtemp(join(tmpdir(), 'seed-publication-'));
+      try {
+        await mkdir(join(path, 'resources', 'product'), { recursive: true });
+        await writeFile(join(path, 'resources', 'product', 'a.json'), '{"foo":"Heineken"}');
+        await writeFile(join(path, 'resources', 'product', 'b.csv'), 'foo,amount\nBrand,5.5\n');
+        await publishSeedResources(path, app.toJSON(), testApp.defaults.baseURL!);
+        const { Resource } = await getAppDB(app.id);
+        expect(
+          (await Resource.findAll({ order: [['id', 'ASC']] })).map(({ data }) => data),
+        ).toStrictEqual([{ foo: 'Heineken' }, { foo: 'Brand', amount: 5.5 }]);
+      } finally {
+        await rm(path, { recursive: true, force: true });
+      }
+    });
   });
 
   describe('publishApp', () => {
@@ -556,7 +649,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData]);
     });
 
@@ -753,7 +851,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData, tuxData]);
       const appCollectionApp = (await AppCollectionApp.findOne())!;
       expect(appCollectionApp.AppId).toBe(1);
@@ -921,7 +1024,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/variants/tux/assets/small-tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData]);
     });
 
@@ -1470,7 +1578,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData]);
     });
 
@@ -1656,7 +1769,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData, tuxData]);
       // TODO: not yet implemented
       // const appCollectionApp = await AppCollectionApp.findOne();
@@ -2657,6 +2775,39 @@ describe('app', () => {
       await deleteApp({ id: app.id, remote: testApp.defaults.baseURL!, clientCredentials });
       const foundApps = await App.findAll();
       expect(foundApps).toStrictEqual([]);
+    });
+  });
+
+  describe('uploadMessages', () => {
+    it('uploads translations whose catalogs are named with a POSIX locale', async () => {
+      const app = await App.create(
+        {
+          path: 'test-app',
+          definition: { name: 'Test App', defaultPage: 'Test Page' },
+          vapidPublicKey: 'a',
+          vapidPrivateKey: 'b',
+          visibility: 'public',
+          OrganizationId: organization.id,
+        },
+        { raw: true },
+      );
+      const directory = await mkdtemp(join(tmpdir(), 'appsemble-messages'));
+      await mkdir(join(directory, 'i18n'));
+      await writeFile(
+        join(directory, 'i18n', 'zh_Hans.json'),
+        JSON.stringify({ app: { name: '测试应用' } }),
+      );
+      await writeFile(
+        join(directory, 'i18n', 'pt_BR.json'),
+        JSON.stringify({ app: { name: 'Test App' } }),
+      );
+      await authorizeCLI('apps:write', testApp);
+
+      await uploadMessages(directory, app.id, testApp.defaults.baseURL!, false);
+
+      const messages = await AppMessages.findAll({ where: { AppId: app.id } });
+      expect(messages.map(({ language }) => language).sort()).toStrictEqual(['pt-br', 'zh-hans']);
+      await rm(directory, { force: true, recursive: true });
     });
   });
 

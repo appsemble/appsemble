@@ -45,6 +45,7 @@
     "bitnami",
     "Foooo",
     "clientcredentials",
+    "AADSTS",
     "mdxjs",
     "testbericht",
     "kleuren",
@@ -167,6 +168,10 @@
     "cacheability",
     "unprefixed",
     "valkey",
+    "rollouts",
+    "sharded",
+    "seaweedfs",
+    "chrislusf",
     "icalendar",
     "Squidward",
     "Spongebob",
@@ -197,10 +202,13 @@
     "klarna",
     "lanczos",
     "nosemgrep",
+    "objectstorage",
     "tolerations",
     "totp",
     "Totp",
     "otpauth",
+    "otplib",
+    "Otplib",
     "reencrypted",
     "datname",
     "securitytxt",
@@ -213,6 +221,8 @@
     "relkind",
     "tableoid",
     "pkey",
-    "dbname"
+    "dbname",
+    "desec",
+    "rrsets"
   ]
 }

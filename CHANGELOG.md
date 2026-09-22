@@ -2,6 +2,180 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.39.2](https://gitlab.com/appsemble/appsemble/-/releases/0.39.2)] - 2026-09-20
+
+### Fixed
+
+- Server: Empty and archive the backup of an app that lost all its assets in the single-bucket
+  layout.
+- Server: Initialize the S3 client in the run-cronjobs command so cron actions can read and write
+  assets.
+
+## \[[0.39.1](https://gitlab.com/appsemble/appsemble/-/releases/0.39.1)] - 2026-09-19
+
+### Added
+
+- Server: Create DNS records for both host names of an organization through the configured DNS
+  provider.
+
+### Fixed
+
+- Cli: Upload app translations whose catalogs carry a POSIX locale name, such as `zh_Hans.json` or
+  `pt_BR.json`, which the API rejected as an invalid language.
+- Server: Serve the organization host name next to the wildcard host name on the ingress of an
+  organization.
+
+## \[[0.39.0](https://gitlab.com/appsemble/appsemble/-/releases/0.39.0)] - 2026-09-19
+
+### Added
+
+- Block(`form`): Support native local time fields with HH:mm values.
+- App: Highlight the nearest visible parent in app navigation.
+- Cli: Add the `organization member add` command.
+- Preact-components: Support native time inputs.
+- React-components: Support explicit current page and section selection in menu items.
+- Server: Add the `/health/live`, `/health/ready` and `/version` endpoints.
+- Server: Add the `POST /api/organizations/{organizationId}/members` endpoint to add an existing
+  account to an organization.
+- Server: Roll the Helm deployment over without dropping requests, and keep a replica through a node
+  drain.
+- Server: Store all app and block assets in one pre-provisioned bucket when `S3_BUCKET` (Helm value
+  `s3.bucket`) is set, with `S3_REGION` and `S3_PATH_STYLE` options for the object storage and the
+  backups.
+
+### Changed
+
+- Node-utils: Replace the `minio` client with `@aws-sdk/client-s3`.
+- Server: Expect the backups bucket of `backup-production-data` to be pre-provisioned; the command
+  no longer creates it.
+- Server: Finish the requests in flight and release the database connections before exiting on
+  SIGTERM.
+- Server: Only rewrite app asset URLs in custom CSS that address the host the app is published to. A
+  URL such as `url('https://appsemble.app/api/apps/123/assets/logo')` published to another host
+  keeps addressing that app on that host, where it previously addressed the app being published. Use
+  `asset('logo')` to address the app being published on any host.
+- Server: Point the Helm liveness and startup probes at `/health/live` and the readiness probe at
+  `/health/ready`, so a database or Valkey outage removes pods from the Service instead of
+  restarting them.
+- Server: Reject custom CSS whose `asset()` utilities do not resolve to an app asset, instead of
+  serving them unresolved. Publishing an app with such CSS fails with `Provided CSS was invalid.`.
+- Server: Replace the bundled Bitnami MinIO dependency chart with SeaweedFS (Helm values
+  `seaweedfs.*`), which runs one pod backed by one volume and implements the S3 flexible checksums.
+  The upgrade removes the MinIO Deployment and starts SeaweedFS with an empty volume, so copy the
+  objects across first; the chart README describes the migration under "Moving from the bundled
+  MinIO to SeaweedFS".
+- Server: Support client credentials on the organization members endpoints.
+
+### Deprecated
+
+- Server: Deprecate `/api/health` in favor of `/health/ready`.
+
+### Removed
+
+- Node-utils: Stop signing a multi-object delete with `Content-MD5`, which only the retired bundled
+  MinIO build required.
+- Server: Support for calling the `asset()` CSS utility inside `url()`, as in `url(asset('logo'))`,
+  and for calling it with an unquoted reference, as in `asset(logo)`. Use `asset('logo')` on its
+  own. An unquoted reference is rejected when the app is published; a nested call is left as
+  written.
+
+### Fixed
+
+- Block(`detail-viewer`): Evaluate file field visibility against the record data.
+- Block(`form`): Distinguish external form data updates from user edits in change events.
+- App: Remap dialog titles using the data passed to the dialog action.
+- Cli: Upload app screenshots directly instead of copying them to a temporary file in the app
+  directory.
+- Scripts: Include `deprecated` entries in the changelog when releasing.
+- Server: Give the bundled object storage a volume ceiling and grow one volume per bucket instead of
+  seven, which SeaweedFS otherwise derives from the disk size and the first app's bucket already
+  exhausts.
+- Server: Reconnect the Valkey client after it drops and skip the rate limit check while it is
+  disconnected.
+
+### Security
+
+- Server: Escape quotes and backslashes in app asset URLs resolved in custom CSS. A quote in the
+  query or fragment of an app asset path could end the generated CSS string and inject arbitrary
+  rules into an app stylesheet.
+
+## \[[0.38.2-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.38.2-test.0)] - 2026-09-10
+
+### Fixed
+
+- Server: Start app exports before reading assets from storage.
+
+## \[[0.38.1](https://gitlab.com/appsemble/appsemble/-/releases/0.38.1)] - 2026-09-10
+
+### Added
+
+- Server: Support the `organizations:delete` client credentials scope on organization deletion.
+
+### Changed
+
+- Server: Serve SVG app assets unmodified and sandboxed against embedded scripts.
+
+### Fixed
+
+- App: Keep a tabs page from re-running its onLoad action and re-emitting the tab list on every tab
+  switch.
+- Cli: Publish seed resources atomically and report replacement failures.
+- Cli: Upload app screenshots directly instead of copying them to a temporary file in the app
+  directory.
+- Lang-sdk: Support loop grid layouts during block schema generation.
+- Node-utils: Handle `!important` correctly in app variant style patches.
+- Server: Replace seed resources transactionally and serialize concurrent seed deletion.
+- Server: Support HEIC image assets in the Debian Docker image.
+
+## \[[0.38.0](https://gitlab.com/appsemble/appsemble/-/releases/0.38.0)] - 2026-09-03
+
+### Added
+
+- Block(`pdf-viewer`): Add `url` property to load files from assets or directly from a source.
+- App: Add `start` and `end` pages to loop pages.
+- App: Add configurable grid breakpoints via `layout.breakpoints`.
+- App: Add responsive navbar grid layouts.
+- App: Use CSS custom properties as responsive grid spacing units.
+- Cli: Warn when the server version does not match the CLI version.
+- Lang-sdk: Add `layout.breakpoints` to configure responsive grid breakpoints.
+- Lang-sdk: Add responsive navbar grid layout definitions.
+- Lang-sdk: Allow CSS custom properties as responsive grid spacing units.
+- Server: Reject an app update when existing resources would no longer satisfy a changed resource
+  schema, or when a resource type with data is removed from the app.
+- Server: Support HEAD requests to the API root.
+
+### Changed
+
+- Block(`form`): Load the markdown editor only when a form contains a markdown field.
+- App: Check the Appsemble version using a HEAD request.
+
+### Fixed
+
+- Block(`form`): Allow selecting the exact minimum and maximum dates in date fields.
+- App: Keep the app navigation layout on pages listed under the profile dropdown.
+- App: Prevent session restoration while logging out.
+- Cli: Bound server version checks and fall back to GET for servers without HEAD support.
+
+## \[[0.37.6](https://gitlab.com/appsemble/appsemble/-/releases/0.37.6)] - 2026-08-20
+
+### Added
+
+- Utils: Support reporting resource paths for serialized assets.
+
+### Changed
+
+- Block(`table`): Set `scrollable` to true by default.
+- Server: Stop cleaning up unresolved custom domains during deployments.
+- Studio: In the app editor, turn the `Publish` button into a loader while it's busy publishing.
+
+### Fixed
+
+- Block(`cards`): Remove the reset event listener when the cards block unmounts.
+- React-components: Render validation errors for file upload fields.
+- Studio: Align documentation anchors consistently before headings.
+- Studio: Show resource validation errors below their corresponding fields.
+- Webpack-core: Stop Sass from emitting a byte order mark that invalidates a bundled CSS rule.
+
 ## \[[0.37.5](https://gitlab.com/appsemble/appsemble/-/releases/0.37.5)] - 2026-08-12
 
 ### Added

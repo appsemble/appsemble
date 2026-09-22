@@ -1,8 +1,10 @@
 import {
   assertKoaCondition,
+  getAppAssetLocation,
   getS3File,
   getS3FileBuffer,
   getS3FileStats,
+  isS3ErrorCode,
   setAssetHeaders,
   uploadS3File,
 } from '@appsemble/node-utils';
@@ -61,13 +63,14 @@ function getDerivedFilename(
 
 async function serveCachedDerivedAsset(
   ctx: Context,
-  bucketName: string,
+  appId: number,
   sourceAsset: { id: string; filename?: string | null },
   cachedAsset: { id: string; mime?: string | null; destroy: () => Promise<unknown> },
 ): Promise<boolean> {
   try {
-    const stats = await getS3FileStats(bucketName, cachedAsset.id);
-    const stream = await getS3File(bucketName, cachedAsset.id);
+    const { bucket, key } = getAppAssetLocation(appId, cachedAsset.id);
+    const stats = await getS3FileStats(bucket, key);
+    const stream = await getS3File(bucket, key);
     const mime = cachedAsset.mime ?? 'application/octet-stream';
     setAssetHeaders(
       ctx,
@@ -78,7 +81,7 @@ async function serveCachedDerivedAsset(
     ctx.body = stream;
     return true;
   } catch (error) {
-    if (!['NotFound', 'NoSuchKey'].includes((error as { code?: string })?.code ?? '')) {
+    if (!isS3ErrorCode(error, 'NotFound') && !isS3ErrorCode(error, 'NoSuchKey')) {
       throw error;
     }
 
@@ -113,9 +116,11 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   });
   assertKoaCondition(sourceAsset != null, ctx, 404, 'Asset not found');
 
-  const bucketName = `app-${appId}`;
+  // SVG is vector XML, not a raster source; a rasterized copy discards the vector, so serve it
+  // unmodified below. Match the media type exactly, ignoring any parameter and case.
+  const isSvg = sourceAsset.mime?.toLowerCase().split(';', 1)[0].trim() === 'image/svg+xml';
 
-  if (sourceAsset.mime?.startsWith('image')) {
+  if (sourceAsset.mime?.startsWith('image') && !isSvg) {
     const fullDerivedAssetName = getFullDerivedAssetName(sourceAsset.id);
 
     if (shouldResize) {
@@ -127,10 +132,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
         attributes: ['id', 'mime', 'filename', 'name'],
       });
 
-      if (
-        cachedAsset &&
-        (await serveCachedDerivedAsset(ctx, bucketName, sourceAsset, cachedAsset))
-      ) {
+      if (cachedAsset && (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset))) {
         return;
       }
     } else {
@@ -142,15 +144,13 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
         attributes: ['id', 'mime', 'filename', 'name'],
       });
 
-      if (
-        cachedAsset &&
-        (await serveCachedDerivedAsset(ctx, bucketName, sourceAsset, cachedAsset))
-      ) {
+      if (cachedAsset && (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset))) {
         return;
       }
     }
 
-    const sourceBuffer = await getS3FileBuffer(bucketName, sourceAsset.id);
+    const source = getAppAssetLocation(appId, sourceAsset.id);
+    const sourceBuffer = await getS3FileBuffer(source.bucket, source.key);
     const image = sharp(sourceBuffer);
     const metadata = await image.metadata();
     assertKoaCondition(
@@ -180,10 +180,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
         attributes: ['id', 'mime', 'filename', 'name'],
       });
 
-      if (
-        cachedAsset &&
-        (await serveCachedDerivedAsset(ctx, bucketName, sourceAsset, cachedAsset))
-      ) {
+      if (cachedAsset && (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset))) {
         return;
       }
     }
@@ -212,7 +209,8 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       });
 
-      await uploadS3File(bucketName, newAsset.id, derivedImage);
+      const derived = getAppAssetLocation(appId, newAsset.id);
+      await uploadS3File(derived.bucket, derived.key, derivedImage);
     } catch (error) {
       // A concurrent request already cached this derived asset. The name is deterministic, so a
       // unique-constraint clash just means the other request won the race; serve our in-memory copy.
@@ -231,9 +229,17 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   }
 
   const sourceFilename = getAssetFilename(sourceAsset.id, sourceAsset.filename, sourceAsset.mime);
-  const stats = await getS3FileStats(bucketName, sourceAsset.id);
-  const stream = await getS3File(bucketName, sourceAsset.id);
+  const { bucket, key } = getAppAssetLocation(appId, sourceAsset.id);
+  const stats = await getS3FileStats(bucket, key);
+  const stream = await getS3File(bucket, key);
 
   setAssetHeaders(ctx, sourceAsset.mime ?? 'application/octet-stream', sourceFilename, stats);
+
+  if (isSvg) {
+    // An inline SVG renders as a document on this origin; sandbox it and block all resource loading
+    // to neutralize scripts and external references in user-uploaded SVGs.
+    ctx.set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; sandbox");
+  }
+
   ctx.body = stream;
 }

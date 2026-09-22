@@ -8,6 +8,13 @@ metadata:
     {{ include "appsemble.gitlab" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  # A replacement pod must become ready before an old one goes away, so even a single-replica
+  # install rolls over without a gap in service.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app.kubernetes.io/instance: {{ .Release.Name | quote }}
@@ -22,6 +29,8 @@ spec:
     spec:
       serviceAccountName: {{ include "appsemble.fullname" . }}-serviceaccount
       enableServiceLinks: false
+      # Covers the preStop sleep plus the longest request still in flight after it.
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
@@ -38,27 +47,40 @@ spec:
             - name: http
               containerPort: 9999
               protocol: TCP
-          # /api/health reports unhealthy until the database and Valkey are
-          # reachable. The startup probe gives those dependencies time to come
-          # up before the liveness probe can restart the container, and the
-          # liveness probe tolerates brief dependency blips rather than killing
-          # the pod after the default 30s.
+          # /health/live answers a constant UP without touching any dependency,
+          # so a database or Valkey outage never restarts the fleet. Only the
+          # readiness probe checks the database, and it removes the pod from
+          # the Service endpoints instead of restarting it.
           startupProbe:
             httpGet:
-              path: /api/health
+              path: /health/live
               port: http
             periodSeconds: 10
-            failureThreshold: 60
+            timeoutSeconds: 2
+            failureThreshold: 6
           livenessProbe:
             httpGet:
-              path: /api/health
+              path: /health/live
               port: http
             periodSeconds: 10
-            failureThreshold: 6
+            timeoutSeconds: 2
+            failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /api/health
+              path: /health/ready
               port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          # Removal from the Service endpoints is asynchronous, so the pod keeps answering
+          # normally while it propagates. SIGTERM follows the sleep, after which the server stops
+          # accepting connections and finishes the requests in flight.
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sleep
+                  - {{ .Values.preStopSleepSeconds | quote }}
           resources:
             {{- toYaml .Values.resources.deployment | nindent 12 }}
           env:
@@ -82,6 +104,7 @@ spec:
               value: {{ include "appsemble.fullname" . }}
             - name: SERVICE_PORT
               value: http
+{{ include "appsemble.dns" . | indent 12 }}
             {{- end }}
             - name: SECRET
               valueFrom:

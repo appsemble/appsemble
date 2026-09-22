@@ -1,4 +1,9 @@
-import { createFixtureStream, getS3FileBuffer, readFixture } from '@appsemble/node-utils';
+import {
+  createFixtureStream,
+  getBlockAssetLocation,
+  getS3FileBuffer,
+  readFixture,
+} from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -14,10 +19,7 @@ import {
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
-import {
-  ensureBlockAssetsBucketPublicRead,
-  getBlockAssetsBucketName,
-} from '../../../utils/blockAssets.js';
+import { ensureBlockAssetsBucketPublicRead } from '../../../utils/blockAssets.js';
 import { createServer } from '../../../utils/createServer.js';
 import { authorizeClientCredentials, createTestUser } from '../../../utils/test/authorization.js';
 
@@ -96,50 +98,55 @@ describe('createBlock', () => {
     });
     expect(blockAsset?.size).toBe(content.byteLength);
     expect(blockAsset?.storageKey).toContain(`/${blockAsset!.BlockVersionId}/`);
-    expect(
-      await getS3FileBuffer(getBlockAssetsBucketName(), blockAsset!.storageKey!),
-    ).toStrictEqual(content);
+    const { bucket, key } = getBlockAssetLocation(blockAsset!.storageKey!);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(content);
   });
 
-  it('should serve published bytes directly from the configured object storage URL', async () => {
-    const blockAssetsBaseUrl = `http://${process.env.S3_HOST || 'localhost'}:${
-      Number(process.env.S3_PORT) || 9009
-    }`;
-    setArgv({
-      blockAssetsBaseUrl,
-      host: 'http://localhost',
-      secret: 'test',
-    });
-    await ensureBlockAssetsBucketPublicRead();
-    const formData = new FormData();
-    formData.append('name', '@xkcd/standing');
-    formData.append('version', '1.32.9');
-    formData.append('files', createFixtureStream('standing.png'), {
-      filename: encodeURIComponent('build/standing.png'),
-    });
+  // The bucket-per-app layout makes the block assets bucket public so browsers fetch published
+  // bytes straight from object storage. The single-bucket layout keeps the bucket private and
+  // serves block assets through the server.
+  it.skipIf(process.env.S3_BUCKET)(
+    'should serve published bytes directly from the configured object storage URL',
+    async () => {
+      const blockAssetsBaseUrl = `http://${process.env.S3_HOST || 'localhost'}:${
+        Number(process.env.S3_PORT) || 9009
+      }`;
+      setArgv({
+        blockAssetsBaseUrl,
+        host: 'http://localhost',
+        secret: 'test',
+      });
+      await ensureBlockAssetsBucketPublicRead();
+      const formData = new FormData();
+      formData.append('name', '@xkcd/standing');
+      formData.append('version', '1.32.9');
+      formData.append('files', createFixtureStream('standing.png'), {
+        filename: encodeURIComponent('build/standing.png'),
+      });
 
-    await authorizeClientCredentials('blocks:write');
-    const { data } = await request.post('/api/blocks', formData);
+      await authorizeClientCredentials('blocks:write');
+      const { data } = await request.post('/api/blocks', formData);
 
-    const blockAsset = await BlockAsset.findOne({
-      where: { filename: 'build/standing.png' },
-    });
+      const blockAsset = await BlockAsset.findOne({
+        where: { filename: 'build/standing.png' },
+      });
 
-    const expectedUrl = `${blockAssetsBaseUrl}/appsemble-block-assets/${blockAsset!.storageKey}`;
-    expect(data).toMatchObject({
-      files: ['build/standing.png'],
-      fileUrls: {
-        'build/standing.png': expectedUrl,
-      },
-    });
-    expect(blockAsset?.content).toStrictEqual(await readFixture('standing.png'));
+      const expectedUrl = `${blockAssetsBaseUrl}/appsemble-block-assets/${blockAsset!.storageKey}`;
+      expect(data).toMatchObject({
+        files: ['build/standing.png'],
+        fileUrls: {
+          'build/standing.png': expectedUrl,
+        },
+      });
+      expect(blockAsset?.content).toStrictEqual(await readFixture('standing.png'));
 
-    const { data: downloadedContent, status } = await axios.get(expectedUrl, {
-      responseType: 'arraybuffer',
-    });
-    expect(status).toBe(200);
-    expect(Buffer.from(downloadedContent)).toStrictEqual(await readFixture('standing.png'));
-  });
+      const { data: downloadedContent, status } = await axios.get(expectedUrl, {
+        responseType: 'arraybuffer',
+      });
+      expect(status).toBe(200);
+      expect(Buffer.from(downloadedContent)).toStrictEqual(await readFixture('standing.png'));
+    },
+  );
 
   it('should publish a valid 220-character filename', async () => {
     const filename = `${'a'.repeat(220)}.js`;
@@ -155,9 +162,8 @@ describe('createBlock', () => {
 
     const blockAsset = await BlockAsset.findOne({ where: { filename } });
     expect(status).toBe(201);
-    expect(
-      await getS3FileBuffer(getBlockAssetsBucketName(), blockAsset!.storageKey!),
-    ).toStrictEqual(await readFixture('standing.png'));
+    const { bucket, key } = getBlockAssetLocation(blockAsset!.storageKey!);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(await readFixture('standing.png'));
   });
 
   it('should accept and return repositoryUrl when publishing blocks', async () => {

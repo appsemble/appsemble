@@ -1,12 +1,23 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import * as nodeUtils from '@appsemble/node-utils';
+import { initS3Client } from '@appsemble/node-utils';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setArgv } from './argv.js';
 import {
+  ensureBlockAssetsBucketPublicRead,
   getBlockAssetFileUrls,
   getSettingsBlockFileUrls,
   getBlockAssetStorageKey,
 } from './blockAssets.js';
 import { BlockAsset, BlockVersion, Organization } from '../models/index.js';
+
+const s3Config = {
+  accessKey: process.env.S3_ACCESS_KEY || 'admin',
+  secretKey: process.env.S3_SECRET_KEY || 'password',
+  endPoint: process.env.S3_HOST || 'localhost',
+  port: Number(process.env.S3_PORT) || 9009,
+  useSSL: false,
+};
 
 beforeEach(() => {
   setArgv({
@@ -39,6 +50,16 @@ describe('getBlockAssetFileUrls', () => {
       ]),
     ).toStrictEqual({});
   });
+});
+
+describe('bucket-per-app layout', () => {
+  beforeEach(() => {
+    initS3Client(s3Config);
+  });
+
+  afterEach(() => {
+    initS3Client({ ...s3Config, bucket: process.env.S3_BUCKET });
+  });
 
   it('should expose every asset after the block version is fully migrated', () => {
     expect(
@@ -52,6 +73,33 @@ describe('getBlockAssetFileUrls', () => {
       'test.js':
         'https://static.appsemble.example/appsemble-block-assets/xkcd/test/1.2.3/id/test.js',
     });
+  });
+});
+
+describe('single-bucket layout', () => {
+  beforeEach(() => {
+    initS3Client({ ...s3Config, bucket: 'objects' });
+  });
+
+  afterEach(() => {
+    initS3Client({ ...s3Config, bucket: process.env.S3_BUCKET });
+  });
+
+  it('should serve block assets from the blocks prefix of the configured bucket', () => {
+    expect(
+      getBlockAssetFileUrls([{ filename: 'test.js', storageKey: 'xkcd/test/1.2.3/id/test.js' }]),
+    ).toStrictEqual({
+      'test.js': 'https://static.appsemble.example/objects/blocks/xkcd/test/1.2.3/id/test.js',
+    });
+  });
+
+  it('should leave bucket policies to the operator', async () => {
+    const setS3BucketPolicy = vi.spyOn(nodeUtils, 'setS3BucketPolicy').mockResolvedValue();
+
+    await ensureBlockAssetsBucketPublicRead();
+
+    expect(setS3BucketPolicy).not.toHaveBeenCalled();
+    setS3BucketPolicy.mockRestore();
   });
 });
 

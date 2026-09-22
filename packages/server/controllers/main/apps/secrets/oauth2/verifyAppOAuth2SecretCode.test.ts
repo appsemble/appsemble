@@ -39,7 +39,7 @@ describe('verifyAppOAuth2SecretCode', () => {
     // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
     vi.clearAllTimers();
     vi.setSystemTime(0);
-    mock = new MockAdapter(axios);
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
 
     user = await createTestUser();
     const organization = await Organization.create({

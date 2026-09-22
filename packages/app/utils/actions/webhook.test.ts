@@ -9,7 +9,7 @@ let mock: MockAdapter;
 let request: AxiosRequestConfig;
 
 beforeEach(() => {
-  mock = new MockAdapter(axios);
+  mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
 });
 
 afterEach(() => {

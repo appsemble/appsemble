@@ -1,5 +1,5 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { getS3FileBuffer, readFixture } from '@appsemble/node-utils';
+import { getAppAssetLocation, getS3FileBuffer, readFixture } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import JSZip from 'jszip';
@@ -188,9 +188,8 @@ describe('importApp', () => {
 
     const asset = (await Asset.findOne())!;
 
-    expect(await getS3FileBuffer(`app-${1}`, asset.id)).toStrictEqual(
-      await readFixture('10x50.png'),
-    );
+    const { bucket, key } = getAppAssetLocation(1, asset.id);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(await readFixture('10x50.png'));
     expect(indexes.map(({ name }) => name)).toContain(
       getResourceUniqueIndexName(
         'testResource',

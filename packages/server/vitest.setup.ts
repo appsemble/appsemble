@@ -41,16 +41,19 @@ setLogLevel(0);
 expect.extend({ toMatchImageSnapshot });
 
 let testDB: Sequelize;
+let rootDB: Sequelize;
 
 beforeAll(async () => {
+  rootDB = getRootDB();
   [testDB] = await setupTestDatabase(randomUUID());
   await testDB.sync();
   initS3Client({
-    accessKey: 'admin',
-    secretKey: 'password',
+    accessKey: process.env.S3_ACCESS_KEY || 'admin',
+    secretKey: process.env.S3_SECRET_KEY || 'password',
     endPoint: process.env.S3_HOST || 'localhost',
     port: Number(process.env.S3_PORT) || 9009,
     useSSL: false,
+    bucket: process.env.S3_BUCKET,
   });
   await initValkeyClient({
     host: process.env.VALKEY_HOST || 'localhost',
@@ -73,11 +76,12 @@ afterEach(async () => {
   await dropAndCloseAllAppDBs();
 });
 
-afterAll(() => {
-  testDB.close();
+afterAll(async () => {
+  await testDB.close();
   // We need to drop the test database from the root database
   // testDB.drop() doesn't actually delete the database
-  getRootDB().query(`DROP DATABASE ${testDB.getDatabaseName()}`);
+  await rootDB.query(`DROP DATABASE ${testDB.getDatabaseName()}`);
+  await rootDB.close();
 });
 
 setResponseTransformer(

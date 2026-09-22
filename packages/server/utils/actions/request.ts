@@ -123,6 +123,8 @@ export async function request({
     );
   }
   if (responseBody instanceof ArrayBuffer) {
+    const contentType = response.headers['content-type'];
+    const blobOptions = typeof contentType === 'string' ? { type: contentType } : undefined;
     try {
       const view = new Uint8Array(responseBody);
       const text = new TextDecoder('utf8').decode(responseBody);
@@ -131,15 +133,17 @@ export async function request({
         arrayBuffer.byteLength === responseBody.byteLength &&
         arrayBuffer.every((byte, index) => byte === view[index])
           ? text
-          : new Blob([responseBody], { type: response.headers['content-type'] });
+          : new Blob([responseBody], blobOptions);
     } catch {
-      responseBody = new Blob([responseBody], { type: response.headers['content-type'] });
+      responseBody = new Blob([responseBody], blobOptions);
     }
   }
 
+  const contentType = response.headers['content-type'];
   if (
     typeof responseBody === 'string' &&
-    /^application\/json/.test(response.headers['content-type'])
+    typeof contentType === 'string' &&
+    /^application\/json/.test(contentType)
   ) {
     try {
       responseBody = JSON.parse(responseBody);
@@ -150,7 +154,8 @@ export async function request({
 
   if (
     typeof responseBody === 'string' &&
-    /^(application|text)\/(.+\+)?xml/.test(response.headers['content-type'])
+    typeof contentType === 'string' &&
+    /^(application|text)\/(.+\+)?xml/.test(contentType)
   ) {
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)

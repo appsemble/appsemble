@@ -1,11 +1,10 @@
 import { buffer as streamToBuffer } from 'node:stream/consumers';
 
-import { uploadS3File } from '@appsemble/node-utils';
+import { getBlockAssetLocation, uploadS3File } from '@appsemble/node-utils';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { getBlockAsset } from './getBlockAsset.js';
 import { BlockAsset, BlockVersion, Organization } from '../models/index.js';
-import { getBlockAssetsBucketName } from '../utils/blockAssets.js';
 
 describe('getBlockAsset', () => {
   let blockVersion: BlockVersion;
@@ -22,7 +21,8 @@ describe('getBlockAsset', () => {
   it('should return bytes and metadata from an S3-backed block asset', async () => {
     const content = Buffer.from('console.log("object storage")');
     const storageKey = `appsemble/form/1.0.0/${blockVersion.id}/form.js.map`;
-    await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength, {
+    const { bucket, key } = getBlockAssetLocation(storageKey);
+    await uploadS3File(bucket, key, content, content.byteLength, {
       'Content-Type': 'application/javascript',
     });
     await BlockAsset.create({

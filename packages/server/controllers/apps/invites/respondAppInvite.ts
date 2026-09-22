@@ -16,7 +16,7 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
     },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId', 'path', 'demoMode', 'totp'],
+    attributes: ['id', 'definition', 'OrganizationId', 'path', 'demoMode'],
   });
   assertKoaCondition(app != null, ctx, 404, 'This app does not exist');
 

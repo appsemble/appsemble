@@ -110,6 +110,8 @@ You can refer to existing code snippets in the guide section of the documentatio
 
 #### Message validation
 
+Text can be marked as translatable by using the `<FormattedMessage />` component.
+
 To add new messages, follow the following format:
 
 ```
@@ -204,6 +206,15 @@ To run tests for a single file, run
 
 ```sh
 npm test -- path/to/file
+```
+
+The server and CLI tests store assets in the `s3-test` service of the Docker Compose configuration,
+in a bucket per app. To run them in the single-bucket layout, where one pre-created bucket holds
+every object under a prefix, create the bucket once and pass its name.
+
+```sh
+docker compose exec s3-test sh -c "echo 's3.bucket.create -name appsemble' | weed shell"
+S3_BUCKET=appsemble npm test -- packages/server packages/cli --no-file-parallelism
 ```
 
 Appsemble uses test snapshots to assert large serializable objects like block manifests, HTTP
@@ -648,11 +659,29 @@ npm --silent run scripts -- get-release-notes
 A release can be created by a maintainer triggering one of the release jos in the pipeline for the
 `main` branch.
 
+Release jobs can also be run from branches named `hotfix/<name>`. In that case, the generated
+release commit is pushed back to that same branch.
+
 We support the following releases:
 
 - prerelease --identifier test - Internal testing or testing with clients
 - patch - Backward-compatible bug fixes
 - minor - Backward-compatible new features or significant updates
+
+For prereleases, the GitLab `release test` job resolves the identifier from exactly one source:
+
+- `main` branch -> `test`
+- `hotfix/<name>` branch -> `<name>`
+
+The identifier must only contain letters, numbers, and hyphens (`[0-9A-Za-z-]`).
+
+Examples:
+
+- `test` -> `0.36.5-test.6`
+- `my-fix` -> `0.36.6-my-fix.0`
+
+Only stable tags (`x.y.z`) and `test` prerelease tags deploy to production; other prerelease tags
+skip the production jobs.
 
 > **Note**: Migrations are still added manually. Make sure the release matches any new migrations.
 > For example, if you’re releasing version `1.2.3`, make sure existing migrations in

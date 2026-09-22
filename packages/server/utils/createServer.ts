@@ -28,7 +28,7 @@ import { argv } from './argv.js';
 import { Mailer } from './email/Mailer.js';
 import * as controllers from '../controllers/index.js';
 import { appMapper, authentication, stripeMiddleware } from '../middleware/index.js';
-import { appRouter, studioRouter } from '../routes/index.js';
+import { appRouter, operationalRouter, studioRouter } from '../routes/index.js';
 
 interface CreateServerOptions {
   /**
@@ -126,6 +126,8 @@ export async function createServer({
     ),
   );
 
+  app.use(operationalRouter);
+
   app.use(
     appMapper(
       compose([
@@ -139,6 +141,12 @@ export async function createServer({
             origin: (ctx) => ctx.get('origin') || '',
             exposeHeaders: ['ETag', 'X-Appsemble-Version'],
           }),
+        ),
+        conditional(
+          (ctx) => ctx.path === '/api' && ctx.method === 'HEAD',
+          (ctx) => {
+            ctx.status = 200;
+          },
         ),
         conditional((ctx) => ctx.path === '/api/payments/accept-payment', stripeMiddleware()),
         conditional((ctx) => /\/apps\/\d+\/accept-payment$/.test(ctx.path), stripeMiddleware()),

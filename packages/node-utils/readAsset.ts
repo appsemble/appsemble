@@ -13,5 +13,5 @@ export const assetDir = new URL('assets/', import.meta.url);
 export function readAsset(filename: string): Promise<Buffer>;
 export function readAsset(filename: string, encoding: BufferEncoding): Promise<string>;
 export function readAsset(filename: string, encoding?: BufferEncoding): Promise<Buffer | string> {
-  return readFile(new URL(filename, assetDir), encoding);
+  return readFile(new URL(filename, assetDir), encoding ?? null);
 }

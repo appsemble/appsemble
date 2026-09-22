@@ -14,6 +14,7 @@ import {
 } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
+import { backupsBuilder } from './builder/backups.js';
 import { databaseBuilder } from './builder/database.js';
 import { App, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
@@ -43,7 +44,9 @@ export interface RestoreDataFromBackupOptions {
   backupsBucket: string;
   backupsFilename: string | undefined;
   backupsHost: string;
+  backupsPathStyle?: boolean;
   backupsPort: number | undefined;
+  backupsRegion?: string;
   backupsSecretKey: string;
   backupsSecure: boolean;
   databaseHost: string;
@@ -59,7 +62,7 @@ export interface RestoreDataFromBackupOptions {
 }
 
 export function builder(yargs: Argv): Argv {
-  return databaseBuilder(yargs).option('restoreBackupFilename', {
+  return backupsBuilder(databaseBuilder(yargs)).option('restoreBackupFilename', {
     type: 'string',
     describe:
       'The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz, or latest',
@@ -275,7 +278,9 @@ export async function restoreDataFromBackup({
   backupsBucket,
   backupsFilename,
   backupsHost,
+  backupsPathStyle,
   backupsPort,
+  backupsRegion,
   backupsSecretKey,
   backupsSecure,
   databaseHost,
@@ -310,6 +315,9 @@ export async function restoreDataFromBackup({
       useSSL: backupsSecure,
       accessKey: backupsAccessKey,
       secretKey: backupsSecretKey,
+      region: backupsRegion,
+      pathStyle: backupsPathStyle,
+      bucket: backupsBucket,
     });
   } catch (error: unknown) {
     logger.warn(`S3Error: ${error}`);
@@ -368,6 +376,7 @@ export async function restoreDataFromBackup({
   // Restore app databases
   const apps = await App.findAll({
     attributes: ['id', 'dbName', 'dbUser', 'dbPassword', 'dbHost', 'dbPort'],
+    paranoid: false,
   });
   const dbPassword = databasePassword;
 
@@ -418,7 +427,9 @@ export async function handler(): Promise<void> {
     backupsBucket: argv.backupsBucket,
     backupsFilename: argv.backupsFilename,
     backupsHost: argv.backupsHost,
+    backupsPathStyle: argv.backupsPathStyle,
     backupsPort: argv.backupsPort,
+    backupsRegion: argv.backupsRegion,
     backupsSecretKey: argv.backupsSecretKey,
     backupsSecure: argv.backupsSecure,
     databaseHost: argv.databaseHost,

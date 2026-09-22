@@ -1,24 +1,35 @@
-import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
-import { authenticator } from 'otplib';
 
-import { getAppDB } from '../../../../models/index.js';
+import { App, getAppDB } from '../../../../models/index.js';
 import { createAppMemberRefreshSession } from '../../../../utils/appMemberRefreshSession.js';
-import { argv } from '../../../../utils/argv.js';
-import { decrypt } from '../../../../utils/crypto.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
+import { assertTotpToken } from '../../../../utils/totp.js';
+import {
+  assertUnusedTotpPendingToken,
+  verifyTotpPendingToken,
+} from '../../../../utils/totpPendingToken.js';
 
 export async function verifyAppMemberTotp(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     request: {
-      body: { memberId, scope, token },
+      body: { token, totpToken },
     },
   } = ctx;
 
+  const app = await App.findByPk(appId, { attributes: ['totp'] });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
+  assertKoaCondition(app.totp !== 'disabled', ctx, 400, 'TOTP is not enabled for this app');
+
+  // The pending token is the only thing binding this request to the app member whose password was
+  // verified in the first step of the login flow.
+  const pending = verifyTotpPendingToken(ctx, appId, totpToken);
+  const { jti, scope, sub } = pending;
+
   const { AppMember } = await getAppDB(appId);
 
-  const member = await AppMember.findByPk(memberId);
+  const member = await AppMember.findByPk(sub);
   assertKoaCondition(member != null, ctx, 404, 'App member not found');
   assertKoaCondition(
     member.totpEnabled && member.totpSecret != null,
@@ -27,12 +38,10 @@ export async function verifyAppMemberTotp(ctx: Context): Promise<void> {
     'TOTP is not enabled for this member',
   );
 
-  const secret = decrypt(member.totpSecret, argv.aesSecret);
-  const isValid = authenticator.verify({ token, secret });
+  assertUnusedTotpPendingToken(ctx, pending, member);
 
-  if (!isValid) {
-    throwKoaError(ctx, 401, 'Invalid TOTP token');
-  }
+  // Accepting the code spends the pending token along with it, in the same statement.
+  await assertTotpToken(ctx, member, token, 401, jti);
 
   const aud = `app:${appId}`;
   const refreshToken = await createAppMemberRefreshSession(ctx, {

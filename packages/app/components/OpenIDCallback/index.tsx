@@ -47,7 +47,7 @@ export function OpenIDCallback(): ReactNode {
   });
 
   const session = useMemo(() => loadOAuth2State<OAuth2State>(), []);
-  const { appMemberRoles, authorizationCodeLogin, isLoggedIn } = useAppMember();
+  const { appMemberRoles, authorizationCodeLogin, isLoggedIn, totpPending } = useAppMember();
 
   const { definition } = useAppDefinition();
 
@@ -62,19 +62,30 @@ export function OpenIDCallback(): ReactNode {
       authorizationCodeLogin({
         code,
         redirect_uri: `${window.location.origin}/Callback`,
+        // The OAuth2 state is cleared as soon as this component is done with it, so the deep link
+        // has to be handed to the provider, which owns the navigation from here on.
+        ...(redirect ? { redirect } : {}),
       }).catch(() => {
         setError(true);
       });
     }
-  }, [authorizationCodeLogin, code, isOk, shouldLink]);
+  }, [authorizationCodeLogin, code, isOk, redirect, shouldLink]);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    // A pending TOTP challenge navigates away from this component just like a completed login
+    // does, so the stored OAuth2 state is equally spent.
+    if (isLoggedIn || totpPending) {
       clearOAuth2State();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, totpPending]);
 
   if (shouldLink) {
+    return <Navigate to="/Login" />;
+  }
+
+  // The authorization code was valid, but a second factor still has to be verified, which happens
+  // on the login page.
+  if (totpPending) {
     return <Navigate to="/Login" />;
   }
 

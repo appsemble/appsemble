@@ -4,6 +4,8 @@
 
 - A working Kubernetes cluster
 - [Helm](https://helm.sh)
+- A PostgreSQL 17 server, see [PostgreSQL](/docs/deployment/postgresql) for running it with
+  CloudNativePG
 - (Optional) [Cert-manager](https://cert-manager.io) for automatic TLS certificate management
 
 For installation, upgrades, values, and chart-specific caveats, use the
@@ -20,6 +22,25 @@ The Helm chart runs database migrations automatically after each `helm install` 
 
 For operational migration checks and troubleshooting commands, use the chart documentation on
 [Artifact Hub](https://artifacthub.io/packages/helm/appsemble/appsemble) (see section `Migrations`).
+
+## Object storage
+
+Appsemble keeps app assets and block assets in S3 compatible object storage. The chart bundles
+SeaweedFS, and any S3 compatible store can replace it. The `s3.bucket` value selects one of two
+layouts:
+
+- **Bucket per app** (the default, used by appsemble.app): the server creates an `app-<id>` bucket
+  for every app and an `appsemble-block-assets` bucket at runtime. The credentials must be allowed
+  to create buckets and to set bucket policies.
+- **Single bucket** (`s3.bucket` set): all objects live in one bucket you provision up front, app
+  assets under `apps/<id>/` and block assets under `blocks/`. The credentials only need to read,
+  write, delete and list objects in that bucket.
+
+Pick the single bucket when the provider limits the number of buckets (Hetzner Object Storage), when
+buckets are claimed through Kubernetes (an `ObjectBucketClaim` on OpenShift Data Foundation), or
+when the credentials must stay least-privilege. The secret contract, provisioning steps per provider
+and the commands that copy an existing installation into a single bucket are in the
+[Appsemble chart README](https://gitlab.com/appsemble/appsemble/-/tree/main/config/charts/appsemble#object-storage).
 
 ## Cert-manager
 
@@ -96,6 +117,31 @@ helm install --name my-appsemble appsemble/appsemble \
 
 Make sure `ingress.host` resolves to the ingress controller with both `A` and `AAAA` records. Point
 `*.ingress.host` to the same place, preferably with a wildcard `CNAME` to the apex host.
+
+Appsemble creates an ingress per organization which serves `<organization>.ingress.host` and
+`*.<organization>.ingress.host`. Both host names need a DNS record of their own. The certificate of
+that ingress covers a wildcard host, so cert-manager validates it with a DNS01 challenge, and the
+challenge record makes `<organization>.ingress.host` exist in the zone, after which the wildcard
+record on `ingress.host` no longer resolves anything below it. Set the `dns` values to let Appsemble
+create an `A` and `AAAA` record for both host names of every organization:
+
+```sh
+helm install my-appsemble appsemble/appsemble \
+--set "dns.provider=desec" \
+--set "dns.zone=example.com" \
+--set "dns.secret=appsemble-dns" \
+--set "dns.targets={203.0.113.10,2001:db8::10}"
+# ...
+```
+
+`dns.zone` is the zone which contains `ingress.host`, `dns.targets` are the addresses of the ingress
+controller, and `dns.secret` names a secret which holds the API token of the provider under the key
+`dns-token`. Appsemble writes the records when an organization is created, removes them when it is
+deleted, and writes the records of all organizations in the `reconcile-dns` job.
+
+Restrict the token to the records Appsemble manages. For deSEC, give it token policies which allow
+writing `A` and `AAAA` record sets in `dns.zone` and nothing else, so it cannot touch the
+`_acme-challenge` records of cert-manager or the records of custom domains in the same zone.
 
 ## Use HTTPS configured elsewhere
 

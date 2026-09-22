@@ -1,4 +1,6 @@
-import { assertKoaCondition, getS3File } from '@appsemble/node-utils';
+import { Readable } from 'node:stream';
+
+import { assertKoaCondition, getAppAssetLocation, getS3File } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
@@ -160,7 +162,15 @@ export async function exportApp(ctx: Context): Promise<void> {
     });
     const appAssets = await Asset.findAll();
     for (const asset of appAssets) {
-      zip.file(`assets/${asset.filename}`, await getS3File(`app-${app.id}`, asset.id));
+      zip.file(
+        `assets/${asset.filename}`,
+        Readable.from(
+          (async function* readAsset(): AsyncGenerator<Buffer> {
+            const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+            yield* await getS3File(bucket, key);
+          })(),
+        ),
+      );
     }
   }
 

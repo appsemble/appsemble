@@ -10,7 +10,7 @@ describe('email', () => {
   let request: AxiosRequestConfig;
 
   beforeEach(() => {
-    mock = new MockAdapter(axios);
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
     mock.onPost(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`).reply((req) => {
       request = req;
       return [200, {}];

@@ -1,4 +1,5 @@
 import { PredefinedOrganizationRole } from '@appsemble/types';
+import { appOAuth2Scope, jwtPattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { authenticator } from 'otplib';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -19,6 +20,7 @@ import {
   createTestAppMember,
   createTestUser,
 } from '../../../../utils/test/authorization.js';
+import { createTotpPendingToken } from '../../../../utils/totpPendingToken.js';
 
 let organization: Organization;
 let user: User;
@@ -88,7 +90,7 @@ describe('verifyAppMemberTotpSetup', () => {
     vi.useRealTimers();
   });
 
-  it('should return 401 if user is not authenticated and no memberId provided', async () => {
+  it('should return 401 if user is not authenticated and no pending token is provided', async () => {
     const response = await request.post(`/api/apps/${app.id}/auth/totp/verify-setup`, {
       token: '123456',
     });
@@ -105,22 +107,63 @@ describe('verifyAppMemberTotpSetup', () => {
     `);
   });
 
-  it('should return 403 if unauthenticated and TOTP is not required', async () => {
-    const appMember = await createTestAppMember(app.id);
+  it('should reject an unauthenticated request on an app which requires TOTP', async () => {
+    await app.update({ totp: 'required' });
+    await createTestAppMember(app.id);
 
     const response = await request.post(`/api/apps/${app.id}/auth/totp/verify-setup`, {
       token: '123456',
-      memberId: appMember.id,
     });
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 403 Forbidden
+      HTTP/1.1 401 Unauthorized
       Content-Type: application/json; charset=utf-8
 
       {
-        "error": "Forbidden",
-        "message": "Unauthenticated TOTP verification is only allowed when TOTP is required",
-        "statusCode": 403,
+        "error": "Unauthorized",
+        "message": "User is not authenticated",
+        "statusCode": 401,
+      }
+    `);
+  });
+
+  it('should reject an invalid pending TOTP token', async () => {
+    const response = await request.post(`/api/apps/${app.id}/auth/totp/verify-setup`, {
+      token: '123456',
+      totpToken: 'not-a-token',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 401 Unauthorized
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Unauthorized",
+        "message": "Invalid pending TOTP token",
+        "statusCode": 401,
+      }
+    `);
+  });
+
+  it('should return 400 if TOTP is disabled for the app', async () => {
+    const secret = authenticator.generateSecret();
+    const appMember = await createTestAppMember(app.id);
+    await appMember.update({ totpSecret: encrypt(secret, 'test') });
+    authorizeAppMember(app, appMember);
+    await app.update({ totp: 'disabled' });
+
+    const response = await request.post(`/api/apps/${app.id}/auth/totp/verify-setup`, {
+      token: authenticator.generate(secret),
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "TOTP is not enabled for this app",
+        "statusCode": 400,
       }
     `);
   });
@@ -200,7 +243,6 @@ describe('verifyAppMemberTotpSetup', () => {
     const token = authenticator.generate(secret);
     const response = await request.post(`/api/apps/${app.id}/auth/totp/verify-setup`, {
       token,
-      memberId: appMember.id,
     });
 
     expect(response.status).toBe(204);
@@ -208,5 +250,73 @@ describe('verifyAppMemberTotpSetup', () => {
     // Verify TOTP is now enabled
     const updatedMember = await AppMember.findByPk(appMember.id);
     expect(updatedMember?.totpEnabled).toBe(true);
+  });
+
+  it('should complete the login when enrolling with a pending TOTP token', async () => {
+    await app.update({ totp: 'required' });
+    const secret = authenticator.generateSecret();
+    const appMember = await createTestAppMember(app.id);
+    const { AppMember } = await getAppDB(app.id);
+    await appMember.update({ totpSecret: encrypt(secret, 'test') });
+
+    const response = await request.post(`/api/apps/${app.id}/auth/totp/verify-setup`, {
+      token: authenticator.generate(secret),
+      totpToken: createTotpPendingToken({
+        aud: `app:${app.id}`,
+        scope: appOAuth2Scope,
+        sub: appMember.id,
+      }),
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        access_token: expect.stringMatching(jwtPattern),
+        expires_in: 3600,
+        refresh_token: expect.stringMatching(jwtPattern),
+        token_type: 'bearer',
+      },
+    });
+
+    const updatedMember = await AppMember.findByPk(appMember.id);
+    expect(updatedMember?.totpEnabled).toBe(true);
+    // The code is consumed, so it can’t be replayed against /auth/totp/verify.
+    expect(updatedMember?.totpLastCounter).toBe(0);
+  });
+
+  it('should reject a pending TOTP token which was already used to enroll', async () => {
+    await app.update({ totp: 'required' });
+    const secret = authenticator.generateSecret();
+    const appMember = await createTestAppMember(app.id);
+    await appMember.update({ totpSecret: encrypt(secret, 'test') });
+    const totpToken = createTotpPendingToken({
+      aud: `app:${app.id}`,
+      scope: appOAuth2Scope,
+      sub: appMember.id,
+    });
+
+    const enroll = await request.post(`/api/apps/${app.id}/auth/totp/verify-setup`, {
+      token: authenticator.generate(secret),
+      totpToken,
+    });
+    expect(enroll.status).toBe(200);
+
+    // A fresh code, so only the spent pending token can reject this second login.
+    vi.setSystemTime(30 * 1000);
+    const response = await request.post(`/api/apps/${app.id}/auth/totp/verify`, {
+      token: authenticator.generate(secret),
+      totpToken,
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 401 Unauthorized
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Unauthorized",
+        "message": "Pending TOTP token has already been used",
+        "statusCode": 401,
+      }
+    `);
   });
 });

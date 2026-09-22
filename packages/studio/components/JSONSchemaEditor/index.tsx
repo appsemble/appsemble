@@ -1,31 +1,36 @@
-import { type NamedEvent } from '@appsemble/web-utils';
 import { forwardRef, type ReactNode, useCallback } from 'react';
 
 import { RecursiveJSONSchemaEditor } from './RecursiveJSONSchemaEditor/index.js';
-import { type CommonJSONSchemaEditorProps } from './types.js';
+import { type CommonJSONSchemaEditorProps, type JSONSchemaEditorEvent } from './types.js';
 
 /**
  * Render a component for editing objects based on a JSON schema.
  */
 export const JSONSchemaEditor = forwardRef<
   never,
-  Pick<CommonJSONSchemaEditorProps<any>, 'disabled' | 'name' | 'onChange' | 'schema' | 'value'>
+  Pick<
+    CommonJSONSchemaEditorProps<any>,
+    'disabled' | 'errors' | 'name' | 'onChange' | 'onFieldChange' | 'schema' | 'value'
+  >
   // The ref is defined to suppress a React warning.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
->(({ disabled, name, onChange, schema, value }, ref): ReactNode => {
+>(({ disabled, errors, name, onChange, onFieldChange, schema, value }, ref): ReactNode => {
   const handleChange = useCallback(
-    (event: NamedEvent, val: string) => {
+    (event: JSONSchemaEditorEvent, val: string) => {
+      onFieldChange?.(event.path ?? []);
       onChange({ currentTarget: { name } }, val);
     },
-    [name, onChange],
+    [name, onChange, onFieldChange],
   );
 
   return (
     <RecursiveJSONSchemaEditor
       disabled={disabled}
+      errors={errors}
       name={name}
       nested={false}
       onChange={handleChange}
+      path={[]}
       prefix={name}
       schema={schema}
       value={value}
