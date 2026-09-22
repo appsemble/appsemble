@@ -19,7 +19,7 @@ sources:
   - https://gitlab.com/appsemble/charts
 dependencies:
   - name: mailpit
-    version: 0.36.0
+    version: 0.37.0
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
   - name: seaweedfs
