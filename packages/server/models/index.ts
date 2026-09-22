@@ -431,9 +431,11 @@ export async function initAppDB(
     closeWhenIdle(appId, replaced.sequelize);
   }
 
+  // Soft-deleted apps keep their database, so it can be migrated and the app restored.
   const app = (await mainDB.models.App.findOne({
     attributes: ['id', 'dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword', 'definition'],
     where: { id: appId },
+    paranoid: false,
     transaction,
   })) as App;
 
