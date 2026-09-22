@@ -58,7 +58,7 @@ pages:
     icon: home
     blocks:
       - type: button-list
-        version: 0.40.0
+        version: 0.40.1
         parameters:
           buttons:
             - label: { translate: dossiers }
@@ -112,7 +112,7 @@ pages:
   - name: Overview
     blocks:
       - type: data-loader
-        version: 0.40.0
+        version: 0.40.1
         actions:
           onLoad:
             type: resource.query
@@ -121,7 +121,7 @@ pages:
           emit:
             data: items
       - type: tiles
-        version: 0.40.0
+        version: 0.40.1
         events:
           listen:
             data: items
@@ -171,7 +171,7 @@ need to be uploaded again with the names used in the registry.
 
 ## Version requirements
 
-Custom icons require Appsemble 0.40.0 or newer. Blocks published before that version render Font
+Custom icons require Appsemble 0.40.1 or newer. Blocks published before that version render Font
 Awesome icons only, so make sure the blocks in the app use a version which supports icon references.
 Existing Font Awesome icons keep working in every version, no changes to the app definition or the
 blocks are needed.
