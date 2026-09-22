@@ -844,6 +844,50 @@ describe('appsTokenHandler', () => {
     });
   });
 
+  describe('urn:ietf:params:oauth:grant-type:demo-login', () => {
+    it('should add a new demo member to existing groups using the selected role', async () => {
+      const organizationId = `org-${randomUUID()}`;
+      await user.$create('Organization', { id: organizationId });
+      const app = await App.create({
+        OrganizationId: organizationId,
+        definition: {
+          security: {
+            roles: {
+              User: {},
+            },
+          },
+        },
+        demoMode: true,
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+      });
+      const { Group, GroupMember } = await getAppDB(app.id);
+      const group = await Group.create({ name: 'Test Group' });
+
+      const response = await request.post<TokenResponse>(
+        `/apps/${app.id}/auth/oauth2/token`,
+        new URLSearchParams({
+          appMemberId: '',
+          appRole: 'User',
+          client_id: `app:${app.id}`,
+          grant_type: 'urn:ietf:params:oauth:grant-type:demo-login',
+          scope: 'groups:read groups:write openid',
+        }),
+      );
+
+      expect(response).toMatchObject({
+        status: 200,
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+          token_type: 'bearer',
+        },
+      });
+      const groupMember = await GroupMember.findOne({ where: { GroupId: group.id } });
+      expect(groupMember).toMatchObject({ role: 'User' });
+    });
+  });
+
   describe('refresh_token', () => {
     let appId: number;
     let tokenEndpoint: string;

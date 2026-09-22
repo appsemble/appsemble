@@ -302,6 +302,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
               appGroups.map((group) => ({
                 GroupId: group.id,
                 demo: true,
+                role,
                 AppMemberId: appMember!.id,
               })),
               { transaction },
