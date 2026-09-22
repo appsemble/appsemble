@@ -604,7 +604,9 @@ The backup jobs upload large objects in parts and abort an upload that fails. Wh
 storage is unreachable the abort fails too, and the parts stay behind as an incomplete multipart
 upload: invisible to listings, billed as storage. Set a lifecycle rule on the backups bucket with
 `AbortIncompleteMultipartUpload` and `DaysAfterInitiation: 1`, which Hetzner Object Storage accepts,
-so such parts are removed without manual action.
+so such parts are removed without manual action. The SQL dumps are never deleted by the job either:
+add an `Expiration` rule on the `sql/` prefix with the number of days to keep them (appsemble.app
+keeps 30).
 
 To restore app asset backups, run `sh scripts/s3-assets-restore.sh` with `BACKUP_S3_*` pointing at
 the backup object storage and `RESTORE_S3_*` pointing at the object storage to restore into. The
