@@ -17,9 +17,9 @@ declare class URLSearchParams {
  */
 export function mergeThemes(...themes: Partial<Theme>[]): Theme {
   const result = Object.assign({}, baseTheme, ...themes) as Theme;
-  result.font.source ||= 'google';
+  result.font = { ...result.font, source: result.font.source || 'google' };
   if (result.displayFont) {
-    result.displayFont.source ||= 'google';
+    result.displayFont = { ...result.displayFont, source: result.displayFont.source || 'google' };
   }
   return result;
 }

@@ -47,6 +47,14 @@ describe('mergeThemes', () => {
     expect(result.displayFont).toStrictEqual({ family: 'Baloo 2', source: 'google' });
   });
 
+  it('should not modify the themes it merges', () => {
+    const theme = { font: { family: 'Lato' }, displayFont: { family: 'Baloo 2' } };
+    const result = mergeThemes(theme);
+    expect(result.font).not.toBe(theme.font);
+    expect(result.displayFont).not.toBe(theme.displayFont);
+    expect(theme).toStrictEqual({ font: { family: 'Lato' }, displayFont: { family: 'Baloo 2' } });
+  });
+
   it('should combine multiple themes', () => {
     const result = mergeThemes(
       { primaryColor: '#123456', successColor: '#789abc' },
