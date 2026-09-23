@@ -98,6 +98,16 @@ describe('bulmaHandler', () => {
     await vi.waitFor(async () => expect(await Theme.count()).toBe(2));
   });
 
+  it('should import a google font once when the display font equals the body font', async () => {
+    const response = await request.get(
+      `/bulma/${bulmaVersion}/bulma.min.css?fontFamily=Lato&fontSource=google&displayFontFamily=Lato&displayFontSource=google`,
+    );
+    expect(response.status).toBe(200);
+    expect(response.data.match(/@import"https:\/\/fonts\.googleapis\.com[^"]*"/g)).toStrictEqual([
+      '@import"https://fonts.googleapis.com/css?display=swap&family=Lato"',
+    ]);
+  });
+
   it('should not import a custom display font from google fonts', async () => {
     const response = await request.get(
       `/bulma/${bulmaVersion}/bulma.min.css?displayFontFamily=Comic+Sans&displayFontSource=custom`,
