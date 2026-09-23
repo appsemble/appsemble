@@ -1,4 +1,10 @@
-import { type PageDefinition } from '@appsemble/lang-sdk';
+import {
+  type AppDefinition,
+  bottomNavigationGridArea,
+  hasBuiltinPagesGridArea,
+  type PageDefinition,
+  pageHasGridArea,
+} from '@appsemble/lang-sdk';
 import { SideMenuProvider } from '@appsemble/react-components';
 import { type MenuItem } from '@appsemble/sdk';
 import { noop } from '@appsemble/utils';
@@ -7,6 +13,7 @@ import {
   type Dispatch,
   type ReactNode,
   type SetStateAction,
+  useCallback,
   useContext,
   useMemo,
   useState,
@@ -33,38 +40,95 @@ interface MenuProviderProps {
 }
 
 interface MenuProviderContext {
-  page: PageDefinition;
-  setPage: Dispatch<SetStateAction<PageDefinition>>;
+  /**
+   * The definition page that is currently rendered, if any.
+   *
+   * A definition page sets it while it is rendered, so it is undefined on built-in pages.
+   */
+  page?: PageDefinition;
+  setPage: Dispatch<SetStateAction<PageDefinition | undefined>>;
   setBlockMenu: (menu: BlockMenuItem) => void;
+
+  /**
+   * Whether the app renders the bottom navigation on the current page.
+   */
+  hasBottomNavigation: boolean;
 }
 
 const Context = createContext<MenuProviderContext>({
-  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   page: undefined,
   setPage: noop,
   setBlockMenu: noop,
+  hasBottomNavigation: false,
 });
 
 export function usePage(): MenuProviderContext {
   return useContext(Context);
 }
 
+/**
+ * Check whether the grid of the current page places an element Appsemble renders itself.
+ *
+ * A definition page sets the page while it is rendered, so without one the layout of the built-in
+ * pages applies.
+ *
+ * @param definition The app definition to read the built-in page layout from.
+ * @param page The definition page that is rendered, if any.
+ * @param area The reserved template area to look for.
+ * @returns Whether the grid of the page names the area.
+ */
+function placesGridArea(
+  definition: AppDefinition,
+  page: PageDefinition | undefined,
+  area: string,
+): boolean {
+  return page
+    ? pageHasGridArea(page, area)
+    : hasBuiltinPagesGridArea(definition.layout?.builtinPages, area);
+}
+
+/**
+ * Check whether the grid of the current page places an element Appsemble renders itself.
+ *
+ * @param area The reserved template area to look for.
+ * @returns Whether the grid of the page names the area.
+ */
+export function usePlacedGridArea(area: string): boolean {
+  const { definition } = useAppDefinition();
+  const { page } = usePage();
+  return placesGridArea(definition, page, area);
+}
+
 export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const { definition: appDefinition } = useAppDefinition();
   const { appMemberRoles, appMemberSelectedGroup } = useAppMember();
-  const [page, setPage] = useState<PageDefinition>();
+  const [currentPage, setCurrentPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
   const { pathname } = useLocation();
+  const setPage = useCallback<MenuProviderContext['setPage']>((p) => {
+    setBlockMenus([]);
+    setCurrentPage(p);
+  }, []);
+  const pages = useMemo(
+    () => getNavPages(appDefinition, appMemberRoles, appMemberSelectedGroup),
+    [appDefinition, appMemberRoles, appMemberSelectedGroup],
+  );
+
+  const showMenu = shouldShowMenu(appDefinition, appMemberRoles, appMemberSelectedGroup, pathname);
+  // `profileDropdown` only lists a page under the profile dropdown; it does not describe the
+  // navigation layout. Fall back to the app navigation so such pages keep the app's menu instead
+  // of dropping it (which would leave the title bar's menu button without a provider).
+  const pageNavigation =
+    currentPage?.navigation === 'profileDropdown' ? undefined : currentPage?.navigation;
+  const navigation = pageNavigation || appDefinition.layout?.navigation;
+  const effectiveNavigation =
+    navigation === 'top' && appDefinition.layout?.hideTitleBar ? 'left-menu' : navigation;
+  const hasBottomNavigation = showMenu && effectiveNavigation === 'bottom';
+
   const value = useMemo<MenuProviderContext>(
     () => ({
-      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-      page,
-      setPage(p) {
-        setBlockMenus([]);
-        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-        // (strictNullChecks)
-        setPage(p);
-      },
+      page: currentPage,
+      setPage,
       setBlockMenu(menu) {
         setBlockMenus((oldBlockMenus) =>
           [...oldBlockMenus.filter((blockMenu) => blockMenu.path !== menu.path), menu].sort(
@@ -72,33 +136,23 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
           ),
         );
       },
+      hasBottomNavigation,
     }),
-    [page],
-  );
-
-  const pages = useMemo(
-    () => getNavPages(appDefinition, appMemberRoles, appMemberSelectedGroup),
-    [appDefinition, appMemberRoles, appMemberSelectedGroup],
+    [currentPage, hasBottomNavigation, setPage],
   );
 
   let navigationElement: ReactNode;
-  const showMenu = shouldShowMenu(appDefinition, appMemberRoles, appMemberSelectedGroup, pathname);
 
   if (showMenu) {
-    // `profileDropdown` only lists a page under the profile dropdown; it does not describe the
-    // navigation layout. Fall back to the app navigation so such pages keep the app's menu instead
-    // of dropping it (which would leave the title bar's menu button without a provider).
-    const pageNavigation = page?.navigation === 'profileDropdown' ? undefined : page?.navigation;
-    const navigation = pageNavigation || appDefinition.layout?.navigation;
-    const effectiveNavigation =
-      navigation === 'top' && appDefinition.layout?.hideTitleBar ? 'left-menu' : navigation;
-
     switch (effectiveNavigation) {
       case 'bottom':
-        navigationElement = (
+        // A page whose grid places the bottom navigation renders it inside the grid itself.
+        navigationElement = placesGridArea(appDefinition, currentPage, bottomNavigationGridArea) ? (
+          children
+        ) : (
           <>
             {children}
-            <BottomNavigation pages={pages} />
+            <BottomNavigation />
           </>
         );
         break;

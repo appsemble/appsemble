@@ -1,11 +1,11 @@
 import {
   getPageDisplayName,
   getPagePathSegment,
-  type PageDefinition,
   remap,
   type RemapperContext,
 } from '@appsemble/lang-sdk';
 import { Button, Icon } from '@appsemble/react-components';
+import classNames from 'classnames';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
@@ -14,22 +14,28 @@ import { usePWAInstall } from 'react-use-pwa-install';
 import './index.css';
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { shouldShowMenu } from '../../utils/layout.js';
+import { getNavPages, shouldShowMenu } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useActiveNavigation } from '../../utils/useActiveNavigation.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
+import { usePage } from '../MenuProvider/index.js';
 
 interface BottomNavigationProps {
-  readonly pages: PageDefinition[];
+  /**
+   * Whether the navigation sits in the `bottom-navigation` area of a page grid.
+   *
+   * In a grid it flows with the page, and renders nothing unless the app navigation is `bottom`.
+   */
+  readonly inGrid?: boolean;
 }
 
 /**
  * The app navigation that is displayed at the bottom of the app.
  */
-export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
+export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
   const { pathname } = useLocation();
@@ -40,7 +46,12 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { definition } = useAppDefinition();
   const { formatMessage } = useIntl();
   const install = usePWAInstall();
+  const { hasBottomNavigation } = usePage();
 
+  const pages = useMemo(
+    () => getNavPages(definition, appMemberRoles, appMemberSelectedGroup),
+    [definition, appMemberRoles, appMemberSelectedGroup],
+  );
   const getCurrent = useActiveNavigation(pages, false);
 
   const showMenu = useMemo(
@@ -48,9 +59,13 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
     [definition, appMemberRoles, appMemberSelectedGroup, pathname],
   );
 
+  if (inGrid && !hasBottomNavigation) {
+    return null;
+  }
+
   return (
     showMenu && (
-      <nav className="bottom-nav mb-0">
+      <nav className={classNames('bottom-nav mb-0', { [styles.inGrid]: inGrid })}>
         <ul className={`${styles.list} is-flex`}>
           {pages.map((page) => {
             const name = getPageDisplayName(page, getAppMessage);

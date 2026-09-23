@@ -77,7 +77,7 @@ function renderNavigation(
                 ) : navigation === 'side' ? (
                   <SideNavigation blockMenus={[]} pages={visiblePages} />
                 ) : (
-                  <BottomNavigation pages={visiblePages} />
+                  <BottomNavigation />
                 )}
                 <Link to="/en/lot-details/42">Open lot</Link>
                 <Link to="/en/orphan">Open orphan</Link>

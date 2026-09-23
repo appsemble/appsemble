@@ -123,6 +123,14 @@ Only applies when \`navigation\` is set to \`top\`.
 Only applies when \`navigation\` is set to \`top\` and cannot be combined with \`stackedHeader\`.
 `,
     },
+    builtinPages: {
+      $ref: '#/components/schemas/BuiltinPagesLayoutDefinition',
+      description: `Responsive grid layout for the built-in pages of the app.
+
+Applies unchanged to every built-in page and every state of it. The available template areas are
+\`resend-banner\`, \`title\`, \`content\`, and \`bottom-navigation\`.
+`,
+    },
     breakpoints: {
       $ref: '#/components/schemas/GridBreakpointsDefinition',
       description: `Minimum viewport widths in pixels at which the tablet and desktop grid layouts apply.

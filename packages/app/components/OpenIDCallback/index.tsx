@@ -1,5 +1,5 @@
 import { normalize } from '@appsemble/lang-sdk';
-import { Button, Content, Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
+import { Button, Message, useMeta, useQuery } from '@appsemble/react-components';
 import { clearOAuth2State, loadOAuth2State, type OAuth2State } from '@appsemble/web-utils';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -12,8 +12,7 @@ import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
-import { Main } from '../Main/index.js';
-import { AppBar } from '../TitleBar/index.js';
+import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
 
 /**
  * Handle the OAuth2 callback.
@@ -96,26 +95,33 @@ export function OpenIDCallback(): ReactNode {
 
   if (!isOk) {
     return (
-      <Main>
-        <AppBar />
-        <Content className={styles.error} padding>
-          <Message color="danger">
-            {errorMessage === 'access_denied' ? (
-              <FormattedMessage {...messages.accessDenied} />
-            ) : (
-              <FormattedMessage {...messages.error} />
-            )}
-          </Message>
-          <Button
-            component={Link}
-            to={{ pathname: '/Login', search: String(new URLSearchParams({ redirect })) }}
-          >
-            <FormattedMessage {...messages.retry} />
-          </Button>
-        </Content>
-      </Main>
+      <BuiltinPage
+        className={styles.error}
+        narrow
+        page="openid-callback"
+        state="error"
+        title={messages.login}
+      >
+        <Message color="danger">
+          {errorMessage === 'access_denied' ? (
+            <FormattedMessage {...messages.accessDenied} />
+          ) : (
+            <FormattedMessage {...messages.error} />
+          )}
+        </Message>
+        <Button
+          component={Link}
+          to={{ pathname: '/Login', search: String(new URLSearchParams({ redirect })) }}
+        >
+          <FormattedMessage {...messages.retry} />
+        </Button>
+      </BuiltinPage>
     );
   }
 
-  return <Loader />;
+  return (
+    <BuiltinPage page="openid-callback" state="loading" title={messages.login}>
+      <BuiltinPageLoader />
+    </BuiltinPage>
+  );
 }

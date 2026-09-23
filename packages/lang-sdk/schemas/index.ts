@@ -128,6 +128,7 @@ export * from './GridBreakpointsDefinition.js';
 export * from './GridLayoutDefinition.js';
 export * from './GridSpacingDefinition.js';
 export * from './ResponsiveGridLayoutDefinition.js';
+export * from './BuiltinPagesLayoutDefinition.js';
 export * from './NavbarDeviceGridLayoutDefinition.js';
 export * from './NavbarLayoutDefinition.js';
 export * from './PageLayoutDefinition.js';

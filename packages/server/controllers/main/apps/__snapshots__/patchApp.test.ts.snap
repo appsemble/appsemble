@@ -37,10 +37,7 @@ Content-Type: application/json; charset=utf-8
               "$ref": "#/components/schemas/EventsDefinition",
             },
             "gridArea": {
-              "description": "Grid area defined in the page layout definition.
-
-The \`breadcrumbs\` area is reserved for the breadcrumb trail of the app.
-",
+              "description": "Grid area defined in the page layout definition.",
               "type": "string",
             },
             "header": {
@@ -2401,10 +2398,7 @@ Content-Type: application/json; charset=utf-8
               "$ref": "#/components/schemas/EventsDefinition",
             },
             "gridArea": {
-              "description": "Grid area defined in the page layout definition.
-
-The \`breadcrumbs\` area is reserved for the breadcrumb trail of the app.
-",
+              "description": "Grid area defined in the page layout definition.",
               "type": "string",
             },
             "header": {

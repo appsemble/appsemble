@@ -1,4 +1,4 @@
-import { Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
+import { Message, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
 import { type ReactNode, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -7,11 +7,9 @@ import { Link, useParams } from 'react-router-dom';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
-import { AppBar } from '../TitleBar/index.js';
+import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
 
 export function Verify(): ReactNode {
-  useMeta(messages.title);
-
   const [submitting, setSubmitting] = useState(true);
   const [success, setSuccess] = useState(false);
   const qs = useQuery();
@@ -32,36 +30,27 @@ export function Verify(): ReactNode {
   }, [token]);
 
   if (submitting) {
-    return <Loader />;
-  }
-
-  if (success) {
     return (
-      <>
-        <AppBar />
-        <div className={`container px-3 py-3 ${styles.root}`}>
-          <Message color="success">
-            <FormattedMessage {...messages.requestSuccess} />
-          </Message>
-          <Link className="button is-primary" to={`/${lang}`}>
-            <FormattedMessage {...messages.returnToApp} />
-          </Link>
-        </div>
-      </>
+      <BuiltinPage page="verify" state="loading" title={messages.title}>
+        <BuiltinPageLoader />
+      </BuiltinPage>
     );
   }
 
   return (
-    <>
-      <AppBar />
-      <div className={`container ${styles.root}`}>
-        <Message color="danger">
-          <FormattedMessage {...messages.requestFailed} />
-        </Message>
-        <Link className="button is-primary" to={`/${lang}`}>
-          <FormattedMessage {...messages.returnToApp} />
-        </Link>
-      </div>
-    </>
+    <BuiltinPage
+      fallbackClassName={`container ${styles.root}`}
+      narrow
+      page="verify"
+      state={success ? 'success' : 'error'}
+      title={messages.title}
+    >
+      <Message color={success ? 'success' : 'danger'}>
+        <FormattedMessage {...(success ? messages.requestSuccess : messages.requestFailed)} />
+      </Message>
+      <Link className="button is-primary" to={`/${lang}`}>
+        <FormattedMessage {...messages.returnToApp} />
+      </Link>
+    </BuiltinPage>
   );
 }

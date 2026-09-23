@@ -1,0 +1,13 @@
+/*
+ * Keep the content clear of the fixed bottom navigation. A grid generates the padding of the root,
+ * so the clearance sits on the last region.
+ */
+.gridHasBottomNavigation > :last-child {
+  padding-bottom: 7rem;
+}
+
+/* The loader shares the page with the grid, so it may not claim the height of the viewport. */
+.loader {
+  height: auto;
+  min-height: 50vh;
+}

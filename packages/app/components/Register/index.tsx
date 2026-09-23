@@ -1,8 +1,6 @@
 import {
-  Content,
   Register as RegisterForm,
   type RegistrationFormValues,
-  useMeta,
   useQuery,
 } from '@appsemble/react-components';
 import { timezone } from '@appsemble/web-utils';
@@ -15,11 +13,9 @@ import { apiUrl, appId } from '../../utils/settings.js';
 import { getTotpChallenge } from '../../utils/totp.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
-import { AppBar } from '../TitleBar/index.js';
+import { BuiltinPage } from '../BuiltinPage/index.js';
 
 export function Register(): ReactNode {
-  useMeta(messages.register);
-
   const { passwordLogin } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const qs = useQuery();
@@ -62,12 +58,11 @@ export function Register(): ReactNode {
   );
 
   return (
-    <Content padding>
-      <AppBar />
+    <BuiltinPage narrow page="register" state="form" title={messages.register}>
       <RegisterForm
         onRegister={onRegister}
         phoneNumberDefinition={definition.members?.phoneNumber}
       />
-    </Content>
+    </BuiltinPage>
   );
 }

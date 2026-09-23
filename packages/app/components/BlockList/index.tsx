@@ -3,10 +3,13 @@ import { type EventEmitter } from 'events';
 import {
   ActionError,
   type BlockDefinition,
-  hasBreadcrumbsGridArea,
+  bottomNavigationGridArea,
+  breadcrumbsGridArea,
+  hasGridArea,
   type PageDefinition,
   type PageLayoutDefinition,
   type Remapper,
+  resendBannerGridArea,
 } from '@appsemble/lang-sdk';
 import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
 import { type ProjectImplementations } from '@appsemble/types';
@@ -24,10 +27,12 @@ import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { Block } from '../Block/index.js';
+import { BottomNavigation } from '../BottomNavigation/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
-import usePageGridCss, { DEFAULT_BREAKPOINTS } from '../PageGridProvider/index.js';
+import usePageGridCss, { useGridBreakpoints } from '../PageGridProvider/index.js';
+import { VerifyBanner } from '../VerifyBanner/index.js';
 
 interface BlockListProps {
   readonly blocks: BlockDefinition[];
@@ -233,10 +238,8 @@ export function BlockList({
     appMemberInfoRef,
     appMemberSelectedGroup,
   ]);
-  const gridClassName = usePageGridCss({
-    pageLayout,
-    BREAKPOINTS: { ...DEFAULT_BREAKPOINTS, ...appDefinition.layout?.breakpoints },
-  });
+  const BREAKPOINTS = useGridBreakpoints(appDefinition.layout?.breakpoints);
+  const gridClassName = usePageGridCss({ pageLayout, BREAKPOINTS });
 
   // The empty context is what the two-argument call in the default breadcrumbs position resolves to,
   // so the trail reads the same page context wherever it is placed.
@@ -257,7 +260,10 @@ export function BlockList({
 
   return (
     <Wrapper {...wrapperProps}>
-      {gridClassName && hasBreadcrumbsGridArea(pageLayout) ? (
+      {gridClassName && hasGridArea(pageLayout, resendBannerGridArea) ? (
+        <VerifyBanner inGrid />
+      ) : null}
+      {gridClassName && hasGridArea(pageLayout, breadcrumbsGridArea) ? (
         <Breadcrumbs
           data={data}
           inGrid
@@ -291,6 +297,9 @@ export function BlockList({
           />
         ) : null,
       )}
+      {gridClassName && hasGridArea(pageLayout, bottomNavigationGridArea) ? (
+        <BottomNavigation inGrid />
+      ) : null}
     </Wrapper>
   );
 }

@@ -16,7 +16,7 @@ import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { GroupDropdown } from '../GroupDropdown/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
-import { DEFAULT_BREAKPOINTS, useGridCss } from '../PageGridProvider/index.js';
+import { useGridBreakpoints, useGridCss } from '../PageGridProvider/index.js';
 import { TopNavigation } from '../TopNavigation/index.js';
 
 // Breakpoints the author leaves undefined fall back to a single-row navbar layout so every rendered
@@ -51,8 +51,9 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { lang: locale } = useParams();
   const { pathname } = useLocation();
   const logoInNavbar = (definition.layout?.logo?.position || 'hidden') === 'navbar';
+  const BREAKPOINTS = useGridBreakpoints(definition.layout?.breakpoints);
   const navbarGridClassName = useGridCss({
-    BREAKPOINTS: { ...DEFAULT_BREAKPOINTS, ...definition.layout?.breakpoints },
+    BREAKPOINTS,
     classNamePrefix: 'navbar-grid',
     defaultLayout: logoInNavbar
       ? NAVBAR_DEFAULT_LAYOUT_WITH_LOGO

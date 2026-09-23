@@ -1,7 +1,8 @@
 import {
+  breadcrumbsGridArea,
   normalize,
   type PageDefinition,
-  pageHasBreadcrumbsGridArea,
+  pageHasGridArea,
   type Remapper,
   type RemapperContext,
   type SubPageDefinition,
@@ -220,7 +221,7 @@ export function TabsPage({
   if (tabsWithPermissions.length) {
     return (
       <>
-        {pageHasBreadcrumbsGridArea(pageDefinition) ? null : (
+        {pageHasGridArea(pageDefinition, breadcrumbsGridArea) ? null : (
           <Breadcrumbs
             data={data}
             pageDefinition={pageDefinition}
