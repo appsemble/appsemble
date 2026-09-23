@@ -133,19 +133,17 @@ writing `A` and `AAAA` record sets in `dns.zone` and nothing else, so it cannot 
 
 ## Migrations
 
-The chart runs database migrations in the `migrate` Job after each install and upgrade. Once that
-Job completes, the `synchronize-trainings` Job syncs training documents with the database. Server
-replicas do not run either task at startup.
+The chart runs database migrations in the `migrate` Job after each install and upgrade. Server
+replicas do not run migrations at startup.
 
 If the migration Job fails, the Appsemble pod can still start, but requests may fail with database
-errors. If the training synchronization Job fails, training content may be unavailable.
+errors.
 
 Check Job status and logs after install/upgrade:
 
 ```sh
 kubectl get jobs
 kubectl logs job/my-appsemble-migrate
-kubectl logs job/my-appsemble-synchronize-trainings
 ```
 
 If you use another namespace, add `-n <namespace>`.

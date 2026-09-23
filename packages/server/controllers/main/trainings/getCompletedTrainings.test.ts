@@ -2,7 +2,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { createServer, createTestUser, setArgv } from '../../../index.js';
-import { Training, TrainingCompleted, type User } from '../../../models/index.js';
+import { TrainingCompleted, type User } from '../../../models/index.js';
 import { authorizeStudio } from '../../../utils/test/authorization.js';
 
 describe('getCompletedTrainings', () => {
@@ -19,8 +19,7 @@ describe('getCompletedTrainings', () => {
   });
 
   it('should return a list of all training IDs the user has completed', async () => {
-    const training = await Training.create({ id: 'test-training-0' });
-    await TrainingCompleted.create({ TrainingId: training.id, UserId: user.id });
+    await TrainingCompleted.create({ TrainingId: 'what-is-appsemble', UserId: user.id });
     authorizeStudio();
 
     const response = await request.get('/api/trainings/completed');
@@ -30,7 +29,7 @@ describe('getCompletedTrainings', () => {
       Content-Type: application/json; charset=utf-8
 
       [
-        "test-training-0",
+        "what-is-appsemble",
       ]
     `);
   });
@@ -46,5 +45,20 @@ describe('getCompletedTrainings', () => {
 
       []
     `);
+  });
+
+  it('should hide completed trainings that are absent from the bundled catalog', async () => {
+    await TrainingCompleted.create({ TrainingId: 'removed-training', UserId: user.id });
+    authorizeStudio();
+
+    const response = await request.get('/api/trainings/completed');
+
+    expect(response.status).toBe(200);
+    expect(response.data).toStrictEqual([]);
+    expect(
+      await TrainingCompleted.findOne({
+        where: { TrainingId: 'removed-training', UserId: user.id },
+      }),
+    ).not.toBeNull();
   });
 });

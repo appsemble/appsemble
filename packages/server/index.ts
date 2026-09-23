@@ -19,7 +19,6 @@ export { handler as checkDownMigrations } from './commands/checkDownMigrations.j
 export { handler as runCronJobs } from './commands/runCronJobs.js';
 export { handler as scaleContainers } from './commands/scaleContainers.js';
 export { handler as fuzzMigrations } from './commands/fuzzMigrations.js';
-export { handler as synchronizeTrainings } from './commands/synchronizeTrainings.js';
 export { handler as chargeOrganizationSubscriptions } from './commands/chargeOrganizationSubscriptions.js';
 export { handler as cleanupExpiredDomains } from './commands/cleanupExpiredDomains.js';
 export { handler as reencryptSecrets } from './commands/reencryptSecrets.js';
