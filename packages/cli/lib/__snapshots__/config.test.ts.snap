@@ -2188,7 +2188,14 @@ exports[`config > getProjectImplementations > official blocks > footer 1`] = `
     },
   },
   "events": undefined,
-  "messages": undefined,
+  "messages": {
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "enlargeImage": {
+      "description": "The accessible label for enlarging an image without alt text.",
+    },
+  },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
@@ -2307,6 +2314,13 @@ This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons
         "properties": {
           "alt": {
             "description": "The alt text of the image.",
+            "format": "remapper",
+          },
+          "enlarge": {
+            "default": true,
+            "description": "Whether clicking the image opens an enlargement.
+
+App assets can also be downloaded from the enlargement.",
             "format": "remapper",
           },
           "file": {

@@ -1,22 +1,25 @@
 parameters:
-  items:
+  columns:
     - type: links
-      links:
-        - label: Link A
-        - label: Link B
-        - label: Link C
-        - label: Link D
+      title: Resources
+      items:
+        - label: Appsemble
+          onClick: openAppsemble
+        - label: Documentation
+          onClick: openDocumentation
     - type: image
       image:
         file: attachment
         alt: Attachment
     - type: links
-      links:
-        - label: Link A
-        - label: Link B
-        - label: Link C
-        - label: Link D
+      title: Information
+      items:
+        - label: Built with Appsemble
+  copyright: Copyright 2026
 actions:
-  onClick:
+  openAppsemble:
     type: link
-    to: { app: url }
+    to: https://appsemble.com
+  openDocumentation:
+    type: link
+    to: https://appsemble.app/docs

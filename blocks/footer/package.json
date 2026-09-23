@@ -2,7 +2,7 @@
   "name": "@appsemble/footer",
   "version": "0.40.2",
   "private": true,
-  "description": "Render data as multiple cards.",
+  "description": "Render a configurable footer with links and images.",
   "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
   "repository": {
@@ -23,5 +23,11 @@
     "@appsemble/preact-components": "0.40.2",
     "classnames": "^2.0.0",
     "preact": "^10.0.0"
+  },
+  "devDependencies": {
+    "@appsemble/block-interaction-tests": "0.40.2",
+    "@testing-library/preact": "3.2.4",
+    "@testing-library/user-event": "14.6.7",
+    "vitest": "4.1.11"
   }
 }

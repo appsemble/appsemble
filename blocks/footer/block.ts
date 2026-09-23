@@ -47,6 +47,15 @@ export interface Image {
    *
    */
   hide?: Remapper;
+
+  /**
+   * Whether clicking the image opens an enlargement.
+   *
+   * App assets can also be downloaded from the enlargement.
+   *
+   * @default true
+   */
+  enlarge?: Remapper;
 }
 
 export interface FooterColumnWithImage {
@@ -85,6 +94,18 @@ declare module '@appsemble/sdk' {
      * Custom action mapping.
      */
     [key: string]: never;
+  }
+
+  interface Messages {
+    /**
+     * The accessible label for closing an enlarged image.
+     */
+    closeImage: never;
+
+    /**
+     * The accessible label for enlarging an image without alt text.
+     */
+    enlargeImage: never;
   }
 
   interface Parameters {

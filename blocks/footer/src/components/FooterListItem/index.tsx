@@ -1,9 +1,9 @@
 import { useBlock } from '@appsemble/preact';
-import { Button, Icon } from '@appsemble/preact-components';
+import { Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
-import { useMemo } from 'preact/hooks';
 
+import styles from './index.module.css';
 import { type FooterItem } from '../../../block.js';
 
 export function FooterListItem({ item }: { item: FooterItem }): VNode | null {
@@ -13,30 +13,50 @@ export function FooterListItem({ item }: { item: FooterItem }): VNode | null {
     parameters: { linkColor, textColor },
     utils: { remap },
   } = useBlock();
-  const itemHref = useMemo(() => {
-    if (!item.onClick) {
-      return null;
-    }
-    const onClick = actions[item.onClick];
-    if (onClick.type === 'link') {
-      return onClick.href(item);
-    }
-  }, [actions.onClick, item]);
-  const label = remap(item.label, data) as string;
   const hide = remap(item.hide, data);
 
-  return hide ? null : (
+  if (hide) {
+    return null;
+  }
+
+  const label = remap(item.label, data) as string;
+  const action = item.onClick ? actions[item.onClick] : undefined;
+  const content = (
+    <>
+      {item.icon ? (
+        <span aria-hidden="true" className="mr-1">
+          <Icon icon={item.icon} />
+        </span>
+      ) : null}
+      {label}
+    </>
+  );
+
+  if (!action) {
+    return (
+      <li>
+        <div className={classNames(textColor && `has-text-${textColor}`)}>{content}</div>
+      </li>
+    );
+  }
+
+  const className = classNames(linkColor && `has-text-${linkColor}`);
+  const onClick = async (event: Event): Promise<void> => {
+    // Delegate anchor behavior to the link action.
+    event.preventDefault();
+    await action(data);
+  };
+
+  return (
     <li>
-      {item.icon ? <Icon icon={item.icon} /> : null}
-      {item.onClick ? null : (
-        <div className={classNames(textColor && `has-text-${textColor}`)}>{label}</div>
-      )}
-      {itemHref ? (
-        <a className={classNames(linkColor && `has-text-${linkColor}`)} href={itemHref}>
-          {label}
+      {action.type === 'link' ? (
+        <a className={className} href={action.href(data)} onClick={onClick}>
+          {content}
         </a>
       ) : (
-        <Button onClick={actions[item.onClick!]}>{label}</Button>
+        <button className={classNames(styles.link, className)} onClick={onClick} type="button">
+          {content}
+        </button>
       )}
     </li>
   );
