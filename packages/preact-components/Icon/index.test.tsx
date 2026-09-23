@@ -45,7 +45,7 @@ it('should render invalid references as empty boxes', () => {
 it('should keep an empty box when the image fails and reset when the URL changes', () => {
   const { container, rerender } = render(<Icon icon="icon:logo" />, { wrapper: Provider });
   fireEvent.error(container.querySelector('img')!);
-  expect(container.innerHTML).toBe('<span class="icon"></span>');
+  expect(container.innerHTML).toBe('<span class="icon asset"></span>');
 
   rerender(<Icon icon="icon:other" />);
   expect(container.querySelector('img')?.getAttribute('src')).toBe(

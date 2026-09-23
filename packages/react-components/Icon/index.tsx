@@ -35,6 +35,7 @@ export function Icon({
   return (
     <span
       className={classNames('icon', size && `is-${size}`, className, {
+        [styles.asset]: resolved.type === 'asset',
         [`has-text-${color}`]: color && resolved.type !== 'asset',
       })}
       {...props}

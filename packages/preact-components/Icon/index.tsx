@@ -46,7 +46,11 @@ export function Icon({
   const resolved = resolveIcon(icon);
 
   return (
-    <span className={classNames('icon', size && `is-${size}`, className)}>
+    <span
+      className={classNames('icon', size && `is-${size}`, className, {
+        [styles.asset]: resolved.type === 'asset',
+      })}
+    >
       {resolved.type === 'fontawesome' ? (
         <i className={classNames(fa(resolved.name), iconSize && `fa-${iconSize}`)} />
       ) : null}
