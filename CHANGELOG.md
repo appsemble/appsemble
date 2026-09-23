@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.2](https://gitlab.com/appsemble/appsemble/-/releases/0.40.2)] - 2026-09-23
+
+### Changed
+
+- Server: Install PostgreSQL 18 client tools and support PostgreSQL 17 and 18.
+
 ## \[[0.40.1](https://gitlab.com/appsemble/appsemble/-/releases/0.40.1)] - 2026-09-22
 
 ## \[[0.40.0](https://gitlab.com/appsemble/appsemble/-/releases/0.40.0)] - 2026-09-22

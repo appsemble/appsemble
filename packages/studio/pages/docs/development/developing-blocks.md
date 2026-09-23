@@ -340,7 +340,7 @@ block, for example a chevron to collapse a section, can keep using `IconName` an
 
 To get a better idea of how blocks work, or for inspiration of what blocks can be created, please
 have a look at the
-[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.40.1/blocks).
+[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.40.2/blocks).
 For example, if you want to create a block to display a set of dynamically loaded data, have a look
 at the `table` or `tiles` block. If you’re interested in displaying a single entity, have a look at
 the `detail-viewer` or `stats` block. If you would like to create a block to process data based on
