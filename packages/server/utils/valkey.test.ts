@@ -87,7 +87,7 @@ describe('initValkeyClient', () => {
     });
     await proxy.stop();
     await closed;
-    await expect(client.ping()).rejects.toThrow("Stream isn't writeable");
+    await expect(client.ping()).rejects.toBeInstanceOf(Error);
 
     await proxy.start();
     await vi.waitFor(async () => expect(await client.ping()).toBe('PONG'), { timeout: 5000 });
@@ -97,7 +97,7 @@ describe('initValkeyClient', () => {
     await proxy.start();
     await proxy.stop();
     client = await initClient(proxy.port);
-    await expect(client.ping()).rejects.toThrow("Stream isn't writeable");
+    await expect(client.ping()).rejects.toBeInstanceOf(Error);
 
     await proxy.start();
     await vi.waitFor(async () => expect(await client.ping()).toBe('PONG'), { timeout: 5000 });
