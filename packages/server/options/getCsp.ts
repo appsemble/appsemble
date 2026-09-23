@@ -1,8 +1,14 @@
-import { baseTheme } from '@appsemble/lang-sdk';
+import { baseTheme, iterApp, type Theme } from '@appsemble/lang-sdk';
 import { type ContentSecurityPolicy, type GetCspParams } from '@appsemble/node-utils';
 
 import { getBlockAssetPublicOrigin } from '../utils/blockAssets.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
+
+function usesGoogleFont(theme: Partial<Theme> | undefined): boolean {
+  return [theme?.font, theme?.displayFont].some(
+    (font) => font != null && (font.source ?? baseTheme.font.source) === 'google',
+  );
+}
 
 function getCustomDirectiveSources(app: GetCspParams['app'], directive: string): string[] {
   return app.definition.contentSecurityPolicy?.[directive] ?? [];
@@ -22,10 +28,14 @@ export function getCsp({
   );
 
   const hasStrictContentSecurityPolicy = Boolean(app.definition.contentSecurityPolicy);
-  const displayFont = app.definition.theme?.displayFont;
+  // Page and block themes are merged over the app theme, so each of them can load a google font.
   const usesGoogleFonts =
-    (app.definition.theme?.font?.source ?? baseTheme.font.source) === 'google' ||
-    (displayFont != null && (displayFont.source ?? baseTheme.font.source) === 'google');
+    app.definition.theme?.font == null ||
+    usesGoogleFont(app.definition.theme) ||
+    iterApp(app.definition, {
+      onPage: (page) => usesGoogleFont(page.theme),
+      onBlock: (block) => usesGoogleFont(block.theme),
+    });
   const objectSrc = getCustomDirectiveSources(app, 'object-src');
   const requiresDynamicScripts = Boolean(app.msClarityID) || Boolean(app.metaPixelID);
   const blockAssetsOrigin = getBlockAssetPublicOrigin() ?? false;
