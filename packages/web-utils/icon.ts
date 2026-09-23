@@ -15,6 +15,19 @@ const sizeModifierMap: Partial<Record<BulmaSize, IconSizeModifier>> = {
 };
 
 /**
+ * The vertical alignment of a custom icon wrapper per Bulma size.
+ *
+ * An image has no text baseline, so an inline wrapper would stand on the text baseline with its
+ * bottom edge. A Font Awesome glyph is centered in its rem-sized wrapper and its baseline lies
+ * 0.375× the glyph size below its center, so the wrapper is lowered by half its height minus that.
+ */
+const assetVerticalAlignMap: Partial<Record<BulmaSize, string>> = {
+  small: 'calc(0.375em - 0.5rem)',
+  medium: 'calc(0.469em - 1rem)',
+  large: 'calc(0.75em - 1.5rem)',
+};
+
+/**
  * Get the icon size modifier to use, deriving it from the wrapper size if it isn’t explicit.
  *
  * @param size The Bulma size of the wrapper.
@@ -106,6 +119,8 @@ export function createIconElement(
     glyph.className = iconSize ? `${fa(icon.name)} fa-${iconSize}` : fa(icon.name);
     wrapper.append(glyph);
   } else if (icon.type === 'asset') {
+    wrapper.style.verticalAlign =
+      (size && assetVerticalAlignMap[size]) ?? 'calc(0.375em - 0.75rem)';
     const img = document.createElement('img');
     img.alt = '';
     applyIconImageStyle(img);

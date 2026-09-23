@@ -40,12 +40,12 @@ it('should render custom icons as images inside a provider', () => {
   expect(img.getAttribute('alt')).toBe('');
   expect(img.getAttribute('src')).toBe('https://example.com/api/apps/42/assets/company-logo');
   expect(img.className).toBe('image');
-  expect(img.parentElement?.className).toBe('icon is-medium');
+  expect(img.parentElement?.className).toBe('icon is-medium asset');
 });
 
 it('should not apply theme colors to custom icons', () => {
   const { container } = render(<Icon color="primary" icon="icon:logo" />, { wrapper: Provider });
-  expect(container.firstElementChild?.className).toBe('icon');
+  expect(container.firstElementChild?.className).toBe('icon asset');
 });
 
 it('should render unknown registry keys as empty boxes', () => {
@@ -56,7 +56,7 @@ it('should render unknown registry keys as empty boxes', () => {
 it('should keep an empty box when the image fails and reset when the URL changes', () => {
   const { container, rerender } = render(<Icon icon="icon:logo" />, { wrapper: Provider });
   fireEvent.error(container.querySelector('img')!);
-  expect(container.innerHTML).toBe('<span class="icon"></span>');
+  expect(container.innerHTML).toBe('<span class="icon asset"></span>');
 
   rerender(<Icon icon="icon:logo" />);
   expect(container.querySelector('img')).toBeNull();
