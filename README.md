@@ -87,9 +87,11 @@ Compose configuration to spin up these pre-configured services with ease.
 docker compose up -d
 ```
 
-The project can be served using the following command.
+Initialize the database and training catalog, then start the development server.
 
 ```sh
+npm run appsemble -- migrate next
+npm run appsemble -- synchronize-trainings
 npm start
 ```
 
