@@ -4,6 +4,7 @@ import { type ModelStatic, type Sequelize, type Transaction } from 'sequelize';
 import { type Promisable } from 'type-fest';
 
 import { type Patch } from './yaml.js';
+import { withDatabaseMaintenanceLock } from './sqlUtils.js';
 import { type Meta as MetaType } from '../models/index.js';
 
 export interface Migration {
@@ -54,7 +55,7 @@ and include the stacktrace.`,
   }
 }
 
-export async function migrate(
+async function migrateUnlocked(
   db: Sequelize,
   toVersion: string,
   migrations: Migration[],
@@ -113,6 +114,10 @@ export async function migrate(
       logger.info(`Downgrade from ${migration.key} successful for database ${dbName}.`);
     }
   }
+}
+
+export function migrate(db: Sequelize, toVersion: string, migrations: Migration[]): Promise<void> {
+  return withDatabaseMaintenanceLock(db, () => migrateUnlocked(db, toVersion, migrations));
 }
 
 export function logDBDebugInstructions(db: Sequelize): void {
