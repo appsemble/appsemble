@@ -6,6 +6,7 @@ import {
   type AppDefinition,
   type BasicPageDefinition,
   type BlockManifest,
+  type BuiltinPagesLayoutDefinition,
   type CustomAppGuestPermission,
   type CustomAppPermission,
   type FlowPageDefinition,
@@ -5063,49 +5064,6 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([]);
   });
 
-  it('should reject a block that claims the breadcrumbs grid area on a page without a grid', async () => {
-    const app = createTestApp();
-    app.layout = { breadcrumbs: true };
-    Object.assign(app.pages[0], {
-      blocks: [{ type: 'test', version: '0.0.0', gridArea: 'breadcrumbs' }],
-    });
-
-    const result = await validateAppDefinition(app, () => []);
-
-    expect(result.errors).toContainEqual(
-      new ValidationError('is reserved for the breadcrumb trail', 'breadcrumbs', undefined, [
-        'pages',
-        0,
-        'blocks',
-        0,
-        'gridArea',
-      ]),
-    );
-  });
-
-  it('should reject a block that claims the breadcrumbs grid area', async () => {
-    const app = createTestApp();
-    app.layout = { breadcrumbs: true };
-    Object.assign(app.pages[0], {
-      layout: {
-        mobile: { layout: { columns: 1, template: ['breadcrumbs', 'main'] } },
-      } as PageLayoutDefinition,
-      blocks: [{ type: 'test', version: '0.0.0', gridArea: 'breadcrumbs' }],
-    });
-
-    const result = await validateAppDefinition(app, () => []);
-
-    expect(result.errors).toContainEqual(
-      new ValidationError('is reserved for the breadcrumb trail', 'breadcrumbs', undefined, [
-        'pages',
-        0,
-        'blocks',
-        0,
-        'gridArea',
-      ]),
-    );
-  });
-
   describe('icons', () => {
     const iconBlock: BlockManifest = {
       name: '@appsemble/test',
@@ -5335,6 +5293,276 @@ describe('validateAppDefinition', () => {
           ['pages', 2, 'tabs', 0, 'blocks', 0, 'parameters', 'icon'],
         ),
       ]);
+    });
+  });
+
+  it.each(['resend-banner', 'bottom-navigation'])(
+    'should accept the %s grid area on a page layout without any app setting',
+    async (area) => {
+      const app = createTestApp();
+      Object.assign(app.pages[0], {
+        layout: {
+          mobile: { layout: { columns: 1, template: [area, 'main'] } },
+        } as PageLayoutDefinition,
+      });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.valid).toBe(true);
+      expect(result.errors).toStrictEqual([]);
+    },
+  );
+
+  it.each(['resend-banner', 'bottom-navigation'])(
+    'should reject the %s grid area a smaller breakpoint does not render',
+    async (area) => {
+      const app = createTestApp();
+      const layout = {
+        mobile: { layout: { columns: 1, template: ['main'] } },
+        desktop: { layout: { columns: 2, template: [`${area} ${area}`, 'main aside'] } },
+      } as PageLayoutDefinition;
+      Object.assign(app.pages[0], { layout });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toContainEqual(
+        new ValidationError(
+          `the '${area}' grid area is missing from the grid rendered on mobile, tablet`,
+          layout,
+          undefined,
+          ['pages', 0],
+        ),
+      );
+    },
+  );
+
+  it.each(['resend-banner', 'bottom-navigation'])(
+    'should reject the %s grid area that only some tabs define',
+    async (area) => {
+      const app = createTestApp();
+      const tabsPage = app.pages[2] as TabsPageDefinition;
+      tabsPage.tabs!.push({ name: 'Tab B', blocks: [] });
+      Object.assign(tabsPage.tabs![0], {
+        layout: {
+          mobile: { layout: { columns: 1, template: [area, 'main'] } },
+        } as PageLayoutDefinition,
+      });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toContainEqual(
+        new ValidationError(
+          `the '${area}' grid area must be defined by every sub page of this page or by none`,
+          tabsPage.tabs![1],
+          undefined,
+          ['pages', 2, 'tabs', 1],
+        ),
+      );
+    },
+  );
+
+  describe('built-in page grid layouts', () => {
+    function createAppWithBuiltinPages(builtinPages: BuiltinPagesLayoutDefinition): AppDefinition {
+      const app = createTestApp();
+      app.layout = { builtinPages };
+      return app;
+    }
+
+    async function builtinPageErrors(
+      builtinPages: BuiltinPagesLayoutDefinition,
+    ): Promise<ValidationError[]> {
+      const result = await validateAppDefinition(createAppWithBuiltinPages(builtinPages), () => []);
+      return result.errors.filter((error) => error.path.includes('builtinPages'));
+    }
+
+    it('should accept a layout that only defines the desktop grid', async () => {
+      expect(
+        await builtinPageErrors({
+          desktop: {
+            layout: { columns: 4, template: ['. title title .', '. content content .'] },
+          },
+        } as BuiltinPagesLayoutDefinition),
+      ).toStrictEqual([]);
+    });
+
+    it('should accept a content only layout', async () => {
+      expect(
+        await builtinPageErrors({
+          mobile: {
+            layout: { columns: 1, template: ['content'] },
+            spacing: { unit: '1rem', gap: 1, padding: 1 },
+          },
+          desktop: { layout: { columns: 3, template: ['. content .'] } },
+        } as BuiltinPagesLayoutDefinition),
+      ).toStrictEqual([]);
+    });
+
+    it('should accept a device that only overrides the spacing', async () => {
+      expect(
+        await builtinPageErrors({
+          mobile: { layout: { columns: 1, template: ['title', 'content'] } },
+          desktop: { spacing: { unit: '2rem', gap: 1, padding: 2 } },
+        } as BuiltinPagesLayoutDefinition),
+      ).toStrictEqual([]);
+    });
+
+    it('should accept a device layout that only defines the columns', async () => {
+      expect(
+        await builtinPageErrors({
+          mobile: { layout: { columns: 1 } },
+        } as BuiltinPagesLayoutDefinition),
+      ).toStrictEqual([]);
+    });
+
+    it('should reject an unknown grid area', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 2, template: ['title actions', 'content content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          "unknown built-in page grid area 'actions'",
+          'title actions',
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template', 0],
+        ),
+      );
+    });
+
+    it('should reject a template row that does not match the column count', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 2, template: ['title', 'content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          'template needs to be the same length as number of columns',
+          builtinPages.mobile!.layout!.template,
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template'],
+        ),
+      );
+    });
+
+    it('should reject an area that is not rectangular', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 2, template: ['title content', 'content content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          "grid area 'content' does not form a single contiguous rectangle",
+          builtinPages.mobile!.layout!.template,
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template'],
+        ),
+      );
+    });
+
+    it('should reject a row that places the content before the title', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 2, template: ['content title'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          'built-in page grid areas must follow the accessible order: title, content',
+          builtinPages.mobile!.layout!.template,
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template'],
+        ),
+      );
+    });
+
+    it('should reject a title row below the content', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 1, template: ['content', 'title'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          'built-in page grid areas must follow the accessible order: title, content',
+          builtinPages.mobile!.layout!.template,
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template'],
+        ),
+      );
+    });
+
+    it('should reject a breakpoint that renders no content', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 1, template: ['content'] } },
+        tablet: { layout: { columns: 1, template: ['title'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          "the 'content' grid area is missing from the grid rendered on tablet, desktop",
+          builtinPages,
+          undefined,
+          ['layout', 'builtinPages'],
+        ),
+      );
+    });
+
+    it('should accept a layout that places the banner and the bottom navigation', async () => {
+      expect(
+        await builtinPageErrors({
+          mobile: {
+            layout: {
+              columns: 1,
+              template: ['resend-banner', 'title', 'content', 'bottom-navigation'],
+            },
+          },
+        } as BuiltinPagesLayoutDefinition),
+      ).toStrictEqual([]);
+    });
+
+    it('should reject a bottom navigation row above the content', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 1, template: ['bottom-navigation', 'content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          'built-in page grid areas must follow the accessible order: content, bottom-navigation',
+          builtinPages.mobile!.layout!.template,
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template'],
+        ),
+      );
+    });
+
+    it('should reject a banner that is missing from the smaller breakpoints', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 1, template: ['content'] } },
+        desktop: { layout: { columns: 1, template: ['resend-banner', 'content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          "the 'resend-banner' grid area is missing from the grid rendered on mobile, tablet",
+          builtinPages,
+          undefined,
+          ['layout', 'builtinPages'],
+        ),
+      );
+    });
+
+    it('should reject a title that is missing from the smaller breakpoints', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 1, template: ['content'] } },
+        desktop: { layout: { columns: 1, template: ['title', 'content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          "the 'title' grid area is missing from the grid rendered on mobile, tablet",
+          builtinPages,
+          undefined,
+          ['layout', 'builtinPages'],
+        ),
+      );
     });
   });
 });

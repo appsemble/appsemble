@@ -2,6 +2,11 @@
   height: 100%;
 }
 
+/* Without a grid the content has to claim the height of the root to center itself in. */
+.content {
+  height: 100%;
+}
+
 .logo {
   height: 33vh;
 }

@@ -4,3 +4,9 @@
   overflow-x: auto;
   width: 100%;
 }
+
+/* In a page grid the navigation takes its area instead of overlaying the viewport. */
+nav.inGrid {
+  grid-area: bottom-navigation;
+  position: static;
+}

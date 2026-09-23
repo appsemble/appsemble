@@ -1,11 +1,13 @@
 import { EventEmitter } from 'events';
 
 import {
+  bottomNavigationGridArea,
+  breadcrumbsGridArea,
   findPageById,
   getPageDisplayName,
   getPagePathSegment,
   normalize,
-  pageHasBreadcrumbsGridArea,
+  pageHasGridArea,
   remap,
   type PageDefinition,
   type Remapper,
@@ -20,7 +22,15 @@ import {
 } from '@appsemble/react-components';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import classNames from 'classnames';
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
   Navigate,
@@ -46,6 +56,7 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
+import { BuiltinPage } from '../BuiltinPage/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { FlowPage } from '../FlowPage/index.js';
 import { usePage } from '../MenuProvider/index.js';
@@ -75,7 +86,7 @@ export function Page(): ReactNode {
   const routeParams = useParams();
   const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
-  const { page: navPage, setPage } = usePage();
+  const { hasBottomNavigation, setPage } = usePage();
   const pushNotifications = useServiceWorkerRegistration();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const showMessage = useMessages();
@@ -92,27 +103,25 @@ export function Page(): ReactNode {
   const tabRef = useRef<unknown>();
   const url = `/${lang}`;
 
-  const defaultErrorPage = useCallback(
+  const permissionError = useCallback(
     (): ReactNode => (
-      <Content padding>
-        <Message color="danger">
-          <p>
-            <FormattedMessage
-              {...messages.permissionError}
-              values={{
-                link: (text) => (
-                  <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
-                    {text}
-                  </a>
-                ),
-              }}
-            />
-          </p>
-          <Button className="mt-4" color="danger">
-            <FormattedMessage {...messages.logout} />
-          </Button>
-        </Message>
-      </Content>
+      <Message color="danger">
+        <p>
+          <FormattedMessage
+            {...messages.permissionError}
+            values={{
+              link: (text) => (
+                <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
+                  {text}
+                </a>
+              ),
+            }}
+          />
+        </p>
+        <Button className="mt-4" color="danger">
+          <FormattedMessage {...messages.logout} />
+        </Button>
+      </Message>
     ),
     [],
   );
@@ -336,15 +345,15 @@ export function Page(): ReactNode {
     [appDefinition, appMemberRoles, appMemberSelectedGroup],
   );
 
-  useEffect(() => {
-    if (
-      pageDefinition &&
-      checkPagePermissionsCallback(pageDefinition) &&
-      navPage !== pageDefinition
-    ) {
+  // The menu page drives the navigation of the app, so it only applies while this page is rendered.
+  // The cleanup and the next set land in the same commit, so switching pages never renders a frame
+  // without one.
+  useLayoutEffect(() => {
+    if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
       setPage(pageDefinition);
+      return () => setPage(undefined);
     }
-  }, [checkPagePermissionsCallback, navPage, pageDefinition, setPage]);
+  }, [checkPagePermissionsCallback, pageDefinition, setPage]);
 
   useEffect(() => {
     if (navigator.credentials) {
@@ -390,7 +399,9 @@ export function Page(): ReactNode {
     return (
       <main
         className={classNames(styles.root, {
-          [styles.hasBottomNavigation]: appDefinition.layout?.navigation === 'bottom',
+          // A grid that places the bottom navigation flows around it, so it needs no clearance.
+          [styles.hasBottomNavigation]:
+            hasBottomNavigation && !pageHasGridArea(pageDefinition, bottomNavigationGridArea),
         })}
         data-path={prefix}
         data-path-index={prefixIndex}
@@ -398,7 +409,8 @@ export function Page(): ReactNode {
         <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
         {/* A grid layout that names a breadcrumbs area renders the trail there, and a tabs page
             renders its own trail so it can name the active tab as the last crumb. */}
-        {pageDefinition.type === 'tabs' || pageHasBreadcrumbsGridArea(pageDefinition) ? null : (
+        {pageDefinition.type === 'tabs' ||
+        pageHasGridArea(pageDefinition, breadcrumbsGridArea) ? null : (
           <Breadcrumbs data={data} pageDefinition={pageDefinition} remap={remapWithContext} />
         )}
         {pageDefinition.type === 'tabs' ? (
@@ -454,7 +466,7 @@ export function Page(): ReactNode {
                       }}
                     />
                   ) : (
-                    defaultErrorPage()
+                    <Content padding>{permissionError()}</Content>
                   )
                 ) : (
                   <BlockList
@@ -520,5 +532,9 @@ export function Page(): ReactNode {
   }
 
   // If the user isn’t allowed to view any pages, show an error message.
-  return defaultErrorPage();
+  return (
+    <BuiltinPage narrow page="page-error" state="permission" title={messages.permissionErrorTitle}>
+      {permissionError()}
+    </BuiltinPage>
+  );
 }

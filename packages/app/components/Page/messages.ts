@@ -1,6 +1,10 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
+  permissionErrorTitle: {
+    id: 'app.zdfyeX',
+    defaultMessage: 'Permission error',
+  },
   permissionError: {
     id: 'app.y/1N+5',
     defaultMessage:

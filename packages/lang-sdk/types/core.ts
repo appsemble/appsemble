@@ -11,6 +11,7 @@ import { type AppRole, type ViewRole } from './roles.js';
 import { type Security } from './security.js';
 import { type Theme } from './theme.js';
 import {
+  type BuiltinPagesLayoutDefinition,
   type GridBreakpointsDefinition,
   type NavbarLayoutDefinition,
   type PageLayoutDefinition,
@@ -178,6 +179,19 @@ export interface AppDefinition {
      * Each rendered area must be included and their first visual occurrence must follow that order.
      */
     navbar?: NavbarLayoutDefinition;
+
+    /**
+     * Responsive grid layout for the built-in pages of the app.
+     *
+     * Applies unchanged to every built-in page and every state of it. Without this, no built-in
+     * page becomes a grid or gains a heading.
+     *
+     * The available template areas are `resend-banner`, `title`, `content`, and
+     * `bottom-navigation`. Every rendered breakpoint places `content`, and each of the others is
+     * either placed by every breakpoint or by none. Their first visual occurrence must follow that
+     * order.
+     */
+    builtinPages?: BuiltinPagesLayoutDefinition;
 
     /**
      * Minimum viewport widths in pixels at which the tablet and desktop grid layouts apply.

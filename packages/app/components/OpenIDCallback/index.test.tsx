@@ -18,6 +18,10 @@ vi.mock('@appsemble/web-utils', async (importOriginal) => {
   return { ...actual, clearOAuth2State, loadOAuth2State };
 });
 
+// The app bar needs the whole app runtime around it, which has nothing to do with the callback.
+// eslint-disable-next-line @typescript-eslint/naming-convention
+vi.mock('../TitleBar/index.js', () => ({ AppBar: () => null }));
+
 const authorizationCodeLogin = vi.fn();
 
 function mockAppMember(overrides: Record<string, unknown> = {}): void {

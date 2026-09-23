@@ -55,6 +55,26 @@ describe('stackedHeader flag', () => {
   });
 });
 
+describe('grid layout', () => {
+  // A breakpoint inherits the fields it leaves out from the smaller breakpoints.
+  it.each([{ columns: 4 }, { template: ['main main'] }])(
+    'should accept a breakpoint that only defines %o',
+    (layout) => {
+      const app = {
+        ...baseApp,
+        pages: [
+          {
+            ...baseApp.pages[0],
+            layout: { mobile: { layout: { columns: 2, template: ['main'] } }, desktop: { layout } },
+          },
+        ],
+      };
+
+      expect(layoutErrors(app)).toHaveLength(0);
+    },
+  );
+});
+
 describe('grid spacing unit', () => {
   function createApp(unit: string): unknown {
     return {
@@ -83,6 +103,40 @@ describe('grid spacing unit', () => {
       expect(layoutErrors(createApp(unit)).length).toBeGreaterThan(0);
     },
   );
+});
+
+describe('builtinPages layout', () => {
+  it('should accept a responsive grid layout', () => {
+    const app = {
+      ...baseApp,
+      layout: {
+        builtinPages: {
+          mobile: {
+            layout: { columns: 1, template: ['title', 'content'] },
+            spacing: { unit: '1rem', gap: 1, padding: 1 },
+          },
+          desktop: { layout: { columns: 4, template: ['. title title .', '. content content .'] } },
+        },
+      },
+    };
+
+    expect(layoutErrors(app)).toHaveLength(0);
+  });
+
+  it('should reject an empty layout', () => {
+    expect(layoutErrors({ ...baseApp, layout: { builtinPages: {} } }).length).toBeGreaterThan(0);
+  });
+
+  it('should reject an unknown device', () => {
+    const app = {
+      ...baseApp,
+      layout: {
+        builtinPages: { watch: { layout: { columns: 1, template: ['content'] } } },
+      },
+    };
+
+    expect(layoutErrors(app).length).toBeGreaterThan(0);
+  });
 });
 
 describe('loop page boundaries', () => {
