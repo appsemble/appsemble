@@ -26,7 +26,8 @@ kubectl create secret generic appsemble-postgresql-app \
   --from-literal 'password=my-password'
 ```
 
-Appsemble requires Valkey for runtime caching and rate limiting. Create a Valkey password secret:
+The chart uses Valkey for runtime caching and rate limiting. For the bundled Valkey, create a
+password secret:
 
 ```sh
 kubectl create secret generic valkey \
@@ -246,6 +247,44 @@ The server serves three operational endpoints on every hostname, following the
 
 Valkey is a soft dependency: the server keeps serving apps without it, so it is not part of
 readiness. `/api/health` is a deprecated alias of `/health/ready`.
+
+## Valkey
+
+The chart deploys one Valkey pod by default. Valkey holds only the app-serving cache (with a default
+`appServingCacheTtl` of 300 seconds) and the sliding-window counters for e-mail registration rate
+limits. It holds no sessions or queues. If Valkey restarts, the cache and counters reset; the server
+keeps serving requests and reconnects when Valkey returns. Cache operations fail fast during the
+outage, and registration requests proceed without the rate limit.
+
+The bundled Valkey has no persistent volume because its data is disposable. It has no replicas: the
+dependency chart does not promote a replica when the primary fails, so replicas would not keep the
+server's single-writer endpoint available. The bundled setup uses the `valkey` secret created above.
+`valkey.auth.usersExistingSecret` names that secret, and `valkey.auth.aclUsers.default.passwordKey`
+selects its `password` key.
+
+To use a platform-managed Valkey or Redis service, create a password secret and set
+`valkey.enabled=false` with `externalValkey` connection settings:
+
+```sh
+kubectl create secret generic external-valkey \
+  --from-literal 'password=my-password'
+```
+
+```yaml
+valkey:
+  enabled: false
+externalValkey:
+  host: valkey.example.com
+  port: 6379
+  username: default
+  tls: true
+  existingSecret: external-valkey
+  passwordKey: password
+```
+
+The chart reads `externalValkey.passwordKey` from `externalValkey.existingSecret` in the release
+namespace. Set `host`, `port`, `username` and `tls` to match the external service. The chart does
+not deploy a bundled Valkey pod when `valkey.enabled=false`.
 
 ## Object storage
 
@@ -564,9 +603,6 @@ For production environments with significant asset storage in the bundled object
 - keep `backup-production-data` enabled for logical database backups.
 - enable `assetsBackups.enabled=true` for app-asset backups (incremental daily + monthly full
   snapshots).
-
-Valkey persistence is disabled by default because Appsemble uses it for disposable runtime data.
-Only enable Valkey persistence when it is used for durable queues or state.
 
 Example:
 
