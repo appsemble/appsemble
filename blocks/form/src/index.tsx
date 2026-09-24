@@ -627,8 +627,9 @@ bootstrap(
               styles['error-link-container'],
               'is-flex is-flex-direction-column is-justify-content-flex-start',
             )}
+            role="alert"
           >
-            <span role="alert">{utils.formatMessage('fixErrors')}</span>
+            <span>{utils.formatMessage('fixErrors')}</span>
             {errorLink}
           </div>
         ) : null}

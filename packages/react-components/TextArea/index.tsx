@@ -1,5 +1,13 @@
 import classNames from 'classnames';
-import { type ChangeEvent, type ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
+import {
+  type ChangeEvent,
+  type ComponentPropsWithoutRef,
+  forwardRef,
+  useCallback,
+  useContext,
+} from 'react';
+
+import { FormComponentContext } from '../index.js';
 
 export interface TextAreaProps extends Omit<
   ComponentPropsWithoutRef<'textarea'>,
@@ -29,6 +37,7 @@ export interface TextAreaProps extends Omit<
  */
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ error, loading, name, onChange, readOnly, id = name, ...props }, ref) => {
+    const aria = useContext(FormComponentContext);
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLTextAreaElement>) => {
         onChange?.(event, event.currentTarget.value);
@@ -38,6 +47,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
     return (
       <textarea
+        {...aria}
         {...props}
         className={classNames('textarea', {
           'has-background-white-bis': readOnly,

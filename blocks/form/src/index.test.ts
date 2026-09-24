@@ -435,3 +435,46 @@ it('should show the errors of untouched fields after submitting', async () => {
   });
   expect(container.textContent).not.toContain('Please fix the following errors:');
 });
+
+it('should name the invalid fields in the alert after a failed submit', async () => {
+  const container = document.createElement('div');
+  const params = {
+    ...getDefaultBootstrapParams(),
+    actions: {
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+      onSubmit: vi.fn(),
+    },
+    events: {
+      emit: { change: vi.fn() },
+      on: {
+        data: vi.fn(() => false),
+        fields: vi.fn(() => false),
+      },
+      off: { fields: vi.fn() },
+    },
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          label: 'Name',
+          name: 'name',
+          requirements: [{ required: true, errorMessage: 'Name is required' }],
+          type: 'string',
+        },
+      ],
+      skipInitialLoad: true,
+    },
+  } as unknown as BootstrapParams;
+
+  await mount(params);
+
+  const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+  await waitFor(() => expect(submit).toHaveProperty('disabled', false));
+  submit.closest('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+  await waitFor(() =>
+    expect(
+      Array.from(container.querySelectorAll('[role="alert"]'), (alert) => alert.textContent),
+    ).toContainEqual(expect.stringContaining('Name: Name is required')),
+  );
+});

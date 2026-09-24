@@ -1,5 +1,12 @@
 import { useBlock } from '@appsemble/preact';
-import { Button, Form, FormComponent, Icon, useToggle } from '@appsemble/preact-components';
+import {
+  Button,
+  Form,
+  FormComponent,
+  FormComponentContext,
+  Icon,
+  useToggle,
+} from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
@@ -159,53 +166,61 @@ export function ListInput({
       required={required}
       tag={tag}
     >
-      <Button
-        className={classNames(
-          'is-fullwidth',
-          styles.button,
-          icon ? 'is-justify-content-center' : String(styles.noIcon),
-          {
-            'is-loading': loading,
-          },
+      <FormComponentContext.Consumer>
+        {(aria) => (
+          <>
+            <Button
+              aria-describedby={aria['aria-describedby']}
+              className={classNames(
+                'is-fullwidth',
+                styles.button,
+                icon ? 'is-justify-content-center' : String(styles.noIcon),
+                {
+                  'is-loading': loading,
+                },
+              )}
+              data-field={field.name}
+              disabled={disabled || readOnly || loading || !options.length}
+              errorLinkRef={errorLinkRef as MutableRef<HTMLDivElement>}
+              icon="chevron-down"
+              iconRight={Boolean(icon)}
+              id={field.name}
+              onClick={showDropDown}
+            >
+              {/* Render placeholder text if present, otherwise render hardcoded text and style it if icon is present. */}
+              <em>{placeholder || '— Select Options —'}</em>
+            </Button>
+            {isDropdownOpen ? (
+              <Form
+                className={classNames(className, styles.dropdown)}
+                name={field.name}
+                onChange={handleChange}
+                onSubmit={(event) => event.preventDefault()}
+                ref={ref}
+              >
+                {options.map(({ label: lab, value: val }) => {
+                  const valStr = val as string;
+                  return (
+                    <div className={styles.option} key={val}>
+                      <input
+                        {...aria}
+                        checked={selected.includes(valStr)}
+                        id={valStr.replaceAll(' ', '-')}
+                        name={valStr.replaceAll(' ', '-')}
+                        type="checkbox"
+                        value={valStr}
+                      />
+                      <label htmlFor={valStr.replaceAll(' ', '-')}>
+                        {(utils.remap(lab, {}) as string) || valStr}
+                      </label>
+                    </div>
+                  );
+                })}
+              </Form>
+            ) : null}
+          </>
         )}
-        data-field={field.name}
-        disabled={disabled || readOnly || loading || !options.length}
-        errorLinkRef={errorLinkRef as MutableRef<HTMLDivElement>}
-        icon="chevron-down"
-        iconRight={Boolean(icon)}
-        id={field.name}
-        onClick={showDropDown}
-      >
-        {/* Render placeholder text if present, otherwise render hardcoded text and style it if icon is present. */}
-        <em>{placeholder || '— Select Options —'}</em>
-      </Button>
-      {isDropdownOpen ? (
-        <Form
-          className={classNames(className, styles.dropdown)}
-          name={field.name}
-          onChange={handleChange}
-          onSubmit={(event) => event.preventDefault()}
-          ref={ref}
-        >
-          {options.map(({ label: lab, value: val }) => {
-            const valStr = val as string;
-            return (
-              <div className={styles.option} key={val}>
-                <input
-                  checked={selected.includes(valStr)}
-                  id={valStr.replaceAll(' ', '-')}
-                  name={valStr.replaceAll(' ', '-')}
-                  type="checkbox"
-                  value={valStr}
-                />
-                <label htmlFor={valStr.replaceAll(' ', '-')}>
-                  {(utils.remap(lab, {}) as string) || valStr}
-                </label>
-              </div>
-            );
-          })}
-        </Form>
-      ) : null}
+      </FormComponentContext.Consumer>
       <div className={styles.chips}>
         {selected.map((val) => {
           const valStr = val as string;
