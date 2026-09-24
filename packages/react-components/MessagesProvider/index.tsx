@@ -71,41 +71,52 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
     [forceUpdate],
   );
 
+  const renderMessages = (assertive: boolean): ReactNode =>
+    msgs.current.map((message) => {
+      const color = message.color || 'danger';
+      if ((color === 'danger') !== assertive) {
+        return null;
+      }
+      return (
+        <CSSTransition
+          classNames={{
+            enter: styles.messageEnter,
+            enterActive: styles.messageEnterActive,
+            exit: styles.messageExit,
+            exitActive: styles.messageExitActive,
+          }}
+          key={message.id}
+          timeout={300}
+        >
+          <Message
+            className={`${styles.content} ${styles[message.layout || 'bottom']}`}
+            color={color}
+          >
+            <span className={styles.body}>{message?.body}</span>
+            {message.dismissable ? (
+              <button
+                aria-label={formatMessage(messages.dismiss)}
+                className={`delete ${styles.deleteButton}`}
+                onClick={message.dismiss}
+                type="button"
+              />
+            ) : null}
+          </Message>
+        </CSSTransition>
+      );
+    });
+
   return (
     <Context.Provider value={push}>
       {children}
-      {/* A live region only announces content added after it is rendered, so it's always rendered */}
-      <div aria-live="polite" className={`${styles.root} mx-3`}>
-        <TransitionGroup>
-          {msgs.current.map((message) => (
-            <CSSTransition
-              classNames={{
-                enter: styles.messageEnter,
-                enterActive: styles.messageEnterActive,
-                exit: styles.messageExit,
-                exitActive: styles.messageExitActive,
-              }}
-              key={message.id}
-              timeout={300}
-            >
-              <Message
-                className={`${styles.content} ${styles[message.layout || 'bottom']}`}
-                color={message.color || 'danger'}
-                role={(message.color || 'danger') === 'danger' ? 'alert' : undefined}
-              >
-                <span className={styles.body}>{message?.body}</span>
-                {message.dismissable ? (
-                  <button
-                    aria-label={formatMessage(messages.dismiss)}
-                    className={`delete ${styles.deleteButton}`}
-                    onClick={message.dismiss}
-                    type="button"
-                  />
-                ) : null}
-              </Message>
-            </CSSTransition>
-          ))}
-        </TransitionGroup>
+      {/* A live region only announces content added after it is rendered, so both are always rendered */}
+      <div className={`${styles.root} mx-3`}>
+        <div aria-live="polite">
+          <TransitionGroup>{renderMessages(false)}</TransitionGroup>
+        </div>
+        <div aria-live="assertive">
+          <TransitionGroup>{renderMessages(true)}</TransitionGroup>
+        </div>
       </div>
     </Context.Provider>
   );

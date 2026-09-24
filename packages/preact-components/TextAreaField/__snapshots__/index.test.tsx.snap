@@ -10,7 +10,6 @@ exports[`should render a field with textarea 1`] = `
       class="control control"
     >
       <textarea
-        aria-describedby="P0-0"
         class="textarea"
       />
     </div>

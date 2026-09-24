@@ -142,6 +142,7 @@ export function FormComponentError({ children, error }: FormComponentErrorProps)
     () =>
       hasError
         ? {
+            ...parentAria,
             'aria-describedby': [parentAria['aria-describedby'], errorId].filter(Boolean).join(' '),
             'aria-invalid': true,
           }
@@ -185,10 +186,10 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
     const hasError = isValidElement(error) || typeof error === 'string' || Number.isFinite(error);
     const aria = useMemo<FormComponentAria>(
       () => ({
-        'aria-describedby': disableHelp ? undefined : helpId,
+        'aria-describedby': !disableHelp && (help || hasError) ? helpId : undefined,
         'aria-invalid': hasError || undefined,
       }),
-      [disableHelp, hasError, helpId],
+      [disableHelp, hasError, help, helpId],
     );
 
     const helpContent = hasError ? (

@@ -49,6 +49,7 @@ export function FileInput({
   const value = getValueByNameSequence(name, formValues);
   const required = isRequired(field, utils, formValues);
   const remappedLabel = utils.remap(label, value) ?? name;
+  const shownError = dirty ? error : null;
 
   const [fileEntriesReady, setFileEntriesReady] = useState<Record<string, boolean>>({});
 
@@ -98,7 +99,7 @@ export function FileInput({
       required={required}
       tag={utils.remap(tag, {}) as string}
     >
-      <FormComponentError error={dirty ? error : null}>
+      <FormComponentError error={shownError}>
         {repeated ? (
           <div
             className={classNames('is-flex py-2 pl-2 pr-0', styles.repeatedContainer, {
@@ -111,7 +112,7 @@ export function FileInput({
                 <FileEntry
                   addThumbnail={addThumbnail}
                   disabled={disabled}
-                  error={dirty ? error : null}
+                  error={shownError}
                   errorLinkRef={errorLinkRef}
                   field={field}
                   formDataLoading={formDataLoading}
@@ -129,7 +130,7 @@ export function FileInput({
             <FileEntry
               addThumbnail={addThumbnail}
               disabled={disabled}
-              error={dirty ? error : null}
+              error={shownError}
               errorLinkRef={errorLinkRef}
               field={field}
               formDataLoading={formDataLoading}
@@ -147,7 +148,7 @@ export function FileInput({
           <FileEntry
             addThumbnail={addThumbnail}
             disabled={disabled}
-            error={dirty ? error : null}
+            error={shownError}
             errorLinkRef={errorLinkRef}
             field={field}
             formDataLoading={formDataLoading}

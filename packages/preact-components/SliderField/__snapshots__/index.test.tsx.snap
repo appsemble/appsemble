@@ -10,7 +10,6 @@ exports[`should render a slider field 1`] = `
       class="control control"
     >
       <input
-        aria-describedby="P0-0"
         class="slider is-fullwidth"
         type="range"
       />

@@ -571,7 +571,6 @@ bootstrap(
       >
         {loading ? <progress className="progress is-small is-primary" /> : null}
         {title ? <div className="title">{utils.remap(title, data) as string}</div> : null}
-        {/* An <output> would break themes that style the `.message` div */}
         {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <Message
           className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}

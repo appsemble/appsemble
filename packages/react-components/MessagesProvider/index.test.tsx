@@ -25,35 +25,34 @@ function ShowMessageButton({ message }: { readonly message: Msg | string }): Rea
   );
 }
 
-it('should announce danger messages as an alert', () => {
-  render(
-    <MessagesProvider>
-      <ShowMessageButton message={{ body: 'Saving failed', color: 'danger' }} />
-    </MessagesProvider>,
-  );
-  fireEvent.click(screen.getByRole('button', { name: 'Show' }));
-  expect(screen.getByRole('alert').textContent).toBe('Saving failed');
-});
-
-it('should announce messages without a color as an alert', () => {
-  render(
-    <MessagesProvider>
-      <ShowMessageButton message="Something went wrong" />
-    </MessagesProvider>,
-  );
-  fireEvent.click(screen.getByRole('button', { name: 'Show' }));
-  expect(screen.getByRole('alert').textContent).toBe('Something went wrong');
-});
-
-it('should announce other messages politely from a live region rendered before the message', () => {
+function renderRegions(message: Msg | string): { assertive: Element; polite: Element } {
   const { container } = render(
     <MessagesProvider>
-      <ShowMessageButton message={{ body: 'Saved', color: 'success' }} />
+      <ShowMessageButton message={message} />
     </MessagesProvider>,
   );
-  const liveRegion = container.querySelector('[aria-live="polite"]');
-  expect(liveRegion).not.toBeNull();
+  const assertive = container.querySelector('[aria-live="assertive"]');
+  const polite = container.querySelector('[aria-live="polite"]');
+  expect(assertive).not.toBeNull();
+  expect(polite).not.toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'Show' }));
-  expect(liveRegion!.contains(screen.getByText('Saved'))).toBe(true);
-  expect(screen.queryByRole('alert')).toBeNull();
+  return { assertive: assertive!, polite: polite! };
+}
+
+it('should announce danger messages assertively', () => {
+  const { assertive, polite } = renderRegions({ body: 'Saving failed', color: 'danger' });
+  expect(assertive.textContent).toBe('Saving failed');
+  expect(polite.textContent).toBe('');
+});
+
+it('should announce messages without a color assertively', () => {
+  const { assertive, polite } = renderRegions('Something went wrong');
+  expect(assertive.textContent).toBe('Something went wrong');
+  expect(polite.textContent).toBe('');
+});
+
+it('should announce other messages politely', () => {
+  const { assertive, polite } = renderRegions({ body: 'Saved', color: 'success' });
+  expect(polite.textContent).toBe('Saved');
+  expect(assertive.textContent).toBe('');
 });

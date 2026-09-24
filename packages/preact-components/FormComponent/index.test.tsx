@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/preact';
 import { type ComponentChildren, type VNode } from 'preact';
 import { expect, it } from 'vitest';
 
+import { getDescription } from './getDescription.js';
 import { FormComponent } from './index.js';
 import { Input } from '../Input/index.js';
 
@@ -105,13 +106,6 @@ it('should render a label', () => {
   expect(screen.getByTestId('label-formcomp')).toBeInstanceOf(HTMLLabelElement);
   expect(optionalLabel.textContent).toBe('test label');
 });
-
-function getDescription(element: HTMLElement): string {
-  return (element.getAttribute('aria-describedby') ?? '')
-    .split(' ')
-    .map((id) => document.getElementById(id)?.textContent)
-    .join(' ');
-}
 
 it('should describe a valid input by its help text', () => {
   render(

@@ -5,6 +5,7 @@ import { type ComponentChildren, type VNode } from 'preact';
 import { expect, it, vi } from 'vitest';
 
 import { RadioGroup } from './index.js';
+import { getDescription } from '../FormComponent/getDescription.js';
 import { RadioButton } from '../RadioButton/index.js';
 
 const block = {
@@ -75,13 +76,7 @@ it('should mark the radio buttons as invalid and describe them by the error', ()
   );
   for (const radio of screen.getAllByRole('radio')) {
     expect(radio.getAttribute('aria-invalid')).toBe('true');
-    const description = radio
-      .getAttribute('aria-describedby')!
-      .split(' ')
-      .map((id) => document.getElementById(id)?.textContent)
-      .join(' ')
-      .trim();
-    expect(description).toBe('Pick an option');
+    expect(getDescription(radio)).toBe('Pick an option');
   }
 });
 

@@ -2,7 +2,6 @@
 
 exports[`should render a checkbox 1`] = `
 <input
-  aria-describedby="P0-0"
   class="is-checkradio is-normal"
   id="test-random"
   type="checkbox"
