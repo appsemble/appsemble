@@ -38,6 +38,7 @@ bootstrap(
       display = 'flex',
       fields: initialFields,
       fullWidth = false,
+      hideErrorSummary = false,
       hideSubmitButton = false,
       longSubmissionDuration = 5000,
       previous,
@@ -608,7 +609,7 @@ bootstrap(
             ))}
         </div>
 
-        {errorLink && hasTriedToSubmit ? (
+        {errorLink && hasTriedToSubmit && !utils.remap(hideErrorSummary, values) ? (
           <div
             className={classNames(
               styles['error-link-container'],

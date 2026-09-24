@@ -1706,6 +1706,15 @@ declare module '@appsemble/sdk' {
     hideSubmitButton?: Remapper;
 
     /**
+     * Whether the summary of invalid fields above the submit button should not be visible.
+     *
+     * Each field still shows its own error message.
+     *
+     * @default false
+     */
+    hideErrorSummary?: Remapper;
+
+    /**
      * Whether or not space should be reserved for the help text.
      *
      * If this is left as `true`, any help text appearing will cause the form input to jump around

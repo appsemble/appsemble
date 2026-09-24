@@ -7,6 +7,7 @@ import { type BootstrapParams } from '@appsemble/sdk';
 import { expect, it, vi } from 'vitest';
 
 import { type Field, type Values } from '../block.js';
+import messages from '../i18n/en.json' with { type: 'json' };
 
 const sdk = vi.hoisted(() => ({
   bootstrap: vi.fn(),
@@ -301,4 +302,71 @@ it('should submit the markdown typed right before the submit', async () => {
       description: expect.stringMatching(/^A new product is available\.\s*$/),
     }),
   );
+});
+
+it('should hide the error summary when hideErrorSummary is set', async () => {
+  async function submitInvalidForm(parameters: Record<string, unknown>): Promise<HTMLElement> {
+    const container = document.createElement('div');
+    const defaultParams = getDefaultBootstrapParams();
+    await mount({
+      ...defaultParams,
+      actions: {
+        onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+        onSubmit: vi.fn(),
+      },
+      events: {
+        emit: { change: vi.fn() },
+        on: {
+          data: vi.fn(() => false),
+          fields: vi.fn(() => false),
+        },
+        off: { fields: vi.fn() },
+      },
+      shadowRoot: container,
+      parameters: {
+        fields: [
+          {
+            label: 'Registration number',
+            name: 'registrationNumber',
+            requirements: [
+              { regex: '^\\d{9}$', errorMessage: 'This registration number is not valid' },
+            ],
+            type: 'string',
+          },
+        ],
+        skipInitialLoad: true,
+        ...parameters,
+      },
+      utils: {
+        ...defaultParams.utils,
+        formatMessage: (message: keyof typeof messages) => messages[message],
+      },
+    } as unknown as BootstrapParams);
+
+    const input = getInputByLabel(container, 'Registration number');
+    input.value = '123';
+    input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+    await waitFor(() =>
+      expect(container.textContent).toContain('This registration number is not valid'),
+    );
+    input.form?.requestSubmit();
+
+    const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+    await waitFor(() => expect(submit).toHaveProperty('disabled', true));
+    return container;
+  }
+
+  const withSummary = await submitInvalidForm({});
+  expect(withSummary.textContent).toContain('Please fix the following errors:');
+
+  const withNonMatchingRemapper = await submitInvalidForm({
+    hideErrorSummary: { equals: [{ prop: 'registrationNumber' }, '456'] },
+  });
+  expect(withNonMatchingRemapper.textContent).toContain('Please fix the following errors:');
+
+  const withoutSummary = await submitInvalidForm({
+    hideErrorSummary: { equals: [{ prop: 'registrationNumber' }, '123'] },
+  });
+  expect(withoutSummary.textContent).not.toContain('Please fix the following errors:');
+  expect(withoutSummary.textContent).toContain('This registration number is not valid');
 });
