@@ -15,14 +15,19 @@ interface FieldErrorProps {
    * Additional class names to assign to the error element.
    */
   readonly className?: string;
+
+  /**
+   * The id of the error element, so form controls can refer to it.
+   */
+  readonly id?: string;
 }
 
 /**
  * Render the error message of a form field.
  */
-export function FieldError({ children, className }: FieldErrorProps): VNode {
+export function FieldError({ children, className, id }: FieldErrorProps): VNode {
   return (
-    <div className={classNames('help is-danger', styles.root, className)}>
+    <div className={classNames('help is-danger', styles.root, className)} id={id}>
       <Icon className={styles.icon} icon={messageIcons.danger} size="small" />
       <span>{children}</span>
     </div>

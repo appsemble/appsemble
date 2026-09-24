@@ -10,6 +10,7 @@ exports[`should render a slider field 1`] = `
       class="control control"
     >
       <input
+        aria-describedby="P0-0"
         class="slider is-fullwidth"
         type="range"
       />
@@ -17,6 +18,7 @@ exports[`should render a slider field 1`] = `
     <span
       class="help help"
       data-testid="help-formcomp"
+      id="P0-0"
     />
   </div>
 </div>

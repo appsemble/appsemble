@@ -2,8 +2,8 @@ import { type ComponentChild, type JSX, type VNode } from 'preact';
 import { type MutableRef } from 'preact/hooks';
 
 import {
-  FieldError,
   FormComponent,
+  FormComponentError,
   type SharedFormComponentProps,
   ValuePickerProvider,
 } from '../index.js';
@@ -76,8 +76,7 @@ export function RadioGroup({
         onChange={onChange}
         value={value}
       >
-        {children}
-        {error ? <FieldError>{error}</FieldError> : null}
+        <FormComponentError error={error}>{children}</FormComponentError>
       </ValuePickerProvider>
     </FormComponent>
   );

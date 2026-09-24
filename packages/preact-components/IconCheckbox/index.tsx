@@ -3,9 +3,10 @@ import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import classNames from 'classnames';
 import { type ComponentChild, type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { useCallback } from 'preact/hooks';
+import { useCallback, useContext } from 'preact/hooks';
 
 import styles from './index.module.css';
+import { FormComponentContext } from '../FormComponent/index.js';
 import { Icon } from '../Icon/index.js';
 
 type CheckboxProps = Omit<
@@ -74,9 +75,12 @@ export const IconCheckbox = forwardRef<HTMLInputElement, CheckboxProps>(
       [onChange],
     );
 
+    const aria = useContext(FormComponentContext);
+
     return (
       <span className={className}>
         <input
+          {...aria}
           {...props}
           checked={value}
           className={styles.checkbox}

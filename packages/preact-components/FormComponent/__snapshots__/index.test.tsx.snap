@@ -9,15 +9,18 @@ exports[`should render a form component with children elements 1`] = `
     class="control control"
   >
     <input
+      aria-describedby="P0-0"
       class="input"
     />
     <input
+      aria-describedby="P0-0"
       class="input"
     />
   </div>
   <span
     class="help help"
     data-testid="help-formcomp"
+    id="P0-0"
   />
 </div>
 `;

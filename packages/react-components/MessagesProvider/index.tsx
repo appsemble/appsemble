@@ -74,7 +74,8 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
   return (
     <Context.Provider value={push}>
       {children}
-      <div className={`${styles.root} mx-3`}>
+      {/* A live region only announces content added after it is rendered, so it's always rendered */}
+      <div aria-live="polite" className={`${styles.root} mx-3`}>
         <TransitionGroup>
           {msgs.current.map((message) => (
             <CSSTransition
@@ -90,6 +91,7 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
               <Message
                 className={`${styles.content} ${styles[message.layout || 'bottom']}`}
                 color={message.color || 'danger'}
+                role={(message.color || 'danger') === 'danger' ? 'alert' : undefined}
               >
                 <span className={styles.body}>{message?.body}</span>
                 {message.dismissable ? (

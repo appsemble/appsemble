@@ -61,3 +61,42 @@ it('should render an error message', () => {
   );
   expect(container.getElementsByClassName('is-danger').length).toBeGreaterThan(0);
 });
+
+it('should mark the radio buttons as invalid and describe them by the error', () => {
+  render(
+    <RadioGroup error="Pick an option" name="choice" onChange={vi.fn()} value="hmm">
+      <RadioButton id="radio-1" value="hmm">
+        Hmm
+      </RadioButton>
+      <RadioButton id="radio-2" value="hmm2">
+        Hmm 2
+      </RadioButton>
+    </RadioGroup>,
+  );
+  for (const radio of screen.getAllByRole('radio')) {
+    expect(radio.getAttribute('aria-invalid')).toBe('true');
+    const description = radio
+      .getAttribute('aria-describedby')!
+      .split(' ')
+      .map((id) => document.getElementById(id)?.textContent)
+      .join(' ')
+      .trim();
+    expect(description).toBe('Pick an option');
+  }
+});
+
+it('should not mark the radio buttons as invalid without an error', () => {
+  render(
+    <RadioGroup name="choice" onChange={vi.fn()} value="hmm">
+      <RadioButton id="radio-1" value="hmm">
+        Hmm
+      </RadioButton>
+      <RadioButton id="radio-2" value="hmm2">
+        Hmm 2
+      </RadioButton>
+    </RadioGroup>,
+  );
+  for (const radio of screen.getAllByRole('radio')) {
+    expect(radio.getAttribute('aria-invalid')).toBeNull();
+  }
+});

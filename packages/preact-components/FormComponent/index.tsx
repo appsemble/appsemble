@@ -1,7 +1,15 @@
 import { type IconReference } from '@appsemble/lang-sdk';
 import classNames from 'classnames';
-import { cloneElement, type ComponentChild, isValidElement, type VNode } from 'preact';
+import {
+  cloneElement,
+  type ComponentChild,
+  type ComponentChildren,
+  createContext,
+  isValidElement,
+  type VNode,
+} from 'preact';
 import { forwardRef } from 'preact/compat';
+import { useContext, useId, useMemo } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { FieldError, Icon } from '../index.js';
@@ -99,6 +107,56 @@ export interface FormComponentProps extends SharedFormComponentProps {
   disableHelp?: boolean;
 }
 
+interface FormComponentAria {
+  'aria-describedby'?: string;
+  'aria-invalid'?: true;
+}
+
+/**
+ * The accessibility attributes a form control inside a {@link FormComponent} spreads onto itself,
+ * so it is described by the help or error text and marked invalid when there is an error.
+ */
+export const FormComponentContext = createContext<FormComponentAria>({});
+
+interface FormComponentErrorProps {
+  /**
+   * The form controls to describe by the error.
+   */
+  readonly children: ComponentChildren;
+
+  /**
+   * The error message to render below the controls.
+   */
+  readonly error?: ComponentChild;
+}
+
+/**
+ * Render an error below form controls that don't show it in the help text of their
+ * {@link FormComponent}, and describe the controls by it.
+ */
+export function FormComponentError({ children, error }: FormComponentErrorProps): VNode {
+  const errorId = useId();
+  const parentAria = useContext(FormComponentContext);
+  const hasError = Boolean(error);
+  const aria = useMemo<FormComponentAria>(
+    () =>
+      hasError
+        ? {
+            'aria-describedby': [parentAria['aria-describedby'], errorId].filter(Boolean).join(' '),
+            'aria-invalid': true,
+          }
+        : parentAria,
+    [errorId, hasError, parentAria],
+  );
+
+  return (
+    <>
+      <FormComponentContext.Provider value={aria}>{children}</FormComponentContext.Provider>
+      {error ? <FieldError id={errorId}>{error}</FieldError> : null}
+    </>
+  );
+}
+
 /**
  * A wrapper for creating consistent form components.
  */
@@ -123,17 +181,29 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
     },
     ref,
   ) => {
-    const helpContent =
-      isValidElement(error) || typeof error === 'string' || Number.isFinite(error) ? (
-        <FieldError className={styles.help}>{error}</FieldError>
-      ) : (
-        <span
-          className={classNames(`help ${styles.help}`, { 'is-danger': error })}
-          data-testid="help-formcomp"
-        >
-          {help}
-        </span>
-      );
+    const helpId = useId();
+    const hasError = isValidElement(error) || typeof error === 'string' || Number.isFinite(error);
+    const aria = useMemo<FormComponentAria>(
+      () => ({
+        'aria-describedby': disableHelp ? undefined : helpId,
+        'aria-invalid': hasError || undefined,
+      }),
+      [disableHelp, hasError, helpId],
+    );
+
+    const helpContent = hasError ? (
+      <FieldError className={styles.help} id={helpId}>
+        {error}
+      </FieldError>
+    ) : (
+      <span
+        className={classNames(`help ${styles.help}`, { 'is-danger': error })}
+        data-testid="help-formcomp"
+        id={helpId}
+      >
+        {help}
+      </span>
+    );
 
     const controls = (
       <div
@@ -143,7 +213,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
         })}
       >
         {icon ? <Icon className="is-left" icon={icon} /> : null}
-        {children}
+        <FormComponentContext.Provider value={aria}>{children}</FormComponentContext.Provider>
         {control ? cloneElement(control, { className: 'is-right' }) : null}
       </div>
     );

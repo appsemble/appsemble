@@ -13,6 +13,7 @@ exports[`should render a select field 1`] = `
         class="select is-fullwidth"
       >
         <select
+          aria-describedby="P0-0"
           class="is-fullwidth"
         >
           <option
@@ -24,6 +25,7 @@ exports[`should render a select field 1`] = `
     <span
       class="help help"
       data-testid="help-formcomp"
+      id="P0-0"
     />
   </div>
 </div>

@@ -14,6 +14,7 @@ exports[`should render a RadioGroup 1`] = `
       <span />
       <div>
         <input
+          aria-describedby="P0-0"
           class="is-checkradio"
           type="radio"
           value=""hmm""
@@ -24,6 +25,7 @@ exports[`should render a RadioGroup 1`] = `
       </div>
       <div>
         <input
+          aria-describedby="P0-0"
           class="is-checkradio"
           type="radio"
           value=""hmm2""
@@ -36,6 +38,7 @@ exports[`should render a RadioGroup 1`] = `
     <span
       class="help help"
       data-testid="help-formcomp"
+      id="P0-0"
     />
   </div>
   ,
