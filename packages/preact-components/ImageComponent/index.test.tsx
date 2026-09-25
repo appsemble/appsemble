@@ -1,8 +1,19 @@
+import { type BlockProps, Context } from '@appsemble/preact';
+import { fa, resolveIcon } from '@appsemble/web-utils';
 import { render, screen, waitFor } from '@testing-library/preact';
 import userEvent from '@testing-library/user-event';
+import { type ComponentChildren, type VNode } from 'preact';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { ImageComponent } from './index.js';
+
+const block = {
+  utils: { fa, resolveIcon: (reference: string) => resolveIcon(reference) },
+} as BlockProps;
+
+function Provider({ children }: { readonly children: ComponentChildren }): VNode {
+  return <Context.Provider value={block}>{children}</Context.Provider>;
+}
 
 let originalDevicePixelRatio: PropertyDescriptor | undefined;
 let originalIntersectionObserver: typeof window.IntersectionObserver;
@@ -174,6 +185,7 @@ it('should download original Appsemble assets from previews', async () => {
       size={48}
       src="http://localhost/api/apps/1/assets/course-image"
     />,
+    { wrapper: Provider },
   );
 
   const button = screen.getByAltText('Preview image').closest('button') as HTMLButtonElement;

@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { FormComponent } from '@appsemble/preact-components';
+import { FormComponent, Icon } from '@appsemble/preact-components';
 import { Crepe } from '@milkdown/crepe';
 import { linkTooltipAPI } from '@milkdown/kit/component/link-tooltip';
 import {
@@ -205,16 +205,16 @@ export function MarkdownInput({
     >
       <div className={classNames('is-flex is-flex-direction-row', styles.gap)}>
         <button className="button" onClick={toggleBold} title="Bold" type="button">
-          <i className="fas fa-bold" />
+          <Icon icon="bold" />
         </button>
         <button className="button" onClick={toggleItalic} title="Italic" type="button">
-          <i className="fas fa-italic" />
+          <Icon icon="italic" />
         </button>
         <button className="button" onClick={toggleStrikethrough} title="Strike out" type="button">
-          <i className="fas fa-strikethrough" />
+          <Icon icon="strikethrough" />
         </button>
         <button className="button" onClick={toggleLink} title="Add link" type="button">
-          <i className="fas fa-link" />
+          <Icon icon="link" />
         </button>
       </div>
       <div id="root-crepe" ref={crepeRootRef} />

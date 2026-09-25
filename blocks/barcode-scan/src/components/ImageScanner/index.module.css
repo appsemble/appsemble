@@ -11,14 +11,16 @@
   position: relative;
 }
 
-.fileLabel i {
+.barcode {
   color: hsl(0deg 0% 0%);
   font-size: 100px;
+  height: 1em;
   opacity: 1;
   transition: opacity 0.3s ease-in-out;
+  width: 1em;
 }
 
-.fileLabel i:hover {
+.barcode:hover {
   color: hsl(210deg 100% 56%);
   font-size: 105px;
 }

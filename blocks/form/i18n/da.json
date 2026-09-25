@@ -7,6 +7,8 @@
   "longSubmissionWarning": "Formularen sendes stadig, vent venligst.",
   "optionalLabel": "(Valgfrit)",
   "previousLabel": "Forrige",
+  "removeFile": "",
+  "resetLocation": "",
   "search": "Søg",
   "selectionNoOptions": "Der er ikke flere tilgængelige muligheder",
   "selectionOptionsError": "Der opstod en fejl under indlæsning af indstillingerne",

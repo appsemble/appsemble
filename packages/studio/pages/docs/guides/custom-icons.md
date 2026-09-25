@@ -9,6 +9,7 @@ artwork for navigation, buttons and login providers without changing any block.
 - [Registering icons](#registering-icons)
 - [Referencing icons](#referencing-icons)
 - [Where icons can be used](#where-icons-can-be-used)
+- [Replacing built-in icons](#replacing-built-in-icons)
 - [Appearance](#appearance)
 - [Errors](#errors)
 - [Templates and portability](#templates-and-portability)
@@ -133,6 +134,43 @@ pages:
 Only literal `icon:<key>` values are checked when the app is published. A remapper is evaluated at
 runtime, so a key it produces which isn’t in the registry, or a value which isn’t a valid icon
 reference, renders an empty icon box instead of failing validation.
+
+## Replacing built-in icons
+
+Blocks and the app shell draw many icons which the app definition doesn’t configure, such as the
+remove button of a chip, the eye of a password field or the logout item of the profile menu. An
+entry’s `overrides` lists the Font Awesome icons it replaces, wherever the app renders them by name.
+
+```yaml copy filename="app-definition.yaml"
+icons:
+  add:
+    asset: plus-24
+    overrides:
+      - plus
+  remove:
+    asset: cross-24
+    overrides:
+      - xmark
+      - trash
+```
+
+With this registry, every `plus` in the app, whether a block draws it or a page sets `icon: plus`,
+renders the `plus-24` asset. To find the name of an icon, inspect it in the browser: the rendered
+element carries an `fa-<name>` class, for example `fa-xmark`. Use that name without the `fa-`
+prefix. Font Awesome aliases such as `times` for `xmark` are folded, so listing either spelling
+replaces the icon under all of its names, and no spelling is left which still renders the glyph.
+Each icon can be listed under one entry only; a name which isn’t a Font Awesome icon is a validation
+error.
+
+One override applies to every spot using that name, on a primary button and on a white dropdown
+alike, and the asset keeps its own colors. Choose artwork which reads on every surface where the
+name appears, such as a shape with its own outline or a filled badge. If no single artwork works,
+leave that name to Font Awesome and use `icon:<key>` where the app definition controls the
+reference.
+
+Overrides require Appsemble 0.40.2 or newer. The shell and Studio previews follow them without a
+block release; a block follows them from the version which renders its icons through the registry,
+so update the blocks in the app to 0.40.2 or newer as well.
 
 ## Appearance
 

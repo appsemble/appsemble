@@ -15,6 +15,13 @@ declare module '@appsemble/sdk' {
     data: never;
   }
 
+  interface Messages {
+    /**
+     * The accessible name of the control that selects a new image.
+     */
+    changeImage: never;
+  }
+
   interface Parameters {
     /**
      * The alignment of image.

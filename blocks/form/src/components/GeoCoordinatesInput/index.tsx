@@ -139,6 +139,7 @@ export function GeoCoordinatesInput({
           <i className={`fas fa-crosshairs ${styles.crossHairs}`} />
         </div>
         <button
+          aria-label={utils.formatMessage('resetLocation')}
           className={`button ${styles.resetButton}`}
           disabled={disabled}
           onClick={onReset}

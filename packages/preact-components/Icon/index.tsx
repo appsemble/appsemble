@@ -4,15 +4,21 @@ import { type BulmaSize } from '@appsemble/types';
 import { getIconSizeModifier, type IconSizeModifier } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
+import { type ComponentPropsWithoutRef, type ElementType } from 'preact/compat';
 import { useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 
-interface IconProps {
+interface IconProps<T extends ElementType> {
   /**
    * The CSS class to apply to the icon.
    */
   readonly className?: string;
+
+  /**
+   * The element to render as the `.icon` wrapper.
+   */
+  readonly component?: T;
 
   /**
    * The name of the Font Awesome icon, or an `icon:<key>` reference to the app’s icon registry.
@@ -33,12 +39,14 @@ interface IconProps {
 /**
  * Display a Font Awesome icon or a custom icon from the app’s icon registry.
  */
-export function Icon({
+export function Icon<T extends ElementType = 'span'>({
   className,
+  component: Component = 'span' as T,
   icon,
   size,
   iconSize = getIconSizeModifier(size),
-}: IconProps): VNode {
+  ...props
+}: IconProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof IconProps<T>>): VNode {
   const {
     utils: { fa, resolveIcon },
   } = useBlock();
@@ -46,10 +54,12 @@ export function Icon({
   const resolved = resolveIcon(icon);
 
   return (
-    <span
+    // @ts-expect-error This construct should work
+    <Component
       className={classNames('icon', size && `is-${size}`, className, {
         [styles.asset]: resolved.type === 'asset',
       })}
+      {...props}
     >
       {resolved.type === 'fontawesome' ? (
         <i className={classNames(fa(resolved.name), iconSize && `fa-${iconSize}`)} />
@@ -64,6 +74,6 @@ export function Icon({
           src={resolved.url}
         />
       ) : null}
-    </span>
+    </Component>
   );
 }

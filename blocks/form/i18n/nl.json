@@ -7,6 +7,8 @@
   "longSubmissionWarning": "Het formulier wordt nog verzonden, even geduld a.u.b.",
   "optionalLabel": "(Optioneel)",
   "previousLabel": "Vorige",
+  "removeFile": "Bestand verwijderen",
+  "resetLocation": "Huidige locatie gebruiken",
   "search": "Zoeken",
   "selectionNoOptions": "Er zijn geen opties meer beschikbaar",
   "selectionOptionsError": "Er is een fout opgetreden bij het laden van de opties",

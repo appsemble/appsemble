@@ -1,6 +1,7 @@
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 
 import { normalized } from './constants/index.js';
+import { fontAwesomeAliases } from './fontAwesome.js';
 import { has } from './miscellaneous.js';
 import { type IconReference, type IconRegistry } from './types/index.js';
 
@@ -17,6 +18,16 @@ export const customIconPrefix = 'icon:';
  */
 export function isValidIconName(name: unknown): name is string {
   return typeof name === 'string' && normalized.test(name);
+}
+
+/**
+ * Fold a Font Awesome alias to the name of the icon it renders.
+ *
+ * @param name A Font Awesome icon name or alias.
+ * @returns The icon name, or the input if it isn’t an alias.
+ */
+export function foldFontAwesomeAlias(name: string): string {
+  return has(fontAwesomeAliases, name) ? fontAwesomeAliases[name] : name;
 }
 
 export type ParsedIconReference =
@@ -76,11 +87,24 @@ export type ResolvedIcon =
   | { type: 'fontawesome'; name: IconName }
   | { type: 'invalid'; reason: string };
 
+function resolveEntry(key: string, entry: unknown): ResolvedIcon {
+  const asset = typeof entry === 'object' && entry ? (entry as { asset?: unknown }).asset : null;
+  if (!isValidIconName(asset)) {
+    return {
+      type: 'invalid',
+      reason: `references the icon key “${key}”, which has an invalid asset name`,
+    };
+  }
+  return { type: 'asset', key, asset };
+}
+
 /**
  * Resolve an icon reference against an icon registry.
  *
- * Registry keys and entries are validated here as well, so the result is safe to render even if
- * the registry wasn’t validated when it was published. Only own properties of the registry count.
+ * A bare name renders the entry whose `overrides` lists it, comparing Font Awesome aliases by the
+ * icon they render, and Font Awesome otherwise. Registry keys and entries are validated here as
+ * well, so the result is safe to render even if the registry wasn’t validated when it was
+ * published. Only own properties of the registry count.
  *
  * @param reference The icon reference to resolve.
  * @param registry The app’s icon registry.
@@ -91,20 +115,37 @@ export function resolveIconReference(
   registry?: IconRegistry | null,
 ): ResolvedIcon {
   const parsed = parseIconReference(reference);
-  if (parsed.type !== 'custom') {
+  if (parsed.type === 'invalid') {
     return parsed;
   }
+  if (typeof registry !== 'object' || !registry) {
+    return parsed.type === 'custom'
+      ? { type: 'invalid', reason: `references the unknown icon key “${parsed.key}”` }
+      : parsed;
+  }
+  if (parsed.type === 'fontawesome') {
+    const icon = foldFontAwesomeAlias(parsed.name);
+    let match: string | undefined;
+    for (const [key, entry] of Object.entries(registry)) {
+      const overrides: unknown = entry?.overrides;
+      if (
+        Array.isArray(overrides) &&
+        overrides.some((name) => typeof name === 'string' && foldFontAwesomeAlias(name) === icon)
+      ) {
+        if (match !== undefined) {
+          return {
+            type: 'invalid',
+            reason: `is overridden by both icons.${match} and icons.${key}`,
+          };
+        }
+        match = key;
+      }
+    }
+    return match === undefined ? parsed : resolveEntry(match, registry[match]);
+  }
   const { key } = parsed;
-  if (typeof registry !== 'object' || !registry || !has(registry, key)) {
+  if (!has(registry, key)) {
     return { type: 'invalid', reason: `references the unknown icon key “${key}”` };
   }
-  const entry: unknown = registry[key];
-  const asset = typeof entry === 'object' && entry ? (entry as { asset?: unknown }).asset : null;
-  if (!isValidIconName(asset)) {
-    return {
-      type: 'invalid',
-      reason: `references the icon key “${key}”, which has an invalid asset name`,
-    };
-  }
-  return { type: 'asset', key, asset };
+  return resolveEntry(key, registry[key]);
 }

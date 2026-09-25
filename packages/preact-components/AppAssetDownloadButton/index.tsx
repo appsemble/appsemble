@@ -3,6 +3,7 @@ import { type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
+import { Icon } from '../Icon/index.js';
 
 const appAssetPattern = /^(?:https?:\/\/[^/]+)?\/api\/apps\/\d+\/assets\/[^#/?]+/;
 const downloadTitle = 'Download in HD';
@@ -51,7 +52,7 @@ export function AppAssetDownloadButton({ src }: AppAssetDownloadButtonProps): VN
       title={downloadTitle}
       type="button"
     >
-      <i className="fas fa-download" />
+      <Icon icon="download" />
     </button>
   ) : null;
 }

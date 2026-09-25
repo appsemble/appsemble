@@ -1,3 +1,4 @@
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 import cronParser from 'cron-parser';
 import { type Schema, ValidationError, Validator, type ValidatorResult } from 'jsonschema';
 import languageTags from 'language-tags';
@@ -13,6 +14,7 @@ import { BlockParamInstanceValidator } from './BasicValidator.js';
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { partialNormalized } from './constants/index.js';
 import { findPageByName } from './findPageByName.js';
+import { fontAwesomeAliases, fontAwesomeIconNames } from './fontAwesome.js';
 import {
   bottomNavigationGridArea,
   breadcrumbsGridArea,
@@ -23,7 +25,7 @@ import {
   gridDeviceOrder,
   resendBannerGridArea,
 } from './gridUtils.js';
-import { isValidIconName, parseIconReference } from './icons.js';
+import { foldFontAwesomeAlias, isValidIconName, parseIconReference } from './icons.js';
 import { iterAction, iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { normalize } from './normalize.js';
@@ -1869,16 +1871,57 @@ function validateResourceReferences(definition: AppDefinition, report: Report): 
   }
 }
 
+/**
+ * Check whether a value is the name or alias of an icon in the free Font Awesome set.
+ *
+ * @param name The value to check.
+ * @returns Whether Font Awesome renders a glyph for the name.
+ */
+function isFontAwesomeIconName(name: unknown): name is IconName {
+  return (
+    typeof name === 'string' && (fontAwesomeIconNames.has(name) || has(fontAwesomeAliases, name))
+  );
+}
+
 function validateIcons({ icons }: AppDefinition, report: Report): void {
   if (!icons) {
     return;
   }
-  for (const key of Object.keys(icons)) {
+  // The icon each override renders, mapped to the key of the entry listing it.
+  const overridden = new Map<string, string>();
+  for (const [key, entry] of Object.entries(icons)) {
     if (!isValidIconName(key)) {
       report(key, 'is not a valid icon key; use lower case letters, digits, and single hyphens', [
         'icons',
         key,
       ]);
+    }
+    // The schema reports entries and override lists of the wrong shape.
+    if (!Array.isArray(entry?.overrides)) {
+      continue;
+    }
+    for (const [index, name] of entry.overrides.entries()) {
+      if (typeof name !== 'string') {
+        continue;
+      }
+      const path = ['icons', key, 'overrides', index];
+      if (!isFontAwesomeIconName(name)) {
+        report(name, 'is not a Font Awesome icon name', path);
+        continue;
+      }
+      const icon = foldFontAwesomeAlias(name);
+      const earlier = overridden.get(icon);
+      if (earlier === undefined) {
+        overridden.set(icon, key);
+      } else {
+        report(
+          name,
+          earlier === key
+            ? `overrides ${icon}, which this entry already overrides`
+            : `overrides ${icon}, which icons.${earlier} already overrides`,
+          path,
+        );
+      }
     }
   }
 }

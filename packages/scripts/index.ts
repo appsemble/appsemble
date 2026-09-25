@@ -7,6 +7,7 @@ import * as createUser from './commands/create-user.js';
 import * as deleteUser from './commands/delete-user.js';
 import * as dockerMetadata from './commands/docker-metadata.js';
 import * as extractMessages from './commands/extract-messages.js';
+import * as generateFontAwesome from './commands/generate-font-awesome.js';
 import * as getReleaseNotes from './commands/get-release-notes.js';
 import * as githubRelease from './commands/github-release.js';
 import * as gitlabRelease from './commands/gitlab-release.js';
@@ -37,6 +38,7 @@ yargs()
   .command(cleanupEnvironments)
   .command(dockerMetadata)
   .command(extractMessages)
+  .command(generateFontAwesome)
   .command(getReleaseNotes)
   .command(githubRelease)
   .command(gitlabRelease)

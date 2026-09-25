@@ -1,4 +1,4 @@
-import { useToggle } from '@appsemble/react-components';
+import { IconProvider, useToggle } from '@appsemble/react-components';
 import { type AppOAuth2Secret } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
@@ -57,13 +57,15 @@ export function OAuth2SecretItem({
 
   return (
     <>
-      <ListButton
-        description={secret.scope}
-        icon={secret.icon}
-        onClick={modal.enable}
-        subtitle={new URL(secret.authorizationUrl).origin}
-        title={secret.name}
-      />
+      <IconProvider apiUrl={window.location.origin} appId={app.id} registry={app.definition.icons}>
+        <ListButton
+          description={secret.scope}
+          icon={secret.icon}
+          onClick={modal.enable}
+          subtitle={new URL(secret.authorizationUrl).origin}
+          title={secret.name}
+        />
+      </IconProvider>
       <OAuth2Modal onDeleted={onDeleted} onSubmit={onSubmit} secret={secret} toggle={modal} />
     </>
   );

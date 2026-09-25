@@ -7,6 +7,8 @@
   "longSubmissionWarning": "Obrazac se još uvijek šalje, molimo pričekajte.",
   "optionalLabel": "(Opcionalno)",
   "previousLabel": "Prethodni",
+  "removeFile": "",
+  "resetLocation": "",
   "search": "Pretraži",
   "selectionNoOptions": "Nema više dostupnih opcija",
   "selectionOptionsError": "Došlo je do pogreške pri učitavanju opcija",

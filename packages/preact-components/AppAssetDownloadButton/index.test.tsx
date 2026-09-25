@@ -1,8 +1,19 @@
+import { type BlockProps, Context } from '@appsemble/preact';
+import { fa, resolveIcon } from '@appsemble/web-utils';
 import { render, screen, waitFor } from '@testing-library/preact';
 import userEvent from '@testing-library/user-event';
+import { type ComponentChildren, type VNode } from 'preact';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { AppAssetDownloadButton } from './index.js';
+
+const block = {
+  utils: { fa, resolveIcon: (reference: string) => resolveIcon(reference) },
+} as BlockProps;
+
+function Provider({ children }: { readonly children: ComponentChildren }): VNode {
+  return <Context.Provider value={block}>{children}</Context.Provider>;
+}
 
 let originalCreateObjectURL: typeof URL.createObjectURL | undefined;
 let originalFetch: typeof globalThis.fetch | undefined;
@@ -54,7 +65,9 @@ it('should download the original asset for Appsemble asset URLs', async () => {
     value: revokeObjectURL,
   });
 
-  render(<AppAssetDownloadButton src="/api/apps/1/assets/course-image?width=128&height=128" />);
+  render(<AppAssetDownloadButton src="/api/apps/1/assets/course-image?width=128&height=128" />, {
+    wrapper: Provider,
+  });
 
   await userEvent.click(screen.getByRole('button', { name: 'Download in HD' }));
 

@@ -1,11 +1,10 @@
-import { type BulmaColor } from '@appsemble/lang-sdk';
-import { fa } from '@appsemble/web-utils';
-import { type IconName, type IconPrefix } from '@fortawesome/fontawesome-common-types';
+import { type BulmaColor, type IconReference } from '@appsemble/lang-sdk';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { type ComponentPropsWithoutRef } from 'preact/compat';
 
 import styles from './index.module.css';
+import { Icon } from '../Icon/index.js';
 
 interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
   /**
@@ -14,14 +13,9 @@ interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
   readonly color?: BulmaColor;
 
   /**
-   * The Fontawesome icon to render.
+   * A Font Awesome icon name or an `icon:<key>` reference to the app’s icon registry.
    */
-  readonly icon: IconName;
-
-  /**
-   * The Fontawesome prefix.
-   */
-  readonly prefix?: IconPrefix;
+  readonly icon: IconReference;
 }
 
 /**
@@ -31,12 +25,12 @@ interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
  */
 export function IconButton({ className, color, icon, ...props }: IconButtonProps): VNode {
   return (
-    <button
-      className={classNames('icon', styles.root, className, { [`has-text-${color}`]: color })}
+    <Icon
+      className={classNames(styles.root, className, { [`has-text-${color}`]: color })}
+      component="button"
+      icon={icon}
       type="button"
       {...props}
-    >
-      <i className={fa(icon)} />
-    </button>
+    />
   );
 }
