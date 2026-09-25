@@ -100,7 +100,7 @@ The most basic resource has a \`schema\` property and defines the minimal securi
 
 Each key names an app-level SVG asset by its name. Keys and asset names must consist of lower case
 letters, digits, and single hyphens. Keys are case-sensitive, and \`icon:<key>\` never falls back
-to a Font Awesome icon. An entry’s \`overrides\` lists the built-in Font Awesome icons it replaces.
+to a Font Awesome icon. Use \`overrides\` to replace Font Awesome icons with a custom icon.
 `,
       additionalProperties: { $ref: '#/components/schemas/IconRegistryEntryDefinition' },
     },

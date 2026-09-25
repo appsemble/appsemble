@@ -137,9 +137,9 @@ reference, renders an empty icon box instead of failing validation.
 
 ## Replacing built-in icons
 
-Blocks and the app shell draw many icons which the app definition doesn’t configure, such as the
-remove button of a chip, the eye of a password field or the logout item of the profile menu. An
-entry’s `overrides` lists the Font Awesome icons it replaces, wherever the app renders them by name.
+Blocks and the app shell also show icons you don’t set in the app definition, such as the remove
+button on a chip or the logout item in the profile menu. To replace these, list their Font Awesome
+names under `overrides`:
 
 ```yaml copy filename="app-definition.yaml"
 icons:
@@ -154,23 +154,17 @@ icons:
       - trash
 ```
 
-With this registry, every `plus` in the app, whether a block draws it or a page sets `icon: plus`,
-renders the `plus-24` asset. To find the name of an icon, inspect it in the browser: the rendered
-element carries an `fa-<name>` class, for example `fa-xmark`. Use that name without the `fa-`
-prefix. Font Awesome aliases such as `times` for `xmark` are folded, so listing either spelling
-replaces the icon under all of its names, and no spelling is left which still renders the glyph.
-Each icon can be listed under one entry only; a name which isn’t a Font Awesome icon is a validation
-error.
+Now every `plus` icon in the app shows the `plus-24` asset, including `icon: plus` on a page. To
+find the name of an icon, inspect it in the browser and look for its `fa-<name>` class, for example
+`fa-xmark`. List the name without `fa-`, spelled exactly as in the class. A name can only be listed
+once.
 
-One override applies to every spot using that name, on a primary button and on a white dropdown
-alike, and the asset keeps its own colors. Choose artwork which reads on every surface where the
-name appears, such as a shape with its own outline or a filled badge. If no single artwork works,
-leave that name to Font Awesome and use `icon:<key>` where the app definition controls the
-reference.
+An override applies everywhere the icon appears, and the asset keeps its own colors. Pick artwork
+that looks right on every background the icon appears on. If that isn’t possible, don’t override the
+icon and use `icon:<key>` in the places you configure yourself.
 
-Overrides require Appsemble 0.40.2 or newer. The shell and Studio previews follow them without a
-block release; a block follows them from the version which renders its icons through the registry,
-so update the blocks in the app to 0.40.2 or newer as well.
+Blocks only follow overrides once they are updated to the Appsemble release that added them, so
+update the blocks in your app to the latest version.
 
 ## Appearance
 

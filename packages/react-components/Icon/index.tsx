@@ -2,19 +2,18 @@ import { type IconReference } from '@appsemble/lang-sdk';
 import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import { fa, getIconSizeModifier, type IconSizeModifier, resolveIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
-import { type ComponentPropsWithoutRef, type ElementType, type ReactNode, useState } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode, useState } from 'react';
 
 import styles from './index.module.css';
 import { useIconContext } from '../IconProvider/index.js';
 
-interface IconProps<T extends ElementType> {
-  readonly className?: string;
+interface IconProps extends ComponentPropsWithoutRef<'button'> {
   readonly color?: BulmaColor;
 
   /**
    * The element to render as the `.icon` wrapper.
    */
-  readonly component?: T;
+  readonly component?: 'button' | 'span';
 
   /**
    * A Font Awesome icon name or an `icon:<key>` reference to the app’s icon registry.
@@ -25,22 +24,21 @@ interface IconProps<T extends ElementType> {
   readonly solid?: boolean;
 }
 
-export function Icon<T extends ElementType = 'span'>({
+export function Icon({
   color,
   className,
-  component: Component = 'span' as T,
+  component: Component = 'span',
   icon,
   size,
   iconSize = getIconSizeModifier(size),
   solid = true,
   ...props
-}: IconProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof IconProps<T>>): ReactNode {
+}: IconProps): ReactNode {
   const { getAssetUrl, registry } = useIconContext();
   const [failedUrl, setFailedUrl] = useState<string>();
   const resolved = resolveIcon(icon, registry, getAssetUrl);
 
   return (
-    // @ts-expect-error This construct should work
     <Component
       className={classNames('icon', size && `is-${size}`, className, {
         [styles.asset]: resolved.type === 'asset',

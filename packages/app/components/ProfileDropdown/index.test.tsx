@@ -1,5 +1,5 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -99,8 +99,9 @@ describe('ProfileDropdown', () => {
     });
     renderProfileDropdown();
 
-    const toggle = screen.getByRole('menu').previousElementSibling as HTMLElement;
-    expect(toggle.querySelector('img')?.getAttribute('src')).toBe(
+    const toggle = screen.getByRole('button', { name: '' });
+    expect(within(toggle).getByAltText('')).toHaveProperty(
+      'src',
       'https://appsemble.app/api/apps/42/assets/avatar-icon',
     );
   });

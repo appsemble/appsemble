@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { FormComponent, type SharedFormComponentProps } from '@appsemble/preact-components';
+import { FormComponent, Icon, type SharedFormComponentProps } from '@appsemble/preact-components';
 import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { type Ref, type VNode } from 'preact';
@@ -136,7 +136,7 @@ export function GeoCoordinatesInput({
           ref={ref.current ? (ref as MutableRef<HTMLDivElement>) : undefined}
         />
         <div className={styles.crossHairsOverlay}>
-          <i className={`fas fa-crosshairs ${styles.crossHairs}`} />
+          <Icon className={styles.crossHairs} icon="crosshairs" />
         </div>
         <button
           aria-label={utils.formatMessage('resetLocation')}
@@ -145,9 +145,7 @@ export function GeoCoordinatesInput({
           onClick={onReset}
           type="button"
         >
-          <span className={`icon ${styles.currentlocation}`}>
-            <i className="fas fa-crosshairs" />
-          </span>
+          <Icon className={styles.currentlocation} icon="crosshairs" />
         </button>
       </div>
     </FormComponent>

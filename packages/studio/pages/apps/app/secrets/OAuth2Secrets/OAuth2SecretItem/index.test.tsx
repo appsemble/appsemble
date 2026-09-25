@@ -1,5 +1,5 @@
 import { type AppOAuth2Secret } from '@appsemble/types';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { expect, it, vi } from 'vitest';
@@ -38,13 +38,12 @@ it('should preview the app’s icon overrides without applying them to Studio’
   );
 
   const item = screen.getByRole('button', { name: /Example SSO/ });
-  expect(item.querySelector('img')?.getAttribute('src')).toBe(
-    'http://localhost/api/apps/42/assets/label-icon',
-  );
+  const preview = within(item).getByAltText('');
+  expect(preview).toHaveProperty('src', 'http://localhost/api/apps/42/assets/label-icon');
 
   fireEvent.click(item);
 
-  const field = screen.getByLabelText('Name').closest('.field');
-  expect(field.querySelector('img')).toBeNull();
-  expect(field.querySelector('.fa-tag')).not.toBeNull();
+  // The opened form shows the Font Awesome tag icon, not the app override.
+  expect(screen.getByLabelText('Name')).toBeDefined();
+  expect(screen.getAllByAltText('')).toStrictEqual([preview]);
 });

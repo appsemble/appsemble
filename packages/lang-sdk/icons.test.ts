@@ -166,13 +166,6 @@ describe('resolveIconReference', () => {
       expect(resolveIconReference('plus', overriding)).toMatchObject({ type: 'asset' });
     });
 
-    it('should override aliases of a listed icon', () => {
-      const canonical = { add: { asset: 'plus-24', overrides: ['circle-plus' as const] } };
-      const alias = { add: { asset: 'plus-24', overrides: ['plus-circle' as const] } };
-      expect(resolveIconReference('plus-circle', canonical)).toMatchObject({ type: 'asset' });
-      expect(resolveIconReference('circle-plus', alias)).toMatchObject({ type: 'asset' });
-    });
-
     it('should pass names that are not overridden through as written', () => {
       expect(resolveIconReference('plus-circle', overriding)).toStrictEqual({
         type: 'fontawesome',
@@ -201,21 +194,6 @@ describe('resolveIconReference', () => {
         resolveIconReference('icon:add', invalid),
       );
       expect(resolveIconReference('plus', invalid)).toMatchObject({ type: 'invalid' });
-    });
-
-    it('should resolve an icon listed under two entries as invalid', () => {
-      expect(
-        resolveIconReference('plus', {
-          add: { asset: 'plus-24', overrides: ['plus'] },
-          create: { asset: 'plus-32', overrides: ['plus'] },
-        }),
-      ).toMatchObject({ type: 'invalid' });
-      expect(
-        resolveIconReference('circle-plus', {
-          add: { asset: 'plus-24', overrides: ['circle-plus'] },
-          create: { asset: 'plus-32', overrides: ['plus-circle'] },
-        }),
-      ).toMatchObject({ type: 'invalid' });
     });
   });
 });

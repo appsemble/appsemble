@@ -3,7 +3,7 @@
 import { getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type IconRegistry, resolveIconReference } from '@appsemble/lang-sdk';
 import { type BlockProps, Context } from '@appsemble/preact';
-import { render, screen } from '@testing-library/preact';
+import { render, screen, within } from '@testing-library/preact';
 import { expect, it, vi } from 'vitest';
 
 import { ListInput } from './index.js';
@@ -48,15 +48,15 @@ it('should render the app’s override for the chip remove icon', () => {
   renderListInput({ remove: { asset: 'remove-icon', overrides: ['xmark'] } });
 
   const button = screen.getByRole('button', { name: 'Remove Alpha' });
-  expect(button.querySelector('img')?.getAttribute('src')).toBe(
+  expect(within(button).getByAltText('')).toHaveProperty(
+    'src',
     'https://example.com/assets/remove-icon',
   );
 });
 
-it('should render the Font Awesome glyph without an override', () => {
+it('should not render an image for the chip remove icon without an override', () => {
   renderListInput();
 
   const button = screen.getByRole('button', { name: 'Remove Alpha' });
-  expect(button.querySelector('img')).toBeNull();
-  expect(button.querySelector('i')).not.toBeNull();
+  expect(within(button).queryByAltText('')).toBeNull();
 });

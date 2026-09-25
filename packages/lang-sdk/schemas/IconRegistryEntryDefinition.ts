@@ -19,12 +19,11 @@ published, but the icon only renders once an SVG asset with this name has been u
     },
     overrides: {
       type: 'array',
-      items: { type: 'string' },
-      description: `Font Awesome icons this entry replaces throughout the app.
+      items: { type: 'string', format: 'fontawesome' },
+      uniqueItems: true,
+      description: `Font Awesome icon names to replace with this icon everywhere in the app.
 
-Wherever the app renders one of these icons by its bare name, it renders this entry’s asset
-instead, the same way \`icon:<key>\` does. Use the Font Awesome 6 free icon name, as shown in the
-\`fa-<name>\` class of the rendered icon. Each icon can be listed under one entry only.
+Use the name from the icon’s \`fa-<name>\` class. A name can only be listed once.
 `,
     },
   },
