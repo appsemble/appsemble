@@ -1,6 +1,7 @@
 import { type IconReference, type IconRegistry, resolveIconReference } from '@appsemble/lang-sdk';
 import { type IconRenderOptions, type RenderableIcon } from '@appsemble/sdk';
-import { type BulmaSize } from '@appsemble/types';
+import { type BulmaColor, type BulmaSize } from '@appsemble/types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 
 import { fa } from './fa.js';
 
@@ -39,6 +40,30 @@ export function getIconSizeModifier(
   iconSize?: IconSizeModifier,
 ): IconSizeModifier | undefined {
   return iconSize ?? (size ? sizeModifierMap[size] : undefined);
+}
+
+/**
+ * The Font Awesome icons that indicate the status of messages and field errors per color.
+ *
+ * Apps replace these using the `overrides` of their icon registry.
+ */
+export const messageIcons: Record<'danger' | 'info' | 'success' | 'warning', IconName> = {
+  danger: 'circle-exclamation',
+  info: 'circle-info',
+  success: 'circle-check',
+  warning: 'triangle-exclamation',
+};
+
+/**
+ * Get the status icon of a message color.
+ *
+ * @param color The Bulma color of the message.
+ * @returns The icon name, or `undefined` if the color has no status icon.
+ */
+export function getMessageIcon(color?: BulmaColor): IconName | undefined {
+  return color && Object.hasOwn(messageIcons, color)
+    ? messageIcons[color as keyof typeof messageIcons]
+    : undefined;
 }
 
 /**

@@ -4,7 +4,7 @@ import { cloneElement, type ComponentChild, isValidElement, type VNode } from 'p
 import { forwardRef } from 'preact/compat';
 
 import styles from './index.module.css';
-import { Icon } from '../index.js';
+import { FieldError, Icon } from '../index.js';
 
 /**
  * These props are typically inherited by a component that implements `FormComponent`.
@@ -123,16 +123,17 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
     },
     ref,
   ) => {
-    const helpContent = (
-      <span
-        className={classNames(`help ${styles.help}`, { 'is-danger': error })}
-        data-testid="help-formcomp"
-      >
-        {isValidElement(error) || typeof error === 'string' || Number.isFinite(error)
-          ? error
-          : help}
-      </span>
-    );
+    const helpContent =
+      isValidElement(error) || typeof error === 'string' || Number.isFinite(error) ? (
+        <FieldError className={styles.help}>{error}</FieldError>
+      ) : (
+        <span
+          className={classNames(`help ${styles.help}`, { 'is-danger': error })}
+          data-testid="help-formcomp"
+        >
+          {help}
+        </span>
+      );
 
     const controls = (
       <div

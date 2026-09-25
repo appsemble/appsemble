@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { FormComponent } from '@appsemble/preact-components';
+import { FieldError, FormComponent } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type JSX, type VNode } from 'preact';
 import { type Dispatch, type StateUpdater, useCallback, useEffect, useState } from 'preact/hooks';
@@ -157,7 +157,7 @@ export function FileInput({
           removeThumbnail={removeThumbnail}
         />
       )}
-      {dirty && error ? <p className="help is-danger">{error}</p> : null}
+      {dirty && error ? <FieldError>{error}</FieldError> : null}
     </FormComponent>
   );
 }

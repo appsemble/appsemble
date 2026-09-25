@@ -9,7 +9,13 @@ import {
   useRef,
 } from 'react';
 
-import { FormComponent, Icon, type Input, type SharedFormComponentProps } from '../index.js';
+import {
+  FieldError,
+  FormComponent,
+  Icon,
+  type Input,
+  type SharedFormComponentProps,
+} from '../index.js';
 
 type FileUploadProps = Omit<
   ComponentPropsWithoutRef<typeof Input>,
@@ -108,7 +114,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             />
           ) : null}
         </div>
-        {error ? <p className="help is-danger">{error}</p> : null}
+        {error ? <FieldError>{error}</FieldError> : null}
         {!error && help ? <p className="help">{help}</p> : null}
       </FormComponent>
     );

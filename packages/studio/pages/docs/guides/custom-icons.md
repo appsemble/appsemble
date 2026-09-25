@@ -159,6 +159,16 @@ find the name of an icon, inspect it in the browser and look for its `fa-<name>`
 `fa-xmark`. List the name without `fa-`, spelled exactly as in the class. A name can only be listed
 once.
 
+Messages and form field errors show a status icon for their color. Override these names to use your
+own status icons:
+
+| Color   | Icon                   |
+| ------- | ---------------------- |
+| danger  | `circle-exclamation`   |
+| warning | `triangle-exclamation` |
+| success | `circle-check`         |
+| info    | `circle-info`          |
+
 An override applies everywhere the icon appears, and the asset keeps its own colors. Pick artwork
 that looks right on every background the icon appears on. If that isn’t possible, don’t override the
 icon and use `icon:<key>` in the places you configure yourself.
