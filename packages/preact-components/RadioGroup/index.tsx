@@ -1,7 +1,12 @@
 import { type ComponentChild, type JSX, type VNode } from 'preact';
 import { type MutableRef } from 'preact/hooks';
 
-import { FormComponent, type SharedFormComponentProps, ValuePickerProvider } from '../index.js';
+import {
+  FieldError,
+  FormComponent,
+  type SharedFormComponentProps,
+  ValuePickerProvider,
+} from '../index.js';
 
 type RadioGroupProps = Omit<JSX.HTMLAttributes<HTMLInputElement>, 'label' | 'onChange' | 'value'> &
   SharedFormComponentProps & {
@@ -72,7 +77,7 @@ export function RadioGroup({
         value={value}
       >
         {children}
-        {error ? <p className="help is-danger">{error}</p> : null}
+        {error ? <FieldError>{error}</FieldError> : null}
       </ValuePickerProvider>
     </FormComponent>
   );

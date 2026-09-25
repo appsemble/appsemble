@@ -1,6 +1,7 @@
 import { type IconReference, type IconRegistry, resolveIconReference } from '@appsemble/lang-sdk';
 import { type IconRenderOptions, type RenderableIcon } from '@appsemble/sdk';
-import { type BulmaSize } from '@appsemble/types';
+import { type BulmaColor, type BulmaSize } from '@appsemble/types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 
 import { fa } from './fa.js';
 
@@ -40,6 +41,18 @@ export function getIconSizeModifier(
 ): IconSizeModifier | undefined {
   return iconSize ?? (size ? sizeModifierMap[size] : undefined);
 }
+
+/**
+ * The Font Awesome icons that indicate the status of messages and field errors per color.
+ *
+ * Apps replace these using the `overrides` of their icon registry.
+ */
+export const messageIcons: Partial<Record<BulmaColor, IconName>> = {
+  danger: 'circle-exclamation',
+  info: 'circle-info',
+  success: 'circle-check',
+  warning: 'triangle-exclamation',
+};
 
 /**
  * Build the URL of an icon asset.

@@ -1,6 +1,6 @@
 import { type ChangeEvent, type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
-import { FormComponent, ValuePickerProvider } from '../index.js';
+import { FieldError, FormComponent, ValuePickerProvider } from '../index.js';
 
 interface RadioGroupProps extends Omit<
   ComponentPropsWithoutRef<'input'>,
@@ -45,7 +45,7 @@ export function RadioGroup({
       {/* @ts-ignore 2322 null is not assignable to type (strictNullChecks) */}
       <ValuePickerProvider name={name} onChange={onChange} value={value}>
         {children}
-        {error ? <p className="help is-danger">{error}</p> : null}
+        {error ? <FieldError>{error}</FieldError> : null}
       </ValuePickerProvider>
     </FormComponent>
   );

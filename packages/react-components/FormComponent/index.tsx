@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { Icon } from '../index.js';
+import { FieldError, Icon } from '../index.js';
 
 /**
  * These props are typically inherited by a component that implements `FormComponent`.
@@ -89,10 +89,10 @@ export function FormComponent({
   label,
   required,
 }: FormComponentProps): ReactNode {
-  const helpContent = (
-    <span className={classNames(`help ${styles.help}`, { 'is-danger': error })}>
-      {isValidElement(error) ? error : help}
-    </span>
+  const helpContent = isValidElement(error) ? (
+    <FieldError className={styles.help}>{error}</FieldError>
+  ) : (
+    <span className={classNames(`help ${styles.help}`, { 'is-danger': error })}>{help}</span>
   );
 
   const controls = (
