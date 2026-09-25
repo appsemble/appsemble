@@ -47,12 +47,24 @@ export function getIconSizeModifier(
  *
  * Apps replace these using the `overrides` of their icon registry.
  */
-export const messageIcons: Partial<Record<BulmaColor, IconName>> = {
+export const messageIcons: Record<'danger' | 'info' | 'success' | 'warning', IconName> = {
   danger: 'circle-exclamation',
   info: 'circle-info',
   success: 'circle-check',
   warning: 'triangle-exclamation',
 };
+
+/**
+ * Get the status icon of a message color.
+ *
+ * @param color The Bulma color of the message.
+ * @returns The icon name, or `undefined` if the color has no status icon.
+ */
+export function getMessageIcon(color?: BulmaColor): IconName | undefined {
+  return color && Object.hasOwn(messageIcons, color)
+    ? messageIcons[color as keyof typeof messageIcons]
+    : undefined;
+}
 
 /**
  * Build the URL of an icon asset.

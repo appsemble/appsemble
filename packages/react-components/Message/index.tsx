@@ -1,5 +1,5 @@
 import { type BulmaColor } from '@appsemble/types';
-import { messageIcons } from '@appsemble/web-utils';
+import { getMessageIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type ReactNode } from 'react';
 
@@ -29,7 +29,7 @@ interface MessageProps {
 }
 
 export function Message({ children, className, color, header }: MessageProps): ReactNode {
-  const icon = color ? messageIcons[color] : undefined;
+  const icon = getMessageIcon(color);
 
   return (
     <div className={classNames('message', className, { [`is-${color}`]: color })}>

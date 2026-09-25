@@ -23,7 +23,7 @@ interface FieldErrorProps {
 export function FieldError({ children, className }: FieldErrorProps): ReactNode {
   return (
     <p className={classNames('help is-danger', styles.root, className)}>
-      <Icon className={styles.icon} icon={messageIcons.danger!} />
+      <Icon className={styles.icon} icon={messageIcons.danger} size="small" />
       <span>{children}</span>
     </p>
   );
