@@ -286,7 +286,6 @@ seed database:
             sleep 1
           done
           appsemble-server migrate next
-          appsemble-server synchronize-trainings
           exec appsemble-server start
       variables:
         SECRET: secret

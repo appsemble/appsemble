@@ -1,1 +1,1 @@
-Run database migrations and training synchronization in dedicated Jobs
+Run database migrations in a dedicated Job

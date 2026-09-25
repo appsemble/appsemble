@@ -31,7 +31,6 @@ import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
 import * as serve from './commands/serve.js';
 import * as start from './commands/start.js';
-import * as synchronizeTrainings from './commands/synchronizeTrainings.js';
 import { coerceRemote } from './lib/coercers.js';
 import { initAxios } from './lib/initAxios.js';
 import { validateServerVersion } from './lib/validateServerVersion.js';
@@ -85,7 +84,6 @@ let parser = yargs(process.argv.slice(2))
   .command(resource)
   .command(runCronJobs as unknown as CommandModule)
   .command(start as unknown as CommandModule)
-  .command(synchronizeTrainings as unknown as CommandModule)
   .command(serve as unknown as CommandModule)
   .command(scaleContainers as unknown as CommandModule)
   .command(chargeOrganizationSubscriptions as unknown as CommandModule)

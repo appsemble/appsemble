@@ -1,16 +1,14 @@
-import { assertKoaCondition } from '@appsemble/node-utils';
+import { assertKoaCondition, getValidTrainings } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { Training, TrainingCompleted } from '../../../models/index.js';
+import { TrainingCompleted } from '../../../models/index.js';
 
 export async function completeTraining(ctx: Context): Promise<void> {
-  const {
-    pathParams: { trainingId },
-    user,
-  } = ctx;
+  const { user } = ctx;
+  const trainingId = String(ctx.pathParams.trainingId);
 
-  const training = await Training.findByPk(trainingId);
-  assertKoaCondition(training != null, ctx, 404, 'Training not found');
+  const trainingIds = await getValidTrainings('trainings');
+  assertKoaCondition(trainingIds.includes(trainingId), ctx, 404, 'Training not found');
 
   const alreadyCompleted = await TrainingCompleted.findOne({
     where: { TrainingId: trainingId, UserId: user?.id },
