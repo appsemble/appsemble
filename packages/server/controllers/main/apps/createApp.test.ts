@@ -2754,7 +2754,7 @@ describe('createApp', () => {
 
       Each key names an app-level SVG asset by its name. Keys and asset names must consist of lower case
       letters, digits, and single hyphens. Keys are case-sensitive, and \`icon:<key>\` never falls back
-      to a Font Awesome icon.
+      to a Font Awesome icon. Use \`overrides\` to replace Font Awesome icons with a custom icon.
       ",
                     "type": "object",
                   },
