@@ -34,6 +34,22 @@ describe('syncTrainings', () => {
     expect(training).not.toBeNull();
   });
 
+  it('should synchronize concurrent calls without duplicate entries', async () => {
+    const properties = JSON.stringify({
+      blockedBy: null,
+      title: '',
+      trainingOrder: ['training-1'],
+    });
+    await writeFile(`${chapterPath}/properties.json`, properties);
+    await mkdir(`${chapterPath}/training-1`);
+    await writeFile(`${chapterPath}/training-1/index.md`, '');
+
+    await Promise.all([syncTrainings(basePath), syncTrainings(basePath)]);
+
+    expect(await Training.count()).toBe(1);
+    expect(await Training.findByPk('training-1')).not.toBeNull();
+  });
+
   it('should delete database entry if the related training document no longer exists', async () => {
     await Training.create({ id: 'old-training' });
     await syncTrainings(basePath);

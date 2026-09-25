@@ -285,6 +285,8 @@ seed database:
           until pg_isready -h database -p 5432 -U admin; do
             sleep 1
           done
+          appsemble-server migrate next
+          appsemble-server synchronize-trainings
           exec appsemble-server start
       variables:
         SECRET: secret
@@ -301,7 +303,6 @@ seed database:
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
-        migrateTo: next
   script:
     - npm run scripts create-user --
       --name $BOT_ACCOUNT_NAME
@@ -749,7 +750,6 @@ validate snippets:
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
-        migrateTo: next
   script:
     - npm run appsemble -- config set remote 'http://appsemble:9999'
     - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
@@ -838,7 +838,6 @@ e2e node:
         S3_BUCKET: appsemble
         S3_ACCESS_KEY: appsemble-server
         S3_SECRET_KEY: appsemble-server-secret
-        migrateTo: next
         E2E: true
   script:
     - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d > /tmp/appsemble.crt
@@ -951,7 +950,6 @@ e2e keycloak:
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
-        migrateTo: next
         E2E: true
   script:
     - npm run appsemble -- config set context e2e

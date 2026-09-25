@@ -1,13 +1,15 @@
 import { getValidTrainings, logger } from '@appsemble/node-utils';
 
 import { Training } from '../models/main/Training.js';
+import { getDB } from '../models/index.js';
+import { withDatabaseMaintenanceLock } from './sqlUtils.js';
 
 /**
  * Makes sure that each individual training document has its reference stored on the database
  *
  * @param path The absolute path to read the trainings from
  */
-export async function syncTrainings(path: string): Promise<void> {
+async function syncTrainingsUnlocked(path: string): Promise<void> {
   const localTrainingIds = await getValidTrainings(path);
 
   // Trainings already stored on the database
@@ -34,4 +36,8 @@ export async function syncTrainings(path: string): Promise<void> {
     );
     await Training.create({ id: localTrainingId });
   }
+}
+
+export function syncTrainings(path: string): Promise<void> {
+  return withDatabaseMaintenanceLock(getDB(), () => syncTrainingsUnlocked(path));
 }
