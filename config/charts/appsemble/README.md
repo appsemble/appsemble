@@ -142,9 +142,10 @@ schema. If it fails, the upgrade fails and the previous replicas keep serving. T
 upgrade creates. On a new installation it runs after the other resources are created, so requests
 may fail with database errors until it completes.
 
-ArgoCD cannot tell an install from an upgrade, so there the Job runs as a `Sync` hook in sync wave
-`0` and the Deployment in wave `1`. Put the database and the secrets the Job reads in an earlier
-wave, such as `argocd.argoproj.io/sync-wave: "-1"`.
+When the chart is deployed with ArgoCD, which cannot tell an install from an upgrade, the Job runs
+as a `Sync` hook in sync wave `0` and the Deployment in wave `1`. Resources the Job needs that are
+deployed alongside the chart, such as the database and its secrets, then belong in an earlier wave,
+for example `argocd.argoproj.io/sync-wave: "-1"`.
 
 Check Job status and logs after install/upgrade:
 
