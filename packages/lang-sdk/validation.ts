@@ -1873,12 +1873,34 @@ function validateIcons({ icons }: AppDefinition, report: Report): void {
   if (!icons) {
     return;
   }
-  for (const key of Object.keys(icons)) {
+  // Each overridden icon name, mapped to the key of the entry listing it.
+  const overridden = new Map<string, string>();
+  for (const [key, entry] of Object.entries(icons)) {
     if (!isValidIconName(key)) {
       report(key, 'is not a valid icon key; use lower case letters, digits, and single hyphens', [
         'icons',
         key,
       ]);
+    }
+    // The schema reports entries and override lists of the wrong shape.
+    if (!Array.isArray(entry?.overrides)) {
+      continue;
+    }
+    for (const [index, name] of entry.overrides.entries()) {
+      if (typeof name !== 'string') {
+        continue;
+      }
+      const earlier = overridden.get(name);
+      if (earlier === undefined) {
+        overridden.set(name, key);
+      } else if (earlier !== key) {
+        report(name, `is already overridden by icons.${earlier}`, [
+          'icons',
+          key,
+          'overrides',
+          index,
+        ]);
+      }
     }
   }
 }

@@ -15,6 +15,7 @@ export * from './CollapsibleMenuSection/index.js';
 export * from './Dropdown/index.js';
 export * from './EditPassword/index.js';
 export * from './ErrorHandler/index.js';
+export * from './FieldError/index.js';
 export * from './FileUpload/index.js';
 export * from './Form/index.js';
 export * from './FormButtons/index.js';

@@ -1,8 +1,19 @@
+import { type BlockProps, Context } from '@appsemble/preact';
+import { fa, resolveIcon } from '@appsemble/web-utils';
 import { fireEvent, render, screen } from '@testing-library/preact';
+import { type ComponentChildren, type VNode } from 'preact';
 import { expect, it, vi } from 'vitest';
 
 import { RadioGroup } from './index.js';
 import { RadioButton } from '../RadioButton/index.js';
+
+const block = {
+  utils: { fa, resolveIcon: (reference: string) => resolveIcon(reference) },
+} as BlockProps;
+
+function Provider({ children }: { readonly children: ComponentChildren }): VNode {
+  return <Context.Provider value={block}>{children}</Context.Provider>;
+}
 
 it('should render a RadioGroup', () => {
   const onChange = vi.fn();
@@ -46,6 +57,7 @@ it('should render an error message', () => {
         Hmm 2
       </RadioButton>
     </RadioGroup>,
+    { wrapper: Provider },
   );
   expect(container.getElementsByClassName('is-danger').length).toBeGreaterThan(0);
 });

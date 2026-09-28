@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@appsemble/preact": "0.40.2",
+    "@appsemble/preact-components": "0.40.2",
     "@appsemble/sdk": "0.40.2",
     "@ericblade/quagga2": "^1.8.2",
     "preact": "^10.0.0"

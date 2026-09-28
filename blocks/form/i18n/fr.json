@@ -7,6 +7,8 @@
   "longSubmissionWarning": "Le formulaire est en cours d'envoi, veuillez patienter.",
   "optionalLabel": "(Facultatif)",
   "previousLabel": "Précédent",
+  "removeFile": "",
+  "resetLocation": "",
   "search": "Rechercher",
   "selectionNoOptions": "Il n'y a plus d'options disponibles",
   "selectionOptionsError": "Une erreur s'est produite lors du chargement des options.",

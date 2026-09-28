@@ -34,6 +34,11 @@ export interface IconRegistryEntry {
    * The name of the app-level asset holding the icon’s SVG artwork.
    */
   asset: string;
+
+  /**
+   * Font Awesome icons this entry replaces throughout the app.
+   */
+  overrides?: IconName[];
 }
 
 /**

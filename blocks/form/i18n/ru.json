@@ -7,6 +7,8 @@
   "longSubmissionWarning": "Форма находится в процессе отправки, пожалуйста, подождите.",
   "optionalLabel": "(Необязательно)",
   "previousLabel": "Предыдущая",
+  "removeFile": "",
+  "resetLocation": "",
   "search": "Поиск",
   "selectionNoOptions": "Больше нет доступных вариантов",
   "selectionOptionsError": "Произошла ошибка при загрузке параметров",

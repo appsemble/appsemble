@@ -87,6 +87,15 @@ barcode event only holds the object with property barcode.",
     "loading": {
       "description": "This message is displayed if no data has been loaded yet.",
     },
+    "removeImage": {
+      "description": "The accessible name of the button that removes the selected image.",
+    },
+    "selectImage": {
+      "description": "The accessible name of the control that selects an image to scan.",
+    },
+    "stopScanning": {
+      "description": "The accessible name of the button that stops the camera scanner.",
+    },
   },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -2455,6 +2464,12 @@ Include an array of fields in \`fields\` to replace the current list of fields i
       "description": undefined,
     },
     "previousLabel": {
+      "description": undefined,
+    },
+    "removeFile": {
+      "description": undefined,
+    },
+    "resetLocation": {
       "description": undefined,
     },
     "search": {
@@ -5649,7 +5664,11 @@ Compatible data that is received will be displayed.",
       },
     },
   },
-  "messages": undefined,
+  "messages": {
+    "changeImage": {
+      "description": "The accessible name of the control that selects a new image.",
+    },
+  },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,

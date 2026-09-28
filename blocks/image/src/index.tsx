@@ -1,5 +1,5 @@
 import { bootstrap } from '@appsemble/preact';
-import { AppAssetDownloadButton, Modal, useToggle } from '@appsemble/preact-components';
+import { AppAssetDownloadButton, Icon, Modal, useToggle } from '@appsemble/preact-components';
 import { type JSX } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
@@ -24,7 +24,7 @@ bootstrap(
       width = 250,
     },
     ready,
-    utils: { asset, remap },
+    utils: { asset, formatMessage, remap },
   }) => {
     const [data, setData] = useState(blockData);
     const modal = useToggle();
@@ -94,9 +94,12 @@ bootstrap(
               </figure>
             </button>
             {input ? (
-              /* eslint-disable-next-line jsx-a11y/label-has-associated-control */
-              <label className={styles.fileLabel} for="fileInput">
-                <i class="fas fa-pen" />
+              <label
+                aria-label={formatMessage('changeImage')}
+                className={styles.fileLabel}
+                for="fileInput"
+              >
+                <Icon icon="pen" size="small" />
                 <input
                   className={styles.hiddenInput}
                   id="fileInput"

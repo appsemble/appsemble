@@ -1,8 +1,19 @@
+import { getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
+import { type BlockProps, Context } from '@appsemble/preact';
 import { render, screen, waitFor } from '@testing-library/preact';
 import userEvent from '@testing-library/user-event';
+import { type ComponentChildren, type VNode } from 'preact';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { CardImage } from './index.js';
+
+function Provider({ children }: { readonly children: ComponentChildren }): VNode {
+  return (
+    <Context.Provider value={getDefaultBootstrapParams() as unknown as BlockProps}>
+      {children}
+    </Context.Provider>
+  );
+}
 
 let originalCreateObjectURL: typeof URL.createObjectURL | undefined;
 let originalFetch: typeof globalThis.fetch | undefined;
@@ -54,7 +65,9 @@ it('should download original feed images from previews', async () => {
     value: revokeObjectURL,
   });
 
-  render(<CardImage alt="Feed image" src="http://localhost/api/apps/1/assets/feed-image" />);
+  render(<CardImage alt="Feed image" src="http://localhost/api/apps/1/assets/feed-image" />, {
+    wrapper: Provider,
+  });
 
   await userEvent.click(screen.getByRole('button', { name: 'Feed image' }));
   await userEvent.click(screen.getByRole('button', { name: 'Download in HD' }));

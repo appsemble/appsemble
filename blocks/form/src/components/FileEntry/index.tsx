@@ -1,6 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import {
   AppAssetDownloadButton,
+  Icon,
   Modal,
   useObjectURL,
   useToggle,
@@ -314,13 +315,12 @@ export function FileEntry({
   const displayFileEntryButtons = (): VNode | null =>
     disabled ? null : (
       <button
+        aria-label={utils.formatMessage('removeFile')}
         className={`button is-small ${styles['remove-button']}`}
         onClick={onRemove}
         type="button"
       >
-        <span className="icon">
-          <i className="fas fa-times" />
-        </span>
+        <Icon icon="xmark" />
       </button>
     );
 

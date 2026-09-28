@@ -1,6 +1,10 @@
 import { type BulmaColor } from '@appsemble/types';
+import { getMessageIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
+
+import styles from './index.module.css';
+import { Icon } from '../index.js';
 
 interface MessageProps {
   /**
@@ -25,13 +29,24 @@ interface MessageProps {
 }
 
 export function Message({ children, className, color, header }: MessageProps): VNode {
+  const icon = getMessageIcon(color);
+
   return (
     <div
       className={classNames('message', className, { [`is-${color}`]: color })}
       data-testid="message-comp"
     >
       {header ? <h6 className="message-header">{header}</h6> : null}
-      <div className="message-body">{children}</div>
+      <div className={classNames('message-body', { [styles.body]: icon })}>
+        {icon ? (
+          <>
+            <Icon className={styles.icon} icon={icon} />
+            <div className={styles.content}>{children}</div>
+          </>
+        ) : (
+          children
+        )}
+      </div>
     </div>
   );
 }

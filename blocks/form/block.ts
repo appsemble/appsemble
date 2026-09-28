@@ -1632,6 +1632,8 @@ declare module '@appsemble/sdk' {
     selectionOptionsError: never;
     fixErrors: never;
     longSubmissionWarning: never;
+    removeFile: never;
+    resetLocation: never;
   }
 
   interface Parameters {

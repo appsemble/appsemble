@@ -1,4 +1,4 @@
-import { Button } from '@appsemble/react-components';
+import { Button, FieldError } from '@appsemble/react-components';
 import { type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -37,7 +37,7 @@ export function DefaultPage({ onChangeTab }: DefaultPageProps): ReactNode {
   if (!app.definition.security?.roles) {
     return (
       <>
-        <p className="help is-danger">{formatMessage(messages.noRoles)}</p>
+        <FieldError>{formatMessage(messages.noRoles)}</FieldError>
         <Button className="is-primary" icon="add" onClick={() => onChangeTab('createRole')}>
           {formatMessage(messages.defaultCreateNewRole)}
         </Button>

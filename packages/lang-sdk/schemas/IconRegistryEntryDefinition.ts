@@ -17,5 +17,14 @@ This is an asset name, not a URL or asset ID. The asset doesn’t need to exist 
 published, but the icon only renders once an SVG asset with this name has been uploaded.
 `,
     },
+    overrides: {
+      type: 'array',
+      items: { type: 'string', format: 'fontawesome' },
+      uniqueItems: true,
+      description: `Font Awesome icon names to replace with this icon everywhere in the app.
+
+Use the name from the icon’s \`fa-<name>\` class. A name can only be listed once.
+`,
+    },
   },
 };

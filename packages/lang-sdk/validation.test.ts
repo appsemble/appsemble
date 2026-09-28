@@ -5294,6 +5294,58 @@ describe('validateAppDefinition', () => {
         ),
       ]);
     });
+
+    describe('overrides', () => {
+      it('should report an icon listed under two entries', async () => {
+        const app = createTestApp();
+        app.icons = {
+          add: { asset: 'plus-24', overrides: ['plus', 'circle-plus'] },
+          create: { asset: 'plus-32', overrides: ['plus'] },
+        };
+
+        const result = await validateAppDefinition(app, () => []);
+
+        expect(result.errors).toStrictEqual([
+          new ValidationError('is already overridden by icons.add', 'plus', undefined, [
+            'icons',
+            'create',
+            'overrides',
+            0,
+          ]),
+        ]);
+      });
+
+      it('should report an icon listed twice under one entry once', async () => {
+        const app = createTestApp();
+        app.icons = { add: { asset: 'plus-24', overrides: ['plus', 'plus'] } };
+
+        const schemaResult = new AppValidator().validateApp(app);
+        const result = await validateAppDefinition(app, () => []);
+
+        expect(schemaResult.errors).toContainEqual(
+          expect.objectContaining({ path: ['icons', 'add', 'overrides'] }),
+        );
+        expect(result.errors).toStrictEqual([]);
+      });
+
+      it('should not require the asset of an overriding entry to exist', async () => {
+        const app = createTestApp();
+        app.icons = { add: { asset: 'not-uploaded', overrides: ['plus'] } };
+
+        const result = await validateAppDefinition(app, () => []);
+
+        expect(result.errors).toStrictEqual([]);
+      });
+
+      it('should accept a key named after a Font Awesome icon', async () => {
+        const app = createTestApp();
+        app.icons = { plus: { asset: 'plus-24' } };
+
+        const result = await validateAppDefinition(app, () => []);
+
+        expect(result.errors).toStrictEqual([]);
+      });
+    });
   });
 
   it.each(['resend-banner', 'bottom-navigation'])(

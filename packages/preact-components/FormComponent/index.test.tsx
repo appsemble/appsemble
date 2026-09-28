@@ -1,8 +1,19 @@
+import { type BlockProps, Context } from '@appsemble/preact';
+import { fa, resolveIcon } from '@appsemble/web-utils';
 import { render, screen } from '@testing-library/preact';
+import { type ComponentChildren, type VNode } from 'preact';
 import { expect, it } from 'vitest';
 
 import { FormComponent } from './index.js';
 import { Input } from '../Input/index.js';
+
+const block = {
+  utils: { fa, resolveIcon: (reference: string) => resolveIcon(reference) },
+} as BlockProps;
+
+function Provider({ children }: { readonly children: ComponentChildren }): VNode {
+  return <Context.Provider value={block}>{children}</Context.Provider>;
+}
 
 it('should render a form component with children elements', () => {
   render(
@@ -38,16 +49,17 @@ it('should not render a help text if disableHelp is set to true', () => {
   expect(screen.getByTestId('submit-formcomp').children[1]).toBeUndefined();
 });
 
-it('should render error text with appropriate class names', () => {
+it('should render error text with a status icon', () => {
   render(
     <FormComponent error="this is an error">
       <Input />
       <Input />
     </FormComponent>,
+    { wrapper: Provider },
   );
-  const helpText = screen.getByTestId('help-formcomp');
+  const helpText = screen.getByText('this is an error').closest('.help')!;
   expect(helpText.classList).toContain('is-danger');
-  expect(helpText.textContent).toBe('this is an error');
+  expect(helpText.querySelector('.icon .fa-circle-exclamation')).not.toBeNull();
 });
 
 it('should render detailed help text', () => {

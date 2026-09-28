@@ -155,4 +155,45 @@ describe('resolveIconReference', () => {
     expect(resolveIconReference('asset:dossier', registry)).toMatchObject({ type: 'invalid' });
     expect(resolveIconReference('', registry)).toMatchObject({ type: 'invalid' });
   });
+
+  describe('overrides', () => {
+    const overriding = { add: { asset: 'plus-24', overrides: ['plus' as const] } };
+
+    it('should render an overridden name like the entry overriding it', () => {
+      expect(resolveIconReference('plus', overriding)).toStrictEqual(
+        resolveIconReference('icon:add', overriding),
+      );
+      expect(resolveIconReference('plus', overriding)).toMatchObject({ type: 'asset' });
+    });
+
+    it('should pass names that are not overridden through as written', () => {
+      expect(resolveIconReference('plus-circle', overriding)).toStrictEqual({
+        type: 'fontawesome',
+        name: 'plus-circle',
+      });
+      expect(resolveIconReference('not-a-real-icon', overriding)).toStrictEqual({
+        type: 'fontawesome',
+        name: 'not-a-real-icon',
+      });
+    });
+
+    it('should resolve bare names like without a registry if no entry overrides', () => {
+      expect(resolveIconReference('plus', registry)).toStrictEqual(resolveIconReference('plus'));
+    });
+
+    it('should not let a key shadow a Font Awesome name', () => {
+      expect(resolveIconReference('plus', { plus: { asset: 'plus-24' } })).toStrictEqual({
+        type: 'fontawesome',
+        name: 'plus',
+      });
+    });
+
+    it('should resolve an overriding entry with an invalid asset name as invalid', () => {
+      const invalid = { add: { asset: 'Plus.svg', overrides: ['plus' as const] } };
+      expect(resolveIconReference('plus', invalid)).toStrictEqual(
+        resolveIconReference('icon:add', invalid),
+      );
+      expect(resolveIconReference('plus', invalid)).toMatchObject({ type: 'invalid' });
+    });
+  });
 });

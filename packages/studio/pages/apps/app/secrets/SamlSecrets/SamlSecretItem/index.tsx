@@ -1,4 +1,4 @@
-import { useToggle } from '@appsemble/react-components';
+import { IconProvider, useToggle } from '@appsemble/react-components';
 import { type AppSamlSecret } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
@@ -54,19 +54,21 @@ export function SamlSecretItem({ onDeleted, onUpdated, secret }: SamlSecretItemP
 
   return (
     <>
-      <ListButton
-        description={
-          entityId
-            ? entityId.origin === ssoUrl.origin
-              ? entityId.pathname
-              : secret.entityId
-            : formatMessage(messages.certificateUploaded)
-        }
-        icon={secret.icon}
-        onClick={modal.enable}
-        subtitle={ssoUrl.origin}
-        title={secret.name}
-      />
+      <IconProvider apiUrl={window.location.origin} appId={app.id} registry={app.definition.icons}>
+        <ListButton
+          description={
+            entityId
+              ? entityId.origin === ssoUrl.origin
+                ? entityId.pathname
+                : secret.entityId
+              : formatMessage(messages.certificateUploaded)
+          }
+          icon={secret.icon}
+          onClick={modal.enable}
+          subtitle={ssoUrl.origin}
+          title={secret.name}
+        />
+      </IconProvider>
       <SamlModal onDeleted={onDeleted} onSubmit={onSubmit} secret={secret} toggle={modal} />
     </>
   );

@@ -2,13 +2,18 @@ import { type IconReference } from '@appsemble/lang-sdk';
 import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import { fa, getIconSizeModifier, type IconSizeModifier, resolveIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
-import { type ComponentProps, type ReactNode, useState } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode, useState } from 'react';
 
 import styles from './index.module.css';
 import { useIconContext } from '../IconProvider/index.js';
 
-interface IconProps extends ComponentProps<'span'> {
+interface IconProps extends ComponentPropsWithoutRef<'button'> {
   readonly color?: BulmaColor;
+
+  /**
+   * The element to render as the `.icon` wrapper.
+   */
+  readonly component?: 'button' | 'span';
 
   /**
    * A Font Awesome icon name or an `icon:<key>` reference to the app’s icon registry.
@@ -22,6 +27,7 @@ interface IconProps extends ComponentProps<'span'> {
 export function Icon({
   color,
   className,
+  component: Component = 'span',
   icon,
   size,
   iconSize = getIconSizeModifier(size),
@@ -33,7 +39,7 @@ export function Icon({
   const resolved = resolveIcon(icon, registry, getAssetUrl);
 
   return (
-    <span
+    <Component
       className={classNames('icon', size && `is-${size}`, className, {
         [styles.asset]: resolved.type === 'asset',
         [`has-text-${color}`]: color && resolved.type !== 'asset',
@@ -53,6 +59,6 @@ export function Icon({
           src={resolved.url}
         />
       ) : null}
-    </span>
+    </Component>
   );
 }

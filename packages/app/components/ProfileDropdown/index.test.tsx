@@ -1,11 +1,12 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ProfileDropdown } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
+import { AppIconProvider } from '../AppIconProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
@@ -62,11 +63,13 @@ afterEach(() => {
 function renderProfileDropdown(): void {
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/Home']}>
-        <Routes>
-          <Route element={<ProfileDropdown />} path="/:lang/*" />
-        </Routes>
-      </MemoryRouter>
+      <AppIconProvider>
+        <MemoryRouter initialEntries={['/en/Home']}>
+          <Routes>
+            <Route element={<ProfileDropdown />} path="/:lang/*" />
+          </Routes>
+        </MemoryRouter>
+      </AppIconProvider>
     </IntlProvider>,
   );
 }
@@ -82,5 +85,24 @@ describe('ProfileDropdown', () => {
     renderProfileDropdown();
 
     expect(screen.queryByText('pages.home')).toBeNull();
+  });
+
+  it('should render the app’s override for the avatar fallback icon', () => {
+    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+      definition: {
+        ...appDefinition,
+        icons: { avatar: { asset: 'avatar-icon', overrides: ['user'] } },
+      },
+      demoMode: false,
+      revision: 1,
+      blockManifests: [],
+    });
+    renderProfileDropdown();
+
+    const toggle = screen.getByRole('button', { name: '' });
+    expect(within(toggle).getByAltText('')).toHaveProperty(
+      'src',
+      'https://appsemble.app/api/apps/42/assets/avatar-icon',
+    );
   });
 });
