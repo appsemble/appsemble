@@ -25,34 +25,30 @@ function ShowMessageButton({ message }: { readonly message: Msg | string }): Rea
   );
 }
 
-function renderRegions(message: Msg | string): { assertive: Element; polite: Element } {
+function showMessage(message: Msg | string): Element | null {
   const { container } = render(
     <MessagesProvider>
       <ShowMessageButton message={message} />
     </MessagesProvider>,
   );
-  const assertive = container.querySelector('[aria-live="assertive"]');
-  const polite = container.querySelector('[aria-live="polite"]');
-  expect(assertive).not.toBeNull();
-  expect(polite).not.toBeNull();
+  // A polite live region only announces content added after it is rendered.
+  const politeRegion = container.querySelector('[aria-live="polite"]');
   fireEvent.click(screen.getByRole('button', { name: 'Show' }));
-  return { assertive: assertive!, polite: polite! };
+  return politeRegion;
 }
 
 it('should announce danger messages assertively', () => {
-  const { assertive, polite } = renderRegions({ body: 'Saving failed', color: 'danger' });
-  expect(assertive.textContent).toBe('Saving failed');
-  expect(polite.textContent).toBe('');
+  showMessage({ body: 'Saving failed', color: 'danger' });
+  expect(screen.getByRole('alert').textContent).toBe('Saving failed');
 });
 
 it('should announce messages without a color assertively', () => {
-  const { assertive, polite } = renderRegions('Something went wrong');
-  expect(assertive.textContent).toBe('Something went wrong');
-  expect(polite.textContent).toBe('');
+  showMessage('Something went wrong');
+  expect(screen.getByRole('alert').textContent).toBe('Something went wrong');
 });
 
 it('should announce other messages politely', () => {
-  const { assertive, polite } = renderRegions({ body: 'Saved', color: 'success' });
-  expect(polite.textContent).toBe('Saved');
-  expect(assertive.textContent).toBe('');
+  const politeRegion = showMessage({ body: 'Saved', color: 'success' });
+  expect(screen.queryByRole('alert')).toBeNull();
+  expect(politeRegion?.textContent).toBe('Saved');
 });

@@ -71,15 +71,10 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
     [forceUpdate],
   );
 
-  const renderAnnouncements = (assertive: boolean): ReactNode =>
-    msgs.current
-      .filter((message) => ((message.color || 'danger') === 'danger') === assertive)
-      .map((message) => <p key={message.id}>{message.body}</p>);
-
   return (
     <Context.Provider value={push}>
       {children}
-      <div className={`${styles.root} mx-3`}>
+      <div aria-live="polite" className={`${styles.root} mx-3`}>
         <TransitionGroup>
           {msgs.current.map((message) => (
             <CSSTransition
@@ -96,7 +91,12 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
                 className={`${styles.content} ${styles[message.layout || 'bottom']}`}
                 color={message.color || 'danger'}
               >
-                <span className={styles.body}>{message?.body}</span>
+                <span
+                  className={styles.body}
+                  role={(message.color || 'danger') === 'danger' ? 'alert' : undefined}
+                >
+                  {message.body}
+                </span>
                 {message.dismissable ? (
                   <button
                     aria-label={formatMessage(messages.dismiss)}
@@ -109,13 +109,6 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
             </CSSTransition>
           ))}
         </TransitionGroup>
-      </div>
-      {/* A live region only announces content added after it is rendered, so both are always rendered */}
-      <div aria-live="polite" className="is-sr-only">
-        {renderAnnouncements(false)}
-      </div>
-      <div aria-live="assertive" className="is-sr-only">
-        {renderAnnouncements(true)}
       </div>
     </Context.Provider>
   );
