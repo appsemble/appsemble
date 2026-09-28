@@ -320,7 +320,7 @@ export function FileEntry({
         onClick={onRemove}
         type="button"
       >
-        <Icon icon="times" />
+        <Icon icon="xmark" />
       </button>
     );
 

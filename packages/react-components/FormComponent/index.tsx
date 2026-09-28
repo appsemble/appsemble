@@ -89,11 +89,12 @@ export function FormComponent({
   label,
   required,
 }: FormComponentProps): ReactNode {
-  const helpContent = error ? (
-    <FieldError className={styles.help}>{isValidElement(error) ? error : help}</FieldError>
-  ) : (
-    <span className={`help ${styles.help}`}>{help}</span>
-  );
+  const helpContent =
+    isValidElement(error) || typeof error === 'string' || Number.isFinite(error) ? (
+      <FieldError className={styles.help}>{error}</FieldError>
+    ) : (
+      <span className={classNames(`help ${styles.help}`, { 'is-danger': error })}>{help}</span>
+    );
 
   const controls = (
     <div

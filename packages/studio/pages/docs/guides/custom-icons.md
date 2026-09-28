@@ -159,6 +159,9 @@ find the name of an icon, inspect it in the browser and look for its `fa-<name>`
 `fa-xmark`. List the name without `fa-`, spelled exactly as in the class. A name can only be listed
 once.
 
+Font Awesome also accepts older names for some icons, such as `times` for `xmark`. An override only
+replaces the name it lists, so if the same icon appears under several names, list each of them.
+
 Messages and form field errors show a status icon for their color. Override these names to use your
 own status icons:
 

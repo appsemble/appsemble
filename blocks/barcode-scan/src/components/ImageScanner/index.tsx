@@ -106,7 +106,7 @@ export function ImageScanner({
             onClick={handleRemove}
             type="button"
           >
-            <Icon icon="times" />
+            <Icon icon="xmark" />
           </button>
         </div>
       ) : (

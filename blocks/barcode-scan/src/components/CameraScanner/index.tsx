@@ -156,7 +156,7 @@ export function CameraScanner({
               onClick={handleScanStop}
               type="button"
             >
-              <Icon icon="times" />
+              <Icon icon="xmark" />
             </button>
           ) : null}
         </div>

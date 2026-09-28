@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { FormComponent, Icon, type SharedFormComponentProps } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { type Ref, type VNode } from 'preact';
@@ -31,6 +32,7 @@ export function GeoCoordinatesInput({
   const [locationMarker, setLocationMarker] = useState<CircleMarker>(null);
   const { icon, label, tag } = field;
   const required = isRequired(field, utils, formValues);
+  const builtInCrosshairs = utils.resolveIcon('crosshairs').type === 'fontawesome';
 
   const {
     defaultLocation: [defaultLat = 51.449_107, defaultLng = 5.457_96] = [],
@@ -136,7 +138,10 @@ export function GeoCoordinatesInput({
           ref={ref.current ? (ref as MutableRef<HTMLDivElement>) : undefined}
         />
         <div className={styles.crossHairsOverlay}>
-          <Icon className={styles.crossHairs} icon="crosshairs" />
+          <Icon
+            className={classNames(styles.crossHairs, { [styles.centralPicker]: builtInCrosshairs })}
+            icon="crosshairs"
+          />
         </div>
         <button
           aria-label={utils.formatMessage('resetLocation')}
@@ -145,7 +150,12 @@ export function GeoCoordinatesInput({
           onClick={onReset}
           type="button"
         >
-          <Icon className={styles.currentlocation} icon="crosshairs" />
+          <Icon
+            className={classNames(styles.currentlocation, {
+              [styles.currentLocationPicture]: builtInCrosshairs,
+            })}
+            icon="crosshairs"
+          />
         </button>
       </div>
     </FormComponent>
