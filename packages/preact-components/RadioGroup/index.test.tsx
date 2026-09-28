@@ -73,6 +73,7 @@ it('should mark the radio buttons as invalid and describe them by the error', ()
         Hmm 2
       </RadioButton>
     </RadioGroup>,
+    { wrapper: Provider },
   );
   for (const radio of screen.getAllByRole('radio')) {
     expect(radio.getAttribute('aria-invalid')).toBe('true');

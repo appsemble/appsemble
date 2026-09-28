@@ -128,6 +128,7 @@ it('should mark an input with an error as invalid and describe it by the error',
     >
       <Input id="name" />
     </FormComponent>,
+    { wrapper: Provider },
   );
   const input = screen.getByLabelText(/Name/);
   expect(input.getAttribute('aria-invalid')).toBe('true');

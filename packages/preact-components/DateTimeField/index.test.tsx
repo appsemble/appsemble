@@ -1,4 +1,5 @@
 import { type BlockProps, Context } from '@appsemble/preact';
+import { fa, resolveIcon } from '@appsemble/web-utils';
 import { render } from '@testing-library/preact';
 import { type ComponentChildren, type VNode } from 'preact';
 import { expect, it } from 'vitest';
@@ -6,7 +7,9 @@ import { expect, it } from 'vitest';
 import { DateTimeField } from './index.js';
 import { getDescription } from '../FormComponent/getDescription.js';
 
-const block = { utils: { remap: () => '' } } as unknown as BlockProps;
+const block = {
+  utils: { fa, remap: () => '', resolveIcon: (reference: string) => resolveIcon(reference) },
+} as unknown as BlockProps;
 
 function Provider({ children }: { readonly children: ComponentChildren }): VNode {
   return <Context.Provider value={block}>{children}</Context.Provider>;

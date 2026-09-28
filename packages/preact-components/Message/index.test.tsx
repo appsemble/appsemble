@@ -86,6 +86,7 @@ it('should expose the message as an alert', () => {
     <Message color="danger" role="alert">
       <span>Submitting failed</span>
     </Message>,
+    { wrapper: Provider },
   );
   expect(screen.getByRole('alert').textContent).toBe('Submitting failed');
 });
