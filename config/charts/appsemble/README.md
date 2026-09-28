@@ -142,6 +142,10 @@ schema. If it fails, the upgrade fails and the previous replicas keep serving. T
 upgrade creates. On a new installation it runs after the other resources are created, so requests
 may fail with database errors until it completes.
 
+ArgoCD cannot tell an install from an upgrade, so there the Job runs as a `Sync` hook in sync wave
+`0` and the Deployment in wave `1`. Put the database and the secrets the Job reads in an earlier
+wave, such as `argocd.argoproj.io/sync-wave: "-1"`.
+
 Check Job status and logs after install/upgrade:
 
 ```sh
