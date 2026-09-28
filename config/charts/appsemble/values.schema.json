@@ -427,6 +427,16 @@
       "type": ["string", "null"],
       "description": "If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`"
     },
+    "migrateImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": {
+          "type": ["string", "null"],
+          "description": "The Docker image tag of the migrate Job. Defaults to the server image tag. Set it to the newer tag when migrating down, because only the image which introduced a migration can revert it."
+        }
+      }
+    },
     "skipCustomDomains": {
       "type": "boolean",
       "description": "If specified, certificates for ingresses for custom domains of apps and app collections will not be issued"

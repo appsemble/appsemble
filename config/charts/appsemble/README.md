@@ -133,11 +133,19 @@ writing `A` and `AAAA` record sets in `dns.zone` and nothing else, so it cannot 
 
 ## Migrations
 
-The chart runs database migrations in the `migrate` Job after each install and upgrade. Server
-replicas do not run migrations at startup.
+The chart runs database migrations in the `migrate` Job. Server replicas do not run migrations at
+startup.
 
-If the migration Job fails, the Appsemble pod can still start, but requests may fail with database
-errors.
+On an upgrade the Job runs before the Deployment is updated, so new replicas start on the migrated
+schema. If it fails, the upgrade fails and the previous replicas keep serving. The Job connects to
+`postgresql.host` directly, not through PgBouncer, so it does not depend on resources the same
+upgrade creates. On a new installation it runs after the other resources are created, so requests
+may fail with database errors until it completes.
+
+When the chart is deployed with ArgoCD, which cannot tell an install from an upgrade, the Job runs
+as a `Sync` hook in sync wave `0` and the Deployment in wave `1`. Resources the Job needs that are
+deployed alongside the chart, such as the database and its secrets, then belong in an earlier wave,
+for example `argocd.argoproj.io/sync-wave: "-1"`.
 
 Check Job status and logs after install/upgrade:
 
@@ -161,6 +169,24 @@ helm upgrade my-appsemble appsemble/appsemble \
   --set 'ingress.host=my-appsemble.example.com' \
   --set 'migrateTo=next'
 ```
+
+### Rolling back
+
+Only the image which introduced a migration can revert it, so do not use `helm rollback`: the
+previous release's image does not know the newer migrations and leaves the schema as it is. Roll
+back with an upgrade of the current chart instead. It runs the current image's migrations down to
+the previous version, then rolls out the previous server image:
+
+```sh
+helm upgrade my-appsemble appsemble/appsemble --version <current> \
+  --set 'ingress.host=my-appsemble.example.com' \
+  --set 'image.tag=<previous>' \
+  --set 'migrateImage.tag=<current>' \
+  --set 'migrateTo=<previous>'
+```
+
+`<current>` is the version being rolled back from and `<previous>` the version to return to. Unset
+`image.tag`, `migrateImage.tag` and `migrateTo` again on the next upgrade.
 
 ### Updating Secrets
 
@@ -495,6 +521,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `cronjob.enabled`                           | true                           | Deploy the app cron runner and generic maintenance CronJobs (independent of ingress/route).                                               |
 | `cronjob.platform.enabled`                  | true                           | Deploy the SaaS-only CronJobs: subscription billing, production backup, container scaling.                                                |
 | `migrateTo`                                 | `nil`                          | If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`.                   |
+| `migrateImage.tag`                          | `nil`                          | The image tag of the `migrate` Job. Defaults to the server image tag. See [Rolling back](#rolling-back).                                  |
 | `proxy`                                     | `false`                        | If `true`, The proxy is trusted for logging purposes.                                                                                     |
 | `postgresql.host`                           | `appsemble-postgresql-rw`      | The PostgreSQL host, such as the `-rw` service of a CloudNativePG `Cluster`.                                                              |
 | `postgresql.port`                           | `5432`                         | The PostgreSQL port.                                                                                                                      |
