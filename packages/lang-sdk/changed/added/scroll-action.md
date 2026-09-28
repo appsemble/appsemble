@@ -1,1 +1,0 @@
-Add `scroll` action definition

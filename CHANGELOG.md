@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.3-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.0)] - 2026-09-28
+
+### Added
+
+- Block(`footer`): Add the `closeImage` and `enlargeImage` messages.
+- Block(`footer`): Add the `enlarge` image parameter to control whether images open an enlargement.
+- Block(`form`): Add `hideErrorSummary` parameter to hide the summary of invalid fields.
+- Block(`form`): Show a status icon in field errors.
+- App: Add `scroll` action to scroll the page to the top or bottom.
+- App: Lay out the built-in pages of an app as a responsive grid using `layout.builtinPages`.
+- App: Place the resend banner and the bottom navigation in a page grid via reserved areas.
+- Lang-sdk: Add `layout.builtinPages` to lay out the built-in pages of an app as a responsive grid.
+- Lang-sdk: Add `overrides` to icon registry entries to replace built-in Font Awesome icons.
+- Lang-sdk: Add `scroll` action definition.
+- Lang-sdk: Add the `resend-banner` and `bottom-navigation` grid areas to page and built-in page
+  layouts.
+- Preact-components: Show status icons in messages and form field errors.
+- React-components: Show status icons in messages and form field errors.
+- Server: Roll back database migrations with the `migrateImage.tag` Helm value.
+- Server: Serve `layout.builtinPages` to the app.
+- Studio: Document bundled and external Valkey deployment.
+- Studio: Show a status icon in field errors.
+
+### Changed
+
+- Block(`form`): Show the errors of untouched fields after a submit attempt.
+- Lang-sdk: Allow blocks to claim the breadcrumbs, resend-banner and bottom-navigation grid areas.
+- Server: Read the training catalog from bundled files without database synchronization.
+- Server: Retry Valkey connections with capped exponential backoff.
+- Server: Run database migrations in a dedicated Job.
+- Server: Run the Helm migrate Job before the Deployment rolls over, connected to PostgreSQL
+  directly.
+
+### Removed
+
+- Cli: Remove the synchronize-trainings command.
+
+### Fixed
+
+- Block(`barcode-scan`): Name the image and camera scanner buttons for screen readers.
+- Block(`footer`): Render footer content and actions correctly.
+- Block(`form`): Name the remove file and reset location buttons for screen readers.
+- Block(`form`): Show validation errors on selection and geocoordinates fields.
+- Block(`image`): Name the change image control for screen readers.
+- App: Align custom icons with their label in inline contexts.
+- App: Keep the content of the built-in pages clear of the bottom navigation.
+- App: Render the title bar on the built-in pages that were missing one.
+- App: Stop a built-in page from applying the navigation of the page rendered before it.
+- Preact-components: Align custom icons with their label in inline contexts.
+- Web-utils: Align custom icons with their label in inline contexts.
+
 ## \[[0.40.2](https://gitlab.com/appsemble/appsemble/-/releases/0.40.2)] - 2026-09-23
 
 ### Changed
