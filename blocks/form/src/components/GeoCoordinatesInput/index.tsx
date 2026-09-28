@@ -17,7 +17,9 @@ type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinate
  * An input element for an object type schema which implements GeoCoordinates.
  */
 export function GeoCoordinatesInput({
+  dirty,
   disabled,
+  error,
   errorLinkRef,
   field,
   formValues,
@@ -96,9 +98,9 @@ export function GeoCoordinatesInput({
       attributionControl: false,
       layers: [new TileLayer(theme.tileLayer)],
     })
-      .once('locationerror', (error) => {
+      .once('locationerror', (event) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
-        if (error?.code === 1) {
+        if (event?.code === 1) {
           utils.showMessage({ body: utils.remap(locationError, {}) as string });
         }
         // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
@@ -122,6 +124,7 @@ export function GeoCoordinatesInput({
 
   return (
     <FormComponent
+      error={dirty ? error : null}
       icon={icon}
       label={label ? (utils.remap(label, {}) as string) : name}
       name={name}

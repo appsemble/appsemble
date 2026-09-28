@@ -38,6 +38,7 @@ bootstrap(
       display = 'flex',
       fields: initialFields,
       fullWidth = false,
+      hideErrorSummary = false,
       hideSubmitButton = false,
       longSubmissionDuration = 5000,
       previous,
@@ -102,7 +103,7 @@ bootstrap(
     );
 
     const [fieldErrorLinks, setFieldErrorLinks] = useState<
-      Record<string, { error: string; element: VNode } | null>
+      Record<string, { error: string; element: VNode; ref: MutableRef<any> } | null>
     >({});
 
     const setFieldErrorLink = (
@@ -117,6 +118,7 @@ bootstrap(
             ...prevState,
             [fieldName]: {
               error,
+              ref,
               element: (
                 <button
                   className={styles['error-link']}
@@ -142,9 +144,10 @@ bootstrap(
       }
     };
 
-    const errorLink = Object.values(fieldErrorLinks).find(
+    const firstFieldErrorLink = Object.values(fieldErrorLinks).find(
       (fieldErrorLink) => fieldErrorLink != null,
-    )?.element;
+    );
+    const errorLink = firstFieldErrorLink?.element;
 
     const lock = useRef<symbol>();
 
@@ -238,6 +241,10 @@ bootstrap(
 
         if (!isFormValid(errors, keys) || formErrors.some(Boolean)) {
           setSubmitting(false);
+
+          if (firstFieldErrorLink && utils.remap(hideErrorSummary, values)) {
+            goToRef(firstFieldErrorLink.ref);
+          }
 
           if (!hasTriedToSubmit) {
             return setHasTriedToSubmit(true);
@@ -343,6 +350,8 @@ bootstrap(
       fields,
       errors,
       formErrors,
+      firstFieldErrorLink,
+      hideErrorSummary,
       longSubmissionDuration,
       hasTriedToSubmit,
       actions,
@@ -597,6 +606,7 @@ bootstrap(
                 field={f}
                 formDataLoading={dataLoading}
                 formValues={values}
+                hasTriedToSubmit={hasTriedToSubmit}
                 key={f.name}
                 name={f.name}
                 onChange={onChange}
@@ -608,7 +618,7 @@ bootstrap(
             ))}
         </div>
 
-        {errorLink && hasTriedToSubmit ? (
+        {errorLink && hasTriedToSubmit && !utils.remap(hideErrorSummary, values) ? (
           <div
             className={classNames(
               styles['error-link-container'],

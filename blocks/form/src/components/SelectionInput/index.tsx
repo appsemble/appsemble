@@ -27,7 +27,9 @@ type SelectionInputProps = InputProps<SelectionChoice[], SelectionFieldInterface
 
 export function SelectionInput({
   className,
+  dirty,
   disabled,
+  error,
   errorLinkRef,
   field,
   formValues,
@@ -169,6 +171,7 @@ export function SelectionInput({
           </Button>
         </FormButtons>
       ) : null}
+      {dirty && error ? <p className="help is-danger">{error}</p> : null}
       <ModalCard isActive={modal.enabled} onClose={modal.disable}>
         {!disableSearch && <Input className="mb-2" onChange={handleSearch} />}
         {loading ? (

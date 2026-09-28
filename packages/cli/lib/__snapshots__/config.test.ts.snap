@@ -5551,6 +5551,13 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "description": "Weather the form should take up all available width on the page.",
         "type": "boolean",
       },
+      "hideErrorSummary": {
+        "default": false,
+        "description": "Whether the summary of invalid fields above the submit button should not be visible.
+
+Each field still shows its own error message.",
+        "format": "remapper",
+      },
       "hideSubmitButton": {
         "default": false,
         "description": "Whether the submit button should not be visible, useful when the only field is an enum and

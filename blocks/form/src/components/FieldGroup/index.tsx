@@ -65,6 +65,11 @@ interface FieldGroupProps {
   formValues: Values;
 
   /**
+   * Whether the user has tried to submit the form.
+   */
+  readonly hasTriedToSubmit: boolean;
+
+  /**
    * Used to set the element for scrolling to the field error
    */
   readonly setFieldErrorLink?: (
@@ -91,6 +96,7 @@ export function FieldGroup({
   fields,
   formDataLoading,
   formValues,
+  hasTriedToSubmit,
   name,
   onChange,
   removeThumbnail,
@@ -164,6 +170,7 @@ export function FieldGroup({
             fieldsetEntryValues={fieldsetEntryValues}
             formDataLoading={formDataLoading}
             formValues={formValues}
+            hasTriedToSubmit={hasTriedToSubmit}
             key={f.name}
             name={name ? `${name}.${f.name}` : f.name}
             onChange={handleChange}
