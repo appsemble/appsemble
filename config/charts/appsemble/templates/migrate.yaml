@@ -5,7 +5,7 @@ metadata:
   labels:
     {{ include "appsemble.labels" . }}
   annotations:
-    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook: post-install,pre-upgrade
     helm.sh/hook-weight: '1'
 spec:
   template:
@@ -16,7 +16,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: {{ include "appsemble.fullname" . }}-migrate
-          image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.migrateImage.tag | default (include "appsemble.tag" .) }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true

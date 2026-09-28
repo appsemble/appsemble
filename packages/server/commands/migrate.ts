@@ -7,6 +7,7 @@ import { databaseBuilder } from './builder/database.js';
 import { migrations } from '../migrations/main/index.js';
 import { App, closeAppDB, getAppDB, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
+import { getDirectPostgresConnection } from '../utils/database.js';
 import { syncAppDefinitionIndexes } from '../utils/appDefinitionIndexes.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
@@ -52,11 +53,15 @@ export async function handler(): Promise<void> {
   if (migrateTo !== 'next' && !semver.valid(migrateTo)) {
     throw new AppsembleError(`A valid semver is required. Got ${migrateTo}`);
   }
+  const { dbHost, dbPort } = getDirectPostgresConnection({
+    dbHost: argv.databaseHost,
+    dbPort: argv.databasePort,
+  });
   let db;
   try {
     db = initDB({
-      host: argv.databaseHost,
-      port: argv.databasePort,
+      host: dbHost,
+      port: dbPort,
       username: argv.databaseUser,
       password: argv.databasePassword,
       database: argv.databaseName,
