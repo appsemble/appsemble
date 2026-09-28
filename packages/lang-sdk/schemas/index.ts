@@ -57,6 +57,7 @@ export * from './actions/ResourceSubscriptionUnsubscribeActionDefinition.js';
 export * from './actions/ResourceUpdateActionDefinition.js';
 export * from './actions/ResourceUpdateGroupActionDefinition.js';
 export * from './actions/ResourceUpdatePositionsActionDefinition.js';
+export * from './actions/ScrollActionDefinition.js';
 export * from './actions/ShareActionDefinition.js';
 export * from './actions/StaticActionDefinition.js';
 export * from './actions/StorageAppendActionDefinition.js';

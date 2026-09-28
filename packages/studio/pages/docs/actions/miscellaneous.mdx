@@ -28,6 +28,7 @@ miscellaneous supported actions.
 - [`noop`](#noop)
 - [`notify`](#notify)
 - [`request`](#request)
+- [`scroll`](#scroll)
 - [`share`](#share)
 - [`static`](#static)
 - [`throw`](#throw)
@@ -575,6 +576,27 @@ blocks:
           object.from:
             name: { prop: name }
             email: { prop: email }
+```
+
+### scroll<Side name="scroll" />
+
+<ActionRef action={referenceSchemas.miscellaneousActions['scroll']} />
+
+The page itself scrolls, so a block inside a dialog doesn't scroll the dialog.
+
+The following is an example of a button that scrolls back to the top of the page.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: action-button
+    version: 0.40.2
+    parameters:
+      icon: arrow-up
+    actions:
+      onClick:
+        type: scroll
+        to: top
+    position: bottom right
 ```
 
 ### share<Side name="share" />

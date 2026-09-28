@@ -64,6 +64,7 @@ export type ActionDefinition =
   | ResourceUpdateActionDefinition
   | ResourceUpdateGroupActionDefinition
   | ResourceUpdatePositionsActionDefinition
+  | ScrollActionDefinition
   | ShareActionDefinition
   | StaticActionDefinition
   | StorageAppendActionDefinition
@@ -132,6 +133,7 @@ export type ActionName =
   | 'resource.update.group'
   | 'resource.update.positions'
   | 'resource.update'
+  | 'scroll'
   | 'share'
   | 'static'
   | 'storage.append'
@@ -373,6 +375,13 @@ export interface LogActionDefinition extends BaseActionDefinition<'log'> {
    * @default `info`.
    */
   level?: 'error' | 'info' | 'warn';
+}
+
+export interface ScrollActionDefinition extends BaseActionDefinition<'scroll'> {
+  /**
+   * Where on the page to scroll to.
+   */
+  to: 'bottom' | 'top';
 }
 
 export interface ShareActionDefinition extends BaseActionDefinition<'share'> {
