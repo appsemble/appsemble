@@ -20,6 +20,9 @@ vi.mock('@appsemble/sdk', async (importOriginal) => ({
 
 await import('./index.js');
 
+// Jsdom doesn’t implement scrolling.
+Element.prototype.scrollIntoView = () => null;
+
 const mount = sdk.bootstrap.mock.calls[0][0] as (params: BootstrapParams) => Promise<void>;
 
 function getInputByLabel(container: HTMLElement, label: string): HTMLInputElement {
@@ -369,4 +372,66 @@ it('should hide the error summary when hideErrorSummary is set', async () => {
   });
   expect(withoutSummary.textContent).not.toContain('Please fix the following errors:');
   expect(withoutSummary.textContent).toContain('This registration number is not valid');
+});
+
+it('should show the errors of untouched fields after submitting', async () => {
+  const container = document.createElement('div');
+  const defaultParams = getDefaultBootstrapParams();
+  await mount({
+    ...defaultParams,
+    actions: {
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+      onSubmit: vi.fn(),
+    },
+    events: {
+      emit: { change: vi.fn() },
+      on: {
+        data: vi.fn(() => false),
+        fields: vi.fn(() => false),
+      },
+      off: { fields: vi.fn() },
+    },
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          label: 'Name',
+          name: 'name',
+          requirements: [{ required: true, errorMessage: 'Name is required' }],
+          type: 'string',
+        },
+        {
+          fields: [
+            {
+              label: 'City',
+              name: 'city',
+              requirements: [{ required: true, errorMessage: 'City is required' }],
+              type: 'string',
+            },
+          ],
+          label: 'Address',
+          name: 'address',
+          type: 'fieldset',
+        },
+      ],
+      hideErrorSummary: true,
+      skipInitialLoad: true,
+    },
+    utils: {
+      ...defaultParams.utils,
+      formatMessage: (message: keyof typeof messages) => messages[message],
+    },
+  } as unknown as BootstrapParams);
+
+  const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+  await waitFor(() => expect(submit).toHaveProperty('disabled', false));
+  expect(container.textContent).not.toContain('Name is required');
+
+  submit.form?.requestSubmit();
+
+  await waitFor(() => {
+    expect(container.textContent).toContain('Name is required');
+    expect(container.textContent).toContain('City is required');
+  });
+  expect(container.textContent).not.toContain('Please fix the following errors:');
 });
