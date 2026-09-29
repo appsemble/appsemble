@@ -10,6 +10,13 @@
     "pages.survey.steps.3": "",
     "pages.survey.steps.4": ""
   },
+  "blocks": {
+    "@appsemble/form": {
+      "0.40.3-test.2": {
+        "submitLabel": "Weiter"
+      }
+    }
+  },
   "messageIds": {
     "anythingElse": "",
     "appsembleRating": "",
