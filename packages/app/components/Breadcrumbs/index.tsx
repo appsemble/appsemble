@@ -6,10 +6,12 @@ import {
   type PageDefinition,
   type Remapper,
 } from '@appsemble/lang-sdk';
+import { Icon } from '@appsemble/react-components';
 import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
 import { messages } from './messages.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -100,18 +102,25 @@ export function Breadcrumbs({
           <li key={page.name}>
             {/* A container has no page of its own; its URL only redirects to its first sub-page. */}
             {page.type === 'container' ? (
-              <span>{getLabel(page, input)}</span>
+              <span className={styles.text}>
+                {page.icon ? <Icon icon={page.icon} /> : null}
+                <span>{getLabel(page, input)}</span>
+              </span>
             ) : (
               <Link
                 to={page === pageDefinition ? pathname : `/${lang}/${getPagePathSegment(page)}`}
               >
-                {getLabel(page, input)}
+                {page.icon ? <Icon icon={page.icon} /> : null}
+                <span>{getLabel(page, input)}</span>
               </Link>
             )}
           </li>
         ))}
         <li aria-current="page" className="is-active">
-          <span>{subPageName ?? getLabel(pageDefinition, data)}</span>
+          <span className={styles.text}>
+            {!subPageName && pageDefinition.icon ? <Icon icon={pageDefinition.icon} /> : null}
+            <span>{subPageName || getLabel(pageDefinition, data)}</span>
+          </span>
         </li>
       </ul>
     </nav>

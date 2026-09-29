@@ -352,7 +352,7 @@ export interface BasePageDefinition {
    * An optional icon from the Font Awesome icon set, or an `icon:<key>` reference to the app’s
    * `icons` registry.
    *
-   * This will be displayed in the navigation menu.
+   * This will be displayed in the navigation menu and the breadcrumb trail.
    */
   icon?: IconReference;
 

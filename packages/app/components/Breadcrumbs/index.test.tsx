@@ -1,4 +1,5 @@
 import { type AppDefinition, type PageDefinition, remap, type Remapper } from '@appsemble/lang-sdk';
+import { IconProvider } from '@appsemble/react-components';
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -54,22 +55,28 @@ function renderBreadcrumbs(
 
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={[path]}>
-        <Routes>
-          <Route
-            element={
-              <Breadcrumbs
-                data={data}
-                inGrid={inGrid}
-                pageDefinition={page}
-                remap={remapWithContext}
-                subPageName={subPageName}
-              />
-            }
-            path="/:lang/:pageId/*"
-          />
-        </Routes>
-      </MemoryRouter>
+      <IconProvider
+        apiUrl="https://example.com"
+        appId={42}
+        registry={{ logo: { asset: 'company-logo' } }}
+      >
+        <MemoryRouter initialEntries={[path]}>
+          <Routes>
+            <Route
+              element={
+                <Breadcrumbs
+                  data={data}
+                  inGrid={inGrid}
+                  pageDefinition={page}
+                  remap={remapWithContext}
+                  subPageName={subPageName}
+                />
+              }
+              path="/:lang/:pageId/*"
+            />
+          </Routes>
+        </MemoryRouter>
+      </IconProvider>
     </IntlProvider>,
   );
 }
@@ -207,6 +214,41 @@ describe('Breadcrumbs', () => {
     expect(screen.getByRole('link', { name: 'Available Lots' }).getAttribute('href')).toBe(
       '/en/available-lots',
     );
+  });
+
+  it('should show the icon of each page next to its name', () => {
+    const pages = [
+      { name: 'Home', icon: 'home', blocks: [] },
+      { name: 'Available Lots', parent: 'Home', icon: 'icon:logo', blocks: [] },
+      { name: 'Lot Details', parent: 'Available Lots', icon: 'file', blocks: [] },
+    ] as unknown as PageDefinition[];
+    mockApp(createAppDefinition(pages));
+
+    renderBreadcrumbs(pages[2]);
+
+    expect(screen.getByRole('link', { name: 'Home' }).querySelector('.fa-home')).not.toBeNull();
+    expect(
+      screen
+        .getByRole('link', { name: 'Available Lots' })
+        .querySelector('img')
+        ?.getAttribute('src'),
+    ).toBe('https://example.com/api/apps/42/assets/company-logo');
+    expect(screen.getByText('Lot Details').closest('li')?.querySelector('.fa-file')).not.toBeNull();
+  });
+
+  it('should show no icon on the crumb of a sub page', () => {
+    const pages = [
+      { name: 'Home', blocks: [] },
+      { name: 'Lot Details', parent: 'Home', icon: 'file', blocks: [] },
+    ] as unknown as PageDefinition[];
+    mockApp(createAppDefinition(pages));
+
+    renderBreadcrumbs(pages[1], { subPageName: 'Documents' });
+
+    expect(
+      screen.getByRole('link', { name: 'Lot Details' }).querySelector('.fa-file'),
+    ).not.toBeNull();
+    expect(screen.getByText('Documents').closest('li')?.querySelector('.icon')).toBeNull();
   });
 
   it('should render nothing on a page that has no ancestors', () => {
