@@ -387,7 +387,7 @@
   "studio.3fhxaY": "App-Meldungen",
   "studio.3gEo0L": "Neues Element hinzufügen",
   "studio.3jkGv6": "YAML-Fehler: {error}",
-  "studio.3nhRA0": "Ein CSV-Trennzeichen ist ein Zeichen, das zur Trennung von Datenwerten in einem strukturierten Textformat verwendet wird; verwenden Sie „ <bold> “ oder „\\t“</bold> für Tabulatoren.",
+  "studio.3nhRA0": "Ein CSV-Trennzeichen ist ein Zeichen, das zur Trennung von Datenwerten in einem strukturierten Textformat verwendet wird; verwenden Sie <bold>\\t</bold> für Tabulatoren.",
   "studio.3p36Vm": "SCIM aktivieren",
   "studio.3rsipf": "Gespeicherte App.",
   "studio.3yY1p8": "Rolle löschen",
