@@ -387,7 +387,7 @@
   "studio.3fhxaY": "Appmeddelanden",
   "studio.3gEo0L": "Lägg till nytt objekt",
   "studio.3jkGv6": "YAML-fel: {error}",
-  "studio.3nhRA0": "En CSV-avgränsare är ett tecken som används för att skilja datavärden åt i ett strukturerat textformat. Använd <bold>\t</bold> för tabbtecken.",
+  "studio.3nhRA0": "En CSV-avgränsare är ett tecken som används för att skilja datavärden åt i ett strukturerat textformat. Använd <bold>\\t</bold> för tabbtecken.",
   "studio.3p36Vm": "Aktivera SCIM",
   "studio.3rsipf": "Appen har sparats.",
   "studio.3yY1p8": "Ta bort roll",
