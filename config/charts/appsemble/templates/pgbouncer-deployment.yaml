@@ -30,6 +30,30 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name | quote }}
         app.kubernetes.io/name: {{ include "appsemble.name" . }}-pgbouncer
     spec:
+    {{- if and .Values.postgresSSL (include "appsemble.pgbouncer.generateTls" .) }}
+      {{- $service := include "appsemble.pgbouncer.fullname" . }}
+      # A certificate generated per pod keeps the rendered manifests stable: a Secret generated
+      # while rendering would change with every render wherever lookup is unavailable, such as
+      # under ArgoCD. The server connects with sslmode require, which does not verify it.
+      initContainers:
+        - name: generate-tls
+          image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+          command:
+            - sh
+            - -ec
+            - |
+              openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj '/CN={{ $service }}' \
+                -addext 'subjectAltName=DNS:{{ $service }},DNS:{{ $service }}.{{ .Release.Namespace }},DNS:{{ $service }}.{{ .Release.Namespace }}.svc,DNS:{{ $service }}.{{ .Release.Namespace }}.svc.cluster.local' \
+                -keyout /etc/pgbouncer/tls/tls.key -out /etc/pgbouncer/tls/tls.crt
+              # PgBouncer runs as a different user than this container outside OpenShift.
+              chmod 0644 /etc/pgbouncer/tls/tls.key
+          volumeMounts:
+            - name: pgbouncer-tls
+              mountPath: /etc/pgbouncer/tls
+    {{- end }}
       containers:
         - name: pgbouncer
           image: "{{ .Values.pgbouncer.image.repository }}:{{ .Values.pgbouncer.image.tag }}"
@@ -96,8 +120,12 @@ spec:
           emptyDir: {}
       {{- if .Values.postgresSSL }}
         - name: pgbouncer-tls
+        {{- if include "appsemble.pgbouncer.generateTls" . }}
+          emptyDir: {}
+        {{- else }}
           secret:
-            secretName: {{ include "appsemble.pgbouncer.tlsSecretName" . }}
+            secretName: {{ .Values.pgbouncer.tls.existingSecret }}
+        {{- end }}
       {{- with .Values.pgbouncer.tls.client.caSecret }}
         - name: pgbouncer-client-ca
           secret:
