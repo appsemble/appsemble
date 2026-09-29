@@ -15,9 +15,10 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   const queryInterface = db.getQueryInterface();
 
   logger.info('Remove the training catalog foreign key');
-  await queryInterface.removeConstraint('TrainingCompleted', 'TrainingCompleted_TrainingId_fkey', {
-    transaction,
-  });
+  await db.query(
+    'ALTER TABLE "TrainingCompleted" DROP CONSTRAINT IF EXISTS "TrainingCompleted_TrainingId_fkey"',
+    { transaction },
+  );
 
   logger.info('Drop the mirrored `Training` table');
   await queryInterface.dropTable('Training', { transaction });

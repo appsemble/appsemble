@@ -65,4 +65,36 @@ describe('migration 0.40.2', () => {
       await transaction.rollback();
     }
   });
+
+  it('should remove the catalog table when the completion foreign key is already missing', async () => {
+    const db = getDB();
+    const transaction = await db.transaction();
+    try {
+      await db.getQueryInterface().createTable(
+        'Training',
+        {
+          id: { type: DataTypes.STRING, primaryKey: true },
+          created: { allowNull: false, type: DataTypes.DATE },
+          updated: { allowNull: false, type: DataTypes.DATE },
+        },
+        { transaction },
+      );
+      const user = await User.create({ timezone: 'Europe/Amsterdam' }, { transaction });
+      await TrainingCompleted.create(
+        { TrainingId: 'what-is-appsemble', UserId: user.id },
+        { transaction },
+      );
+
+      await up(transaction, db);
+
+      const [removedTable] = await db.query<{ tableName: string | null }>(
+        'SELECT to_regclass(\'"Training"\') AS "tableName"',
+        { transaction, type: QueryTypes.SELECT },
+      );
+      expect(removedTable.tableName).toBeNull();
+      expect(await TrainingCompleted.count({ transaction })).toBe(1);
+    } finally {
+      await transaction.rollback();
+    }
+  });
 });
