@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.3-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.1)] - 2026-09-29
+
+### Fixed
+
+- Block(`form`): Announce form errors to screen readers.
+- Preact-components: Announce form errors to screen readers.
+- React-components: Announce form errors to screen readers.
+- React-components: Announce notifications to screen readers.
+
 ## \[[0.40.3-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.0)] - 2026-09-28
 
 ### Added
