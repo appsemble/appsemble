@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.3-test.1
-appVersion: 0.40.3-test.1
+version: 0.40.3-test.2
+appVersion: 0.40.3-test.2
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,14 +32,7 @@ dependencies:
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: |
-    - kind: fixed
-      description: "Block(form): Announce form errors to screen readers."
-    - kind: fixed
-      description: "Preact-components: Announce form errors to screen readers."
-    - kind: fixed
-      description: "React-components: Announce form errors to screen readers."
-    - kind: fixed
-      description: "React-components: Announce notifications to screen readers."
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
