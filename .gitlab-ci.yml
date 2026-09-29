@@ -1206,6 +1206,8 @@ publish npm:
       if [ "$RUNNER_ENVIRONMENT" != gitlab-hosted ]; then
         echo "Detected $RUNNER_ENVIRONMENT runner, using NPM_TOKEN for authentication"
         npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+        # npm publish uses trusted publishing and provenance whenever it finds the ID tokens.
+        unset NPM_ID_TOKEN SIGSTORE_ID_TOKEN
         PROVENANCE_FLAG=""
       else
         echo "Using npm trusted publishing (OIDC)"
