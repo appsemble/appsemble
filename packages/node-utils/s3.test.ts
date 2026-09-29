@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import dns from 'node:dns';
 import { createServer, type IncomingMessage, type Server } from 'node:http';
 import { type AddressInfo } from 'node:net';
@@ -481,6 +482,7 @@ describe('object store', () => {
 
 describe('requests', () => {
   interface RecordedRequest {
+    body: string;
     headers: IncomingMessage['headers'];
     method: string;
     path: string;
@@ -496,18 +498,25 @@ describe('requests', () => {
     requests = [];
     responds = true;
     server = createServer((request, response) => {
-      requests.push({
+      const recorded: RecordedRequest = {
+        body: '',
         headers: request.headers,
         method: request.method!,
         path: new URL(request.url!, 'http://localhost').pathname,
+      };
+      requests.push(recorded);
+      request.setEncoding('utf8');
+      request.on('data', (chunk: string) => {
+        recorded.body += chunk;
       });
-      request.resume();
       request.on('end', () => {
         if (!responds) {
           return;
         }
         response.writeHead(200, { ETag: '"etag"' });
-        response.end(request.method === 'GET' ? 'payload' : undefined);
+        response.end(
+          { GET: 'payload', POST: '<DeleteResult></DeleteResult>' }[request.method!] ?? undefined,
+        );
       });
     });
     await new Promise<void>((resolve) => {
@@ -532,6 +541,19 @@ describe('requests', () => {
     await new Promise<void>((resolve) => {
       server.close(() => resolve());
     });
+  });
+
+  it('signs a delete of multiple objects with Content-MD5', async () => {
+    // Object stores from before the flexible checksums of S3 reject a DeleteObjects request that
+    // carries only the CRC32 checksum the SDK sends by default.
+    initS3Client({ ...credentials, port, bucket: 'objects' });
+
+    await deleteS3Files('objects', ['apps/1/first', 'apps/1/second']);
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].headers['content-md5']).toBe(
+      createHash('md5').update(requests[0].body).digest('base64'),
+    );
   });
 
   it('adds no checksums to uploads and downloads', async () => {

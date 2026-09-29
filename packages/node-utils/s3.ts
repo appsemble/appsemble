@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { Readable } from 'node:stream';
@@ -98,6 +99,18 @@ export function initS3Client({
       responseChecksumValidation: 'WHEN_REQUIRED',
       ...(socketTimeout && { requestHandler: { socketTimeout } }),
     });
+    // S3 requires a checksum on DeleteObjects. The SDK sends CRC32, which object stores from
+    // before the flexible checksums reject in favour of Content-MD5.
+    s3Client.middlewareStack.add(
+      (next, context) => (args) => {
+        const request = args.request as { body?: string; headers: Record<string, string> };
+        if (context.commandName === 'DeleteObjectsCommand' && request.body) {
+          request.headers['content-md5'] = createHash('md5').update(request.body).digest('base64');
+        }
+        return next(args);
+      },
+      { step: 'finalizeRequest', name: 'deleteObjectsContentMd5' },
+    );
     s3Bucket = bucket || undefined;
     s3Region = region;
   } catch (error) {
