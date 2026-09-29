@@ -62,7 +62,7 @@
     "chalk": "^5.0.0",
     "cli-highlight": "^2.0.0",
     "css-tree": "^2.0.0",
-    "csv-parse": "^5.0.0",
+    "csv-parse": "^7.0.0",
     "date-fns": "^2.0.0",
     "express-to-koa": "^2.0.0",
     "fast-glob": "^3.0.0",
