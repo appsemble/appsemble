@@ -9,7 +9,7 @@ default:
 
 variables:
   # Runner tag for the publish docker and npm jobs. To publish on a self-hosted runner, set this to
-  # `self-hosted` as a project CI/CD variable before pushing the release tag.
+  # `dcentralize` as a project CI/CD variable before pushing the release tag.
   PUBLISH_RUNNER_TAG: saas-linux-small-amd64
 
 stages:
@@ -1200,8 +1200,10 @@ publish npm:
       aud: 'npm:registry.npmjs.org'
   script:
     - |
-      if echo "$CI_RUNNER_TAGS" | grep -q "self-hosted"; then
-        echo "Detected self-hosted runner, using NPM_TOKEN for authentication"
+      # npm only accepts trusted publishing and provenance from GitLab-hosted runners.
+      RUNNER_ENVIRONMENT=$(node -p "JSON.parse(Buffer.from(process.env.NPM_ID_TOKEN.split('.')[1], 'base64url')).runner_environment")
+      if [ "$RUNNER_ENVIRONMENT" != gitlab-hosted ]; then
+        echo "Detected $RUNNER_ENVIRONMENT runner, using NPM_TOKEN for authentication"
         npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
         PROVENANCE_FLAG=""
       else
