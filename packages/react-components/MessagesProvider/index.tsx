@@ -74,7 +74,7 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
   return (
     <Context.Provider value={push}>
       {children}
-      <div className={`${styles.root} mx-3`}>
+      <div aria-live="polite" className={`${styles.root} mx-3`}>
         <TransitionGroup>
           {msgs.current.map((message) => (
             <CSSTransition
@@ -91,7 +91,12 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
                 className={`${styles.content} ${styles[message.layout || 'bottom']}`}
                 color={message.color || 'danger'}
               >
-                <span className={styles.body}>{message?.body}</span>
+                <span
+                  className={styles.body}
+                  role={(message.color || 'danger') === 'danger' ? 'alert' : undefined}
+                >
+                  {message.body}
+                </span>
                 {message.dismissable ? (
                   <button
                     aria-label={formatMessage(messages.dismiss)}

@@ -36,6 +36,7 @@ exports[`should render a RadioGroup 1`] = `
     <span
       class="help help"
       data-testid="help-formcomp"
+      id="P0-0"
     />
   </div>
   ,

@@ -16,6 +16,7 @@ exports[`should render a field with textarea 1`] = `
     <span
       class="help help"
       data-testid="help-formcomp"
+      id="P0-0"
     />
   </div>
 </div>

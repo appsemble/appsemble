@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/preact';
 import { type ComponentChildren, type VNode } from 'preact';
 import { expect, it } from 'vitest';
 
+import { getDescription } from './getDescription.js';
 import { FormComponent } from './index.js';
 import { Input } from '../Input/index.js';
 
@@ -104,4 +105,41 @@ it('should render a label', () => {
   const optionalLabel = screen.getByTestId('label-formcomp');
   expect(screen.getByTestId('label-formcomp')).toBeInstanceOf(HTMLLabelElement);
   expect(optionalLabel.textContent).toBe('test label');
+});
+
+it('should describe a valid input by its help text', () => {
+  render(
+    <FormComponent help="Enter your full name" id="name" label="Name">
+      <Input id="name" />
+    </FormComponent>,
+  );
+  const input = screen.getByLabelText(/Name/);
+  expect(input.getAttribute('aria-invalid')).toBeNull();
+  expect(getDescription(input)).toBe('Enter your full name');
+});
+
+it('should mark an input with an error as invalid and describe it by the error', () => {
+  render(
+    <FormComponent
+      error="This field is required"
+      help="Enter your full name"
+      id="name"
+      label="Name"
+    >
+      <Input id="name" />
+    </FormComponent>,
+    { wrapper: Provider },
+  );
+  const input = screen.getByLabelText(/Name/);
+  expect(input.getAttribute('aria-invalid')).toBe('true');
+  expect(getDescription(input)).toBe('This field is required');
+});
+
+it('should not describe an input if the help is disabled', () => {
+  render(
+    <FormComponent disableHelp help="Enter your full name" id="name" label="Name">
+      <Input id="name" />
+    </FormComponent>,
+  );
+  expect(screen.getByLabelText(/Name/).hasAttribute('aria-describedby')).toBe(false);
 });

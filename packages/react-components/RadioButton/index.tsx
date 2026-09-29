@@ -3,9 +3,10 @@ import {
   type ComponentPropsWithoutRef,
   type ReactNode,
   useCallback,
+  useContext,
 } from 'react';
 
-import { useValuePicker } from '../index.js';
+import { FormComponentContext, useValuePicker } from '../index.js';
 
 interface RadioButtonProps<T> extends Omit<
   ComponentPropsWithoutRef<'input'>,
@@ -44,6 +45,7 @@ export function RadioButton<T>({
   ...props
 }: RadioButtonProps<T>): ReactNode {
   const { name, onChange, value: currentValue } = useValuePicker();
+  const aria = useContext(FormComponentContext);
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => onChange(event, value),
@@ -53,6 +55,7 @@ export function RadioButton<T>({
   return (
     <div className={wrapperClassName}>
       <input
+        {...aria}
         {...props}
         checked={value === currentValue}
         className="is-checkradio"

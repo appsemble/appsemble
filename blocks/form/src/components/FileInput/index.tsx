@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { FieldError, FormComponent } from '@appsemble/preact-components';
+import { FormComponent, FormComponentError } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type JSX, type VNode } from 'preact';
 import { type Dispatch, type StateUpdater, useCallback, useEffect, useState } from 'preact/hooks';
@@ -49,6 +49,7 @@ export function FileInput({
   const value = getValueByNameSequence(name, formValues);
   const required = isRequired(field, utils, formValues);
   const remappedLabel = utils.remap(label, value) ?? name;
+  const shownError = dirty ? error : null;
 
   const [fileEntriesReady, setFileEntriesReady] = useState<Record<string, boolean>>({});
 
@@ -98,66 +99,67 @@ export function FileInput({
       required={required}
       tag={utils.remap(tag, {}) as string}
     >
-      {repeated ? (
-        <div
-          className={classNames('is-flex py-2 pl-2 pr-0', styles.repeatedContainer, {
-            'mt-5': !remappedLabel,
-          })}
-          id={name}
-        >
-          <div className={styles.repeatedEntries}>
-            {(value as string[]).map((val, index) => (
-              <FileEntry
-                addThumbnail={addThumbnail}
-                disabled={disabled}
-                error={dirty ? error : null}
-                errorLinkRef={errorLinkRef}
-                field={field}
-                formDataLoading={formDataLoading}
-                formValues={val as unknown as Values}
-                handleFileEntryReady={handleFileEntryReady}
-                // eslint-disable-next-line react/no-array-index-key
-                key={index}
-                name={`${name}.${index}`}
-                onChange={handleInput}
-                removeThumbnail={removeThumbnail}
-                repeated={repeated}
-              />
-            ))}
+      <FormComponentError error={shownError}>
+        {repeated ? (
+          <div
+            className={classNames('is-flex py-2 pl-2 pr-0', styles.repeatedContainer, {
+              'mt-5': !remappedLabel,
+            })}
+            id={name}
+          >
+            <div className={styles.repeatedEntries}>
+              {(value as string[]).map((val, index) => (
+                <FileEntry
+                  addThumbnail={addThumbnail}
+                  disabled={disabled}
+                  error={shownError}
+                  errorLinkRef={errorLinkRef}
+                  field={field}
+                  formDataLoading={formDataLoading}
+                  formValues={val as unknown as Values}
+                  handleFileEntryReady={handleFileEntryReady}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={index}
+                  name={`${name}.${index}`}
+                  onChange={handleInput}
+                  removeThumbnail={removeThumbnail}
+                  repeated={repeated}
+                />
+              ))}
+            </div>
+            <FileEntry
+              addThumbnail={addThumbnail}
+              disabled={disabled}
+              error={shownError}
+              errorLinkRef={errorLinkRef}
+              field={field}
+              formDataLoading={formDataLoading}
+              // @ts-expect-error breaks with multiple file entries if {} is passed
+              // FIXME
+              formValues={null}
+              handleFileEntryReady={handleFileEntryReady}
+              name={`${name}.${(value as string[]).length}`}
+              onChange={handleInput}
+              removeThumbnail={removeThumbnail}
+              repeated={repeated}
+            />
           </div>
+        ) : (
           <FileEntry
             addThumbnail={addThumbnail}
             disabled={disabled}
-            error={dirty ? error : null}
+            error={shownError}
             errorLinkRef={errorLinkRef}
             field={field}
             formDataLoading={formDataLoading}
-            // @ts-expect-error breaks with multiple file entries if {} is passed
-            // FIXME
-            formValues={null}
+            formValues={value as Values}
             handleFileEntryReady={handleFileEntryReady}
-            name={`${name}.${(value as string[]).length}`}
-            onChange={handleInput}
+            name={name}
+            onChange={onChange}
             removeThumbnail={removeThumbnail}
-            repeated={repeated}
           />
-        </div>
-      ) : (
-        <FileEntry
-          addThumbnail={addThumbnail}
-          disabled={disabled}
-          error={dirty ? error : null}
-          errorLinkRef={errorLinkRef}
-          field={field}
-          formDataLoading={formDataLoading}
-          formValues={value as Values}
-          handleFileEntryReady={handleFileEntryReady}
-          name={name}
-          onChange={onChange}
-          removeThumbnail={removeThumbnail}
-        />
-      )}
-      {dirty && error ? <FieldError>{error}</FieldError> : null}
+        )}
+      </FormComponentError>
     </FormComponent>
   );
 }

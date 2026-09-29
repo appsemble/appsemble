@@ -80,3 +80,13 @@ it('should show the custom icon which overrides a status icon', () => {
     'https://example.com/assets/error-icon',
   );
 });
+
+it('should expose the message as an alert', () => {
+  render(
+    <Message color="danger" role="alert">
+      <span>Submitting failed</span>
+    </Message>,
+    { wrapper: Provider },
+  );
+  expect(screen.getByRole('alert').textContent).toBe('Submitting failed');
+});

@@ -571,9 +571,11 @@ bootstrap(
       >
         {loading ? <progress className="progress is-small is-primary" /> : null}
         {title ? <div className="title">{utils.remap(title, data) as string}</div> : null}
+        {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <Message
           className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}
           color="danger"
+          role="status"
         >
           {/* Render the first form error */}
           <span>{formErrors.find(Boolean)}</span>
@@ -581,6 +583,7 @@ bootstrap(
         <Message
           className={classNames(styles.error, { [styles.hidden]: submitErrorResult == null })}
           color="danger"
+          role="alert"
         >
           <span>{submitErrorResult}</span>
         </Message>
@@ -624,6 +627,7 @@ bootstrap(
               styles['error-link-container'],
               'is-flex is-flex-direction-column is-justify-content-flex-start',
             )}
+            role="alert"
           >
             <span>{utils.formatMessage('fixErrors')}</span>
             {errorLink}

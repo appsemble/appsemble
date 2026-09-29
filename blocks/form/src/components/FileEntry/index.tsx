@@ -1,6 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import {
   AppAssetDownloadButton,
+  FormComponentContext,
   Icon,
   Modal,
   useObjectURL,
@@ -18,7 +19,7 @@ import { findIconDefinition, icon, library } from '@fortawesome/fontawesome-svg-
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import { type JSX, type Ref, type VNode } from 'preact';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useContext, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type AcceptRequirement, type FileField, type InputProps } from '../../../block.js';
@@ -128,6 +129,7 @@ export function FileEntry({
     getMimeTypeCategories((acceptRequirement as AcceptRequirement)?.accept || []) ?? [];
 
   const modal = useToggle();
+  const aria = useContext(FormComponentContext);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [fileType, setFileType] = useState<MimeTypeCategory | null>(null);
   const [fileName, setFileName] = useState<string>('');
@@ -354,6 +356,7 @@ export function FileEntry({
       <label className="file-label">
         {!value || !url ? (
           <input
+            {...aria}
             accept={
               acceptMime?.includes('image/') || acceptMime?.includes('video/')
                 ? `${acceptMime}, android/allowCamera`

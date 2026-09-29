@@ -10,8 +10,9 @@ import {
 } from 'react';
 
 import {
-  FieldError,
   FormComponent,
+  FormComponentContext,
+  FormComponentError,
   Icon,
   type Input,
   type SharedFormComponentProps,
@@ -87,34 +88,40 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
 
     return (
       <FormComponent className={formComponentClassName} id={id} label={label} required={required}>
-        {preview}
-        <div className="file has-name">
-          <label className={`file-label ${className}`} htmlFor={id}>
-            <input
-              accept={accept}
-              capture={capture}
-              className="file-input"
-              id={id}
-              name={name}
-              onChange={handleChange}
-              ref={inputRef}
-              type="file"
-            />
-            <span className="file-cta">
-              <Icon icon={icon} />
-              {fileButtonLabel ? <span className="file-label">{fileButtonLabel}</span> : null}
-            </span>
-            {fileName ? <span className="file-name">{fileName}</span> : null}
-          </label>
-          {hasPicture ? (
-            <button
-              className="delete is-medium is-align-self-center ml-2"
-              onClick={handleRemoveClick}
-              type="button"
-            />
-          ) : null}
-        </div>
-        {error ? <FieldError>{error}</FieldError> : null}
+        <FormComponentError error={error}>
+          {preview}
+          <div className="file has-name">
+            <label className={`file-label ${className}`} htmlFor={id}>
+              <FormComponentContext.Consumer>
+                {(aria) => (
+                  <input
+                    {...aria}
+                    accept={accept}
+                    capture={capture}
+                    className="file-input"
+                    id={id}
+                    name={name}
+                    onChange={handleChange}
+                    ref={inputRef}
+                    type="file"
+                  />
+                )}
+              </FormComponentContext.Consumer>
+              <span className="file-cta">
+                <Icon icon={icon} />
+                {fileButtonLabel ? <span className="file-label">{fileButtonLabel}</span> : null}
+              </span>
+              {fileName ? <span className="file-name">{fileName}</span> : null}
+            </label>
+            {hasPicture ? (
+              <button
+                className="delete is-medium is-align-self-center ml-2"
+                onClick={handleRemoveClick}
+                type="button"
+              />
+            ) : null}
+          </div>
+        </FormComponentError>
         {!error && help ? <p className="help">{help}</p> : null}
       </FormComponent>
     );
