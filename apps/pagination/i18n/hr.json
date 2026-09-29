@@ -1,17 +1,17 @@
 {
   "app": {
-    "app.roles.User": "",
-    "app.roles.User.description": "",
-    "description": "",
-    "name": "",
-    "pages.notes-list": "",
-    "pages.notes-table": ""
+    "app.roles.User": "Korisnik",
+    "app.roles.User.description": "Korisnik koji vodi vlastite bilješke.",
+    "description": "Vodi osobne bilješke i prikaži ih na lijep način",
+    "name": "Paginacija",
+    "pages.notes-list": "Popis bilježaka",
+    "pages.notes-table": "Tablica bilježaka"
   },
   "messageIds": {
-    "body": "",
-    "cancel": "",
-    "configDelete": "",
-    "confirmDelete": "",
-    "title": ""
+    "body": "Sadržaj",
+    "cancel": "Otkaži",
+    "configDelete": "Izbriši",
+    "confirmDelete": "Stvarno želiš izbrisati sljedeću bilješku?",
+    "title": "Naslov"
   }
 }

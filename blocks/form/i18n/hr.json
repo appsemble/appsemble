@@ -6,11 +6,11 @@
   "invalidLabel": "Ova vrijednost je nevažeća",
   "longSubmissionWarning": "Obrazac se još uvijek šalje, molimo pričekajte.",
   "optionalLabel": "(Opcionalno)",
-  "previousLabel": "Prethodni",
+  "previousLabel": "Prethodna",
   "removeFile": "",
   "resetLocation": "",
   "search": "Pretraži",
-  "selectionNoOptions": "Nema više dostupnih opcija",
+  "selectionNoOptions": "Nema daljnjih opcija",
   "selectionOptionsError": "Došlo je do pogreške pri učitavanju opcija",
   "submitError": "Došlo je do problema pri slanju ovog obrasca",
   "submitLabel": "Pošalji"
