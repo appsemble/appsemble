@@ -85,7 +85,7 @@
     "lodash": "^4.0.0",
     "lodash-es": "^4.0.0",
     "logform": "^2.0.0",
-    "memfs": "4.68.2",
+    "memfs": "4.79.0",
     "mime-types": "^2.0.0",
     "mustache": "^4.0.0",
     "openapi-types": "^12.1.3",
