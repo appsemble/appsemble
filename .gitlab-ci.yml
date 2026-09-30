@@ -777,9 +777,8 @@ validate snippets:
 #  End 2 End Stage                                                                               #
 ###################################################################################################
 
-e2e node:
-  stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.64.1-noble
+# The Appsemble server built in this pipeline, with its seeded dependencies, as GitLab services.
+.appsemble service:
   interruptible: true
   needs:
     - build docker image
@@ -863,6 +862,11 @@ e2e node:
         SMTP_USER: Appsemble
         SMTP_PASS: password
         SMTP_FROM: localdev@appsemble.com
+
+e2e node:
+  extends: .appsemble service
+  stage: end 2 end
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   script:
     - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d > /tmp/appsemble.crt
     - export NODE_EXTRA_CA_CERTS=/tmp/appsemble.crt
@@ -1806,37 +1810,37 @@ provision production:
 #  Performance Stage                                                                               #
 ###################################################################################################
 
-#
-# --- Disabled for now ---
-#
-# lighthouse:
-#   interruptible: true
-#   stage: performance
-#   extends: .npm
-#   image: $CI_REGISTRY/appsemble/docker-node-chrome
-#   needs:
-#     - npm_ci
-#     - job: provision review
-#       optional: true
-#     - job: provision staging
-#       optional: true
-#     - job: provision production
-#       optional: true
-#   rules:
-#     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-#     - if: $CI_COMMIT_TAG
-#   variables:
-#     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
-#     APPSEMBLE_STAGING_DOMAIN: 'appsemble.eu'
-#   script:
-#     - npm run scripts -- wait-for-ssl
-#     - npx -- lhci collect
-#     - npx -- lhci assert
-#   artifacts:
-#     expose_as: Lighthouse reports
-#     when: always
-#     paths:
-#       - .lighthouseci
+lighthouse:
+  extends: .appsemble service
+  stage: performance
+  image: mcr.microsoft.com/playwright:v1.63.0-noble
+  allow_failure: true
+  script:
+    - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d > /tmp/appsemble.crt
+    - export NODE_EXTRA_CA_CERTS=/tmp/appsemble.crt
+    - npm run appsemble -- config set context e2e
+    - npm run appsemble -- config set remote 'https://appsemble:9999'
+    - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
+      --s3-host s3
+      --s3-port 8333
+      --s3-secure=false
+      --s3-bucket appsemble
+      --s3-access-key appsemble-server
+      --s3-secret-key appsemble-server-secret
+    - npm run appsemble -- app publish --resources apps/*
+    - |
+      APPSEMBLE_IP=$(getent hosts appsemble | awk '{ print $1 }')
+      for host in $(node -e 'fetch("https://appsemble:9999/api/apps").then((r) => r.json()).then((apps) => console.log(apps.map((app) => `${app.path}.${app.OrganizationId}.appsemble`).join("\n")))'); do
+        echo "$APPSEMBLE_IP $host" >> /etc/hosts
+        URL_ARGS="$URL_ARGS --url https://$host:9999"
+      done
+      npx -- lhci collect $URL_ARGS
+    - npx -- lhci assert
+  artifacts:
+    expose_as: Lighthouse reports
+    when: always
+    paths:
+      - .lighthouseci
 
 ###################################################################################################
 #  Cleanup Stage                                                                                  #
