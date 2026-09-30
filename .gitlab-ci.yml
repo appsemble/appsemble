@@ -1827,6 +1827,7 @@ lighthouse:
       --s3-bucket appsemble
       --s3-access-key appsemble-server
       --s3-secret-key appsemble-server-secret
+    - npm run scripts -- update-subscription --organizationId appsemble --subscriptionPlan enterprise
     - npm run appsemble -- app publish --resources apps/*
     - |
       APPSEMBLE_IP=$(getent hosts appsemble | awk '{ print $1 }')
