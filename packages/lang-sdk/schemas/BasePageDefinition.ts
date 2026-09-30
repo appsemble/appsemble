@@ -53,8 +53,8 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
       format: 'icon',
       description: `An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 `,
     },
     parent: {
