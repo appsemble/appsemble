@@ -1830,11 +1830,13 @@ lighthouse:
     - npm run scripts -- update-subscription --organizationId appsemble --subscriptionPlan enterprise
     - npm run appsemble -- app publish --resources apps/*
     - |
-      APPSEMBLE_IP=$(getent hosts appsemble | awk '{ print $1 }')
+      APPSEMBLE_IP=$(getent ahostsv4 appsemble | awk 'NR == 1 { print $1 }')
       for host in $(node -e 'fetch("https://appsemble:9999/api/apps").then((r) => r.json()).then((apps) => console.log(apps.map((app) => `${app.path}.${app.OrganizationId}.appsemble`).join("\n")))'); do
         echo "$APPSEMBLE_IP $host" >> /etc/hosts
         URL_ARGS="$URL_ARGS --url https://$host:9999"
       done
+      cat /etc/hosts
+      NODE_TLS_REJECT_UNAUTHORIZED=0 node -e 'Promise.all(process.argv.slice(1).filter((a) => a.startsWith("https")).map((u) => fetch(u).then((r) => `${r.status} ${u}`, (e) => `${e.cause?.code ?? e.message} ${u}`))).then((l) => console.log(l.join("\n")))' $URL_ARGS
       npx -- lhci collect $URL_ARGS
     - npx -- lhci assert
   artifacts:
