@@ -1836,7 +1836,9 @@ lighthouse:
         URL_ARGS="$URL_ARGS --url https://$host:9999"
       done
       cat /etc/hosts
-      NODE_TLS_REJECT_UNAUTHORIZED=0 node -e 'Promise.all(process.argv.slice(1).filter((a) => a.startsWith("https")).map((u) => fetch(u).then((r) => `${r.status} ${u}`, (e) => `${e.cause?.code ?? e.message} ${u}`))).then((l) => console.log(l.join("\n")))' $URL_ARGS
+      NODE_TLS_REJECT_UNAUTHORIZED=0 node -e 'Promise.all(process.argv.slice(1).filter((a) => a.startsWith("https")).map((u) => fetch(u).then((r) => `${r.status} ${u}`, (e) => `${e.cause?.code ?? e.message} ${u}`))).then((l) => console.log(l.join("\n")))' -- $URL_ARGS
+      CHROME="$(node -e 'console.log(require("@playwright/test").chromium.executablePath())')"
+      "$CHROME" --headless --no-sandbox --ignore-certificate-errors --enable-logging=stderr --v=0 --dump-dom "https://notes.appsemble.appsemble:9999/" 2>&1 | grep -iE 'net::|ERR_|<title' | head -20 || true
       npx -- lhci collect $URL_ARGS
     - npx -- lhci assert
   artifacts:
