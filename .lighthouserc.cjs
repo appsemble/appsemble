@@ -5,7 +5,7 @@ module.exports = {
     collect: {
       chromePath: chromium.executablePath(),
       settings: {
-        chromeFlags: '--headless --no-sandbox --ignore-certificate-errors',
+        chromeFlags: '--headless --no-sandbox --disable-dev-shm-usage --ignore-certificate-errors',
       },
     },
     assert: {
