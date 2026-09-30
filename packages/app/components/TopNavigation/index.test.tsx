@@ -1,11 +1,12 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TopNavigation } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
+import { AppIconProvider } from '../AppIconProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
@@ -73,11 +74,13 @@ function renderNav(definition = appDefinition): void {
 
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/Home']}>
-        <Routes>
-          <Route element={<TopNavigation />} path="/:lang/*" />
-        </Routes>
-      </MemoryRouter>
+      <AppIconProvider>
+        <MemoryRouter initialEntries={['/en/Home']}>
+          <Routes>
+            <Route element={<TopNavigation />} path="/:lang/*" />
+          </Routes>
+        </MemoryRouter>
+      </AppIconProvider>
     </IntlProvider>,
   );
 }
@@ -125,8 +128,35 @@ describe('TopNavigation', () => {
     renderNav();
     const burger = screen.getByRole('button', { name: 'menu' });
     expect(burger.getAttribute('aria-expanded')).toBe('false');
+    expect(within(burger).queryByAltText('')).toBeNull();
     fireEvent.click(burger);
     expect(burger.getAttribute('aria-expanded')).toBe('true');
+    expect(within(burger).queryByAltText('')).toBeNull();
+  });
+
+  it("should render the app's overrides for the burger icons", () => {
+    renderNav({
+      ...appDefinition,
+      icons: {
+        menu: { asset: 'menu-icon', overrides: ['bars'] },
+        close: { asset: 'close-icon', overrides: ['xmark'] },
+      },
+    });
+    const closed = screen.getByRole('button', { name: 'menu' });
+    expect(closed.getAttribute('aria-expanded')).toBe('false');
+    expect(within(closed).getByAltText('')).toHaveProperty(
+      'src',
+      'https://appsemble.app/api/apps/42/assets/menu-icon',
+    );
+
+    fireEvent.click(closed);
+
+    const open = screen.getByRole('button', { name: 'menu' });
+    expect(open.getAttribute('aria-expanded')).toBe('true');
+    expect(within(open).getByAltText('')).toHaveProperty(
+      'src',
+      'https://appsemble.app/api/apps/42/assets/close-icon',
+    );
   });
 
   it('should close the collapsed menu after a navigation link is clicked', () => {

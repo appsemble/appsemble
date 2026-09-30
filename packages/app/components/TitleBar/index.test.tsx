@@ -1,11 +1,13 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render, screen, waitFor } from '@testing-library/react';
+import { SideMenuProvider } from '@appsemble/react-components';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppBar } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
+import { AppIconProvider } from '../AppIconProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
@@ -64,11 +66,15 @@ afterEach(() => {
 function renderAppBar(): void {
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/Home']}>
-        <Routes>
-          <Route element={<AppBar />} path="/:lang/*" />
-        </Routes>
-      </MemoryRouter>
+      <AppIconProvider>
+        <MemoryRouter initialEntries={['/en/Home']}>
+          <SideMenuProvider base={null} bottom={null}>
+            <Routes>
+              <Route element={<AppBar />} path="/:lang/*" />
+            </Routes>
+          </SideMenuProvider>
+        </MemoryRouter>
+      </AppIconProvider>
     </IntlProvider>,
   );
 }
@@ -308,5 +314,51 @@ describe('AppBar top navigation', () => {
       'grid-template-areas: "logo name navigation controls"',
     );
     expect(document.head.textContent).not.toContain('grid-template-areas: "main"');
+  });
+});
+
+describe('AppBar side menu toggle', () => {
+  function mockLeftMenuDefinition(icons?: AppDefinition['icons']): void {
+    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+      definition: { ...appDefinition, icons, layout: { navigation: 'left-menu', login: 'hidden' } },
+      demoMode: false,
+      revision: 1,
+      blockManifests: [],
+    });
+  }
+
+  it('should open the side menu without rendering an image when nothing is overridden', () => {
+    mockLeftMenuDefinition();
+    renderAppBar();
+
+    const toggle = screen.getByRole('button', { name: 'Open menu' });
+    expect(within(toggle).queryByAltText('')).toBeNull();
+
+    fireEvent.click(toggle);
+
+    const close = screen.getByRole('button', { name: 'Close menu' });
+    expect(within(close).queryByAltText('')).toBeNull();
+  });
+
+  it("should render the app's overrides for the burger icons", () => {
+    mockLeftMenuDefinition({
+      menu: { asset: 'menu-icon', overrides: ['bars'] },
+      close: { asset: 'close-icon', overrides: ['xmark'] },
+    });
+    renderAppBar();
+
+    const toggle = screen.getByRole('button', { name: 'Open menu' });
+    expect(within(toggle).getByAltText('')).toHaveProperty(
+      'src',
+      'https://appsemble.app/api/apps/42/assets/menu-icon',
+    );
+
+    fireEvent.click(toggle);
+
+    const close = screen.getByRole('button', { name: 'Close menu' });
+    expect(within(close).getByAltText('')).toHaveProperty(
+      'src',
+      'https://appsemble.app/api/apps/42/assets/close-icon',
+    );
   });
 });

@@ -1,0 +1,14 @@
+/*
+ * Bulma draws the burger lines on every span in `.navbar-burger`, up to the specificity of
+ * `.navbar-burger.is-active span:nth-child(1)`. The icon outranks those rules to keep the size of a
+ * default `.icon`, centered in the burger.
+ */
+:global(.navbar-burger).burger > .icon:only-child {
+  background: none;
+  height: 1.5rem;
+  inset: 0;
+  margin: auto;
+  transform: none;
+  transition: none;
+  width: 1.5rem;
+}

@@ -5,7 +5,7 @@ import {
   remap,
   type RemapperContext,
 } from '@appsemble/lang-sdk';
-import { Button, Icon } from '@appsemble/react-components';
+import { Button, Icon, NavbarBurger } from '@appsemble/react-components';
 import { type ReactNode, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, NavLink, useParams } from 'react-router-dom';
@@ -132,17 +132,12 @@ export function TopNavigation(): ReactNode {
 
   return (
     <>
-      <button
+      <NavbarBurger
+        active={active}
         aria-expanded={active}
         aria-label="menu"
-        className={`navbar-burger ${active ? 'is-active' : ''}`}
         onClick={() => setActive((open) => !open)}
-        type="button"
-      >
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
-      </button>
+      />
       <div className={`navbar-menu ${styles.menu} ${active ? 'is-active' : ''}`}>
         <div className="navbar-start">
           {pages.map((page) => renderItem(page))}
