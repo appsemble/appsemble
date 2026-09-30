@@ -10,6 +10,24 @@ import { type Argv } from 'yargs';
 export const command = 'validate-packaged-exports <paths...>';
 export const description = 'Checks for missing files exported by a package.';
 
+/**
+ * Recursively collect the relative file targets referenced by a package.json `exports` value.
+ *
+ * @param value An `exports` entry, which may be a string target or a nested conditions object.
+ * @param targets The set to collect relative (`./…`) targets into.
+ */
+function collectExportTargets(value: unknown, targets: Set<string>): void {
+  if (typeof value === 'string') {
+    if (value.startsWith('./')) {
+      targets.add(value);
+    }
+  } else if (value && typeof value === 'object') {
+    for (const nested of Object.values(value)) {
+      collectExportTargets(nested, targets);
+    }
+  }
+}
+
 export function builder(yargs: Argv): Argv<any> {
   return yargs.positional('paths', {
     describe: 'The path to the package(s) to validate.',
@@ -35,6 +53,22 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
     console.log(`Extracted ${file}\nImporting ${outDir}/index.js`);
 
     const packageJson = JSON.parse(await readFile(join(outDir, 'package.json'), 'utf8'));
+
+    // Every file referenced by an export condition must be shipped in the package. This guards
+    // against conditions like `ts-source` (pointing at TypeScript source that isn't published)
+    // leaking into a published package and breaking consumers that resolve them.
+    const exportTargets = new Set<string>();
+    collectExportTargets(packageJson.exports, exportTargets);
+    for (const target of exportTargets) {
+      const exists = await access(join(outDir, target))
+        .then(() => true)
+        .catch(() => false);
+      if (!exists) {
+        console.error(`Export target ${target} is missing from ${file}`);
+        process.exit(1);
+      }
+    }
+
     const nodeModulesPath = join(process.cwd(), packageJson.repository.directory, 'node_modules');
     const outDirNodeModulesPath = join(outDir, 'node_modules');
     if (
