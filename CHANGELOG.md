@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.3-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.3)] - 2026-09-30
+
+### Added
+
+- App: Show page icons in breadcrumbs.
+
+### Fixed
+
+- Node-utils: Sign a multi-object delete with `Content-MD5` again, so deleting assets works against
+  object stores from before the S3 flexible checksums, such as the MinIO builds self-hosted
+  installations still run.
+- Preact-components: Show a danger-colored X icon for error messages.
+- React-components: Show a danger-colored X icon for error messages.
+- Server: Generate the self-signed PgBouncer certificate in each PgBouncer pod instead of in a
+  rendered Secret, which changed on every render under ArgoCD and kept the application out of sync.
+- Server: Let PgBouncer retry a failed server login after 1 second instead of 15, so a PostgreSQL
+  switchover or failover no longer fails requests for 15 seconds.
+- Server: Name the server PodDisruptionBudget `<release>-server`, so it no longer collides with the
+  one CloudNativePG creates for a Cluster named after the release.
+
 ## \[[0.40.3-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.2)] - 2026-09-29
 
 ## \[[0.40.3-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.1)] - 2026-09-29
