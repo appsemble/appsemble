@@ -60,7 +60,7 @@ it('should render error text with a status icon', () => {
   );
   const helpText = screen.getByText('this is an error').closest('.help')!;
   expect(helpText.classList).toContain('is-danger');
-  expect(helpText.querySelector('.icon .fa-circle-exclamation')).not.toBeNull();
+  expect(helpText.querySelector('.icon .fa-circle-xmark')).not.toBeNull();
 });
 
 it('should render detailed help text', () => {

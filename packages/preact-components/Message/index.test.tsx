@@ -8,7 +8,7 @@ import { expect, it } from 'vitest';
 import { Message } from './index.js';
 
 const registry: IconRegistry = {
-  error: { asset: 'error-icon', overrides: ['circle-exclamation'] },
+  error: { asset: 'error-icon', overrides: ['circle-xmark'] },
 };
 
 const block = {
@@ -57,7 +57,18 @@ it.each([
   );
   const message = screen.getByTestId('message-comp');
   expect(message.querySelector(`.icon .${className}`)).not.toBeNull();
+  expect(message.querySelector('.icon')?.className).not.toContain('has-text-');
   expect(message.textContent).toBe('Saved');
+});
+
+it('should show the danger status icon in the danger color', () => {
+  render(
+    <Message color="danger">
+      <span>Failed</span>
+    </Message>,
+    { wrapper: Provider },
+  );
+  expect(screen.getByTestId('message-comp').querySelector('.icon.has-text-danger')).not.toBeNull();
 });
 
 it('should not show an icon for messages without a status color', () => {

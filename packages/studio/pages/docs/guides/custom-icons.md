@@ -167,7 +167,7 @@ own status icons:
 
 | Color   | Icon                   |
 | ------- | ---------------------- |
-| danger  | `circle-exclamation`   |
+| danger  | `circle-xmark`         |
 | warning | `triangle-exclamation` |
 | success | `circle-check`         |
 | info    | `circle-info`          |

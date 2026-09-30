@@ -48,7 +48,7 @@ export function getIconSizeModifier(
  * Apps replace these using the `overrides` of their icon registry.
  */
 export const messageIcons: Record<'danger' | 'info' | 'success' | 'warning', IconName> = {
-  danger: 'circle-exclamation',
+  danger: 'circle-xmark',
   info: 'circle-info',
   success: 'circle-check',
   warning: 'triangle-exclamation',
