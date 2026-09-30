@@ -6,7 +6,7 @@ import { Message } from './index.js';
 import { IconProvider } from '../IconProvider/index.js';
 
 it.each([
-  ['danger', 'fa-circle-exclamation'],
+  ['danger', 'fa-circle-xmark'],
   ['info', 'fa-circle-info'],
   ['success', 'fa-circle-check'],
   ['warning', 'fa-triangle-exclamation'],
@@ -15,6 +15,19 @@ it.each([
   expect(container.querySelector(`.icon .${className}`)).not.toBeNull();
   expect(container.textContent).toBe('Saved');
 });
+
+it('should show the danger status icon in the danger color', () => {
+  const { container } = render(<Message color="danger">Failed</Message>);
+  expect(container.querySelector('.icon.has-text-danger')).not.toBeNull();
+});
+
+it.each(['info', 'success', 'warning'] as const)(
+  'should show the %s status icon in the message text color',
+  (color) => {
+    const { container } = render(<Message color={color}>Saved</Message>);
+    expect(container.querySelector('.icon')?.className).not.toContain('has-text-');
+  },
+);
 
 it('should not show an icon for messages without a status color', () => {
   const { container } = render(<Message color="primary">Saved</Message>);
@@ -27,7 +40,7 @@ it('should show the custom icon which overrides a status icon', () => {
       <IconProvider
         apiUrl="https://example.com"
         appId={42}
-        registry={{ error: { asset: 'error-icon', overrides: ['circle-exclamation'] } }}
+        registry={{ error: { asset: 'error-icon', overrides: ['circle-xmark'] } }}
       >
         {children}
       </IconProvider>

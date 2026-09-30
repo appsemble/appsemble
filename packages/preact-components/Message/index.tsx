@@ -49,7 +49,10 @@ export function Message({ children, className, color, header, role }: MessagePro
       <div className={classNames('message-body', { [styles.body]: icon })}>
         {icon ? (
           <>
-            <Icon className={styles.icon} icon={icon} />
+            <Icon
+              className={classNames(styles.icon, { 'has-text-danger': color === 'danger' })}
+              icon={icon}
+            />
             <div className={styles.content}>{children}</div>
           </>
         ) : (
