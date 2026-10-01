@@ -38,13 +38,13 @@
     "test": "vitest"
   },
   "dependenciesComments": {
-    "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tag of the `e2e node` job in .gitlab-ci.yml; Renovate bumps both together (see renovate.json)."
+    "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tags of the `mermaid svgs`, `e2e node`, and `e2e keycloak` jobs in .gitlab-ci.yml; Renovate bumps them all together (see renovate.json)."
   },
   "dependencies": {
     "@appsemble/lang-sdk": "0.40.3-test.3",
     "@appsemble/node-utils": "0.40.3-test.3",
     "@appsemble/types": "0.40.3-test.3",
-    "@playwright/test": "1.62.1",
+    "@playwright/test": "1.63.0",
     "strip-indent": "^4.0.0"
   },
   "engines": {
