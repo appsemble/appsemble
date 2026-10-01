@@ -89,6 +89,8 @@ declare module '@appsemble/sdk' {
     /**
      * Is image rounded.
      *
+     * With `fill`, the image is forced to a square so it renders as a circle.
+     *
      * @default false
      */
     rounded?: boolean;

@@ -1,13 +1,20 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
+function escapeRegExp(value) {
+  return value.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`);
+}
+
 /**
  * Generate a proper Vitest configuration based on a project context.
  *
  * @param {ImportMeta} meta The import module meta object.
+ * @param {object} [options] Additional options.
+ * @param {boolean} [options.css] Process the CSS files under `src/`, so tests can assert computed
+ *   styles. By default CSS imports resolve to empty strings.
  * @returns {import('vitest/config').UserProjectConfigExport} A vitest configuration for the project.
  */
-export function createVitestConfig({ url }) {
+export function createVitestConfig({ url }, { css = false } = {}) {
   const { compilerOptions: { lib = [] } = {} } = JSON.parse(
     readFileSync(new URL('tsconfig.json', url)),
   );
@@ -39,6 +46,7 @@ export function createVitestConfig({ url }) {
         },
       },
       css: {
+        include: css ? [new RegExp(`^${escapeRegExp(fileURLToPath(new URL('src/', url)))}.*\\.css$`)] : [],
         modules: {
           classNameStrategy: 'non-scoped',
         },

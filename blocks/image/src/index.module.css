@@ -19,10 +19,11 @@
   display: none;
 }
 
-button {
+.imageButton {
   background: transparent;
   border: none;
   cursor: pointer;
+  padding: 0;
 }
 
 .img {
@@ -39,19 +40,21 @@ button {
 
 .fill {
   display: block;
-  position: relative;
   width: 100%;
 }
 
-.fill button {
+.fill .imageButton {
   display: block;
-  padding: 0;
   width: 100%;
 }
 
 .fill img {
   display: block;
   width: 100%;
+}
+
+.fill .rounded {
+  aspect-ratio: 1 / 1;
 }
 
 .fileLabel {
@@ -78,7 +81,10 @@ button {
   right: 0.75rem;
 }
 
+/* Theme rules written for the inline image (radius, position, ratio) must not reach the modal. */
 .fullscreenImage {
   aspect-ratio: auto;
+  border-radius: 0;
   object-fit: contain;
+  object-position: center;
 }

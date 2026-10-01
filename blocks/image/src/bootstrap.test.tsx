@@ -1,7 +1,8 @@
 import { getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type BlockProps, Context } from '@appsemble/preact';
-import { render, screen } from '@testing-library/preact';
-import { expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/preact';
+import userEvent from '@testing-library/user-event';
+import { expect, it, vi } from 'vitest';
 
 import { ImageBlock } from './bootstrap.js';
 import styles from './index.module.css';
@@ -11,10 +12,11 @@ const defaultBootstrapParams = getDefaultBootstrapParams();
 function setup(
   parameters: Record<string, unknown>,
   container?: HTMLElement,
+  actions: Record<string, unknown> = {},
 ): ReturnType<typeof render> {
   const props = {
     ...defaultBootstrapParams,
-    actions: {},
+    actions,
     events: { on: { data: () => true } },
     parameters: { alt: 'Team photo', ...parameters },
     ready() {
@@ -45,6 +47,29 @@ it('renders the image as a button when fullscreen is on', () => {
   setup({ fullscreen: true, url: 'photo.jpg' });
 
   expect(screen.getByRole('button', { name: 'Team photo' })).toBeDefined();
+});
+
+it('shows the default image in fullscreen when no image is set', async () => {
+  setup({ defaultImage: 'placeholder.png', fullscreen: true });
+
+  await userEvent.click(screen.getByRole('button', { name: 'Team photo' }));
+
+  const sources = screen
+    .getAllByRole('img', { name: 'Team photo' })
+    .map((img) => img.getAttribute('src'));
+  expect(sources).toStrictEqual(['placeholder.png', 'placeholder.png']);
+});
+
+it('keeps the current image when the file selection is cancelled', () => {
+  const onChange = vi.fn();
+  setup({ input: true, url: 'photo.jpg' }, undefined, { onChange });
+
+  fireEvent.change(screen.getByLabelText('changeImage'));
+
+  expect(onChange).not.toHaveBeenCalled();
+  expect(screen.getByRole('img', { name: 'Team photo' }).getAttribute('src')).toBe(
+    'http://localhost/api/apps/1/assets/photo.jpg',
+  );
 });
 
 function getImageStyle(): CSSStyleDeclaration {

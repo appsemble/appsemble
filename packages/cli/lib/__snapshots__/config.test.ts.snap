@@ -5734,7 +5734,9 @@ Value should be same as property name in resources where it is going to be store
       },
       "rounded": {
         "default": false,
-        "description": "Is image rounded.",
+        "description": "Is image rounded.
+
+With \`fill\`, the image is forced to a square so it renders as a circle.",
         "type": "boolean",
       },
       "url": {

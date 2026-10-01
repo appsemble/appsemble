@@ -2,7 +2,7 @@ import { type BlockProps } from '@appsemble/preact';
 import { AppAssetDownloadButton, Icon, Modal, useToggle } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type JSX, type VNode } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import defaultPic from './addpicture.svg';
 import styles from './index.module.css';
@@ -48,10 +48,20 @@ export function ImageBlock({
   const img = remap(url, data) as string;
   const defaultSrc = remap(defaultImage, data) as string;
   const [selectedImage, setSelectedImage] = useState<string | null>(img);
+  const objectUrl = useRef<string>();
 
   useEffect(() => {
     setSelectedImage(img);
   }, [img]);
+
+  useEffect(
+    () => () => {
+      if (objectUrl.current) {
+        URL.revokeObjectURL(objectUrl.current);
+      }
+    },
+    [],
+  );
 
   const selectedSrc = selectedImage
     ? /^(https?:|blob:https?:)?\/\//.test(selectedImage)
@@ -62,11 +72,19 @@ export function ImageBlock({
   const handleFileChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>): void => {
       const { currentTarget } = event;
-      const file = currentTarget.files?.[0] as Blob;
+      const file = currentTarget.files?.[0];
       // @ts-expect-error strictNullCheck
       currentTarget.value = null;
 
-      setSelectedImage(URL.createObjectURL(file));
+      if (!file) {
+        return;
+      }
+
+      if (objectUrl.current) {
+        URL.revokeObjectURL(objectUrl.current);
+      }
+      objectUrl.current = URL.createObjectURL(file);
+      setSelectedImage(objectUrl.current);
 
       actions.onChange({
         ...(data as Record<string, unknown>),
@@ -76,32 +94,32 @@ export function ImageBlock({
     [actions, data, name],
   );
 
-  const figure = (
-    <figure>
-      <img
-        alt={alt}
-        className={classNames(styles.img, {
-          [styles.placeholder]: !selectedImage,
-          [styles.rounded]: rounded,
-        })}
-        src={selectedSrc}
-        // eslint-disable-next-line react/forbid-dom-props
-        style={fill ? undefined : { height: `${height}px`, width: `${width}px` }}
-      />
-    </figure>
+  const image = (
+    <img
+      alt={alt}
+      className={classNames(styles.img, {
+        [styles.placeholder]: !selectedImage,
+        [styles.rounded]: rounded,
+      })}
+      src={selectedSrc}
+      // eslint-disable-next-line react/forbid-dom-props
+      style={fill ? undefined : { height: `${height}px`, width: `${width}px` }}
+    />
   );
 
   return (
     <>
       <div className={classNames('is-flex', alignmentClasses[alignment])}>
-        <div className={fill ? styles.fill : styles.imageScannerWrapper}>
-          {fullscreen ? (
-            <button onClick={modal.enable} type="button">
-              {figure}
-            </button>
-          ) : (
-            figure
-          )}
+        <div className={classNames(styles.imageScannerWrapper, { [styles.fill]: fill })}>
+          <figure>
+            {fullscreen ? (
+              <button className={styles.imageButton} onClick={modal.enable} type="button">
+                {image}
+              </button>
+            ) : (
+              image
+            )}
+          </figure>
           {input ? (
             <label
               aria-label={formatMessage('changeImage')}
@@ -123,15 +141,7 @@ export function ImageBlock({
         <Modal isActive={modal.enabled} onClose={modal.disable}>
           <AppAssetDownloadButton src={selectedSrc} />
           <figure className="image">
-            <img
-              alt={alt}
-              className={styles.fullscreenImage}
-              src={
-                /^(https?:|blob:https?:)?\/\//.test(selectedImage ?? '')
-                  ? (selectedImage ?? undefined)
-                  : (asset(selectedImage ?? '') ?? undefined)
-              }
-            />
+            <img alt={alt} className={styles.fullscreenImage} src={selectedSrc} />
           </figure>
         </Modal>
       ) : null}
