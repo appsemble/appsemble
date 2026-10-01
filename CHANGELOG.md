@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.3-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.4)] - 2026-10-01
+
+### Changed
+
+- App: Render icon overrides of `bars` and `xmark` in the menu burgers.
+- React-components: Render icon overrides of `bars` and `xmark` in the side menu burger.
+
+### Fixed
+
+- Cli: Fix building blocks outside the monorepo with the default webpack config.
+
 ## \[[0.40.3-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.3)] - 2026-09-30
 
 ### Added

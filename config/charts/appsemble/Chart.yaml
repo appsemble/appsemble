@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.3-test.3
-appVersion: 0.40.3-test.3
+version: 0.40.3-test.4
+appVersion: 0.40.3-test.4
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,28 +32,14 @@ dependencies:
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "App: Show page icons in breadcrumbs."
+    - kind: changed
+      description: "App: Render icon overrides of bars and xmark in the menu burgers."
+    - kind: changed
+      description: "React-components: Render icon overrides of bars and xmark in the
+        side menu burger."
     - kind: fixed
-      description: "Node-utils: Sign a multi-object delete with Content-MD5 again, so
-        deleting assets works against object stores from before the S3 flexible
-        checksums, such as the MinIO builds self-hosted installations still run."
-    - kind: fixed
-      description: "Preact-components: Show a danger-colored X icon for error messages."
-    - kind: fixed
-      description: "React-components: Show a danger-colored X icon for error messages."
-    - kind: fixed
-      description: "Server: Generate the self-signed PgBouncer certificate in each
-        PgBouncer pod instead of in a rendered Secret, which changed on every render
-        under ArgoCD and kept the application out of sync."
-    - kind: fixed
-      description: "Server: Let PgBouncer retry a failed server login after 1 second
-        instead of 15, so a PostgreSQL switchover or failover no longer fails
-        requests for 15 seconds."
-    - kind: fixed
-      description: "Server: Name the server PodDisruptionBudget <release>-server, so
-        it no longer collides with the one CloudNativePG creates for a Cluster named
-        after the release."
+      description: "Cli: Fix building blocks outside the monorepo with the default
+        webpack config."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
