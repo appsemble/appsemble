@@ -3,6 +3,18 @@
   position: relative;
 }
 
+.alignLeft {
+  justify-content: flex-start;
+}
+
+.alignCenter {
+  justify-content: center;
+}
+
+.alignRight {
+  justify-content: flex-end;
+}
+
 .hiddenInput {
   display: none;
 }
@@ -15,6 +27,31 @@ button {
 
 .img {
   object-fit: cover;
+}
+
+.placeholder {
+  background-color: hsl(218deg 100% 66%);
+}
+
+.rounded {
+  border-radius: 50%;
+}
+
+.fill {
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+.fill button {
+  display: block;
+  padding: 0;
+  width: 100%;
+}
+
+.fill img {
+  display: block;
+  width: 100%;
 }
 
 .fileLabel {
@@ -34,4 +71,14 @@ button {
 
 .fileLabel:hover {
   filter: brightness(0.7);
+}
+
+.fill .fileLabel {
+  bottom: 0.75rem;
+  right: 0.75rem;
+}
+
+.fullscreenImage {
+  aspect-ratio: auto;
+  object-fit: contain;
 }

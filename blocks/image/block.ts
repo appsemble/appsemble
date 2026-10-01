@@ -43,6 +43,16 @@ declare module '@appsemble/sdk' {
     defaultImage?: Remapper;
 
     /**
+     * Whether the image fills the full width of the block.
+     *
+     * The image keeps its natural aspect ratio unless the app theme sets one, for example with
+     * `aspect-ratio` on `img`. When true, `width` and `height` are ignored.
+     *
+     * @default false
+     */
+    fill?: boolean;
+
+    /**
      * This image will be shown in full screen mode if image is clicked.
      *
      * @default false
@@ -51,6 +61,8 @@ declare module '@appsemble/sdk' {
 
     /**
      * The height of the image in pixels.
+     *
+     * Ignored when `fill` is true.
      *
      * @default 250
      */
@@ -89,6 +101,8 @@ declare module '@appsemble/sdk' {
 
     /**
      * The width of the image in pixels.
+     *
+     * Ignored when `fill` is true.
      *
      * @default 250
      */
