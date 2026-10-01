@@ -1533,6 +1533,7 @@ staging:
       --set "migrateTo=next"
       --set "oauthSecret=oauth2"
       --set "skipCustomDomains=true"
+      --set 'resources.deployment.requests.memory=1536Mi'
       --set 'seaweedfs.allInOne.data.size=40Gi'
       --set "seaweedfs.allInOne.data.annotations.helm\\.sh/resource-policy=keep"
       --set "provision.organization.id=appsemble"
