@@ -6,11 +6,31 @@
   "minimumReleaseAge": "3 days",
   "customManagers": [
     {
-      "description": "Track the 'mermaid svgs' job's mcr.microsoft.com/playwright image tag against the root @playwright/test npm version (the e2e job's image is pinned separately to @appsemble/e2e and kept in sync manually)",
+      "description": "Track the 'mermaid svgs' job's mcr.microsoft.com/playwright image tag against the @playwright/test npm version",
       "customType": "regex",
       "managerFilePatterns": ["/^\\.gitlab-ci\\.yml$/"],
       "matchStrings": [
         "mermaid svgs:[\\s\\S]*?mcr\\.microsoft\\.com/playwright:v(?<currentValue>\\d+\\.\\d+\\.\\d+)-noble"
+      ],
+      "depNameTemplate": "@playwright/test",
+      "datasourceTemplate": "npm"
+    },
+    {
+      "description": "Track the 'e2e node' job's mcr.microsoft.com/playwright image tag against the @playwright/test npm version",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.gitlab-ci\\.yml$/"],
+      "matchStrings": [
+        "e2e node:[\\s\\S]*?mcr\\.microsoft\\.com/playwright:v(?<currentValue>\\d+\\.\\d+\\.\\d+)-noble"
+      ],
+      "depNameTemplate": "@playwright/test",
+      "datasourceTemplate": "npm"
+    },
+    {
+      "description": "Track the 'e2e keycloak' job's mcr.microsoft.com/playwright image tag against the @playwright/test npm version",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.gitlab-ci\\.yml$/"],
+      "matchStrings": [
+        "e2e keycloak:[\\s\\S]*?mcr\\.microsoft\\.com/playwright:v(?<currentValue>\\d+\\.\\d+\\.\\d+)-noble"
       ],
       "depNameTemplate": "@playwright/test",
       "datasourceTemplate": "npm"
@@ -25,6 +45,12 @@
       "description": "Bump the npm @playwright/test pins and the matching playwright Docker image tags in a single PR",
       "matchPackageNames": ["@playwright/test"],
       "groupName": "playwright"
+    },
+    {
+      "description": "The mcr.microsoft.com/playwright image tags are tracked via the @playwright/test npm identity above so all three .gitlab-ci.yml occurrences and the npm pins move in one PR; disable the built-in Docker manager for this image to avoid a second, independent update",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["mcr.microsoft.com/playwright"],
+      "enabled": false
     },
     {
       "description": "eslint-plugin-jsx-a11y has no released version supporting ESLint 10 yet; cap eslint below v10 until https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/issues/1075 (tracked by PR https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/pull/1081) ships a compatible release",
