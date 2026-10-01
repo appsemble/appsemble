@@ -1813,6 +1813,9 @@ provision production:
 lighthouse:
   extends: .appsemble service
   stage: performance
+  # Performance scores depend on the machine, so run on our runners that take one job at a time.
+  tags:
+    - sole-occupant
   image: mcr.microsoft.com/playwright:v1.63.0-noble
   allow_failure: true
   script:
