@@ -38,6 +38,7 @@ export * from './MessagesProvider/index.js';
 export * from './Meta/index.js';
 export * from './Modal/index.js';
 export * from './ModalCard/index.js';
+export * from './NavbarBurger/index.js';
 export * from './NavbarDropdown/index.js';
 export * from './NavbarItem/index.js';
 export * from './NavLink/index.js';
