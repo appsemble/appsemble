@@ -1508,6 +1508,8 @@ staging:
       printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
     - kubectl create secret generic staging-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
     - rm pgbouncer-userlist.txt
+    # Reserve memory for workload peaks rather than average use, leaving capacity for monitoring.
+    # Asset storage needs headroom for production-sized restores, storage overhead, and growth.
     - helm install staging ./public/appsemble-*.tgz
       --atomic
       --timeout 30m0s
@@ -1533,7 +1535,8 @@ staging:
       --set "migrateTo=next"
       --set "oauthSecret=oauth2"
       --set "skipCustomDomains=true"
-      --set 'seaweedfs.allInOne.data.size=20Gi'
+      --set 'resources.deployment.requests.memory=1536Mi'
+      --set 'seaweedfs.allInOne.data.size=40Gi'
       --set "seaweedfs.allInOne.data.annotations.helm\\.sh/resource-policy=keep"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
