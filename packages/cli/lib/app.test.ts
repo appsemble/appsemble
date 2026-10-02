@@ -2880,6 +2880,33 @@ describe('app', () => {
       ).rejects.toThrow('Missing translation');
     });
 
+    it('should not require route segments in a verified file', async () => {
+      const initialMessages = JSON.parse(
+        String(await readFixture('apps/test-messages/i18n/nl.json')),
+      );
+      await writeFile(
+        resolveFixture('apps/test-messages/i18n/nl.json'),
+        JSON.stringify({
+          app: {
+            description: 'Dutch description',
+            'emails.appInvite.body': 'Dutch invite',
+            name: 'Test App',
+            'pages.test-page': 'Testpagina',
+          },
+        }),
+      );
+      try {
+        await writeAppMessages(resolveFixture('apps/test-messages'), ['nl'], ['nl'], 'json');
+        const messages = JSON.parse(String(await readFixture('apps/test-messages/i18n/nl.json')));
+        expect(messages).toMatchObject({ app: { 'routes.Login': '' } });
+      } finally {
+        await writeFile(
+          resolveFixture('apps/test-messages/i18n/nl.json'),
+          JSON.stringify(initialMessages, null, '\t'),
+        );
+      }
+    });
+
     it('should throw if app definition does not exist in the app folder', async () => {
       await expect(() =>
         writeAppMessages(resolveFixture('apps/empty'), ['nl'], [], 'json'),
