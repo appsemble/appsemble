@@ -1,4 +1,4 @@
-import { normalize } from '@appsemble/lang-sdk';
+import { getPagePathSegment } from '@appsemble/lang-sdk';
 import { Message, useQuery } from '@appsemble/react-components';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -19,6 +19,7 @@ import {
 } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
 import { MainLogin } from '../MainLogin/index.js';
@@ -28,12 +29,15 @@ type LoginState = 'demo' | 'form' | 'permission-error' | 'totp-setup' | 'totp';
 export function Login(): ReactNode {
   const { definition } = useAppDefinition();
   const { appMemberRoles, isLoggedIn, totpPending } = useAppMember();
+  const { getAppMessage } = useAppMessages();
   const qs = useQuery();
   const redirect = qs.get('redirect');
 
   if (isLoggedIn || !definition.security) {
     const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
-    return <Navigate to={redirect || normalize(defaultPageName)} />;
+    return (
+      <Navigate to={redirect || getPagePathSegment({ name: defaultPageName }, getAppMessage)} />
+    );
   }
 
   const hasNoLogin =

@@ -10,6 +10,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppMemberProvider, useAppMember } from './index.js';
+import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 
 const { axiosGet, axiosPost, definitionSecurity, getUri, requestEject, requestUse, setSentryUser } =
   vi.hoisted(() => ({
@@ -120,6 +121,12 @@ function createAccessToken(): string {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
+    getAppMessage: ({ defaultMessage }: { defaultMessage: string }) => ({
+      format: () => defaultMessage,
+    }),
+    getMessage: () => ({ format: () => '' }),
+  } as never);
   appMember = undefined;
   location = undefined;
   requestInterceptor = undefined;

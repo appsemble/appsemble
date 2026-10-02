@@ -23,6 +23,7 @@ import { parse } from 'yaml';
 import {
   App,
   AppBuildSnapshot,
+  AppMessages,
   AppReadme,
   AppScreenshot,
   AppSnapshot,
@@ -40,6 +41,7 @@ import { checkUserOrganizationPermissions } from '../../../utils/authorization.j
 import { findAppMemberByRole } from '../../../utils/appMember.js';
 import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
+import { assertMessageSlugs } from '../../../utils/appMessageSlugs.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
 import { validateStoredSsoIcons } from '../../../utils/icons.js';
@@ -186,6 +188,17 @@ export async function patchApp(ctx: Context): Promise<void> {
           errors: ssoIconErrors,
         });
       }
+
+      const storedMessages = await AppMessages.findAll({
+        attributes: ['language', 'messages'],
+        where: { AppId: appId },
+      });
+      assertMessageSlugs(
+        ctx,
+        definition,
+        new Map(storedMessages.map((row) => [row.language, row.messages])),
+        storedMessages.map((row) => row.language),
+      );
 
       result.definition = definition;
       if (definition.cron && definition.security?.cron) {

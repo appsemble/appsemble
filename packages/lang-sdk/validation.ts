@@ -13,6 +13,7 @@ import { BlockParamInstanceValidator } from './BasicValidator.js';
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { partialNormalized } from './constants/index.js';
 import { findPageByName } from './findPageByName.js';
+import { type TranslatableRoute } from './pageUtils.js';
 import {
   bottomNavigationGridArea,
   breadcrumbsGridArea,
@@ -123,7 +124,7 @@ function hasResourcePermission(
  * @param link The link to check
  * @returns Whether or not the given link represents a link related to the Appsemble core.
  */
-export function isAppLink(link: Remapper | string[] | string): boolean {
+export function isAppLink(link: Remapper | string[] | string): link is `/${TranslatableRoute}` {
   return (
     link === '/Login' || link === '/Settings' || link === '/Register' || link === '/Reset-Password'
   );

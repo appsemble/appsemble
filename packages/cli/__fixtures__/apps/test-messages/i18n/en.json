@@ -3,6 +3,15 @@
     "description": "",
     "emails.appInvite.body": "test invite body",
     "name": "Test App",
-    "pages.test-page": "Test Page"
+    "pages.test-page": "Test Page",
+    "routes.App-Invite": "App-Invite",
+    "routes.Edit-Password": "Edit-Password",
+    "routes.Feedback": "Feedback",
+    "routes.Group-Invite": "Group-Invite",
+    "routes.Login": "Login",
+    "routes.Register": "Register",
+    "routes.Reset-Password": "Reset-Password",
+    "routes.Settings": "Settings",
+    "routes.Verify": "Verify"
   }
 }

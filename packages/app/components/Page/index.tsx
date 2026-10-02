@@ -6,6 +6,7 @@ import {
   findPageById,
   getPageDisplayName,
   getPagePathSegment,
+  getRouteSegment,
   normalize,
   pageHasGridArea,
   remap,
@@ -82,9 +83,9 @@ export function Page(): ReactNode {
   } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
-  const { pathname, search } = useLocation();
+  const { hash, pathname, search } = useLocation();
   const routeParams = useParams();
-  const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
+  const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const { hasBottomNavigation, setPage } = usePage();
   const pushNotifications = useServiceWorkerRegistration();
@@ -153,12 +154,14 @@ export function Page(): ReactNode {
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const normalizedPageId = normalize(pageId);
-  const pageDefinition = findPageById(
-    appDefinition.pages,
-    normalizedPageId,
-    appMessageIds,
-    getAppMessage,
-  );
+  const pageDefinition = findPageById(appDefinition.pages, normalizedPageId, getAppMessage);
+
+  // The path is rebuilt from its segments (`/:lang/:pageId/...rest`), because replacing the text
+  // of the page segment could also replace part of the language segment.
+  const replacePageSegment = (segment: string): string => {
+    const [langSegment, , ...rest] = pathname.split('/').filter(Boolean);
+    return `/${[langSegment, segment, ...rest].join('/')}`;
+  };
   const index = pageDefinition ? appDefinition.pages.indexOf(pageDefinition) : -1;
   const internalPageName = pageDefinition ? normalize(pageDefinition.name) : null;
   const prefix = internalPageName ? `pages.${internalPageName}` : null;
@@ -386,13 +389,13 @@ export function Page(): ReactNode {
   // If the user is on an existing page and is allowed to view it, render it.
   if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
     const pageName = getPageDisplayName(pageDefinition, getAppMessage);
-    const canonicalPageId = getPagePathSegment(pageDefinition);
+    const translatedPageId = getPagePathSegment(pageDefinition, getAppMessage);
 
-    if (pageId && pageId !== canonicalPageId) {
-      // Redirect translated or legacy aliases to the canonical internal page slug,
-      // while preserving query params.
+    if (pageId && pageId !== translatedPageId) {
+      // The canonical slug and other aliases redirect to the slug of the current language, while
+      // preserving query params and the fragment.
       return (
-        <Navigate replace to={{ pathname: pathname.replace(pageId, canonicalPageId), search }} />
+        <Navigate replace to={{ hash, pathname: replacePageSegment(translatedPageId), search }} />
       );
     }
 
@@ -456,11 +459,11 @@ export function Page(): ReactNode {
                   pageDefinition.pages.some(checkPagePermissionsCallback) && pageId ? (
                     <Navigate
                       to={{
-                        pathname: pathname.replace(
-                          pageId,
-                          // @ts-expect-error 2345 argument of type is not assignable to parameter
-                          // of type (strictNullChecks)
-                          normalize(pageDefinition.pages.find(checkPagePermissionsCallback)?.name),
+                        pathname: replacePageSegment(
+                          getPagePathSegment(
+                            pageDefinition.pages.find(checkPagePermissionsCallback)!,
+                            getAppMessage,
+                          ),
                         ),
                         search,
                       }}
@@ -511,7 +514,8 @@ export function Page(): ReactNode {
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
   if (pageDefinition && !isLoggedIn) {
-    return <Navigate to={`${url}/Login?${new URLSearchParams({ redirect })}`} />;
+    const loginSegment = getRouteSegment('Login', getAppMessage);
+    return <Navigate to={`${url}/${loginSegment}?${new URLSearchParams({ redirect })}`} />;
   }
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
@@ -520,7 +524,7 @@ export function Page(): ReactNode {
   const defaultPage = appDefinition.pages.find((p) => p.name === defaultPageName);
 
   if (defaultPage && checkPagePermissionsCallback(defaultPage)) {
-    return <Navigate replace to={`${url}/${getPagePathSegment(defaultPage)}`} />;
+    return <Navigate replace to={`${url}/${getPagePathSegment(defaultPage, getAppMessage)}`} />;
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
@@ -528,7 +532,7 @@ export function Page(): ReactNode {
     (pd) => checkPagePermissionsCallback(pd) && !pd.parameters,
   );
   if (redirectPage) {
-    return <Navigate replace to={`${url}/${getPagePathSegment(redirectPage)}`} />;
+    return <Navigate replace to={`${url}/${getPagePathSegment(redirectPage, getAppMessage)}`} />;
   }
 
   // If the user isn’t allowed to view any pages, show an error message.

@@ -120,7 +120,6 @@ beforeEach(() => {
   mockApp();
   vi.spyOn(appMemberProvider, 'useAppMember').mockImplementation(() => appMember as never);
   vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
-    appMessageIds: [],
     getAppMessage: ({ defaultMessage }: { defaultMessage?: string }) => ({
       format: () => defaultMessage,
     }),

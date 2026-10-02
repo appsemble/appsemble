@@ -1,4 +1,9 @@
-import { normalize, type PageDefinition } from '@appsemble/lang-sdk';
+import {
+  getPageDisplayName,
+  getPagePathSegment,
+  getRouteSegment,
+  type PageDefinition,
+} from '@appsemble/lang-sdk';
 import { Icon, NavbarDropdown, NavbarItem, useToggle } from '@appsemble/react-components';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -29,15 +34,16 @@ export function ProfileDropdown(): ReactNode {
   const showLogin = definition.security && Object.hasOwn(definition.security, 'roles');
   const { layout } = definition;
   const onClickPageName = useCallback(
-    (page: PageDefinition) => navigate(`/${lang}/${normalize(page.name)}`),
-    [navigate, lang],
+    (page: PageDefinition) => navigate(`/${lang}/${getPagePathSegment(page, getAppMessage)}`),
+    [getAppMessage, navigate, lang],
   );
+  const loginSegment = getRouteSegment('Login', getAppMessage);
   const demoLoginToggle = useToggle();
   const install = usePWAInstall();
 
   if (
     !showLogin ||
-    pathname.includes(`${lang}/Login`) ||
+    pathname.includes(`${lang}/${loginSegment}`) ||
     (layout?.login != null && layout?.login !== 'navbar')
   ) {
     return null;
@@ -46,7 +52,7 @@ export function ProfileDropdown(): ReactNode {
   if (!isLoggedIn) {
     return (
       <div className="navbar-item is-paddingless">
-        <Link className={styles.login} to={`/${lang}/Login`}>
+        <Link className={styles.login} to={`/${lang}/${loginSegment}`}>
           <div
             className={`is-flex is-justify-content-center is-align-items-center px-4 ${styles.loginText}`}
           >
@@ -97,14 +103,17 @@ export function ProfileDropdown(): ReactNode {
         }
       >
         {showSettings ? (
-          <NavbarItem icon="wrench" to={`/${lang}/Settings`}>
+          <NavbarItem icon="wrench" to={`/${lang}/${getRouteSegment('Settings', getAppMessage)}`}>
             <FormattedMessage {...messages.settings} />
           </NavbarItem>
         ) : null}
         {showFeedback ? (
           <>
             {showSettings ? <hr className="navbar-divider" /> : null}
-            <NavbarItem icon="comment" to={`/${lang}/Feedback`}>
+            <NavbarItem
+              icon="comment"
+              to={`/${lang}/${getRouteSegment('Feedback', getAppMessage)}`}
+            >
               <FormattedMessage {...messages.feedback} />
             </NavbarItem>
           </>
@@ -148,7 +157,7 @@ export function ProfileDropdown(): ReactNode {
               <div key={page.name}>
                 <hr className="navbar-divider" />
                 <NavbarItem onClick={() => onClickPageName(page)}>
-                  {getAppMessage({ id: `pages.${normalize(page.name)}` }).format()}
+                  {getPageDisplayName(page, getAppMessage)}
                 </NavbarItem>
               </div>
             ))

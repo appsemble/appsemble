@@ -1,6 +1,7 @@
 import {
   getPageDisplayName,
   getPagePathSegment,
+  getRouteSegment,
   type PageDefinition,
   remap,
 } from '@appsemble/lang-sdk';
@@ -116,13 +117,20 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
               icon={page.icon}
               key={page.name}
               title={navName}
-              to={`${url}/${getPagePathSegment(page)}`}
+              to={`${url}/${getPagePathSegment(page, getAppMessage)}`}
             >
               {navName}
             </MenuItem>
           );
         }),
-    [generateNameAndNavName, shouldShowPageCallback, createRemapperContext, getCurrent, url],
+    [
+      generateNameAndNavName,
+      shouldShowPageCallback,
+      createRemapperContext,
+      getCurrent,
+      getAppMessage,
+      url,
+    ],
   );
 
   return (
@@ -130,12 +138,20 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
       <MenuSection>
         {renderMenu(pages)}
         {layout?.settings === 'navigation' && (
-          <MenuItem icon="wrench" title={formatMessage(messages.settings)} to={`${url}/Settings`}>
+          <MenuItem
+            icon="wrench"
+            title={formatMessage(messages.settings)}
+            to={`${url}/${getRouteSegment('Settings', getAppMessage)}`}
+          >
             <FormattedMessage {...messages.settings} />
           </MenuItem>
         )}
         {layout?.feedback === 'navigation' && sentryDsn ? (
-          <MenuItem icon="comment" title={formatMessage(messages.feedback)} to={`${url}/Feedback`}>
+          <MenuItem
+            icon="comment"
+            title={formatMessage(messages.feedback)}
+            to={`${url}/${getRouteSegment('Feedback', getAppMessage)}`}
+          >
             <FormattedMessage {...messages.feedback} />
           </MenuItem>
         ) : null}
@@ -151,7 +167,11 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
               <FormattedMessage {...messages.logout} />
             </Button>
           ) : (
-            <MenuItem icon="sign-in-alt" title={formatMessage(messages.login)} to={`${url}/Login`}>
+            <MenuItem
+              icon="sign-in-alt"
+              title={formatMessage(messages.login)}
+              to={`${url}/${getRouteSegment('Login', getAppMessage)}`}
+            >
               <FormattedMessage {...messages.login} />
             </MenuItem>
           )

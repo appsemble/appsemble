@@ -937,7 +937,8 @@ export async function writeAppMessages(
           return [key, extractedMessages.app[key]];
         }
 
-        if (verify.includes(parse(filepath).name)) {
+        // Route segments are translated by choice, so a verified language may leave them empty.
+        if (verify.includes(parse(filepath).name) && !key.startsWith('routes.')) {
           throw new AppsembleError(`Missing translation: app.${key}`);
         }
 
