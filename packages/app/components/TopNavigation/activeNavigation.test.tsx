@@ -54,7 +54,6 @@ function renderNavigation(
     isLoggedIn: Boolean(roles.length),
   } as never);
   vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
-    appMessageIds: ['pages.lot-details'],
     getAppMessage: ({ defaultMessage, id }: { defaultMessage: string; id: string }) => ({
       format: () => (id === 'pages.lot-details' ? 'Details' : defaultMessage),
     }),

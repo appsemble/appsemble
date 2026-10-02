@@ -1,4 +1,4 @@
-import { normalize, remap, type RemapperContext } from '@appsemble/lang-sdk';
+import { getPagePathSegment, remap, type RemapperContext } from '@appsemble/lang-sdk';
 import { Portal, SideMenuButton } from '@appsemble/react-components';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -102,14 +102,20 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
     return null;
   }
 
-  const showMenu = shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname);
+  const showMenu = shouldShowMenu(
+    definition,
+    appMemberRoles,
+    appMemberSelectedGroup,
+    pathname,
+    getAppMessage,
+  );
   const topNavigation = navigation === 'top' && showMenu;
 
   // `layout.stackedHeader` gives the logo its own centered row above the top navigation.
   const stackedTopHeader = topNavigation && definition.layout?.stackedHeader === true;
 
   const logoNode = logoInNavbar ? (
-    <Link to={`/${locale}/${normalize(defaultPageName)}`}>
+    <Link to={`/${locale}/${getPagePathSegment({ name: defaultPageName }, getAppMessage)}`}>
       <img
         alt="app-logo"
         className={styles.logo}

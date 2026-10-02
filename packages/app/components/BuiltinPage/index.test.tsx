@@ -56,7 +56,6 @@ function mockApp(layout: AppDefinition['layout'] = {}, emailVerified = true): vo
     isLoggedIn: !emailVerified,
   } as never);
   vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
-    appMessageIds: [],
     getAppMessage: ({ defaultMessage }: { defaultMessage?: string }) => ({
       format: () => defaultMessage,
     }),

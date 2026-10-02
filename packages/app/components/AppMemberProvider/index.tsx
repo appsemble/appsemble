@@ -1,4 +1,4 @@
-import { type AppRole } from '@appsemble/lang-sdk';
+import { type AppRole, getRouteSegment } from '@appsemble/lang-sdk';
 import { Loader } from '@appsemble/react-components';
 import { type AppMemberGroup, type AppMemberInfo } from '@appsemble/types';
 import { setUser as setSentryUser } from '@sentry/browser';
@@ -24,6 +24,7 @@ import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId, development } from '../../utils/settings.js';
 import { getGrantTotpChallenge } from '../../utils/totp.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
 
 axios.defaults.withCredentials = true;
 
@@ -128,6 +129,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   const isOAuth2Callback = /(^|\/)Callback$/.test(pathname);
   const navigate = useNavigate();
   const { lang } = useParams<{ lang: string }>();
+  const { getAppMessage } = useAppMessages();
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
@@ -319,9 +321,10 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         }));
         // Only the login page renders the second step, so a login started anywhere else, such as
         // registering or an app member action, has to move there to be completed.
-        if (!/(^|\/)Login$/.test(pathname)) {
+        const loginSegment = getRouteSegment('Login', getAppMessage);
+        if (pathname.split('/').at(-1) !== loginSegment) {
           navigate({
-            pathname: `/${lang}/Login`,
+            pathname: `/${lang}/${loginSegment}`,
             search: params.redirect
               ? String(new URLSearchParams({ redirect: params.redirect }))
               : '',
@@ -343,7 +346,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       applyTokenExpiration(accessToken, requestId);
       return auth;
     },
-    [applyTokenExpiration, isLatestAuthRequest, lang, navigate, pathname],
+    [applyTokenExpiration, getAppMessage, isLatestAuthRequest, lang, navigate, pathname],
   );
 
   /**

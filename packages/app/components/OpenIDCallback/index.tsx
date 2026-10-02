@@ -1,4 +1,4 @@
-import { normalize } from '@appsemble/lang-sdk';
+import { getPagePathSegment, getRouteSegment } from '@appsemble/lang-sdk';
 import { Button, Message, useMeta, useQuery } from '@appsemble/react-components';
 import { clearOAuth2State, loadOAuth2State, type OAuth2State } from '@appsemble/web-utils';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
@@ -12,6 +12,7 @@ import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
 
 /**
@@ -47,8 +48,10 @@ export function OpenIDCallback(): ReactNode {
 
   const session = useMemo(() => loadOAuth2State<OAuth2State>(), []);
   const { appMemberRoles, authorizationCodeLogin, isLoggedIn, totpPending } = useAppMember();
+  const { getAppMessage } = useAppMessages();
 
   const { definition } = useAppDefinition();
+  const loginSegment = getRouteSegment('Login', getAppMessage);
 
   const [error, setError] = useState(false);
 
@@ -79,18 +82,26 @@ export function OpenIDCallback(): ReactNode {
   }, [isLoggedIn, totpPending]);
 
   if (shouldLink) {
-    return <Navigate to="/Login" />;
+    return <Navigate to={`/${loginSegment}`} />;
   }
 
   // The authorization code was valid, but a second factor still has to be verified, which happens
   // on the login page.
   if (totpPending) {
-    return <Navigate to="/Login" />;
+    return <Navigate to={`/${loginSegment}`} />;
   }
 
   if (isLoggedIn) {
     const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
-    return <Navigate to={showDemoLogin ? '/Login' : redirect || normalize(defaultPageName)} />;
+    return (
+      <Navigate
+        to={
+          showDemoLogin
+            ? `/${loginSegment}`
+            : redirect || getPagePathSegment({ name: defaultPageName }, getAppMessage)
+        }
+      />
+    );
   }
 
   if (!isOk) {
@@ -111,7 +122,7 @@ export function OpenIDCallback(): ReactNode {
         </Message>
         <Button
           component={Link}
-          to={{ pathname: '/Login', search: String(new URLSearchParams({ redirect })) }}
+          to={{ pathname: `/${loginSegment}`, search: String(new URLSearchParams({ redirect })) }}
         >
           <FormattedMessage {...messages.retry} />
         </Button>

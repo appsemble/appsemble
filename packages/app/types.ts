@@ -134,7 +134,7 @@ export interface FlowActions {
 
 export interface MakeActionParameters<D extends ActionDefinition> {
   appDefinition: AppDefinition;
-  getAppMessage?: MessageGetter;
+  getAppMessage: MessageGetter;
   getAppVariable?: AppConfigEntryGetter;
   appStorage: AppStorage;
   definition: D;

@@ -1,6 +1,7 @@
 import {
   getPageDisplayName,
   getPagePathSegment,
+  getRouteSegment,
   remap,
   type RemapperContext,
 } from '@appsemble/lang-sdk';
@@ -55,8 +56,9 @@ export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
   const getCurrent = useActiveNavigation(pages, false);
 
   const showMenu = useMemo(
-    () => shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname),
-    [definition, appMemberRoles, appMemberSelectedGroup, pathname],
+    () =>
+      shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname, getAppMessage),
+    [definition, appMemberRoles, appMemberSelectedGroup, pathname, getAppMessage],
   );
 
   if (inGrid && !hasBottomNavigation) {
@@ -95,7 +97,7 @@ export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
                   aria-current={current}
                   className={`bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${current ? 'is-active' : ''}`}
                   title={navName as string}
-                  to={`${url}/${getPagePathSegment(page)}`}
+                  to={`${url}/${getPagePathSegment(page, getAppMessage)}`}
                 >
                   {page.icon ? (
                     <div>
@@ -127,7 +129,7 @@ export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
                   }`
                 }
                 title={formatMessage(messages.settings)}
-                to={`${url}/Settings`}
+                to={`${url}/${getRouteSegment('Settings', getAppMessage)}`}
               >
                 <Icon className="mb-1" icon="wrench" iconSize="3x" size="large" />
                 <span>
@@ -145,7 +147,7 @@ export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
                   }`
                 }
                 title={formatMessage(messages.feedback)}
-                to={`${url}/Feedback`}
+                to={`${url}/${getRouteSegment('Feedback', getAppMessage)}`}
               >
                 <Icon className="mb-1" icon="comment" iconSize="3x" size="large" />
                 <span>
@@ -191,7 +193,7 @@ export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
                     }`
                   }
                   title={formatMessage(messages.login)}
-                  to={`${url}/Login`}
+                  to={`${url}/${getRouteSegment('Login', getAppMessage)}`}
                 >
                   <Icon className="mb-1" icon="sign-in-alt" iconSize="3x" size="large" />
                   <span>
