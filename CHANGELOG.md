@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.3](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3)] - 2026-10-02
+
+### Added
+
+- Block(`image`): Add `fill` parameter and fix alignment, placeholder and fullscreen rendering.
+- App: Serve pages and built-in routes at URLs translated through the app messages.
+- Server: Reject app messages that give two pages or routes the same URL segment.
+- Utils: Add `validateMessageSlugs` to check translated page and route URL segments.
+
+### Fixed
+
+- Server: Preserve external login errors and clarify account linking verification.
+
 ## \[[0.40.3-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.4)] - 2026-10-01
 
 ### Changed

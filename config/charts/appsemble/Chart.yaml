@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.3-test.4
-appVersion: 0.40.3-test.4
+version: 0.40.3
+appVersion: 0.40.3
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,14 +32,21 @@ dependencies:
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: changed
-      description: "App: Render icon overrides of bars and xmark in the menu burgers."
-    - kind: changed
-      description: "React-components: Render icon overrides of bars and xmark in the
-        side menu burger."
+    - kind: added
+      description: "Block(image): Add fill parameter and fix alignment, placeholder
+        and fullscreen rendering."
+    - kind: added
+      description: "App: Serve pages and built-in routes at URLs translated through
+        the app messages."
+    - kind: added
+      description: "Server: Reject app messages that give two pages or routes the same
+        URL segment."
+    - kind: added
+      description: "Utils: Add validateMessageSlugs to check translated page and route
+        URL segments."
     - kind: fixed
-      description: "Cli: Fix building blocks outside the monorepo with the default
-        webpack config."
+      description: "Server: Preserve external login errors and clarify account linking
+        verification."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
