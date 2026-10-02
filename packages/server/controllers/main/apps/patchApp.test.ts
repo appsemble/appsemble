@@ -12,6 +12,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import {
   App,
   AppBuildSnapshot,
+  AppMessages,
   AppSnapshot,
   BlockAsset,
   BlockVersion,
@@ -2397,6 +2398,97 @@ describe('patchApp', () => {
         "statusCode": 400,
       }
     `);
+  });
+
+  it('should reject a page whose canonical URL segment a stored translation already uses', async () => {
+    const app = await App.create({
+      path: 'foo',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Home',
+        pages: [{ name: 'Home', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl',
+      messages: { app: { 'pages.home': 'Tasks' } },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Home
+          pages:
+            - name: Home
+              blocks:
+                - type: test
+                  version: 0.0.0
+            - name: Tasks
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Language “nl”: pages “Tasks” and “Home” share the URL segment “tasks”",
+        "statusCode": 400,
+      }
+    `);
+    await app.reload();
+    expect(app.definition.pages).toHaveLength(1);
+  });
+
+  it('should accept a page rename that leaves a stale translation key behind', async () => {
+    const app = await App.create({
+      path: 'foo',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Home',
+        pages: [{ name: 'Home', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl',
+      messages: { app: { 'pages.home': 'Welcome' } },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Start
+          pages:
+            - name: Start
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    await app.reload();
+    expect(app.definition.pages[0].name).toBe('Start');
   });
 
   it('should reject removing an icon key which is still used by stored SSO settings', async () => {
