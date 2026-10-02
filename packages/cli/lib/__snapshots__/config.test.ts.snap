@@ -5698,6 +5698,13 @@ Compatible data that is received will be displayed.",
         "description": "This image will load if url returns invalid or null value.",
         "format": "remapper",
       },
+      "fill": {
+        "default": false,
+        "description": "Whether the image fills the full width of the block.
+
+The image keeps its natural aspect ratio unless the app theme sets one, for example with \`aspect-ratio\` on \`img\`. When true, \`width\` and \`height\` are ignored.",
+        "type": "boolean",
+      },
       "fullscreen": {
         "default": false,
         "description": "This image will be shown in full screen mode if image is clicked.",
@@ -5705,7 +5712,9 @@ Compatible data that is received will be displayed.",
       },
       "height": {
         "default": 250,
-        "description": "The height of the image in pixels.",
+        "description": "The height of the image in pixels.
+
+Ignored when \`fill\` is true.",
         "type": "number",
       },
       "input": {
@@ -5725,7 +5734,9 @@ Value should be same as property name in resources where it is going to be store
       },
       "rounded": {
         "default": false,
-        "description": "Is image rounded.",
+        "description": "Is image rounded.
+
+With \`fill\`, the image is forced to a square so it renders as a circle.",
         "type": "boolean",
       },
       "url": {
@@ -5734,7 +5745,9 @@ Value should be same as property name in resources where it is going to be store
       },
       "width": {
         "default": 250,
-        "description": "The width of the image in pixels.",
+        "description": "The width of the image in pixels.
+
+Ignored when \`fill\` is true.",
         "type": "number",
       },
     },
