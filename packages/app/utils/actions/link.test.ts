@@ -60,6 +60,22 @@ describe('link', () => {
     expect(navigate).toHaveBeenCalledWith('/da/Login', {});
   });
 
+  it('should support links to translated default app pages', async () => {
+    const action = createTestAction({
+      appDefinition: { name: 'Test App', defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
+      definition: { type: 'link', to: '/Login' },
+      params: { lang: 'nl' },
+      getAppMessage: ({ defaultMessage, id }) =>
+        new IntlMessageFormat(id === 'routes.Login' ? 'InLoggen' : (defaultMessage ?? '')),
+      navigate,
+    });
+    const link = action.href();
+    expect(link).toBe('/nl/InLoggen');
+    const result = await action();
+    expect(result).toBeUndefined();
+    expect(navigate).toHaveBeenCalledWith('/nl/InLoggen', {});
+  });
+
   it('should support links to pages', async () => {
     const action = createTestAction({
       appDefinition: { name: 'Test App', defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },

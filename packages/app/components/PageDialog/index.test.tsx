@@ -9,6 +9,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { PageDialog } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
+import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 
 afterEach(cleanup);
@@ -20,6 +21,11 @@ it('should render the dialog title from the data passed to its action', async ()
   vi.spyOn(appMemberProvider, 'useAppMember').mockReturnValue({
     appMemberRoles: [],
     isLoggedIn: true,
+  } as never);
+  vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
+    getAppMessage: ({ defaultMessage }: { defaultMessage: string }) => ({
+      format: () => defaultMessage,
+    }),
   } as never);
   vi.spyOn(demoAppMembersProvider, 'useDemoAppMembers').mockReturnValue({
     refetchDemoAppMembers: noop,

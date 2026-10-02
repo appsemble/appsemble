@@ -1,15 +1,27 @@
 import {
   findPageByName,
+  getPagePathSegment,
+  getRouteSegment,
   isAppLink,
   normalize,
   partialNormalized,
+  type MessageGetter,
   type Remapper,
   type SubPageDefinition,
+  type TranslatableRoute,
 } from '@appsemble/lang-sdk';
 
 import { type ActionCreator } from './index.js';
 
 const urlRegex = new RegExp(`^${partialNormalized.source}:`);
+
+function getAppLinkHref(
+  to: `/${TranslatableRoute}`,
+  lang: string | undefined,
+  getAppMessage: MessageGetter,
+): string {
+  return `/${lang}/${getRouteSegment(to.slice(1) as TranslatableRoute, getAppMessage)}`;
+}
 
 export const link: ActionCreator<'link'> = ({
   appDefinition: { pages },
@@ -24,7 +36,7 @@ export const link: ActionCreator<'link'> = ({
   if (typeof to === 'string' && urlRegex.test(to)) {
     href = () => to;
   } else if (isAppLink(to)) {
-    href = () => `/${params.lang}${to}`;
+    href = () => getAppLinkHref(to, params.lang, getAppMessage);
   } else {
     href = (data = {}) => {
       const isRemappedLink =
@@ -41,7 +53,7 @@ export const link: ActionCreator<'link'> = ({
         }
 
         if (isAppLink(remappedLink)) {
-          return `/${params.lang}${remappedLink}`;
+          return getAppLinkHref(remappedLink, params.lang, getAppMessage);
         }
 
         [toBase, toSub] = [].concat(remappedLink ?? pages[0].name);
@@ -66,12 +78,7 @@ export const link: ActionCreator<'link'> = ({
       }
 
       const normalizedPageName = normalize(toPage.name);
-      const translatedPageName = normalize(
-        getAppMessage?.({
-          id: `pages.${normalizedPageName}`,
-          defaultMessage: normalizedPageName,
-        }).format() as string,
-      );
+      const translatedPageName = getPagePathSegment(toPage, getAppMessage);
 
       if (typeof data === 'string' && urlRegex.test(data)) {
         return data;
@@ -84,7 +91,7 @@ export const link: ActionCreator<'link'> = ({
         ...(subPage
           ? [
               normalize(
-                getAppMessage?.({
+                getAppMessage({
                   // @ts-expect-error 2454 Variable 'index' is used before being assigned - Severe
                   id: `pages.${normalizedPageName}.tabs.${index}`,
                   defaultMessage: normalize(

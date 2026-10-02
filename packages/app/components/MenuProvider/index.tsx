@@ -26,6 +26,7 @@ import { getNavPages, shouldShowMenu } from '../../utils/layout.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
 import { SideNavigation } from '../SideNavigation/index.js';
 
@@ -102,6 +103,7 @@ export function usePlacedGridArea(area: string): boolean {
 export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const { definition: appDefinition } = useAppDefinition();
   const { appMemberRoles, appMemberSelectedGroup } = useAppMember();
+  const { getAppMessage } = useAppMessages();
   const [currentPage, setCurrentPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
   const { pathname } = useLocation();
@@ -114,7 +116,13 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
     [appDefinition, appMemberRoles, appMemberSelectedGroup],
   );
 
-  const showMenu = shouldShowMenu(appDefinition, appMemberRoles, appMemberSelectedGroup, pathname);
+  const showMenu = shouldShowMenu(
+    appDefinition,
+    appMemberRoles,
+    appMemberSelectedGroup,
+    pathname,
+    getAppMessage,
+  );
   // `profileDropdown` only lists a page under the profile dropdown; it does not describe the
   // navigation layout. Fall back to the app navigation so such pages keep the app's menu instead
   // of dropping it (which would leave the title bar's menu button without a provider).

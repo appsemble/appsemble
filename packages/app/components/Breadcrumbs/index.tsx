@@ -108,7 +108,11 @@ export function Breadcrumbs({
               </span>
             ) : (
               <Link
-                to={page === pageDefinition ? pathname : `/${lang}/${getPagePathSegment(page)}`}
+                to={
+                  page === pageDefinition
+                    ? pathname
+                    : `/${lang}/${getPagePathSegment(page, getAppMessage)}`
+                }
               >
                 {page.icon ? <Icon icon={page.icon} /> : null}
                 <span>{getLabel(page, input)}</span>

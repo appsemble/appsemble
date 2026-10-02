@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strictFunctionTypes": false,
     "strictNullChecks": true,
-    "types": ["@appsemble/webpack-config/types"]
+    "types": ["@appsemble/webpack-config/types"],
+    "lib": ["dom", "dom.iterable", "esnext"]
   }
 }

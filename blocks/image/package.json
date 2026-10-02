@@ -21,6 +21,13 @@
     "@appsemble/preact-components": "0.40.3-test.4",
     "@appsemble/sdk": "0.40.3-test.4",
     "@appsemble/utils": "0.40.3-test.4",
+    "classnames": "^2.0.0",
     "preact": "^10.0.0"
+  },
+  "devDependencies": {
+    "@appsemble/block-interaction-tests": "0.40.3-test.4",
+    "@testing-library/preact": "3.2.4",
+    "@testing-library/user-event": "14.6.7",
+    "vitest": "4.1.11"
   }
 }

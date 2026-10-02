@@ -2,7 +2,7 @@ import { type AppDefinition } from '@appsemble/lang-sdk';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
-import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Page } from './index.js';
@@ -24,6 +24,11 @@ vi.mock('../TitleBar/index.js', () => ({
 
 // A hidden block renders nothing, which keeps the page from redirecting as an empty one does.
 const block = { type: 'test', version: '0.0.0' };
+
+function LocationProbe(): ReactNode {
+  const { hash, pathname, search } = useLocation();
+  return <p>{`${pathname}${search}${hash}`}</p>;
+}
 
 function BuiltinPage(): ReactNode {
   return <span>Settings</span>;
@@ -96,7 +101,6 @@ beforeEach(() => {
     isLoggedIn: false,
   } as never);
   vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
-    appMessageIds: [],
     getAppMessage: ({ defaultMessage }: { defaultMessage?: string }) => ({
       format: () => defaultMessage,
     }),
@@ -115,6 +119,66 @@ beforeEach(() => {
 
 afterEach(() => {
   document.getElementById('bulma-style-app')?.remove();
+});
+
+it('should redirect a canonical page path to the translated path', async () => {
+  vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
+    getAppMessage: ({ defaultMessage, id }: { defaultMessage?: string; id: string }) => ({
+      format: () => (id === 'pages.home' ? 'Start' : defaultMessage),
+    }),
+    getMessage: () => ({ format: () => '' }),
+  } as never);
+  render(
+    <IntlProvider locale="en" messages={{}}>
+      <MemoryRouter initialEntries={['/en/home?foo=bar#section']}>
+        <MenuProvider>
+          <LocationProbe />
+          <Routes>
+            <Route element={<Page />} path="/:lang/:pageId/*" />
+          </Routes>
+        </MenuProvider>
+      </MemoryRouter>
+    </IntlProvider>,
+  );
+
+  await waitFor(() => expect(screen.getByText('/en/start?foo=bar#section')).not.toBeNull());
+  await waitFor(() => expect(document.querySelector('main')).not.toBeNull());
+});
+
+it('should redirect a container page to the translated path of its first sub page', async () => {
+  vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+    definition: {
+      name: 'Test App',
+      defaultPage: 'Home',
+      pages: [
+        { name: 'Home', blocks: [block] },
+        { name: 'Reports', type: 'container', pages: [{ name: 'Daily', blocks: [block] }] },
+      ],
+    } as AppDefinition,
+    demoMode: false,
+    revision: 1,
+    blockManifests,
+  } as never);
+  vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
+    getAppMessage: ({ defaultMessage, id }: { defaultMessage?: string; id: string }) => ({
+      format: () => (id === 'pages.daily' ? 'Everyday' : defaultMessage),
+    }),
+    getMessage: () => ({ format: () => '' }),
+  } as never);
+  render(
+    <IntlProvider locale="en" messages={{}}>
+      <MemoryRouter initialEntries={['/en/reports?foo=bar']}>
+        <MenuProvider>
+          <LocationProbe />
+          <Routes>
+            <Route element={<Page />} path="/:lang/:pageId/*" />
+          </Routes>
+        </MenuProvider>
+      </MemoryRouter>
+    </IntlProvider>,
+  );
+
+  await waitFor(() => expect(screen.getByText('/en/everyday?foo=bar')).not.toBeNull());
 });
 
 it('should leave its navigation behind when a built-in page replaces it', async () => {

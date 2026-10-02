@@ -1,6 +1,7 @@
 import {
   getPageDisplayName,
   getPagePathSegment,
+  getRouteSegment,
   type PageDefinition,
   remap,
   type RemapperContext,
@@ -87,7 +88,7 @@ export function TopNavigation(): ReactNode {
         key={page.name}
         onClick={closeMenu}
         title={navName as string}
-        to={`${url}/${getPagePathSegment(page)}`}
+        to={`${url}/${getPagePathSegment(page, getAppMessage)}`}
       >
         {page.icon ? <Icon icon={page.icon} /> : null}
         <span>{navName}</span>
@@ -147,7 +148,7 @@ export function TopNavigation(): ReactNode {
               className="navbar-item"
               onClick={closeMenu}
               title={formatMessage(messages.settings)}
-              to={`${url}/Settings`}
+              to={`${url}/${getRouteSegment('Settings', getAppMessage)}`}
             >
               <Icon icon="wrench" />
               <span>
@@ -160,7 +161,7 @@ export function TopNavigation(): ReactNode {
               className="navbar-item"
               onClick={closeMenu}
               title={formatMessage(messages.feedback)}
-              to={`${url}/Feedback`}
+              to={`${url}/${getRouteSegment('Feedback', getAppMessage)}`}
             >
               <Icon icon="comment" />
               <span>
@@ -206,7 +207,7 @@ export function TopNavigation(): ReactNode {
                 className="navbar-item"
                 onClick={closeMenu}
                 title={formatMessage(messages.login)}
-                to={`${url}/Login`}
+                to={`${url}/${getRouteSegment('Login', getAppMessage)}`}
               >
                 <Icon icon="sign-in-alt" />
                 <span>
