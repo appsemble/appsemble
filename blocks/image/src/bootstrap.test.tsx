@@ -1,20 +1,31 @@
 import { getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type BlockProps, Context } from '@appsemble/preact';
-import { fireEvent, render, screen } from '@testing-library/preact';
+import { createEvent, fireEvent, render, screen } from '@testing-library/preact';
 import userEvent from '@testing-library/user-event';
-import { expect, it, vi } from 'vitest';
+import { type VNode } from 'preact';
+import { afterEach, expect, it, vi } from 'vitest';
 
 import { ImageBlock } from './bootstrap.js';
 import styles from './index.module.css';
 
 const defaultBootstrapParams = getDefaultBootstrapParams();
 
-function setup(
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+// The preact fireEvent wrapper renames `change` to `input` once a `preact/compat` element was
+// rendered, so the file input needs a real change event.
+function selectFiles(files: File[]): void {
+  const input = screen.getByLabelText('changeImage').querySelector('input')!;
+  fireEvent(input, createEvent.change(input, { target: { files } }));
+}
+
+function createProps(
   parameters: Record<string, unknown>,
-  container?: HTMLElement,
   actions: Record<string, unknown> = {},
-): ReturnType<typeof render> {
-  const props = {
+): BlockProps {
+  return {
     ...defaultBootstrapParams,
     actions,
     events: { on: { data: () => true } },
@@ -27,13 +38,22 @@ function setup(
       asset: (value: string) => `http://localhost/api/apps/1/assets/${value}`,
     },
   } as unknown as BlockProps;
+}
 
-  return render(
+function renderBlock(props: BlockProps): VNode {
+  return (
     <Context.Provider value={props}>
       <ImageBlock {...props} />
-    </Context.Provider>,
-    { container },
+    </Context.Provider>
   );
+}
+
+function setup(
+  parameters: Record<string, unknown>,
+  container?: HTMLElement,
+  actions: Record<string, unknown> = {},
+): ReturnType<typeof render> {
+  return render(renderBlock(createProps(parameters, actions)), { container });
 }
 
 it('renders the image without a button when fullscreen is off', () => {
@@ -64,11 +84,31 @@ it('keeps the current image when the file selection is cancelled', () => {
   const onChange = vi.fn();
   setup({ input: true, url: 'photo.jpg' }, undefined, { onChange });
 
-  fireEvent.change(screen.getByLabelText('changeImage'));
+  selectFiles([]);
 
   expect(onChange).not.toHaveBeenCalled();
   expect(screen.getByRole('img', { name: 'Team photo' }).getAttribute('src')).toBe(
     'http://localhost/api/apps/1/assets/photo.jpg',
+  );
+});
+
+it('revokes the preview URL when the image url changes', () => {
+  const previewUrl = 'blob:http://localhost/preview';
+  vi.stubGlobal('URL', {
+    ...URL,
+    createObjectURL: vi.fn(() => previewUrl),
+    revokeObjectURL: vi.fn(),
+  });
+  const { rerender } = setup({ input: true, url: 'photo.jpg' }, undefined, { onChange: vi.fn() });
+  const file = new File(['image'], 'photo.png', { type: 'image/png' });
+  selectFiles([file]);
+  expect(screen.getByRole('img', { name: 'Team photo' }).getAttribute('src')).toBe(previewUrl);
+
+  rerender(renderBlock(createProps({ input: true, url: 'other.jpg' }, { onChange: vi.fn() })));
+
+  expect(URL.revokeObjectURL).toHaveBeenCalledWith(previewUrl);
+  expect(screen.getByRole('img', { name: 'Team photo' }).getAttribute('src')).toBe(
+    'http://localhost/api/apps/1/assets/other.jpg',
   );
 });
 

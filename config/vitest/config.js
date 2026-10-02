@@ -1,10 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-function escapeRegExp(value) {
-  return value.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`);
-}
-
 /**
  * Generate a proper Vitest configuration based on a project context.
  *
@@ -46,7 +42,7 @@ export function createVitestConfig({ url }, { css = false } = {}) {
         },
       },
       css: {
-        include: css ? [new RegExp(`^${escapeRegExp(fileURLToPath(new URL('src/', url)))}.*\\.css$`)] : [],
+        include: css ? [new RegExp(`^${RegExp.escape(fileURLToPath(new URL('src/', url)))}.*\\.css$`)] : [],
         modules: {
           classNameStrategy: 'non-scoped',
         },

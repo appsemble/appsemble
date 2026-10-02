@@ -1,1 +1,1 @@
-Add `fill` parameter to make the image fill the block width
+Add `fill` parameter and fix alignment, placeholder and fullscreen rendering

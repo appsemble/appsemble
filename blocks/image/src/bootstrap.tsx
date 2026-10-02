@@ -50,18 +50,19 @@ export function ImageBlock({
   const [selectedImage, setSelectedImage] = useState<string | null>(img);
   const objectUrl = useRef<string>();
 
-  useEffect(() => {
-    setSelectedImage(img);
-  }, [img]);
+  const revokeObjectUrl = useCallback(() => {
+    if (objectUrl.current) {
+      URL.revokeObjectURL(objectUrl.current);
+      objectUrl.current = undefined;
+    }
+  }, []);
 
-  useEffect(
-    () => () => {
-      if (objectUrl.current) {
-        URL.revokeObjectURL(objectUrl.current);
-      }
-    },
-    [],
-  );
+  useEffect(() => {
+    revokeObjectUrl();
+    setSelectedImage(img);
+  }, [img, revokeObjectUrl]);
+
+  useEffect(() => revokeObjectUrl, [revokeObjectUrl]);
 
   const selectedSrc = selectedImage
     ? /^(https?:|blob:https?:)?\/\//.test(selectedImage)
@@ -80,9 +81,7 @@ export function ImageBlock({
         return;
       }
 
-      if (objectUrl.current) {
-        URL.revokeObjectURL(objectUrl.current);
-      }
+      revokeObjectUrl();
       objectUrl.current = URL.createObjectURL(file);
       setSelectedImage(objectUrl.current);
 
@@ -91,7 +90,7 @@ export function ImageBlock({
         ...(name ? { [name]: file } : null),
       });
     },
-    [actions, data, name],
+    [actions, data, name, revokeObjectUrl],
   );
 
   const image = (
