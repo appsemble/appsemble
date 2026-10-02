@@ -5,6 +5,7 @@
 - [Introduction](#introduction)
 - [Appsemble Core and Blocks](#appsemble-core-and-blocks)
 - [Custom messages](#custom-messages)
+- [Translated URLs](#translated-urls)
 - [Translating screenshots](#translating-screenshots)
 - [Using the translations page](#using-the-translations-page)
 - [Translating using the Appsemble CLI](#translating-using-the-appsemble-cli)
@@ -96,6 +97,37 @@ message, as well as the name of the user assuming they are logged in:
 With the above example if the user is not logged in it will display a blank spot in the spot where
 the `{name}` value is set. This could be solved by using an
 [if remapper](../remappers/conditionals.mdx#if).
+
+## Translated URLs
+
+The URL of a page is built from its translated name. In a language that translates the page name
+`My profile` to `Mijn profiel`, the page is served at `/nl/mijn-profiel`. The normalized page name
+URL (`/nl/my-profile`) redirects to the translated URL. Every link in the app, such as the
+navigation and the `link` action, points at the translated URL. A URL segment only contains Latin
+letters, digits and hyphens, so a translated name written in another script, such as Cyrillic, keeps
+the normalized page name URL.
+
+The built-in routes of an app keep their English URL segment unless the app translates the matching
+`routes.<Name>` message. The translatable routes are `Login`, `Register`, `Settings`,
+`Reset-Password`, `Edit-Password`, `Verify`, `Group-Invite`, `App-Invite` and `Feedback`. For
+example, the following translation serves the login page at `/nl/InLoggen` and redirects `/nl/Login`
+to it:
+
+```json
+{
+  "app": {
+    "routes.Login": "InLoggen"
+  }
+}
+```
+
+A route segment is used as written and matched case-sensitively. It has to start with an uppercase
+letter and may only contain letters, digits and hyphens. The `Callback` and `debug` routes cannot be
+translated.
+
+Two pages of one language cannot share a URL segment, and a translated route cannot take the segment
+of another route. Appsemble rejects translations that cause such a collision when they are uploaded
+or when the app definition changes.
 
 ## Translating screenshots
 
