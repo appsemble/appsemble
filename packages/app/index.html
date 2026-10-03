@@ -24,6 +24,10 @@
     <meta name="description" content="{{ app.definition.description }}" />
     <meta name="og:image" content="{{ host }}/api/apps/{{ app.id }}/icon" />
     <meta name="twitter:image" content="{{ host }}/api/apps/{{ app.id }}/icon" />
+    {{#fontURL}}
+    <link rel="preload" href="{{ fontURL }}" as="style" />
+    {{/fontURL}}
+    <link rel="preload" href="{{ messagesURL }}" as="fetch" crossorigin="use-credentials" />
     <link rel="icon" sizes="16x16" href="/icon-16.png?updated={{ appUpdated }}" />
     <link rel="icon" sizes="32x32" href="/icon-32.png?updated={{ appUpdated }}" />
     <link rel="icon" sizes="96x96" href="/icon-96.png?updated={{ appUpdated }}" />

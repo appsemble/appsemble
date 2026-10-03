@@ -404,11 +404,13 @@ describe('indexHandler', () => {
           "appUrl": "http://app.test.host.example/",
           "bulmaURL": "/bulma/0.9.4/bulma.min.css?dangerColor=%23ff2800&fontFamily=Open+Sans&fontSource=google&infoColor=%23a7d0ff&linkColor=%230440ad&primaryColor=%235393ff&splashColor=%23ffffff&successColor=%231fd25b&themeColor=%23ffffff&tileLayer=https%3A%2F%2F%7Bs%7D.tile.openstreetmap.org%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D.png&warningColor=%23fed719",
           "faURL": "/fa/6.7.2/css/all.min.css",
+          "fontURL": "https://fonts.googleapis.com/css?display=swap&family=Open+Sans",
           "host": "http://host.example",
           "locale": "en",
           "locales": [
             "nl",
           ],
+          "messagesURL": "http://host.example/api/apps/1/messages/en",
           "noIndex": true,
           "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
           "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]}</script>",
@@ -450,6 +452,32 @@ describe('indexHandler', () => {
     secondResponse.data.data.nonce = firstResponse.data.data.nonce;
     expect(secondResponse.data).toStrictEqual(firstResponse.data);
   });
+
+  it.each([
+    ['the URL', '/nl/test-page', 'en-US', 'nl'],
+    ['the Accept-Language header', '/', 'nl-NL,nl;q=0.9', 'nl'],
+    ['the default language', '/', 'fr-FR', 'en'],
+  ])(
+    'should preload the messages in the language of %s',
+    async (source, path, acceptLanguage, language) => {
+      const app = await App.create({
+        OrganizationId: 'test',
+        definition: { name: 'Test App', pages: [{ name: 'Test Page', blocks: [] }] },
+        path: 'app',
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+      });
+      await AppMessages.bulkCreate(
+        ['en', 'nl'].map((lang) => ({ AppId: app.id, language: lang, messages: {} })),
+      );
+
+      const response = await request.get(path, { headers: { 'accept-language': acceptLanguage } });
+
+      expect(response.data.data.messagesURL).toBe(
+        `http://host.example/api/apps/${app.id}/messages/${language}`,
+      );
+    },
+  );
 
   it('should miss the settings cache when the latest snapshot changes', async () => {
     const cache = createTestCache();
@@ -1011,11 +1039,13 @@ describe('indexHandler', () => {
           "appUrl": "http://app.test.host.example/",
           "bulmaURL": "/bulma/0.9.4/bulma.min.css?dangerColor=%23ff2800&fontFamily=Open+Sans&fontSource=google&infoColor=%23a7d0ff&linkColor=%230440ad&primaryColor=%235393ff&splashColor=%23ffffff&successColor=%231fd25b&themeColor=%23ffffff&tileLayer=https%3A%2F%2F%7Bs%7D.tile.openstreetmap.org%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D.png&warningColor=%23fed719",
           "faURL": "/fa/6.7.2/css/all.min.css",
+          "fontURL": "https://fonts.googleapis.com/css?display=swap&family=Open+Sans",
           "host": "http://host.example",
           "locale": "en",
           "locales": [
             "nl",
           ],
+          "messagesURL": "http://host.example/api/apps/1/messages/en",
           "noIndex": true,
           "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
           "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]};(function(c,l,a,r,i,t,y){
