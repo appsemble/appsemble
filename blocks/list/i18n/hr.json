@@ -1,4 +1,5 @@
 {
   "error": "Došlo je do pogreške pri dohvaćanju podataka.",
-  "noData": "Nema dostupnih podataka."
+  "noData": "Nema dostupnih podataka.",
+  "toggleList": ""
 }

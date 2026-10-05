@@ -117,6 +117,45 @@ export interface Button {
   title?: Remapper;
 }
 
+/**
+ * The styling and icons of the button that expands and collapses a collapsible list.
+ */
+export interface CollapseButton extends Pick<Button, 'color' | 'inverted' | 'light' | 'outlined'> {
+  /**
+   * The size of the button.
+   *
+   * If not set, the button is normal sized on desktop and small on mobile.
+   */
+  size?: BulmaSize;
+
+  /**
+   * Whether the button should be rounded.
+   *
+   * @default true
+   */
+  rounded?: boolean;
+
+  /**
+   * The icon to show while the list is collapsed.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
+   *
+   * @default "chevron-down"
+   */
+  expandIcon?: IconReference;
+
+  /**
+   * The icon to show while the list is expanded.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
+   *
+   * @default "chevron-up"
+   */
+  collapseIcon?: IconReference;
+}
+
 export interface ToggleButton {
   /**
    * Value should be true or false.
@@ -417,6 +456,11 @@ declare module '@appsemble/sdk' {
      * The text that is shown when something went wrong with fetching the data.
      */
     error: never;
+
+    /**
+     * The accessible name of the button that expands and collapses a list without a title.
+     */
+    toggleList: never;
   }
 
   interface Parameters {
@@ -438,6 +482,13 @@ declare module '@appsemble/sdk' {
      * Will only apply to the first list in grouped lists.
      */
     startCollapsed?: boolean;
+
+    /**
+     * The styling and icons of the button that expands and collapses the list.
+     *
+     * Only applies if `collapsible` is true.
+     */
+    collapseButton?: CollapseButton;
 
     /**
      * The property based on which the list should be split into multiple lists.

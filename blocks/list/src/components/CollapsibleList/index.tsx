@@ -21,9 +21,19 @@ export function CollapsibleListComponent({
   title,
 }: CollapsibleListComponentProps): VNode {
   const {
-    parameters: { startCollapsed },
-    utils: { isMobile },
+    parameters: { collapseButton = {}, startCollapsed },
+    utils: { formatMessage, isMobile },
   } = useBlock();
+  const {
+    collapseIcon = 'chevron-up',
+    color = 'primary',
+    expandIcon = 'chevron-down',
+    inverted,
+    light,
+    outlined,
+    rounded = true,
+    size = isMobile ? 'small' : 'normal',
+  } = collapseButton;
 
   const [collapsed, setCollapsed] = useState(index === 0 ? startCollapsed : true);
 
@@ -35,7 +45,8 @@ export function CollapsibleListComponent({
 
   return (
     <>
-      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
+      {/* The nested button is the keyboard accessible control, the bar is a larger click target. */}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <div
         className={classNames(
           styles['toggle-button'],
@@ -43,14 +54,19 @@ export function CollapsibleListComponent({
           'py-2 pl-3 pr-2',
         )}
         onClick={toggleCollapsed}
-        onKeyDown={toggleCollapsed}
-        role="button"
-        tabIndex={-1}
       >
         {title ? <span className={styles.title}>{title}</span> : null}
         <Button
-          className={classNames(`is-${isMobile ? 'small' : 'normal'} is-rounded is-primary`)}
-          icon={collapsed ? 'chevron-down' : 'chevron-up'}
+          aria-expanded={!collapsed}
+          aria-label={title || formatMessage('toggleList')}
+          className={classNames(`is-${size}`, {
+            'is-rounded': rounded,
+            'is-light': light,
+            'is-outlined': outlined,
+          })}
+          color={color}
+          icon={collapsed ? expandIcon : collapseIcon}
+          inverted={inverted}
           onClick={toggleCollapsed}
         />
       </div>
