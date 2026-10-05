@@ -1723,7 +1723,7 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
               ],
             },
             "pages": {
-              "description": "The pages of the app.",
+              "description": "The pages grouped in this container. These may be container pages themselves.",
               "items": {
                 "anyOf": [
                   {
@@ -1929,7 +1929,7 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
               ],
             },
             "pages": {
-              "description": "The pages of the app.",
+              "description": "The pages grouped in this container. These may be container pages themselves.",
               "items": {
                 "anyOf": [
                   {
@@ -2135,7 +2135,7 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
               ],
             },
             "pages": {
-              "description": "The pages of the app.",
+              "description": "The pages grouped in this container. These may be container pages themselves.",
               "items": {
                 "anyOf": [
                   {
