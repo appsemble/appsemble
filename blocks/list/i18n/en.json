@@ -1,4 +1,5 @@
 {
   "error": "An error occurred when fetching the data.",
-  "noData": "There is no data available."
+  "noData": "There is no data available.",
+  "toggleList": "Show or hide items"
 }

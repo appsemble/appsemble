@@ -117,6 +117,70 @@ export interface Button {
   title?: Remapper;
 }
 
+/**
+ * The styling and icons of the button that expands and collapses a collapsible list.
+ */
+export interface CollapseButton extends Pick<Button, 'color' | 'inverted' | 'light' | 'outlined'> {
+  /**
+   * The size of the button.
+   *
+   * If not set, the button is normal sized on desktop and small on mobile.
+   */
+  size?: BulmaSize;
+
+  /**
+   * Whether the button should be rounded.
+   *
+   * @default true
+   */
+  rounded?: boolean;
+
+  /**
+   * The icon to show while the list is collapsed.
+   *
+   * If not set, the button shows a `chevron-down` icon, unless it shows a label.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
+   */
+  expandIcon?: IconReference;
+
+  /**
+   * The icon to show while the list is expanded.
+   *
+   * If not set, the button shows a `chevron-up` icon, unless it shows a label.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
+   */
+  collapseIcon?: IconReference;
+
+  /**
+   * The label to show next to the icon while the list is collapsed.
+   *
+   * The label is only shown on desktop; on mobile the button only shows the icon. The remapper
+   * receives the items of the list.
+   */
+  expandLabel?: Remapper;
+
+  /**
+   * The label to show next to the icon while the list is expanded.
+   *
+   * The label is only shown on desktop; on mobile the button only shows the icon. The remapper
+   * receives the items of the list.
+   */
+  collapseLabel?: Remapper;
+
+  /**
+   * Whether the icon is shown on the left or the right of the label.
+   *
+   * Only applies when the button shows both an icon and a label.
+   *
+   * @default "left"
+   */
+  iconPosition?: 'left' | 'right';
+}
+
 export interface ToggleButton {
   /**
    * Value should be true or false.
@@ -417,6 +481,11 @@ declare module '@appsemble/sdk' {
      * The text that is shown when something went wrong with fetching the data.
      */
     error: never;
+
+    /**
+     * The accessible name of the button that expands and collapses a list without a title.
+     */
+    toggleList: never;
   }
 
   interface Parameters {
@@ -438,6 +507,13 @@ declare module '@appsemble/sdk' {
      * Will only apply to the first list in grouped lists.
      */
     startCollapsed?: boolean;
+
+    /**
+     * The styling and icons of the button that expands and collapses the list.
+     *
+     * Only applies if `collapsible` is true.
+     */
+    collapseButton?: CollapseButton;
 
     /**
      * The property based on which the list should be split into multiple lists.

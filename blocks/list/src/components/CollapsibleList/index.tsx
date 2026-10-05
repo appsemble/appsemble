@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Button } from '@appsemble/preact-components';
+import { Button, Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { useState } from 'preact/hooks';
@@ -21,11 +21,31 @@ export function CollapsibleListComponent({
   title,
 }: CollapsibleListComponentProps): VNode {
   const {
-    parameters: { startCollapsed },
-    utils: { isMobile },
+    parameters: { collapseButton = {}, startCollapsed },
+    utils: { formatMessage, isMobile, remap },
   } = useBlock();
+  const {
+    collapseIcon,
+    collapseLabel,
+    color = 'primary',
+    expandIcon,
+    expandLabel,
+    iconPosition = 'left',
+    inverted,
+    light,
+    outlined,
+    rounded = true,
+    size = isMobile ? 'small' : 'normal',
+  } = collapseButton;
 
   const [collapsed, setCollapsed] = useState(index === 0 ? startCollapsed : true);
+
+  const label = isMobile
+    ? null
+    : (remap(collapsed ? expandLabel : collapseLabel, items, { index }) as string);
+  const definedIcon = collapsed ? expandIcon : collapseIcon;
+  // A labelled button only shows an icon the app defines, an icon-only button falls back to a chevron.
+  const icon = label ? definedIcon : (definedIcon ?? (collapsed ? 'chevron-down' : 'chevron-up'));
 
   const toggleCollapsed = (event: Event): void => {
     event.preventDefault();
@@ -35,7 +55,8 @@ export function CollapsibleListComponent({
 
   return (
     <>
-      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
+      {/* The nested button is the keyboard accessible control, the bar is a larger click target. */}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <div
         className={classNames(
           styles['toggle-button'],
@@ -43,16 +64,24 @@ export function CollapsibleListComponent({
           'py-2 pl-3 pr-2',
         )}
         onClick={toggleCollapsed}
-        onKeyDown={toggleCollapsed}
-        role="button"
-        tabIndex={-1}
       >
         {title ? <span className={styles.title}>{title}</span> : null}
         <Button
-          className={classNames(`is-${isMobile ? 'small' : 'normal'} is-rounded is-primary`)}
-          icon={collapsed ? 'chevron-down' : 'chevron-up'}
+          aria-expanded={!collapsed}
+          aria-label={label ? undefined : title || formatMessage('toggleList')}
+          className={classNames(styles.button, `is-${size}`, {
+            'is-rounded': rounded,
+            'is-light': light,
+            'is-outlined': outlined,
+          })}
+          color={color}
+          inverted={inverted}
           onClick={toggleCollapsed}
-        />
+        >
+          {icon && iconPosition === 'left' ? <Icon icon={icon} /> : null}
+          {label ? <span>{label}</span> : null}
+          {icon && iconPosition === 'right' ? <Icon icon={icon} /> : null}
+        </Button>
       </div>
       {collapsed ? null : renderItems(items)}
     </>

@@ -1,4 +1,5 @@
 {
   "error": "Er is een fout opgetreden bij het ophalen van de gegevens.",
-  "noData": "Er zijn geen gegevens beschikbaar."
+  "noData": "Er zijn geen gegevens beschikbaar.",
+  "toggleList": "Items tonen of verbergen"
 }

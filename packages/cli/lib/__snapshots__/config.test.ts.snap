@@ -5804,6 +5804,9 @@ Commonly used with a filter.",
     "noData": {
       "description": "The text that is shown when no data was found.",
     },
+    "toggleList": {
+      "description": "The accessible name of the button that expands and collapses a list without a title.",
+    },
   },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -5901,6 +5904,82 @@ Describe what the button does. This helps with accessibility for people using sc
         "required": [
           "icon",
         ],
+        "type": "object",
+      },
+      "CollapseButton": {
+        "additionalProperties": false,
+        "description": "The styling and icons of the button that expands and collapses a collapsible list.",
+        "properties": {
+          "collapseIcon": {
+            "description": "The icon to show while the list is expanded.
+
+If not set, the button shows a \`chevron-up\` icon, unless it shows a label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
+            "type": "string",
+          },
+          "collapseLabel": {
+            "description": "The label to show next to the icon while the list is expanded.
+
+The label is only shown on desktop; on mobile the button only shows the icon. The remapper receives the items of the list.",
+            "format": "remapper",
+          },
+          "color": {
+            "$ref": "#/definitions/BulmaColor",
+            "default": "primary",
+            "description": "The color of the button.",
+          },
+          "expandIcon": {
+            "description": "The icon to show while the list is collapsed.
+
+If not set, the button shows a \`chevron-down\` icon, unless it shows a label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
+            "type": "string",
+          },
+          "expandLabel": {
+            "description": "The label to show next to the icon while the list is collapsed.
+
+The label is only shown on desktop; on mobile the button only shows the icon. The remapper receives the items of the list.",
+            "format": "remapper",
+          },
+          "iconPosition": {
+            "default": "left",
+            "description": "Whether the icon is shown on the left or the right of the label.
+
+Only applies when the button shows both an icon and a label.",
+            "enum": [
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
+          "inverted": {
+            "description": "Whether the text and background colors should be inverted.",
+            "type": "boolean",
+          },
+          "light": {
+            "description": "When set to true, the ‘light’ set of Bulma colors are used.",
+            "type": "boolean",
+          },
+          "outlined": {
+            "description": "Whether the button should display its colors in the outlines.",
+            "type": "boolean",
+          },
+          "rounded": {
+            "default": true,
+            "description": "Whether the button should be rounded.",
+            "type": "boolean",
+          },
+          "size": {
+            "$ref": "#/definitions/BulmaSize",
+            "description": "The size of the button.
+
+If not set, the button is normal sized on desktop and small on mobile.",
+          },
+        },
         "type": "object",
       },
       "Content": {
@@ -7034,6 +7113,12 @@ When set to \`auto\`, no fixed image dimensions are applied",
 
 If not defined, received data will be treated as an array.",
         "type": "string",
+      },
+      "collapseButton": {
+        "$ref": "#/definitions/CollapseButton",
+        "description": "The styling and icons of the button that expands and collapses the list.
+
+Only applies if \`collapsible\` is true.",
       },
       "collapsible": {
         "description": "Whether the list or the grouped lists should be collapsible.
