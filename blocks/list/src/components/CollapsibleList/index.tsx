@@ -69,7 +69,7 @@ export function CollapsibleListComponent({
         <Button
           aria-expanded={!collapsed}
           aria-label={label ? undefined : title || formatMessage('toggleList')}
-          className={classNames(`is-${size}`, {
+          className={classNames(styles.button, `is-${size}`, {
             'is-rounded': rounded,
             'is-light': light,
             'is-outlined': outlined,

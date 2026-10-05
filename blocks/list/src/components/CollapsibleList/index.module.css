@@ -12,3 +12,8 @@
   margin-top: 12px;
   width: 100%;
 }
+
+/* Keep the focus ring for keyboard focus only, a mouse click leaves the button focused. */
+.toggle-button .button:focus:not(:focus-visible) {
+  box-shadow: none;
+}
