@@ -31,7 +31,7 @@
     "@appsemble/sdk": "0.40.3",
     "@appsemble/utils": "0.40.3",
     "@appsemble/web-utils": "0.40.3",
-    "@types/node": "22.20.4",
+    "@types/node": "22.20.5",
     "preact": "^10.0.0"
   },
   "devDependencies": {
