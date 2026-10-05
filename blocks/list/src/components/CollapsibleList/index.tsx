@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Button } from '@appsemble/preact-components';
+import { Button, Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { useState } from 'preact/hooks';
@@ -22,12 +22,15 @@ export function CollapsibleListComponent({
 }: CollapsibleListComponentProps): VNode {
   const {
     parameters: { collapseButton = {}, startCollapsed },
-    utils: { formatMessage, isMobile },
+    utils: { formatMessage, isMobile, remap },
   } = useBlock();
   const {
-    collapseIcon = 'chevron-up',
+    collapseIcon,
+    collapseLabel,
     color = 'primary',
-    expandIcon = 'chevron-down',
+    expandIcon,
+    expandLabel,
+    iconPosition = 'left',
     inverted,
     light,
     outlined,
@@ -36,6 +39,13 @@ export function CollapsibleListComponent({
   } = collapseButton;
 
   const [collapsed, setCollapsed] = useState(index === 0 ? startCollapsed : true);
+
+  const label = isMobile
+    ? null
+    : (remap(collapsed ? expandLabel : collapseLabel, items, { index }) as string);
+  const definedIcon = collapsed ? expandIcon : collapseIcon;
+  // A labelled button only shows an icon the app defines, an icon-only button falls back to a chevron.
+  const icon = label ? definedIcon : (definedIcon ?? (collapsed ? 'chevron-down' : 'chevron-up'));
 
   const toggleCollapsed = (event: Event): void => {
     event.preventDefault();
@@ -58,17 +68,20 @@ export function CollapsibleListComponent({
         {title ? <span className={styles.title}>{title}</span> : null}
         <Button
           aria-expanded={!collapsed}
-          aria-label={title || formatMessage('toggleList')}
+          aria-label={label ? undefined : title || formatMessage('toggleList')}
           className={classNames(`is-${size}`, {
             'is-rounded': rounded,
             'is-light': light,
             'is-outlined': outlined,
           })}
           color={color}
-          icon={collapsed ? expandIcon : collapseIcon}
           inverted={inverted}
           onClick={toggleCollapsed}
-        />
+        >
+          {icon && iconPosition === 'left' ? <Icon icon={icon} /> : null}
+          {label ? <span>{label}</span> : null}
+          {icon && iconPosition === 'right' ? <Icon icon={icon} /> : null}
+        </Button>
       </div>
       {collapsed ? null : renderItems(items)}
     </>

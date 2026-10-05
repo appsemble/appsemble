@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { CollapsibleListComponent } from './index.js';
-import { type Item } from '../../../block.js';
+import { type CollapseButton, type Item } from '../../../block.js';
 
 const items: Item[] = [{ id: 1 }, { id: 2 }];
 
@@ -59,6 +59,18 @@ function classesOf(button: HTMLElement): string[] {
 
 function iconOf(button: HTMLElement): string | undefined {
   return button.querySelector('i')?.className;
+}
+
+/**
+ * Read the visible content of a button in rendering order.
+ *
+ * @param button The button to read.
+ * @returns The icon names and label texts of the button from left to right.
+ */
+function contentOrder(button: HTMLElement): string[] {
+  return [...button.children].map(
+    (child) => child.querySelector('i')?.className ?? child.textContent ?? '',
+  );
 }
 
 describe('default collapse button', () => {
@@ -127,6 +139,108 @@ describe('configured collapse button', () => {
     expect(iconOf(button)).toBe('minus');
     await userEvent.click(button);
     expect(iconOf(button)).toBe('plus');
+  });
+});
+
+describe('collapse button labels', () => {
+  const collapseButton: CollapseButton = {
+    expandLabel: 'Show more',
+    collapseLabel: 'Show less',
+    expandIcon: 'plus',
+    collapseIcon: 'minus',
+  };
+
+  it('shows the label for the current state next to the icon on desktop', async () => {
+    const button = setup({ parameters: { collapseButton } });
+
+    expect(button.textContent).toBe('Show more');
+    expect(iconOf(button)).toBe('plus');
+
+    await userEvent.click(button);
+
+    expect(button.textContent).toBe('Show less');
+    expect(iconOf(button)).toBe('minus');
+  });
+
+  it('uses the visible label as the accessible name on desktop', () => {
+    setup({ parameters: { collapseButton } });
+
+    expect(screen.queryByRole('button', { name: 'Show more' })).not.toBeNull();
+  });
+
+  it('shows only a small icon on mobile, named after the list title', () => {
+    const button = setup({ isMobile: true, parameters: { collapseButton } });
+
+    expect(button.textContent).toBe('');
+    expect(iconOf(button)).toBe('plus');
+    expect(classesOf(button)).toContain('is-small');
+    expect(screen.queryByRole('button', { name: 'Coffee' })).not.toBeNull();
+  });
+
+  it('shows only the label on desktop when no icon is defined', async () => {
+    const button = setup({
+      parameters: { collapseButton: { expandLabel: 'Show more', collapseLabel: 'Show less' } },
+    });
+
+    expect(button.textContent).toBe('Show more');
+    expect(iconOf(button)).toBeUndefined();
+
+    await userEvent.click(button);
+
+    expect(button.textContent).toBe('Show less');
+    expect(iconOf(button)).toBeUndefined();
+  });
+
+  it('shows a defined icon next to the label only for the state it is defined for', async () => {
+    const button = setup({
+      parameters: {
+        collapseButton: {
+          expandIcon: 'plus',
+          expandLabel: 'Show more',
+          collapseLabel: 'Show less',
+        },
+      },
+    });
+
+    expect(iconOf(button)).toBe('plus');
+
+    await userEvent.click(button);
+
+    expect(button.textContent).toBe('Show less');
+    expect(iconOf(button)).toBeUndefined();
+  });
+
+  it('falls back to a chevron on mobile when no icon is defined', async () => {
+    const button = setup({
+      isMobile: true,
+      parameters: { collapseButton: { expandLabel: 'Show more', collapseLabel: 'Show less' } },
+    });
+
+    expect(button.textContent).toBe('');
+    expect(iconOf(button)).toBe('chevron-down');
+
+    await userEvent.click(button);
+
+    expect(button.textContent).toBe('');
+    expect(iconOf(button)).toBe('chevron-up');
+  });
+
+  it('shows the icon left of the label by default', () => {
+    const button = setup({ parameters: { collapseButton } });
+
+    expect(contentOrder(button)).toStrictEqual(['plus', 'Show more']);
+  });
+
+  it('shows the icon right of the label when iconPosition is right', async () => {
+    const button = setup({
+      parameters: { collapseButton: { ...collapseButton, iconPosition: 'right' } },
+    });
+
+    expect(contentOrder(button)).toStrictEqual(['Show more', 'plus']);
+
+    await userEvent.click(button);
+
+    expect(contentOrder(button)).toStrictEqual(['Show less', 'minus']);
   });
 });
 

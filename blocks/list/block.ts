@@ -138,22 +138,47 @@ export interface CollapseButton extends Pick<Button, 'color' | 'inverted' | 'lig
   /**
    * The icon to show while the list is collapsed.
    *
+   * If not set, the button shows a `chevron-down` icon, unless it shows a label.
+   *
    * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
    * registry.
-   *
-   * @default "chevron-down"
    */
   expandIcon?: IconReference;
 
   /**
    * The icon to show while the list is expanded.
    *
+   * If not set, the button shows a `chevron-up` icon, unless it shows a label.
+   *
    * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
    * registry.
-   *
-   * @default "chevron-up"
    */
   collapseIcon?: IconReference;
+
+  /**
+   * The label to show next to the icon while the list is collapsed.
+   *
+   * The label is only shown on desktop; on mobile the button only shows the icon. The remapper
+   * receives the items of the list.
+   */
+  expandLabel?: Remapper;
+
+  /**
+   * The label to show next to the icon while the list is expanded.
+   *
+   * The label is only shown on desktop; on mobile the button only shows the icon. The remapper
+   * receives the items of the list.
+   */
+  collapseLabel?: Remapper;
+
+  /**
+   * Whether the icon is shown on the left or the right of the label.
+   *
+   * Only applies when the button shows both an icon and a label.
+   *
+   * @default "left"
+   */
+  iconPosition?: 'left' | 'right';
 }
 
 export interface ToggleButton {

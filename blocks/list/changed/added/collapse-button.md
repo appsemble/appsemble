@@ -1,1 +1,1 @@
-Add `collapseButton` parameter to style the collapsible list toggle button
+Add `collapseButton` parameter to configure the collapsible list toggle button

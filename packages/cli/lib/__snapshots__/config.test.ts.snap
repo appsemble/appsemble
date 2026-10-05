@@ -5911,12 +5911,19 @@ Describe what the button does. This helps with accessibility for people using sc
         "description": "The styling and icons of the button that expands and collapses a collapsible list.",
         "properties": {
           "collapseIcon": {
-            "default": "chevron-up",
             "description": "The icon to show while the list is expanded.
+
+If not set, the button shows a \`chevron-up\` icon, unless it shows a label.
 
 This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
             "format": "icon",
             "type": "string",
+          },
+          "collapseLabel": {
+            "description": "The label to show next to the icon while the list is expanded.
+
+The label is only shown on desktop; on mobile the button only shows the icon. The remapper receives the items of the list.",
+            "format": "remapper",
           },
           "color": {
             "$ref": "#/definitions/BulmaColor",
@@ -5924,11 +5931,29 @@ This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons
             "description": "The color of the button.",
           },
           "expandIcon": {
-            "default": "chevron-down",
             "description": "The icon to show while the list is collapsed.
+
+If not set, the button shows a \`chevron-down\` icon, unless it shows a label.
 
 This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
             "format": "icon",
+            "type": "string",
+          },
+          "expandLabel": {
+            "description": "The label to show next to the icon while the list is collapsed.
+
+The label is only shown on desktop; on mobile the button only shows the icon. The remapper receives the items of the list.",
+            "format": "remapper",
+          },
+          "iconPosition": {
+            "default": "left",
+            "description": "Whether the icon is shown on the left or the right of the label.
+
+Only applies when the button shows both an icon and a label.",
+            "enum": [
+              "left",
+              "right",
+            ],
             "type": "string",
           },
           "inverted": {
