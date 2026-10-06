@@ -146,6 +146,8 @@ export async function query({
       { association: 'Editor', attributes: ['id', 'name'], required: false },
     ],
     order: parsed.order,
+    limit: queryParams.$top,
+    offset: queryParams.$skip,
     where: {
       [Op.and]: [
         parsed.query,

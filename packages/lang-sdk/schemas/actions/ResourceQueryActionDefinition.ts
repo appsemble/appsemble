@@ -25,6 +25,15 @@ export const ResourceQueryActionDefinition = extendJSONSchema(
         type: 'string',
         description: 'The view to use for the resource.',
       },
+      query: {
+        $ref: '#/components/schemas/RemapperDefinition',
+        description: `A remapper that results in either an object containing each property of the query
+string, or a string that gets passed through as-is.
+
+Supported query parameters are \`$filter\`, \`$orderby\`, \`$select\`, \`$top\` (the maximum number of
+resources to return) and \`$skip\` (the number of resources to skip). Combine \`$top\` and \`$skip\`
+with \`$orderby\` to get stable pages.`,
+      },
       own: {
         type: 'boolean',
         description:

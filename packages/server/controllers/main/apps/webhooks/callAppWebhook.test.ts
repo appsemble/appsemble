@@ -179,6 +179,28 @@ describe('callAppWebhook', () => {
               type: 'noop',
             },
           },
+          queryRecords: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['skip', 'top'],
+              properties: {
+                skip: { type: 'integer' },
+                top: { type: 'integer' },
+              },
+            },
+            action: {
+              type: 'resource.query',
+              resource: 'record',
+              query: {
+                'object.from': {
+                  $orderby: 'foo',
+                  $skip: { prop: 'skip' },
+                  $top: { prop: 'top' },
+                },
+              },
+            },
+          },
         },
       },
     });
@@ -500,6 +522,25 @@ describe('callAppWebhook', () => {
         reference: '0',
       },
     });
+  });
+
+  it('should page resource.query webhook results using $top and $skip', async () => {
+    const { Resource } = await getAppDB(app.id);
+    for (const foo of ['c', 'a', 'e', 'b', 'd']) {
+      await Resource.create({ type: 'record', data: { foo } });
+    }
+
+    const res = await request.post(`/api/apps/${app.id}/webhooks/queryRecords`, {
+      skip: 1,
+      top: 3,
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.data).toStrictEqual([
+      expect.objectContaining({ foo: 'b' }),
+      expect.objectContaining({ foo: 'c' }),
+      expect.objectContaining({ foo: 'd' }),
+    ]);
   });
 });
 
