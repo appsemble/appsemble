@@ -136,6 +136,18 @@ export function readExtraAnnotations<R>(
  * for `LanguageCtx.compile`; `annotate` bulk-tags an existing schema registry (e.g. the shipped
  * Appsemble schemas) so the analyzer mounts identities without per-component defs.
  */
+// The component registry harvested from a tuple of definitions: each def's name -> its `define`-time
+// value type.
+export type RegistryOf<Defs extends readonly LanguageComponent[]> = {
+  [Def in Defs[number] as Def['name']]: Def['valueType'];
+};
+
+// The value type of the def named `RootName`.
+export type RootValue<Defs extends readonly LanguageComponent[], RootName extends string> = Extract<
+  Defs[number],
+  { name: RootName }
+>['valueType'];
+
 export class LanguageComponent<Name extends string = string, V = unknown, Ctx = unknown> {
   readonly name: Name;
 
@@ -146,9 +158,9 @@ export class LanguageComponent<Name extends string = string, V = unknown, Ctx = 
   // The materialized TS type of a node of this component, injected at `define`: a hand-written
   // interface for cyclic components (natively recursive, no `Omit`), or an opt-in `FromSchema`
   // derivation for simple ones. Type-only (`declare`, never assigned) so it adds no runtime cost and
-  // never widens the schema. The typed overlay harvests it (`RegistryOf`/`compileComponents`); the
-  // runtime never reads it, and the recursion-heavy derivation stays at this `define` boundary rather
-  // than inside the recursive cursor — which is what keeps the cursor free of TS2589.
+  // never widens the schema. `LanguageCtx.compileComponents` harvests it (`RegistryOf`) to type `Node`;
+  // the runtime never reads it, and any recursion-heavy derivation stays at this `define` boundary
+  // rather than inside the recursive `Node` types, which is what keeps them free of TS2589.
   declare readonly valueType: V;
 
   private constructor(name: Name, schema: TaggedSchema, binding: LanguageComponentBinding<Ctx>) {
@@ -160,7 +172,7 @@ export class LanguageComponent<Name extends string = string, V = unknown, Ctx = 
   // Declare a language component: name, schema (auto-annotated so the analyzer mounts it), behaviors.
   // Unlike the `annotate` heuristic, `define` always tags (an explicit declaration is opt-in whatever
   // the shape), falling back to `single` mode; an existing annotation is kept. Pass the value type
-  // explicitly (`define<'Menu', Menu>(…)`) to carry it into the typed overlay; it defaults to
+  // explicitly (`define<'Menu', Menu>(…)`) to type the `Node`s over it; it defaults to
   // `unknown` and is erased at runtime either way.
   static define<const Name extends string, V = unknown, Ctx = unknown>(
     name: Name,

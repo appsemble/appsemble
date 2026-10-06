@@ -3,6 +3,26 @@ import { type Schema } from 'jsonschema';
 import { childNode, localValue, resolve, type ResolveContext, type Resolution } from './resolve.js';
 import { type Identity, type NodePath } from './types.js';
 
+// A component registry: component name -> the component's value type. The default `C` of an untyped
+// `Node`; a consumer's `interface` registry works directly (indexed access `C[N]` needs no index
+// signature).
+export type Components = Record<string, unknown>;
+
+// The value at key `K` of `V`: the element type for an array/tuple, the property type for an object.
+// Array-aware so indexed access does not drag in array method types (`length`, `map`, ...).
+export type ChildValue<V, K extends PropertyKey> = V extends readonly (infer E)[]
+  ? E
+  : K extends keyof V
+    ? V[K]
+    : unknown;
+
+// The union of a value's child value types, for `children()`. Array-aware, one level, deferred.
+export type ChildValues<V> = V extends readonly (infer E)[]
+  ? E
+  : V extends object
+    ? V[keyof V]
+    : never;
+
 /**
  * One document node: a `(comp, val, path)` focus plus its parent. Each focus derives its identity by
  * resolving `comp` against `val`; `child` moves down both via the shared `childNode` step, so a node
@@ -11,8 +31,13 @@ import { type Identity, type NodePath } from './types.js';
  * `Node` is the interactive/navigable form (parent-linked, memoized). The eager walk deliberately
  * does NOT mint a `Node` per document node — it steps over transient frames (perf guardrail). Nodes
  * are minted only where navigation is needed: a tree root, `cursorAt`, `boundaryAt`, `MountIndex.nodeAt`.
+ *
+ * `V` (the value type) and `C` (the component registry) are phantom: the runtime never trusts them,
+ * they are the consumer's promise about the data. `child` slices `V` by a literal key and `as`/`nearest`
+ * narrow by registry lookup, both by plain indexed access, so a natively recursive value interface
+ * stays finite (no TS2589). Untyped use defaults to `Node<unknown, Components>`.
  */
-export class Node {
+export class Node<V = unknown, C = Components> {
   private cachedResolution?: Resolution;
 
   private readonly ctx: ResolveContext;
@@ -20,18 +45,18 @@ export class Node {
   // The schema governing this node (may itself be a `$ref`, resolved lazily).
   readonly comp: Schema;
 
-  readonly val: unknown;
+  readonly val: V;
 
   readonly path: NodePath;
 
-  private readonly parentNode: Node | null;
+  private readonly parentNode: Node<unknown, C> | null;
 
   constructor(
     ctx: ResolveContext,
     comp: Schema,
-    val: unknown,
+    val: V,
     path: NodePath,
-    parentNode: Node | null,
+    parentNode: Node<unknown, C> | null,
   ) {
     this.ctx = ctx;
     this.comp = comp;
@@ -83,48 +108,54 @@ export class Node {
   // mount a separate component (`$ref` or value-directed child) blanked to `undefined`, containers
   // preserved. The value-level mirror of the schema ref-cut — the editable shape of just this
   // component, for a GUI editor. Navigate to a child node for a sub-component's own local value.
-  localValue(): unknown {
-    return localValue(this.comp, this.val, this.ctx);
+  localValue(): V {
+    return localValue(this.comp, this.val, this.ctx) as V;
   }
 
   // Move down to `key`, schema + value together; null when unowned. Value-directed resolver first
   // (BLOCKS.md), so it descends exactly as the walk does.
-  child(key: number | string): Node | null {
+  child<K extends number | string>(key: K): Node<ChildValue<V, K>, C> | null {
     const child = childNode(this.val, this.path, this.resolve(), key, this.ctx);
     if (!child) {
       return null;
     }
-    return new Node(this.ctx, child.schema, child.value, child.path, this);
+    return new Node<ChildValue<V, K>, C>(
+      this.ctx,
+      child.schema,
+      child.value as ChildValue<V, K>,
+      child.path,
+      this as Node<unknown, C>,
+    );
   }
 
   // `child`, but first `await`s the value-directed load for `key` (if the context supplies one), so a
   // `dynamicChild` backed by an async source (e.g. a block manifest) can answer. The load runs inline
   // right before the sync step — no prime-everything pass; a context without `loadDynamicChild` just
   // resolves to `child(key)`.
-  async childAsync(key: number | string): Promise<Node | null> {
+  async childAsync<K extends number | string>(key: K): Promise<Node<ChildValue<V, K>, C> | null> {
     const identity = this.resolve().identity?.name ?? null;
     await this.ctx.loadDynamicChild?.(identity, this.val, String(key));
     return this.child(key);
   }
 
-  parent(): Node | null {
+  parent(): Node<unknown, C> | null {
     return this.parentNode;
   }
 
   // Nodes for every owned key of the current value.
-  children(): Node[] {
+  children(): Node<ChildValues<V>, C>[] {
     if (!this.val || typeof this.val !== 'object') {
       return [];
     }
     return Object.keys(this.val)
-      .map((key) => this.child(key))
-      .filter((node): node is Node => node != null);
+      .map((key) => this.child(key) as Node<ChildValues<V>, C> | null)
+      .filter((node): node is Node<ChildValues<V>, C> => node != null);
   }
 
   // Navigate a relative path from this node, one `child` per segment; null if any step is unowned.
-  cursorAt(relativePath: NodePath): Node | null {
+  cursorAt(relativePath: NodePath): Node<unknown, C> | null {
     if (!relativePath.length) {
-      return this;
+      return this as Node<unknown, C>;
     }
     const [key, ...rest] = relativePath;
     return this.child(key)?.cursorAt(rest) ?? null;
@@ -134,13 +165,13 @@ export class Node {
   // re-walk root for an edit there. The ref-cutoff makes a node's resolution depend on its value only
   // down to the next `$ref`, so re-walking from the boundary reproduces the subtree. Falls back to
   // this node when the path crosses no `$ref`; stops early at a removed value.
-  boundaryAt(targetPath: NodePath): Node {
-    return this.boundaryFrom(this, targetPath);
+  boundaryAt(targetPath: NodePath): Node<unknown, C> {
+    return this.boundaryFrom(this as Node<unknown, C>, targetPath);
   }
 
   // Recurse `targetPath`, carrying `boundary` as the last `$ref` node seen; stops at an unowned or
   // removed key. A method (not a `this`-alias) so the fold state travels as parameters.
-  private boundaryFrom(boundary: Node, targetPath: NodePath): Node {
+  private boundaryFrom(boundary: Node<unknown, C>, targetPath: NodePath): Node<unknown, C> {
     if (!targetPath.length) {
       return boundary;
     }
@@ -153,21 +184,21 @@ export class Node {
   }
 
   // The nearest node at or above this one whose identity has `name`.
-  nearest(name: string): Node | null {
+  nearest<N extends keyof C & string>(name: N): Node<C[N], C> | null {
     if (this.identity?.name === name) {
-      return this;
+      return this as unknown as Node<C[N], C>;
     }
     return this.parent()?.nearest(name) ?? null;
   }
 
-  // Whether this node resolves to component `name` (the type overlay turns this into a `this is`
-  // guard, so consumers narrow without hand-written predicates).
+  // Whether this node resolves to component `name`. A plain boolean rather than a `this is` guard, whose
+  // self-intersection accumulates on a recursive value type; `as` is the narrowing form.
   is(name: string): boolean {
     return this.identity?.name === name;
   }
 
   // This node typed to `name` when it resolves to that component, else null — the handle form of `is`.
-  as(name: string): Node | null {
-    return this.is(name) ? this : null;
+  as<N extends keyof C & string>(name: N): Node<C[N], C> | null {
+    return this.is(name) ? (this as unknown as Node<C[N], C>) : null;
   }
 }

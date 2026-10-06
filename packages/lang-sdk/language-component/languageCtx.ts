@@ -5,8 +5,14 @@ import {
   type DistinguishabilityResult,
   type UnionCollision,
 } from './distinguishability.js';
-import { findPrimitiveComponents, type LanguageComponentBinding } from './languageComponent.js';
-import { Node } from './node.js';
+import {
+  findPrimitiveComponents,
+  LanguageComponent,
+  type LanguageComponentBinding,
+  type RegistryOf,
+  type RootValue,
+} from './languageComponent.js';
+import { type Components, Node } from './node.js';
 import { localShapeFactory, type ResolveContext, type ResolveOptions } from './resolve.js';
 import { SchemaRegistry } from './schemaRegistry.js';
 import { COMPONENT_KEY, type NodePath, type ScanHit, schemaTag } from './types.js';
@@ -54,7 +60,9 @@ function collectHits(validator: Validator, data: unknown, rootSchema: Schema): S
   return { documentValid: result.valid, errors: result.errors, hits };
 }
 
-export class LanguageCtx {
+// `Root` (the root value type) and `C` (the component registry) are phantom: they only type the nodes
+// `root` hands out (see `Node`).
+export class LanguageCtx<Root = unknown, C = Components> {
   private readonly registry: SchemaRegistry;
 
   // Clean validator for the walk's local checks; never carries the hit side effect.
@@ -142,12 +150,30 @@ export class LanguageCtx {
 
   // Compile a schema set, pinning `rootName` (a registry key) as the document root. Reuse the
   // returned context across every value and edit — compile once, then `root`/`buildTree`/`scan` many.
-  static compile(
+  // Pass `Root`/`C` to type the nodes; they are the caller's promise about the data.
+  static compile<Root = unknown, C = Components>(
     schemas: Record<string, Schema>,
     rootName: string,
     options: CompileOptions = {},
-  ): LanguageCtx {
-    return new LanguageCtx(schemas, rootName, options);
+  ): LanguageCtx<Root, C> {
+    return new LanguageCtx<Root, C>(schemas, rootName, options);
+  }
+
+  // Compile component definitions, harvesting the root value type and the registry from each def's
+  // `define`-time value type and wiring their bindings (unless `options.binds` overrides them).
+  static compileComponents<
+    const Defs extends readonly LanguageComponent[],
+    RootName extends Defs[number]['name'],
+  >(
+    defs: Defs,
+    rootName: RootName,
+    options: CompileOptions = {},
+  ): LanguageCtx<RootValue<Defs, RootName>, RegistryOf<Defs>> {
+    const list = defs as unknown as LanguageComponent[];
+    return LanguageCtx.compile(LanguageComponent.schemas(list), rootName, {
+      ...options,
+      binds: options.binds ?? LanguageComponent.bindings(list),
+    });
   }
 
   // The descent core (ref resolver, ref-cut, resolve validator, dynamic-child hook) shared by `Node`
@@ -175,8 +201,8 @@ export class LanguageCtx {
 
   // A navigable root node over `data` (for interactive navigation, boundary-finding,
   // `MountIndex.nodeAt`); the walk doesn't go through here.
-  root(data: unknown, path: NodePath = []): Node {
-    return new Node(this.cachedResolveContext, this.rootSchema, data, path, null);
+  root(data: Root, path: NodePath = []): Node<Root, C> {
+    return new Node<Root, C>(this.cachedResolveContext, this.rootSchema, data, path, null);
   }
 
   // The binding declared for a component identity, if any — so a consumer (e.g. the GUI editor) can read

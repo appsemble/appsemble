@@ -1,13 +1,12 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import type { BlockDefinition } from '../types/index.js';
-import { LanguageComponent } from './index.js';
-import { compileTyped, type TypedNode } from './overlay.js';
+import { LanguageComponent, LanguageCtx, type Node } from './index.js';
 
 /*
- * Outside-consumer view of the typed overlay. The consumer brings its OWN value types — real lang-sdk
+ * Outside-consumer view of typed `Node`s. The consumer brings its OWN value types — real lang-sdk
  * interfaces, which are natively recursive so cyclic components need no `Omit` — and a `Components`
- * registry mapping component name -> value type. The cursor slices those plain types by indexed access
+ * registry mapping component name -> value type. `Node` slices those plain types by indexed access
  * and narrows by registry lookup. No `FromSchema`, no fork: the type assertions here (`expectTypeOf`)
  * compile precisely, and the runtime navigation is honest.
  */
@@ -43,14 +42,14 @@ const schemas = LanguageComponent.schemas([
   ),
 ]);
 
-describe('typed overlay (outside consumer, plain value types)', () => {
-  const ctx = compileTyped<MiniApp, AppComponents>(schemas, 'AppDefinition');
+describe('typed Node (outside consumer, plain value types)', () => {
+  const ctx = LanguageCtx.compile<MiniApp, AppComponents>(schemas, 'AppDefinition');
   const root = ctx.root({ name: 'Shop', blocks: [{ type: 'form', version: '0.0.0' }] });
 
   it('types the root value and slices objects and arrays by indexed access', () => {
     expectTypeOf(root.val).toEqualTypeOf<MiniApp>();
     // Object slice: a literal key indexes the value type.
-    expectTypeOf(root.child('name')).toEqualTypeOf<TypedNode<string, AppComponents> | null>();
+    expectTypeOf(root.child('name')).toEqualTypeOf<Node<string, AppComponents> | null>();
     // Array slice: blocks -> BlockDefinition[], then index -> the element type (array-aware ChildValue).
     const block = root.child('blocks')?.child(0);
     expectTypeOf(block?.val).toEqualTypeOf<BlockDefinition | undefined>();

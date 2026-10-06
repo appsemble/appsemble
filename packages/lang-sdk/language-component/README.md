@@ -191,32 +191,6 @@ classDiagram
     }
   }
 
-  namespace overlay_ts {
-    class TypedNode {
-      <<type-only view>>
-      +val V
-      +child(key) TypedNode
-      +children() TypedNode[]
-      +as(name) TypedNode
-      +nearest(name) TypedNode
-      +is(name) boolean
-      +localValue() V
-    }
-    class TypedLanguageCtx {
-      <<type-only view>>
-      +root(data) TypedNode
-    }
-    class OverlayFns {
-      <<util fns>>
-      +typed(ctx) TypedLanguageCtx
-      +compileTyped(schemas, rootName) TypedLanguageCtx
-    }
-    class ChildValue {
-      <<type>>
-      +array element / property
-    }
-  }
-
   namespace overlay_schema_ts {
     class SchemaOverlay {
       <<opt-in, FromSchema>>
@@ -249,10 +223,7 @@ classDiagram
   Mount --> Identity
   Identity o-- Identity : parts
   ScanHit --> SchemaTag
-  TypedNode ..> Node : typed view of
-  TypedLanguageCtx ..> LanguageCtx : typed view of
-  OverlayFns ..> LanguageCtx : wraps compile
-  SchemaOverlay ..> TypedNode : derives value types (opt-in)
+  SchemaOverlay ..> Node : derives value types (opt-in)
 ```
 
 ## Engine
@@ -451,24 +422,81 @@ augmentation in `types.ts`.
   `MountIndex.mountAt` and the walk.
 - `schemaRegistry.ts`: synchronous schema registry for `$ref` resolution.
 
-## Optional type overlay (Tier-2)
+## Typed nodes
 
-`overlay.ts` is a typed VIEW over the runtime cursor: `import type` plus one boundary cast, zero
-runtime, and no json-schema dependency. A consumer brings a `Components` registry (component name ->
-value type) and the value types themselves — hand-written lang-sdk interfaces (natively recursive,
-so cyclic components need no `Omit`) or types derived from `const` schemas. `TypedNode<V, C>` slices
-the value type `V` by array-aware indexed access (`child`) and narrows by registry lookup
-(`as`/`nearest`/`is`); `compileTyped`/`typed` are the entrypoints. It stays finite over deeply
-recursive component graphs precisely because it never transforms a schema type internally — a
-recursive interface is already tied off nominally, whereas re-deriving that shape from schema
-literals inside a recursive cursor surface over-instantiates (TS2589).
+`Node<V, C>` and `LanguageCtx<Root, C>` carry two phantom type parameters: `V` is the node's value
+type and `C` is the component registry (component name -> value type). The runtime never reads them;
+they are the consumer's promise about the data. `child` slices `V` by array-aware indexed access,
+and `as`/`nearest` narrow by registry lookup. Untyped use defaults to `Node<unknown, Components>`.
+
+The value types are plain interfaces given at `define`. A natively recursive interface stays finite
+(no TS2589), because `Node` only indexes it and never transforms a schema type:
+
+```ts
+interface Menu {
+  label: string;
+  children: (Link | Menu)[];
+}
+interface Link {
+  label: string;
+  href: string;
+}
+
+const menu = LanguageComponent.define<'Menu', Menu>(
+  'Menu',
+  {
+    type: 'object',
+    required: ['label', 'children'],
+    properties: {
+      label: { type: 'string' },
+      children: { type: 'array', items: { oneOf: [{ $ref: 'Menu' }, { $ref: 'Link' }] } },
+    },
+  },
+  {},
+);
+const link = LanguageComponent.define<'Link', Link>(
+  'Link',
+  {
+    type: 'object',
+    required: ['label', 'href'],
+    properties: { label: { type: 'string' }, href: { type: 'string' } },
+  },
+  {},
+);
+
+// Root value type and registry come from the defs: LanguageCtx<Menu, { Menu: Menu; Link: Link }>.
+const ctx = LanguageCtx.compileComponents([menu, link], 'Menu');
+const root = ctx.root({ label: 'Main', children: [{ label: 'Home', href: '/' }] });
+
+root.val.label; // string
+root.child('children')?.child(0)?.val; // Menu | Link | undefined
+root.child('children')?.child(0)?.as('Link')?.val.href; // string | undefined (runtime-checked)
+```
+
+With a schema map instead of defs, pass the types directly:
+`LanguageCtx.compile<Menu, { Menu: Menu; Link: Link }>(schemas, 'Menu')`.
 
 `overlay-schema.ts` is the opt-in `FromSchema` derivation
 (`LocalValue`/`LCValue`/`DeriveComponents`) for consumers who want value types generated from
 `const` schema literals. It is the only part that touches the published
 `@ngruychev/json-schema-to-ts` fork's `ignoreRefSiblings` option (draft-07), and it is a deep import
-— the barrel never pulls it in, so the overlay's recursion-safety is unconditional. The runtime
-engine is untouched throughout.
+(the barrel never pulls it in), so `Node`'s recursion-safety is unconditional.
+
+`defineFromSchema(name, constSchema, binding)` is `define` with the value type set to the schema's
+`LocalValue`. `LocalValue` cuts each `$ref` to `unknown`, so recursive components work, and `as`
+restores the referenced component's type. `LCValue` follows `$ref`s and is for non-recursive
+references only; on a recursive one tsc fails with TS2615.
+
+```ts
+const link = defineFromSchema('Link', linkSchema, {}); // linkSchema is `as const`
+const menu = defineFromSchema('Menu', menuSchema, {}); // children: oneOf [$ref Menu, $ref Link]
+
+const root = LanguageCtx.compileComponents([menu, link], 'Menu').root(data);
+root.val; // { label: string; children: unknown[] }
+root.child('children')?.child(0)?.as('Link')?.val; // { label: string; href: string } | undefined
+```
+
+See `schema-derived.test.ts` for the full example.
 
 ## Identity
 

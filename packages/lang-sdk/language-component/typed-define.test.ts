@@ -1,11 +1,11 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import { LanguageComponent } from './languageComponent.js';
-import { compileComponents, type RegistryOf } from './overlay.js';
+import { LanguageComponent, type RegistryOf } from './languageComponent.js';
+import { LanguageCtx } from './languageCtx.js';
 
 // A deliberately self-referential value type — the cyclic shape that made schema-derived cursors
-// over-instantiate (TS2589). Hand-written, it is tied off nominally, so the cursor slices it freely.
+// over-instantiate (TS2589). Hand-written, it is tied off nominally, so `Node` slices it freely.
 interface Menu {
   label: string;
   children: Menu[];
@@ -22,7 +22,7 @@ const menuSchema: Schema = {
   },
 };
 
-// The value type is injected here, at the `define` boundary, not derived inside the cursor.
+// The value type is injected here, at the `define` boundary, not derived inside `Node`.
 const menu = LanguageComponent.define<'Menu', Menu>('Menu', menuSchema, {});
 
 describe('phantom-typed define', () => {
@@ -34,7 +34,7 @@ describe('phantom-typed define', () => {
   });
 
   it('navigates a recursive component without widening or TS2589', () => {
-    const ctx = compileComponents([menu], 'Menu');
+    const ctx = LanguageCtx.compileComponents([menu], 'Menu');
     const data: Menu = { label: 'root', children: [{ label: 'child', children: [] }] };
     const root = ctx.root(data);
 
