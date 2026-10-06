@@ -93,7 +93,6 @@ declare global {
       enableSelfRegistration: boolean;
       showDemoLogin: boolean;
       appUpdated: string;
-      development: boolean;
       snapshotId?: number;
       displayAppMemberName?: boolean;
       displayInstallationPrompt?: boolean;

@@ -21,7 +21,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
-import { apiUrl, appId, development } from '../../utils/settings.js';
+import { apiUrl, appId } from '../../utils/settings.js';
 import { getGrantTotpChallenge } from '../../utils/totp.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -183,10 +183,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     invalidateAuthRequests();
     resetSessionState();
 
-    if (development) {
-      return;
-    }
-
     try {
       await axios.post(
         `${apiUrl}/apps/${appId}/auth/oauth2/token`,
@@ -285,10 +281,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
    */
   const fetchToken = useCallback(
     async (grantType: string, params: Record<string, string>, requestId: number) => {
-      if (development) {
-        return isLatestAuthRequest(requestId) ? '' : false;
-      }
-
       let data: TokenResponse;
       try {
         ({ data } = await axios.post<TokenResponse>(
@@ -404,13 +396,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   );
 
   /**
-   * Login using the development server.
-   *
-   * @param credentials The username and password.
-   */
-  const developmentLogin = useCallback(() => login('development', {}), [login]);
-
-  /**
    * Login using demo app functionality.
    *
    * @param appMemberId The app member to log in as.
@@ -494,15 +479,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       return;
     }
 
-    if (development) {
-      developmentLogin()
-        .finally(() => setIsLoading(false))
-        .catch(() => {
-          // This can fail if the server is not reachable, but in development this is fine.
-        });
-      return;
-    }
-
     if (isOAuth2Callback) {
       setIsLoading(false);
       return;
@@ -514,7 +490,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         // Do nothing. `login` already resets the local session state on failure.
       })
       .finally(() => setIsLoading(false));
-  }, [definition, developmentLogin, isLoading, isOAuth2Callback, login]);
+  }, [definition, isLoading, isOAuth2Callback, login]);
 
   // Handle refreshing access tokens
   useEffect(() => {
@@ -578,7 +554,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     () => ({
       authorizationCodeLogin,
       passwordLogin,
-      developmentLogin,
       demoLogin,
       totpLogin,
       completeTotpLogin,
@@ -595,7 +570,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     [
       authorizationCodeLogin,
       passwordLogin,
-      developmentLogin,
       demoLogin,
       totpLogin,
       completeTotpLogin,
