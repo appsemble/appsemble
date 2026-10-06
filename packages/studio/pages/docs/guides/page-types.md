@@ -286,3 +286,8 @@ The example above was created using the following page definition (minus Page 2)
               type: link
               to: Contained page 1
 ```
+
+A container page can itself contain container pages, to group pages several levels deep. Each page
+keeps its own URL, based on its own name, regardless of how deeply it is nested. Opening a container
+page shows the first page inside it that the user may view. The side menu shows every level. The top
+navigation on large screens and the bottom navigation are best suited for a single level.
