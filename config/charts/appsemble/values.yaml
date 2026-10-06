@@ -172,7 +172,7 @@ pgbouncer:
   replicaCount: 1
   image:
     repository: edoburu/pgbouncer
-    tag: v1.25.2-p0
+    tag: v1.26.0-p0
     pullPolicy: IfNotPresent
   service:
     port: 6432
