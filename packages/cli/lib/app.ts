@@ -566,7 +566,7 @@ function parseValueFromDefinition(value: ValueFromDefinition): ValueFromProcess 
   return parsed;
 }
 
-export function parseValues(
+function parseValues(
   type: string,
   name: string,
   valuesToParse: Record<string, ValueFromDefinition>[],

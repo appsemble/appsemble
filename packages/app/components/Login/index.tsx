@@ -11,7 +11,6 @@ import {
   apiUrl,
   appId,
   appUpdated,
-  development,
   logins,
   showAppsembleLogin,
   showAppsembleOAuth2Login,
@@ -40,8 +39,7 @@ export function Login(): ReactNode {
     );
   }
 
-  const hasNoLogin =
-    !logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin && !development;
+  const hasNoLogin = !logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin;
 
   let state: LoginState;
   if (hasNoLogin) {

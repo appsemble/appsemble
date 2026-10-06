@@ -10,7 +10,6 @@
 
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Development server](#development-server)
   - [Authentication](#authentication)
   - [Organizations](#organizations)
   - [Apps](#apps)
@@ -37,76 +36,6 @@ appsemble --help
 ```
 
 Every subcommand also supports the `--help` flag.
-
-### Development server
-
-The development server can create an app from a specified folder containing an `app-definition.yml`
-file. It will check what blocks are needed for the app and will try to load them from the local
-workspaces, listed in the `package.json` file in the root of the project, if they are present. This
-way, all default Appsemble blocks shipped with Appsemble are loaded automatically.
-
-Once the development server is started, making a change to a block’s code or styles will reflect in
-the browser immediately after refreshing the page, without the need of increasing the block’s
-version. Running docker database containers, creating a user account and creating an organization
-are not needed.
-
-The Appsemble CLI can be used to start the development server. For example, the following command
-serves `my-app`:
-
-```sh
-appsemble serve <path-to-app-directory>
-```
-
-This will serve the app on `http://localhost:9090`.
-
-A different port can be specified with the `--port` parameter.
-
-The following option allows you to view the app with a specified role:
-
-```sh
-appsemble serve <path-to-app-directory> --user-role test
-```
-
-The following option allows you to view the app as a Manager of a group:
-
-```sh
-appsemble serve <path-to-app-directory> --group-role Manager
-```
-
-App data is stored within a `db.json` file in your machine’s cache directory. Each app has their own
-directory `<my-app>`.
-
-```sh
-MacOS - /Users/<my-name>/Library/Caches/appsemble/<my-app>
-Linux - /home/<my-name>/.cache/appsemble/<my-app>
-Windows - C:\Users\<my-name>\AppData\Local\appsemble\Cache\<my-app>
-```
-
-App assets will be served from the local file system.
-
-The development server will automatically fetch all blocks that are needed for the served app but
-are missing from the local workspaces. These are typically third-party or proprietary blocks. The
-development server will use `http://localhost:9999` as the default remote server to fetch blocks
-from. The following option allows you to specify a different remote (e.g. `https://appsemble.app`):
-
-```sh
-appsemble serve <path-to-app-directory> --remote <remote>
-```
-
-The development server will use the corresponding block directory in your machine’s cache directory
-to store and read block manifests and assets.
-
-```sh
-MacOS - /Users/<my-name>/Library/Caches/appsemble/blocks/<organisation>/<block-name>/<block-version>
-Linux - /home/<my-name>/.cache/appsemble/blocks/<organisation>/<block-name>/<block-version>
-Windows - C:\Users\<my-name>\AppData\Local\appsemble\Cache\blocks\<organisation>\<block-name>\<block-version>
-```
-
-You can overwrite the existing block cache with the following option:
-
-```sh
-appsemble serve <path-to-app-directory> --remote <remote> --overwrite-block-cache
-```
 
 ### Authentication
 
