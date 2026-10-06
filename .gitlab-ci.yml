@@ -1813,9 +1813,11 @@ provision production:
 lighthouse:
   extends: .appsemble service
   stage: performance
-  # Performance scores depend on the machine, so run on our runners that take one job at a time.
+  # Performance scores depend on the machine, so run on the group's own runners rather than the
+  # shared ones. These runners may run other jobs at the same time, so only compare scores within
+  # one pipeline.
   tags:
-    - sole-occupant
+    - dcentralize
   image: mcr.microsoft.com/playwright:v1.63.0-noble
   allow_failure: true
   script:
