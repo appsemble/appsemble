@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.3
-appVersion: 0.40.3
+version: 0.40.4
+appVersion: 0.40.4
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,20 +33,22 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(image): Add fill parameter and fix alignment, placeholder
-        and fullscreen rendering."
+      description: "Block(list): Add collapseButton parameter to configure the
+        collapsible list toggle button."
     - kind: added
-      description: "App: Serve pages and built-in routes at URLs translated through
-        the app messages."
-    - kind: added
-      description: "Server: Reject app messages that give two pages or routes the same
-        URL segment."
-    - kind: added
-      description: "Utils: Add validateMessageSlugs to check translated page and route
-        URL segments."
+      description: "Server: Support $top and $skip in server-side resource.query actions."
+    - kind: changed
+      description: "App: List the profile dropdown items in the collapsed top navigation menu."
+    - kind: removed
+      description: "Cli: Remove the appsemble serve development server."
     - kind: fixed
-      description: "Server: Preserve external login errors and clarify account linking
-        verification."
+      description: "App: Wrap the email verification banner on narrow screens."
+    - kind: fixed
+      description: "Preact-components: Show keyboard focus rings and support
+        --input-radius and --appsemble-placeholder-color."
+    - kind: security
+      description: "Block(form): Update prosemirror-view to fix XSS in clipboard paste
+        handling."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

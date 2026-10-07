@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.4](https://gitlab.com/appsemble/appsemble/-/releases/0.40.4)] - 2026-10-07
+
+### Added
+
+- Block(`list`): Add `collapseButton` parameter to configure the collapsible list toggle button.
+- Server: Support `$top` and `$skip` in server-side `resource.query` actions.
+
+### Changed
+
+- App: List the profile dropdown items in the collapsed top navigation menu.
+
+### Removed
+
+- Cli: Remove the `appsemble serve` development server.
+
+### Fixed
+
+- App: Wrap the email verification banner on narrow screens.
+- Preact-components: Show keyboard focus rings and support `--input-radius` and
+  `--appsemble-placeholder-color`.
+
+### Security
+
+- Block(`form`): Update prosemirror-view to fix XSS in clipboard paste handling.
+
 ## \[[0.40.3](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3)] - 2026-10-02
 
 ### Added
