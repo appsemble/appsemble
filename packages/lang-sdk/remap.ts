@@ -195,6 +195,23 @@ function isNumber(a: unknown): boolean {
   return a !== undefined && a != null && a !== '' && !Number.isNaN(Number(a));
 }
 
+/**
+ * Tag and attribute names fast-xml-parser refuses to parse, because they could pollute object
+ * prototypes.
+ */
+const prototypeNames = new Set(['__proto__', 'constructor', 'prototype']);
+
+/**
+ * Prefix tag and attribute names that fast-xml-parser refuses with `#`, so the rest of the
+ * document still parses.
+ *
+ * @param name The XML tag or attribute name.
+ * @returns The name to use as the object key.
+ */
+function escapePrototypeName(name: string): string {
+  return prototypeNames.has(name) ? `#${name}` : name;
+}
+
 export function remap(
   remapper: Remapper,
   input: unknown,
@@ -1203,6 +1220,8 @@ const mapperImplementations: MapperImplementations = {
     const parser = new XMLParser({
       ignoreAttributes: false,
       attributeNamePrefix: '',
+      transformAttributeName: escapePrototypeName,
+      transformTagName: escapePrototypeName,
     });
 
     try {
