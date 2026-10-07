@@ -28,8 +28,8 @@ RUN mkdir /tmp/libheif \
   && cmake --install /tmp/libheif/build \
   && rm -rf /tmp/libheif /tmp/libheif.tar.gz
 
-ARG VIPS_VERSION=8.18.6
-ADD --checksum=sha256:3c41e1d5458081bfa4a5bc54e116c46259c75c6760a18027764555632b9dda3e \
+ARG VIPS_VERSION=8.18.7
+ADD --checksum=sha256:5baaead3b0bb20ffdb9e9ff09aa9fda08620923df77b63b436654cb5e0b3bf94 \
   https://github.com/libvips/libvips/releases/download/v${VIPS_VERSION}/vips-${VIPS_VERSION}.tar.xz /tmp/vips.tar.xz
 RUN mkdir /tmp/vips \
   && tar -xf /tmp/vips.tar.xz -C /tmp/vips --strip-components=1 \
