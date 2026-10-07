@@ -269,6 +269,42 @@ describe('resource', () => {
         { fullName: 'Patrick Star' },
       ]);
     });
+
+    it('should support $top and $skip from the query remapper', async () => {
+      const action: ActionDefinition = {
+        type: 'resource.query',
+        resource: 'person',
+        query: {
+          'object.from': {
+            $orderby: 'firstName',
+            $skip: { prop: 'skip' },
+            $top: { prop: 'top' },
+          },
+        },
+      };
+      const app = await exampleApp('testorg', action);
+
+      const { Resource } = await getAppDB(app.id);
+      for (const firstName of ['Sandy', 'Patrick', 'Spongebob', 'Gary']) {
+        await Resource.create({ type: 'person', data: { firstName, lastName: 'Bikini' } });
+      }
+
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
+      const result = await handleAction(query, {
+        app,
+        action,
+        mailer,
+        data: { skip: 1, top: 2 },
+        options,
+        context: {} as any,
+      });
+
+      expect((result as { firstName: string }[]).map(({ firstName }) => firstName)).toStrictEqual([
+        'Patrick',
+        'Sandy',
+      ]);
+    });
   });
 
   describe('resource.get', () => {
