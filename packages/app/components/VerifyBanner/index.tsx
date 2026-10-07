@@ -28,11 +28,13 @@ export function VerifyBanner({ inGrid }: VerifyBannerProps): ReactNode {
 
   return (
     <Message className={inGrid ? styles.inGrid : undefined} color="warning">
-      <div className="is-flex is-justify-content-space-between is-align-items-center">
-        <span>
+      <div
+        className={`is-flex is-flex-wrap-wrap is-justify-content-space-between is-align-items-center ${styles.row}`}
+      >
+        <span className={styles.text}>
           <FormattedMessage values={{ email: appMemberInfo.email }} {...messages.verifyEmail} />
         </span>
-        <ResendVerificationButton />
+        <ResendVerificationButton className={styles.button} />
       </div>
     </Message>
   );

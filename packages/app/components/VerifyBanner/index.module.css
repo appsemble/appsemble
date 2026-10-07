@@ -1,3 +1,19 @@
 .inGrid {
   grid-area: resend-banner;
 }
+
+.row {
+  gap: 0.75rem;
+}
+
+.text {
+  flex: 1 1 20rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.button {
+  height: auto;
+  max-width: 100%;
+  white-space: normal;
+}
