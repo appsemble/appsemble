@@ -24,7 +24,7 @@ Add `appsemble` as plugin to the plugins in the eslint config.
 
 **Rules**
 
-- `enforce-index-decorator` has been made to enforce a consistent method of applying uniquess to
+- `enforce-index-decorator` has been made to enforce a consistent method of applying uniqueness to
   columns in tables.
 
 ## Why these rules?

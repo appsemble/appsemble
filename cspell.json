@@ -12,8 +12,8 @@
       "addWords": true
     }
   ],
-  "files": ["**/*.ts", "**/*.tsx"],
-  "ignorePaths": ["node_modules", "packages/server/utils/email/Mailer.test.ts"],
+  "files": ["**/*.md", "**/*.ts", "**/*.tsx"],
+  "ignorePaths": ["**/*.nl.md", "node_modules", "packages/server/utils/email/Mailer.test.ts"],
   "ignoreRegExpList": [
     "import[^\\;]*",
     "const[^\\;]*",
@@ -223,6 +223,7 @@
     "tableoid",
     "pkey",
     "desec",
-    "rrsets"
+    "rrsets",
+    "CREATEDB"
   ]
 }

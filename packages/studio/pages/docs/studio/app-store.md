@@ -10,7 +10,7 @@ Each app shows an icon, a title, which organization made it and what rating it h
 automatically sorted based on how their rating is, but you can change how this is sorted if you'd
 like.
 
-By clicking on any of these apps you're taken to their frontpage. Depending on the app's
+By clicking on any of these apps you're taken to their front page. Depending on the app's
 [privacy setting](../app/security#app-privacy) and your role in the organization, you'll see a
 different screen.
 
