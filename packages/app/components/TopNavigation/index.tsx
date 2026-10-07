@@ -6,7 +6,7 @@ import {
   remap,
   type RemapperContext,
 } from '@appsemble/lang-sdk';
-import { Button, Icon, NavbarBurger } from '@appsemble/react-components';
+import { Button, Icon, NavbarBurger, useToggle } from '@appsemble/react-components';
 import { type ReactNode, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, NavLink, useParams } from 'react-router-dom';
@@ -14,19 +14,23 @@ import { usePWAInstall } from 'react-use-pwa-install';
 
 import styles from './index.module.css';
 import { getNavPages, shouldShowPage } from '../../utils/layout.js';
-import { appId, sentryDsn } from '../../utils/settings.js';
+import { appId, sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { useActiveNavigation } from '../../utils/useActiveNavigation.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { messages } from '../BottomNavigation/messages.js';
+import { DemoLogin } from '../DemoLogin/index.js';
+import { useIsDesktop } from '../PageGridProvider/index.js';
+import { ProfileMenuItems, useProfileMenu } from '../ProfileMenu/index.js';
 
 /**
  * The app navigation that is displayed as a horizontal bar in the title bar.
  *
  * On small screens the links collapse behind a hamburger menu, reusing Bulma's
- * native navbar behavior.
+ * native navbar behavior. Below the desktop breakpoint the menu also lists the
+ * profile dropdown items, which the title bar hides there.
  */
 export function TopNavigation(): ReactNode {
   const { lang } = useParams<{ lang: string }>();
@@ -41,6 +45,10 @@ export function TopNavigation(): ReactNode {
   const { getVariable } = useAppVariables();
   const { formatMessage } = useIntl();
   const install = usePWAInstall();
+  const isDesktop = useIsDesktop(definition.layout?.breakpoints);
+  const profileMenu = useProfileMenu();
+  const showProfileMenu = profileMenu && !isDesktop;
+  const demoLoginToggle = useToggle();
 
   const pages = useMemo(
     () => getNavPages(definition, appMemberRoles, appMemberSelectedGroup),
@@ -131,6 +139,20 @@ export function TopNavigation(): ReactNode {
     return renderLink(page);
   };
 
+  const loginLink = (
+    <NavLink
+      className="navbar-item"
+      onClick={closeMenu}
+      title={formatMessage(messages.login)}
+      to={`${url}/${getRouteSegment('Login', getAppMessage)}`}
+    >
+      <Icon icon="sign-in-alt" />
+      <span>
+        <FormattedMessage {...messages.login} />
+      </span>
+    </NavLink>
+  );
+
   return (
     <>
       <NavbarBurger
@@ -203,21 +225,27 @@ export function TopNavigation(): ReactNode {
                 <FormattedMessage {...messages.logout} />
               </Button>
             ) : (
-              <NavLink
-                className="navbar-item"
-                onClick={closeMenu}
-                title={formatMessage(messages.login)}
-                to={`${url}/${getRouteSegment('Login', getAppMessage)}`}
-              >
-                <Icon icon="sign-in-alt" />
-                <span>
-                  <FormattedMessage {...messages.login} />
-                </span>
-              </NavLink>
+              loginLink
             )
           ) : null}
         </div>
+        {showProfileMenu ? (
+          <div className={`navbar-end ${styles.profileMenu}`}>
+            <hr className="navbar-divider" />
+            {profileMenu.isLoggedIn ? (
+              <>
+                {profileMenu.memberName ? (
+                  <span className="navbar-item">{profileMenu.memberName}</span>
+                ) : null}
+                <ProfileMenuItems onDemoLogin={demoLoginToggle.enable} onNavigate={closeMenu} />
+              </>
+            ) : (
+              loginLink
+            )}
+          </div>
+        ) : null}
       </div>
+      {showProfileMenu && showDemoLogin ? <DemoLogin modal={demoLoginToggle} /> : null}
     </>
   );
 }

@@ -5,7 +5,7 @@ import {
   type PageLayoutDefinition,
   type ResponsiveGridLayoutDefinition,
 } from '@appsemble/lang-sdk';
-import { useId, useLayoutEffect, useMemo, useRef } from 'react';
+import { useCallback, useId, useLayoutEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 
 type DeviceName = 'desktop' | 'mobile' | 'tablet';
 
@@ -36,6 +36,27 @@ export function useGridBreakpoints(
   breakpoints?: GridBreakpointsDefinition,
 ): Record<DeviceName, number> {
   return useMemo(() => ({ ...DEFAULT_BREAKPOINTS, ...breakpoints }), [breakpoints]);
+}
+
+/**
+ * Track whether the viewport is at least as wide as the desktop breakpoint of the app.
+ *
+ * @param breakpoints The breakpoints the app definition defines, if any.
+ * @returns Whether the viewport currently matches the desktop breakpoint.
+ */
+export function useIsDesktop(breakpoints?: GridBreakpointsDefinition): boolean {
+  const { desktop } = useGridBreakpoints(breakpoints);
+  const query = `(min-width: ${desktop}px)`;
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      const mql = window.matchMedia(query);
+      mql.addEventListener('change', onChange);
+      return () => mql.removeEventListener('change', onChange);
+    },
+    [query],
+  );
+
+  return useSyncExternalStore(subscribe, () => window.matchMedia(query).matches);
 }
 
 export function useGridCss({
