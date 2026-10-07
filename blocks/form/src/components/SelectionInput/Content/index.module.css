@@ -1,6 +1,6 @@
 .item {
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius, 4px);
   color: inherit;
   font-family: inherit;
   font-size: 100%;

@@ -1,5 +1,5 @@
 .root {
-  border-radius: 12px !important;
+  border-radius: var(--radius, 12px);
   display: inline-block;
   overflow: hidden;
   position: relative;

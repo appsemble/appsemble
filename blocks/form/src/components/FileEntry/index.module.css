@@ -34,7 +34,7 @@
 }
 
 .rounded {
-  border-radius: 11px !important;
+  border-radius: var(--radius, 11px);
 }
 
 .image {
