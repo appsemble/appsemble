@@ -1,2 +1,1 @@
-Show a themed keyboard focus ring on icon buttons and let `--appsemble-radius` override the image
-radius
+Show keyboard focus rings and support `--input-radius` and `--appsemble-placeholder-color`

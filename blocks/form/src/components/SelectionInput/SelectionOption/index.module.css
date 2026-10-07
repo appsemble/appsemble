@@ -1,7 +1,7 @@
 .option {
   background-color: hsl(0deg 0% 96%);
   border: none;
-  border-radius: var(--appsemble-radius, 4px);
+  border-radius: var(--input-radius, 4px);
   color: inherit;
   font-family: inherit;
   font-size: 100%;
