@@ -48,7 +48,6 @@
   },
   "devDependencies": {
     "@appsemble/eslint-config": "0.40.4",
-    "@lhci/cli": "0.15.1",
     "@vitest/coverage-v8": "4.1.11",
     "@vitest/ui": "4.1.11",
     "cspell": "10.3.6",
