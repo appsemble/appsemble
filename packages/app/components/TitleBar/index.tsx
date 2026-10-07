@@ -16,7 +16,7 @@ import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { GroupDropdown } from '../GroupDropdown/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
-import { useGridBreakpoints, useGridCss } from '../PageGridProvider/index.js';
+import { useGridBreakpoints, useGridCss, useIsDesktop } from '../PageGridProvider/index.js';
 import { TopNavigation } from '../TopNavigation/index.js';
 
 // Breakpoints the author leaves undefined fall back to a single-row navbar layout so every rendered
@@ -52,6 +52,7 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { pathname } = useLocation();
   const logoInNavbar = (definition.layout?.logo?.position || 'hidden') === 'navbar';
   const BREAKPOINTS = useGridBreakpoints(definition.layout?.breakpoints);
+  const isDesktop = useIsDesktop(definition.layout?.breakpoints);
   const navbarGridClassName = useGridCss({
     BREAKPOINTS,
     classNamePrefix: 'navbar-grid',
@@ -149,7 +150,12 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
         </div>
       ) : null}
       {definition.layout?.login == null || definition.layout?.login === 'navbar' ? (
-        <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
+        // Below the desktop breakpoint the top navigation menu lists the profile items instead.
+        <div
+          className={`navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto ${
+            topNavigation && !isDesktop ? 'is-hidden' : ''
+          }`}
+        >
           <ProfileDropdown />
         </div>
       ) : null}

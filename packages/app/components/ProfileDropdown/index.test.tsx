@@ -81,6 +81,19 @@ describe('ProfileDropdown', () => {
     expect(screen.getByText('pages.edit-profile')).not.toBeNull();
   });
 
+  it('should list the settings and logout items', () => {
+    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+      definition: { ...appDefinition, notifications: 'opt-in' },
+      demoMode: false,
+      revision: 1,
+      blockManifests: [],
+    });
+    renderProfileDropdown();
+
+    expect(screen.getByRole('link', { name: 'Settings' })).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Logout' })).not.toBeNull();
+  });
+
   it('should not list pages that are not configured for the profile dropdown', () => {
     renderProfileDropdown();
 

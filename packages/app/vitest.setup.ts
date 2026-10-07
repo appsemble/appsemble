@@ -39,3 +39,19 @@ window.settings = {
   supportedLanguages: ['en'],
   totp: 'disabled',
 };
+
+// Jsdom implements no media queries. Evaluate `min-width` queries against `window.innerWidth`, so
+// tests pick a viewport by mocking it.
+window.matchMedia = (query) => {
+  const minWidth = /\(min-width: (\d+)px\)/.exec(query);
+  return {
+    matches: minWidth ? window.innerWidth >= Number(minWidth[1]) : false,
+    media: query,
+    onchange: null,
+    addEventListener: noop,
+    removeEventListener: noop,
+    addListener: noop,
+    removeListener: noop,
+    dispatchEvent: () => false,
+  };
+};

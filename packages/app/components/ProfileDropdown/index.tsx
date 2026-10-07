@@ -1,58 +1,29 @@
-import {
-  getPageDisplayName,
-  getPagePathSegment,
-  getRouteSegment,
-  type PageDefinition,
-} from '@appsemble/lang-sdk';
-import { Icon, NavbarDropdown, NavbarItem, useToggle } from '@appsemble/react-components';
-import { type ReactNode, useCallback } from 'react';
+import { Icon, NavbarDropdown, useToggle } from '@appsemble/react-components';
+import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { usePWAInstall } from 'react-use-pwa-install';
+import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { checkPagePermissions } from '../../utils/authorization.js';
-import { demoMode, displayAppMemberName, sentryDsn, showDemoLogin } from '../../utils/settings.js';
-import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { showDemoLogin } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
-import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
-import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
+import { ProfileMenuItems, useProfileMenu } from '../ProfileMenu/index.js';
 
 export function ProfileDropdown(): ReactNode {
   const { formatMessage } = useIntl();
-  const { definition } = useAppDefinition();
-  const navigate = useNavigate();
-  const { getAppMessage } = useAppMessages();
-  const { appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn, logout } =
-    useAppMember();
-  const { lang } = useParams<{ lang: string }>();
-  const { pathname } = useLocation();
-  const { update } = useServiceWorkerRegistration();
-
-  const showLogin = definition.security && Object.hasOwn(definition.security, 'roles');
-  const { layout } = definition;
-  const onClickPageName = useCallback(
-    (page: PageDefinition) => navigate(`/${lang}/${getPagePathSegment(page, getAppMessage)}`),
-    [getAppMessage, navigate, lang],
-  );
-  const loginSegment = getRouteSegment('Login', getAppMessage);
+  const { appMemberInfo } = useAppMember();
+  const profileMenu = useProfileMenu();
   const demoLoginToggle = useToggle();
-  const install = usePWAInstall();
 
-  if (
-    !showLogin ||
-    pathname.includes(`${lang}/${loginSegment}`) ||
-    (layout?.login != null && layout?.login !== 'navbar')
-  ) {
+  if (!profileMenu) {
     return null;
   }
 
-  if (!isLoggedIn) {
+  if (!profileMenu.isLoggedIn) {
     return (
       <div className="navbar-item is-paddingless">
-        <Link className={styles.login} to={`/${lang}/${loginSegment}`}>
+        <Link className={styles.login} to={profileMenu.loginPath}>
           <div
             className={`is-flex is-justify-content-center is-align-items-center px-4 ${styles.loginText}`}
           >
@@ -63,25 +34,10 @@ export function ProfileDropdown(): ReactNode {
     );
   }
 
-  const enabledSettings = definition.layout?.enabledSettings;
-  const pages = definition.pages.filter(
-    (page) =>
-      page.navigation === 'profileDropdown' &&
-      checkPagePermissions(page, definition, appMemberRoles, appMemberSelectedGroup),
-  );
-  const showSettings =
-    (layout?.settings ?? 'navbar') === 'navbar' &&
-    (enabledSettings?.length || definition.notifications === 'opt-in');
-  const showFeedback = (layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn;
-  const showInstall = (layout?.install ?? 'navbar') === 'navbar' && install;
-  const showDebug = (layout?.debug ?? 'hidden') === 'navbar';
-
   return (
     <>
-      {!demoMode && displayAppMemberName && appMemberInfo ? (
-        <span className="m-1 is-size-6 is-align-content-center">
-          {appMemberInfo.name || appMemberInfo.email}
-        </span>
+      {profileMenu.memberName ? (
+        <span className="m-1 is-size-6 is-align-content-center">{profileMenu.memberName}</span>
       ) : null}
       <NavbarDropdown
         className={`is-right ${styles.dropdown}`}
@@ -102,74 +58,7 @@ export function ProfileDropdown(): ReactNode {
           </figure>
         }
       >
-        {showSettings ? (
-          <NavbarItem icon="wrench" to={`/${lang}/${getRouteSegment('Settings', getAppMessage)}`}>
-            <FormattedMessage {...messages.settings} />
-          </NavbarItem>
-        ) : null}
-        {showFeedback ? (
-          <>
-            {showSettings ? <hr className="navbar-divider" /> : null}
-            <NavbarItem
-              icon="comment"
-              to={`/${lang}/${getRouteSegment('Feedback', getAppMessage)}`}
-            >
-              <FormattedMessage {...messages.feedback} />
-            </NavbarItem>
-          </>
-        ) : null}
-        {showDemoLogin ? (
-          <>
-            {showSettings || showFeedback ? <hr className="navbar-divider" /> : null}
-            <NavbarItem dataTestId="change-role" onClick={demoLoginToggle.enable}>
-              <FormattedMessage {...messages.demoLogin} />
-            </NavbarItem>
-          </>
-        ) : null}
-        {showInstall ? (
-          <>
-            {showSettings || showFeedback || showDemoLogin ? (
-              <hr className="navbar-divider" />
-            ) : null}
-            <>
-              <NavbarItem dataTestId="install" onClick={install}>
-                <FormattedMessage {...messages.install} />
-              </NavbarItem>
-              <hr className="navbar-divider" />
-              <NavbarItem dataTestId="update" onClick={update}>
-                <FormattedMessage {...messages.update} />
-              </NavbarItem>
-            </>
-          </>
-        ) : null}
-        {showDebug ? (
-          <>
-            {showSettings || showFeedback || showDemoLogin || showInstall ? (
-              <hr className="navbar-divider" />
-            ) : null}
-            <NavbarItem dataTestId="debug" to={`/${lang}/Debug`}>
-              <FormattedMessage {...messages.debug} />
-            </NavbarItem>
-          </>
-        ) : null}
-        {pages?.length
-          ? pages.map((page) => (
-              <div key={page.name}>
-                <hr className="navbar-divider" />
-                <NavbarItem onClick={() => onClickPageName(page)}>
-                  {getPageDisplayName(page, getAppMessage)}
-                </NavbarItem>
-              </div>
-            ))
-          : null}
-        {showLogin ? (
-          <>
-            {showSettings || showFeedback || showInstall ? <hr className="navbar-divider" /> : null}
-            <NavbarItem icon="sign-out-alt" onClick={logout}>
-              <FormattedMessage {...messages.logoutButton} />
-            </NavbarItem>
-          </>
-        ) : null}
+        <ProfileMenuItems onDemoLogin={demoLoginToggle.enable} />
       </NavbarDropdown>
       {showDemoLogin ? <DemoLogin modal={demoLoginToggle} /> : null}
     </>
