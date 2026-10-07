@@ -4,7 +4,7 @@
 
 .fieldset-wrapper {
   background-color: rgb(0 0 0 / 2.5%);
-  border-radius: var(--radius, 4px);
+  border-radius: var(--appsemble-radius, 4px);
   padding: 1rem;
 }
 
