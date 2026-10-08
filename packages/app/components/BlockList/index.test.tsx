@@ -12,6 +12,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { BlockList } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
+import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
 
@@ -54,6 +55,11 @@ it('should display error and success messages from controller action callbacks',
     appMemberInfoRef: { current: undefined },
     isLoggedIn: false,
     logout: noop,
+  } as never);
+  vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
+    getAppMessage: ({ defaultMessage }: { defaultMessage?: string }) => ({
+      format: () => defaultMessage,
+    }),
   } as never);
   vi.spyOn(demoAppMembersProvider, 'useDemoAppMembers').mockReturnValue({
     refetchDemoAppMembers: noop,
