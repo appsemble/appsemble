@@ -40,6 +40,7 @@ purge_release() {
   kubectl delete namespace "companion-containers-$rel" --ignore-not-found=true || true
   kubectl delete secret "$rel-mailpit-tls" "$rel-valkey" "$rel-pgbouncer-userlist" "stripe-webhook-secret-$id" --ignore-not-found=true || true
   delete_cert_manager_tls_secrets "$id"
+  "$(dirname "$0")/review-dns-records.sh" "$id" delete || true
 }
 
 if [ -n "${PURGE_REVIEW_IID:-}" ]; then

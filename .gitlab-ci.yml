@@ -1335,6 +1335,7 @@ update dependencies:
     - ./scripts/cleanup-review-resources.sh
     - ./scripts/pre-review-capacity-check.sh
     - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
+    - ./scripts/review-dns-records.sh "$CI_MERGE_REQUEST_IID"
     - ./scripts/deploy-review-postgresql.sh
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
@@ -1729,22 +1730,6 @@ provision review:
   script:
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context review
-    - |
-      REVIEW_HOST="$CI_MERGE_REQUEST_IID.$APPSEMBLE_REVIEW_DOMAIN"
-      REVIEW_IP=
-      for attempt in $(seq 1 60); do
-        REVIEW_IP=$(node -e 'const host = process.argv[1]; fetch(`https://dns.google/resolve?name=${host}&type=A`).then((response) => response.json()).then((data) => { const answer = (data.Answer || []).find((entry) => entry.type === 1); if (answer) { process.stdout.write(answer.data); } }).catch((error) => { console.error(error); process.exit(1); });' "$REVIEW_HOST")
-        if [ -n "$REVIEW_IP" ]; then
-          break
-        fi
-        echo "Waiting for A record for $REVIEW_HOST ($attempt/60)"
-        sleep 10
-      done
-      if [ -z "$REVIEW_IP" ]; then
-        echo "No A record found for $REVIEW_HOST" >&2
-        exit 1
-      fi
-      echo "$REVIEW_IP $REVIEW_HOST" >> /etc/hosts
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
     - npm run scripts -- wait-for-ssl
