@@ -207,7 +207,7 @@ it.each(['data', 'fields'] as const)(
       events: createEvents(
         emitter,
         Promise.resolve(),
-        { emit: { change: {} }, listen: { data: {}, fields: {} } },
+        { emit: { change: {} }, listen: { data: {}, fields: {}, submit: {} } },
         { emit: { change: 'changed' }, listen: { [eventName]: 'populate' } },
       ),
       shadowRoot: container,
@@ -268,8 +268,9 @@ it('should submit the markdown typed right before the submit', async () => {
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: {
@@ -325,8 +326,9 @@ it('should hide the error summary when hideErrorSummary is set', async () => {
         on: {
           data: vi.fn(() => false),
           fields: vi.fn(() => false),
+          submit: vi.fn(() => false),
         },
-        off: { fields: vi.fn() },
+        off: { fields: vi.fn(), submit: vi.fn() },
       },
       shadowRoot: container,
       parameters: {
@@ -391,8 +393,9 @@ it('should show the errors of untouched fields after submitting', async () => {
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: {
@@ -452,8 +455,9 @@ it('should name the invalid fields in the alert after a failed submit', async ()
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: {
