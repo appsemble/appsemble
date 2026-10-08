@@ -478,3 +478,47 @@ it('should name the invalid fields in the alert after a failed submit', async ()
     ).toContainEqual(expect.stringContaining('Name: Name is required')),
   );
 });
+
+it.each([
+  { loaded: { name: 'Ada' }, shown: 'Ada' },
+  { loaded: undefined, shown: '' },
+])(
+  'should disable the fields until the onLoad action resolves with $loaded',
+  async ({ loaded, shown }) => {
+    let resolveLoad!: (value: unknown) => void;
+    const container = document.createElement('div');
+    await mount({
+      ...getDefaultBootstrapParams(),
+      actions: {
+        onLoad: Object.assign(
+          () =>
+            new Promise((resolve) => {
+              resolveLoad = resolve;
+            }),
+          { type: 'resource.get' },
+        ),
+        onSubmit: vi.fn(),
+      },
+      events: {
+        emit: { change: vi.fn() },
+        on: {
+          data: vi.fn(() => false),
+          fields: vi.fn(() => false),
+        },
+        off: { fields: vi.fn() },
+      },
+      shadowRoot: container,
+      parameters: {
+        fields: [{ label: 'Name', name: 'name', type: 'string' }],
+      },
+    } as unknown as BootstrapParams);
+
+    const input = getInputByLabel(container, 'Name');
+    expect(input).toHaveProperty('disabled', true);
+
+    resolveLoad(loaded);
+
+    await waitFor(() => expect(input).toHaveProperty('disabled', false));
+    expect(input.value).toBe(shown);
+  },
+);
