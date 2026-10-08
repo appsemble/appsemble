@@ -40,6 +40,9 @@
     ]
   },
   "overrides": {
+    "@ericblade/quagga2": {
+      "sharp": "^0.35.5"
+    },
     "axios": "~1.20.0",
     "gitleaks-secret-scanner": {
       "tar": "7.5.21"
