@@ -1,2 +1,1 @@
-Hand `mailto:` and other non-web link targets to the browser's protocol handler instead of opening a
-blank tab
+Open `mailto:`, `tel:` and `sms:` links without leaving a blank tab behind

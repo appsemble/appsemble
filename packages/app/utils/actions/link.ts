@@ -14,7 +14,7 @@ import {
 import { type ActionCreator } from './index.js';
 
 const urlRegex = new RegExp(`^${partialNormalized.source}:`);
-const webUrlRegex = /^https?:/;
+const protocolHandlerRegex = /^(?:mailto|tel|sms):/;
 
 function getAppLinkHref(
   to: `/${TranslatableRoute}`,
@@ -111,13 +111,14 @@ export const link: ActionCreator<'link'> = ({
     (data = {}) => {
       const target = href(data);
 
-      if (webUrlRegex.test(target)) {
-        window.open(target, '_blank', 'noopener,noreferrer');
-      } else if (urlRegex.test(target)) {
-        // Schemes such as mailto: and tel: are handed to the browser's protocol
-        // handler. Assigning the location keeps the app page open, whereas a new
-        // window would stay behind as a blank tab.
+      if (protocolHandlerRegex.test(target)) {
+        // These schemes are handed to the browser's protocol handler. Assigning
+        // the location keeps the app page open, whereas a new window would stay
+        // behind as a blank tab. Only known handler schemes qualify, so a
+        // javascript: target from input data never runs in the app page.
         window.location.assign(target);
+      } else if (urlRegex.test(target)) {
+        window.open(target, '_blank', 'noopener,noreferrer');
       } else {
         navigate?.(target, data ?? {});
       }

@@ -86,6 +86,20 @@ describe('link', () => {
     expect(window.open).not.toHaveBeenCalled();
   });
 
+  it('should keep other schemes from input data out of the app page', async () => {
+    const action = createTestAction({
+      appDefinition: { name: 'Test App', defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
+      definition: { type: 'link', to: 'Page A' },
+    });
+    // A script URL is exactly the input this test must keep out of the page.
+    // eslint-disable-next-line no-script-url
+    const target = 'javascript:alert(1)';
+    const result = await action(target);
+    expect(result).toBeUndefined();
+    expect(window.location.assign).not.toHaveBeenCalled();
+    expect(window.open).toHaveBeenCalledWith(target, '_blank', 'noopener,noreferrer');
+  });
+
   it('should support links to default app pages', async () => {
     const action = createTestAction({
       appDefinition: { name: 'Test App', defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
