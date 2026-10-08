@@ -56,6 +56,7 @@
     "eslint-formatter-gitlab": "7.0.1",
     "husky": "9.1.7",
     "identity-obj-proxy": "3.0.0",
+    "intl-messageformat": "10.7.18",
     "jsdom": "22.1.0",
     "lint-staged": "15.5.2",
     "postcss": "8.5.28",
