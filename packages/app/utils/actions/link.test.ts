@@ -1,5 +1,5 @@
 import { IntlMessageFormat } from 'intl-messageformat';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createTestAction } from '../makeActions.js';
 
@@ -9,8 +9,24 @@ vi.mock('react-router-dom', async () => ({
   useNavigate: () => navigate,
 }));
 
+let originalLocation: Location;
+
 beforeEach(() => {
   vi.spyOn(window, 'open').mockImplementation(() => window);
+  originalLocation = window.location;
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    writable: true,
+    value: { assign: vi.fn() },
+  });
+});
+
+afterEach(() => {
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    value: originalLocation,
+    writable: true,
+  });
 });
 
 describe('link', () => {
@@ -44,6 +60,30 @@ describe('link', () => {
       '_blank',
       'noopener,noreferrer',
     );
+  });
+
+  it('should hand mailto links to the protocol handler without opening a window', async () => {
+    const action = createTestAction({
+      appDefinition: { name: 'Test App', defaultPage: '', pages: [] },
+      definition: { type: 'link', to: 'mailto:support@example.com' },
+    });
+    const link = action.href();
+    expect(link).toBe('mailto:support@example.com');
+    const result = await action();
+    expect(result).toBeUndefined();
+    expect(window.location.assign).toHaveBeenCalledWith('mailto:support@example.com');
+    expect(window.open).not.toHaveBeenCalled();
+  });
+
+  it('should hand tel links from input data to the protocol handler', async () => {
+    const action = createTestAction({
+      appDefinition: { name: 'Test App', defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
+      definition: { type: 'link', to: 'Page A' },
+    });
+    const result = await action('tel:+31201234567');
+    expect(result).toBeUndefined();
+    expect(window.location.assign).toHaveBeenCalledWith('tel:+31201234567');
+    expect(window.open).not.toHaveBeenCalled();
   });
 
   it('should support links to default app pages', async () => {

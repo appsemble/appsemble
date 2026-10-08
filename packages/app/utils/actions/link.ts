@@ -14,6 +14,7 @@ import {
 import { type ActionCreator } from './index.js';
 
 const urlRegex = new RegExp(`^${partialNormalized.source}:`);
+const webUrlRegex = /^https?:/;
 
 function getAppLinkHref(
   to: `/${TranslatableRoute}`,
@@ -110,8 +111,13 @@ export const link: ActionCreator<'link'> = ({
     (data = {}) => {
       const target = href(data);
 
-      if (urlRegex.test(target)) {
+      if (webUrlRegex.test(target)) {
         window.open(target, '_blank', 'noopener,noreferrer');
+      } else if (urlRegex.test(target)) {
+        // Schemes such as mailto: and tel: are handed to the browser's protocol
+        // handler. Assigning the location keeps the app page open, whereas a new
+        // window would stay behind as a blank tab.
+        window.location.assign(target);
       } else {
         navigate?.(target, data ?? {});
       }
