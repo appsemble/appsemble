@@ -445,8 +445,10 @@ shellcheck:
   stage: test
   needs: []
   script:
+    - apk add --no-cache nodejs jq
     - printf "Evaluating:\n$(find . -name '*.sh')"
     - find . -name '*.sh' | xargs shellcheck
+    - node --test scripts/cleanup-review-resources.test.mjs
 
 # Verify app messages are in sync with the app definition.
 i18n:
@@ -1334,7 +1336,7 @@ update dependencies:
     - apk add --no-cache curl jq tar openssl
     - ./scripts/cleanup-review-resources.sh
     - ./scripts/pre-review-capacity-check.sh
-    - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
+    - REDEPLOY_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
     - ./scripts/review-dns-records.sh "$CI_MERGE_REQUEST_IID"
     - ./scripts/deploy-review-postgresql.sh
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
