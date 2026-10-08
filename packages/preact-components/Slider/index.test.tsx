@@ -3,6 +3,18 @@ import { expect, it, vi } from 'vitest';
 
 import { Slider } from './index.js';
 
+it('exposes range progress to themes after value, bounds, and user input changes', () => {
+  const { rerender } = render(<Slider aria-label="Brightness" max={60} min={20} value={30} />);
+  const slider = screen.getByRole('slider', { name: 'Brightness' });
+  expect(slider.style.getPropertyValue('--slider-progress')).toBe('25%');
+
+  rerender(<Slider aria-label="Brightness" max={100} min={20} value={60} />);
+  expect(slider.style.getPropertyValue('--slider-progress')).toBe('50%');
+
+  fireEvent.input(slider, { target: { value: 80 } });
+  expect(slider.style.getPropertyValue('--slider-progress')).toBe('75%');
+});
+
 it('should render an input element', () => {
   const onChange = vi.fn();
   render(<Slider data-testid="slider-test" onChange={onChange} value="hmm" />);
