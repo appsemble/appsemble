@@ -151,9 +151,7 @@ interface InternalContext extends RemapperContext {
     current: Record<string, any>;
   };
 
-  tabRef?: {
-    current: Record<string, any>;
-  };
+  tabName?: string;
 }
 
 type MapperImplementations = {
@@ -366,9 +364,7 @@ const mapperImplementations: MapperImplementations = {
   },
 
   'tab.name'(mapper, input, context) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore 18048 variable is possibly undefined (strictNullChecks)
-    return context.tabRef.current.name;
+    return context.tabName;
   },
 
   gt: ([left, right], input: any, context) =>

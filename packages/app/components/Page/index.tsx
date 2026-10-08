@@ -101,7 +101,6 @@ export function Page(): ReactNode {
 
   const [dialog, setDialog] = useState<ShowDialogParams | undefined>();
   const stepRef = useRef<unknown>();
-  const tabRef = useRef<unknown>();
   const url = `/${lang}`;
 
   const permissionError = useCallback(
@@ -185,7 +184,11 @@ export function Page(): ReactNode {
   useEffect(() => () => abortController.abort(), [abortController]);
 
   const remapWithContext = useCallback(
-    (mappers: Remapper, input: any, { history = [], ...context }: Record<string, any> = {}) =>
+    (
+      mappers: Remapper,
+      input: any,
+      { history = [], tabName, ...context }: Record<string, any> = {},
+    ) =>
       remap(mappers, input, {
         appId,
         url: window.location.href,
@@ -206,8 +209,7 @@ export function Page(): ReactNode {
         locale: lang,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         stepRef,
-        // @ts-expect-error 2322 unknown is not assignable to type (strictNullChecks)
-        tabRef,
+        tabName,
       }),
     [
       getAppMessage,
@@ -430,7 +432,6 @@ export function Page(): ReactNode {
             remap={remapWithContext}
             showDialog={showDialog}
             showShareDialog={showShareDialog}
-            tabRef={tabRef}
           />
         ) : (
           // The switch is used to enforce an exact path.
