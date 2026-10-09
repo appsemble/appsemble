@@ -82,6 +82,13 @@ export interface Button {
    * If the button should be disabled.
    */
   disable?: Remapper;
+
+  /**
+   * Whether this toggle button is pressed, based on the current data.
+   *
+   * Omit this for ordinary action buttons. Pressed state is exposed as `aria-pressed`.
+   */
+  pressed?: Remapper;
 }
 
 declare module '@appsemble/sdk' {
