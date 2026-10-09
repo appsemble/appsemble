@@ -2181,6 +2181,11 @@ describe('xml.parse', () => {
       mappers: { 'xml.parse': { root: null } },
       expected: { a: { '#constructor': '1', b: '2' } },
     },
+    'keep the text of a prefixed tag that has attributes': {
+      input: '<constructor id="1">t</constructor>',
+      mappers: { 'xml.parse': { root: null } },
+      expected: { '#constructor': { id: '1', '#text': 't' } },
+    },
   });
 
   it('should not pollute the object prototype', () => {
