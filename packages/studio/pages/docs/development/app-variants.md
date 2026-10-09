@@ -119,7 +119,7 @@ messages file.
       "pages.login": null
     }
   },
-  "en": null
+  "fr": null
 }
 ```
 

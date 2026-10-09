@@ -268,7 +268,7 @@ function mergeMessages(original: unknown, replacement: unknown): unknown {
  */
 export async function patchMessages(
   appPath: string,
-  replacements: Record<string, Partial<AppsembleMessages>>,
+  replacements: Record<string, Partial<AppsembleMessages> | null>,
 ): Promise<void> {
   try {
     const i18nPath = join(appPath, 'i18n');
@@ -277,7 +277,7 @@ export async function patchMessages(
 
       if (!existsSync(originalMessagesPath)) {
         logger.warn(`Missing translation file at ${originalMessagesPath}`);
-        return;
+        continue;
       }
 
       logger.verbose(`Updating ${originalMessagesPath}`);
@@ -456,7 +456,7 @@ export async function applyAppVariant(appPath: string, appVariant: string): Prom
         const [messagesPatches] = await readData(messagesPath);
         await patchMessages(
           appVariantDestDir,
-          messagesPatches as Record<string, Partial<AppsembleMessages>>,
+          messagesPatches as Record<string, Partial<AppsembleMessages> | null>,
         );
       } else {
         logger.warn(`Missing file ${messagesPath}. Skipping patching app messages.`);

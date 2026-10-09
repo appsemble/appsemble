@@ -1117,6 +1117,18 @@ describe('app', () => {
         });
       });
 
+      it('should patch the remaining languages after a language without messages', async () => {
+        const messages = await publishTuxVariant({
+          fr: { app: { name: 'Tux App' } },
+          nl: { app: { name: 'Tux App' } },
+        });
+
+        expect(messages).toStrictEqual({
+          nl: { app: { name: 'Tux App', 'pages.test-page': 'Test Pagina' } },
+          en: { app: { name: 'Test App', 'pages.test-page': 'Test Page' } },
+        });
+      });
+
       it('should delete the messages of a language patched to null', async () => {
         const messages = await publishTuxVariant({ nl: null });
 
