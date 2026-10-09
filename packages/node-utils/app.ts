@@ -240,17 +240,35 @@ export async function patchDefinition(
   }
 }
 
+function mergeMessages(original: unknown, replacement: unknown): unknown {
+  if (!lodash.isPlainObject(replacement)) {
+    return replacement;
+  }
+  const merged: Record<string, unknown> = lodash.isPlainObject(original)
+    ? { ...(original as Record<string, unknown>) }
+    : {};
+  for (const [key, value] of Object.entries(replacement as Record<string, unknown>)) {
+    if (value == null) {
+      delete merged[key];
+    } else {
+      merged[key] = mergeMessages(merged[key], value);
+    }
+  }
+  return merged;
+}
+
 /**
  * Patch app messages.
  *
- * The replacements will be deep merged into the original content.
+ * The replacements will be deep merged into the original content. A `null` replacement deletes the
+ * corresponding key, or the whole messages file if the language itself is `null`.
  *
  * @param appPath The name of the app to patch.
  * @param replacements Replacements for the original messages.
  */
 export async function patchMessages(
   appPath: string,
-  replacements: Record<string, Partial<AppsembleMessages>>,
+  replacements: Record<string, Partial<AppsembleMessages> | null>,
 ): Promise<void> {
   try {
     const i18nPath = join(appPath, 'i18n');
@@ -259,13 +277,13 @@ export async function patchMessages(
 
       if (!existsSync(originalMessagesPath)) {
         logger.warn(`Missing translation file at ${originalMessagesPath}`);
-        return;
+        continue;
       }
 
       logger.verbose(`Updating ${originalMessagesPath}`);
       const [originalMessages] = await readData<AppsembleMessages>(originalMessagesPath);
       await (replacementMessages
-        ? writeData(originalMessagesPath, lodash.merge(originalMessages, replacementMessages))
+        ? writeData(originalMessagesPath, mergeMessages(originalMessages, replacementMessages))
         : rm(originalMessagesPath));
       logger.verbose(`Successfully updated ${originalMessagesPath}`);
     }
@@ -438,7 +456,7 @@ export async function applyAppVariant(appPath: string, appVariant: string): Prom
         const [messagesPatches] = await readData(messagesPath);
         await patchMessages(
           appVariantDestDir,
-          messagesPatches as Record<string, Partial<AppsembleMessages>>,
+          messagesPatches as Record<string, Partial<AppsembleMessages> | null>,
         );
       } else {
         logger.warn(`Missing file ${messagesPath}. Skipping patching app messages.`);
