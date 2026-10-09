@@ -18,3 +18,7 @@
 .inline {
   flex: 1 0 0 !important;
 }
+
+.above {
+  margin-bottom: 0.25rem;
+}

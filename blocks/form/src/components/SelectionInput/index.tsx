@@ -2,6 +2,7 @@ import { FormattedMessage, useBlock } from '@appsemble/preact';
 import {
   Button,
   FormButtons,
+  FormComponentHelpPositionContext,
   Input,
   Loader,
   Message,
@@ -10,7 +11,7 @@ import {
 } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type Ref, type VNode } from 'preact';
-import { useCallback, useEffect, useId, useState } from 'preact/hooks';
+import { useCallback, useContext, useEffect, useId, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { SelectionEntry } from './SelectionEntry/index.js';
@@ -38,6 +39,7 @@ export function SelectionInput({
   readOnly,
 }: SelectionInputProps): VNode {
   const { actions, events, utils } = useBlock();
+  const errorAbove = useContext(FormComponentHelpPositionContext) === 'above';
   const {
     allowRemovalFromModal = false,
     disableSearch = false,
@@ -141,6 +143,8 @@ export function SelectionInput({
     setFilteredOptions(filtered);
   }, [getOptionsFilteredBySelection, options, searchString, selectedOptions]);
 
+  const errorMessage = dirty && error ? <p className="help is-danger">{error}</p> : null;
+
   return (
     <div
       className={classNames('appsemble-selection mb-4', className, styles['selection-wrapper'])}
@@ -155,6 +159,7 @@ export function SelectionInput({
           </span>
         )}
       </div>
+      {errorAbove ? errorMessage : null}
       <div>
         {selectedOptions.map((option) => (
           <SelectionEntry
@@ -172,7 +177,7 @@ export function SelectionInput({
           </Button>
         </FormButtons>
       ) : null}
-      {dirty && error ? <p className="help is-danger">{error}</p> : null}
+      {errorAbove ? null : errorMessage}
       {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <ModalCard
         aria-labelledby={titleId}

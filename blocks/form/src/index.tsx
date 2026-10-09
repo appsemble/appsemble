@@ -1,11 +1,25 @@
 import { type ActionError } from '@appsemble/lang-sdk';
 import { bootstrap } from '@appsemble/preact';
-import { Button, Form, FormButtons, Message } from '@appsemble/preact-components';
+import {
+  Button,
+  Form,
+  FormButtons,
+  FormComponentHelpPositionContext,
+  Message,
+} from '@appsemble/preact-components';
 import { identity } from '@appsemble/utils';
 import classNames from 'classnames';
 import { recursive } from 'merge';
 import { type VNode } from 'preact';
-import { type MutableRef, useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import {
+  type MutableRef,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'preact/hooks';
 
 import { FormInput } from './components/FormInput/index.js';
 import styles from './index.module.css';
@@ -36,8 +50,10 @@ bootstrap(
       disabled,
       startDisabled = false,
       display = 'flex',
+      errorSummaryPosition = 'bottom',
       fields: initialFields,
       fullWidth = false,
+      helpPosition = 'below',
       hideErrorSummary = false,
       hideSubmitButton = false,
       longSubmissionDuration = 5000,
@@ -149,6 +165,29 @@ bootstrap(
     );
     const errorLink = firstFieldErrorLink?.element;
 
+    const sortedFieldErrorLinks = Object.values(fieldErrorLinks)
+      .filter(
+        (fieldErrorLink): fieldErrorLink is NonNullable<typeof fieldErrorLink> =>
+          fieldErrorLink != null,
+      )
+      .sort(({ ref: { current: a } }, { ref: { current: b } }) => {
+        if (!a || !b) {
+          return Number(!a) - Number(!b);
+        }
+        return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+      });
+
+    const errorSummaryRef = useRef<HTMLElement>(null);
+    const errorSummaryTitleId = useId();
+    const [failedSubmitCount, setFailedSubmitCount] = useState(0);
+
+    useEffect(() => {
+      if (failedSubmitCount) {
+        errorSummaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        errorSummaryRef.current?.focus({ preventScroll: true });
+      }
+    }, [failedSubmitCount]);
+
     const lock = useRef<symbol>();
 
     const onChange = useCallback((name: string, value: Values) => {
@@ -244,6 +283,8 @@ bootstrap(
 
           if (firstFieldErrorLink && utils.remap(hideErrorSummary, values)) {
             goToRef(firstFieldErrorLink.ref);
+          } else if (errorSummaryPosition === 'top') {
+            setFailedSubmitCount((count) => count + 1);
           }
 
           if (!hasTriedToSubmit) {
@@ -352,6 +393,7 @@ bootstrap(
       formErrors,
       firstFieldErrorLink,
       hideErrorSummary,
+      errorSummaryPosition,
       longSubmissionDuration,
       hasTriedToSubmit,
       actions,
@@ -594,41 +636,70 @@ bootstrap(
         >
           <span>{submitErrorResult}</span>
         </Message>
-        <div className={getFieldsContainerClass()}>
-          {fields
-            .filter((f) => f.type === 'enum' || show(f))
-            .map((f) => (
-              <FormInput
-                addThumbnail={addThumbnail}
-                className={`mb-4 ${f.type === 'enum' && !show(f) ? 'is-hidden' : ''} ${classNames({
-                  [styles.dense]: dense,
-                  [styles['column-span']]:
-                    ['fieldset', 'tags', 'file', 'selection', 'markdown'].includes(f.type) ||
-                    (f as StringField).multiline,
-                })}`}
-                disabled={
-                  dataLoading ||
-                  submitting ||
-                  Boolean(utils.remap(f.disabled, values[f.name], { values }))
-                }
-                display={display}
-                error={errors[f.name]}
-                field={f}
-                formDataLoading={dataLoading}
-                formValues={values}
-                hasTriedToSubmit={hasTriedToSubmit}
-                key={f.name}
-                name={f.name}
-                onChange={onChange}
-                readOnly={Boolean(utils.remap(f.readOnly, values[f.name], { values }))}
-                removeThumbnail={removeThumbnail}
-                setFieldErrorLink={setFieldErrorLink}
-                setFieldsReady={setFieldsReady}
-              />
-            ))}
-        </div>
+        {errorSummaryPosition === 'top' &&
+        sortedFieldErrorLinks.length > 0 &&
+        hasTriedToSubmit &&
+        !utils.remap(hideErrorSummary, values) ? (
+          <section
+            aria-labelledby={errorSummaryTitleId}
+            className={styles['error-summary']}
+            ref={errorSummaryRef}
+            tabIndex={-1}
+          >
+            <Message color="danger">
+              <div className={styles['error-link-container']}>
+                <p id={errorSummaryTitleId}>{utils.formatMessage('fixErrors')}</p>
+                <ul>
+                  {sortedFieldErrorLinks.map(({ element }) => (
+                    <li key={element.key}>{element}</li>
+                  ))}
+                </ul>
+              </div>
+            </Message>
+          </section>
+        ) : null}
+        <FormComponentHelpPositionContext.Provider value={helpPosition}>
+          <div className={getFieldsContainerClass()}>
+            {fields
+              .filter((f) => f.type === 'enum' || show(f))
+              .map((f) => (
+                <FormInput
+                  addThumbnail={addThumbnail}
+                  className={`mb-4 ${f.type === 'enum' && !show(f) ? 'is-hidden' : ''} ${classNames(
+                    {
+                      [styles.dense]: dense,
+                      [styles['column-span']]:
+                        ['fieldset', 'tags', 'file', 'selection', 'markdown'].includes(f.type) ||
+                        (f as StringField).multiline,
+                    },
+                  )}`}
+                  disabled={
+                    dataLoading ||
+                    submitting ||
+                    Boolean(utils.remap(f.disabled, values[f.name], { values }))
+                  }
+                  display={display}
+                  error={errors[f.name]}
+                  field={f}
+                  formDataLoading={dataLoading}
+                  formValues={values}
+                  hasTriedToSubmit={hasTriedToSubmit}
+                  key={f.name}
+                  name={f.name}
+                  onChange={onChange}
+                  readOnly={Boolean(utils.remap(f.readOnly, values[f.name], { values }))}
+                  removeThumbnail={removeThumbnail}
+                  setFieldErrorLink={setFieldErrorLink}
+                  setFieldsReady={setFieldsReady}
+                />
+              ))}
+          </div>
+        </FormComponentHelpPositionContext.Provider>
 
-        {errorLink && hasTriedToSubmit && !utils.remap(hideErrorSummary, values) ? (
+        {errorSummaryPosition === 'bottom' &&
+        errorLink &&
+        hasTriedToSubmit &&
+        !utils.remap(hideErrorSummary, values) ? (
           <div
             className={classNames(
               styles['error-link-container'],

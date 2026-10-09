@@ -5,7 +5,7 @@ import { type ComponentChildren, type VNode } from 'preact';
 import { expect, it } from 'vitest';
 
 import { getDescription } from './getDescription.js';
-import { FormComponent } from './index.js';
+import { FormComponent, FormComponentError, FormComponentHelpPositionContext } from './index.js';
 import { Input } from '../Input/index.js';
 
 const block = {
@@ -14,6 +14,30 @@ const block = {
 
 function Provider({ children }: { readonly children: ComponentChildren }): VNode {
   return <Context.Provider value={block}>{children}</Context.Provider>;
+}
+
+function HelpAboveProvider({ children }: { readonly children: ComponentChildren }): VNode {
+  return (
+    <Provider>
+      <FormComponentHelpPositionContext.Provider value="above">
+        {children}
+      </FormComponentHelpPositionContext.Provider>
+    </Provider>
+  );
+}
+
+/**
+ * Name the given elements in the order they appear in the document.
+ *
+ * @param elements The elements to order by their names.
+ * @returns The names of the elements in document order.
+ */
+function documentOrder(elements: Record<string, Element>): string[] {
+  return Object.entries(elements)
+    .sort(([, a], [, b]) =>
+      a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+    )
+    .map(([name]) => name);
 }
 
 it('should render a form component with children elements', () => {
@@ -142,4 +166,90 @@ it('should not describe an input if the help is disabled', () => {
     </FormComponent>,
   );
   expect(screen.getByLabelText(/Name/).hasAttribute('aria-describedby')).toBe(false);
+});
+
+it('should render the help text and error between the label and the input if help is above', () => {
+  render(
+    <FormComponent
+      error="This field is required"
+      help="Enter your full name"
+      helpExtra="0 / 20"
+      id="name"
+      label="Name"
+    >
+      <Input id="name" />
+    </FormComponent>,
+    { wrapper: HelpAboveProvider },
+  );
+  const input = screen.getByLabelText(/Name/);
+  expect(
+    documentOrder({
+      counter: screen.getByText('0 / 20'),
+      error: screen.getByText('This field is required'),
+      help: screen.getByText('Enter your full name'),
+      input,
+      label: screen.getByText('Name'),
+    }),
+  ).toStrictEqual(['label', 'help', 'counter', 'error', 'input']);
+  expect(input.getAttribute('aria-invalid')).toBe('true');
+  expect(getDescription(input)).toBe('Enter your full name This field is required');
+});
+
+it('should describe a valid input by its help text if help is above', () => {
+  render(
+    <FormComponent help="Enter your full name" id="name" label="Name">
+      <Input id="name" />
+    </FormComponent>,
+    { wrapper: HelpAboveProvider },
+  );
+  const input = screen.getByLabelText(/Name/);
+  expect(documentOrder({ help: screen.getByText('Enter your full name'), input })).toStrictEqual([
+    'help',
+    'input',
+  ]);
+  expect(input.getAttribute('aria-invalid')).toBeNull();
+  expect(getDescription(input)).toBe('Enter your full name');
+});
+
+it('should render the error of a form component error above its controls if help is above', () => {
+  render(
+    <FormComponent help="Choose a size" id="size" label="Size">
+      <FormComponentError error="Size is required">
+        <Input id="size" />
+      </FormComponentError>
+    </FormComponent>,
+    { wrapper: HelpAboveProvider },
+  );
+  const input = screen.getByLabelText(/Size/);
+  expect(
+    documentOrder({
+      error: screen.getByText('Size is required'),
+      help: screen.getByText('Choose a size'),
+      input,
+      label: screen.getByText('Size'),
+    }),
+  ).toStrictEqual(['label', 'help', 'error', 'input']);
+  expect(input.getAttribute('aria-invalid')).toBe('true');
+  expect(getDescription(input)).toBe('Choose a size Size is required');
+});
+
+it('should render the error of a form component error below its controls by default', () => {
+  render(
+    <FormComponent help="Choose a size" id="size" label="Size">
+      <FormComponentError error="Size is required">
+        <Input id="size" />
+      </FormComponentError>
+    </FormComponent>,
+    { wrapper: Provider },
+  );
+  const input = screen.getByLabelText(/Size/);
+  expect(
+    documentOrder({
+      error: screen.getByText('Size is required'),
+      help: screen.getByText('Choose a size'),
+      input,
+      label: screen.getByText('Size'),
+    }),
+  ).toStrictEqual(['label', 'input', 'error', 'help']);
+  expect(getDescription(input)).toBe('Choose a size Size is required');
 });
