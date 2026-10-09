@@ -478,3 +478,96 @@ it('should name the invalid fields in the alert after a failed submit', async ()
     ).toContainEqual(expect.stringContaining('Name: Name is required')),
   );
 });
+
+it.each([
+  { loaded: { name: 'Ada' }, shown: 'Ada' },
+  { loaded: undefined, shown: '' },
+])(
+  'should disable the fields until the onLoad action resolves with $loaded',
+  async ({ loaded, shown }) => {
+    let resolveLoad!: (value: unknown) => void;
+    const container = document.createElement('div');
+    await mount({
+      ...getDefaultBootstrapParams(),
+      actions: {
+        onLoad: Object.assign(
+          () =>
+            new Promise((resolve) => {
+              resolveLoad = resolve;
+            }),
+          { type: 'resource.get' },
+        ),
+        onSubmit: vi.fn(),
+      },
+      events: {
+        emit: { change: vi.fn() },
+        on: {
+          data: vi.fn(() => false),
+          fields: vi.fn(() => false),
+        },
+        off: { fields: vi.fn() },
+      },
+      shadowRoot: container,
+      parameters: {
+        fields: [{ label: 'Name', name: 'name', type: 'string' }],
+      },
+    } as unknown as BootstrapParams);
+
+    const input = getInputByLabel(container, 'Name');
+    expect(input).toHaveProperty('disabled', true);
+
+    resolveLoad(loaded);
+
+    await waitFor(() => expect(input).toHaveProperty('disabled', false));
+    expect(input.value).toBe(shown);
+  },
+);
+
+it('should keep the date picker open when another field changes', async () => {
+  // The date picker names weekdays and months in the document language.
+  document.documentElement.lang = 'en';
+  const change = vi.fn();
+  const container = document.createElement('div');
+  await mount({
+    ...getDefaultBootstrapParams(),
+    actions: {
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+      onSubmit: vi.fn(),
+    },
+    events: {
+      emit: { change },
+      on: {
+        data: vi.fn(() => false),
+        fields: vi.fn(() => false),
+      },
+      off: { fields: vi.fn() },
+    },
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          label: 'Date',
+          name: 'date',
+          requirements: [{ saturday: false, sunday: false }],
+          type: 'date',
+        },
+        { label: 'Name', name: 'name', type: 'string' },
+      ],
+      skipInitialLoad: true,
+    },
+  } as unknown as BootstrapParams);
+
+  getInputByLabel(container, 'Date').click();
+  await waitFor(() =>
+    expect(container.querySelector('.flatpickr-calendar.open')).toBeInstanceOf(HTMLElement),
+  );
+
+  const name = getInputByLabel(container, 'Name');
+  name.value = 'Ada';
+  name.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  await waitFor(() =>
+    expect(change).toHaveBeenLastCalledWith(expect.objectContaining({ lastChanged: 'name' })),
+  );
+
+  expect(container.querySelector('.flatpickr-calendar.open')).toBeInstanceOf(HTMLElement);
+});

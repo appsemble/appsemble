@@ -466,18 +466,25 @@ bootstrap(
     }, [lastChanged, debouncedRequest, values, autofill]);
 
     useEffect(() => {
-      // If a listener is present, wait until data has been received
+      // If a listener or an onLoad action is present, wait until data has been received
       const hasListener = events.on.data(receiveData);
-      if (actions.onLoad?.type !== 'noop') {
+      const hasOnLoad = actions.onLoad?.type !== 'noop';
+      if (hasOnLoad) {
         (async () => {
-          const result = (await actions?.onLoad?.({ ...pageParameters })) as Values;
-          if (result) {
-            receiveData(result);
+          try {
+            const result = (await actions?.onLoad?.({ ...pageParameters })) as Values;
+            if (result) {
+              receiveData(result);
+            }
+          } finally {
+            if (!hasListener) {
+              setDataLoading(false);
+            }
           }
         })();
       }
       if (!skipInitialLoad || !initialLoad.current) {
-        setDataLoading(hasListener);
+        setDataLoading(hasListener || hasOnLoad);
       } else {
         initialLoad.current = false;
       }
