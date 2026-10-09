@@ -5550,6 +5550,17 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "default": "flex",
         "description": "How the form fields should be displayed.",
       },
+      "errorSummaryPosition": {
+        "default": "bottom",
+        "description": "Where the summary of invalid fields is shown after a submit fails validation.
+
+With \`bottom\`, the summary is shown above the submit button and links to the first invalid field. With \`top\`, the summary is shown at the top of the form and links to every invalid field in the order of the fields. It is scrolled into view and focused when a submit fails validation.",
+        "enum": [
+          "bottom",
+          "top",
+        ],
+        "type": "string",
+      },
       "fields": {
         "description": "A list of objects describing each field that can be entered in the form.",
         "items": {
@@ -5563,9 +5574,20 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "description": "Weather the form should take up all available width on the page.",
         "type": "boolean",
       },
+      "helpPosition": {
+        "default": "below",
+        "description": "Where the help text and the error message of each field are shown.
+
+With \`below\`, they are shown below the input, and the error message replaces the help text. With \`above\`, they are shown between the label and the input, with the error message below the help text.",
+        "enum": [
+          "above",
+          "below",
+        ],
+        "type": "string",
+      },
       "hideErrorSummary": {
         "default": false,
-        "description": "Whether the summary of invalid fields above the submit button should not be visible.
+        "description": "Whether the summary of invalid fields should not be visible.
 
 Each field still shows its own error message.",
         "format": "remapper",

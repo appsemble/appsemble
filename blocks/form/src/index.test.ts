@@ -4,7 +4,9 @@ import { EventEmitter } from 'node:events';
 
 import { createEvents, getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type BootstrapParams } from '@appsemble/sdk';
-import { expect, it, vi } from 'vitest';
+import { within } from '@testing-library/preact';
+import { userEvent } from '@testing-library/user-event';
+import { expect, it, onTestFinished, vi } from 'vitest';
 
 import { type Field, type Values } from '../block.js';
 import messages from '../i18n/en.json' with { type: 'json' };
@@ -570,4 +572,244 @@ it('should keep the date picker open when another field changes', async () => {
   );
 
   expect(container.querySelector('.flatpickr-calendar.open')).toBeInstanceOf(HTMLElement);
+});
+
+const fieldsWithHelp = [
+  {
+    help: 'Your full name',
+    label: 'Name',
+    name: 'name',
+    requirements: [{ required: true, errorMessage: 'Name is required' }],
+    type: 'string',
+  },
+  {
+    help: 'Your favorite color',
+    label: 'Color',
+    name: 'color',
+    options: [{ label: 'Red', value: 'red' }],
+    requirements: [{ required: true, errorMessage: 'Color is required' }],
+    type: 'radio',
+  },
+  {
+    label: 'Products',
+    name: 'products',
+    requirements: [{ minItems: 1, errorMessage: 'Pick a product' }],
+    selection: [{ id: 1, header: 'Apple' }],
+    type: 'selection',
+  },
+];
+
+async function mountForm(parameters: Record<string, unknown>): Promise<HTMLElement> {
+  const container = document.createElement('div');
+  // Focus only moves to elements that are attached to the document.
+  document.body.append(container);
+  onTestFinished(() => container.remove());
+  const defaultParams = getDefaultBootstrapParams();
+  await mount({
+    ...defaultParams,
+    actions: {
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+      onSubmit: vi.fn(),
+    },
+    events: {
+      emit: { change: vi.fn() },
+      on: {
+        data: vi.fn(() => false),
+        fields: vi.fn(() => false),
+      },
+      off: { fields: vi.fn() },
+    },
+    shadowRoot: container,
+    parameters: { skipInitialLoad: true, ...parameters },
+    utils: {
+      ...defaultParams.utils,
+      formatMessage: (message: keyof typeof messages) => messages[message],
+    },
+  } as unknown as BootstrapParams);
+  return container;
+}
+
+async function submitForm(container: HTMLElement): Promise<void> {
+  const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+  await waitFor(() => expect(submit).toHaveProperty('disabled', false));
+  submit.form!.requestSubmit();
+}
+
+/**
+ * Name the given elements in the order they appear in the document.
+ *
+ * @param elements The elements to order by their names.
+ * @returns The names of the elements in document order.
+ */
+function documentOrder(elements: Record<string, Element>): string[] {
+  return Object.entries(elements)
+    .sort(([, a], [, b]) =>
+      a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+    )
+    .map(([name]) => name);
+}
+
+function getDescription(element: Element): string | undefined {
+  return element
+    .getAttribute('aria-describedby')
+    ?.split(' ')
+    .map((id) => element.ownerDocument.getElementById(id)?.textContent)
+    .join(' ');
+}
+
+it('should render the help text and errors between the label and the input if helpPosition is above', async () => {
+  const container = await mountForm({ fields: fieldsWithHelp, helpPosition: 'above' });
+  const screen = within(container);
+  await submitForm(container);
+  await waitFor(() => screen.getByText('Pick a product'));
+
+  const name = getInputByLabel(container, 'Name');
+  expect(
+    documentOrder({
+      error: screen.getByText('Name is required'),
+      help: screen.getByText('Your full name'),
+      input: name,
+      label: screen.getByText('Name'),
+    }),
+  ).toStrictEqual(['label', 'help', 'error', 'input']);
+  expect(name.getAttribute('aria-invalid')).toBe('true');
+  expect(getDescription(name)).toBe('Your full name Name is required');
+
+  const red = screen.getByRole('radio', { name: 'Red' });
+  expect(
+    documentOrder({
+      error: screen.getByText('Color is required'),
+      input: red,
+      label: screen.getByText('Color'),
+    }),
+  ).toStrictEqual(['label', 'error', 'input']);
+  expect(red.getAttribute('aria-invalid')).toBe('true');
+  expect(getDescription(red)).toBe('Color is required');
+
+  expect(
+    documentOrder({
+      error: screen.getByText('Pick a product'),
+      input: screen.getByRole('button', { name: 'Add' }),
+      label: screen.getByText('Products'),
+    }),
+  ).toStrictEqual(['label', 'error', 'input']);
+});
+
+it('should render the help text and errors below the input by default', async () => {
+  const container = await mountForm({ fields: fieldsWithHelp });
+  const screen = within(container);
+  expect(
+    documentOrder({
+      help: screen.getByText('Your full name'),
+      input: getInputByLabel(container, 'Name'),
+      label: screen.getByText('Name'),
+    }),
+  ).toStrictEqual(['label', 'input', 'help']);
+
+  await submitForm(container);
+  await waitFor(() => screen.getByText('Pick a product'));
+
+  const name = getInputByLabel(container, 'Name');
+  expect(
+    documentOrder({
+      error: screen.getByText('Name is required'),
+      input: name,
+      label: screen.getByText('Name'),
+    }),
+  ).toStrictEqual(['label', 'input', 'error']);
+  expect(screen.queryByText('Your full name')).toBeNull();
+  expect(getDescription(name)).toBe('Name is required');
+
+  expect(
+    documentOrder({
+      error: screen.getByText('Color is required'),
+      input: screen.getByRole('radio', { name: 'Red' }),
+    }),
+  ).toStrictEqual(['input', 'error']);
+  expect(
+    documentOrder({
+      error: screen.getByText('Pick a product'),
+      input: screen.getByRole('button', { name: 'Add' }),
+    }),
+  ).toStrictEqual(['input', 'error']);
+});
+
+it('should summarize only the first error above the submit button by default', async () => {
+  const container = await mountForm({ fields: fieldsWithHelp });
+  const screen = within(container);
+  await submitForm(container);
+
+  const summary = await vi.waitFor(() =>
+    screen.getByText('Please fix the following errors:').closest('[role="alert"]')!,
+  );
+  expect(summary.textContent).toBe('Please fix the following errors:Name: Name is required');
+  expect(
+    documentOrder({
+      products: screen.getByText('Products'),
+      submit: screen.getByRole('button', { name: 'Submit' }),
+      summary,
+    }),
+  ).toStrictEqual(['products', 'summary', 'submit']);
+  expect(document.activeElement).not.toBe(summary);
+});
+
+it('should summarize every error at the top of the form if errorSummaryPosition is top', async () => {
+  const container = await mountForm({
+    errorSummaryPosition: 'top',
+    fields: [
+      {
+        label: 'Email',
+        name: 'email',
+        requirements: [{ regex: '@', errorMessage: 'Email is invalid' }],
+        type: 'string',
+      },
+      {
+        label: 'Name',
+        name: 'name',
+        requirements: [{ required: true, errorMessage: 'Name is required' }],
+        type: 'string',
+      },
+    ],
+    title: 'Contact',
+  });
+  const screen = within(container);
+  // The email only becomes invalid after the name, but the summary lists the errors in field order.
+  const email = getInputByLabel(container, 'Email');
+  email.value = 'ada';
+  email.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  await waitFor(() => screen.getByText('Email is invalid'));
+
+  await submitForm(container);
+
+  const summary = await vi.waitFor(() =>
+    screen.getByRole('region', { name: 'Please fix the following errors:' }),
+  );
+  expect(
+    within(summary)
+      .getAllByRole('listitem')
+      .map((item) => item.textContent),
+  ).toStrictEqual(['Email: Email is invalid', 'Name: Name is required']);
+  expect(
+    documentOrder({
+      email,
+      summary,
+      title: screen.getByText('Contact'),
+    }),
+  ).toStrictEqual(['title', 'summary', 'email']);
+
+  await userEvent.click(within(summary).getByRole('button', { name: 'Name: Name is required' }));
+  expect(document.activeElement).toBe(getInputByLabel(container, 'Name'));
+});
+
+it('should scroll to and focus the error summary at the top after a failed submit', async () => {
+  const scrollIntoView = vi.spyOn(Element.prototype, 'scrollIntoView');
+  const container = await mountForm({ errorSummaryPosition: 'top', fields: fieldsWithHelp });
+  const screen = within(container);
+  await submitForm(container);
+
+  const summary = await vi.waitFor(() =>
+    screen.getByRole('region', { name: 'Please fix the following errors:' }),
+  );
+  await waitFor(() => expect(document.activeElement).toBe(summary));
+  expect(scrollIntoView.mock.contexts).toStrictEqual([summary]);
 });

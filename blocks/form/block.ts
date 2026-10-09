@@ -1712,13 +1712,36 @@ declare module '@appsemble/sdk' {
     hideSubmitButton?: Remapper;
 
     /**
-     * Whether the summary of invalid fields above the submit button should not be visible.
+     * Whether the summary of invalid fields should not be visible.
      *
      * Each field still shows its own error message.
      *
      * @default false
      */
     hideErrorSummary?: Remapper;
+
+    /**
+     * Where the summary of invalid fields is shown after a submit fails validation.
+     *
+     * With `bottom`, the summary is shown above the submit button and links to the first invalid
+     * field. With `top`, the summary is shown at the top of the form and links to every invalid
+     * field in the order of the fields. It is scrolled into view and focused when a submit fails
+     * validation.
+     *
+     * @default 'bottom'
+     */
+    errorSummaryPosition?: 'bottom' | 'top';
+
+    /**
+     * Where the help text and the error message of each field are shown.
+     *
+     * With `below`, they are shown below the input, and the error message replaces the help text.
+     * With `above`, they are shown between the label and the input, with the error message below
+     * the help text.
+     *
+     * @default 'below'
+     */
+    helpPosition?: 'above' | 'below';
 
     /**
      * Whether or not space should be reserved for the help text.
