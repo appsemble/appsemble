@@ -2164,6 +2164,41 @@ describe('maths', () => {
   });
 });
 
+describe('xml.parse', () => {
+  runTests({
+    'keep sibling elements when a tag is named after a prototype property': {
+      input: '<a><constructor>1</constructor><prototype>2</prototype><b>3</b></a>',
+      mappers: { 'xml.parse': { root: null } },
+      expected: { a: { '#constructor': 1, '#prototype': 2, b: 3 } },
+    },
+    'prefix a __proto__ tag': {
+      input: '<a><__proto__>1</__proto__></a>',
+      mappers: { 'xml.parse': { root: null } },
+      expected: { a: { '#__proto__': 1 } },
+    },
+    'prefix attributes named after prototype properties': {
+      input: '<a constructor="1" b="2"/>',
+      mappers: { 'xml.parse': { root: null } },
+      expected: { a: { '#constructor': '1', b: '2' } },
+    },
+    'keep the text of a prefixed tag that has attributes': {
+      input: '<constructor id="1">t</constructor>',
+      mappers: { 'xml.parse': { root: null } },
+      expected: { '#constructor': { id: '1', '#text': 't' } },
+    },
+  });
+
+  it('should not pollute the object prototype', () => {
+    const context = createExampleContext(new URL('https://example.com'), 'en');
+    remap(
+      { 'xml.parse': { root: null } },
+      '<__proto__><polluted>yes</polluted></__proto__>',
+      context,
+    );
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+  });
+});
+
 describe.each(Object.entries(examples))(
   'should test remapper example: %s',
   (name, { history, input, remapper, result: expected, skip }) => {
