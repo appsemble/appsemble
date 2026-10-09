@@ -101,7 +101,7 @@
     "type-is": "^1.6.18",
     "uuid": "^14.0.2",
     "webpack": "^5.0.0",
-    "webpack-dev-middleware": "^6.0.0",
+    "webpack-dev-middleware": "^7.4.6",
     "winston": "^3.0.0",
     "yaml": "^2.0.0",
     "yargs": "^17.0.0"
