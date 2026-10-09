@@ -10,8 +10,12 @@
   "removeFile": "",
   "resetLocation": "",
   "search": "Suche",
+  "selectionAdd": "{option} hinzufügen",
+  "selectionClose": "Auswahl schließen",
   "selectionNoOptions": "Keine weiteren Optionen verfügbar",
   "selectionOptionsError": "Beim Laden der Optionen ist ein Fehler aufgetreten.",
+  "selectionRemove": "{option} entfernen",
+  "selectionSelected": "{option} ausgewählt",
   "submitError": "Beim Absenden dieses Formulars ist ein Problem aufgetreten.",
   "submitLabel": "Absenden"
 }

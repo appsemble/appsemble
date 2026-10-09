@@ -1628,8 +1628,12 @@ declare module '@appsemble/sdk' {
     invalidLabel: never;
     previousLabel: never;
     search: never;
+    selectionAdd: { option: number | string };
+    selectionClose: never;
     selectionNoOptions: never;
     selectionOptionsError: never;
+    selectionRemove: { option: number | string };
+    selectionSelected: { option: number | string };
     fixErrors: never;
     longSubmissionWarning: never;
     removeFile: never;

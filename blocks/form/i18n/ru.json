@@ -10,8 +10,12 @@
   "removeFile": "",
   "resetLocation": "",
   "search": "Поиск",
+  "selectionAdd": "Добавить {option}",
+  "selectionClose": "Закрыть выбор",
   "selectionNoOptions": "Больше нет доступных вариантов",
   "selectionOptionsError": "Произошла ошибка при загрузке параметров",
+  "selectionRemove": "Удалить {option}",
+  "selectionSelected": "Выбрано: {option}",
   "submitError": "Произошла ошибка при отправке этой формы",
   "submitLabel": "Отправить"
 }

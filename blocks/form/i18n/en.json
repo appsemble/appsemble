@@ -10,8 +10,12 @@
   "removeFile": "Remove file",
   "resetLocation": "Use current location",
   "search": "Search",
+  "selectionAdd": "Add {option}",
+  "selectionClose": "Close selection",
   "selectionNoOptions": "No more available options",
   "selectionOptionsError": "There was an error loading the options",
+  "selectionRemove": "Remove {option}",
+  "selectionSelected": "Selected {option}",
   "submitError": "There was a problem submitting this form",
   "submitLabel": "Submit"
 }

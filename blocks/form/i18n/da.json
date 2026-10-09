@@ -10,8 +10,12 @@
   "removeFile": "",
   "resetLocation": "",
   "search": "Søg",
+  "selectionAdd": "Tilføj {option}",
+  "selectionClose": "Luk valg",
   "selectionNoOptions": "Der er ikke flere tilgængelige muligheder",
   "selectionOptionsError": "Der opstod en fejl under indlæsning af indstillingerne",
+  "selectionRemove": "Fjern {option}",
+  "selectionSelected": "Valgt {option}",
   "submitError": "Der opstod et problem ved indsendelse af denne formular",
   "submitLabel": "Indsend"
 }

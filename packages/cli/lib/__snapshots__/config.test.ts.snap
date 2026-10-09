@@ -2475,10 +2475,22 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "search": {
       "description": undefined,
     },
+    "selectionAdd": {
+      "description": undefined,
+    },
+    "selectionClose": {
+      "description": undefined,
+    },
     "selectionNoOptions": {
       "description": undefined,
     },
     "selectionOptionsError": {
+      "description": undefined,
+    },
+    "selectionRemove": {
+      "description": undefined,
+    },
+    "selectionSelected": {
       "description": undefined,
     },
     "submitError": {

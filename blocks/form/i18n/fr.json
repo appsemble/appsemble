@@ -10,8 +10,12 @@
   "removeFile": "",
   "resetLocation": "",
   "search": "Rechercher",
+  "selectionAdd": "Ajouter {option}",
+  "selectionClose": "Fermer la sélection",
   "selectionNoOptions": "Il n'y a plus d'options disponibles",
   "selectionOptionsError": "Une erreur s'est produite lors du chargement des options.",
+  "selectionRemove": "Retirer {option}",
+  "selectionSelected": "Sélectionné : {option}",
   "submitError": "Une erreur s'est produite lors de l'envoi de ce formulaire",
   "submitLabel": "Envoyer"
 }
