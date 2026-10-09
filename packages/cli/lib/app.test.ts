@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { appendFile, cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -20,7 +20,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { ISODateTimePattern } from '@appsemble/utils';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   deleteApp,
@@ -1031,6 +1031,99 @@ describe('app', () => {
           }),
         ),
       ).toStrictEqual([tuxData]);
+    });
+
+    describe('app variant message patches', () => {
+      let appPath: string;
+
+      beforeEach(async () => {
+        appPath = join(await mkdtemp(join(tmpdir(), 'appsemble-variant-')), 'test');
+        await cp(resolveFixture('apps/test'), appPath, { recursive: true });
+      });
+
+      afterEach(async () => {
+        await rm(join(appPath, '..'), { recursive: true, force: true });
+      });
+
+      async function publishTuxVariant(messagesPatch: unknown): Promise<Record<string, unknown>> {
+        await writeFile(
+          join(appPath, 'variants/tux/patches/messages.json'),
+          JSON.stringify(messagesPatch),
+        );
+        vi.useRealTimers();
+        try {
+          const clientCredentials = await authorizeCLI('apps:write', testApp);
+          await publishApp({
+            path: appPath,
+            organization: organization.id,
+            remote: testApp.defaults.baseURL!,
+            clientCredentials,
+            // Required defaults
+            visibility: 'unlisted',
+            iconBackground: '#ffffff',
+            variant: 'tux',
+          });
+        } finally {
+          vi.useFakeTimers();
+        }
+        const appMessages = await AppMessages.findAll();
+        return Object.fromEntries(
+          appMessages.map(({ language, messages }) => [language, messages]),
+        );
+      }
+
+      it('should delete message keys patched to null', async () => {
+        // The base app has a login page which the variant removes, along with its translations.
+        await appendFile(
+          join(appPath, 'app-definition.yaml'),
+          '  - name: Login\n    blocks:\n      - type: test\n        version: 0.0.0\n',
+        );
+        await writeFile(
+          join(appPath, 'i18n/nl.json'),
+          JSON.stringify({
+            app: { name: 'Test App', 'pages.test-page': 'Test Pagina', 'pages.login': 'Inloggen' },
+          }),
+        );
+        await writeFile(
+          join(appPath, 'i18n/en.json'),
+          JSON.stringify({
+            app: { name: 'Test App', 'pages.test-page': 'Test Page', 'pages.login': 'Login' },
+          }),
+        );
+        await writeFile(
+          join(appPath, 'variants/tux/patches/app-definition.json'),
+          JSON.stringify([[['pages', 1]]]),
+        );
+
+        const messages = await publishTuxVariant({
+          nl: { app: { 'pages.login': null } },
+          en: { app: { 'pages.login': null } },
+        });
+
+        expect(messages).toStrictEqual({
+          nl: { app: { name: 'Test App', 'pages.test-page': 'Test Pagina' } },
+          en: { app: { name: 'Test App', 'pages.test-page': 'Test Page' } },
+        });
+      });
+
+      it('should deep merge message patches into the original messages', async () => {
+        const messages = await publishTuxVariant({
+          nl: { app: { name: 'Tux App' } },
+        });
+
+        expect(messages).toStrictEqual({
+          nl: { app: { name: 'Tux App', 'pages.test-page': 'Test Pagina' } },
+          en: { app: { name: 'Test App', 'pages.test-page': 'Test Page' } },
+        });
+      });
+
+      it('should delete the messages of a language patched to null', async () => {
+        const messages = await publishTuxVariant({ nl: null });
+
+        expect(messages).toStrictEqual({
+          en: { app: { name: 'Test App', 'pages.test-page': 'Test Page' } },
+        });
+      });
     });
 
     it('should publish app variables and secrets', async () => {

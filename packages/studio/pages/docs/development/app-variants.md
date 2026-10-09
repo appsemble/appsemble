@@ -108,6 +108,21 @@ The file is divided into a record of key-value pairs like so:
 }
 ```
 
+The changes are deep merged into the original messages. A `null` value deletes the key, for example
+the translation of a page the variant removes. Setting a whole language to `null` deletes its
+messages file.
+
+```json
+{
+  "nl": {
+    "app": {
+      "pages.login": null
+    }
+  },
+  "en": null
+}
+```
+
 #### app-definition.json
 
 This file contains changes to the app’s definition, defined in the `app-definition.yaml` file. The
