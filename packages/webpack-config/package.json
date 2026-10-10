@@ -44,7 +44,7 @@
     "@appsemble/types": "0.40.4",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
     "css-loader": "^6.0.0",
-    "css-minimizer-webpack-plugin": "^5.0.0",
+    "css-minimizer-webpack-plugin": "^8.0.0",
     "mini-css-extract-plugin": "^2.0.0",
     "postcss": "^8.0.0",
     "postcss-loader": "^7.0.0",
