@@ -28,7 +28,7 @@
     "@appsemble/lang-sdk": "0.40.4",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
-    "@milkdown/crepe": "^7.5.7",
+    "@milkdown/crepe": "^7.22.2",
     "@milkdown/kit": "^7.5.5",
     "@types/leaflet": "^1.0.0",
     "classnames": "^2.0.0",
