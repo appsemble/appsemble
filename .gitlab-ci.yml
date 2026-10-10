@@ -1833,6 +1833,7 @@ lighthouse:
       --s3-access-key appsemble-server
       --s3-secret-key appsemble-server-secret
     - npm run scripts -- update-subscription --organizationId appsemble --subscriptionPlan enterprise
+    - npm ci --prefix config/lighthouse
     - npm run appsemble -- app publish --resources apps/*
     - |
       APPSEMBLE_IP=$(getent ahostsv4 appsemble | awk 'NR == 1 { print $1 }')
@@ -1840,8 +1841,8 @@ lighthouse:
         echo "$APPSEMBLE_IP $host" >> /etc/hosts
         URL_ARGS="$URL_ARGS --url https://$host:9999"
       done
-      npx -- lhci collect $URL_ARGS
-    - npx -- lhci assert
+      config/lighthouse/node_modules/.bin/lhci collect $URL_ARGS
+    - config/lighthouse/node_modules/.bin/lhci assert
   artifacts:
     expose_as: Lighthouse reports
     when: always

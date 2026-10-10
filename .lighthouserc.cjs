@@ -6,6 +6,8 @@ module.exports = {
       chromePath: chromium.executablePath(),
       settings: {
         chromeFlags: '--headless --no-sandbox --disable-dev-shm-usage --ignore-certificate-errors',
+        // Simulated throttling misjudges scripts served by the service worker.
+        throttlingMethod: 'devtools',
       },
     },
     assert: {
