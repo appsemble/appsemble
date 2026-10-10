@@ -31,6 +31,7 @@ export function HighlightedCode({ children, className }: HighlightedCodeProps): 
       Promise.all([
         import('monaco-editor/esm/vs/editor/editor.api.js'),
         import('../MonacoEditor/languages.js'),
+        import('../MonacoEditor/contributions.js'),
       ]).then(([MonacoEditor]) => {
         const isLanguageSupported = MonacoEditor.languages
           .getLanguages()
