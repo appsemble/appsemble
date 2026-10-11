@@ -12,7 +12,7 @@ import {
   getAdminToken,
   joinGroup,
   requestKc,
-} from './utils/keycloak-admin.js';
+} from '../../../utils/keycloak-admin.js';
 
 const { KEYCLOAK_BASE_URL } = process.env;
 

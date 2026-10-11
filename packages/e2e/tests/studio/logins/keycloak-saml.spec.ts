@@ -10,7 +10,7 @@ import {
   getSigningCertificate,
   joinGroup,
   requestKc,
-} from './utils/keycloak-admin.js';
+} from '../../../utils/keycloak-admin.js';
 
 const { KEYCLOAK_BASE_URL, KEYCLOAK_REALM = 'appsemble-e2e' } = process.env;
 
