@@ -1,20 +1,12 @@
 import { schemas } from '@appsemble/lang-sdk';
 import { mapValues } from '@appsemble/utils';
 import { type Schema } from 'jsonschema';
-import 'monaco-editor/esm/vs/editor/contrib/colorPicker/browser/colorContributions.js';
-import 'monaco-editor/esm/vs/editor/contrib/comment/browser/comment.js';
-import 'monaco-editor/esm/vs/editor/contrib/contextmenu/browser/contextmenu.js';
-import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController.js';
-import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding.js';
-import 'monaco-editor/esm/vs/editor/contrib/format/browser/formatActions.js';
-import 'monaco-editor/esm/vs/editor/contrib/hover/browser/hover.js';
-import 'monaco-editor/esm/vs/editor/contrib/inlineCompletions/browser/inlineCompletions.contribution.js';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
-import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js';
 import 'monaco-editor/esm/vs/language/css/monaco.contribution.js';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
 import { configureMonacoYaml } from 'monaco-yaml';
 
+import './contributions.js';
 import { appValidationLabel } from './appValidation/index.js';
 import './languages.js';
 
