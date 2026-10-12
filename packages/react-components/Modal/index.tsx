@@ -5,11 +5,13 @@ import {
   type KeyboardEvent,
   type MouseEvent,
   type ReactNode,
-  useCallback,
 } from 'react';
+import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { useAnimation } from '../index.js';
+import { useModalDialog } from '../useModalDialog/index.js';
+import { messages } from '../useModalDialog/messages.js';
 
 interface ModalProps<T extends ElementType> {
   /**
@@ -18,12 +20,13 @@ interface ModalProps<T extends ElementType> {
   readonly children?: ReactNode;
 
   /**
-   * Whether the user is allowed to click on the close button or outside of the modal to close it.
+   * Whether the user is allowed to close the modal using the close button, by clicking outside of
+   * it, or by pressing escape.
    */
   readonly closable?: boolean;
 
   /**
-   * The aria label to apply on the close button.
+   * The aria label to apply on the close button. Defaults to a translated "Close".
    */
   readonly closeButtonLabel?: string;
 
@@ -88,26 +91,27 @@ export function Modal<T extends ElementType = 'div'>({
     closing: styles.closing,
   });
 
-  const onKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose?.(event);
-      }
-    },
-    [onClose],
-  );
+  const { formatMessage } = useIntl();
+  const { onKeyDown, ref } = useModalDialog({ closable, isActive, onClose });
 
   if (!openClass) {
     return null;
   }
 
   return (
-    <div className={`is-active modal ${styles.root} ${extraClassName} ${openClass}`}>
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/prefer-tag-over-role
+    <div
+      aria-modal="true"
+      className={`is-active modal ${styles.root} ${extraClassName} ${openClass}`}
+      onKeyDown={onKeyDown}
+      ref={ref}
+      role="dialog"
+      tabIndex={-1}
+    >
       {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <div
         className="modal-background"
         onClick={closable ? onClose : undefined}
-        onKeyDown={closable ? onKeyDown : undefined}
         role="presentation"
       />
       {/* @ts-expect-error This construct should work */}
@@ -116,7 +120,7 @@ export function Modal<T extends ElementType = 'div'>({
       </Component>
       {closable ? (
         <button
-          aria-label={closeButtonLabel}
+          aria-label={closeButtonLabel ?? formatMessage(messages.close)}
           className="modal-close is-large"
           onClick={onClose}
           type="button"
