@@ -4,7 +4,7 @@ import { type Schema } from 'jsonschema';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 import 'monaco-editor/esm/vs/language/css/monaco.contribution.js';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
-import { configureMonacoYaml } from 'monaco-yaml';
+import { configureMonacoYaml, type JSONSchema } from 'monaco-yaml';
 
 import './contributions.js';
 import { appValidationLabel } from './appValidation/index.js';
@@ -108,20 +108,50 @@ function addMarkdownDescriptions(schema: Schema): Schema {
   return result;
 }
 
+/**
+ * Create a deep clone of a JSON schema with OpenAPI style `$ref` pointers rewritten to point into
+ * `definitions`.
+ *
+ * The schemas use OpenAPI document pointers, but `monaco-yaml` only resolves pointers into a
+ * standard JSON Schema container. Any other sibling of `$ref` is treated as a constraint and gets
+ * stripped from the schema before the pointer is resolved.
+ *
+ * @param value The schema or schema fragment to process.
+ * @returns The value with its `$ref` pointers rewritten.
+ */
+function rewriteRefs<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map(rewriteRefs) as T;
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, val]) =>
+        key === '$ref' && typeof val === 'string'
+          ? [key, val.replace('#/components/schemas/', '#/definitions/')]
+          : [key, rewriteRefs(val)],
+      ),
+    ) as T;
+  }
+  return value;
+}
+
 configureMonacoYaml(monaco, {
   completion: true,
   validate: true,
-  format: true,
+  format: { enable: true },
   enableSchemaRequest: false,
   schemas: [
     {
       uri: String(new URL('/docs/reference', window.location.origin)),
       fileMatch: ['app.yaml'],
       schema: {
-        $ref: '#/components/schemas/AppDefinition',
-        components: {
-          schemas: mapValues(schemas, addMarkdownDescriptions),
-        },
+        $ref: '#/definitions/AppDefinition',
+        // The schemas are typed using `jsonschema`, whose `Schema` additionally allows a `RegExp`
+        // pattern and a boolean `required`. Neither occurs in these JSON sourced schemas.
+        definitions: rewriteRefs(mapValues(schemas, addMarkdownDescriptions)) as Record<
+          string,
+          JSONSchema
+        >,
       },
     },
   ],
