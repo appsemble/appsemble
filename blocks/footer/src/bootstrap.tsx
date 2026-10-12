@@ -9,8 +9,10 @@ import { ImageComponent } from './components/ImageComponent/index.js';
 const safeLinkProtocols = new Set(['http:', 'https:', 'mailto:', 'tel:']);
 
 function getSafeHref(link: string | undefined): string | undefined {
-  const protocol = link ? URL.parse(link, window.location.href)?.protocol : undefined;
-  return protocol && safeLinkProtocols.has(protocol) ? link : undefined;
+  if (!link || !URL.canParse(link, window.location.href)) {
+    return undefined;
+  }
+  return safeLinkProtocols.has(new URL(link, window.location.href).protocol) ? link : undefined;
 }
 
 export function Footer({
