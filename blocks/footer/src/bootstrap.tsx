@@ -6,14 +6,25 @@ import { useEffect } from 'preact/hooks';
 import { FooterListColumn } from './components/FooterListColumn/index.js';
 import { ImageComponent } from './components/ImageComponent/index.js';
 
+const safeLinkProtocols = new Set(['http:', 'https:', 'mailto:', 'tel:']);
+
+function getSafeHref(link: string | undefined): string | undefined {
+  const protocol = link ? URL.parse(link, window.location.href)?.protocol : undefined;
+  return protocol && safeLinkProtocols.has(protocol) ? link : undefined;
+}
+
 export function Footer({
   data,
-  parameters: { alignment, backgroundColor, columns, copyright, textColor },
+  parameters: { alignment, backgroundColor, columns, copyright, linkColor, textColor },
   ready,
   utils: { remap },
 }: BlockProps): VNode {
   useEffect(() => ready(), [ready]);
-  const copyrightText = remap(copyright, data) as string;
+  const copyrightValue = remap(copyright, data) as string | { label: string; link: string } | null;
+  const copyrightLabel =
+    typeof copyrightValue === 'string' ? copyrightValue : copyrightValue?.label;
+  const copyrightHref =
+    typeof copyrightValue === 'string' ? undefined : getSafeHref(copyrightValue?.link);
   return (
     <footer
       className={classNames(
@@ -38,9 +49,15 @@ export function Footer({
             ),
           )}
         </div>
-        {copyrightText ? (
+        {copyrightLabel ? (
           <div className={classNames('has-text-centered', textColor && `has-text-${textColor}`)}>
-            {copyrightText}
+            {copyrightHref ? (
+              <a className={classNames(linkColor && `has-text-${linkColor}`)} href={copyrightHref}>
+                {copyrightLabel}
+              </a>
+            ) : (
+              copyrightLabel
+            )}
           </div>
         ) : null}
       </div>
