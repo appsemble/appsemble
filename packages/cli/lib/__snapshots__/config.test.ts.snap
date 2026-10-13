@@ -4224,6 +4224,17 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A number entry field.",
         "properties": {
+          "autocomplete": {
+            "description": "The HTML \`autocomplete\` attribute of the input, which tells browsers and assistive technology what data the field asks for, so they can fill it in.
+
+This is ignored if \`display\` is \`slider\`.
+
+See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens) for the supported values.",
+            "examples": [
+              "bday-year",
+            ],
+            "type": "string",
+          },
           "bottomLabels": {
             "description": "If \`display\` is set to \`slider\`, these labels are displayed evenly spaced below the slider.",
             "items": {
@@ -4945,6 +4956,15 @@ For example, the [\`regex\`](#RegexRequirement) requirement type allows you to v
 
 \`\`\`yaml type: string requirements:   - regex: \\w+@appsemble\\.com     errorMessage: Value does not end with “@appsemble.com” \`\`\`",
         "properties": {
+          "autocomplete": {
+            "description": "The HTML \`autocomplete\` attribute of the input, which tells browsers and assistive technology what data the field asks for, so they can fill it in.
+
+See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens) for the supported values.",
+            "examples": [
+              "email",
+            ],
+            "type": "string",
+          },
           "datalist": {
             "default": [],
             "description": "Used to display a static html datalist for the field",

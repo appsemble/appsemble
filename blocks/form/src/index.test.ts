@@ -813,3 +813,64 @@ it('should scroll to and focus the error summary at the top after a failed submi
   await waitFor(() => expect(document.activeElement).toBe(summary));
   expect(scrollIntoView.mock.contexts).toStrictEqual([summary]);
 });
+
+it('should set the autocomplete attribute of a password field, also while it is visible', async () => {
+  const container = await mountForm({
+    fields: [
+      {
+        autocomplete: 'current-password',
+        format: 'password',
+        label: 'Password',
+        name: 'password',
+        type: 'string',
+      },
+    ],
+  });
+  const password = getInputByLabel(container, 'Password');
+  expect(password.type).toBe('password');
+  expect(password.getAttribute('autocomplete')).toBe('current-password');
+
+  const toggle = within(container)
+    .getAllByRole('button')
+    .find((button) => button.getAttribute('type') === 'button')!;
+  await userEvent.click(toggle);
+
+  const visiblePassword = getInputByLabel(container, 'Password');
+  expect(visiblePassword.type).toBe('text');
+  expect(visiblePassword.getAttribute('autocomplete')).toBe('current-password');
+});
+
+it('should set the autocomplete attribute of string, multiline and number fields', async () => {
+  const container = await mountForm({
+    fields: [
+      { autocomplete: 'email', format: 'email', label: 'Email', name: 'email', type: 'string' },
+      {
+        autocomplete: 'street-address',
+        label: 'Address',
+        multiline: true,
+        name: 'address',
+        type: 'string',
+      },
+      { autocomplete: 'bday-year', label: 'Birth year', name: 'year', type: 'integer' },
+    ],
+  });
+  const screen = within(container);
+  expect(getInputByLabel(container, 'Email').getAttribute('autocomplete')).toBe('email');
+  expect(screen.getByRole('textbox', { name: /^Address/ }).getAttribute('autocomplete')).toBe(
+    'street-address',
+  );
+  expect(getInputByLabel(container, 'Birth year').getAttribute('autocomplete')).toBe('bday-year');
+});
+
+it('should not set an autocomplete attribute if the field does not define one', async () => {
+  const container = await mountForm({
+    fields: [
+      { format: 'email', label: 'Email', name: 'email', type: 'string' },
+      { format: 'password', label: 'Password', name: 'password', type: 'string' },
+      { label: 'Age', name: 'age', type: 'integer' },
+    ],
+  });
+  expect(getInputByLabel(container, 'Email').hasAttribute('autocomplete')).toBe(false);
+  expect(getInputByLabel(container, 'Password').hasAttribute('autocomplete')).toBe(false);
+  expect(getInputByLabel(container, 'Age').hasAttribute('autocomplete')).toBe(false);
+});
