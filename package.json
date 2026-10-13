@@ -64,7 +64,7 @@
     "jsdom": "22.1.0",
     "lint-staged": "17.6.0",
     "postcss": "8.5.29",
-    "postcss-preset-env": "9.6.0",
+    "postcss-preset-env": "10.6.1",
     "prettier": "3.9.10",
     "prettier-plugin-packagejson": "2.5.22",
     "remark-cli": "12.0.1",
