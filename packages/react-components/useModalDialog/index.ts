@@ -1,7 +1,9 @@
 import {
+  createContext,
   type KeyboardEvent,
   type RefObject,
   useCallback,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -40,6 +42,47 @@ let inertElements: Element[] = [];
 let pageObserver: MutationObserver | undefined;
 
 /**
+ * The dialog that currently blocks the page.
+ */
+let blockingDialog: HTMLElement | undefined;
+
+/**
+ * Whether the children are rendered inside a modal dialog.
+ */
+export const ModalDialogContext = createContext(false);
+
+/**
+ * Find out whether a component is rendered inside a modal dialog.
+ *
+ * Content that belongs to a dialog must be rendered inside it, because everything outside the
+ * topmost dialog is blocked.
+ *
+ * @returns Whether the component is rendered inside a modal dialog.
+ */
+export function useIsInModalDialog(): boolean {
+  return useContext(ModalDialogContext);
+}
+
+/**
+ * Find the topmost open dialog that is displayed.
+ *
+ * A dialog hidden using CSS, for example by a media query, can't be used, so it doesn't block the
+ * page.
+ *
+ * @returns The dialog that should block the page.
+ */
+function getTopmostDialog(): HTMLElement | undefined {
+  return openDialogs.findLast((dialog) => {
+    for (let element: Element | null = dialog; element; element = element.parentElement) {
+      if (getComputedStyle(element).display === 'none') {
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
+/**
  * Block everything except the topmost dialog for keyboard, pointer, and assistive technology users.
  *
  * Live regions stay available, so messages shown while a dialog is open are still announced.
@@ -51,7 +94,8 @@ function updatePageBehindDialogs(): void {
   }
   inertElements = [];
 
-  const dialog = openDialogs.at(-1);
+  const dialog = getTopmostDialog();
+  blockingDialog = dialog;
   document.documentElement.classList.toggle(styles['scroll-lock'], Boolean(dialog));
   if (!dialog) {
     return;
@@ -73,6 +117,15 @@ function updatePageBehindDialogs(): void {
       }
     }
     element = parent;
+  }
+}
+
+/**
+ * Update the blocked page when a media query shows or hides an open dialog.
+ */
+function onWindowResize(): void {
+  if (getTopmostDialog() !== blockingDialog) {
+    updatePageBehindDialogs();
   }
 }
 
@@ -178,6 +231,7 @@ export function useModalDialog({
     }
 
     openDialogs.push(dialog);
+    window.addEventListener('resize', onWindowResize);
     updatePageBehindDialogs();
     if (!dialog.contains(document.activeElement)) {
       dialog.focus();
@@ -185,6 +239,9 @@ export function useModalDialog({
 
     return () => {
       openDialogs.splice(openDialogs.indexOf(dialog), 1);
+      if (!openDialogs.length) {
+        window.removeEventListener('resize', onWindowResize);
+      }
       updatePageBehindDialogs();
       const { activeElement } = document;
       if (
@@ -199,7 +256,7 @@ export function useModalDialog({
   const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const dialog = ref.current;
-      if (!dialog || openDialogs.at(-1) !== dialog || event.defaultPrevented) {
+      if (!dialog || getTopmostDialog() !== dialog || event.defaultPrevented) {
         return;
       }
 

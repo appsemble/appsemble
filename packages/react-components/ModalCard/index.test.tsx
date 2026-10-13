@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { type ReactNode, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { ModalCard } from './index.js';
 
@@ -165,6 +165,24 @@ describe('modal dialog behavior', () => {
 
     await user.keyboard('{Escape}');
     expect(behind.closest('[inert]')).toBeNull();
+  });
+
+  it('should not block the page while a media query hides the dialog', async () => {
+    const user = userEvent.setup();
+    render(<Page />);
+    const behind = screen.getByRole('button', { name: 'Behind' });
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+    const mediaQuery = document.createElement('style');
+    mediaQuery.textContent = '.modal { display: none; }';
+    onTestFinished(() => mediaQuery.remove());
+
+    document.head.append(mediaQuery);
+    window.dispatchEvent(new Event('resize'));
+    expect(behind.closest('[inert]')).toBeNull();
+
+    mediaQuery.remove();
+    window.dispatchEvent(new Event('resize'));
+    expect(behind.closest('[inert]')).not.toBeNull();
   });
 
   it('should make content added behind the dialog while it is open inert', async () => {

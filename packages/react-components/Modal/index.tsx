@@ -10,7 +10,7 @@ import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { useAnimation } from '../index.js';
-import { useModalDialog } from '../useModalDialog/index.js';
+import { ModalDialogContext, useModalDialog } from '../useModalDialog/index.js';
 import { messages } from '../useModalDialog/messages.js';
 
 interface ModalProps<T extends ElementType> {
@@ -99,33 +99,35 @@ export function Modal<T extends ElementType = 'div'>({
   }
 
   return (
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/prefer-tag-over-role
-    <div
-      aria-modal="true"
-      className={`is-active modal ${styles.root} ${extraClassName} ${openClass}`}
-      onKeyDown={onKeyDown}
-      ref={ref}
-      role="dialog"
-      tabIndex={-1}
-    >
-      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
+    <ModalDialogContext.Provider value>
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/prefer-tag-over-role */}
       <div
-        className="modal-background"
-        onClick={closable ? onClose : undefined}
-        role="presentation"
-      />
-      {/* @ts-expect-error This construct should work */}
-      <Component className={classNames('modal-content', className)} {...props}>
-        {children}
-      </Component>
-      {closable ? (
-        <button
-          aria-label={closeButtonLabel ?? formatMessage(messages.close)}
-          className="modal-close is-large"
-          onClick={onClose}
-          type="button"
+        aria-modal="true"
+        className={`is-active modal ${styles.root} ${extraClassName} ${openClass}`}
+        onKeyDown={onKeyDown}
+        ref={ref}
+        role="dialog"
+        tabIndex={-1}
+      >
+        {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
+        <div
+          className="modal-background"
+          onClick={closable ? onClose : undefined}
+          role="presentation"
         />
-      ) : null}
-    </div>
+        {/* @ts-expect-error This construct should work */}
+        <Component className={classNames('modal-content', className)} {...props}>
+          {children}
+        </Component>
+        {closable ? (
+          <button
+            aria-label={closeButtonLabel ?? formatMessage(messages.close)}
+            className="modal-close is-large"
+            onClick={onClose}
+            type="button"
+          />
+        ) : null}
+      </div>
+    </ModalDialogContext.Provider>
   );
 }
