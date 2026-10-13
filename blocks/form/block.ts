@@ -1237,6 +1237,19 @@ export interface NumberField extends AbstractField, InlineField {
   defaultValue?: number;
 
   /**
+   * The HTML `autocomplete` attribute of the input, which tells browsers and assistive technology
+   * what data the field asks for, so they can fill it in.
+   *
+   * This is ignored if `display` is `slider`.
+   *
+   * See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens)
+   * for the supported values.
+   *
+   * @example 'bday-year'
+   */
+  autocomplete?: string;
+
+  /**
    * The type of the field.
    */
   type: 'integer' | 'number';
@@ -1270,7 +1283,7 @@ export interface NumberField extends AbstractField, InlineField {
   topLabels?: Remapper[];
 }
 
-export interface RangeField extends Omit<NumberField, 'display' | 'type'> {
+export interface RangeField extends Omit<NumberField, 'autocomplete' | 'display' | 'type'> {
   type: 'range';
   from?: Remapper;
   to?: Remapper;
@@ -1329,6 +1342,17 @@ export interface StringField extends AbstractField, InlineField {
    * The default value of the field.
    */
   defaultValue?: string;
+
+  /**
+   * The HTML `autocomplete` attribute of the input, which tells browsers and assistive technology
+   * what data the field asks for, so they can fill it in.
+   *
+   * See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens)
+   * for the supported values.
+   *
+   * @example 'email'
+   */
+  autocomplete?: string;
 
   /**
    * The native input format to use for validation.
@@ -1625,9 +1649,11 @@ declare module '@appsemble/sdk' {
     optionalLabel: never;
     fieldErrorLabel: never;
     formRequirementError: never;
+    hidePassword: never;
     invalidLabel: never;
     previousLabel: never;
     search: never;
+    showPassword: never;
     selectionAdd: { option: number | string };
     selectionClose: never;
     selectionNoOptions: never;

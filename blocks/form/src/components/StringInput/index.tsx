@@ -33,6 +33,7 @@ export function StringInput({
     setHidePassword((prevValue) => !prevValue);
   }, []);
   const {
+    autocomplete,
     datalistEnabled = false,
     format,
     help,
@@ -63,9 +64,14 @@ export function StringInput({
 
   const remappedLabel = utils.remap(label, value) ?? name;
   const commonProps = {
+    autocomplete,
     control:
       format === 'password' ? (
-        <IconButton icon={hidePassword ? 'eye-slash' : 'eye'} onClick={toggleHidePassword} />
+        <IconButton
+          aria-label={utils.formatMessage(hidePassword ? 'showPassword' : 'hidePassword')}
+          icon={hidePassword ? 'eye-slash' : 'eye'}
+          onClick={toggleHidePassword}
+        />
       ) : undefined,
     className: classNames('appsemble-string', className),
     disabled,

@@ -3,6 +3,7 @@
   "fieldErrorLabel": "",
   "fixErrors": "",
   "formRequirementError": "",
+  "hidePassword": "",
   "invalidLabel": "",
   "longSubmissionWarning": "",
   "optionalLabel": "",
@@ -16,6 +17,7 @@
   "selectionOptionsError": "",
   "selectionRemove": "",
   "selectionSelected": "",
+  "showPassword": "",
   "submitError": "",
   "submitLabel": ""
 }
