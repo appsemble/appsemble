@@ -63,6 +63,7 @@ export function StringInput({
   );
 
   const remappedLabel = utils.remap(label, value) ?? name;
+  const type = format === 'password' && !hidePassword ? 'text' : format;
   const commonProps = {
     autocomplete,
     control:
@@ -103,14 +104,10 @@ export function StringInput({
         ))}
       </datalist>
       {/* @ts-expect-error strictNullChecks */}
-      <InputField {...commonProps} list={`${name}-datalist`} type={format} />
+      <InputField {...commonProps} list={`${name}-datalist`} type={type} />
     </>
   ) : (
     // @ts-expect-error strictNullChecks
-    <InputField
-      {...commonProps}
-      type={format === 'password' && !hidePassword ? 'text' : format}
-      value={value as string}
-    />
+    <InputField {...commonProps} type={type} value={value as string} />
   );
 }

@@ -841,6 +841,29 @@ it('should set the autocomplete attribute of a password field, also while it is 
   expect(getInputByLabel(container, 'Password').type).toBe('password');
 });
 
+it('should show and hide a password field that has a datalist', async () => {
+  const container = await mountForm({
+    fields: [
+      {
+        datalist: [{ value: 'correct horse battery staple' }],
+        datalistEnabled: true,
+        format: 'password',
+        label: 'Password',
+        name: 'password',
+        type: 'string',
+      },
+    ],
+  });
+  const screen = within(container);
+  expect(getInputByLabel(container, 'Password').type).toBe('password');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Show password' }));
+  expect(getInputByLabel(container, 'Password').type).toBe('text');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Hide password' }));
+  expect(getInputByLabel(container, 'Password').type).toBe('password');
+});
+
 it('should set the autocomplete attribute of string, multiline and number fields', async () => {
   const container = await mountForm({
     fields: [

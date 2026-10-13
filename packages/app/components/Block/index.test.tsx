@@ -3,8 +3,9 @@ import { EventEmitter } from 'node:events';
 import { type AppDefinition, type BlockDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
+import { ModalCard } from '@appsemble/react-components';
 import { noop } from '@appsemble/utils';
-import { cleanup, render, waitFor, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -137,5 +138,60 @@ describe('block viewport mode', () => {
     await waitFor(() =>
       expect(within(blockRoot).getByRole('button', { name: label })).toBeDefined(),
     );
+  });
+});
+
+describe('float layout', () => {
+  it('should keep a float block in a dialog usable while the page behind it is blocked', async () => {
+    blockVersion += 1;
+    const block: BlockDefinition = {
+      type: '@test/float-controls',
+      version: `1.0.${blockVersion}`,
+      layout: 'float',
+    };
+    const pageDefinition = { name: 'Home', blocks: [] };
+    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Home',
+        pages: [pageDefinition],
+      } as AppDefinition,
+      demoMode: false,
+      revision: 1,
+      blockManifests: [
+        { name: block.type, version: block.version, files: ['float-controls.js'] },
+      ] as BlockManifest[],
+    });
+    render(
+      <IntlProvider locale="en">
+        <MemoryRouter>
+          <button type="button">Behind</button>
+          <ModalCard isActive>
+            <Block
+              appStorage={{} as AppStorage}
+              block={block}
+              // eslint-disable-next-line unicorn/prefer-event-target
+              ee={new EventEmitter()}
+              flowActions={{}}
+              pageDefinition={pageDefinition}
+              pageReady={Promise.resolve()}
+              prefix="pages.home.blocks.0.actions.onClick.blocks.0"
+              prefixIndex="pages.0.blocks.0.actions.onClick.blocks.0"
+              ready={noop}
+              remap={noop}
+              showDialog={() => noop}
+              showShareDialog={() => Promise.resolve()}
+            />
+          </ModalCard>
+        </MemoryRouter>
+      </IntlProvider>,
+    );
+
+    const control = await waitFor(() => within(blockRoot).getByRole('button'));
+    expect(control.closest('[inert]')).toBeNull();
+    expect((blockRoot as unknown as ShadowRoot).host.closest('[inert]')).toBeNull();
+    expect(
+      screen.getByRole('button', { hidden: true, name: 'Behind' }).closest('[inert]'),
+    ).not.toBeNull();
   });
 });
