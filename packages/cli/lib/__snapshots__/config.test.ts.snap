@@ -2462,6 +2462,9 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "formRequirementError": {
       "description": undefined,
     },
+    "hidePassword": {
+      "description": undefined,
+    },
     "invalidLabel": {
       "description": undefined,
     },
@@ -2499,6 +2502,9 @@ Include an array of fields in \`fields\` to replace the current list of fields i
       "description": undefined,
     },
     "selectionSelected": {
+      "description": undefined,
+    },
+    "showPassword": {
       "description": undefined,
     },
     "submitError": {

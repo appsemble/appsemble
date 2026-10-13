@@ -830,14 +830,15 @@ it('should set the autocomplete attribute of a password field, also while it is 
   expect(password.type).toBe('password');
   expect(password.getAttribute('autocomplete')).toBe('current-password');
 
-  const toggle = within(container)
-    .getAllByRole('button')
-    .find((button) => button.getAttribute('type') === 'button')!;
-  await userEvent.click(toggle);
+  const screen = within(container);
+  await userEvent.click(screen.getByRole('button', { name: 'Show password' }));
 
   const visiblePassword = getInputByLabel(container, 'Password');
   expect(visiblePassword.type).toBe('text');
   expect(visiblePassword.getAttribute('autocomplete')).toBe('current-password');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Hide password' }));
+  expect(getInputByLabel(container, 'Password').type).toBe('password');
 });
 
 it('should set the autocomplete attribute of string, multiline and number fields', async () => {

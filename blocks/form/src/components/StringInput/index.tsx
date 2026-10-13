@@ -67,7 +67,11 @@ export function StringInput({
     autocomplete,
     control:
       format === 'password' ? (
-        <IconButton icon={hidePassword ? 'eye-slash' : 'eye'} onClick={toggleHidePassword} />
+        <IconButton
+          aria-label={utils.formatMessage(hidePassword ? 'showPassword' : 'hidePassword')}
+          icon={hidePassword ? 'eye-slash' : 'eye'}
+          onClick={toggleHidePassword}
+        />
       ) : undefined,
     className: classNames('appsemble-string', className),
     disabled,

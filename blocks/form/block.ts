@@ -1649,9 +1649,11 @@ declare module '@appsemble/sdk' {
     optionalLabel: never;
     fieldErrorLabel: never;
     formRequirementError: never;
+    hidePassword: never;
     invalidLabel: never;
     previousLabel: never;
     search: never;
+    showPassword: never;
     selectionAdd: { option: number | string };
     selectionClose: never;
     selectionNoOptions: never;

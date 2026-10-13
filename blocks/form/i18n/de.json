@@ -3,6 +3,7 @@
   "fieldErrorLabel": "Eine der Anforderungen in diesem Bereich ist ungültig.",
   "fixErrors": "Bitte beheben Sie die folgenden Fehler:",
   "formRequirementError": "Eine der Angaben in diesem Formular ist ungültig.",
+  "hidePassword": "Passwort verbergen",
   "invalidLabel": "Dieser Wert ist ungültig",
   "longSubmissionWarning": "Das Formular wird gerade übermittelt, bitte haben Sie einen Moment Geduld.",
   "optionalLabel": "(Optional)",
@@ -16,6 +17,7 @@
   "selectionOptionsError": "Beim Laden der Optionen ist ein Fehler aufgetreten.",
   "selectionRemove": "{option} entfernen",
   "selectionSelected": "{option} ausgewählt",
+  "showPassword": "Passwort anzeigen",
   "submitError": "Beim Absenden dieses Formulars ist ein Problem aufgetreten.",
   "submitLabel": "Absenden"
 }

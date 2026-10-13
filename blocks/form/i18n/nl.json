@@ -3,6 +3,7 @@
   "fieldErrorLabel": "Een van de vereisten op dit gebied is ongeldig.",
   "fixErrors": "Corrigeer de volgende fouten:",
   "formRequirementError": "Een van de velden in dit formulier is ongeldig.",
+  "hidePassword": "Wachtwoord verbergen",
   "invalidLabel": "Deze waarde is ongeldig",
   "longSubmissionWarning": "Het formulier wordt nog verzonden, even geduld a.u.b.",
   "optionalLabel": "(Optioneel)",
@@ -16,6 +17,7 @@
   "selectionOptionsError": "Er is een fout opgetreden bij het laden van de opties",
   "selectionRemove": "{option} verwijderen",
   "selectionSelected": "{option} geselecteerd",
+  "showPassword": "Wachtwoord tonen",
   "submitError": "Er is een probleem opgetreden bij het verzenden van dit formulier",
   "submitLabel": "Verzenden"
 }

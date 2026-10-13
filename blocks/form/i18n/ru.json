@@ -3,6 +3,7 @@
   "fieldErrorLabel": "Одно из требований в этой области является неверным.",
   "fixErrors": "Пожалуйста, исправьте следующие ошибки:",
   "formRequirementError": "Одно из полей этой формы заполнено некорректно.",
+  "hidePassword": "Скрыть пароль",
   "invalidLabel": "Это значение недопустимо",
   "longSubmissionWarning": "Форма находится в процессе отправки, пожалуйста, подождите.",
   "optionalLabel": "(Необязательно)",
@@ -16,6 +17,7 @@
   "selectionOptionsError": "Произошла ошибка при загрузке параметров",
   "selectionRemove": "Удалить {option}",
   "selectionSelected": "Выбрано: {option}",
+  "showPassword": "Показать пароль",
   "submitError": "Произошла ошибка при отправке этой формы",
   "submitLabel": "Отправить"
 }

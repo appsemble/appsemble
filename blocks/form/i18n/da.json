@@ -3,6 +3,7 @@
   "fieldErrorLabel": "Et af kravene i dette felt er ugyldigt.",
   "fixErrors": "Ret venligst følgende fejl:",
   "formRequirementError": "Et af kravene i denne formular er ugyldigt.",
+  "hidePassword": "Skjul adgangskode",
   "invalidLabel": "Denne værdi er ugyldig",
   "longSubmissionWarning": "Formularen sendes stadig, vent venligst.",
   "optionalLabel": "(Valgfrit)",
@@ -16,6 +17,7 @@
   "selectionOptionsError": "Der opstod en fejl under indlæsning af indstillingerne",
   "selectionRemove": "Fjern {option}",
   "selectionSelected": "Valgt {option}",
+  "showPassword": "Vis adgangskode",
   "submitError": "Der opstod et problem ved indsendelse af denne formular",
   "submitLabel": "Indsend"
 }
