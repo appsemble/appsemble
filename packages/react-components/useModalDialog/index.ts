@@ -2,49 +2,27 @@ import {
   createContext,
   type KeyboardEvent,
   type RefObject,
+  type SyntheticEvent,
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react';
 
 import styles from './index.module.css';
 
-const tabbableSelector = [
-  'a[href]',
-  'area[href]',
-  'audio[controls]',
-  'button',
-  'iframe',
-  'input:not([type="hidden"])',
-  'select',
-  'summary',
-  'textarea',
-  'video[controls]',
-  '[contenteditable]:not([contenteditable="false"])',
-  '[tabindex]',
-].join(',');
+/**
+ * The dialogs that are shown as modal dialogs, ordered from bottom to top.
+ */
+const modalDialogs: HTMLDialogElement[] = [];
 
 /**
- * The open modal dialogs, ordered from bottom to top.
+ * The functions to call when the modal dialogs change.
  */
-const openDialogs: HTMLElement[] = [];
-
-/**
- * The elements made inert to block the page underneath the topmost dialog.
- */
-let inertElements: Element[] = [];
-
-/**
- * Watches the ancestors of the topmost dialog, so content added behind it is made inert too.
- */
-let pageObserver: MutationObserver | undefined;
-
-/**
- * The dialog that currently blocks the page.
- */
-let blockingDialog: HTMLElement | undefined;
+const listeners = new Set<() => void>();
 
 /**
  * Whether the children are rendered inside a modal dialog.
@@ -63,69 +41,30 @@ export function useIsInModalDialog(): boolean {
   return useContext(ModalDialogContext);
 }
 
-/**
- * Find the topmost open dialog that is displayed.
- *
- * A dialog hidden using CSS, for example by a media query, can't be used, so it doesn't block the
- * page.
- *
- * @returns The dialog that should block the page.
- */
-function getTopmostDialog(): HTMLElement | undefined {
-  return openDialogs.findLast((dialog) => {
-    for (let element: Element | null = dialog; element; element = element.parentElement) {
-      if (getComputedStyle(element).display === 'none') {
-        return false;
-      }
-    }
-    return true;
-  });
+function subscribe(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function getTopmostModalDialog(): HTMLDialogElement | null {
+  return modalDialogs.at(-1) ?? null;
 }
 
 /**
- * Block everything except the topmost dialog for keyboard, pointer, and assistive technology users.
+ * Find the topmost modal dialog.
  *
- * Live regions stay available, so messages shown while a dialog is open are still announced.
+ * Content rendered outside of this dialog is blocked while it is open.
+ *
+ * @returns The topmost modal dialog, or null if no modal dialog is open.
  */
-function updatePageBehindDialogs(): void {
-  pageObserver?.disconnect();
-  for (const element of inertElements) {
-    element.removeAttribute('inert');
-  }
-  inertElements = [];
-
-  const dialog = getTopmostDialog();
-  blockingDialog = dialog;
-  document.documentElement.classList.toggle(styles['scroll-lock'], Boolean(dialog));
-  if (!dialog) {
-    return;
-  }
-
-  pageObserver ??= new MutationObserver(updatePageBehindDialogs);
-  let element = dialog;
-  while (element !== document.body && element.parentElement) {
-    const parent = element.parentElement;
-    pageObserver.observe(parent, { childList: true });
-    for (const sibling of parent.children) {
-      if (
-        sibling !== element &&
-        !sibling.hasAttribute('inert') &&
-        !sibling.matches('[aria-live]')
-      ) {
-        sibling.setAttribute('inert', '');
-        inertElements.push(sibling);
-      }
-    }
-    element = parent;
-  }
+export function useTopmostModalDialog(): HTMLDialogElement | null {
+  return useSyncExternalStore(subscribe, getTopmostModalDialog, getTopmostModalDialog);
 }
 
-/**
- * Update the blocked page when a media query shows or hides an open dialog.
- */
-function onWindowResize(): void {
-  if (getTopmostDialog() !== blockingDialog) {
-    updatePageBehindDialogs();
+function updateModalDialogs(): void {
+  document.documentElement.classList.toggle(styles['scroll-lock'], modalDialogs.length > 0);
+  for (const listener of listeners) {
+    listener();
   }
 }
 
@@ -143,28 +82,43 @@ function getActiveElement(): Element | null {
 }
 
 /**
- * Find the elements that can be reached using the tab key, including those inside shadow roots.
+ * Show an open dialog as a modal dialog.
  *
- * @param root The element or shadow root to search in.
- * @returns The tabbable elements in document order.
+ * Focus stays on an element inside the dialog that claimed focus using autoFocus.
+ *
+ * @param dialog The dialog to show.
  */
-function getTabbableElements(root: Element | ShadowRoot): HTMLElement[] {
-  const tabbable: HTMLElement[] = [];
-  for (const element of root.querySelectorAll<HTMLElement>('*')) {
-    if (
-      element.matches(tabbableSelector) &&
-      element.tabIndex >= 0 &&
-      !element.matches(':disabled') &&
-      !element.closest('[inert]') &&
-      element.checkVisibility({ visibilityProperty: true })
-    ) {
-      tabbable.push(element);
-    }
-    if (element.shadowRoot) {
-      tabbable.push(...getTabbableElements(element.shadowRoot));
-    }
+function showModalDialog(dialog: HTMLDialogElement): void {
+  const focused = dialog.contains(document.activeElement) ? getActiveElement() : null;
+  if (dialog.hasAttribute('popover')) {
+    dialog.hidePopover();
+    dialog.removeAttribute('popover');
   }
-  return tabbable;
+  dialog.close();
+  dialog.showModal();
+  if (focused instanceof HTMLElement) {
+    focused.focus();
+  }
+  modalDialogs.push(dialog);
+  updateModalDialogs();
+}
+
+/**
+ * Stop showing a dialog as a modal dialog.
+ *
+ * The dialog stays open as a manual popover, so it remains rendered on top of the page while it
+ * transitions out, without blocking the page.
+ *
+ * @param dialog The dialog to stop showing as a modal dialog.
+ */
+function closeModalDialog(dialog: HTMLDialogElement): void {
+  modalDialogs.splice(modalDialogs.indexOf(dialog), 1);
+  dialog.close();
+  // eslint-disable-next-line no-param-reassign
+  dialog.open = true;
+  dialog.setAttribute('popover', 'manual');
+  dialog.showPopover();
+  updateModalDialogs();
 }
 
 interface UseModalDialogOptions {
@@ -179,39 +133,58 @@ interface UseModalDialogOptions {
   isActive: boolean;
 
   /**
-   * A function that is called when the user closes the dialog using the escape key.
+   * A function that is called when the user closes the dialog using the escape key or another
+   * close request of the browser.
    */
-  onClose?: (event: KeyboardEvent) => void;
+  onClose?: (event: SyntheticEvent) => void;
 }
 
 interface UseModalDialogResult {
   /**
+   * The class name to apply on the dialog element.
+   */
+  className: string;
+
+  /**
+   * The cancel handler to apply on the dialog element.
+   */
+  onCancel: (event: SyntheticEvent<HTMLDialogElement>) => void;
+
+  /**
+   * The close handler to apply on the dialog element.
+   */
+  onClose: (event: SyntheticEvent<HTMLDialogElement>) => void;
+
+  /**
    * The keyboard handler to apply on the dialog element.
    */
-  onKeyDown: (event: KeyboardEvent) => void;
+  onKeyDown: (event: KeyboardEvent<HTMLDialogElement>) => void;
 
   /**
    * The ref to apply on the dialog element.
    */
-  ref: RefObject<HTMLDivElement>;
+  ref: RefObject<HTMLDialogElement>;
 }
 
 /**
- * Implement the keyboard and focus behavior of a modal dialog.
+ * Show an open dialog element as a modal dialog while it is active.
  *
- * While the dialog is open, the rest of the page is inert and can't be scrolled. Focus moves into
- * the dialog when it opens, stays inside it when tabbing, and returns to the element that opened
- * it when it closes.
+ * The browser renders the dialog on top of the page and blocks the page behind it. The page can't
+ * be scrolled while the dialog is open, and focus returns to the element that opened the dialog
+ * when it closes.
+ *
+ * A dialog hidden using CSS, for example by a media query, isn't shown as a modal dialog, so it
+ * doesn't block the page.
  *
  * @param options The options for the modal dialog.
- * @returns The ref and keyboard handler to apply on the dialog element.
+ * @returns The class name, ref, and event handlers to apply on the dialog element.
  */
 export function useModalDialog({
   closable,
   isActive,
   onClose,
 }: UseModalDialogOptions): UseModalDialogResult {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDialogElement>(null);
 
   // The opener is read during render, because elements inside the dialog may claim focus using
   // autoFocus before any effect runs.
@@ -224,25 +197,41 @@ export function useModalDialog({
     }
   }
 
+  useLayoutEffect(() => {
+    const dialog = ref.current;
+    if (!isActive || !dialog) {
+      return;
+    }
+
+    const update = (): void => {
+      const isDisplayed = dialog.checkVisibility();
+      if (isDisplayed && !modalDialogs.includes(dialog)) {
+        showModalDialog(dialog);
+      } else if (!isDisplayed && modalDialogs.includes(dialog)) {
+        closeModalDialog(dialog);
+      }
+    };
+
+    update();
+    window.addEventListener('resize', update);
+
+    return () => {
+      window.removeEventListener('resize', update);
+      if (modalDialogs.includes(dialog)) {
+        closeModalDialog(dialog);
+      }
+    };
+  }, [isActive]);
+
+  // Focus is returned in a passive effect, because React restores the focus it had before a commit
+  // after layout effects are cleaned up.
   useEffect(() => {
     const dialog = ref.current;
     if (!isActive || !dialog) {
       return;
     }
 
-    openDialogs.push(dialog);
-    window.addEventListener('resize', onWindowResize);
-    updatePageBehindDialogs();
-    if (!dialog.contains(document.activeElement)) {
-      dialog.focus();
-    }
-
     return () => {
-      openDialogs.splice(openDialogs.indexOf(dialog), 1);
-      if (!openDialogs.length) {
-        window.removeEventListener('resize', onWindowResize);
-      }
-      updatePageBehindDialogs();
       const { activeElement } = document;
       if (
         opener instanceof HTMLElement &&
@@ -254,40 +243,48 @@ export function useModalDialog({
   }, [isActive, opener]);
 
   const onKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const dialog = ref.current;
-      if (!dialog || getTopmostDialog() !== dialog || event.defaultPrevented) {
+    (event: KeyboardEvent<HTMLDialogElement>) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) {
         return;
       }
 
-      if (event.key === 'Escape') {
-        if (closable && onClose) {
-          event.preventDefault();
-          onClose(event);
-        }
-        return;
-      }
-
-      if (event.key !== 'Tab') {
-        return;
-      }
-
-      const tabbable = getTabbableElements(dialog);
-      const active = getActiveElement();
-      const first = tabbable.at(0);
-      const last = tabbable.at(-1);
-      if (!first || !last) {
-        event.preventDefault();
-      } else if (event.shiftKey && (active === first || active === dialog)) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && active === last) {
-        event.preventDefault();
-        first.focus();
+      // The dialog is closed by the parent component, not by the browser.
+      event.preventDefault();
+      if (closable) {
+        onClose?.(event);
       }
     },
     [closable, onClose],
   );
 
-  return { onKeyDown, ref };
+  const handleCancel = useCallback(
+    (event: SyntheticEvent<HTMLDialogElement>) => {
+      event.preventDefault();
+      if (closable) {
+        onClose?.(event);
+      }
+    },
+    [closable, onClose],
+  );
+
+  const handleClose = useCallback(
+    (event: SyntheticEvent<HTMLDialogElement>) => {
+      const dialog = event.currentTarget;
+      // The browser may close a modal dialog on a close request that can't be canceled. Dialogs
+      // that are open again by the time the close event is fired were closed by this hook.
+      if (dialog.open || !modalDialogs.includes(dialog)) {
+        return;
+      }
+
+      closeModalDialog(dialog);
+      if (closable) {
+        onClose?.(event);
+      } else {
+        showModalDialog(dialog);
+      }
+    },
+    [closable, onClose],
+  );
+
+  return { className: styles.dialog, onCancel: handleCancel, onClose: handleClose, onKeyDown, ref };
 }

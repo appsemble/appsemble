@@ -142,7 +142,7 @@ describe('block viewport mode', () => {
 });
 
 describe('float layout', () => {
-  it('should keep a float block in a dialog usable while the page behind it is blocked', async () => {
+  it('should render a float block in a dialog inside the dialog, so it is not blocked', async () => {
     blockVersion += 1;
     const block: BlockDefinition = {
       type: '@test/float-controls',
@@ -165,7 +165,6 @@ describe('float layout', () => {
     render(
       <IntlProvider locale="en">
         <MemoryRouter>
-          <button type="button">Behind</button>
           <ModalCard isActive>
             <Block
               appStorage={{} as AppStorage}
@@ -187,11 +186,9 @@ describe('float layout', () => {
       </IntlProvider>,
     );
 
-    const control = await waitFor(() => within(blockRoot).getByRole('button'));
-    expect(control.closest('[inert]')).toBeNull();
-    expect((blockRoot as unknown as ShadowRoot).host.closest('[inert]')).toBeNull();
-    expect(
-      screen.getByRole('button', { hidden: true, name: 'Behind' }).closest('[inert]'),
-    ).not.toBeNull();
+    await waitFor(() => within(blockRoot).getByRole('button'));
+    expect(screen.getByRole('dialog').contains((blockRoot as unknown as ShadowRoot).host)).toBe(
+      true,
+    );
   });
 });

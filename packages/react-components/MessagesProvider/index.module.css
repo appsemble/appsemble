@@ -28,7 +28,7 @@
   min-height: 64px;
   position: fixed;
   width: calc(100vw - 20px);
-  z-index: 6001; /* 1 more than the z-index of modals */
+  z-index: 6001; /* Above the page content, such as the navigation */
 }
 
 .deleteButton {

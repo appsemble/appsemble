@@ -1,11 +1,13 @@
 import { type BaseMessage } from '@appsemble/lang-sdk';
 import { createContext, type ReactNode, useCallback, useContext, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { Message, useForceUpdate } from '../index.js';
+import { useTopmostModalDialog } from '../useModalDialog/index.js';
 
 export interface Msg extends BaseMessage {
   /**
@@ -34,10 +36,14 @@ interface UniqueMessage extends Msg {
 
 /**
  * Render messages that may be pushed using {@link useMessages}.
+ *
+ * While a modal dialog is open, the messages are rendered inside the topmost dialog, because
+ * everything outside of it is blocked.
  */
 export function MessagesProvider({ children }: MessagesProviderProps): ReactNode {
   const { formatMessage } = useIntl();
   const forceUpdate = useForceUpdate();
+  const modalDialog = useTopmostModalDialog();
 
   // The counter is used as a key of messages.
   const counter = useRef(0);
@@ -71,45 +77,49 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
     [forceUpdate],
   );
 
+  const region = (
+    <div aria-live="polite" className={`${styles.root} mx-3`}>
+      <TransitionGroup>
+        {msgs.current.map((message) => (
+          <CSSTransition
+            classNames={{
+              enter: styles.messageEnter,
+              enterActive: styles.messageEnterActive,
+              exit: styles.messageExit,
+              exitActive: styles.messageExitActive,
+            }}
+            key={message.id}
+            timeout={300}
+          >
+            <Message
+              className={`${styles.content} ${styles[message.layout || 'bottom']}`}
+              color={message.color || 'danger'}
+            >
+              <span
+                className={styles.body}
+                role={(message.color || 'danger') === 'danger' ? 'alert' : undefined}
+              >
+                {message.body}
+              </span>
+              {message.dismissable ? (
+                <button
+                  aria-label={formatMessage(messages.dismiss)}
+                  className={`delete ${styles.deleteButton}`}
+                  onClick={message.dismiss}
+                  type="button"
+                />
+              ) : null}
+            </Message>
+          </CSSTransition>
+        ))}
+      </TransitionGroup>
+    </div>
+  );
+
   return (
     <Context.Provider value={push}>
       {children}
-      <div aria-live="polite" className={`${styles.root} mx-3`}>
-        <TransitionGroup>
-          {msgs.current.map((message) => (
-            <CSSTransition
-              classNames={{
-                enter: styles.messageEnter,
-                enterActive: styles.messageEnterActive,
-                exit: styles.messageExit,
-                exitActive: styles.messageExitActive,
-              }}
-              key={message.id}
-              timeout={300}
-            >
-              <Message
-                className={`${styles.content} ${styles[message.layout || 'bottom']}`}
-                color={message.color || 'danger'}
-              >
-                <span
-                  className={styles.body}
-                  role={(message.color || 'danger') === 'danger' ? 'alert' : undefined}
-                >
-                  {message.body}
-                </span>
-                {message.dismissable ? (
-                  <button
-                    aria-label={formatMessage(messages.dismiss)}
-                    className={`delete ${styles.deleteButton}`}
-                    onClick={message.dismiss}
-                    type="button"
-                  />
-                ) : null}
-              </Message>
-            </CSSTransition>
-          ))}
-        </TransitionGroup>
-      </div>
+      {modalDialog ? createPortal(region, modalDialog) : region}
     </Context.Provider>
   );
 }
