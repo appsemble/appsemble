@@ -3,7 +3,7 @@ import { EventEmitter } from 'node:events';
 import { type AppDefinition, type BlockDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
-import { ModalCard } from '@appsemble/react-components';
+import { MessagesProvider, ModalCard } from '@appsemble/react-components';
 import { noop } from '@appsemble/utils';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
@@ -22,11 +22,33 @@ import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistration
 let blockRoot: HTMLElement;
 let blockVersion = 0;
 
-function loadBlock({ shadowRoot, utils }: BootstrapParams): void {
+function loadControls({ shadowRoot, utils }: BootstrapParams): void {
   const button = document.createElement('button');
   button.textContent = utils.isMobile ? 'Move item up' : 'Drag item';
   shadowRoot.append(button);
   blockRoot = shadowRoot as unknown as HTMLElement;
+}
+
+let loadBlock = loadControls;
+
+/**
+ * Check whether an element is rendered inside a container, following slots into shadow roots.
+ *
+ * @param container The container to look for.
+ * @param element The element to check.
+ * @returns Whether the element is a flat tree descendant of the container.
+ */
+function isRenderedInside(container: Element, element: Element): boolean {
+  let node: Node | null = element;
+  while (node) {
+    if (node === container) {
+      return true;
+    }
+    node =
+      (node instanceof Element && node.assignedSlot) ||
+      (node instanceof ShadowRoot ? node.host : node.parentNode);
+  }
+  return false;
 }
 
 beforeEach(() => {
@@ -55,6 +77,7 @@ beforeEach(() => {
     {} as never,
   );
 
+  const bootstrap = (params: BootstrapParams): void => loadBlock(params);
   const appendHead = document.head.append.bind(document.head);
   vi.spyOn(document.head, 'append').mockImplementation((...nodes: (string | Node)[]) => {
     appendHead(...nodes);
@@ -63,7 +86,7 @@ beforeEach(() => {
         queueMicrotask(() => {
           Object.defineProperty(document, 'currentScript', { configurable: true, value: node });
           node.dispatchEvent(
-            new CustomEvent('AppsembleBootstrap', { detail: { document, fn: loadBlock } }),
+            new CustomEvent('AppsembleBootstrap', { detail: { document, fn: bootstrap } }),
           );
         });
       }
@@ -86,6 +109,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  loadBlock = loadControls;
   vi.unstubAllGlobals();
   document.head.innerHTML = '';
 });
@@ -190,5 +214,67 @@ describe('float layout', () => {
     expect(screen.getByRole('dialog').contains((blockRoot as unknown as ShadowRoot).host)).toBe(
       true,
     );
+  });
+});
+
+describe('modal dialogs', () => {
+  it('should show messages inside the modal dialog of a block', async () => {
+    let dialog: HTMLDialogElement;
+    loadBlock = ({ shadowRoot, utils }) => {
+      // This mirrors how the modals of @appsemble/preact-components tell the app they are shown.
+      dialog = document.createElement('dialog');
+      dialog.innerHTML = '<slot name="messages"></slot>';
+      shadowRoot.append(dialog);
+      dialog.showModal();
+      dialog.dispatchEvent(
+        new CustomEvent('AppsembleModalDialogShow', {
+          bubbles: true,
+          composed: true,
+          detail: { slot: 'messages' },
+        }),
+      );
+      utils.showMessage('Saving failed');
+    };
+    blockVersion += 1;
+    const block: BlockDefinition = { type: '@test/dialog', version: `1.0.${blockVersion}` };
+    const pageDefinition = { name: 'Home', blocks: [block] };
+    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Home',
+        pages: [pageDefinition],
+      } as AppDefinition,
+      demoMode: false,
+      revision: 1,
+      blockManifests: [
+        { name: block.type, version: block.version, files: ['dialog.js'] },
+      ] as BlockManifest[],
+    });
+    render(
+      <IntlProvider locale="en">
+        <MessagesProvider>
+          <MemoryRouter>
+            <Block
+              appStorage={{} as AppStorage}
+              block={block}
+              // eslint-disable-next-line unicorn/prefer-event-target
+              ee={new EventEmitter()}
+              flowActions={{}}
+              pageDefinition={pageDefinition}
+              pageReady={Promise.resolve()}
+              prefix="pages.home.blocks.0"
+              prefixIndex="pages.0.blocks.0"
+              ready={noop}
+              remap={noop}
+              showDialog={() => noop}
+              showShareDialog={() => Promise.resolve()}
+            />
+          </MemoryRouter>
+        </MessagesProvider>
+      </IntlProvider>,
+    );
+
+    const message = await screen.findByRole('alert');
+    expect(isRenderedInside(dialog!, message)).toBe(true);
   });
 });

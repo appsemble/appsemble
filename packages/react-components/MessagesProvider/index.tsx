@@ -7,7 +7,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { Message, useForceUpdate } from '../index.js';
-import { useTopmostModalDialog } from '../useModalDialog/index.js';
+import { type ModalDialog, useModalDialogs } from '../useModalDialog/index.js';
 
 export interface Msg extends BaseMessage {
   /**
@@ -35,15 +35,31 @@ interface UniqueMessage extends Msg {
 }
 
 /**
+ * The keys of the live regions rendered inside modal dialogs.
+ */
+const regionKeys = new WeakMap<ModalDialog, string>();
+let regionCount = 0;
+
+function getRegionKey(modalDialog: ModalDialog): string {
+  if (!regionKeys.has(modalDialog)) {
+    regionCount += 1;
+    regionKeys.set(modalDialog, String(regionCount));
+  }
+  return regionKeys.get(modalDialog)!;
+}
+
+/**
  * Render messages that may be pushed using {@link useMessages}.
  *
  * While a modal dialog is open, the messages are rendered inside the topmost dialog, because
- * everything outside of it is blocked.
+ * everything outside of it is blocked. Every modal dialog has its own live region, which is rendered
+ * as long as the dialog is shown, because screen readers only announce content that is added to an
+ * existing live region.
  */
 export function MessagesProvider({ children }: MessagesProviderProps): ReactNode {
   const { formatMessage } = useIntl();
   const forceUpdate = useForceUpdate();
-  const modalDialog = useTopmostModalDialog();
+  const modalDialogs = useModalDialogs();
 
   // The counter is used as a key of messages.
   const counter = useRef(0);
@@ -77,10 +93,10 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
     [forceUpdate],
   );
 
-  const region = (
-    <div aria-live="polite" className={`${styles.root} mx-3`}>
+  const renderRegion = (regionMessages: UniqueMessage[], slot?: string): ReactNode => (
+    <div aria-live="polite" className={`${styles.root} mx-3`} slot={slot}>
       <TransitionGroup>
-        {msgs.current.map((message) => (
+        {regionMessages.map((message) => (
           <CSSTransition
             classNames={{
               enter: styles.messageEnter,
@@ -119,7 +135,17 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
   return (
     <Context.Provider value={push}>
       {children}
-      {modalDialog ? createPortal(region, modalDialog) : region}
+      {renderRegion(modalDialogs.length ? [] : msgs.current)}
+      {modalDialogs.map((modalDialog, index) => {
+        const regionMessages = index === modalDialogs.length - 1 ? msgs.current : [];
+        const root = modalDialog.dialog.getRootNode();
+        // The shadow host renders content inside a dialog in its shadow root using a slot.
+        return createPortal(
+          renderRegion(regionMessages, modalDialog.slot),
+          root instanceof ShadowRoot ? root.host : modalDialog.dialog,
+          getRegionKey(modalDialog),
+        );
+      })}
     </Context.Provider>
   );
 }

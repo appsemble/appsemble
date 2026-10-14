@@ -117,6 +117,7 @@ export function Modal<T extends ElementType = 'div'>({
           type="button"
         />
       ) : null}
+      <slot name={dialogProps.slot} />
     </dialog>
   );
 }

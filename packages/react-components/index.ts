@@ -83,7 +83,7 @@ export * from './useQuery.js';
 export * from './useScrollTo.js';
 export * from './useToggle.js';
 export * from './useLocationString.js';
-export { useIsInModalDialog } from './useModalDialog/index.js';
+export { trackShadowModalDialogs, useIsInModalDialog } from './useModalDialog/index.js';
 export * from './ValuePickerProvider/index.js';
 export * from './Prompt/index.js';
 export * from './LogViewer/index.js';

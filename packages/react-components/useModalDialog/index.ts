@@ -14,10 +14,23 @@ import {
 
 import styles from './index.module.css';
 
+export interface ModalDialog {
+  /**
+   * The dialog element that is shown as a modal dialog.
+   */
+  dialog: HTMLDialogElement;
+
+  /**
+   * For a dialog inside a shadow root, the name of the slot in the dialog that renders the children
+   * of the shadow host with this slot name.
+   */
+  slot?: string;
+}
+
 /**
  * The dialogs that are shown as modal dialogs, ordered from bottom to top.
  */
-const modalDialogs: HTMLDialogElement[] = [];
+let modalDialogs: readonly ModalDialog[] = [];
 
 /**
  * The functions to call when the modal dialogs change.
@@ -46,26 +59,75 @@ function subscribe(listener: () => void): () => void {
   return () => listeners.delete(listener);
 }
 
-function getTopmostModalDialog(): HTMLDialogElement | null {
-  return modalDialogs.at(-1) ?? null;
+function getModalDialogs(): readonly ModalDialog[] {
+  return modalDialogs;
 }
 
 /**
- * Find the topmost modal dialog.
+ * Find the dialogs that are shown as modal dialogs.
  *
- * Content rendered outside of this dialog is blocked while it is open.
+ * Content rendered outside of the topmost dialog is blocked while it is open.
  *
- * @returns The topmost modal dialog, or null if no modal dialog is open.
+ * @returns The modal dialogs, ordered from bottom to top.
  */
-export function useTopmostModalDialog(): HTMLDialogElement | null {
-  return useSyncExternalStore(subscribe, getTopmostModalDialog, getTopmostModalDialog);
+export function useModalDialogs(): readonly ModalDialog[] {
+  return useSyncExternalStore(subscribe, getModalDialogs, getModalDialogs);
 }
 
-function updateModalDialogs(): void {
+function isModalDialog(dialog: HTMLDialogElement): boolean {
+  return modalDialogs.some((modalDialog) => modalDialog.dialog === dialog);
+}
+
+function setModalDialogs(dialogs: readonly ModalDialog[]): void {
+  modalDialogs = dialogs;
   document.documentElement.classList.toggle(styles['scroll-lock'], modalDialogs.length > 0);
   for (const listener of listeners) {
     listener();
   }
+}
+
+function removeModalDialog(dialog: HTMLDialogElement): void {
+  setModalDialogs(modalDialogs.filter((modalDialog) => modalDialog.dialog !== dialog));
+}
+
+/**
+ * Track the modal dialogs inside the shadow root of an element.
+ *
+ * A dialog inside the shadow root dispatches a composed `AppsembleModalDialogShow` event when it is
+ * shown as a modal dialog, and a composed `AppsembleModalDialogClose` event when it stops being shown
+ * as a modal dialog. The detail of the show event contains the name of a slot in the dialog, so
+ * content can be rendered inside the dialog by the shadow host.
+ *
+ * @param host The shadow host whose modal dialogs to track.
+ * @returns A function that stops tracking the modal dialogs, and removes the ones that are shown.
+ */
+export function trackShadowModalDialogs(host: Element): () => void {
+  const dialogs = new Set<HTMLDialogElement>();
+
+  const onShow = (event: Event): void => {
+    const [dialog] = event.composedPath() as HTMLDialogElement[];
+    const { slot } = (event as CustomEvent<{ slot: string }>).detail;
+    dialogs.add(dialog);
+    setModalDialogs([...modalDialogs, { dialog, slot }]);
+  };
+
+  const onClose = (event: Event): void => {
+    const [dialog] = event.composedPath() as HTMLDialogElement[];
+    dialogs.delete(dialog);
+    removeModalDialog(dialog);
+  };
+
+  host.addEventListener('AppsembleModalDialogShow', onShow);
+  host.addEventListener('AppsembleModalDialogClose', onClose);
+
+  return () => {
+    host.removeEventListener('AppsembleModalDialogShow', onShow);
+    host.removeEventListener('AppsembleModalDialogClose', onClose);
+    for (const dialog of dialogs) {
+      removeModalDialog(dialog);
+    }
+    dialogs.clear();
+  };
 }
 
 /**
@@ -99,8 +161,7 @@ function showModalDialog(dialog: HTMLDialogElement): void {
   if (focused instanceof HTMLElement) {
     focused.focus();
   }
-  modalDialogs.push(dialog);
-  updateModalDialogs();
+  setModalDialogs([...modalDialogs, { dialog }]);
 }
 
 /**
@@ -112,13 +173,12 @@ function showModalDialog(dialog: HTMLDialogElement): void {
  * @param dialog The dialog to stop showing as a modal dialog.
  */
 function closeModalDialog(dialog: HTMLDialogElement): void {
-  modalDialogs.splice(modalDialogs.indexOf(dialog), 1);
   dialog.close();
   // eslint-disable-next-line no-param-reassign
   dialog.open = true;
   dialog.setAttribute('popover', 'manual');
   dialog.showPopover();
-  updateModalDialogs();
+  removeModalDialog(dialog);
 }
 
 interface UseModalDialogOptions {
@@ -205,9 +265,9 @@ export function useModalDialog({
 
     const update = (): void => {
       const isDisplayed = dialog.checkVisibility();
-      if (isDisplayed && !modalDialogs.includes(dialog)) {
+      if (isDisplayed && !isModalDialog(dialog)) {
         showModalDialog(dialog);
-      } else if (!isDisplayed && modalDialogs.includes(dialog)) {
+      } else if (!isDisplayed && isModalDialog(dialog)) {
         closeModalDialog(dialog);
       }
     };
@@ -217,7 +277,7 @@ export function useModalDialog({
 
     return () => {
       window.removeEventListener('resize', update);
-      if (modalDialogs.includes(dialog)) {
+      if (isModalDialog(dialog)) {
         closeModalDialog(dialog);
       }
     };
@@ -272,7 +332,7 @@ export function useModalDialog({
       const dialog = event.currentTarget;
       // The browser may close a modal dialog on a close request that can't be canceled. Dialogs
       // that are open again by the time the close event is fired were closed by this hook.
-      if (dialog.open || !modalDialogs.includes(dialog)) {
+      if (dialog.open || !isModalDialog(dialog)) {
         return;
       }
 

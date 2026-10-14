@@ -41,6 +41,9 @@ exports[`should render a bulma modal when it is active 1`] = `
         />
       </div>
     </div>
+    <slot
+      name="P0-1"
+    />
   </dialog>
 </div>
 `;

@@ -7,7 +7,12 @@ import {
   type PageDefinition,
   type Remapper,
 } from '@appsemble/lang-sdk';
-import { Title, useIsInModalDialog, useMessages } from '@appsemble/react-components';
+import {
+  Title,
+  trackShadowModalDialogs,
+  useIsInModalDialog,
+  useMessages,
+} from '@appsemble/react-components';
 import { type BlockUtils } from '@appsemble/sdk';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import { createIconElement, fa, resolveIcon } from '@appsemble/web-utils';
@@ -162,6 +167,9 @@ export function Block({
     setInitialized(true);
 
     const shadowRoot = div?.attachShadow({ mode: 'open' });
+    if (div) {
+      cleanups.current.push(trackShadowModalDialogs(div));
+    }
 
     // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     const events = createEvents(ee, pageReady, manifest.events, block.events);

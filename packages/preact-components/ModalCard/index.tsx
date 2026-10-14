@@ -142,6 +142,7 @@ export function ModalCard<T extends ElementType = 'div'>({
           {footer || <div className={styles['footer-placeholder']} />}
         </div>
       </Component>
+      <slot name={dialogProps.slot} />
     </dialog>
   );
 }

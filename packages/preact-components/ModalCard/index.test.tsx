@@ -1,7 +1,7 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/preact';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
 import { type VNode } from 'preact';
 import { useState } from 'preact/hooks';
-import { expect, it, vi } from 'vitest';
+import { expect, it, onTestFinished, vi } from 'vitest';
 
 import { ModalCard } from './index.js';
 
@@ -154,4 +154,53 @@ it('should name the dialog by its title', () => {
     </ModalCard>,
   );
   expect(screen.getByRole('dialog', { name: 'Edit lamp' })).not.toBeNull();
+});
+
+function createShadowContainer(): { container: HTMLElement; host: HTMLElement } {
+  const host = document.createElement('div');
+  document.body.append(host);
+  onTestFinished(() => host.remove());
+  const container = document.createElement('div');
+  host.attachShadow({ mode: 'open' }).append(container);
+  return { container, host };
+}
+
+it('should let the shadow host render content inside the modal dialog', () => {
+  const { container, host } = createShadowContainer();
+  let slot = '';
+  host.addEventListener('AppsembleModalDialogShow', (event) => {
+    ({ slot } = (event as CustomEvent<{ slot: string }>).detail);
+  });
+  render(
+    <ModalCard closeButtonLabel="Close" isActive>
+      test
+    </ModalCard>,
+    { container },
+  );
+
+  const content = document.createElement('span');
+  content.slot = slot;
+  host.append(content);
+
+  expect(within(container).getByRole('dialog').contains(content.assignedSlot)).toBe(true);
+});
+
+it('should tell the shadow host when it stops being shown as a modal dialog', () => {
+  const { container, host } = createShadowContainer();
+  const closeEvents: Event[] = [];
+  host.addEventListener('AppsembleModalDialogClose', (event) => closeEvents.push(event));
+  const { rerender } = render(
+    <ModalCard closeButtonLabel="Close" isActive>
+      test
+    </ModalCard>,
+    { container },
+  );
+
+  rerender(
+    <ModalCard closeButtonLabel="Close" isActive={false}>
+      test
+    </ModalCard>,
+  );
+
+  expect(closeEvents).toHaveLength(1);
 });
