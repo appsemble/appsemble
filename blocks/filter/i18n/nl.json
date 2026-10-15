@@ -1,5 +1,8 @@
 {
   "clearLabel": "Duidelijk",
+  "closeLabel": "Sluit filter",
   "modalTitle": "Filter",
+  "sliderMaximum": "Maximum",
+  "sliderMinimum": "Minimum",
   "submitLabel": "Filter"
 }

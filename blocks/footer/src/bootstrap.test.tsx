@@ -29,9 +29,11 @@ const data: FooterData = {
 function setup({
   actions = {},
   columns = [],
+  copyright = { prop: 'copyright' },
 }: {
   actions?: Record<string, any>;
   columns?: any[];
+  copyright?: unknown;
 }): ReturnType<typeof render> & { ready: ReturnType<typeof vi.fn> } {
   const ready = vi.fn();
   const props = {
@@ -42,7 +44,7 @@ function setup({
       alignment: 'center',
       backgroundColor: 'dark',
       columns,
-      copyright: { prop: 'copyright' },
+      copyright,
       linkColor: 'primary',
       textColor: 'light',
     },
@@ -94,6 +96,30 @@ it('renders remapped footer content with semantic headings and configured colors
   expect(container.querySelector('footer')?.className).toContain('has-background-dark');
   expect(screen.getByText('Visible information').className).toContain('has-text-light');
   expect(ready).toHaveBeenCalledExactlyOnceWith();
+});
+
+it('renders the copyright as a link when the remapper returns a label and link', () => {
+  setup({
+    copyright: {
+      'object.from': { label: { prop: 'copyright' }, link: 'https://appsemble.com' },
+    },
+  });
+
+  const link = screen.getByRole('link', { name: 'Copyright Appsemble' });
+  expect(link.getAttribute('href')).toBe('https://appsemble.com');
+  expect(link.className).toContain('has-text-primary');
+});
+
+it('renders the copyright as text when its link uses an unsafe scheme', () => {
+  setup({
+    copyright: {
+      // eslint-disable-next-line no-script-url
+      'object.from': { label: { prop: 'copyright' }, link: 'javascript:alert(1)' },
+    },
+  });
+
+  expect(screen.getByText('Copyright Appsemble')).toBeDefined();
+  expect(screen.queryByRole('link', { name: 'Copyright Appsemble' })).toBeNull();
 });
 
 it('delegates link actions to the action instead of navigating', async () => {
@@ -178,11 +204,11 @@ it('opens and closes downloadable image enlargements', async () => {
   });
 
   await userEvent.click(screen.getByRole('button', { name: 'Appsemble logo' }));
-  expect(await screen.findByRole('button', { name: 'Download in HD' })).toBeDefined();
+  expect(await screen.findByRole('button', { name: 'downloadImage' })).toBeDefined();
 
   await userEvent.click(screen.getByRole('button', { name: 'closeImage' }));
   await waitFor(() => {
-    expect(screen.queryByRole('button', { name: 'Download in HD' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'downloadImage' })).toBeNull();
   });
 });
 

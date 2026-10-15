@@ -1,5 +1,8 @@
 {
   "clearLabel": "Klar",
+  "closeLabel": "",
   "modalTitle": "Filter",
+  "sliderMaximum": "",
+  "sliderMinimum": "",
   "submitLabel": "Filter"
 }

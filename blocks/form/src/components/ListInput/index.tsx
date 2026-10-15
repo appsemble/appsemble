@@ -163,6 +163,7 @@ export function ListInput({
       inline={inline}
       label={(utils.remap(label, value) as string) ?? name}
       name={name}
+      optionalLabel={utils.formatMessage('optionalLabel')}
       required={required}
       tag={tag}
     >

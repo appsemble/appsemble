@@ -84,21 +84,28 @@ export function Dropdown({
     >
       <div className="dropdown-trigger">
         {asButton ? (
-          <Button aria-haspopup icon={icon} onClick={handleClick} onKeyDown={onKeyDown}>
+          <Button
+            aria-expanded={enabled}
+            aria-haspopup
+            icon={icon}
+            onClick={handleClick}
+            onKeyDown={onKeyDown}
+          >
             {label}
           </Button>
         ) : (
-          // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
-          <div
+          <button
+            aria-expanded={enabled}
             aria-haspopup
+            className={styles.trigger}
             onClick={handleClick}
             onKeyDown={onKeyDown}
-            role="button"
-            tabIndex={-1}
+            type="button"
           >
             {/* @ts-expect-error strictNullChecks not assignable to type */}
             <Icon className={iconClassName} icon={icon} />
-          </div>
+            <span className="is-sr-only">{label}</span>
+          </button>
         )}
       </div>
       <div

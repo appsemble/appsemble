@@ -284,6 +284,21 @@ declare module '@appsemble/sdk' {
      * The text on the button that is used to submit the checked data.
      */
     submitChecked: never;
+
+    /**
+     * The accessible label for closing an enlarged image.
+     */
+    closeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
+
+    /**
+     * The accessible label of the loader shown while data loads.
+     */
+    loading: never;
   }
   interface Parameters {
     /**

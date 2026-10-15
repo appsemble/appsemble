@@ -74,11 +74,23 @@ interface ImageComponentProps {
    * @default true
    */
   readonly openPreview?: boolean;
+
+  /**
+   * The accessible label of the button that closes the preview.
+   */
+  readonly closeButtonLabel: string;
+
+  /**
+   * The accessible label of the button that downloads the image from the preview.
+   */
+  readonly downloadLabel: string;
 }
 
 export function ImageComponent({
   alt,
   aspectRatio = 'square',
+  closeButtonLabel,
+  downloadLabel,
   id,
   openPreview = true,
   rounded,
@@ -169,8 +181,12 @@ export function ImageComponent({
               />
             </figure>
           </button>
-          <Modal isActive={modal.enabled} onClose={modal.disable}>
-            <AppAssetDownloadButton src={src} />
+          <Modal
+            closeButtonLabel={closeButtonLabel}
+            isActive={modal.enabled}
+            onClose={modal.disable}
+          >
+            <AppAssetDownloadButton label={downloadLabel} src={src} />
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions */}
             <figure
               className="image"
@@ -178,7 +194,7 @@ export function ImageComponent({
                 e.stopPropagation();
               }}
             >
-              <img alt="list icon" src={src} />
+              <img alt={alt} src={src} />
             </figure>
           </Modal>
         </>

@@ -1,5 +1,9 @@
 {
+  "closeImage": "",
+  "downloadImage": "",
   "error": "Došlo je do pogreške pri dohvaćanju podataka.",
+  "loading": "",
+  "moreOptions": "",
   "noData": "Nema dostupnih podataka.",
   "toggleList": ""
 }

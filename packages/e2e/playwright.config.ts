@@ -17,7 +17,8 @@ export default defineConfig({
   // Amount of workers to run tests with
   workers: CI ? 2 : 1,
   // Reporter to use. See https://playwright.dev/docs/test-reporters
-  reporter: [['junit', { outputFile: 'results.xml' }]],
+  // Written to the repository root, so attachment paths resolve against the CI job artifacts
+  reporter: [['junit', { outputFile: '../../junit.xml' }]],
   // Prevent the pipeline from timing out
   maxFailures: 6,
   // Overall test timeout - increased for CI stability with cold server starts

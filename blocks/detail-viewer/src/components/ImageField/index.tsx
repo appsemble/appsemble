@@ -33,8 +33,12 @@ export function ImageField({
           <img alt={alt} className={`${styles.img} ${rounded && 'is-rounded'}`} src={src} />
         </figure>
       </button>
-      <Modal isActive={modal.enabled} onClose={modal.disable}>
-        <AppAssetDownloadButton src={src} />
+      <Modal
+        closeButtonLabel={utils.formatMessage('closeImage')}
+        isActive={modal.enabled}
+        onClose={modal.disable}
+      >
+        <AppAssetDownloadButton label={utils.formatMessage('downloadImage')} src={src} />
         <figure className="image">
           <img alt={alt} src={src} />
         </figure>

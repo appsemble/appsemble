@@ -20,6 +20,16 @@ declare module '@appsemble/sdk' {
      * The accessible name of the control that selects a new image.
      */
     changeImage: never;
+
+    /**
+     * The accessible label for closing an enlarged image.
+     */
+    closeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
   }
 
   interface Parameters {

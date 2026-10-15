@@ -1,4 +1,5 @@
 name: pdf-viewer
+description: An app demonstrating how PDF files can be displayed
 defaultPage: PDF Viewer
 pages:
   - name: PDF Viewer

@@ -154,6 +154,31 @@ declare module '@appsemble/sdk' {
      * The label that’s displayed when feed data cannot be loaded due to missing permissions.
      */
     permissionDeniedLabel: never;
+
+    /**
+     * The accessible label for closing an enlarged image.
+     */
+    closeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
+
+    /**
+     * The accessible label of the loader shown while data loads.
+     */
+    loading: never;
+
+    /**
+     * The accessible name of a map.
+     */
+    map: never;
+
+    /**
+     * The accessible name of a dropdown without a label.
+     */
+    moreOptions: never;
   }
 
   interface Parameters {
