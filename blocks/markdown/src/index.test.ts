@@ -87,6 +87,14 @@ it('stops loading without rendering a placeholder when the data event has no dat
   expect(node.textContent).toBe('');
 });
 
+it('clears rendered content when a data event has no data', async () => {
+  const { node, update } = await setup({ content: '**Bluetooth is ready**' });
+
+  update(null);
+
+  expect(node.textContent).toBe('');
+});
+
 it('renders initial content without requiring a data listener', async () => {
   const { node } = await setup({ content: 'Open **Bluetooth settings**.' }, false);
 
