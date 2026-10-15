@@ -486,6 +486,26 @@ declare module '@appsemble/sdk' {
      * The accessible name of the button that expands and collapses a list without a title.
      */
     toggleList: never;
+
+    /**
+     * The accessible label for closing an enlarged image.
+     */
+    closeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
+
+    /**
+     * The accessible label of the loader shown while data loads.
+     */
+    loading: never;
+
+    /**
+     * The accessible name of a dropdown without a label.
+     */
+    moreOptions: never;
   }
 
   interface Parameters {

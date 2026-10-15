@@ -1,10 +1,14 @@
 {
+  "closeImage": "",
+  "closeVideo": "",
   "confirmLabel": "Confirmer",
+  "downloadImage": "",
   "fieldErrorLabel": "L'une des exigences de ce champ n'est pas valide.",
   "fixErrors": "Veuillez corriger les erreurs suivantes :",
   "formRequirementError": "L'une des données saisies dans ce formulaire n'est pas valide.",
   "hidePassword": "Masquer le mot de passe",
   "invalidLabel": "Cette valeur n'est pas valide",
+  "loading": "",
   "longSubmissionWarning": "Le formulaire est en cours d'envoi, veuillez patienter.",
   "optionalLabel": "(Facultatif)",
   "previousLabel": "Précédent",
@@ -18,6 +22,8 @@
   "selectionRemove": "Retirer {option}",
   "selectionSelected": "Sélectionné : {option}",
   "showPassword": "Afficher le mot de passe",
+  "sliderMaximum": "",
+  "sliderMinimum": "",
   "submitError": "Une erreur s'est produite lors de l'envoi de ce formulaire",
   "submitLabel": "Envoyer"
 }

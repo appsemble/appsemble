@@ -65,9 +65,15 @@ it('should download the original asset for Appsemble asset URLs', async () => {
     value: revokeObjectURL,
   });
 
-  render(<AppAssetDownloadButton src="/api/apps/1/assets/course-image?width=128&height=128" />, {
-    wrapper: Provider,
-  });
+  render(
+    <AppAssetDownloadButton
+      label="Download in HD"
+      src="/api/apps/1/assets/course-image?width=128&height=128"
+    />,
+    {
+      wrapper: Provider,
+    },
+  );
 
   await userEvent.click(screen.getByRole('button', { name: 'Download in HD' }));
 
@@ -81,7 +87,9 @@ it('should download the original asset for Appsemble asset URLs', async () => {
 });
 
 it('should not render for external image URLs', () => {
-  render(<AppAssetDownloadButton src="https://example.com/course-image.png" />);
+  render(
+    <AppAssetDownloadButton label="Download in HD" src="https://example.com/course-image.png" />,
+  );
 
   expect(screen.queryByRole('button', { name: 'Download in HD' })).toBeNull();
 });

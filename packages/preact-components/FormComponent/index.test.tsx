@@ -42,7 +42,7 @@ function documentOrder(elements: Record<string, Element>): string[] {
 
 it('should render a form component with children elements', () => {
   render(
-    <FormComponent>
+    <FormComponent optionalLabel="(Optional)">
       <Input />
       <Input />
     </FormComponent>,
@@ -53,7 +53,7 @@ it('should render a form component with children elements', () => {
 
 it('should render a help text', () => {
   render(
-    <FormComponent help="test text">
+    <FormComponent help="test text" optionalLabel="(Optional)">
       <Input />
       <Input />
     </FormComponent>,
@@ -66,7 +66,7 @@ it('should render a help text', () => {
 
 it('should not render a help text if disableHelp is set to true', () => {
   render(
-    <FormComponent disableHelp help="test text">
+    <FormComponent disableHelp help="test text" optionalLabel="(Optional)">
       <Input />
       <Input />
     </FormComponent>,
@@ -76,7 +76,7 @@ it('should not render a help text if disableHelp is set to true', () => {
 
 it('should render error text with a status icon', () => {
   render(
-    <FormComponent error="this is an error">
+    <FormComponent error="this is an error" optionalLabel="(Optional)">
       <Input />
       <Input />
     </FormComponent>,
@@ -89,7 +89,7 @@ it('should render error text with a status icon', () => {
 
 it('should render detailed help text', () => {
   render(
-    <FormComponent help="help" helpExtra="this is detailed help">
+    <FormComponent help="help" helpExtra="this is detailed help" optionalLabel="(Optional)">
       <Input />
       <Input />
     </FormComponent>,
@@ -109,20 +109,9 @@ it('should render the specified optional label if the field has a label', () => 
   expect(optionalLabel.textContent).toBe('Optional label');
 });
 
-it('should render the default optional label', () => {
-  render(
-    <FormComponent label="test label">
-      <Input />
-      <Input />
-    </FormComponent>,
-  );
-  const optionalLabel = screen.getByTestId('tag-formcomp');
-  expect(optionalLabel.textContent).toBe('(Optional)');
-});
-
 it('should render a label', () => {
   render(
-    <FormComponent label="test label" required>
+    <FormComponent label="test label" optionalLabel="(Optional)" required>
       <Input />
     </FormComponent>,
   );
@@ -133,7 +122,7 @@ it('should render a label', () => {
 
 it('should describe a valid input by its help text', () => {
   render(
-    <FormComponent help="Enter your full name" id="name" label="Name">
+    <FormComponent help="Enter your full name" id="name" label="Name" optionalLabel="(Optional)">
       <Input id="name" />
     </FormComponent>,
   );
@@ -149,6 +138,7 @@ it('should mark an input with an error as invalid and describe it by the error',
       help="Enter your full name"
       id="name"
       label="Name"
+      optionalLabel="(Optional)"
     >
       <Input id="name" />
     </FormComponent>,
@@ -161,7 +151,13 @@ it('should mark an input with an error as invalid and describe it by the error',
 
 it('should not describe an input if the help is disabled', () => {
   render(
-    <FormComponent disableHelp help="Enter your full name" id="name" label="Name">
+    <FormComponent
+      disableHelp
+      help="Enter your full name"
+      id="name"
+      label="Name"
+      optionalLabel="(Optional)"
+    >
       <Input id="name" />
     </FormComponent>,
   );
@@ -176,6 +172,7 @@ it('should render the help text and error between the label and the input if hel
       helpExtra="0 / 20"
       id="name"
       label="Name"
+      optionalLabel="(Optional)"
     >
       <Input id="name" />
     </FormComponent>,
@@ -197,7 +194,7 @@ it('should render the help text and error between the label and the input if hel
 
 it('should describe a valid input by its help text if help is above', () => {
   render(
-    <FormComponent help="Enter your full name" id="name" label="Name">
+    <FormComponent help="Enter your full name" id="name" label="Name" optionalLabel="(Optional)">
       <Input id="name" />
     </FormComponent>,
     { wrapper: HelpAboveProvider },
@@ -213,7 +210,7 @@ it('should describe a valid input by its help text if help is above', () => {
 
 it('should render the error of a form component error above its controls if help is above', () => {
   render(
-    <FormComponent help="Choose a size" id="size" label="Size">
+    <FormComponent help="Choose a size" id="size" label="Size" optionalLabel="(Optional)">
       <FormComponentError error="Size is required">
         <Input id="size" />
       </FormComponentError>
@@ -235,7 +232,7 @@ it('should render the error of a form component error above its controls if help
 
 it('should render the error of a form component error below its controls by default', () => {
   render(
-    <FormComponent help="Choose a size" id="size" label="Size">
+    <FormComponent help="Choose a size" id="size" label="Size" optionalLabel="(Optional)">
       <FormComponentError error="Size is required">
         <Input id="size" />
       </FormComponentError>

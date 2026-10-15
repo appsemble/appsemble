@@ -359,6 +359,9 @@ Commonly used with a filter.",
     "error": {
       "description": "This message is displayed if there was a problem loading the data.",
     },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
+    },
     "noData": {
       "description": "This message is displayed if no data was to be found.",
     },
@@ -908,7 +911,20 @@ Compatible data that is received will be displayed.",
       },
     },
   },
-  "messages": undefined,
+  "messages": {
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
+    },
+    "map": {
+      "description": "The accessible name of a map.",
+    },
+  },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
@@ -1366,8 +1382,23 @@ Compatible data that is received will be displayed.",
     "anonymousLabel": {
       "description": "The name to display for replies without known user names.",
     },
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
     "emptyLabel": {
       "description": "The label that’s displayed when there are no feed items available.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
+    },
+    "map": {
+      "description": "The accessible name of a map.",
+    },
+    "moreOptions": {
+      "description": "The accessible name of a dropdown without a label.",
     },
     "permissionDeniedLabel": {
       "description": "The label that’s displayed when feed data cannot be loaded due to missing permissions.",
@@ -1665,8 +1696,17 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
     "clearLabel": {
       "description": "The label of the clear button.",
     },
+    "closeLabel": {
+      "description": "The accessible label for closing the filter modal.",
+    },
     "modalTitle": {
       "description": "The title of the modal.",
+    },
+    "sliderMaximum": {
+      "description": "The accessible label of the upper handle of a range slider.",
+    },
+    "sliderMinimum": {
+      "description": "The accessible label of the lower handle of a range slider.",
     },
     "submitLabel": {
       "description": "The label of the filter button.",
@@ -2207,6 +2247,9 @@ exports[`config > getProjectImplementations > official blocks > footer 1`] = `
     "closeImage": {
       "description": "The accessible label for closing an enlarged image.",
     },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
     "enlargeImage": {
       "description": "The accessible label for enlarging an image without alt text.",
     },
@@ -2450,7 +2493,16 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     },
   },
   "messages": {
+    "closeImage": {
+      "description": undefined,
+    },
+    "closeVideo": {
+      "description": undefined,
+    },
     "confirmLabel": {
+      "description": undefined,
+    },
+    "downloadImage": {
       "description": undefined,
     },
     "fieldErrorLabel": {
@@ -2466,6 +2518,9 @@ Include an array of fields in \`fields\` to replace the current list of fields i
       "description": undefined,
     },
     "invalidLabel": {
+      "description": undefined,
+    },
+    "loading": {
       "description": undefined,
     },
     "longSubmissionWarning": {
@@ -2505,6 +2560,12 @@ Include an array of fields in \`fields\` to replace the current list of fields i
       "description": undefined,
     },
     "showPassword": {
+      "description": undefined,
+    },
+    "sliderMaximum": {
+      "description": undefined,
+    },
+    "sliderMinimum": {
       "description": undefined,
     },
     "submitError": {
@@ -5743,6 +5804,12 @@ Compatible data that is received will be displayed.",
     "changeImage": {
       "description": "The accessible name of the control that selects a new image.",
     },
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
   },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -5866,8 +5933,20 @@ Commonly used with a filter.",
     },
   },
   "messages": {
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
     "error": {
       "description": "The text that is shown when something went wrong with fetching the data.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
+    },
+    "moreOptions": {
+      "description": "The accessible name of a dropdown without a label.",
     },
     "noData": {
       "description": "The text that is shown when no data was found.",
@@ -7818,11 +7897,20 @@ This does not trigger if the field has a different action specified.",
     },
   },
   "messages": {
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
     "emptyMessage": {
       "description": "The message to display when the data to display is empty.",
     },
     "error": {
       "description": "The message to display when data could not be loaded.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
     },
     "submitChecked": {
       "description": "The text on the button that is used to submit the checked data.",

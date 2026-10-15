@@ -47,7 +47,7 @@ export function Cards({
   }, [blockData, events.on.data]);
 
   if (loading) {
-    return <Loader />;
+    return <Loader label={utils.formatMessage('loading')} />;
   }
 
   if (hideOnNoData && !data?.length) {

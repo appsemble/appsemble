@@ -7,7 +7,7 @@ import { Field } from './components/Field/index.js';
 import { FieldGroup } from './components/FieldGroup/index.js';
 import styles from './index.module.css';
 
-bootstrap(({ data: blockData, events, parameters, ready }) => {
+bootstrap(({ data: blockData, events, parameters, ready, utils }) => {
   const [data, setData] = useState(blockData);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +21,7 @@ bootstrap(({ data: blockData, events, parameters, ready }) => {
   }, [events, ready]);
 
   if (loading) {
-    return <Loader />;
+    return <Loader label={utils.formatMessage('loading')} />;
   }
 
   return (

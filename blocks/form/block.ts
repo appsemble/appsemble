@@ -1664,6 +1664,12 @@ declare module '@appsemble/sdk' {
     longSubmissionWarning: never;
     removeFile: never;
     resetLocation: never;
+    closeImage: never;
+    closeVideo: never;
+    downloadImage: never;
+    loading: never;
+    sliderMaximum: never;
+    sliderMinimum: never;
   }
 
   interface Parameters {

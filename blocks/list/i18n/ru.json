@@ -1,5 +1,9 @@
 {
+  "closeImage": "",
+  "downloadImage": "",
   "error": "При получении данных произошла ошибка.",
+  "loading": "",
+  "moreOptions": "",
   "noData": "Данных нет.",
   "toggleList": ""
 }

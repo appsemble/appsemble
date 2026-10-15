@@ -4,13 +4,17 @@ import { expect, it, vi } from 'vitest';
 import { Modal } from './index.js';
 
 it('should not render a bulma modal when it is inactive', () => {
-  const { container } = render(<Modal isActive={false}>test</Modal>);
+  const { container } = render(
+    <Modal closeButtonLabel="Close" isActive={false}>
+      test
+    </Modal>,
+  );
   expect(container).toMatchSnapshot();
 });
 
 it('should render a bulma modal when it is active', () => {
   const { container } = render(
-    <Modal className="is-hidden-desktop" isActive>
+    <Modal className="is-hidden-desktop" closeButtonLabel="Close" isActive>
       test
     </Modal>,
   );
@@ -31,7 +35,7 @@ it('should close the modal when the close button is clicked', () => {
 it('should close the modal when the background is clicked', () => {
   const onClose = vi.fn();
   const { getByRole } = render(
-    <Modal isActive onClose={() => onClose()}>
+    <Modal closeButtonLabel="Close" isActive onClose={() => onClose()}>
       test
     </Modal>,
   );
@@ -42,7 +46,7 @@ it('should close the modal when the background is clicked', () => {
 it('should close the modal escape is pressed on the background', () => {
   const onClose = vi.fn();
   const { getByRole } = render(
-    <Modal isActive onClose={() => onClose()}>
+    <Modal closeButtonLabel="Close" isActive onClose={() => onClose()}>
       test
     </Modal>,
   );
@@ -53,7 +57,7 @@ it('should close the modal escape is pressed on the background', () => {
 it('should not close the modal another key is pressed on the background', () => {
   const onClose = vi.fn();
   const { getByRole } = render(
-    <Modal isActive onClose={() => onClose()}>
+    <Modal closeButtonLabel="Close" isActive onClose={() => onClose()}>
       test
     </Modal>,
   );

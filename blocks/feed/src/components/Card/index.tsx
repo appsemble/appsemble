@@ -203,6 +203,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         {(latitude && longitude) != null && marker ? (
           <Location
             className={styles.location}
+            label={utils.formatMessage('map')}
             latitude={latitude as number}
             longitude={longitude as number}
             mapOptions={{

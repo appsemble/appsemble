@@ -60,10 +60,8 @@ export interface SharedFormComponentProps {
 
   /**
    * The label used for optional fields.
-   *
-   * @default '(Optional)'
    */
-  optionalLabel?: ComponentChild;
+  optionalLabel: ComponentChild;
 
   /**
    * The name for the HTML element.
@@ -105,6 +103,11 @@ export interface FormComponentProps extends SharedFormComponentProps {
    * Whether or not the help section should be rendered.
    */
   disableHelp?: boolean;
+
+  /**
+   * The id of the label element, for controls that reference it using `aria-labelledby`.
+   */
+  labelId?: string;
 }
 
 /**
@@ -198,7 +201,8 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
       id,
       inline,
       label,
-      optionalLabel = '(Optional)',
+      labelId,
+      optionalLabel,
       required,
       tag,
     },
@@ -257,7 +261,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
         ref={ref}
       >
         {label ? (
-          <label className="label" data-testid="label-formcomp" htmlFor={id}>
+          <label className="label" data-testid="label-formcomp" htmlFor={id} id={labelId}>
             {label}
             {!required || tag ? (
               <span className="is-pulled-right has-text-weight-normal" data-testid="tag-formcomp">

@@ -29,7 +29,7 @@ interface DropdownComponentProps {
 
 export function DropdownComponent({ field, index, item, record }: DropdownComponentProps): VNode {
   const {
-    utils: { remap },
+    utils: { formatMessage, remap },
   } = useBlock();
 
   return (
@@ -37,7 +37,7 @@ export function DropdownComponent({ field, index, item, record }: DropdownCompon
       asButton={false}
       icon={field.icon}
       iconClassName="is-align-items-center p-4 box"
-      label={remap(field.label, item, { index }) as string}
+      label={(remap(field.label, item, { index }) as string) || formatMessage('moreOptions')}
     >
       {field.options.map((option, i) => {
         const label = remap(option.label, item, { index });

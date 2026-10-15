@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { FormComponent, Icon, type SharedFormComponentProps } from '@appsemble/preact-components';
+import { FormComponent, Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -10,8 +10,7 @@ import styles from './index.module.css';
 import { type GeoCoordinatesField, type InputProps } from '../../../block.js';
 import { isRequired } from '../../utils/requirements.js';
 
-type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField> &
-  SharedFormComponentProps;
+type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField>;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.

@@ -10,6 +10,7 @@ const context = createExampleContext(new URL('https://example.com/en/example'), 
 const block = {
   utils: {
     asset: (id: string) => id,
+    formatMessage: (message: string) => message,
     remap: (remapper: Remapper, data: unknown) => remap(remapper, data, context),
   },
 } as BlockProps;

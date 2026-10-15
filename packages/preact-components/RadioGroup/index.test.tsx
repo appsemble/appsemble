@@ -20,7 +20,7 @@ it('should render a RadioGroup', () => {
   const onChange = vi.fn();
   render(
     <div data-testid="radio-group-comp-parent">
-      <RadioGroup onChange={onChange} value="hmm">
+      <RadioGroup onChange={onChange} optionalLabel="(Optional)" value="hmm">
         <RadioButton value="hmm">Hmm</RadioButton>
         <RadioButton value="hmm2">Hmm2</RadioButton>
       </RadioGroup>
@@ -34,7 +34,7 @@ it('should render a RadioGroup', () => {
 it('should fire the onChange function', () => {
   const onChange = vi.fn();
   render(
-    <RadioGroup onChange={onChange} value="hmm">
+    <RadioGroup onChange={onChange} optionalLabel="(Optional)" value="hmm">
       <RadioButton id="radio-1" value="hmm">
         Hmm
       </RadioButton>
@@ -50,7 +50,7 @@ it('should fire the onChange function', () => {
 it('should render an error message', () => {
   const onChange = vi.fn();
   const { container } = render(
-    <RadioGroup error onChange={onChange} value="hmm">
+    <RadioGroup error onChange={onChange} optionalLabel="(Optional)" value="hmm">
       <RadioButton id="radio-1" value="hmm">
         Hmm
       </RadioButton>
@@ -65,7 +65,13 @@ it('should render an error message', () => {
 
 it('should mark the radio buttons as invalid and describe them by the error', () => {
   render(
-    <RadioGroup error="Pick an option" name="choice" onChange={vi.fn()} value="hmm">
+    <RadioGroup
+      error="Pick an option"
+      name="choice"
+      onChange={vi.fn()}
+      optionalLabel="(Optional)"
+      value="hmm"
+    >
       <RadioButton id="radio-1" value="hmm">
         Hmm
       </RadioButton>
@@ -83,7 +89,7 @@ it('should mark the radio buttons as invalid and describe them by the error', ()
 
 it('should not mark the radio buttons as invalid without an error', () => {
   render(
-    <RadioGroup name="choice" onChange={vi.fn()} value="hmm">
+    <RadioGroup name="choice" onChange={vi.fn()} optionalLabel="(Optional)" value="hmm">
       <RadioButton id="radio-1" value="hmm">
         Hmm
       </RadioButton>
@@ -95,4 +101,19 @@ it('should not mark the radio buttons as invalid without an error', () => {
   for (const radio of screen.getAllByRole('radio')) {
     expect(radio.getAttribute('aria-invalid')).toBeNull();
   }
+});
+
+it('should group the radio buttons under its label', () => {
+  render(
+    <RadioGroup label="Favorite fruit" onChange={vi.fn()} optionalLabel="(Optional)" value="apple">
+      <RadioButton id="radio-apple" value="apple">
+        Apple
+      </RadioButton>
+      <RadioButton id="radio-pear" value="pear">
+        Pear
+      </RadioButton>
+    </RadioGroup>,
+  );
+  const group = screen.getByRole('radiogroup', { name: /Favorite fruit/ });
+  expect(group.contains(screen.getByLabelText('Pear'))).toBe(true);
 });
