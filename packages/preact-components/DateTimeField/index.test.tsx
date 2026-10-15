@@ -24,6 +24,7 @@ it('should mark the alternative input as invalid and describe it by the error', 
       label="Date"
       locale="en"
       name="date"
+      optionalLabel="(Optional)"
       value=""
     />,
     { wrapper: Provider },
@@ -41,6 +42,7 @@ it('should mark the alternative input as invalid and describe it by the error', 
       label="Date"
       locale="en"
       name="date"
+      optionalLabel="(Optional)"
       value=""
     />,
   );

@@ -6,7 +6,6 @@ import styles from './index.module.css';
 import { Icon } from '../Icon/index.js';
 
 const appAssetPattern = /^(?:https?:\/\/[^/]+)?\/api\/apps\/\d+\/assets\/[^#/?]+/;
-const downloadTitle = 'Download in HD';
 
 function getOriginalAssetURL(url: string): string {
   return `${url.split(/[#?]/)[0]}/download`;
@@ -27,10 +26,15 @@ async function downloadAsset(url: string): Promise<void> {
 }
 
 interface AppAssetDownloadButtonProps {
+  /**
+   * The accessible label and tooltip of the button.
+   */
+  readonly label: string;
+
   readonly src: string;
 }
 
-export function AppAssetDownloadButton({ src }: AppAssetDownloadButtonProps): VNode | null {
+export function AppAssetDownloadButton({ label, src }: AppAssetDownloadButtonProps): VNode | null {
   const downloadUrl = appAssetPattern.test(src) ? getOriginalAssetURL(src) : null;
 
   const handleDownloadClick = useCallback(
@@ -46,10 +50,10 @@ export function AppAssetDownloadButton({ src }: AppAssetDownloadButtonProps): VN
 
   return downloadUrl ? (
     <button
-      aria-label={downloadTitle}
+      aria-label={label}
       className={styles.root}
       onClick={handleDownloadClick}
-      title={downloadTitle}
+      title={label}
       type="button"
     >
       <Icon icon="download" />

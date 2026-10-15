@@ -1,3 +1,4 @@
+import { useBlock } from '@appsemble/preact';
 import { AppAssetDownloadButton, Modal, useToggle } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
 
@@ -21,6 +22,7 @@ interface CardImageProps {
 }
 
 export function CardImage({ alt, className, src }: CardImageProps): VNode {
+  const { utils } = useBlock();
   const modal = useToggle();
 
   return (
@@ -34,8 +36,12 @@ export function CardImage({ alt, className, src }: CardImageProps): VNode {
           <img alt={alt} className={styles.image} src={src} />
         </figure>
       </button>
-      <Modal isActive={modal.enabled} onClose={modal.disable}>
-        <AppAssetDownloadButton src={src} />
+      <Modal
+        closeButtonLabel={utils.formatMessage('closeImage')}
+        isActive={modal.enabled}
+        onClose={modal.disable}
+      >
+        <AppAssetDownloadButton label={utils.formatMessage('downloadImage')} src={src} />
         <figure className="image">
           <img alt={alt} src={src} />
         </figure>

@@ -1,10 +1,14 @@
 {
+  "closeImage": "Close enlarged image",
+  "closeVideo": "Close video preview",
   "confirmLabel": "Confirm",
+  "downloadImage": "Download in HD",
   "fieldErrorLabel": "One of the requirements of this field is invalid.",
   "fixErrors": "Please fix the following errors:",
   "formRequirementError": "One of the requirements of this form is invalid.",
   "hidePassword": "Hide password",
   "invalidLabel": "This value is invalid",
+  "loading": "Loading",
   "longSubmissionWarning": "The form is still being submitted, please wait.",
   "optionalLabel": "(Optional)",
   "previousLabel": "Previous",
@@ -18,6 +22,8 @@
   "selectionRemove": "Remove {option}",
   "selectionSelected": "Selected {option}",
   "showPassword": "Show password",
+  "sliderMaximum": "Maximum",
+  "sliderMinimum": "Minimum",
   "submitError": "There was a problem submitting this form",
   "submitLabel": "Submit"
 }

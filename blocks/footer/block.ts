@@ -106,6 +106,11 @@ declare module '@appsemble/sdk' {
      * The accessible label for enlarging an image without alt text.
      */
     enlargeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
   }
 
   interface Parameters {

@@ -189,7 +189,7 @@ export function SelectionInput({
       >
         {!disableSearch && <Input className="mb-2" onChange={handleSearch} />}
         {loading ? (
-          <Loader />
+          <Loader label={utils.formatMessage('loading')} />
         ) : optionsError ? (
           <Message className="mt-4 mr-6 mb-4 ml-5" color="danger">
             <span>

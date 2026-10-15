@@ -204,11 +204,11 @@ it('opens and closes downloadable image enlargements', async () => {
   });
 
   await userEvent.click(screen.getByRole('button', { name: 'Appsemble logo' }));
-  expect(await screen.findByRole('button', { name: 'Download in HD' })).toBeDefined();
+  expect(await screen.findByRole('button', { name: 'downloadImage' })).toBeDefined();
 
   await userEvent.click(screen.getByRole('button', { name: 'closeImage' }));
   await waitFor(() => {
-    expect(screen.queryByRole('button', { name: 'Download in HD' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'downloadImage' })).toBeNull();
   });
 });
 

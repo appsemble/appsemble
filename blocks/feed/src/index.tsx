@@ -12,7 +12,7 @@ interface Item {
   photos: string[];
 }
 
-bootstrap(({ events, ready }) => {
+bootstrap(({ events, ready, utils }) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Item[]>([]);
   const [permissionDenied, setPermissionDenied] = useState(false);
@@ -37,7 +37,7 @@ bootstrap(({ events, ready }) => {
   }, [events, loadData, ready]);
 
   if (loading) {
-    return <Loader />;
+    return <Loader label={utils.formatMessage('loading')} />;
   }
 
   if (!data.length) {

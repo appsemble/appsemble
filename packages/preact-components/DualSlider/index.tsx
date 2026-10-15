@@ -25,6 +25,11 @@ export interface DualSliderProps extends Omit<
   readonly hasIcon?: boolean;
 
   /**
+   * The accessible labels of the lower and upper handle.
+   */
+  readonly handleLabels: [string, string];
+
+  /**
    * This is fired when the input value has changed.
    *
    * If the input type is `number`, the value is a number, otherwise it is a string.
@@ -45,6 +50,7 @@ export function DualSlider({
   name,
   id = name,
   from = 0,
+  handleLabels,
   hasIcon,
   onChange,
   to = 100,
@@ -62,6 +68,7 @@ export function DualSlider({
       noUiSlider.create(sliderRef.current as HTMLDivElement, {
         start: [from, to],
         connect: true,
+        handleAttributes: handleLabels.map((label) => ({ 'aria-label': label })),
         range: {
           min: from,
           max: to,
@@ -83,7 +90,7 @@ export function DualSlider({
         onChange?.(event, [min, max] as [number, number]);
       });
     }
-  }, [from, to, onChange, name]);
+  }, [from, to, onChange, name, handleLabels]);
 
   const combinedRef = useCombinedRefs(sliderRef, errorLinkRef as MutableRef<HTMLDivElement>);
 

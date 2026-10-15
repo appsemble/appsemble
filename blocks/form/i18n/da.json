@@ -1,10 +1,14 @@
 {
+  "closeImage": "",
+  "closeVideo": "",
   "confirmLabel": "Bekræft",
+  "downloadImage": "",
   "fieldErrorLabel": "Et af kravene i dette felt er ugyldigt.",
   "fixErrors": "Ret venligst følgende fejl:",
   "formRequirementError": "Et af kravene i denne formular er ugyldigt.",
   "hidePassword": "Skjul adgangskode",
   "invalidLabel": "Denne værdi er ugyldig",
+  "loading": "",
   "longSubmissionWarning": "Formularen sendes stadig, vent venligst.",
   "optionalLabel": "(Valgfrit)",
   "previousLabel": "Forrige",
@@ -18,6 +22,8 @@
   "selectionRemove": "Fjern {option}",
   "selectionSelected": "Valgt {option}",
   "showPassword": "Vis adgangskode",
+  "sliderMaximum": "",
+  "sliderMinimum": "",
   "submitError": "Der opstod et problem ved indsendelse af denne formular",
   "submitLabel": "Indsend"
 }

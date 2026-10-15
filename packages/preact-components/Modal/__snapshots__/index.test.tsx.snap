@@ -17,6 +17,7 @@ exports[`should render a bulma modal when it is active 1`] = `
       test
     </div>
     <button
+      aria-label="Close"
       class="modal-close is-large"
       type="button"
     />

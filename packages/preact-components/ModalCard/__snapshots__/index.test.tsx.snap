@@ -21,6 +21,7 @@ exports[`should render a bulma modal when it is active 1`] = `
           class="modal-card-title"
         />
         <button
+          aria-label="Close"
           class="delete is-large"
           type="button"
         />

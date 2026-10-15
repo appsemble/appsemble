@@ -70,7 +70,7 @@ it('should download original feed images from previews', async () => {
   });
 
   await userEvent.click(screen.getByRole('button', { name: 'Feed image' }));
-  await userEvent.click(screen.getByRole('button', { name: 'Download in HD' }));
+  await userEvent.click(screen.getByRole('button', { name: 'downloadImage' }));
 
   await waitFor(() => {
     expect(fetch).toHaveBeenCalledWith('http://localhost/api/apps/1/assets/feed-image/download');
