@@ -147,7 +147,7 @@
     "strip-indent": "4.1.1",
     "validate-vat": "0.9.0",
     "vitest": "4.1.11",
-    "xpath": "0.0.34"
+    "xpath": "0.0.35"
   },
   "peerDependencies": {
     "webpack": "^5"
