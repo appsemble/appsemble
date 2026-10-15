@@ -222,7 +222,10 @@ build docker image:
   stage: build
   script:
     - CACHE_IMAGE="$CI_REGISTRY_IMAGE/cache:$CI_COMMIT_REF_SLUG"
-    - docker buildx create --use
+    # Buildx refuses to create a builder from the TLS environment the docker image sets for dind,
+    # so the builder runs on a context created from it.
+    - docker context create ci
+    - docker buildx create --use ci
     - docker buildx build
       -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
       --cache-from "type=registry,ref=$CACHE_IMAGE"
