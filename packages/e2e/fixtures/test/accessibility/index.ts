@@ -1,3 +1,5 @@
+import { writeFile } from 'node:fs/promises';
+
 import { AxeBuilder } from '@axe-core/playwright';
 import { test as base } from '@playwright/test';
 
@@ -72,7 +74,8 @@ export interface AccessibilityFixtures {
    * penalty per failing rule, regardless of how many elements fail it: 10 for critical, 7 for
    * serious, 3 for moderate and 1 for minor violations, with a minimum of 0.
    *
-   * The report is attached to the test as `accessibility.json`.
+   * The report is attached to the test as `accessibility.json`, and the app score is added as the
+   * `accessibility score` annotation, which the JUnit reporter writes as a test case property.
    *
    * @param options Options for the crawl. `maxPages` limits the number of scanned pages, 50 by
    *   default.
@@ -148,10 +151,13 @@ export const test = base.extend<AccessibilityFixtures>({
         score: Math.round(pages.reduce((sum, { score }) => sum + score, 0) / pages.length),
         pages,
       };
+      const reportPath = testInfo.outputPath('accessibility.json');
+      await writeFile(reportPath, JSON.stringify(report, null, 2));
       await testInfo.attach('accessibility.json', {
-        body: JSON.stringify(report, null, 2),
+        path: reportPath,
         contentType: 'application/json',
       });
+      testInfo.annotations.push({ type: 'accessibility score', description: String(report.score) });
 
       return report;
     });

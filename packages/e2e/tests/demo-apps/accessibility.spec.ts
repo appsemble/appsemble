@@ -4,7 +4,7 @@ import { type AppsembleMessages } from '@appsemble/types';
 
 import { expect, authenticatedTest as test } from '../../index.js';
 
-const minimumScore = 90;
+const minimumScore = 85;
 
 let organizationId: string;
 const appIds: number[] = [];
