@@ -1,0 +1,4 @@
+.scroll-lock {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}

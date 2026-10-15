@@ -106,6 +106,11 @@ declare module '@appsemble/sdk' {
      * The accessible label for enlarging an image without alt text.
      */
     enlargeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
   }
 
   interface Parameters {
@@ -141,6 +146,9 @@ declare module '@appsemble/sdk' {
 
     /**
      * Copyright text to be rendered at the bottom.
+     *
+     * If this resolves to an object with a `label` and a `link`, the copyright is rendered as a
+     * link. The link must be relative or use the `http`, `https`, `mailto`, or `tel` scheme.
      */
     copyright?: Remapper;
   }

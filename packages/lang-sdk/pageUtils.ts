@@ -1,7 +1,7 @@
 import { findPageByName } from './findPageByName.js';
 import { normalize } from './normalize.js';
 import { type MessageGetter } from './remap.js';
-import { type PageDefinition, type PageParentDefinition } from './types/index.js';
+import { type PageDefinition, type PageParentDefinition, type Remapper } from './types/index.js';
 
 type NamedPage = Pick<PageDefinition, 'name'>;
 
@@ -160,4 +160,16 @@ export function getPageAncestors(
   }
 
   return ancestors;
+}
+
+/**
+ * Check whether or not the given link represents a link related to the Appsemble core.
+ *
+ * @param link The link to check
+ * @returns Whether or not the given link represents a link related to the Appsemble core.
+ */
+export function isAppLink(link: Remapper | string[] | string): link is `/${TranslatableRoute}` {
+  return (
+    link === '/Login' || link === '/Settings' || link === '/Register' || link === '/Reset-Password'
+  );
 }

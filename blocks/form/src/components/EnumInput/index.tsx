@@ -237,6 +237,7 @@ export function EnumInput({
             onChange={filterChange}
             onClick={toggle}
             onKeyDown={onKeyDown}
+            optionalLabel={utils.formatMessage('optionalLabel')}
             placeholder={utils.remap(placeholder, {}) as string}
             readOnly={readOnly}
             required={required}

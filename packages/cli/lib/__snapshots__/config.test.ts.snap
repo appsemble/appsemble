@@ -281,6 +281,12 @@ Will not render if undefined.",
             "description": "Whether the button should display its colors in the outlines.",
             "type": "boolean",
           },
+          "pressed": {
+            "description": "Whether this toggle button is pressed, based on the current data.
+
+Omit this for ordinary action buttons. Pressed state is exposed as \`aria-pressed\`.",
+            "format": "remapper",
+          },
           "rounded": {
             "description": "Whether the button should be rounded.",
             "type": "boolean",
@@ -352,6 +358,9 @@ Commonly used with a filter.",
   "messages": {
     "error": {
       "description": "This message is displayed if there was a problem loading the data.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
     },
     "noData": {
       "description": "This message is displayed if no data was to be found.",
@@ -902,7 +911,20 @@ Compatible data that is received will be displayed.",
       },
     },
   },
-  "messages": undefined,
+  "messages": {
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
+    },
+    "map": {
+      "description": "The accessible name of a map.",
+    },
+  },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
@@ -1360,8 +1382,23 @@ Compatible data that is received will be displayed.",
     "anonymousLabel": {
       "description": "The name to display for replies without known user names.",
     },
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
     "emptyLabel": {
       "description": "The label that’s displayed when there are no feed items available.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
+    },
+    "map": {
+      "description": "The accessible name of a map.",
+    },
+    "moreOptions": {
+      "description": "The accessible name of a dropdown without a label.",
     },
     "permissionDeniedLabel": {
       "description": "The label that’s displayed when feed data cannot be loaded due to missing permissions.",
@@ -1659,8 +1696,17 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
     "clearLabel": {
       "description": "The label of the clear button.",
     },
+    "closeLabel": {
+      "description": "The accessible label for closing the filter modal.",
+    },
     "modalTitle": {
       "description": "The title of the modal.",
+    },
+    "sliderMaximum": {
+      "description": "The accessible label of the upper handle of a range slider.",
+    },
+    "sliderMinimum": {
+      "description": "The accessible label of the lower handle of a range slider.",
     },
     "submitLabel": {
       "description": "The label of the filter button.",
@@ -2201,6 +2247,9 @@ exports[`config > getProjectImplementations > official blocks > footer 1`] = `
     "closeImage": {
       "description": "The accessible label for closing an enlarged image.",
     },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
     "enlargeImage": {
       "description": "The accessible label for enlarging an image without alt text.",
     },
@@ -2372,7 +2421,9 @@ file can either be url or uploaded image",
         "type": "array",
       },
       "copyright": {
-        "description": "Copyright text to be rendered at the bottom.",
+        "description": "Copyright text to be rendered at the bottom.
+
+If this resolves to an object with a \`label\` and a \`link\`, the copyright is rendered as a link. The link must be relative or use the \`http\`, \`https\`, \`mailto\`, or \`tel\` scheme.",
         "format": "remapper",
       },
       "linkColor": {
@@ -2442,7 +2493,16 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     },
   },
   "messages": {
+    "closeImage": {
+      "description": undefined,
+    },
+    "closeVideo": {
+      "description": undefined,
+    },
     "confirmLabel": {
+      "description": undefined,
+    },
+    "downloadImage": {
       "description": undefined,
     },
     "fieldErrorLabel": {
@@ -2454,7 +2514,13 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "formRequirementError": {
       "description": undefined,
     },
+    "hidePassword": {
+      "description": undefined,
+    },
     "invalidLabel": {
+      "description": undefined,
+    },
+    "loading": {
       "description": undefined,
     },
     "longSubmissionWarning": {
@@ -2475,10 +2541,31 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "search": {
       "description": undefined,
     },
+    "selectionAdd": {
+      "description": undefined,
+    },
+    "selectionClose": {
+      "description": undefined,
+    },
     "selectionNoOptions": {
       "description": undefined,
     },
     "selectionOptionsError": {
+      "description": undefined,
+    },
+    "selectionRemove": {
+      "description": undefined,
+    },
+    "selectionSelected": {
+      "description": undefined,
+    },
+    "showPassword": {
+      "description": undefined,
+    },
+    "sliderMaximum": {
+      "description": undefined,
+    },
+    "sliderMinimum": {
       "description": undefined,
     },
     "submitError": {
@@ -4204,6 +4291,17 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A number entry field.",
         "properties": {
+          "autocomplete": {
+            "description": "The HTML \`autocomplete\` attribute of the input, which tells browsers and assistive technology what data the field asks for, so they can fill it in.
+
+This is ignored if \`display\` is \`slider\`.
+
+See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens) for the supported values.",
+            "examples": [
+              "bday-year",
+            ],
+            "type": "string",
+          },
           "bottomLabels": {
             "description": "If \`display\` is set to \`slider\`, these labels are displayed evenly spaced below the slider.",
             "items": {
@@ -4925,6 +5023,15 @@ For example, the [\`regex\`](#RegexRequirement) requirement type allows you to v
 
 \`\`\`yaml type: string requirements:   - regex: \\w+@appsemble\\.com     errorMessage: Value does not end with “@appsemble.com” \`\`\`",
         "properties": {
+          "autocomplete": {
+            "description": "The HTML \`autocomplete\` attribute of the input, which tells browsers and assistive technology what data the field asks for, so they can fill it in.
+
+See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens) for the supported values.",
+            "examples": [
+              "email",
+            ],
+            "type": "string",
+          },
           "datalist": {
             "default": [],
             "description": "Used to display a static html datalist for the field",
@@ -5556,6 +5663,17 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "default": "flex",
         "description": "How the form fields should be displayed.",
       },
+      "errorSummaryPosition": {
+        "default": "bottom",
+        "description": "Where the summary of invalid fields is shown after a submit fails validation.
+
+With \`bottom\`, the summary is shown above the submit button and links to the first invalid field. With \`top\`, the summary is shown at the top of the form and links to every invalid field in the order of the fields. It is scrolled into view and focused when a submit fails validation.",
+        "enum": [
+          "bottom",
+          "top",
+        ],
+        "type": "string",
+      },
       "fields": {
         "description": "A list of objects describing each field that can be entered in the form.",
         "items": {
@@ -5569,9 +5687,20 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "description": "Weather the form should take up all available width on the page.",
         "type": "boolean",
       },
+      "helpPosition": {
+        "default": "below",
+        "description": "Where the help text and the error message of each field are shown.
+
+With \`below\`, they are shown below the input, and the error message replaces the help text. With \`above\`, they are shown between the label and the input, with the error message below the help text.",
+        "enum": [
+          "above",
+          "below",
+        ],
+        "type": "string",
+      },
       "hideErrorSummary": {
         "default": false,
-        "description": "Whether the summary of invalid fields above the submit button should not be visible.
+        "description": "Whether the summary of invalid fields should not be visible.
 
 Each field still shows its own error message.",
         "format": "remapper",
@@ -5692,6 +5821,12 @@ Compatible data that is received will be displayed.",
   "messages": {
     "changeImage": {
       "description": "The accessible name of the control that selects a new image.",
+    },
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
     },
   },
   "parameters": {
@@ -5816,8 +5951,20 @@ Commonly used with a filter.",
     },
   },
   "messages": {
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
     "error": {
       "description": "The text that is shown when something went wrong with fetching the data.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
+    },
+    "moreOptions": {
+      "description": "The accessible name of a dropdown without a label.",
     },
     "noData": {
       "description": "The text that is shown when no data was found.",
@@ -7768,11 +7915,20 @@ This does not trigger if the field has a different action specified.",
     },
   },
   "messages": {
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
     "emptyMessage": {
       "description": "The message to display when the data to display is empty.",
     },
     "error": {
       "description": "The message to display when data could not be loaded.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
     },
     "submitChecked": {
       "description": "The text on the button that is used to submit the checked data.",

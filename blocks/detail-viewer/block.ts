@@ -253,6 +253,28 @@ export interface RendererProps<F extends Field> {
 }
 
 declare module '@appsemble/sdk' {
+  interface Messages {
+    /**
+     * The accessible label for closing an enlarged image.
+     */
+    closeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
+
+    /**
+     * The accessible label of the loader shown while data loads.
+     */
+    loading: never;
+
+    /**
+     * The accessible name of a map.
+     */
+    map: never;
+  }
+
   interface Parameters {
     /**
      * A list of fields to display based on the name from the schema.

@@ -4,6 +4,7 @@ import { registerMarkerDataProvider } from 'monaco-marker-data-provider';
 import { createWorkerManager } from 'monaco-worker-manager';
 
 import { type AppValidationWorker } from './worker.js';
+import '../contributions.js';
 
 export const appValidationLabel = 'appValidation';
 

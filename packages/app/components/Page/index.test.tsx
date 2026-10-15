@@ -1,11 +1,13 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { type BootstrapParams } from '@appsemble/sdk';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Page } from './index.js';
+import * as bootstrapper from '../../utils/bootstrapper.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
@@ -53,10 +55,10 @@ function mockApp(definition: AppDefinition): void {
   } as never);
 }
 
-function renderApp(): void {
+function renderApp(path = '/en/home'): void {
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/home']}>
+      <MemoryRouter initialEntries={[path]}>
         <MenuProvider>
           <VerifyBanner />
           <Routes>
@@ -201,6 +203,51 @@ it('should leave its navigation behind when a built-in page replaces it', async 
 
   await waitFor(() => expect(screen.getByText('Settings')).not.toBeNull());
   expect(document.querySelector('nav.bottom-nav')).toBeNull();
+});
+
+it('should resolve tab.name to its own tab when the tab list arrives after the tab rendered', async () => {
+  const topics = [{ name: 'Alpha' }, { name: 'Beta' }];
+  vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+    definition: {
+      name: 'Test App',
+      defaultPage: 'Topics',
+      pages: [
+        {
+          name: 'Topics',
+          type: 'tabs',
+          actions: { onLoad: { type: 'event', event: 'topics', remapBefore: { static: topics } } },
+          definition: {
+            events: { listen: { data: 'topics' } },
+            foreach: {
+              name: { prop: 'name' },
+              blocks: [{ ...block, events: { emit: { data: 'topics' } } }],
+            },
+          },
+        },
+      ],
+    } as AppDefinition,
+    demoMode: false,
+    revision: 1,
+    blockManifests: [{ ...blockManifests[0], events: { emit: { data: {} } } }],
+    pageManifests: { events: { listen: { data: {} } } },
+  } as never);
+  let tabBlock: BootstrapParams | undefined;
+  vi.spyOn(bootstrapper, 'callBootstrap').mockImplementation((manifest, params) => {
+    tabBlock = params;
+    return Promise.resolve();
+  });
+  renderApp('/en/topics/beta');
+  await waitFor(() => expect(tabBlock).toBeDefined());
+
+  let tabName: unknown;
+  await act(async () => {
+    // The tab list loads again while the Beta tab is shown. The block reads its tab name right
+    // after the list arrived, before the tabs page renders it.
+    await tabBlock!.events.emit.data(topics);
+    tabName = tabBlock!.utils.remap({ 'tab.name': null }, null);
+  });
+
+  expect(tabName).toBe('Beta');
 });
 
 describe('reserved grid areas', () => {

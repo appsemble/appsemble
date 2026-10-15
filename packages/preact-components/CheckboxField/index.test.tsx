@@ -5,7 +5,14 @@ import { CheckboxField } from './index.js';
 
 it('should render a checkbox', () => {
   const onChange = vi.fn();
-  render(<CheckboxField id="test-random" label="test-checkbox" onChange={onChange} />);
+  render(
+    <CheckboxField
+      id="test-random"
+      label="test-checkbox"
+      onChange={onChange}
+      optionalLabel="(Optional)"
+    />,
+  );
   const checkbox = screen.getByLabelText('test-checkbox');
   fireEvent.click(checkbox);
   expect(onChange).toHaveBeenCalledWith(expect.objectContaining({}), true);

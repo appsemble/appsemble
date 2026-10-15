@@ -1,5 +1,8 @@
 {
+  "closeImage": "Close enlarged image",
+  "downloadImage": "Download in HD",
   "emptyMessage": "No data available.",
   "error": "An error occurred when fetching the data",
+  "loading": "Loading",
   "submitChecked": "Submit"
 }

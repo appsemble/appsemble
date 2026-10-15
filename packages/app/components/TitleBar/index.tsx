@@ -125,10 +125,11 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
     </Link>
   ) : null;
 
-  const nameNode = (
-    <h2 className="navbar-item title is-4 mb-0">
-      {displayAppName ? appName : !hideName && (children || appName)}
-    </h2>
+  // The app name repeats on every page, so it isn't a heading that precedes each page's own H1.
+  const nameNode = displayAppName ? (
+    <p className="navbar-item title is-4 mb-0">{appName}</p>
+  ) : (
+    <h2 className="navbar-item title is-4 mb-0">{!hideName && (children || appName)}</h2>
   );
 
   const headerTagNode =

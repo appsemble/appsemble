@@ -4,6 +4,6 @@ import { expect, it } from 'vitest';
 import { TextAreaField } from './index.js';
 
 it('should render a field with textarea', () => {
-  const { container } = render(<TextAreaField />);
+  const { container } = render(<TextAreaField optionalLabel="(Optional)" />);
   expect(container).toMatchSnapshot();
 });

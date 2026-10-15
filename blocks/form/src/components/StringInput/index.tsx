@@ -34,6 +34,7 @@ export function StringInput({
     setHidePassword((prevValue) => !prevValue);
   }, []);
   const {
+    autocomplete,
     datalistEnabled = false,
     format,
     help,
@@ -64,10 +65,16 @@ export function StringInput({
   );
 
   const remappedLabel = utils.remap(label, value) ?? name;
+  const type = format === 'password' && !hidePassword ? 'text' : format;
   const commonProps = {
+    autocomplete,
     control:
       format === 'password' ? (
-        <IconButton icon={hidePassword ? 'eye-slash' : 'eye'} onClick={toggleHidePassword} />
+        <IconButton
+          aria-label={utils.formatMessage(hidePassword ? 'showPassword' : 'hidePassword')}
+          icon={hidePassword ? 'eye-slash' : 'eye'}
+          onClick={toggleHidePassword}
+        />
       ) : undefined,
     className: classNames('appsemble-string', className),
     disabled,
@@ -107,14 +114,10 @@ export function StringInput({
         ))}
       </datalist>
       {/* @ts-expect-error strictNullChecks */}
-      <InputField {...commonProps} list={`${name}-datalist`} type={format} />
+      <InputField {...commonProps} list={`${name}-datalist`} type={type} />
     </>
   ) : (
     // @ts-expect-error strictNullChecks
-    <InputField
-      {...commonProps}
-      type={format === 'password' && !hidePassword ? 'text' : format}
-      value={value as string}
-    />
+    <InputField {...commonProps} type={type} value={value as string} />
   );
 }

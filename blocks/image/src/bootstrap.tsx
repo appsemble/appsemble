@@ -137,8 +137,12 @@ export function ImageBlock({
         </div>
       </div>
       {fullscreen ? (
-        <Modal isActive={modal.enabled} onClose={modal.disable}>
-          <AppAssetDownloadButton src={selectedSrc} />
+        <Modal
+          closeButtonLabel={formatMessage('closeImage')}
+          isActive={modal.enabled}
+          onClose={modal.disable}
+        >
+          <AppAssetDownloadButton label={formatMessage('downloadImage')} src={selectedSrc} />
           <figure className="image">
             <img alt={alt} className={styles.fullscreenImage} src={selectedSrc} />
           </figure>

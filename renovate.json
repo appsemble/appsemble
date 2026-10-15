@@ -61,6 +61,11 @@
       "description": "@remcohaszing/eslint v13 requires migrating ~120 call sites across the repo to eslint-plugin-unicorn's stricter rules (e.g. no-array-sort, no-immediate-mutation), and v14 additionally requires ESLint 10, which is capped below v10 until https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/issues/1075 (tracked by PR https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/pull/1081) ships a compatible release; cap below v13 until the lint migration is done and that issue closes",
       "matchPackageNames": ["@remcohaszing/eslint"],
       "allowedVersions": "<13.0.0"
+    },
+    {
+      "description": "monaco-worker-manager, used by the studio editor and by monaco-yaml, has no released version supporting monaco-editor v0.53+ (editor.createWebWorker became internal, and v0.56 no longer resolves its monaco-editor/esm/vs/... imports); cap monaco-editor below v0.53 until https://github.com/remcohaszing/monaco-worker-manager/issues/3 ships a compatible release",
+      "matchPackageNames": ["monaco-editor"],
+      "allowedVersions": "<0.53.0"
     }
   ]
 }

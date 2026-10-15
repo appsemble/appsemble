@@ -26,7 +26,18 @@ export function NumberInput({
   readOnly,
 }: NumberInputProps): VNode {
   const { utils } = useBlock();
-  const { bottomLabels, display, help, icon, inline, label, placeholder, tag, topLabels } = field;
+  const {
+    autocomplete,
+    bottomLabels,
+    display,
+    help,
+    icon,
+    inline,
+    label,
+    placeholder,
+    tag,
+    topLabels,
+  } = field;
 
   const value = getValueByNameSequence(name, formValues) as string;
   const remappedLabel = utils.remap(label, value) ?? name;
@@ -65,6 +76,7 @@ export function NumberInput({
   return (
     // @ts-expect-error strictNullChecks not assignable to type
     <InputField
+      autocomplete={autocomplete}
       placeholder={
         (utils.remap(placeholder, value) as string) ||
         (utils.remap(label, value) as string) ||
