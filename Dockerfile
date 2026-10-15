@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.27-labs
+# syntax=docker/dockerfile:1.28-labs
 # Build the image libraries with HEVC decoding support.
 FROM node:24-trixie-slim AS image-libraries
 
