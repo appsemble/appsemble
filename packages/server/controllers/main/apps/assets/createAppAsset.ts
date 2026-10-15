@@ -1,8 +1,8 @@
 import {
-  AssetUploadValidationError,
   assertKoaCondition,
-  deleteS3Files,
   type AssetToUpload,
+  AssetUploadValidationError,
+  deleteAppAssetObjects,
   getCompressedFileMeta,
   throwKoaError,
   uploadAssets,
@@ -106,8 +106,8 @@ export async function createAppAsset(ctx: Context): Promise<void> {
       );
     });
   } catch (error: unknown) {
-    await deleteS3Files(
-      `app-${appId}`,
+    await deleteAppAssetObjects(
+      appId,
       assetsToUpload.map(({ id }) => id),
     );
     if (error instanceof UniqueConstraintError) {

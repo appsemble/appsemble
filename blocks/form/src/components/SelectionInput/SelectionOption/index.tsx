@@ -31,6 +31,7 @@ export function SelectionOption({
   const { utils } = useBlock();
   const { id, image, imageInline } = option;
   const alignment = image?.alignment || 'default';
+  const label = (utils.remap(option.header, option) as string | undefined) ?? id;
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -95,7 +96,14 @@ export function SelectionOption({
       </div>
       <div className="is-flex is-flex-direction-column is-justify-content-end">
         <Button
-          aria-label={inline ? (utils.remap(option.header, option) as string) : undefined}
+          aria-label={
+            inline
+              ? String(label)
+              : utils.formatMessage(
+                  selected ? (mayRemove ? 'selectionRemove' : 'selectionSelected') : 'selectionAdd',
+                  { option: label },
+                )
+          }
           aria-pressed={inline ? selected : undefined}
           disabled={disabled || (selected ? !mayRemove : undefined)}
           icon={selected ? (inline || !mayRemove ? 'check' : 'xmark') : 'plus'}

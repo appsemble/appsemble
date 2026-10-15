@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 import { PredefinedAppRole } from '@appsemble/lang-sdk';
 import * as nodeUtils from '@appsemble/node-utils';
-import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
+import { createFormData, getAppAssetLocation, getS3FileBuffer } from '@appsemble/node-utils';
 
 import { deleteAppAssetsWithLogging } from './patchAppResource.js';
 import { PredefinedOrganizationRole, type Resource as ResourceType } from '@appsemble/types';
@@ -709,7 +709,10 @@ describe('patchAppResource', () => {
       }),
     ]);
     const assetsData = await Promise.all(
-      assets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
+      assets.map((asset) => {
+        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        return getS3FileBuffer(bucket, key);
+      }),
     );
     expect(Buffer.from('Test resource a').equals(assetsData[0])).toBe(true);
   });
@@ -909,7 +912,7 @@ describe('patchAppResource', () => {
 
   it('should log and ignore s3 deletion failures during cleanup', async () => {
     const error = new Error('s3 failed');
-    vi.spyOn(nodeUtils, 'deleteS3Files').mockRejectedValue(error);
+    vi.spyOn(nodeUtils, 'deleteAppAssetObjects').mockRejectedValue(error);
     const loggerSpy = vi
       .spyOn(nodeUtils.logger, 'error')
       .mockImplementation(() => nodeUtils.logger);
@@ -943,7 +946,7 @@ describe('patchAppResource', () => {
           throw new Error('transaction failed');
         }) as any;
       });
-    const deleteSpy = vi.spyOn(nodeUtils, 'deleteS3Files').mockResolvedValue();
+    const deleteSpy = vi.spyOn(nodeUtils, 'deleteAppAssetObjects').mockResolvedValue();
 
     authorizeStudio();
     const response = await request.patch(
@@ -954,7 +957,7 @@ describe('patchAppResource', () => {
     expect(response.status).toBe(500);
     expect(transactionSpy).toHaveBeenCalledWith(expect.any(Function));
     expect(deleteSpy).toHaveBeenCalledWith(
-      `app-${app.id}`,
+      app.id,
       expect.arrayContaining([expect.stringMatching(uuid4Pattern)]),
     );
   });

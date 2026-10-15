@@ -1,4 +1,5 @@
 import {
+  getBlockAssetLocation,
   getS3File,
   getS3FileStats,
   logger,
@@ -7,7 +8,6 @@ import {
 } from '@appsemble/node-utils';
 
 import { BlockAsset, BlockVersion } from '../models/index.js';
-import { getBlockAssetsBucketName } from '../utils/blockAssets.js';
 
 export async function getBlockAsset({
   filename,
@@ -39,8 +39,9 @@ export async function getBlockAsset({
 
   if (asset.storageKey) {
     try {
-      const stats = await getS3FileStats(getBlockAssetsBucketName(), asset.storageKey);
-      const stream = await getS3File(getBlockAssetsBucketName(), asset.storageKey);
+      const { bucket, key } = getBlockAssetLocation(asset.storageKey);
+      const stats = await getS3FileStats(bucket, key);
+      const stream = await getS3File(bucket, key);
 
       if (stream) {
         return {

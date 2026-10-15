@@ -1,0 +1,12 @@
+.link {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-align: inherit;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

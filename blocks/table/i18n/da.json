@@ -1,5 +1,8 @@
 {
+  "closeImage": "",
+  "downloadImage": "",
   "emptyMessage": "Der foreligger ingen data.",
   "error": "Der opstod en fejl under hentning af dataene",
+  "loading": "",
   "submitChecked": "Indsend"
 }

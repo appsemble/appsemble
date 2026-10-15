@@ -18,3 +18,8 @@
   top: 50%;
   transform: translateY(-50%);
 }
+
+.active {
+  background-color: var(--primary-color);
+  color: var(--primary-color-invert);
+}

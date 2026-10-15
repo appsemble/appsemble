@@ -12,15 +12,15 @@ import {
 } from '@appsemble/lang-sdk';
 import {
   addResourceEtag,
-  deleteS3Files,
+  deleteAppAssetObjects,
   getCompressedFileMeta,
   getRemapperContext,
   getResourceDefinition,
   logger,
   processResourceBody,
   type QueryParams,
-  uploadAssets,
   serializeServerResource,
+  uploadAssets,
 } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 
@@ -38,7 +38,7 @@ import {
 export const resourceCleanup = {
   async deleteDereferencedS3Assets(appId: number, deletedAssetIds: string[]): Promise<void> {
     try {
-      await deleteS3Files(`app-${appId}`, deletedAssetIds);
+      await deleteAppAssetObjects(appId, deletedAssetIds);
     } catch (error) {
       logger.error(error);
     }
@@ -146,6 +146,8 @@ export async function query({
       { association: 'Editor', attributes: ['id', 'name'], required: false },
     ],
     order: parsed.order,
+    limit: queryParams.$top,
+    offset: queryParams.$skip,
     where: {
       [Op.and]: [
         parsed.query,
@@ -350,7 +352,7 @@ export async function update({
     });
   } catch (error) {
     if (uploadedAssetIds.length) {
-      await deleteS3Files(`app-${app.id}`, uploadedAssetIds);
+      await deleteAppAssetObjects(app.id, uploadedAssetIds);
     }
     throw error;
   }
@@ -500,7 +502,7 @@ export async function patch({
     });
   } catch (error) {
     if (uploadedAssetIds.length) {
-      await deleteS3Files(`app-${app.id}`, uploadedAssetIds);
+      await deleteAppAssetObjects(app.id, uploadedAssetIds);
     }
     throw error;
   }

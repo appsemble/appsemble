@@ -6,6 +6,7 @@ import { type Context } from 'koa';
 import { App, getAppDB } from '../../../../../models/index.js';
 import { touchApp } from '../../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
+import { getSsoIconError } from '../../../../../utils/icons.js';
 import {
   normalizeLoginRoleMappings,
   validateLoginRoleMappings,
@@ -31,6 +32,9 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
   });
 
   assertKoaCondition(appOAuth2Secret != null, ctx, 404, 'OAuth2 secret not found');
+
+  const iconError = getSsoIconError(body.icon, app.definition);
+  assertKoaCondition(iconError == null, ctx, 400, iconError ?? 'Invalid icon');
 
   const roleMappingsError = validateLoginRoleMappings(
     body.roleMappings,

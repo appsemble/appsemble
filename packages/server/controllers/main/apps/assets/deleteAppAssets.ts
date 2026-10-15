@@ -1,4 +1,4 @@
-import { assertKoaCondition, deleteS3Files } from '@appsemble/node-utils';
+import { assertKoaCondition, deleteAppAssetObjects } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { type FindOptions, Op } from 'sequelize';
@@ -41,8 +41,8 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
 
   assertKoaCondition(isSeed || assets.length !== 0, ctx, 404, 'No assets found');
 
-  await deleteS3Files(
-    `app-${appId}`,
+  await deleteAppAssetObjects(
+    appId,
     assets.map((asset) => asset.id),
   );
 

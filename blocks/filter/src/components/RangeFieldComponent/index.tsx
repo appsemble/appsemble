@@ -59,6 +59,7 @@ export function RangeFieldComponent({
       </div>
       <DualSlider
         from={utils.remap(from, {}) as number}
+        handleLabels={[utils.formatMessage('sliderMinimum'), utils.formatMessage('sliderMaximum')]}
         id={field.name}
         name={field.name}
         onChange={handleChange}

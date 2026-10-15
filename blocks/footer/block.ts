@@ -1,4 +1,4 @@
-import { type BulmaColor, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type IconReference, type Remapper } from '@appsemble/sdk';
 
 export interface FooterItem {
   /**
@@ -8,8 +8,11 @@ export interface FooterItem {
 
   /**
    * Icon to be rendered next to the item.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * Action to fire when user clicks on the link.
@@ -44,6 +47,15 @@ export interface Image {
    *
    */
   hide?: Remapper;
+
+  /**
+   * Whether clicking the image opens an enlargement.
+   *
+   * App assets can also be downloaded from the enlargement.
+   *
+   * @default true
+   */
+  enlarge?: Remapper;
 }
 
 export interface FooterColumnWithImage {
@@ -84,6 +96,23 @@ declare module '@appsemble/sdk' {
     [key: string]: never;
   }
 
+  interface Messages {
+    /**
+     * The accessible label for closing an enlarged image.
+     */
+    closeImage: never;
+
+    /**
+     * The accessible label for enlarging an image without alt text.
+     */
+    enlargeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
+  }
+
   interface Parameters {
     columns: FooterColumn[];
 
@@ -117,6 +146,9 @@ declare module '@appsemble/sdk' {
 
     /**
      * Copyright text to be rendered at the bottom.
+     *
+     * If this resolves to an object with a `label` and a `link`, the copyright is rendered as a
+     * link. The link must be relative or use the `http`, `https`, `mailto`, or `tel` scheme.
      */
     copyright?: Remapper;
   }

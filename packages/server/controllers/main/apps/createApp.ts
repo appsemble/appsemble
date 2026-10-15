@@ -13,7 +13,7 @@ import {
   updateCompanionContainers,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/types';
+import { APP_VALIDATION_FAILED, OrganizationPermission } from '@appsemble/types';
 import { validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
@@ -102,7 +102,12 @@ export async function createApp(ctx: Context): Promise<void> {
 
     const appValidator = new AppValidator();
 
-    handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
+    handleValidatorResult(
+      ctx,
+      appValidator.validateApp(definition),
+      'App validation failed',
+      APP_VALIDATION_FAILED,
+    );
 
     handleValidatorResult(
       ctx,
@@ -112,6 +117,7 @@ export async function createApp(ctx: Context): Promise<void> {
         controllerImplementations ? JSON.parse(controllerImplementations) : undefined,
       ),
       'App validation failed',
+      APP_VALIDATION_FAILED,
     );
 
     // TOTP cannot be enabled in demo mode apps

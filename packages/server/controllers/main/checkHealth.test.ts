@@ -1,41 +1,27 @@
 import { request, setTestApp } from 'axios-test-instance';
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getDB } from '../../models/index.js';
 import { setArgv } from '../../utils/argv.js';
 import { createServer } from '../../utils/createServer.js';
-import { getValkeyClient } from '../../utils/valkey.js';
 
-vi.mock('../../utils/valkey.js', async (importOriginal) => {
-  const mod = await importOriginal<typeof import('../../utils/valkey.js')>();
-  return {
-    ...mod,
-    getValkeyClient: vi.fn(mod.getValkeyClient),
-  };
-});
+// The readiness result is cached per process. Every test starts a minute after the previous one,
+// so it always begins with an expired cache.
+let now = Date.now();
 
 describe('checkHealth', () => {
   beforeAll(async () => {
-    setArgv({
-      host: 'http://localhost',
-      secret: 'test',
-      valkeyHost: process.env.VALKEY_HOST || 'localhost',
-    });
-
+    setArgv({ host: 'http://localhost', secret: 'test' });
     const server = await createServer();
     await setTestApp(server);
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-    setArgv({
-      host: 'http://localhost',
-      secret: 'test',
-      valkeyHost: process.env.VALKEY_HOST || 'localhost',
-    });
+  beforeEach(() => {
+    now += 60_000;
+    vi.useFakeTimers({ now });
   });
 
-  it('should return status ok if all services are connected properly', async () => {
+  it('should answer like /health/ready', async () => {
     const response = await request.get('/api/health');
 
     expect(response).toMatchInlineSnapshot(`
@@ -43,37 +29,22 @@ describe('checkHealth', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "database": true,
-        "valkey": true,
+        "checks": [
+          {
+            "data": {
+              "detail": "ok",
+            },
+            "name": "database",
+            "status": "UP",
+          },
+        ],
+        "status": "UP",
       }
     `);
   });
 
   it('should fail if the database is disconnected', async () => {
     vi.spyOn(getDB(), 'authenticate').mockRejectedValue(new Error('stub'));
-    const response = await request.get('/api/health');
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 503 Service Unavailable
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "data": {
-          "database": false,
-          "valkey": true,
-        },
-        "error": "Service Unavailable",
-        "message": "API unhealthy",
-        "statusCode": 503,
-      }
-    `);
-  });
-
-  it('should fail if Valkey is disconnected', async () => {
-    const mockClient = {
-      ping: vi.fn().mockRejectedValue(new Error('Valkey is unavailable')),
-    };
-    vi.mocked(getValkeyClient).mockReturnValue(mockClient as any);
 
     const response = await request.get('/api/health');
 
@@ -82,13 +53,16 @@ describe('checkHealth', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "data": {
-          "database": true,
-          "valkey": false,
-        },
-        "error": "Service Unavailable",
-        "message": "API unhealthy",
-        "statusCode": 503,
+        "checks": [
+          {
+            "data": {
+              "detail": "Error",
+            },
+            "name": "database",
+            "status": "DOWN",
+          },
+        ],
+        "status": "DOWN",
       }
     `);
   });

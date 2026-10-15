@@ -1,6 +1,8 @@
 import { useBlock } from '@appsemble/preact';
 import {
   AppAssetDownloadButton,
+  FormComponentContext,
+  Icon,
   Modal,
   useObjectURL,
   useToggle,
@@ -17,7 +19,7 @@ import { findIconDefinition, icon, library } from '@fortawesome/fontawesome-svg-
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import { type JSX, type Ref, type VNode } from 'preact';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useContext, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type AcceptRequirement, type FileField, type InputProps } from '../../../block.js';
@@ -127,6 +129,7 @@ export function FileEntry({
     getMimeTypeCategories((acceptRequirement as AcceptRequirement)?.accept || []) ?? [];
 
   const modal = useToggle();
+  const aria = useContext(FormComponentContext);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [fileType, setFileType] = useState<MimeTypeCategory | null>(null);
   const [fileName, setFileName] = useState<string>('');
@@ -314,13 +317,12 @@ export function FileEntry({
   const displayFileEntryButtons = (): VNode | null =>
     disabled ? null : (
       <button
+        aria-label={utils.formatMessage('removeFile')}
         className={`button is-small ${styles['remove-button']}`}
         onClick={onRemove}
         type="button"
       >
-        <span className="icon">
-          <i className="fas fa-times" />
-        </span>
+        <Icon icon="xmark" />
       </button>
     );
 
@@ -331,10 +333,14 @@ export function FileEntry({
       ref={errorLinkRef as unknown as Ref<HTMLDivElement>}
     >
       {value && url && previewAvailable ? (
-        <Modal isActive={modal.enabled} onClose={modal.disable}>
+        <Modal
+          closeButtonLabel={utils.formatMessage(fileType === 'image' ? 'closeImage' : 'closeVideo')}
+          isActive={modal.enabled}
+          onClose={modal.disable}
+        >
           {fileType === 'image' ? (
             <>
-              <AppAssetDownloadButton src={url} />
+              <AppAssetDownloadButton label={utils.formatMessage('downloadImage')} src={url} />
               <figure className="image">
                 <img
                   alt={(utils.remap(field.label, value) as string) ?? field.name}
@@ -354,6 +360,7 @@ export function FileEntry({
       <label className="file-label">
         {!value || !url ? (
           <input
+            {...aria}
             accept={
               acceptMime?.includes('image/') || acceptMime?.includes('video/')
                 ? `${acceptMime}, android/allowCamera`

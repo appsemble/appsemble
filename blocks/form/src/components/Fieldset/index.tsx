@@ -28,6 +28,7 @@ import { FieldsetEntry } from '../FieldsetEntry/index.js';
 interface FieldsetProps extends InputProps<Values | Values[], FieldsetType> {
   readonly formDataLoading: boolean;
   readonly display?: FormDisplay;
+  readonly hasTriedToSubmit: boolean;
   readonly setFieldErrorLink?: (
     fieldName: string,
     params: { ref: MutableRef<any>; error: string; label: string },
@@ -51,6 +52,7 @@ export function Fieldset({
   fieldsetEntryValues = {},
   formDataLoading,
   formValues,
+  hasTriedToSubmit,
   name,
   onChange,
   readOnly,
@@ -145,6 +147,7 @@ export function Fieldset({
                   fieldSpan={!fieldsetSpan}
                   formDataLoading={formDataLoading}
                   formValues={formValues}
+                  hasTriedToSubmit={hasTriedToSubmit}
                   index={index}
                   name={`${name}.${index}`}
                   onChange={changeArray}
@@ -174,6 +177,7 @@ export function Fieldset({
           field={field}
           formDataLoading={formDataLoading}
           formValues={formValues}
+          hasTriedToSubmit={hasTriedToSubmit}
           name={name}
           onChange={onChange}
           removeThumbnail={removeThumbnail}

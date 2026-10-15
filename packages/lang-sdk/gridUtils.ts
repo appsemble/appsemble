@@ -1,4 +1,5 @@
 import {
+  type BuiltinPagesLayoutDefinition,
   type DeviceGridLayoutDefinition,
   type GridLayoutDefinition,
   type PageDefinition,
@@ -10,6 +11,16 @@ import {
  * The template area a page grid layout uses to place the breadcrumb trail.
  */
 export const breadcrumbsGridArea = 'breadcrumbs';
+
+/**
+ * The template area a grid layout uses to place the banner that asks to verify the email address.
+ */
+export const resendBannerGridArea = 'resend-banner';
+
+/**
+ * The template area a grid layout uses to place the bottom navigation.
+ */
+export const bottomNavigationGridArea = 'bottom-navigation';
 
 /**
  * The devices a responsive grid layout is defined for, from the smallest breakpoint up.
@@ -28,6 +39,26 @@ export const defaultGridLayout: Readonly<GridLayoutDefinition> = {
   columns: 1,
   template: ['main'],
 };
+
+/**
+ * The template area a built-in page grid layout uses to place the heading of the page.
+ */
+export const builtinPagesTitleGridArea = 'title';
+
+/**
+ * The template area a built-in page grid layout uses to place the content of the page.
+ */
+export const builtinPagesContentGridArea = 'content';
+
+/**
+ * The template areas a built-in page grid layout may name, in DOM order.
+ */
+export const builtinPagesGridAreaOrder = [
+  resendBannerGridArea,
+  builtinPagesTitleGridArea,
+  builtinPagesContentGridArea,
+  bottomNavigationGridArea,
+] as const;
 
 function getTemplateAreas(template: string[]): Set<string> {
   const areas = new Set<string>();
@@ -97,16 +128,18 @@ export function getPageGridLayouts(page: PageDefinition): (PageLayoutDefinition 
  * Collect the template areas each device renders.
  *
  * A device that defines no template of its own inherits the one of the next smaller device, the way
- * the app applies the grid of a page, down to a fallback of the single `main` area. So the areas a
- * device renders are not the areas its own template names.
+ * the app applies the grid of a page, down to the given default layout: `defaultGridLayout` unless
+ * the caller passes its own. So the areas a device renders are not the areas its own template names.
  *
  * @param layout The responsive grid layout to read.
+ * @param defaultLayout The grid a device falls back to below the smallest defined template.
  * @returns The areas rendered by each device, keyed by device name.
  */
 export function getCascadedGridTemplateAreas(
   layout: ResponsiveGridLayoutDefinition | undefined,
+  defaultLayout: Readonly<GridLayoutDefinition> = defaultGridLayout,
 ): Record<GridDeviceName, Set<string>> {
-  let { template } = defaultGridLayout;
+  let { template } = defaultLayout;
   return Object.fromEntries(
     gridDeviceOrder.map((device) => {
       template = layout?.[device]?.layout?.template ?? template;
@@ -116,29 +149,68 @@ export function getCascadedGridTemplateAreas(
 }
 
 /**
- * Check whether a grid layout places the breadcrumb trail.
+ * Check whether a built-in page grid layout places an area.
  *
- * Every device has to render the area, since a device that does not would place the trail against
- * implicit grid lines rather than inside the layout.
+ * An optional area is named by the template of every device or by the template of none, so any
+ * device that names it opts every breakpoint in.
  *
- * @param layout The responsive grid layout to check.
- * @returns Whether every device renders the breadcrumbs template area.
+ * @param layout The built-in page grid layout to check.
+ * @param area The template area to look for.
+ * @returns Whether the layout names the template area.
  */
-export function hasBreadcrumbsGridArea(layout: PageLayoutDefinition | undefined): boolean {
-  if (!layout) {
-    return false;
-  }
-  return Object.values(getCascadedGridTemplateAreas(layout)).every((areas) =>
-    areas.has(breadcrumbsGridArea),
-  );
+export function hasBuiltinPagesGridArea(
+  layout: BuiltinPagesLayoutDefinition | undefined,
+  area: string,
+): boolean {
+  return getGridTemplateAreas(layout).has(area);
 }
 
 /**
- * Check whether a page renders the breadcrumb trail from a grid layout.
+ * Build the grid built-in pages fall back to below the smallest defined template.
+ *
+ * `defaultGridLayout` names the `main` area, which no built-in page renders. Built-in pages stack
+ * the areas their templates name instead, in DOM order, so an app can define the desktop grid alone
+ * without an invalid mobile fallback or an accidental heading.
+ *
+ * @param layout The built-in page grid layout to read the areas of.
+ * @returns A single column grid with one row per area the layout names.
+ */
+export function getBuiltinPagesDefaultGridLayout(
+  layout: BuiltinPagesLayoutDefinition | undefined,
+): GridLayoutDefinition {
+  const areas = getGridTemplateAreas(layout);
+  return {
+    columns: 1,
+    template: builtinPagesGridAreaOrder.filter(
+      (area) => area === builtinPagesContentGridArea || areas.has(area),
+    ),
+  };
+}
+
+/**
+ * Check whether a grid layout places an area Appsemble renders itself.
+ *
+ * Every device has to render the area, since a device that does not would place the element against
+ * implicit grid lines rather than inside the layout.
+ *
+ * @param layout The responsive grid layout to check.
+ * @param area The template area to look for.
+ * @returns Whether every device renders the template area.
+ */
+export function hasGridArea(layout: PageLayoutDefinition | undefined, area: string): boolean {
+  if (!layout) {
+    return false;
+  }
+  return Object.values(getCascadedGridTemplateAreas(layout)).every((areas) => areas.has(area));
+}
+
+/**
+ * Check whether a page renders an area Appsemble renders itself from a grid layout.
  *
  * @param page The page to check the grid layouts of.
- * @returns Whether any grid layout of the page places the breadcrumb trail.
+ * @param area The template area to look for.
+ * @returns Whether any grid layout of the page places the area.
  */
-export function pageHasBreadcrumbsGridArea(page: PageDefinition): boolean {
-  return getPageGridLayouts(page).some(hasBreadcrumbsGridArea);
+export function pageHasGridArea(page: PageDefinition, area: string): boolean {
+  return getPageGridLayouts(page).some((layout) => hasGridArea(layout, area));
 }

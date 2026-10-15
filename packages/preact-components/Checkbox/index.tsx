@@ -2,7 +2,9 @@ import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import classNames from 'classnames';
 import { type ComponentChild, type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { useCallback } from 'preact/hooks';
+import { useCallback, useContext } from 'preact/hooks';
+
+import { FormComponentContext } from '../FormComponent/index.js';
 
 type CheckboxProps = Omit<
   ComponentProps<'input'>,
@@ -93,9 +95,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       [onChange],
     );
 
+    const aria = useContext(FormComponentContext);
+
     return (
       <span className={className}>
         <input
+          {...aria}
           {...props}
           checked={value}
           className={classNames(isSwitch ? 'switch' : 'is-checkradio', {

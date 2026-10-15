@@ -5,14 +5,19 @@ import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { initAxios } from './initAxios.js';
-import { createOrganization, updateOrganization, upsertOrganization } from './organization.js';
+import {
+  addOrganizationMember,
+  createOrganization,
+  updateOrganization,
+  upsertOrganization,
+} from './organization.js';
 import { authorizeCLI } from './testUtils.js';
 
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 let user: models.User;
 let testApp: AxiosTestInstance;
 
-const { Organization, OrganizationMember } = models;
+const { EmailAuthorization, Organization, OrganizationMember, User } = models;
 
 describe('organization', () => {
   beforeAll(() => {
@@ -340,6 +345,57 @@ describe('organization', () => {
         id: 'test',
         name: 'Test',
       });
+    });
+  });
+
+  describe('addOrganizationMember', () => {
+    it('should add an existing account to the organization', async () => {
+      const organization = await Organization.create({ id: 'test', name: 'Test' });
+      await OrganizationMember.create({
+        OrganizationId: organization.id,
+        UserId: user.id,
+        role: PredefinedOrganizationRole.Owner,
+      });
+      const account = await User.create({
+        name: 'Other User',
+        primaryEmail: 'other@example.com',
+        timezone: 'Europe/Amsterdam',
+      });
+      await EmailAuthorization.create({
+        UserId: account.id,
+        email: 'other@example.com',
+        verified: true,
+      });
+      await authorizeCLI('organizations:write', testApp);
+
+      await addOrganizationMember({
+        id: organization.id,
+        email: 'other@example.com',
+        role: PredefinedOrganizationRole.AppManager,
+      });
+
+      expect(await OrganizationMember.findOne({ where: { UserId: account.id } })).toMatchObject({
+        OrganizationId: 'test',
+        role: PredefinedOrganizationRole.AppManager,
+      });
+    });
+
+    it('should throw if the account is unknown', async () => {
+      const organization = await Organization.create({ id: 'test', name: 'Test' });
+      await OrganizationMember.create({
+        OrganizationId: organization.id,
+        UserId: user.id,
+        role: PredefinedOrganizationRole.Owner,
+      });
+      await authorizeCLI('organizations:write', testApp);
+
+      await expect(() =>
+        addOrganizationMember({
+          id: organization.id,
+          email: 'unknown@example.com',
+          role: PredefinedOrganizationRole.Member,
+        }),
+      ).rejects.toThrow('Request failed with status code 404');
     });
   });
 });

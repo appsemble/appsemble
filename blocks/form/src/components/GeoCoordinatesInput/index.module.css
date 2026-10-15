@@ -21,22 +21,29 @@
 }
 
 .crossHairs {
-  background-image: url(./central-picker.svg);
-  background-repeat: no-repeat;
-  background-size: contain;
-  font-size: 0; /* XXX: Replace with 64px; when removing central-picker.svg */
   height: 64px;
   pointer-events: none;
   width: 64px;
   z-index: 2;
 }
 
+/* The built-in artwork is only shown if the app doesn’t override the crosshairs icon. */
+.centralPicker {
+  background-image: url(./central-picker.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  font-size: 0; /* XXX: Replace with 64px; when removing central-picker.svg */
+}
+
 .currentlocation {
+  pointer-events: none;
+  z-index: 2;
+}
+
+.currentLocationPicture {
   background-image: url(./current-location.svg);
   background-repeat: no-repeat;
   background-size: contain;
-  pointer-events: none;
-  z-index: 2;
 }
 
 .iconUrl {

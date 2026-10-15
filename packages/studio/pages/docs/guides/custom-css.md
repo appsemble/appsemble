@@ -153,6 +153,48 @@ Appsemble.
 | `.bottom-nav-item-link` | Bottom app navigation | A link inside a list item.              |
 | `.appsemble-login`      | The login page        | A container element for the login page. |
 
+### Built-in pages
+
+Every built-in page renders a single root element that carries the name of the page and the state it
+is in. The regions of the page carry the name of the grid area they belong to. These attributes are
+part of the public API of Appsemble, so they may be used as selectors in custom CSS.
+
+| Attribute                   | Element              | Description                            |
+| --------------------------- | -------------------- | -------------------------------------- |
+| `data-appsemble-page`       | The page root        | The name of the built-in page.         |
+| `data-appsemble-page-state` | The page root        | The state the page is currently in.    |
+| `data-grid-area`            | A region of the page | The grid area the region is placed in. |
+
+The regions are `title`, an optional heading that renders the name of the page, and `content`,
+everything else the page renders for its current state. The `title` region is only rendered if the
+[`layout.builtinPages`](../reference/app.mdx#-app-layout-definition) grid layout of the app names
+it. The layout may also name `resend-banner` and `bottom-navigation` to place the banner that asks
+to verify the email address and the bottom navigation inside the grid; those keep their own
+selectors (`.message` and `.bottom-nav`) rather than a `data-grid-area` attribute.
+
+The following pages exist. A page is only mounted if its condition holds.
+
+| Page name         | Route             | States                                                       | Mounted                                                                     |
+| ----------------- | ----------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| `login`           | `/Login`          | `form`, `demo`, `totp`, `totp-setup`, `permission-error`     | Logged out, and the app has no custom `Login` page or demo login is enabled |
+| `register`        | `/Register`       | `form`                                                       | Logged out, and the app has no custom `Register` page                       |
+| `reset-password`  | `/Reset-Password` | `form`, `success`                                            | Always                                                                      |
+| `edit-password`   | `/Edit-Password`  | `form`, `success`                                            | Always                                                                      |
+| `verify`          | `/Verify`         | `loading`, `success`, `error`                                | Always                                                                      |
+| `app-invite`      | `/App-Invite`     | `loading`, `error`, `accepted`, `declined`, `member`, `form` | Always                                                                      |
+| `group-invite`    | `/Group-Invite`   | `loading`, `error`, `accepted`, `declined`, `form`           | Logged in                                                                   |
+| `settings`        | `/Settings`       | `default`                                                    | Always                                                                      |
+| `feedback`        | `/Feedback`       | `form`                                                       | A Sentry DSN is configured                                                  |
+| `debug`           | `/debug`          | `default`                                                    | Always                                                                      |
+| `openid-callback` | `/Callback`       | `error`                                                      | The OAuth2 login failed                                                     |
+| `page-error`      | any page route    | `permission`                                                 | Logged in, and no page of the app is allowed for the member                 |
+
+```css copy
+[data-appsemble-page='login'] [data-grid-area='title'] {
+  text-transform: uppercase;
+}
+```
+
 ## Appsemble CSS functions
 
 Appsemble supports the following CSS functions to simplify referencing app-specific data.
