@@ -42,7 +42,7 @@ test.describe('Accessibility', () => {
 
     await visitApp(appId);
     await page.waitForURL('**/person-registration-form');
-    const { pages, score } = await scanAppAccessibility();
+    const { pages, score } = await scanAppAccessibility({ name: 'person' });
 
     expect(score, JSON.stringify(pages, null, 2)).toBeGreaterThanOrEqual(minimumScore);
   });
@@ -63,7 +63,7 @@ test.describe('Accessibility', () => {
     await visitApp(appId);
     await loginAppAppsembleOAuth();
     await page.waitForURL('**/notes');
-    const { pages, score } = await scanAppAccessibility();
+    const { pages, score } = await scanAppAccessibility({ name: 'notes' });
 
     expect(score, JSON.stringify(pages, null, 2)).toBeGreaterThanOrEqual(minimumScore);
   });

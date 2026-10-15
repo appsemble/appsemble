@@ -1,4 +1,5 @@
-import { writeFile } from 'node:fs/promises';
+import { appendFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 import { AxeBuilder } from '@axe-core/playwright';
 import { test as base } from '@playwright/test';
@@ -75,13 +76,18 @@ export interface AccessibilityFixtures {
    * serious, 3 for moderate and 1 for minor violations, with a minimum of 0.
    *
    * The report is attached to the test as `accessibility.json`, and the app score is added as the
-   * `accessibility score` annotation, which the JUnit reporter writes as a test case property.
+   * `accessibility score` annotation, which the JUnit reporter writes as a test case property. The
+   * score is also written as the metric `accessibility_<name>` to `accessibility-metrics.txt` in
+   * the output directory of the project, in the format of a GitLab metrics report.
    *
-   * @param options Options for the crawl. `maxPages` limits the number of scanned pages, 50 by
-   *   default.
+   * @param options Options for the crawl. `name` identifies the app in the metrics report.
+   *   `maxPages` limits the number of scanned pages, 50 by default.
    * @returns The accessibility report of the app.
    */
-  scanAppAccessibility: (options?: { maxPages?: number }) => Promise<AppAccessibilityReport>;
+  scanAppAccessibility: (options: {
+    name: string;
+    maxPages?: number;
+  }) => Promise<AppAccessibilityReport>;
 }
 
 const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -104,7 +110,7 @@ function getRoutePattern(url: URL): string {
 
 export const test = base.extend<AccessibilityFixtures>({
   async scanAppAccessibility({ page }, use, testInfo) {
-    await use(async ({ maxPages = 50 } = {}) => {
+    await use(async ({ maxPages = 50, name }) => {
       const { origin } = new URL(page.url());
       const queue = [page.url()];
       const seen = new Set(queue.map((url) => getRoutePattern(new URL(url))));
@@ -158,6 +164,10 @@ export const test = base.extend<AccessibilityFixtures>({
         contentType: 'application/json',
       });
       testInfo.annotations.push({ type: 'accessibility score', description: String(report.score) });
+      await appendFile(
+        join(testInfo.project.outputDir, 'accessibility-metrics.txt'),
+        `accessibility_${name} ${report.score}\n`,
+      );
 
       return report;
     });

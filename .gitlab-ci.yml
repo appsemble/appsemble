@@ -873,7 +873,8 @@ e2e node:
     paths:
       - packages/e2e/test-results/
     reports:
-      junit: packages/e2e/results.xml
+      junit: junit.xml
+      metrics: packages/e2e/test-results/accessibility-metrics.txt
 
 e2e keycloak:
   stage: end 2 end
@@ -983,7 +984,7 @@ e2e keycloak:
     paths:
       - packages/e2e/test-results/
     reports:
-      junit: packages/e2e/results.xml
+      junit: junit.xml
 
 # Apps under SLA are supported through Appsemble core changes
 e2e SLA apps:
