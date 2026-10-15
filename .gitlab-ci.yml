@@ -1813,6 +1813,9 @@ provision production:
 lighthouse:
   extends: .appsemble service
   stage: performance
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'staging'
   # Performance scores depend on the machine, so run on the group's own runners rather than the
   # shared ones. These runners may run other jobs at the same time, so only compare scores within
   # one pipeline.
