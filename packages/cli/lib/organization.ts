@@ -267,3 +267,35 @@ export async function upsertOrganization({
     }
   }
 }
+
+interface AddOrganizationMemberArguments {
+  /**
+   * The id of the organization to add the member to.
+   */
+  id: string;
+
+  /**
+   * The email address of the account to add.
+   */
+  email: string;
+
+  /**
+   * The organization role to assign to the new member.
+   */
+  role: string;
+}
+
+export async function addOrganizationMember({
+  email,
+  id,
+  role,
+}: AddOrganizationMemberArguments): Promise<void> {
+  logger.info(`Adding ${email} to organization ${id} as ${role}`);
+  try {
+    await axios.post(`/api/organizations/${id}/members`, { email, role });
+    logger.info(`Successfully added ${email} to organization ${id}`);
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
+}

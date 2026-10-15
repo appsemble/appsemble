@@ -1,14 +1,26 @@
+import { type BlockProps, Context } from '@appsemble/preact';
+import { fa, resolveIcon } from '@appsemble/web-utils';
 import { fireEvent, render, screen } from '@testing-library/preact';
+import { type ComponentChildren, type VNode } from 'preact';
 import { expect, it, vi } from 'vitest';
 
 import { RadioGroup } from './index.js';
+import { getDescription } from '../FormComponent/getDescription.js';
 import { RadioButton } from '../RadioButton/index.js';
+
+const block = {
+  utils: { fa, resolveIcon: (reference: string) => resolveIcon(reference) },
+} as BlockProps;
+
+function Provider({ children }: { readonly children: ComponentChildren }): VNode {
+  return <Context.Provider value={block}>{children}</Context.Provider>;
+}
 
 it('should render a RadioGroup', () => {
   const onChange = vi.fn();
   render(
     <div data-testid="radio-group-comp-parent">
-      <RadioGroup onChange={onChange} value="hmm">
+      <RadioGroup onChange={onChange} optionalLabel="(Optional)" value="hmm">
         <RadioButton value="hmm">Hmm</RadioButton>
         <RadioButton value="hmm2">Hmm2</RadioButton>
       </RadioGroup>
@@ -22,7 +34,7 @@ it('should render a RadioGroup', () => {
 it('should fire the onChange function', () => {
   const onChange = vi.fn();
   render(
-    <RadioGroup onChange={onChange} value="hmm">
+    <RadioGroup onChange={onChange} optionalLabel="(Optional)" value="hmm">
       <RadioButton id="radio-1" value="hmm">
         Hmm
       </RadioButton>
@@ -38,7 +50,46 @@ it('should fire the onChange function', () => {
 it('should render an error message', () => {
   const onChange = vi.fn();
   const { container } = render(
-    <RadioGroup error onChange={onChange} value="hmm">
+    <RadioGroup error onChange={onChange} optionalLabel="(Optional)" value="hmm">
+      <RadioButton id="radio-1" value="hmm">
+        Hmm
+      </RadioButton>
+      <RadioButton id="radio-2" value="hmm2">
+        Hmm 2
+      </RadioButton>
+    </RadioGroup>,
+    { wrapper: Provider },
+  );
+  expect(container.getElementsByClassName('is-danger').length).toBeGreaterThan(0);
+});
+
+it('should mark the radio buttons as invalid and describe them by the error', () => {
+  render(
+    <RadioGroup
+      error="Pick an option"
+      name="choice"
+      onChange={vi.fn()}
+      optionalLabel="(Optional)"
+      value="hmm"
+    >
+      <RadioButton id="radio-1" value="hmm">
+        Hmm
+      </RadioButton>
+      <RadioButton id="radio-2" value="hmm2">
+        Hmm 2
+      </RadioButton>
+    </RadioGroup>,
+    { wrapper: Provider },
+  );
+  for (const radio of screen.getAllByRole('radio')) {
+    expect(radio.getAttribute('aria-invalid')).toBe('true');
+    expect(getDescription(radio)).toBe('Pick an option');
+  }
+});
+
+it('should not mark the radio buttons as invalid without an error', () => {
+  render(
+    <RadioGroup name="choice" onChange={vi.fn()} optionalLabel="(Optional)" value="hmm">
       <RadioButton id="radio-1" value="hmm">
         Hmm
       </RadioButton>
@@ -47,5 +98,22 @@ it('should render an error message', () => {
       </RadioButton>
     </RadioGroup>,
   );
-  expect(container.getElementsByClassName('is-danger').length).toBeGreaterThan(0);
+  for (const radio of screen.getAllByRole('radio')) {
+    expect(radio.getAttribute('aria-invalid')).toBeNull();
+  }
+});
+
+it('should group the radio buttons under its label', () => {
+  render(
+    <RadioGroup label="Favorite fruit" onChange={vi.fn()} optionalLabel="(Optional)" value="apple">
+      <RadioButton id="radio-apple" value="apple">
+        Apple
+      </RadioButton>
+      <RadioButton id="radio-pear" value="pear">
+        Pear
+      </RadioButton>
+    </RadioGroup>,
+  );
+  const group = screen.getByRole('radiogroup', { name: /Favorite fruit/ });
+  expect(group.contains(screen.getByLabelText('Pear'))).toBe(true);
 });

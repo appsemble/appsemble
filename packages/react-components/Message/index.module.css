@@ -1,0 +1,14 @@
+.body {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.75em;
+}
+
+.icon {
+  flex: none;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}

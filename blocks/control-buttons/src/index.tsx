@@ -1,4 +1,4 @@
-import { type Action, bootstrap, type IconName } from '@appsemble/sdk';
+import { type Action, bootstrap } from '@appsemble/sdk';
 
 bootstrap(({ actions, data, parameters: { back, forward }, utils }) => {
   const createClickAction = (action: Action) => async (event: Event) => {
@@ -10,12 +10,6 @@ bootstrap(({ actions, data, parameters: { back, forward }, utils }) => {
     button.disabled = false;
   };
 
-  const createIcon = (name: IconName): HTMLElement => (
-    <span class="icon">
-      <i class={utils.fa(name || 'caret-right')} />
-    </span>
-  );
-
   return (
     <div
       class={`is-flex px-2 py-2 ${
@@ -24,7 +18,7 @@ bootstrap(({ actions, data, parameters: { back, forward }, utils }) => {
     >
       {back === false ? undefined : (
         <button class="button is-white" onclick={createClickAction(actions.onBack)} type="button">
-          {createIcon(back?.icon || 'caret-left')}
+          {utils.icon(back?.icon || 'caret-left')}
           <span>{utils.formatMessage('back')}</span>
         </button>
       )}
@@ -35,7 +29,7 @@ bootstrap(({ actions, data, parameters: { back, forward }, utils }) => {
           type="button"
         >
           <span>{utils.formatMessage('forward')}</span>
-          {createIcon(forward?.icon || 'caret-right')}
+          {utils.icon(forward?.icon || 'caret-right')}
         </button>
       )}
     </div>

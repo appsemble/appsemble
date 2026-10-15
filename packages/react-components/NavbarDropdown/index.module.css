@@ -7,4 +7,9 @@
   &:hover {
     background: transparent;
   }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color-invert);
+    outline-offset: -3px;
+  }
 }

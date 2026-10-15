@@ -13,12 +13,18 @@ import { BlockParamInstanceValidator } from './BasicValidator.js';
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { partialNormalized } from './constants/index.js';
 import { findPageByName } from './findPageByName.js';
+import { isAppLink } from './pageUtils.js';
 import {
+  bottomNavigationGridArea,
   breadcrumbsGridArea,
+  builtinPagesGridAreaOrder,
+  getBuiltinPagesDefaultGridLayout,
   getCascadedGridTemplateAreas,
   getGridTemplateAreas,
   gridDeviceOrder,
+  resendBannerGridArea,
 } from './gridUtils.js';
+import { isValidIconName, parseIconReference } from './icons.js';
 import { iterAction, iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { normalize } from './normalize.js';
@@ -31,6 +37,7 @@ import {
   type AppMemberRegisterAction,
   type BasicPageDefinition,
   type BlockDefinition,
+  type BuiltinPagesLayoutDefinition,
   type BlockManifest,
   type CustomAppPermission,
   type DeviceGridLayoutDefinition,
@@ -45,7 +52,6 @@ import {
   PredefinedAppRole,
   predefinedAppRolePermissions,
   type ProjectImplementations,
-  type Remapper,
   inferResourceUniqueFieldType,
   type ResourceGetActionDefinition,
   type WebhookActionDefinition,
@@ -109,18 +115,6 @@ function hasResourcePermission(
 
     return false;
   });
-}
-
-/**
- * Check whether or not the given link represents a link related to the Appsemble core.
- *
- * @param link The link to check
- * @returns Whether or not the given link represents a link related to the Appsemble core.
- */
-export function isAppLink(link: Remapper | string[] | string): boolean {
-  return (
-    link === '/Login' || link === '/Settings' || link === '/Register' || link === '/Reset-Password'
-  );
 }
 
 function validateJSONSchema(schema: Schema, prefix: Prefix, report: Report): void {
@@ -679,6 +673,133 @@ function validateResponsiveGridLayoutDefinition(
   }
 }
 
+interface GridTemplateAreaRules {
+  /**
+   * The areas the template may name, in the order the runtime renders them.
+   */
+  areaOrder: readonly string[];
+
+  /**
+   * The areas every template has to name, and how to describe one the template misses.
+   */
+  required?: {
+    areas: readonly string[];
+    missingAreaMessage: (area: string) => string;
+  };
+
+  /**
+   * Describe an area the template names that the runtime does not render.
+   */
+  unknownAreaMessage: (area: string) => string;
+
+  /**
+   * Describe the order the areas the template names have to appear in.
+   */
+  orderMessage: (expectedAreaOrder: string[]) => string;
+}
+
+/**
+ * Check the areas of a single grid template against the order the runtime renders them in.
+ *
+ * Reading the template row by row and cell by cell, the first occurrence of each area has to come
+ * in the order the runtime renders them, so that keyboard, screen reader, and visual order agree.
+ *
+ * @param template The template rows to check.
+ * @param rules The areas the template may name and the messages to report with.
+ * @param report The report function to use.
+ * @param templatePath The path of the template within the app definition.
+ */
+function validateGridTemplateAreaOrder(
+  template: string[],
+  rules: GridTemplateAreaRules,
+  report: Report,
+  templatePath: Prefix,
+): void {
+  const allowedAreas = new Set(['.', ...rules.areaOrder]);
+  const visualAreaOrder: string[] = [];
+  const visualAreas = new Set<string>();
+
+  for (const [rowIndex, row] of template.entries()) {
+    for (const area of row.split(' ')) {
+      if (!allowedAreas.has(area)) {
+        report(row, rules.unknownAreaMessage(area), [...templatePath, rowIndex]);
+      } else if (area !== '.' && !visualAreas.has(area)) {
+        visualAreas.add(area);
+        visualAreaOrder.push(area);
+      }
+    }
+  }
+
+  let hasMissingArea = false;
+  if (rules.required) {
+    for (const area of rules.required.areas) {
+      if (!visualAreas.has(area)) {
+        hasMissingArea = true;
+        report(template, rules.required.missingAreaMessage(area), templatePath);
+      }
+    }
+  }
+
+  if (hasMissingArea) {
+    return;
+  }
+
+  const expectedAreaOrder = rules.areaOrder.filter((area) => visualAreas.has(area));
+  if (visualAreaOrder.some((area, index) => area !== expectedAreaOrder[index])) {
+    report(template, rules.orderMessage(expectedAreaOrder), templatePath);
+  }
+}
+
+function validateBuiltinPagesLayout(
+  layout: BuiltinPagesLayoutDefinition | undefined,
+  report: Report,
+  path: Prefix,
+): void {
+  if (!layout) {
+    return;
+  }
+
+  validateResponsiveGridLayoutDefinition(layout, report, path);
+
+  for (const [deviceName, deviceDefinition] of Object.entries(layout) as [
+    string,
+    DeviceGridLayoutDefinition,
+  ][]) {
+    const deviceLayout = deviceDefinition?.layout;
+    if (!deviceLayout?.template) {
+      continue;
+    }
+
+    validateGridTemplateAreaOrder(
+      deviceLayout.template,
+      {
+        areaOrder: builtinPagesGridAreaOrder,
+        unknownAreaMessage: (area) => `unknown built-in page grid area '${area}'`,
+        orderMessage: (expectedAreaOrder) =>
+          `built-in page grid areas must follow the accessible order: ${expectedAreaOrder.join(', ')}`,
+      },
+      report,
+      [...path, deviceName, 'layout', 'template'],
+    );
+  }
+
+  // A device without a grid of its own inherits the one of the next smaller device, so the areas a
+  // breakpoint renders are not the areas its own template names. Content renders in every state, so
+  // every breakpoint needs a slot for it, and an opted in area needs one at every breakpoint too.
+  const defaultLayout = getBuiltinPagesDefaultGridLayout(layout);
+  const cascaded = getCascadedGridTemplateAreas(layout, defaultLayout);
+  for (const area of defaultLayout.template) {
+    const missing = gridDeviceOrder.filter((device) => !cascaded[device].has(area));
+    if (missing.length) {
+      report(
+        layout,
+        `the '${area}' grid area is missing from the grid rendered on ${missing.join(', ')}`,
+        path,
+      );
+    }
+  }
+}
+
 function validateBlockGridAreas(
   blocks: BlockDefinition[],
   layoutDefinition: PageLayoutDefinition | undefined,
@@ -687,9 +808,7 @@ function validateBlockGridAreas(
 ): void {
   const templateAreas = getGridTemplateAreas(layoutDefinition);
   for (const [idx, block] of blocks.entries()) {
-    if (block.gridArea === breadcrumbsGridArea) {
-      report(block.gridArea, 'is reserved for the breadcrumb trail', [...path, idx, 'gridArea']);
-    } else if (layoutDefinition && block.gridArea && !templateAreas.has(block.gridArea)) {
+    if (layoutDefinition && block.gridArea && !templateAreas.has(block.gridArea)) {
       report(
         block.gridArea,
         `does not match any area defined in the layout template. Available areas: ${[...templateAreas].join(', ') || 'none'}`,
@@ -699,66 +818,87 @@ function validateBlockGridAreas(
   }
 }
 
-function validateBreadcrumbsGridArea(
-  layout: PageLayoutDefinition | undefined,
+// A device inherits the template of the next smaller one, so an area defined only for a larger
+// device leaves the element without a slot to sit in below that breakpoint.
+function validateGridAreaCascade(
+  layout: PageLayoutDefinition,
+  area: string,
   report: Report,
   path: Prefix,
-  breadcrumbsEnabled: boolean,
 ): void {
-  if (!layout || !getGridTemplateAreas(layout).has(breadcrumbsGridArea)) {
-    return;
-  }
-
-  if (!breadcrumbsEnabled) {
-    for (const [deviceName, deviceDefinition] of Object.entries(layout) as [
-      string,
-      DeviceGridLayoutDefinition,
-    ][]) {
-      const template = deviceDefinition?.layout?.template;
-      if (template?.some((row) => row.split(' ').includes(breadcrumbsGridArea))) {
-        report(
-          template,
-          `the '${breadcrumbsGridArea}' grid area requires layout.breadcrumbs to be enabled`,
-          [...path, deviceName, 'layout', 'template'],
-        );
-      }
-    }
-    return;
-  }
-
-  // A device inherits the template of the next smaller one, so an area defined only for a larger
-  // device leaves the trail without a slot to sit in below that breakpoint.
   const cascaded = getCascadedGridTemplateAreas(layout);
-  const missing = gridDeviceOrder.filter((device) => !cascaded[device].has(breadcrumbsGridArea));
+  const missing = gridDeviceOrder.filter((device) => !cascaded[device].has(area));
   if (missing.length) {
     report(
       layout,
-      `the '${breadcrumbsGridArea}' grid area is missing from the grid rendered on ${missing.join(', ')}`,
+      `the '${area}' grid area is missing from the grid rendered on ${missing.join(', ')}`,
       path,
     );
   }
 }
 
-function validateConsistentBreadcrumbsGridArea(
+function validateReservedGridAreas(
+  layout: PageLayoutDefinition | undefined,
+  report: Report,
+  path: Prefix,
+  breadcrumbsEnabled: boolean,
+): void {
+  const areas = getGridTemplateAreas(layout);
+  if (!layout || !areas.size) {
+    return;
+  }
+
+  if (areas.has(breadcrumbsGridArea)) {
+    if (breadcrumbsEnabled) {
+      validateGridAreaCascade(layout, breadcrumbsGridArea, report, path);
+    } else {
+      for (const [deviceName, deviceDefinition] of Object.entries(layout) as [
+        string,
+        DeviceGridLayoutDefinition,
+      ][]) {
+        const template = deviceDefinition?.layout?.template;
+        if (template?.some((row) => row.split(' ').includes(breadcrumbsGridArea))) {
+          report(
+            template,
+            `the '${breadcrumbsGridArea}' grid area requires layout.breadcrumbs to be enabled`,
+            [...path, deviceName, 'layout', 'template'],
+          );
+        }
+      }
+    }
+  }
+
+  // The banner and the bottom navigation render nothing when the app has none, so naming their
+  // area only has to give every device a slot for it.
+  for (const area of [resendBannerGridArea, bottomNavigationGridArea]) {
+    if (areas.has(area)) {
+      validateGridAreaCascade(layout, area, report, path);
+    }
+  }
+}
+
+function validateConsistentGridAreas(
   subPages: [SubPageDefinition, Prefix][],
   report: Report,
 ): void {
-  // The trail belongs to the page, so it may not appear on one sub page and be missing from the
-  // next. Defining the area consistently also lets the app runtime tell from the page definition
-  // alone whether a page renders the trail from its grid or below the title bar.
-  const declaresArea = ([subPage]: [SubPageDefinition, Prefix]): boolean =>
-    getGridTemplateAreas(subPage.layout).has(breadcrumbsGridArea);
-  const declaring = subPages.filter(declaresArea);
-  if (!declaring.length || declaring.length === subPages.length) {
-    return;
-  }
-  for (const entry of subPages) {
-    if (!declaresArea(entry)) {
-      report(
-        entry[0],
-        `the '${breadcrumbsGridArea}' grid area must be defined by every sub page of this page or by none`,
-        entry[1],
-      );
+  // A reserved area belongs to the page, so it may not appear on one sub page and be missing from
+  // the next. Defining the area consistently also lets the app runtime tell from the page definition
+  // alone whether a page renders the element from its grid or in its default position.
+  for (const area of [breadcrumbsGridArea, resendBannerGridArea, bottomNavigationGridArea]) {
+    const declaresArea = ([subPage]: [SubPageDefinition, Prefix]): boolean =>
+      getGridTemplateAreas(subPage.layout).has(area);
+    const declaring = subPages.filter(declaresArea);
+    if (!declaring.length || declaring.length === subPages.length) {
+      continue;
+    }
+    for (const entry of subPages) {
+      if (!declaresArea(entry)) {
+        report(
+          entry[0],
+          `the '${area}' grid area must be defined by every sub page of this page or by none`,
+          entry[1],
+        );
+      }
     }
   }
 }
@@ -771,7 +911,7 @@ function validateSubPageLayout(
   breadcrumbsEnabled: boolean,
 ): void {
   validateResponsiveGridLayoutDefinition(layout, report, path);
-  validateBreadcrumbsGridArea(layout, report, path, breadcrumbsEnabled);
+  validateReservedGridAreas(layout, report, path, breadcrumbsEnabled);
   if (blocks) {
     validateBlockGridAreas(blocks, layout, report, [...path, 'blocks']);
   }
@@ -802,7 +942,6 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
     }
 
     const navbarAreaOrder = ['logo', 'name', 'navigation', 'controls'];
-    const allowedAreas = new Set(['.', ...navbarAreaOrder]);
     const requiredAreas =
       definition.layout?.logo?.position === 'navbar' ? navbarAreaOrder : navbarAreaOrder.slice(1);
 
@@ -810,42 +949,26 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
       if (!deviceDefinition?.layout?.template) {
         continue;
       }
-      const { template } = deviceDefinition.layout;
-      const templatePath = ['layout', 'navbar', deviceName, 'layout', 'template'] as Prefix;
-      const visualAreaOrder: string[] = [];
-      const visualAreas = new Set<string>();
 
-      for (const [rowIndex, row] of deviceDefinition.layout.template.entries()) {
-        for (const area of row.split(' ')) {
-          if (!allowedAreas.has(area)) {
-            report(row, `unknown navbar grid area '${area}'`, [...templatePath, rowIndex]);
-          } else if (area !== '.' && !visualAreas.has(area)) {
-            visualAreas.add(area);
-            visualAreaOrder.push(area);
-          }
-        }
-      }
-
-      let hasMissingArea = false;
-      for (const area of requiredAreas) {
-        if (!visualAreas.has(area)) {
-          hasMissingArea = true;
-          report(template, `navbar grid is missing required area '${area}'`, templatePath);
-        }
-      }
-
-      if (!hasMissingArea) {
-        const expectedAreaOrder = navbarAreaOrder.filter((area) => visualAreas.has(area));
-        if (visualAreaOrder.some((area, index) => area !== expectedAreaOrder[index])) {
-          report(
-            template,
+      validateGridTemplateAreaOrder(
+        deviceDefinition.layout.template,
+        {
+          areaOrder: navbarAreaOrder,
+          required: {
+            areas: requiredAreas,
+            missingAreaMessage: (area) => `navbar grid is missing required area '${area}'`,
+          },
+          unknownAreaMessage: (area) => `unknown navbar grid area '${area}'`,
+          orderMessage: (expectedAreaOrder) =>
             `navbar grid areas must follow the accessible order: ${expectedAreaOrder.join(', ')}`,
-            templatePath,
-          );
-        }
-      }
+        },
+        report,
+        ['layout', 'navbar', deviceName, 'layout', 'template'],
+      );
     }
   }
+
+  validateBuiltinPagesLayout(definition.layout?.builtinPages, report, ['layout', 'builtinPages']);
 
   const breadcrumbsEnabled = definition.layout?.breadcrumbs === true;
 
@@ -869,7 +992,7 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
         for (const [tab, tabPath] of tabs) {
           validateSubPageLayout(tab.layout, tab.blocks, report, tabPath, breadcrumbsEnabled);
         }
-        validateConsistentBreadcrumbsGridArea(tabs, report);
+        validateConsistentGridAreas(tabs, report);
         return;
       }
 
@@ -883,7 +1006,7 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
         for (const [step, stepPath] of steps) {
           validateSubPageLayout(step.layout, step.blocks, report, stepPath, breadcrumbsEnabled);
         }
-        validateConsistentBreadcrumbsGridArea(steps, report);
+        validateConsistentGridAreas(steps, report);
         return;
       }
 
@@ -908,7 +1031,7 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
             breadcrumbsEnabled,
           );
         }
-        validateConsistentBreadcrumbsGridArea(subPages, report);
+        validateConsistentGridAreas(subPages, report);
       }
     },
   });
@@ -1734,6 +1857,152 @@ function validateResourceReferences(definition: AppDefinition, report: Report): 
   }
 }
 
+function validateIcons({ icons }: AppDefinition, report: Report): void {
+  if (!icons) {
+    return;
+  }
+  // Each overridden icon name, mapped to the key of the entry listing it.
+  const overridden = new Map<string, string>();
+  for (const [key, entry] of Object.entries(icons)) {
+    if (!isValidIconName(key)) {
+      report(key, 'is not a valid icon key; use lower case letters, digits, and single hyphens', [
+        'icons',
+        key,
+      ]);
+    }
+    // The schema reports entries and override lists of the wrong shape.
+    if (!Array.isArray(entry?.overrides)) {
+      continue;
+    }
+    for (const [index, name] of entry.overrides.entries()) {
+      if (typeof name !== 'string') {
+        continue;
+      }
+      const earlier = overridden.get(name);
+      if (earlier === undefined) {
+        overridden.set(name, key);
+      } else if (earlier !== key) {
+        report(name, `is already overridden by icons.${earlier}`, [
+          'icons',
+          key,
+          'overrides',
+          index,
+        ]);
+      }
+    }
+  }
+}
+
+/**
+ * Collect the string values of an instance which its schema marks with the given format.
+ *
+ * Schema references, nested objects, arrays, and composition keywords are followed.
+ *
+ * @param instance The value to inspect.
+ * @param schema The schema describing the value.
+ * @param root The root schema, used to resolve local `$ref`s to its definitions.
+ * @param format The format to look for.
+ * @param path The path of the instance, used for reporting.
+ * @param found The collected values, keyed by their JSON path.
+ */
+function collectFormattedStrings(
+  instance: unknown,
+  schema: Schema | undefined,
+  root: Schema,
+  format: string,
+  path: Prefix,
+  found: Map<string, [Prefix, string]>,
+): void {
+  if (!schema || typeof schema !== 'object') {
+    return;
+  }
+  if (schema.$ref) {
+    const match = /^#\/definitions\/(.+)$/.exec(schema.$ref);
+    if (match) {
+      collectFormattedStrings(
+        instance,
+        root.definitions?.[decodeURIComponent(match[1])],
+        root,
+        format,
+        path,
+        found,
+      );
+    }
+    return;
+  }
+  if (typeof instance === 'string') {
+    if (schema.format === format) {
+      found.set(JSON.stringify(path), [path, instance]);
+    }
+  } else if (Array.isArray(instance)) {
+    for (const [index, item] of instance.entries()) {
+      const itemSchema = Array.isArray(schema.items)
+        ? (schema.items[index] ??
+          (typeof schema.additionalItems === 'object' ? schema.additionalItems : undefined))
+        : schema.items;
+      collectFormattedStrings(item, itemSchema, root, format, [...path, index], found);
+    }
+  } else if (typeof instance === 'object' && instance) {
+    for (const [key, value] of Object.entries(instance)) {
+      const propertySchema = has(schema.properties, key)
+        ? schema.properties![key]
+        : (Object.entries(schema.patternProperties ?? {}).find(([pattern]) =>
+            new RegExp(pattern).test(key),
+          )?.[1] ??
+          (typeof schema.additionalProperties === 'object'
+            ? schema.additionalProperties
+            : undefined));
+      collectFormattedStrings(value, propertySchema, root, format, [...path, key], found);
+    }
+  }
+  for (const branches of [schema.anyOf, schema.oneOf, schema.allOf]) {
+    for (const branch of branches ?? []) {
+      collectFormattedStrings(instance, branch, root, format, path, found);
+    }
+  }
+}
+
+function validateIconReferences(
+  definition: AppDefinition,
+  blockVersions: Map<string, Map<string, BlockManifest>>,
+  report: Report,
+): void {
+  const check = (reference: string, path: Prefix): void => {
+    // Syntax errors are reported by the schema validation and invalid registry entries by
+    // validateIcons; only check registry membership here.
+    const parsed = parseIconReference(reference);
+    if (parsed.type === 'custom' && !has(definition.icons, parsed.key)) {
+      report(reference, `references the unknown icon key “${parsed.key}”`, path);
+    }
+  };
+
+  iterApp(definition, {
+    onPage(page, path) {
+      if (typeof page.icon === 'string') {
+        check(page.icon, [...path, 'icon']);
+      }
+    },
+    onBlock(block, path) {
+      const version = blockVersions.get(normalizeBlockName(block.type))?.get(block.version);
+      if (!version?.parameters || !block.parameters) {
+        return;
+      }
+      const found = new Map<string, [Prefix, string]>();
+      collectFormattedStrings(
+        block.parameters,
+        version.parameters,
+        version.parameters,
+        'icon',
+        [...path, 'parameters'],
+        found,
+      );
+      for (const [iconPath, reference] of found.values()) {
+        check(reference, iconPath);
+      }
+    },
+  });
+}
+
 function validateLanguage({ defaultLanguage }: AppDefinition, report: Report): void {
   if (defaultLanguage != null && !languageTags.check(defaultLanguage)) {
     report(defaultLanguage, 'is not a valid language code', ['defaultLanguage']);
@@ -2347,6 +2616,8 @@ export async function validateAppDefinition(
     validateCronJobs(clonedDefinition, report);
     validateDefaultPage(clonedDefinition, report);
     validateHooks(clonedDefinition, report);
+    validateIcons(clonedDefinition, report);
+    validateIconReferences(clonedDefinition, blockVersionMap, report);
     validateLanguage(clonedDefinition, report);
     validateResourceReferences(clonedDefinition, report);
     validateMembersSchema(clonedDefinition, report);

@@ -1,4 +1,4 @@
-import { type Remapper } from '@appsemble/sdk';
+import { type IconReference, type Remapper } from '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
   interface Actions {
@@ -25,11 +25,12 @@ declare module '@appsemble/sdk' {
     image?: Remapper;
 
     /**
-     * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render.
+     * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render, or an `icon:<key>`
+     * reference to an icon from the app’s `icons` registry.
      *
      * This is ignored if an asset can be resolved.
      */
-    icon?: Remapper;
+    icon?: IconReference | Remapper;
 
     /**
      * The label to render.

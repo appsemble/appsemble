@@ -17,6 +17,7 @@ exports[`should render a slider field 1`] = `
     <span
       class="help help"
       data-testid="help-formcomp"
+      id="P0-0"
     />
   </div>
 </div>

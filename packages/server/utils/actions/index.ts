@@ -72,6 +72,7 @@ export const actions = {
   'resource.subscription.subscribe': noop,
   'resource.subscription.toggle': noop,
   'resource.subscription.unsubscribe': noop,
+  scroll: noop,
   share: noop,
   static: staticAction,
   'storage.read': noop,

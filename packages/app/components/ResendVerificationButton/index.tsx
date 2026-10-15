@@ -7,7 +7,11 @@ import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 
-export function ResendVerificationButton(): ReactNode {
+interface ResendVerificationButtonProps {
+  readonly className?: string;
+}
+
+export function ResendVerificationButton({ className }: ResendVerificationButtonProps): ReactNode {
   const { appMemberInfo } = useAppMember();
   const push = useMessages();
   const { formatMessage } = useIntl();
@@ -26,7 +30,7 @@ export function ResendVerificationButton(): ReactNode {
   }, [appMemberInfo, formatMessage, push]);
 
   return (
-    <Button onClick={onClickResend}>
+    <Button className={className} onClick={onClickResend}>
       <FormattedMessage {...messages.resendVerification} />
     </Button>
   );

@@ -25,11 +25,12 @@
   }
 }
 
+/* Bulma shrinks icons inside buttons; keep the 3x glyph size so custom icons fill the same box. */
 .bottom-nav-item-button .icon {
-  height: unset !important;
+  height: 3rem !important;
   margin: 0 !important;
   margin-bottom: 0.25rem !important;
-  width: unset !important;
+  width: 3rem !important;
 }
 
 .bottom-nav-item-link {

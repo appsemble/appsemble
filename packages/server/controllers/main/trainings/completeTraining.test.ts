@@ -2,13 +2,13 @@ import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { setArgv } from '../../../index.js';
-import { Training, TrainingCompleted, type User } from '../../../models/index.js';
+import { TrainingCompleted, type User } from '../../../models/index.js';
 import { createServer } from '../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
 
 describe('completeTraining', () => {
   let user: User;
-  let training: Training;
+  const trainingId = 'what-is-appsemble';
 
   beforeAll(async () => {
     setArgv({ host: 'http://localhost', secret: 'test' });
@@ -18,13 +18,12 @@ describe('completeTraining', () => {
 
   beforeEach(async () => {
     user = await createTestUser();
-    training = await Training.create({ id: 'test-training-0' });
   });
 
   it('should return 201 created when successfull', async () => {
     authorizeStudio();
 
-    const response = await request.post(`/api/trainings/completed/${training.id}`);
+    const response = await request.post(`/api/trainings/completed/${trainingId}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
@@ -36,7 +35,7 @@ describe('completeTraining', () => {
 
   it('should create a new database entry for the user\'s training "completed" status', async () => {
     authorizeStudio();
-    await request.post(`/api/trainings/completed/${training.id}`);
+    await request.post(`/api/trainings/completed/${trainingId}`);
 
     const response = await request.get('/api/trainings/completed');
 
@@ -45,7 +44,7 @@ describe('completeTraining', () => {
       Content-Type: application/json; charset=utf-8
 
       [
-        "test-training-0",
+        "what-is-appsemble",
       ]
     `);
   });
@@ -68,10 +67,10 @@ describe('completeTraining', () => {
   });
 
   it('should return an error if there is already a database entry for this completion status', async () => {
-    await TrainingCompleted.create({ TrainingId: training.id, UserId: user.id });
+    await TrainingCompleted.create({ TrainingId: trainingId, UserId: user.id });
     authorizeStudio();
 
-    const response = await request.post(`/api/trainings/completed/${training.id}`);
+    const response = await request.post(`/api/trainings/completed/${trainingId}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 409 Conflict

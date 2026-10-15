@@ -14,8 +14,8 @@ exports[`config > getProjectImplementations > official blocks > action-button 1`
     "additionalProperties": false,
     "properties": {
       "icon": {
-        "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.",
-        "format": "fontawesome",
+        "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button, or an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+        "format": "icon",
         "type": "string",
       },
       "title": {
@@ -86,6 +86,15 @@ barcode event only holds the object with property barcode.",
     },
     "loading": {
       "description": "This message is displayed if no data has been loaded yet.",
+    },
+    "removeImage": {
+      "description": "The accessible name of the button that removes the selected image.",
+    },
+    "selectImage": {
+      "description": "The accessible name of the control that selects an image to scan.",
+    },
+    "stopScanning": {
+      "description": "The accessible name of the button that stops the camera scanner.",
     },
   },
   "parameters": {
@@ -242,7 +251,7 @@ By default buttons only take up as much space as needed.",
             "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.
 
 Will not render if undefined.",
-            "format": "fontawesome",
+            "format": "icon",
             "type": "string",
           },
           "iconSide": {
@@ -271,6 +280,12 @@ Will not render if undefined.",
           "outlined": {
             "description": "Whether the button should display its colors in the outlines.",
             "type": "boolean",
+          },
+          "pressed": {
+            "description": "Whether this toggle button is pressed, based on the current data.
+
+Omit this for ordinary action buttons. Pressed state is exposed as \`aria-pressed\`.",
+            "format": "remapper",
           },
           "rounded": {
             "description": "Whether the button should be rounded.",
@@ -344,6 +359,9 @@ Commonly used with a filter.",
     "error": {
       "description": "This message is displayed if there was a problem loading the data.",
     },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
+    },
     "noData": {
       "description": "This message is displayed if no data was to be found.",
     },
@@ -404,8 +422,10 @@ Useful for conditional rendering.",
           "icon": {
             "description": "An FontAwesome icon to display inside of the button.
 
-This is the only thing visible on mobile so it's required",
-            "format": "fontawesome",
+This is the only thing visible on mobile so it's required
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inverted": {
@@ -717,10 +737,10 @@ It will be called with the page data.",
         "additionalProperties": false,
         "properties": {
           "icon": {
-            "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.
+            "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button, or an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.
 
 By default a cared pointing left or right respectively will be rendered.",
-            "format": "fontawesome",
+            "format": "icon",
             "type": "string",
           },
         },
@@ -891,7 +911,20 @@ Compatible data that is received will be displayed.",
       },
     },
   },
-  "messages": undefined,
+  "messages": {
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
+    },
+    "map": {
+      "description": "The accessible name of a map.",
+    },
+  },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
@@ -1197,8 +1230,10 @@ If the content is an object it will be converted using \`JSON.stringify()\`.",
             "format": "remapper",
           },
           "icon": {
-            "description": "The icon to be used.",
-            "format": "fontawesome",
+            "description": "The icon to be used.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -1347,8 +1382,23 @@ Compatible data that is received will be displayed.",
     "anonymousLabel": {
       "description": "The name to display for replies without known user names.",
     },
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
     "emptyLabel": {
       "description": "The label that’s displayed when there are no feed items available.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
+    },
+    "map": {
+      "description": "The accessible name of a map.",
+    },
+    "moreOptions": {
+      "description": "The accessible name of a dropdown without a label.",
     },
     "permissionDeniedLabel": {
       "description": "The label that’s displayed when feed data cannot be loaded due to missing permissions.",
@@ -1429,8 +1479,10 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
         "additionalProperties": false,
         "properties": {
           "icon": {
-            "description": "The icon to show in the dropdown button.",
-            "format": "fontawesome",
+            "description": "The icon to show in the dropdown button.
+
+This can be a [Font Awesome icon](https://fontawesome.com/icons?m=free) name or an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -1455,8 +1507,10 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
         "additionalProperties": false,
         "properties": {
           "icon": {
-            "description": "The icon to show in the option.",
-            "format": "fontawesome",
+            "description": "The icon to show in the option.
+
+This can be a [Font Awesome icon](https://fontawesome.com/icons?m=free) name or an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -1642,8 +1696,17 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
     "clearLabel": {
       "description": "The label of the clear button.",
     },
+    "closeLabel": {
+      "description": "The accessible label for closing the filter modal.",
+    },
     "modalTitle": {
       "description": "The title of the modal.",
+    },
+    "sliderMaximum": {
+      "description": "The accessible label of the upper handle of a range slider.",
+    },
+    "sliderMinimum": {
+      "description": "The accessible label of the lower handle of a range slider.",
     },
     "submitLabel": {
       "description": "The label of the filter button.",
@@ -1661,8 +1724,10 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
             "type": "string",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -1698,8 +1763,10 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
             "type": "boolean",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -1777,8 +1844,10 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
         "additionalProperties": false,
         "properties": {
           "icon": {
-            "description": "An icon to render on the button.",
-            "format": "fontawesome",
+            "description": "An icon to render on the button.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -1807,8 +1876,10 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
             "type": "array",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -1859,8 +1930,10 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -1906,8 +1979,10 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
             "type": "array",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -1981,8 +2056,10 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
             "type": "string",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -2029,8 +2106,10 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -2070,8 +2149,10 @@ By setting this to true, an exact match is used.",
             "type": "boolean",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -2139,8 +2220,10 @@ This means this field will be displayed directly on the screen instead of in the
       },
       "icon": {
         "default": "filter",
-        "description": "The name of the fontawesome icon to display on the button to open the filter modal.",
-        "format": "fontawesome",
+        "description": "The name of the fontawesome icon to display on the button to open the filter modal.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+        "format": "icon",
         "type": "string",
       },
     },
@@ -2160,7 +2243,17 @@ exports[`config > getProjectImplementations > official blocks > footer 1`] = `
     },
   },
   "events": undefined,
-  "messages": undefined,
+  "messages": {
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
+    "enlargeImage": {
+      "description": "The accessible label for enlarging an image without alt text.",
+    },
+  },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
@@ -2253,8 +2346,10 @@ exports[`config > getProjectImplementations > official blocks > footer 1`] = `
             "format": "remapper",
           },
           "icon": {
-            "description": "Icon to be rendered next to the item.",
-            "format": "fontawesome",
+            "description": "Icon to be rendered next to the item.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -2277,6 +2372,13 @@ exports[`config > getProjectImplementations > official blocks > footer 1`] = `
         "properties": {
           "alt": {
             "description": "The alt text of the image.",
+            "format": "remapper",
+          },
+          "enlarge": {
+            "default": true,
+            "description": "Whether clicking the image opens an enlargement.
+
+App assets can also be downloaded from the enlargement.",
             "format": "remapper",
           },
           "file": {
@@ -2319,7 +2421,9 @@ file can either be url or uploaded image",
         "type": "array",
       },
       "copyright": {
-        "description": "Copyright text to be rendered at the bottom.",
+        "description": "Copyright text to be rendered at the bottom.
+
+If this resolves to an object with a \`label\` and a \`link\`, the copyright is rendered as a link. The link must be relative or use the \`http\`, \`https\`, \`mailto\`, or \`tel\` scheme.",
         "format": "remapper",
       },
       "linkColor": {
@@ -2362,7 +2466,8 @@ exports[`config > getProjectImplementations > official blocks > form 1`] = `
       "change": {
         "description": "This event is emitted every time a change is made to the form.
 
-The data received in the entire form data.",
+The payload contains \`values\` with the entire form data and \`lastChanged\` with the name of
+the field edited by the user. External data and field updates set \`lastChanged\` to \`null\`.",
       },
     },
     "listen": {
@@ -2388,7 +2493,16 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     },
   },
   "messages": {
+    "closeImage": {
+      "description": undefined,
+    },
+    "closeVideo": {
+      "description": undefined,
+    },
     "confirmLabel": {
+      "description": undefined,
+    },
+    "downloadImage": {
       "description": undefined,
     },
     "fieldErrorLabel": {
@@ -2400,7 +2514,13 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "formRequirementError": {
       "description": undefined,
     },
+    "hidePassword": {
+      "description": undefined,
+    },
     "invalidLabel": {
+      "description": undefined,
+    },
+    "loading": {
       "description": undefined,
     },
     "longSubmissionWarning": {
@@ -2412,13 +2532,40 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "previousLabel": {
       "description": undefined,
     },
+    "removeFile": {
+      "description": undefined,
+    },
+    "resetLocation": {
+      "description": undefined,
+    },
     "search": {
+      "description": undefined,
+    },
+    "selectionAdd": {
+      "description": undefined,
+    },
+    "selectionClose": {
       "description": undefined,
     },
     "selectionNoOptions": {
       "description": undefined,
     },
     "selectionOptionsError": {
+      "description": undefined,
+    },
+    "selectionRemove": {
+      "description": undefined,
+    },
+    "selectionSelected": {
+      "description": undefined,
+    },
+    "showPassword": {
+      "description": undefined,
+    },
+    "sliderMaximum": {
+      "description": undefined,
+    },
+    "sliderMinimum": {
       "description": undefined,
     },
     "submitError": {
@@ -2481,8 +2628,10 @@ The action should return an array of objects that contain the \`label\` and \`va
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -2577,8 +2726,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -2712,8 +2863,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "type": "boolean",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed in the option.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed in the option.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -2841,8 +2994,10 @@ A remapper that should resolve to an array of ISO date strings (\`yyyy-MM-dd\`).
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -2967,8 +3122,10 @@ On mobile browsers the field falls back to the native date picker by default. Th
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -3163,8 +3320,10 @@ The event should return an array of objects that contain the \`label\` and \`val
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -3255,8 +3414,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -3350,8 +3511,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -3503,8 +3666,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -3592,8 +3757,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -3766,8 +3933,10 @@ This can be used to set the location to something that is more relevant to the u
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -3853,8 +4022,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -4033,8 +4204,10 @@ When set to \`auto\`, no fixed image dimensions are applied",
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -4118,6 +4291,17 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A number entry field.",
         "properties": {
+          "autocomplete": {
+            "description": "The HTML \`autocomplete\` attribute of the input, which tells browsers and assistive technology what data the field asks for, so they can fill it in.
+
+This is ignored if \`display\` is \`slider\`.
+
+See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens) for the supported values.",
+            "examples": [
+              "bday-year",
+            ],
+            "type": "string",
+          },
           "bottomLabels": {
             "description": "If \`display\` is set to \`slider\`, these labels are displayed evenly spaced below the slider.",
             "items": {
@@ -4149,8 +4333,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -4278,8 +4464,10 @@ Another option is to pass a remapper returning a boolean value. This way you can
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -4377,8 +4565,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -4521,8 +4711,10 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -4636,8 +4828,10 @@ Will not render if undefined.",
           "icon": {
             "description": "The icon that displays in front of the header.
 
-Will not render if undefined.",
-            "format": "fontawesome",
+Will not render if undefined.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "id": {
@@ -4670,8 +4864,10 @@ This can be either a full image path or an asset id.",
           "icon": {
             "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
 
-Will not render if undefined.",
-            "format": "fontawesome",
+Will not render if undefined.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -4744,8 +4940,10 @@ This field does not contain a name or a value.",
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -4825,6 +5023,15 @@ For example, the [\`regex\`](#RegexRequirement) requirement type allows you to v
 
 \`\`\`yaml type: string requirements:   - regex: \\w+@appsemble\\.com     errorMessage: Value does not end with “@appsemble.com” \`\`\`",
         "properties": {
+          "autocomplete": {
+            "description": "The HTML \`autocomplete\` attribute of the input, which tells browsers and assistive technology what data the field asks for, so they can fill it in.
+
+See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens) for the supported values.",
+            "examples": [
+              "email",
+            ],
+            "type": "string",
+          },
           "datalist": {
             "default": [],
             "description": "Used to display a static html datalist for the field",
@@ -4863,10 +5070,13 @@ If \`multiline\` is set to true, this is ignored",
             "format": "remapper",
           },
           "format": {
-            "description": "The format to use for validation.",
+            "description": "The native input format to use for validation.
+
+The \`time\` format represents local time as an \`HH:mm\` string.",
             "enum": [
               "email",
               "password",
+              "time",
               "url",
             ],
             "type": "string",
@@ -4876,8 +5086,10 @@ If \`multiline\` is set to true, this is ignored",
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -4988,8 +5200,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -5070,8 +5284,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -5167,8 +5383,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -5259,8 +5477,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inline": {
@@ -5425,6 +5645,17 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "default": "flex",
         "description": "How the form fields should be displayed.",
       },
+      "errorSummaryPosition": {
+        "default": "bottom",
+        "description": "Where the summary of invalid fields is shown after a submit fails validation.
+
+With \`bottom\`, the summary is shown above the submit button and links to the first invalid field. With \`top\`, the summary is shown at the top of the form and links to every invalid field in the order of the fields. It is scrolled into view and focused when a submit fails validation.",
+        "enum": [
+          "bottom",
+          "top",
+        ],
+        "type": "string",
+      },
       "fields": {
         "description": "A list of objects describing each field that can be entered in the form.",
         "items": {
@@ -5437,6 +5668,24 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "default": false,
         "description": "Weather the form should take up all available width on the page.",
         "type": "boolean",
+      },
+      "helpPosition": {
+        "default": "below",
+        "description": "Where the help text and the error message of each field are shown.
+
+With \`below\`, they are shown below the input, and the error message replaces the help text. With \`above\`, they are shown between the label and the input, with the error message below the help text.",
+        "enum": [
+          "above",
+          "below",
+        ],
+        "type": "string",
+      },
+      "hideErrorSummary": {
+        "default": false,
+        "description": "Whether the summary of invalid fields should not be visible.
+
+Each field still shows its own error message.",
+        "format": "remapper",
       },
       "hideSubmitButton": {
         "default": false,
@@ -5551,7 +5800,17 @@ Compatible data that is received will be displayed.",
       },
     },
   },
-  "messages": undefined,
+  "messages": {
+    "changeImage": {
+      "description": "The accessible name of the control that selects a new image.",
+    },
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
+  },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
@@ -5574,6 +5833,13 @@ Compatible data that is received will be displayed.",
         "description": "This image will load if url returns invalid or null value.",
         "format": "remapper",
       },
+      "fill": {
+        "default": false,
+        "description": "Whether the image fills the full width of the block.
+
+The image keeps its natural aspect ratio unless the app theme sets one, for example with \`aspect-ratio\` on \`img\`. When true, \`width\` and \`height\` are ignored.",
+        "type": "boolean",
+      },
       "fullscreen": {
         "default": false,
         "description": "This image will be shown in full screen mode if image is clicked.",
@@ -5581,7 +5847,9 @@ Compatible data that is received will be displayed.",
       },
       "height": {
         "default": 250,
-        "description": "The height of the image in pixels.",
+        "description": "The height of the image in pixels.
+
+Ignored when \`fill\` is true.",
         "type": "number",
       },
       "input": {
@@ -5601,7 +5869,9 @@ Value should be same as property name in resources where it is going to be store
       },
       "rounded": {
         "default": false,
-        "description": "Is image rounded.",
+        "description": "Is image rounded.
+
+With \`fill\`, the image is forced to a square so it renders as a circle.",
         "type": "boolean",
       },
       "url": {
@@ -5610,7 +5880,9 @@ Value should be same as property name in resources where it is going to be store
       },
       "width": {
         "default": 250,
-        "description": "The width of the image in pixels.",
+        "description": "The width of the image in pixels.
+
+Ignored when \`fill\` is true.",
         "type": "number",
       },
     },
@@ -5661,11 +5933,26 @@ Commonly used with a filter.",
     },
   },
   "messages": {
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
     "error": {
       "description": "The text that is shown when something went wrong with fetching the data.",
     },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
+    },
+    "moreOptions": {
+      "description": "The accessible name of a dropdown without a label.",
+    },
     "noData": {
       "description": "The text that is shown when no data was found.",
+    },
+    "toggleList": {
+      "description": "The accessible name of the button that expands and collapses a list without a title.",
     },
   },
   "parameters": {
@@ -5718,8 +6005,10 @@ By default buttons only take up as much space as needed.",
           "icon": {
             "description": "An FontAwesome icon to display inside of the button.
 
-This is the only thing visible on mobile so it's required",
-            "format": "fontawesome",
+This is the only thing visible on mobile so it's required
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "inverted": {
@@ -5762,6 +6051,82 @@ Describe what the button does. This helps with accessibility for people using sc
         "required": [
           "icon",
         ],
+        "type": "object",
+      },
+      "CollapseButton": {
+        "additionalProperties": false,
+        "description": "The styling and icons of the button that expands and collapses a collapsible list.",
+        "properties": {
+          "collapseIcon": {
+            "description": "The icon to show while the list is expanded.
+
+If not set, the button shows a \`chevron-up\` icon, unless it shows a label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
+            "type": "string",
+          },
+          "collapseLabel": {
+            "description": "The label to show next to the icon while the list is expanded.
+
+The label is only shown on desktop; on mobile the button only shows the icon. The remapper receives the items of the list.",
+            "format": "remapper",
+          },
+          "color": {
+            "$ref": "#/definitions/BulmaColor",
+            "default": "primary",
+            "description": "The color of the button.",
+          },
+          "expandIcon": {
+            "description": "The icon to show while the list is collapsed.
+
+If not set, the button shows a \`chevron-down\` icon, unless it shows a label.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
+            "type": "string",
+          },
+          "expandLabel": {
+            "description": "The label to show next to the icon while the list is collapsed.
+
+The label is only shown on desktop; on mobile the button only shows the icon. The remapper receives the items of the list.",
+            "format": "remapper",
+          },
+          "iconPosition": {
+            "default": "left",
+            "description": "Whether the icon is shown on the left or the right of the label.
+
+Only applies when the button shows both an icon and a label.",
+            "enum": [
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
+          "inverted": {
+            "description": "Whether the text and background colors should be inverted.",
+            "type": "boolean",
+          },
+          "light": {
+            "description": "When set to true, the ‘light’ set of Bulma colors are used.",
+            "type": "boolean",
+          },
+          "outlined": {
+            "description": "Whether the button should display its colors in the outlines.",
+            "type": "boolean",
+          },
+          "rounded": {
+            "default": true,
+            "description": "Whether the button should be rounded.",
+            "type": "boolean",
+          },
+          "size": {
+            "$ref": "#/definitions/BulmaSize",
+            "description": "The size of the button.
+
+If not set, the button is normal sized on desktop and small on mobile.",
+          },
+        },
         "type": "object",
       },
       "Content": {
@@ -5828,8 +6193,10 @@ Describe what the button does. This helps with accessibility for people using sc
         "additionalProperties": false,
         "properties": {
           "icon": {
-            "description": "The icon to show in the dropdown button.",
-            "format": "fontawesome",
+            "description": "The icon to show in the dropdown button.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -5854,8 +6221,10 @@ Describe what the button does. This helps with accessibility for people using sc
         "additionalProperties": false,
         "properties": {
           "icon": {
-            "description": "The icon to show in the option.",
-            "format": "fontawesome",
+            "description": "The icon to show in the option.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -5880,8 +6249,10 @@ Describe what the button does. This helps with accessibility for people using sc
           "icon": {
             "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
 
-Will not render if undefined.",
-            "format": "fontawesome",
+Will not render if undefined.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -6203,8 +6574,10 @@ Cannot be set in combination with toggleButton or dropdown.",
               "icon": {
                 "description": "The icon that is shown in the header before the titles.
 
-Cannot be set in combination with image.",
-                "format": "fontawesome",
+Cannot be set in combination with image.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+                "format": "icon",
                 "type": "string",
               },
             },
@@ -6226,8 +6599,10 @@ Cannot be set in combination with toggleButton or dropdown.",
               "icon": {
                 "description": "The icon that is shown in the header before the titles.
 
-Cannot be set in combination with image.",
-                "format": "fontawesome",
+Cannot be set in combination with image.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+                "format": "icon",
                 "type": "string",
               },
               "subtitle": {
@@ -6339,8 +6714,10 @@ Cannot be set in combination with button or toggleButton.",
               "icon": {
                 "description": "The icon that is shown in the header before the titles.
 
-Cannot be set in combination with image.",
-                "format": "fontawesome",
+Cannot be set in combination with image.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+                "format": "icon",
                 "type": "string",
               },
             },
@@ -6362,8 +6739,10 @@ Cannot be set in combination with button or toggleButton.",
               "icon": {
                 "description": "The icon that is shown in the header before the titles.
 
-Cannot be set in combination with image.",
-                "format": "fontawesome",
+Cannot be set in combination with image.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+                "format": "icon",
                 "type": "string",
               },
               "subtitle": {
@@ -6469,8 +6848,10 @@ Cannot be set in combination with button or toggleButton.",
               "icon": {
                 "description": "The icon that is shown in the header before the titles.
 
-Cannot be set in combination with image.",
-                "format": "fontawesome",
+Cannot be set in combination with image.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+                "format": "icon",
                 "type": "string",
               },
               "subtitle": {
@@ -6494,8 +6875,10 @@ Cannot be set in combination with image.",
               "icon": {
                 "description": "The icon that is shown in the header before the titles.
 
-Cannot be set in combination with image.",
-                "format": "fontawesome",
+Cannot be set in combination with image.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+                "format": "icon",
                 "type": "string",
               },
               "subtitle": {
@@ -6526,8 +6909,10 @@ Cannot be set in combination with button or dropdown.",
               "icon": {
                 "description": "The icon that is shown in the header before the titles.
 
-Cannot be set in combination with image.",
-                "format": "fontawesome",
+Cannot be set in combination with image.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+                "format": "icon",
                 "type": "string",
               },
               "toggleButton": {
@@ -6704,8 +7089,10 @@ Cannot be set in combination with button or toggleButton.",
           "icon": {
             "description": "The icon that is shown in the header before the titles.
 
-Cannot be set in combination with image.",
-            "format": "fontawesome",
+Cannot be set in combination with image.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
         },
@@ -6873,6 +7260,12 @@ When set to \`auto\`, no fixed image dimensions are applied",
 
 If not defined, received data will be treated as an array.",
         "type": "string",
+      },
+      "collapseButton": {
+        "$ref": "#/definitions/CollapseButton",
+        "description": "The styling and icons of the button that expands and collapses the list.
+
+Only applies if \`collapsible\` is true.",
       },
       "collapsible": {
         "description": "Whether the list or the grouped lists should be collapsible.
@@ -7436,8 +7829,8 @@ exports[`config > getProjectImplementations > official blocks > stats 1`] = `
         "description": "An object describing what a stats field looks like.",
         "properties": {
           "icon": {
-            "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render.",
-            "format": "fontawesome",
+            "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render, or an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -7504,11 +7897,20 @@ This does not trigger if the field has a different action specified.",
     },
   },
   "messages": {
+    "closeImage": {
+      "description": "The accessible label for closing an enlarged image.",
+    },
+    "downloadImage": {
+      "description": "The accessible label for downloading the original image.",
+    },
     "emptyMessage": {
       "description": "The message to display when the data to display is empty.",
     },
     "error": {
       "description": "The message to display when data could not be loaded.",
+    },
+    "loading": {
+      "description": "The accessible label of the loader shown while data loads.",
     },
     "submitChecked": {
       "description": "The text on the button that is used to submit the checked data.",
@@ -7575,8 +7977,10 @@ By default buttons only take up as much space as needed.",
                 "type": "boolean",
               },
               "icon": {
-                "description": "An optional FontAwesome icon to display inside of the button.",
-                "format": "fontawesome",
+                "description": "An optional FontAwesome icon to display inside of the button.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+                "format": "icon",
                 "type": "string",
               },
               "inverted": {
@@ -7704,8 +8108,10 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
                 "type": "string",
               },
               "icon": {
-                "description": "The icon to show in the dropdown button.",
-                "format": "fontawesome",
+                "description": "The icon to show in the dropdown button.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+                "format": "icon",
                 "type": "string",
               },
               "label": {
@@ -7752,8 +8158,10 @@ If the resulting remapper value is truthy, the option will be disabled.",
             "format": "remapper",
           },
           "icon": {
-            "description": "The icon to show in the option.",
-            "format": "fontawesome",
+            "description": "The icon to show in the option.
+
+This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
+            "format": "icon",
             "type": "string",
           },
           "label": {
@@ -8038,10 +8446,18 @@ Takes either a hex color or a [Bulma color](https://bulma.io/documentation/helpe
         "format": "remapper",
       },
       "icon": {
-        "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render.
+        "anyOf": [
+          {
+            "format": "icon",
+            "type": "string",
+          },
+          {
+            "format": "remapper",
+          },
+        ],
+        "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render, or an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.
 
 This is ignored if an asset can be resolved.",
-        "format": "remapper",
       },
       "image": {
         "description": "This can be used to render an image. This can be either an asset ID or name, or a full URL.

@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import { type ReactNode } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
-interface ContentProps {
+interface ContentProps extends ComponentPropsWithoutRef<'div'> {
   /**
    * An additional class name to append to the element.
    */
@@ -41,12 +41,14 @@ export function Content({
   fullwidth,
   main,
   padding,
+  ...props
 }: ContentProps): ReactNode {
   const Component = main ? 'main' : 'div';
 
   return (
     <Component
       className={classNames(className, { [styles.center]: !fullwidth, 'px-3 py-3': padding })}
+      {...props}
     >
       {children}
     </Component>

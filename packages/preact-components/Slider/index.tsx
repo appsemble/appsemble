@@ -1,9 +1,10 @@
 import classNames from 'classnames';
 import { type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { type MutableRef, useCallback } from 'preact/hooks';
+import { type MutableRef, useCallback, useContext } from 'preact/hooks';
 
 import styles from './index.module.css';
+import { FormComponentContext } from '../FormComponent/index.js';
 import { useCombinedRefs } from '../useCombinedRefs.js';
 
 export interface SliderProps extends Omit<
@@ -51,8 +52,11 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       errorLinkRef as MutableRef<HTMLElement>,
     );
 
+    const aria = useContext(FormComponentContext);
+
     return (
       <input
+        {...aria}
         {...props}
         className={classNames('slider is-fullwidth', {
           'is-danger': error,

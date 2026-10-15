@@ -1,4 +1,4 @@
-import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconReference, type Remapper } from '@appsemble/sdk';
 
 export interface Button {
   /**
@@ -13,7 +13,7 @@ export interface Button {
    *
    * Will not render if undefined.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * When set to true, icon will be located on the right side of the button in the list.
@@ -82,6 +82,13 @@ export interface Button {
    * If the button should be disabled.
    */
   disable?: Remapper;
+
+  /**
+   * Whether this toggle button is pressed, based on the current data.
+   *
+   * Omit this for ordinary action buttons. Pressed state is exposed as `aria-pressed`.
+   */
+  pressed?: Remapper;
 }
 
 declare module '@appsemble/sdk' {

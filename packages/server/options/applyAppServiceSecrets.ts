@@ -6,13 +6,136 @@ import {
   logger,
   version,
 } from '@appsemble/node-utils';
+import { type App, PredefinedOrganizationRole } from '@appsemble/types';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { isMatch } from 'matcher';
+import { Op } from 'sequelize';
 
-import { type AppServiceSecret, getAppDB } from '../models/index.js';
+import {
+  App as AppModel,
+  type AppDB,
+  type AppServiceSecret,
+  getAppDB,
+  OrganizationMember,
+  User,
+} from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { checkAppPermissions } from '../utils/authorization.js';
 import { decrypt, encrypt } from '../utils/crypto.js';
+
+const tokenErrorNotificationInterval = 24 * 60 * 60 * 1e3;
+
+/**
+ * Describe a failed token request the way the token endpoint reported it.
+ *
+ * OAuth2 token endpoints (RFC 6749 section 5.2) answer with a JSON body holding `error` and
+ * optionally `error_description`; the description is the actionable part (e.g. Entra's
+ * `AADSTS7000215: Invalid client secret provided`). Transport errors carry no body.
+ *
+ * @param error The error thrown by the token request.
+ * @returns The provider's description, or the transport error message.
+ */
+function describeTokenError(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data;
+    const description = data?.error_description || data?.error;
+    if (typeof description === 'string') {
+      return description;
+    }
+  }
+  return error instanceof Error ? error.message : String(error);
+}
+
+function escapeMarkdown(value: string): string {
+  return value.replaceAll(/([!#()*+.<>[\\\]_`{|}~-])/g, '\\$1');
+}
+
+/**
+ * Record a failed token request on the service secret and email the organization owners.
+ *
+ * Owners are emailed at most once per secret per 24 hours; the gate is a conditional update, so
+ * concurrent failures send a single email.
+ *
+ * @param context The Koa context of the request that triggered the token request.
+ * @param app The app the service secret belongs to.
+ * @param AppServiceSecret The service secret model of the app database.
+ * @param serviceSecret The service secret whose token request failed.
+ * @param error The error thrown by the token request.
+ */
+async function recordTokenError(
+  context: ApplyAppServiceSecretsParams['context'],
+  app: App,
+  AppServiceSecret: AppDB['AppServiceSecret'],
+  serviceSecret: AppServiceSecret,
+  error: unknown,
+): Promise<void> {
+  const now = new Date();
+  const lastTokenError = describeTokenError(error);
+  const [notify] = await AppServiceSecret.update(
+    { lastTokenError, lastTokenErrorAt: now, lastTokenErrorNotifiedAt: now },
+    {
+      where: {
+        accessToken: serviceSecret.accessToken ?? null,
+        id: serviceSecret.id,
+        secret: serviceSecret.secret,
+        [Op.or]: [
+          { lastTokenErrorNotifiedAt: null },
+          {
+            lastTokenErrorNotifiedAt: {
+              [Op.lt]: new Date(now.getTime() - tokenErrorNotificationInterval),
+            },
+          },
+        ],
+      },
+    },
+  );
+  if (!notify) {
+    await AppServiceSecret.update(
+      { lastTokenError, lastTokenErrorAt: now },
+      {
+        where: {
+          accessToken: serviceSecret.accessToken ?? null,
+          id: serviceSecret.id,
+          secret: serviceSecret.secret,
+        },
+      },
+    );
+    return;
+  }
+
+  // Callers load the app with the attributes they need, which need not include the organization.
+  const { OrganizationId } = (await AppModel.findByPk(app.id, { attributes: ['OrganizationId'] }))!;
+  const owners = await OrganizationMember.findAll({
+    where: { role: PredefinedOrganizationRole.Owner, OrganizationId },
+    include: [{ model: User, required: true, attributes: ['primaryEmail', 'name', 'locale'] }],
+    attributes: [],
+  });
+  await Promise.all(
+    owners.map(async (owner) => {
+      try {
+        await context.mailer.sendTranslatedEmail({
+          to: { name: owner.User!.name, email: owner.User!.primaryEmail! },
+          emailName: 'serviceSecretTokenError',
+          locale: owner.User!.locale,
+          values: {
+            name: owner.User!.name,
+            appName: app.definition.name,
+            secretName: serviceSecret.name || serviceSecret.urlPatterns,
+            tokenUrl: serviceSecret.tokenUrl!,
+            error: escapeMarkdown(lastTokenError),
+            link: (text) => `[${text}](${argv.host}/apps/${app.id}/secrets)`,
+          },
+        });
+      } catch (emailError) {
+        // A failed notification must not change the outcome of the proxied request.
+        logger.error(
+          `Failed to email ${owner.User!.primaryEmail} about service secret ${serviceSecret.id}`,
+        );
+        logger.error(emailError);
+      }
+    }),
+  );
+}
 
 export async function applyAppServiceSecrets({
   app,
@@ -162,6 +285,12 @@ export async function applyAppServiceSecrets({
             logger.verbose(`Failed to fetch token from ${serviceSecret.tokenUrl}`);
             logger.error(error);
             logger.error(String(error));
+            try {
+              await recordTokenError(context, app, AppServiceSecret, serviceSecret, error);
+            } catch (recordError) {
+              logger.error(`Failed to record token error for service secret ${serviceSecret.id}`);
+              logger.error(recordError);
+            }
           }
 
           let updatedSecret;
@@ -175,8 +304,13 @@ export async function applyAppServiceSecrets({
                   {
                     accessToken: encrypt(response.data.access_token, argv.aesSecret),
                     expiresAt: Date.now() + response.data.expires_in * 1e3,
+                    lastTokenError: null,
+                    lastTokenErrorAt: null,
                   },
-                  { where: { id: serviceSecret.id }, returning: true },
+                  {
+                    where: { id: serviceSecret.id, secret: serviceSecret.secret },
+                    returning: true,
+                  },
                 )
               )[1][0];
             } catch (error) {

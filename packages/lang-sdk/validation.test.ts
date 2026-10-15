@@ -5,6 +5,8 @@ import { AppValidator } from './BasicValidator.js';
 import {
   type AppDefinition,
   type BasicPageDefinition,
+  type BlockManifest,
+  type BuiltinPagesLayoutDefinition,
   type CustomAppGuestPermission,
   type CustomAppPermission,
   type FlowPageDefinition,
@@ -5062,46 +5064,557 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([]);
   });
 
-  it('should reject a block that claims the breadcrumbs grid area on a page without a grid', async () => {
-    const app = createTestApp();
-    app.layout = { breadcrumbs: true };
-    Object.assign(app.pages[0], {
-      blocks: [{ type: 'test', version: '0.0.0', gridArea: 'breadcrumbs' }],
+  describe('icons', () => {
+    const iconBlock: BlockManifest = {
+      name: '@appsemble/test',
+      version: '1.2.3',
+      files: [],
+      languages: [],
+      parameters: {
+        type: 'object',
+        properties: {
+          icon: { type: 'string', format: 'icon' },
+          label: { type: 'string' },
+          dynamic: { format: 'remapper' },
+          buttons: {
+            type: 'array',
+            items: { $ref: '#/definitions/Button' },
+          },
+          nested: {
+            type: 'object',
+            additionalProperties: { $ref: '#/definitions/Button' },
+          },
+          either: {
+            anyOf: [{ type: 'string', format: 'icon' }, { format: 'remapper' }],
+          },
+        },
+        definitions: {
+          Button: {
+            type: 'object',
+            properties: {
+              icon: { type: 'string', format: 'icon' },
+              title: { type: 'string' },
+            },
+          },
+        },
+      },
+    };
+
+    it('should accept a registry and references to it', async () => {
+      const app = createTestApp();
+      app.icons = { dossier: { asset: 'dossier-icon' }, shared: { asset: 'dossier-icon' } };
+      Object.assign(app.pages[0], { icon: 'icon:dossier' });
+      app.pages[1].icon = 'home';
+      (app.pages[0] as BasicPageDefinition).blocks.push({
+        type: 'test',
+        version: '1.2.3',
+        parameters: {
+          icon: 'icon:shared',
+          label: 'icon:not-an-icon-field',
+          dynamic: { 'string.format': { template: 'icon:{key}' } },
+          buttons: [{ icon: 'icon:dossier' }, { icon: 'circle-check' }],
+        },
+      });
+
+      const result = await validateAppDefinition(app, () => [iconBlock]);
+
+      expect(result.errors).toStrictEqual([]);
     });
 
-    const result = await validateAppDefinition(app, () => []);
+    it('should accept an app without a registry', async () => {
+      const app = createTestApp();
+      app.pages[0].icon = 'home';
 
-    expect(result.errors).toContainEqual(
-      new ValidationError('is reserved for the breadcrumb trail', 'breadcrumbs', undefined, [
-        'pages',
-        0,
-        'blocks',
-        0,
-        'gridArea',
-      ]),
-    );
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toStrictEqual([]);
+    });
+
+    it('should report invalid registry keys', async () => {
+      const app = createTestApp();
+      app.icons = { Dossier: { asset: 'dossier-icon' } };
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError(
+          'is not a valid icon key; use lower case letters, digits, and single hyphens',
+          'Dossier',
+          undefined,
+          ['icons', 'Dossier'],
+        ),
+      ]);
+    });
+
+    it('should report page icons referencing unknown keys', async () => {
+      const app = createTestApp();
+      app.icons = { dossier: { asset: 'dossier-icon' } };
+      Object.assign(app.pages[0], { icon: 'icon:missing' });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError(
+          'references the unknown icon key “missing”',
+          'icon:missing',
+          undefined,
+          ['pages', 0, 'icon'],
+        ),
+      ]);
+    });
+
+    it('should report page icons referencing keys without a registry', async () => {
+      const app = createTestApp();
+      Object.assign(app.pages[2], { icon: 'icon:dossier' });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError(
+          'references the unknown icon key “dossier”',
+          'icon:dossier',
+          undefined,
+          ['pages', 2, 'icon'],
+        ),
+      ]);
+    });
+
+    it('should not fall back to Font Awesome for unknown keys', async () => {
+      const app = createTestApp();
+      app.icons = { dossier: { asset: 'dossier-icon' } };
+      Object.assign(app.pages[0], { icon: 'icon:home' });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toHaveLength(1);
+    });
+
+    it('should leave syntax errors to the schema validation', async () => {
+      const app = createTestApp();
+      Object.assign(app.pages[0], { icon: 'asset:dossier' });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toStrictEqual([]);
+    });
+
+    it('should report nested block parameters referencing unknown keys', async () => {
+      const app = createTestApp();
+      app.icons = { dossier: { asset: 'dossier-icon' } };
+      (app.pages[0] as BasicPageDefinition).blocks.push({
+        type: 'test',
+        version: '1.2.3',
+        parameters: {
+          icon: 'icon:missing',
+          label: 'icon:missing',
+          buttons: [{ icon: 'icon:dossier' }, { icon: 'icon:other', title: 'icon:other' }],
+          nested: { first: { icon: 'icon:nested' } },
+          either: 'icon:either',
+        },
+      });
+
+      const result = await validateAppDefinition(app, () => [iconBlock]);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError(
+          'references the unknown icon key “missing”',
+          'icon:missing',
+          undefined,
+          ['pages', 0, 'blocks', 0, 'parameters', 'icon'],
+        ),
+        new ValidationError('references the unknown icon key “other”', 'icon:other', undefined, [
+          'pages',
+          0,
+          'blocks',
+          0,
+          'parameters',
+          'buttons',
+          1,
+          'icon',
+        ]),
+        new ValidationError('references the unknown icon key “nested”', 'icon:nested', undefined, [
+          'pages',
+          0,
+          'blocks',
+          0,
+          'parameters',
+          'nested',
+          'first',
+          'icon',
+        ]),
+        new ValidationError('references the unknown icon key “either”', 'icon:either', undefined, [
+          'pages',
+          0,
+          'blocks',
+          0,
+          'parameters',
+          'either',
+        ]),
+      ]);
+    });
+
+    it('should report block parameters with invalid icon syntax', async () => {
+      const app = createTestApp();
+      (app.pages[0] as BasicPageDefinition).blocks.push({
+        type: 'test',
+        version: '1.2.3',
+        parameters: { icon: 'asset:dossier' },
+      });
+
+      const result = await validateAppDefinition(app, () => [iconBlock]);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError('does not conform to the "icon" format', 'asset:dossier', undefined, [
+          'pages',
+          0,
+          'blocks',
+          0,
+          'parameters',
+          'icon',
+        ]),
+      ]);
+    });
+
+    it('should check block icons in tabs and flow steps', async () => {
+      const app = createTestApp();
+      (app.pages[2] as TabsPageDefinition).tabs![0].blocks.push({
+        type: 'test',
+        version: '1.2.3',
+        parameters: { icon: 'icon:missing' },
+      });
+
+      const result = await validateAppDefinition(app, () => [iconBlock]);
+
+      expect(result.errors).toStrictEqual([
+        new ValidationError(
+          'references the unknown icon key “missing”',
+          'icon:missing',
+          undefined,
+          ['pages', 2, 'tabs', 0, 'blocks', 0, 'parameters', 'icon'],
+        ),
+      ]);
+    });
+
+    describe('overrides', () => {
+      it('should report an icon listed under two entries', async () => {
+        const app = createTestApp();
+        app.icons = {
+          add: { asset: 'plus-24', overrides: ['plus', 'circle-plus'] },
+          create: { asset: 'plus-32', overrides: ['plus'] },
+        };
+
+        const result = await validateAppDefinition(app, () => []);
+
+        expect(result.errors).toStrictEqual([
+          new ValidationError('is already overridden by icons.add', 'plus', undefined, [
+            'icons',
+            'create',
+            'overrides',
+            0,
+          ]),
+        ]);
+      });
+
+      it('should report an icon listed twice under one entry once', async () => {
+        const app = createTestApp();
+        app.icons = { add: { asset: 'plus-24', overrides: ['plus', 'plus'] } };
+
+        const schemaResult = new AppValidator().validateApp(app);
+        const result = await validateAppDefinition(app, () => []);
+
+        expect(schemaResult.errors).toContainEqual(
+          expect.objectContaining({ path: ['icons', 'add', 'overrides'] }),
+        );
+        expect(result.errors).toStrictEqual([]);
+      });
+
+      it('should not require the asset of an overriding entry to exist', async () => {
+        const app = createTestApp();
+        app.icons = { add: { asset: 'not-uploaded', overrides: ['plus'] } };
+
+        const result = await validateAppDefinition(app, () => []);
+
+        expect(result.errors).toStrictEqual([]);
+      });
+
+      it('should accept a key named after a Font Awesome icon', async () => {
+        const app = createTestApp();
+        app.icons = { plus: { asset: 'plus-24' } };
+
+        const result = await validateAppDefinition(app, () => []);
+
+        expect(result.errors).toStrictEqual([]);
+      });
+    });
   });
 
-  it('should reject a block that claims the breadcrumbs grid area', async () => {
-    const app = createTestApp();
-    app.layout = { breadcrumbs: true };
-    Object.assign(app.pages[0], {
-      layout: {
-        mobile: { layout: { columns: 1, template: ['breadcrumbs', 'main'] } },
-      } as PageLayoutDefinition,
-      blocks: [{ type: 'test', version: '0.0.0', gridArea: 'breadcrumbs' }],
+  it.each(['resend-banner', 'bottom-navigation'])(
+    'should accept the %s grid area on a page layout without any app setting',
+    async (area) => {
+      const app = createTestApp();
+      Object.assign(app.pages[0], {
+        layout: {
+          mobile: { layout: { columns: 1, template: [area, 'main'] } },
+        } as PageLayoutDefinition,
+      });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.valid).toBe(true);
+      expect(result.errors).toStrictEqual([]);
+    },
+  );
+
+  it.each(['resend-banner', 'bottom-navigation'])(
+    'should reject the %s grid area a smaller breakpoint does not render',
+    async (area) => {
+      const app = createTestApp();
+      const layout = {
+        mobile: { layout: { columns: 1, template: ['main'] } },
+        desktop: { layout: { columns: 2, template: [`${area} ${area}`, 'main aside'] } },
+      } as PageLayoutDefinition;
+      Object.assign(app.pages[0], { layout });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toContainEqual(
+        new ValidationError(
+          `the '${area}' grid area is missing from the grid rendered on mobile, tablet`,
+          layout,
+          undefined,
+          ['pages', 0],
+        ),
+      );
+    },
+  );
+
+  it.each(['resend-banner', 'bottom-navigation'])(
+    'should reject the %s grid area that only some tabs define',
+    async (area) => {
+      const app = createTestApp();
+      const tabsPage = app.pages[2] as TabsPageDefinition;
+      tabsPage.tabs!.push({ name: 'Tab B', blocks: [] });
+      Object.assign(tabsPage.tabs![0], {
+        layout: {
+          mobile: { layout: { columns: 1, template: [area, 'main'] } },
+        } as PageLayoutDefinition,
+      });
+
+      const result = await validateAppDefinition(app, () => []);
+
+      expect(result.errors).toContainEqual(
+        new ValidationError(
+          `the '${area}' grid area must be defined by every sub page of this page or by none`,
+          tabsPage.tabs![1],
+          undefined,
+          ['pages', 2, 'tabs', 1],
+        ),
+      );
+    },
+  );
+
+  describe('built-in page grid layouts', () => {
+    function createAppWithBuiltinPages(builtinPages: BuiltinPagesLayoutDefinition): AppDefinition {
+      const app = createTestApp();
+      app.layout = { builtinPages };
+      return app;
+    }
+
+    async function builtinPageErrors(
+      builtinPages: BuiltinPagesLayoutDefinition,
+    ): Promise<ValidationError[]> {
+      const result = await validateAppDefinition(createAppWithBuiltinPages(builtinPages), () => []);
+      return result.errors.filter((error) => error.path.includes('builtinPages'));
+    }
+
+    it('should accept a layout that only defines the desktop grid', async () => {
+      expect(
+        await builtinPageErrors({
+          desktop: {
+            layout: { columns: 4, template: ['. title title .', '. content content .'] },
+          },
+        } as BuiltinPagesLayoutDefinition),
+      ).toStrictEqual([]);
     });
 
-    const result = await validateAppDefinition(app, () => []);
+    it('should accept a content only layout', async () => {
+      expect(
+        await builtinPageErrors({
+          mobile: {
+            layout: { columns: 1, template: ['content'] },
+            spacing: { unit: '1rem', gap: 1, padding: 1 },
+          },
+          desktop: { layout: { columns: 3, template: ['. content .'] } },
+        } as BuiltinPagesLayoutDefinition),
+      ).toStrictEqual([]);
+    });
 
-    expect(result.errors).toContainEqual(
-      new ValidationError('is reserved for the breadcrumb trail', 'breadcrumbs', undefined, [
-        'pages',
-        0,
-        'blocks',
-        0,
-        'gridArea',
-      ]),
-    );
+    it('should accept a device that only overrides the spacing', async () => {
+      expect(
+        await builtinPageErrors({
+          mobile: { layout: { columns: 1, template: ['title', 'content'] } },
+          desktop: { spacing: { unit: '2rem', gap: 1, padding: 2 } },
+        } as BuiltinPagesLayoutDefinition),
+      ).toStrictEqual([]);
+    });
+
+    it('should accept a device layout that only defines the columns', async () => {
+      expect(
+        await builtinPageErrors({
+          mobile: { layout: { columns: 1 } },
+        } as BuiltinPagesLayoutDefinition),
+      ).toStrictEqual([]);
+    });
+
+    it('should reject an unknown grid area', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 2, template: ['title actions', 'content content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          "unknown built-in page grid area 'actions'",
+          'title actions',
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template', 0],
+        ),
+      );
+    });
+
+    it('should reject a template row that does not match the column count', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 2, template: ['title', 'content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          'template needs to be the same length as number of columns',
+          builtinPages.mobile!.layout!.template,
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template'],
+        ),
+      );
+    });
+
+    it('should reject an area that is not rectangular', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 2, template: ['title content', 'content content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          "grid area 'content' does not form a single contiguous rectangle",
+          builtinPages.mobile!.layout!.template,
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template'],
+        ),
+      );
+    });
+
+    it('should reject a row that places the content before the title', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 2, template: ['content title'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          'built-in page grid areas must follow the accessible order: title, content',
+          builtinPages.mobile!.layout!.template,
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template'],
+        ),
+      );
+    });
+
+    it('should reject a title row below the content', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 1, template: ['content', 'title'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          'built-in page grid areas must follow the accessible order: title, content',
+          builtinPages.mobile!.layout!.template,
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template'],
+        ),
+      );
+    });
+
+    it('should reject a breakpoint that renders no content', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 1, template: ['content'] } },
+        tablet: { layout: { columns: 1, template: ['title'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          "the 'content' grid area is missing from the grid rendered on tablet, desktop",
+          builtinPages,
+          undefined,
+          ['layout', 'builtinPages'],
+        ),
+      );
+    });
+
+    it('should accept a layout that places the banner and the bottom navigation', async () => {
+      expect(
+        await builtinPageErrors({
+          mobile: {
+            layout: {
+              columns: 1,
+              template: ['resend-banner', 'title', 'content', 'bottom-navigation'],
+            },
+          },
+        } as BuiltinPagesLayoutDefinition),
+      ).toStrictEqual([]);
+    });
+
+    it('should reject a bottom navigation row above the content', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 1, template: ['bottom-navigation', 'content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          'built-in page grid areas must follow the accessible order: content, bottom-navigation',
+          builtinPages.mobile!.layout!.template,
+          undefined,
+          ['layout', 'builtinPages', 'mobile', 'layout', 'template'],
+        ),
+      );
+    });
+
+    it('should reject a banner that is missing from the smaller breakpoints', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 1, template: ['content'] } },
+        desktop: { layout: { columns: 1, template: ['resend-banner', 'content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          "the 'resend-banner' grid area is missing from the grid rendered on mobile, tablet",
+          builtinPages,
+          undefined,
+          ['layout', 'builtinPages'],
+        ),
+      );
+    });
+
+    it('should reject a title that is missing from the smaller breakpoints', async () => {
+      const builtinPages = {
+        mobile: { layout: { columns: 1, template: ['content'] } },
+        desktop: { layout: { columns: 1, template: ['title', 'content'] } },
+      } as BuiltinPagesLayoutDefinition;
+
+      expect(await builtinPageErrors(builtinPages)).toContainEqual(
+        new ValidationError(
+          "the 'title' grid area is missing from the grid rendered on mobile, tablet",
+          builtinPages,
+          undefined,
+          ['layout', 'builtinPages'],
+        ),
+      );
+    });
   });
 });

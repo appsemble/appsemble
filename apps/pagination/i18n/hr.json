@@ -1,0 +1,17 @@
+{
+  "app": {
+    "app.roles.User": "Korisnik",
+    "app.roles.User.description": "Korisnik koji vodi vlastite bilješke.",
+    "description": "Vodi osobne bilješke i prikaži ih na lijep način",
+    "name": "Paginacija",
+    "pages.notes-list": "Popis bilježaka",
+    "pages.notes-table": "Tablica bilježaka"
+  },
+  "messageIds": {
+    "body": "Sadržaj",
+    "cancel": "Otkaži",
+    "configDelete": "Izbriši",
+    "confirmDelete": "Stvarno želiš izbrisati sljedeću bilješku?",
+    "title": "Naslov"
+  }
+}

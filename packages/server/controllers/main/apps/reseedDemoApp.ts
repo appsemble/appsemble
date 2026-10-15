@@ -1,6 +1,7 @@
 import {
   assertKoaCondition,
-  deleteS3Files,
+  deleteAppAssetObjects,
+  getAppAssetLocation,
   getS3File,
   getS3FileStats,
   logger,
@@ -48,8 +49,8 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
     where: { ephemeral: true },
   });
 
-  await deleteS3Files(
-    `app-${appId}`,
+  await deleteAppAssetObjects(
+    appId,
     demoAssetsToDelete.map((asset) => asset.id),
   );
 
@@ -76,9 +77,11 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
       ephemeral: true,
       seed: false,
     });
-    const stream = await getS3File(`app-${appId}`, id);
-    const stats = await getS3FileStats(`app-${appId}`, id);
-    await uploadS3File(`app-${appId}`, created.id, stream, stats.size);
+    const source = getAppAssetLocation(appId, id);
+    const target = getAppAssetLocation(appId, created.id);
+    const stream = await getS3File(source.bucket, source.key);
+    const stats = await getS3FileStats(source.bucket, source.key);
+    await uploadS3File(target.bucket, target.key, stream, stats.size);
   }
 
   logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets.`);

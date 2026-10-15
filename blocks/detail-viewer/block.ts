@@ -1,4 +1,4 @@
-import { type BulmaColor, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type IconName, type IconReference, type Remapper } from '@appsemble/sdk';
 
 interface AbstractField {
   /**
@@ -152,8 +152,11 @@ export interface StringField extends AbstractField {
 
   /**
    * The icon to be used.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 }
 
 /**
@@ -250,6 +253,28 @@ export interface RendererProps<F extends Field> {
 }
 
 declare module '@appsemble/sdk' {
+  interface Messages {
+    /**
+     * The accessible label for closing an enlarged image.
+     */
+    closeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
+
+    /**
+     * The accessible label of the loader shown while data loads.
+     */
+    loading: never;
+
+    /**
+     * The accessible name of a map.
+     */
+    map: never;
+  }
+
   interface Parameters {
     /**
      * A list of fields to display based on the name from the schema.

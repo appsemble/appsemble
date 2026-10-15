@@ -156,6 +156,45 @@ describe('createAppSamlSecret', () => {
     `);
   });
 
+  it('should accept a custom icon reference which exists in the app icon registry', async () => {
+    authorizeStudio();
+    await app.update({
+      definition: { ...app.definition, icons: { okta: { asset: 'okta-logo' } } },
+    });
+    const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: 'icon:okta',
+      name: 'Okta',
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.data).toMatchObject({ icon: 'icon:okta' });
+  });
+
+  it('should reject a custom icon reference which is missing from the app icon registry', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: 'icon:okta',
+      name: 'Okta',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "The icon field references the unknown icon key “okta”",
+        "statusCode": 400,
+      }
+    `);
+  });
+
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });

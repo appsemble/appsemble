@@ -5,6 +5,7 @@ import { type ContentSecurityPolicy } from '@appsemble/node-utils';
 import { compareStrings } from '@appsemble/utils';
 import { type Context } from 'koa';
 import mustache from 'mustache';
+import serialize from 'serialize-javascript';
 
 /**
  * Render settings as an HTML script tag.
@@ -20,7 +21,9 @@ export function createSettings(
   nonce?: string,
   statements: string[] = [],
 ): [digest: string, script: string] {
-  const script = [`window.settings=${JSON.stringify(settings)}`, ...statements].join(';');
+  const script = [`window.settings=${serialize(settings, { isJSON: true })}`, ...statements].join(
+    ';',
+  );
   const hash = createHash('sha256').update(script, 'utf8').digest('base64');
   return [`'sha256-${hash}'`, `<script>${script}</script>`];
 }

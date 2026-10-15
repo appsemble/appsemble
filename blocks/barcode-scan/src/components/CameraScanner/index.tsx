@@ -1,4 +1,5 @@
-import { useToggle } from '@appsemble/preact-components';
+import { useBlock } from '@appsemble/preact';
+import { Icon, useToggle } from '@appsemble/preact-components';
 import Quagga, {
   type QuaggaJSResultCallbackFunction,
   type QuaggaJSResultObject,
@@ -20,6 +21,7 @@ export function CameraScanner({
   resolution,
   setBarcode,
 }: CameraScannerProps): VNode {
+  const { utils } = useBlock();
   const videoRef = useRef<HTMLVideoElement>(null);
   const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
   const scanning = useToggle();
@@ -148,8 +150,13 @@ export function CameraScanner({
           </video>
           <canvas ref={drawingCanvasRef} />
           {videoPlaying ? (
-            <button className={styles.close} onClick={handleScanStop} type="button">
-              <i class="fas fa-times" />
+            <button
+              aria-label={utils.formatMessage('stopScanning')}
+              className={styles.close}
+              onClick={handleScanStop}
+              type="button"
+            >
+              <Icon icon="xmark" />
             </button>
           ) : null}
         </div>

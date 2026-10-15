@@ -1,10 +1,18 @@
-import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconReference } from '@appsemble/lang-sdk';
 import classNames from 'classnames';
-import { cloneElement, type ComponentChild, isValidElement, type VNode } from 'preact';
+import {
+  cloneElement,
+  type ComponentChild,
+  type ComponentChildren,
+  createContext,
+  isValidElement,
+  type VNode,
+} from 'preact';
 import { forwardRef } from 'preact/compat';
+import { useContext, useId, useMemo } from 'preact/hooks';
 
 import styles from './index.module.css';
-import { Icon } from '../index.js';
+import { FieldError, Icon } from '../index.js';
 
 /**
  * These props are typically inherited by a component that implements `FormComponent`.
@@ -36,9 +44,9 @@ export interface SharedFormComponentProps {
   help?: ComponentChild;
 
   /**
-   * A fontawesome icon to render on the left side of the input.
+   * A Font Awesome icon or an `icon:<key>` reference to render on the left side of the input.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * An optional id for the HTML element. If not set, this will fall back to `name`.
@@ -52,10 +60,8 @@ export interface SharedFormComponentProps {
 
   /**
    * The label used for optional fields.
-   *
-   * @default '(Optional)'
    */
-  optionalLabel?: ComponentChild;
+  optionalLabel: ComponentChild;
 
   /**
    * The name for the HTML element.
@@ -97,6 +103,84 @@ export interface FormComponentProps extends SharedFormComponentProps {
    * Whether or not the help section should be rendered.
    */
   disableHelp?: boolean;
+
+  /**
+   * The id of the label element, for controls that reference it using `aria-labelledby`.
+   */
+  labelId?: string;
+}
+
+/**
+ * Where a {@link FormComponent} renders its help text and error message.
+ *
+ * With `below`, the help text renders below the form controls, and the error message replaces it.
+ * With `above`, the help text renders between the label and the form controls, followed by the
+ * error message.
+ */
+export type FormComponentHelpPosition = 'above' | 'below';
+
+/**
+ * The position of the help text and error message of the {@link FormComponent} elements inside.
+ */
+export const FormComponentHelpPositionContext = createContext<FormComponentHelpPosition>('below');
+
+interface FormComponentAria {
+  'aria-describedby'?: string;
+  'aria-invalid'?: true;
+}
+
+/**
+ * The accessibility attributes a form control inside a {@link FormComponent} spreads onto itself,
+ * so it is described by the help or error text and marked invalid when there is an error.
+ */
+export const FormComponentContext = createContext<FormComponentAria>({});
+
+interface FormComponentErrorProps {
+  /**
+   * The form controls to describe by the error.
+   */
+  readonly children: ComponentChildren;
+
+  /**
+   * The error message to render next to the controls.
+   */
+  readonly error?: ComponentChild;
+}
+
+/**
+ * Render an error next to form controls that don't show it in the help text of their
+ * {@link FormComponent}, and describe the controls by it.
+ */
+export function FormComponentError({ children, error }: FormComponentErrorProps): VNode {
+  const errorId = useId();
+  const parentAria = useContext(FormComponentContext);
+  const helpAbove = useContext(FormComponentHelpPositionContext) === 'above';
+  const hasError = Boolean(error);
+  const aria = useMemo<FormComponentAria>(
+    () =>
+      hasError
+        ? {
+            ...parentAria,
+            'aria-describedby': [parentAria['aria-describedby'], errorId].filter(Boolean).join(' '),
+            'aria-invalid': true,
+          }
+        : parentAria,
+    [errorId, hasError, parentAria],
+  );
+
+  const errorContent = error ? (
+    <FieldError className={classNames({ [styles.above]: helpAbove })} id={errorId}>
+      {error}
+    </FieldError>
+  ) : null;
+
+  return (
+    <>
+      {helpAbove ? errorContent : null}
+      <FormComponentContext.Provider value={aria}>{children}</FormComponentContext.Provider>
+      {helpAbove ? null : errorContent}
+    </>
+  );
 }
 
 /**
@@ -117,20 +201,43 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
       id,
       inline,
       label,
-      optionalLabel = '(Optional)',
+      labelId,
+      optionalLabel,
       required,
       tag,
     },
     ref,
   ) => {
-    const helpContent = (
+    const helpId = useId();
+    const errorId = useId();
+    const helpAbove = useContext(FormComponentHelpPositionContext) === 'above';
+    const hasError = isValidElement(error) || typeof error === 'string' || Number.isFinite(error);
+    const aria = useMemo<FormComponentAria>(
+      () => ({
+        'aria-describedby': disableHelp
+          ? undefined
+          : helpAbove
+            ? [help ? helpId : null, hasError ? errorId : null].filter(Boolean).join(' ') ||
+              undefined
+            : help || hasError
+              ? helpId
+              : undefined,
+        'aria-invalid': hasError || undefined,
+      }),
+      [disableHelp, errorId, hasError, help, helpAbove, helpId],
+    );
+
+    const helpContent = hasError ? (
+      <FieldError className={styles.help} id={helpId}>
+        {error}
+      </FieldError>
+    ) : (
       <span
         className={classNames(`help ${styles.help}`, { 'is-danger': error })}
         data-testid="help-formcomp"
+        id={helpId}
       >
-        {isValidElement(error) || typeof error === 'string' || Number.isFinite(error)
-          ? error
-          : help}
+        {help}
       </span>
     );
 
@@ -142,7 +249,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
         })}
       >
         {icon ? <Icon className="is-left" icon={icon} /> : null}
-        {children}
+        <FormComponentContext.Provider value={aria}>{children}</FormComponentContext.Provider>
         {control ? cloneElement(control, { className: 'is-right' }) : null}
       </div>
     );
@@ -154,7 +261,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
         ref={ref}
       >
         {label ? (
-          <label className="label" data-testid="label-formcomp" htmlFor={id}>
+          <label className="label" data-testid="label-formcomp" htmlFor={id} id={labelId}>
             {label}
             {!required || tag ? (
               <span className="is-pulled-right has-text-weight-normal" data-testid="tag-formcomp">
@@ -162,6 +269,27 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
               </span>
             ) : null}
           </label>
+        ) : null}
+        {!disableHelp && helpAbove ? (
+          <>
+            {help || helpExtra ? (
+              <div className={`is-flex ${styles.helpWrapper} ${styles.above}`}>
+                <span className={`help ${styles.help}`} data-testid="help-formcomp" id={helpId}>
+                  {help}
+                </span>
+                {helpExtra ? (
+                  <span className={`help ml-1 ${styles.counter}`} data-testid="help-extra-formcomp">
+                    {helpExtra}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
+            {hasError ? (
+              <FieldError className={styles.above} id={errorId}>
+                {error}
+              </FieldError>
+            ) : null}
+          </>
         ) : null}
         {addon ? (
           <div className="field is-marginless has-addons">
@@ -173,7 +301,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
         ) : (
           controls
         )}
-        {disableHelp ? null : helpExtra ? (
+        {disableHelp || helpAbove ? null : helpExtra ? (
           <div className={`is-flex ${styles.helpWrapper}`} data-testid>
             {helpContent}
             <span className={`help ml-1 ${styles.counter}`} data-testid="help-extra-formcomp">

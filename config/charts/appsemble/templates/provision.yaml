@@ -46,22 +46,22 @@ spec:
             - -vv
           env:
             - name: DATABASE_HOST
-              value: {{ .Values.postgresql.fullnameOverride }}
+              value: {{ .Values.postgresql.host }}
             - name: DATABASE_PORT
-              value: {{ .Values.global.postgresql.service.ports.postgresql | quote }}
+              value: {{ .Values.postgresql.port | quote }}
             {{- if .Values.postgresSSL }}
             - name: DATABASE_SSL
               value: 'true'
             {{- end }}
             - name: DATABASE_NAME
-              value: {{ .Values.global.postgresql.auth.database }}
+              value: {{ .Values.postgresql.auth.database }}
             - name: DATABASE_USER
-              value: {{ .Values.global.postgresql.auth.username }}
+              value: {{ .Values.postgresql.auth.username }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.global.postgresql.auth.existingSecret }}
-                  key: {{ .Values.global.postgresql.auth.secretKeys.userPasswordKey | quote }}
+                  name: {{ .Values.postgresql.auth.existingSecret }}
+                  key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey | quote }}
             {{- if .Values.ingress.enabled }}
             - name: APP_DOMAIN_STRATEGY
               value: kubernetes-ingress

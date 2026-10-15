@@ -1,5 +1,6 @@
 import {
-  deleteS3Files,
+  deleteAppAssetObjects,
+  getAppAssetLocation,
   getS3File,
   getS3FileStats,
   initS3Client,
@@ -48,8 +49,8 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
       });
 
       try {
-        await deleteS3Files(
-          `app-${demoApp.id}`,
+        await deleteAppAssetObjects(
+          demoApp.id,
           demoAssetsToDestroy.map((a) => a.id),
         );
       } catch (error) {
@@ -78,9 +79,11 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
           ephemeral: true,
           seed: false,
         });
-        const stream = await getS3File(`app-${demoApp.id}`, id);
-        const stats = await getS3FileStats(`app-${demoApp.id}`, id);
-        await uploadS3File(`app-${demoApp.id}`, created.id, stream, stats.size);
+        const source = getAppAssetLocation(demoApp.id, id);
+        const target = getAppAssetLocation(demoApp.id, created.id);
+        const stream = await getS3File(source.bucket, source.key);
+        const stats = await getS3FileStats(source.bucket, source.key);
+        await uploadS3File(target.bucket, target.key, stream, stats.size);
       }
 
       logger.info(
@@ -148,8 +151,8 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
       logger.info(`Cleaning up ephemeral assets from regular app ${app.id}.`);
 
       try {
-        await deleteS3Files(
-          `app-${app.id}`,
+        await deleteAppAssetObjects(
+          app.id,
           assetsToDestroy.map((a) => a.id),
         );
       } catch (error) {
@@ -220,6 +223,9 @@ export async function handler(): Promise<void> {
       useSSL: argv.s3Secure,
       accessKey: argv.s3AccessKey,
       secretKey: argv.s3SecretKey,
+      region: argv.s3Region,
+      pathStyle: argv.s3PathStyle,
+      bucket: argv.s3Bucket,
     });
   } catch (error: unknown) {
     logger.warn(`S3Error: ${error}`);

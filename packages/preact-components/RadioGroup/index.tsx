@@ -1,7 +1,12 @@
 import { type ComponentChild, type JSX, type VNode } from 'preact';
-import { type MutableRef } from 'preact/hooks';
+import { type MutableRef, useId } from 'preact/hooks';
 
-import { FormComponent, type SharedFormComponentProps, ValuePickerProvider } from '../index.js';
+import {
+  FormComponent,
+  FormComponentError,
+  type SharedFormComponentProps,
+  ValuePickerProvider,
+} from '../index.js';
 
 type RadioGroupProps = Omit<JSX.HTMLAttributes<HTMLInputElement>, 'label' | 'onChange' | 'value'> &
   SharedFormComponentProps & {
@@ -28,11 +33,6 @@ type RadioGroupProps = Omit<JSX.HTMLAttributes<HTMLInputElement>, 'label' | 'onC
     readonly value: any;
 
     /**
-     * The label to display if the input group is optional.
-     */
-    readonly optionalLabel?: ComponentChild;
-
-    /**
      * The tag to display to the right of the label.
      */
     readonly tag?: ComponentChild;
@@ -56,11 +56,13 @@ export function RadioGroup({
   tag,
   value,
 }: RadioGroupProps): VNode {
+  const labelId = useId();
+
   return (
     <FormComponent
       className={className}
-      id={name}
       label={label}
+      labelId={labelId}
       optionalLabel={optionalLabel}
       required={required}
       tag={tag}
@@ -71,8 +73,9 @@ export function RadioGroup({
         onChange={onChange}
         value={value}
       >
-        {children}
-        {error ? <p className="help is-danger">{error}</p> : null}
+        <div aria-labelledby={label ? labelId : undefined} role="radiogroup">
+          <FormComponentError error={error}>{children}</FormComponentError>
+        </div>
       </ValuePickerProvider>
     </FormComponent>
   );

@@ -283,6 +283,41 @@ describe('config', () => {
       });
     });
 
+    it('should handle icon references', () => {
+      const result = getProjectImplementations({
+        webpack: '',
+        output: '',
+        dir: resolveFixture('getProjectImplementations/iconParameters'),
+        name: '',
+        version: '1.33.7',
+      });
+
+      expect(result).toStrictEqual({
+        actions: undefined,
+        events: undefined,
+        messages: undefined,
+        parameters: {
+          $schema: 'http://json-schema.org/draft-07/schema#',
+          additionalProperties: false,
+          properties: {
+            icon: { description: 'This is an icon.', format: 'icon', type: 'string' },
+            buttons: {
+              description: 'Nested icons.',
+              type: 'array',
+              items: {
+                additionalProperties: false,
+                properties: {
+                  icon: { description: 'A button icon.', format: 'icon', type: 'string' },
+                },
+                type: 'object',
+              },
+            },
+          },
+          type: 'object',
+        },
+      });
+    });
+
     it('should handle TypeScript pre emit diagnostics', () => {
       function fn(): void {
         getProjectImplementations({

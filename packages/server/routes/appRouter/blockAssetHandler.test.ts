@@ -1,11 +1,15 @@
-import { errorMiddleware, readFixture, uploadS3File } from '@appsemble/node-utils';
+import {
+  errorMiddleware,
+  getBlockAssetLocation,
+  readFixture,
+  uploadS3File,
+} from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { appRouter } from './index.js';
 import { BlockAsset, BlockVersion, Organization } from '../../models/index.js';
-import { getBlockAssetsBucketName } from '../../utils/blockAssets.js';
 
 describe('blockAssetHandler', () => {
   beforeAll(async () => {
@@ -22,7 +26,8 @@ describe('blockAssetHandler', () => {
     const content = await readFixture('tux.png');
     const storageKey = 'linux/tux/3.1.4/hash/tux.png';
 
-    await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength);
+    const { bucket, key } = getBlockAssetLocation(storageKey);
+    await uploadS3File(bucket, key, content, content.byteLength);
     await BlockAsset.create({
       content,
       filename: 'tux.png',

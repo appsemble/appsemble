@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import { type ComponentProps, type JSX, toChildArray, type VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { type MutableRef, useCallback } from 'preact/hooks';
+import { type MutableRef, useCallback, useContext } from 'preact/hooks';
 
+import { FormComponentContext } from '../FormComponent/index.js';
 import { Option, type OptionProps } from '../Option/index.js';
 import { useCombinedRefs } from '../useCombinedRefs.js';
 
@@ -105,6 +106,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       errorLinkRef as MutableRef<HTMLSelectElement>,
     );
 
+    const aria = useContext(FormComponentContext);
+
     return (
       <div
         className={classNames('select', className, {
@@ -119,6 +122,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           name={name}
           onChange={handleChange}
           ref={combinedRef}
+          {...aria}
           {...props}
         >
           {options}

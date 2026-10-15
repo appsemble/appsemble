@@ -111,6 +111,37 @@ describe('updateAppServiceSecret', () => {
     `);
   });
 
+  it('should reset the recorded token error', async () => {
+    const { AppServiceSecret } = await getAppDB(app.id);
+    const failedAt = new Date('2026-09-15T08:00:00.000Z');
+    const secret = await AppServiceSecret.create({
+      name: 'Graph',
+      urlPatterns: 'https://graph.microsoft.com',
+      authenticationMethod: 'client-credentials',
+      identifier: 'client-id',
+      secret: 'expired',
+      tokenUrl: 'https://login.microsoftonline.com/tenant/oauth2/v2.0/token',
+      lastTokenError: 'AADSTS7000215: Invalid client secret provided.',
+      lastTokenErrorAt: failedAt,
+      lastTokenErrorNotifiedAt: failedAt,
+    });
+
+    const response = await request.put(`/api/apps/${app.id}/secrets/service/${secret.id}`, {
+      name: 'Graph',
+      urlPatterns: 'https://graph.microsoft.com',
+      authenticationMethod: 'client-credentials',
+      identifier: 'client-id',
+      secret: 'renewed',
+      tokenUrl: 'https://login.microsoftonline.com/tenant/oauth2/v2.0/token',
+    });
+
+    expect(response.status).toBe(200);
+    await secret.reload();
+    expect(secret.lastTokenError).toBeNull();
+    expect(secret.lastTokenErrorAt).toBeNull();
+    expect(secret.lastTokenErrorNotifiedAt).toBeNull();
+  });
+
   it('should throw status 404 for unknown secrets', async () => {
     authorizeStudio();
     const response = await request.put(`/api/apps/${app.id}/secrets/service/123`, {

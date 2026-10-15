@@ -18,7 +18,6 @@
     - [Registering an Organization](#registering-an-organization)
     - [Publishing Blocks](#publishing-blocks)
     - [Publishing App templates](#publishing-app-templates)
-  - [Development Server](#development-server)
   - [Tests](#tests)
   - [Building](#building)
 - [Contributing](#contributing)
@@ -87,9 +86,10 @@ Compose configuration to spin up these pre-configured services with ease.
 docker compose up -d
 ```
 
-The project can be served using the following command.
+Initialize the database, then start the development server.
 
 ```sh
+npm run appsemble -- migrate next
 npm start
 ```
 
@@ -166,16 +166,6 @@ npm run appsemble -- app publish --context development apps/*
 ```
 
 The published apps will be displayed on the `App store` page.
-
-### Development Server
-
-The development server can be started by running:
-
-```sh
-npm run appsemble -- serve <path-to-app-directory>
-```
-
-See the [CLI readme](packages/cli/README.md#development-server)
 
 ### Tests
 

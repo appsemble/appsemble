@@ -2,6 +2,7 @@ import * as nodeUtils from '@appsemble/node-utils';
 import {
   createFixtureStream,
   createFormData,
+  getAppAssetLocation,
   getS3FileBuffer,
   readFixture,
 } from '@appsemble/node-utils';
@@ -109,7 +110,8 @@ describe('createAppAsset', () => {
       `/api/apps/${app.id}/assets`,
       createFormData({ file: data, name: 'test-asset' }),
     );
-    expect(await getS3FileBuffer(`app-${app.id}`, response.data.id)).toStrictEqual(data);
+    const { bucket, key } = getAppAssetLocation(app.id, response.data.id);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(data);
   });
 
   it('should not allow using conflicting names', async () => {
@@ -222,7 +224,8 @@ describe('createAppAsset', () => {
       filename: 'uploaded.bin',
       mime: 'image/png',
     });
-    expect(await getS3FileBuffer(`app-${app.id}`, response.data.id)).toStrictEqual(image);
+    const { bucket, key } = getAppAssetLocation(app.id, response.data.id);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(image);
   });
 
   it('should reject invalid image uploads by content', async () => {

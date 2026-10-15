@@ -23,6 +23,21 @@ declare module '@appsemble/sdk' {
      * This message is displayed if no data has been loaded yet.
      */
     loading: never;
+
+    /**
+     * The accessible name of the button that removes the selected image.
+     */
+    removeImage: never;
+
+    /**
+     * The accessible name of the control that selects an image to scan.
+     */
+    selectImage: never;
+
+    /**
+     * The accessible name of the button that stops the camera scanner.
+     */
+    stopScanning: never;
   }
 
   interface Parameters {

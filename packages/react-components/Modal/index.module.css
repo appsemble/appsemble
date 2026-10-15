@@ -2,6 +2,10 @@
   /* The transition times must be matched by the timeout value in the React code. */
   transition: opacity 300ms;
   z-index: 6000;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .opening {

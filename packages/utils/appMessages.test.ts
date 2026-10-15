@@ -72,6 +72,23 @@ describe('extractAppMessages', () => {
     });
   });
 
+  it('should extract the segments of the translatable built-in routes', () => {
+    const result = extractAppMessages({ name: 'Test app', defaultPage: '', pages: [] });
+    expect(result).toMatchObject({
+      app: {
+        'routes.Login': 'Login',
+        'routes.Register': 'Register',
+        'routes.Settings': 'Settings',
+        'routes.Reset-Password': 'Reset-Password',
+        'routes.Edit-Password': 'Edit-Password',
+        'routes.Verify': 'Verify',
+        'routes.Group-Invite': 'Group-Invite',
+        'routes.App-Invite': 'App-Invite',
+        'routes.Feedback': 'Feedback',
+      },
+    });
+  });
+
   it('should extract block header remappers', () => {
     const result = extractAppMessages({
       name: 'Test app',

@@ -12,6 +12,6 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}/api/health']
+      args: ['{{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}/health/ready']
   restartPolicy: Never
 {{- end -}}

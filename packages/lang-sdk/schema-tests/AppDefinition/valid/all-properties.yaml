@@ -12,6 +12,12 @@ layout:
   navigation: left-menu
   breadcrumbs: true
 
+icons:
+  dossier:
+    asset: dossier-icon
+  shared:
+    asset: dossier-icon
+
 theme:
   dangerColor: '#ff0000'
   primaryColor: '#fe87f0'

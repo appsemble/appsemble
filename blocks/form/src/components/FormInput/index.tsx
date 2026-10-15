@@ -36,6 +36,7 @@ const MarkdownInput = lazy(() =>
 interface FormInputProps extends Omit<InputProps<any, Field>, 'dirty' | 'errorLinkRef'> {
   readonly formDataLoading: boolean;
   readonly display?: FormDisplay;
+  readonly hasTriedToSubmit: boolean;
   readonly setFieldErrorLink?: (
     fieldName: string,
     params: { ref: MutableRef<HTMLElement>; error: string; label: string },
@@ -49,8 +50,14 @@ interface FormInputProps extends Omit<InputProps<any, Field>, 'dirty' | 'errorLi
 /**
  * Render any type of form input.
  */
-export function FormInput({ field, onChange, ...props }: FormInputProps): VNode | null | undefined {
-  const [dirty, setDirty] = useState(false);
+export function FormInput({
+  field,
+  hasTriedToSubmit,
+  onChange,
+  ...props
+}: FormInputProps): VNode | null | undefined {
+  const [changed, setChanged] = useState(false);
+  const dirty = changed || hasTriedToSubmit;
   const { utils } = useBlock();
 
   const errorLinkRef = useRef<HTMLElement>() as MutableRef<HTMLElement>;
@@ -71,7 +78,7 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
 
   const handleChange = useCallback(
     (event: never, value: any) => {
-      setDirty(true);
+      setChanged(true);
       onChange(field.name, value);
     },
     [field, onChange],
@@ -187,6 +194,7 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
           dirty={dirty}
           errorLinkRef={errorLinkRef}
           field={field}
+          hasTriedToSubmit={hasTriedToSubmit}
           onChange={handleChange}
           setFieldErrorLink={setFieldErrorLink}
           {...props}

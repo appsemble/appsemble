@@ -7,6 +7,7 @@ export * from './blockUtils.js';
 export * from './validation.js';
 export * from './findPageByName.js';
 export * from './gridUtils.js';
+export * from './icons.js';
 export * from './pageUtils.js';
 export * from './iterApp.js';
 export * from './serverActions.js';

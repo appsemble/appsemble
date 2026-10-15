@@ -41,7 +41,7 @@ pages:
     pages: {
       type: 'array',
       minItems: 1,
-      description: 'The pages of the app.',
+      description: 'The pages grouped in this container. These may be container pages themselves.',
       items: {
         anyOf: [
           { $ref: '#/components/schemas/PageDefinition' },

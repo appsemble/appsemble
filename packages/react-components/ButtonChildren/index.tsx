@@ -1,5 +1,5 @@
+import { type IconReference } from '@appsemble/lang-sdk';
 import { type BulmaColor, type BulmaSize } from '@appsemble/types';
-import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type ReactNode } from 'react';
 
 import { Icon } from '../index.js';
@@ -11,9 +11,9 @@ interface ButtonChildrenProps {
   readonly children?: ReactNode;
 
   /**
-   * A Font Awesome icon name to render left of the button text.
+   * A Font Awesome icon name or an `icon:<key>` reference to render left of the button text.
    */
-  readonly icon?: IconName;
+  readonly icon?: IconReference;
 
   /**
    * The position of the icon.

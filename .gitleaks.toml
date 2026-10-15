@@ -13,3 +13,9 @@ regexes = [
   '''s3-access-key''',
   '''s3-secret-key''',
 ]
+
+[[allowlists]]
+description = "Placeholder PEM keys in tests"
+paths = ['''.*\.test\.tsx?$''']
+regexTarget = "line"
+regexes = ['''-----BEGIN PRIVATE KEY-----\\n[A-Z]{2,3}\\n-----END PRIVATE KEY-----''']

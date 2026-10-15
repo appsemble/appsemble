@@ -15,6 +15,7 @@ import {
   writeData,
 } from '@appsemble/node-utils';
 import {
+  APP_VALIDATION_FAILED,
   type App,
   type AppConfigEntryDefinition,
   type AppLock,
@@ -32,7 +33,7 @@ import {
   type ValueFromProcess,
   type WritableAppSamlSecret,
 } from '@appsemble/types';
-import { extractAppMessages, has } from '@appsemble/utils';
+import { extractAppMessages, has, normalizeLocale } from '@appsemble/utils';
 import axios from 'axios';
 import csv from 'csvtojson';
 import { type BuildResult } from 'esbuild';
@@ -327,7 +328,9 @@ export async function uploadMessages(
     join(path, 'i18n'),
     async (messageFile) => {
       logger.verbose(`Processing ${messageFile} ⚙️`);
-      const { name: language } = parse(messageFile);
+      // Weblate names its catalogs with a POSIX locale, such as `zh_Hans.json`. The API takes a
+      // BCP 47 language tag.
+      const language = normalizeLocale(parse(messageFile).name);
 
       if (result.some((entry) => entry.language === language)) {
         throw new AppsembleError(
@@ -563,7 +566,7 @@ function parseValueFromDefinition(value: ValueFromDefinition): ValueFromProcess 
   return parsed;
 }
 
-export function parseValues(
+function parseValues(
   type: string,
   name: string,
   valuesToParse: Record<string, ValueFromDefinition>[],
@@ -934,7 +937,8 @@ export async function writeAppMessages(
           return [key, extractedMessages.app[key]];
         }
 
-        if (verify.includes(parse(filepath).name)) {
+        // Route segments are translated by choice, so a verified language may leave them empty.
+        if (verify.includes(parse(filepath).name) && !key.startsWith('routes.')) {
           throw new AppsembleError(`Missing translation: app.${key}`);
         }
 
@@ -1416,7 +1420,9 @@ export async function publishApp({
     if (!axios.isAxiosError(error)) {
       throw error;
     }
-    if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
+    if (
+      (error.response?.data as { data?: { code?: string } })?.data?.code !== APP_VALIDATION_FAILED
+    ) {
       throw error;
     }
     throw new AppsembleError(
@@ -1852,7 +1858,9 @@ export async function updateApp({
     if (!axios.isAxiosError(error)) {
       throw error;
     }
-    if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
+    if (
+      (error.response?.data as { data?: { code?: string } })?.data?.code !== APP_VALIDATION_FAILED
+    ) {
       throw error;
     }
     throw new AppsembleError(

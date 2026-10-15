@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.27-labs
+# syntax=docker/dockerfile:1.28-labs
 # Build the image libraries with HEVC decoding support.
 FROM node:24-trixie-slim AS image-libraries
 
@@ -28,8 +28,8 @@ RUN mkdir /tmp/libheif \
   && cmake --install /tmp/libheif/build \
   && rm -rf /tmp/libheif /tmp/libheif.tar.gz
 
-ARG VIPS_VERSION=8.18.6
-ADD --checksum=sha256:3c41e1d5458081bfa4a5bc54e116c46259c75c6760a18027764555632b9dda3e \
+ARG VIPS_VERSION=8.18.7
+ADD --checksum=sha256:5baaead3b0bb20ffdb9e9ff09aa9fda08620923df77b63b436654cb5e0b3bf94 \
   https://github.com/libvips/libvips/releases/download/v${VIPS_VERSION}/vips-${VIPS_VERSION}.tar.xz /tmp/vips.tar.xz
 RUN mkdir /tmp/vips \
   && tar -xf /tmp/vips.tar.xz -C /tmp/vips --strip-components=1 \
@@ -93,12 +93,15 @@ RUN rm -r package-lock.json
 # Setup the production docker image.
 FROM node:24-trixie-slim
 
-# Install postgresql-client for pg_dump (used by backup-production-data command)
+# Install PostgreSQL 18 client tools for pg_dump (used by backup-production-data command)
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
   rm -f /etc/apt/apt.conf.d/docker-clean \
   && apt-get update \
-  && apt-get install --yes --no-install-recommends postgresql-client \
+  && apt-get install --yes --no-install-recommends ca-certificates postgresql-common \
+  && /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y \
+  && apt-get update \
+  && apt-get install --yes --no-install-recommends postgresql-client-18 \
     libaom3 libarchive13t64 libcgif0 libde265-0 libexif12 libexpat1 libfontconfig1 \
     libglib2.0-0t64 libhwy1t64 libimagequant0 libjpeg62-turbo liblcms2-2 \
     libpango-1.0-0 libpangocairo-1.0-0 libpng16-16t64 librsvg2-2 \
@@ -123,8 +126,12 @@ ENTRYPOINT ["appsemble-server"]
 CMD ["start"]
 HEALTHCHECK CMD ["appsemble-server", "health"]
 EXPOSE 9999
-ARG version=0.38.2-test.0
+ARG version=0.40.4
 ARG date
+ARG commit
+# Reported by `/version`.
+ENV GIT_COMMIT="${commit}"
+ENV BUILD_TIME="${date}"
 LABEL io.artifacthub.package.alternative-locations="registry.gitlab.com/appsemble/appsemble:${version}"
 LABEL io.artifacthub.package.keywords="app,apps,appsemble,framework,low-code,lowcode"
 LABEL io.artifacthub.package.license="LGPL-3.0-only"
@@ -133,6 +140,7 @@ LABEL io.artifacthub.package.readme-url="https://gitlab.com/appsemble/appsemble/
 LABEL org.opencontainers.image.created="${date}"
 LABEL org.opencontainers.image.description="The open source low-code app building platform"
 LABEL org.opencontainers.image.documentation="https://appsemble.app/docs"
+LABEL org.opencontainers.image.revision="${commit}"
 LABEL org.opencontainers.image.source="https://gitlab.com/appsemble/appsemble/-/tree/${version}"
 LABEL org.opencontainers.image.title="Appsemble"
 LABEL org.opencontainers.image.vendor="Appsemble"

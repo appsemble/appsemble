@@ -2,6 +2,7 @@ import { Message } from '@appsemble/react-components';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import styles from './index.module.css';
 import { messages } from './messages.js';
 import { ResendEmailButton } from '../ResendEmailButton/index.js';
 import { useUser } from '../UserProvider/index.js';
@@ -14,7 +15,7 @@ export function VerifyBanner(): ReactNode {
   }
 
   return (
-    <Message color="warning">
+    <Message className={styles.root} color="warning">
       <div className="is-flex is-justify-content-space-between is-align-items-center">
         <span>
           <FormattedMessage values={{ email: userInfo.email }} {...messages.verifyEmail} />

@@ -1,4 +1,4 @@
-import { uploadS3File } from '@appsemble/node-utils';
+import { getBlockAssetLocation, uploadS3File } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -9,7 +9,6 @@ import {
   OrganizationMember,
   type User,
 } from '../../../../../models/index.js';
-import { getBlockAssetsBucketName } from '../../../../../utils/blockAssets.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { createTestUser } from '../../../../../utils/test/authorization.js';
@@ -65,7 +64,8 @@ describe('getBlockVersionAsset', () => {
     const content = Buffer.from('console.log("Hello from S3!")');
     const storageKey = 'xkcd/test/1.2.3/hello.js';
 
-    await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength);
+    const { bucket, key } = getBlockAssetLocation(storageKey);
+    await uploadS3File(bucket, key, content, content.byteLength);
     await BlockAsset.create({
       BlockVersionId: block.id,
       content,

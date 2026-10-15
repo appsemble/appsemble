@@ -37,6 +37,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
       401: {
         description: 'User is not authenticated.',
       },
+      429: {
+        description: 'Too many failed TOTP attempts.',
+      },
     },
     security: [{ app: [] }],
   },

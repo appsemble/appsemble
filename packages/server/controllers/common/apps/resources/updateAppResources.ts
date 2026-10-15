@@ -1,6 +1,6 @@
 import {
   assertKoaCondition,
-  deleteS3Files,
+  deleteAppAssetObjects,
   extractResourceBody,
   getCompressedFileMeta,
   getResourceDefinition,
@@ -139,7 +139,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
 
         transaction.afterCommit(async () => {
           try {
-            await deleteS3Files(`app-${appId}`, unusedAssetIds);
+            await deleteAppAssetObjects(appId, unusedAssetIds);
           } catch (error) {
             logger.error(error);
           }
@@ -173,8 +173,8 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     });
   } catch (error) {
     if (preparedAssets.length) {
-      await deleteS3Files(
-        `app-${appId}`,
+      await deleteAppAssetObjects(
+        appId,
         preparedAssets.map((asset) => asset.id),
       );
     }

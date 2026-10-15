@@ -36,6 +36,8 @@ const serverMessageKeys = [
   'server.emails.emailAdded.subject',
   'server.emails.appEmailQuotaLimitHit.body',
   'server.emails.appEmailQuotaLimitHit.subject',
+  'server.emails.serviceSecretTokenError.body',
+  'server.emails.serviceSecretTokenError.subject',
   'server.invoice.invoice',
   'server.invoice.invoiceNumber',
   'server.invoice.invoiceDate',

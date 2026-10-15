@@ -20,18 +20,26 @@ import {
 export class GrantError extends Error {
   status: number;
 
+  /**
+   * Additional properties to merge into the error response body.
+   */
+  data?: Record<string, unknown>;
+
   constructor(
     error:
       | 'invalid_client'
       | 'invalid_grant'
       | 'invalid_request'
       | 'invalid_scope'
+      | 'totp_required'
       | 'unsupported_grant_type',
     status = 400,
+    data?: Record<string, unknown>,
   ) {
     super(error);
     this.status = status;
     this.name = 'GrantError';
+    this.data = data;
   }
 }
 

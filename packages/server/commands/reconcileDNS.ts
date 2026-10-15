@@ -32,6 +32,20 @@ export function builder(yargs: Argv): Argv {
       desc: 'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
       implies: ['service-name'],
     })
+    .option('dns-provider', {
+      desc: 'The provider which serves the DNS zone of the deployment.',
+      choices: ['desec'],
+      implies: ['dns-zone', 'dns-token', 'dns-targets'],
+    })
+    .option('dns-zone', {
+      desc: 'The name of the DNS zone which contains the organization host names.',
+    })
+    .option('dns-token', {
+      desc: 'The token used to authenticate with the API of the DNS provider.',
+    })
+    .option('dns-targets', {
+      desc: 'The IP addresses the organization host names resolve to, comma separated.',
+    })
     .option('host', {
       desc: 'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
       required: true,

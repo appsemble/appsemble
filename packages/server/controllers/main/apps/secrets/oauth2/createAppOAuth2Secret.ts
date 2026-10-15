@@ -7,6 +7,7 @@ import { App, getAppDB } from '../../../../../models/index.js';
 import { touchApp } from '../../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
+import { getSsoIconError } from '../../../../../utils/icons.js';
 import {
   normalizeLoginRoleMappings,
   validateLoginRoleMappings,
@@ -29,6 +30,9 @@ export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
     organizationId: app.OrganizationId,
     requiredPermissions: [OrganizationPermission.CreateAppSecrets],
   });
+
+  const iconError = getSsoIconError(body.icon, app.definition);
+  assertKoaCondition(iconError == null, ctx, 400, iconError ?? 'Invalid icon');
 
   const roleMappingsError = validateLoginRoleMappings(
     body.roleMappings,

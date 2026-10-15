@@ -194,6 +194,73 @@ describe('createAppOAuth2Secret', () => {
     `);
   });
 
+  it('should accept a custom icon reference which exists in the app icon registry', async () => {
+    authorizeStudio();
+    await app.update({
+      definition: { ...app.definition, icons: { google: { asset: 'google-logo' } } },
+    });
+    const response = await request.post(`/api/apps/${app.id}/secrets/oauth2`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'icon:google',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.data).toMatchObject({ icon: 'icon:google' });
+  });
+
+  it('should reject a custom icon reference which is missing from the app icon registry', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/oauth2`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'icon:google',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "The icon field references the unknown icon key “google”",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should reject an icon reference with an unsupported prefix', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/oauth2`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'asset:google-logo',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "The icon field uses the unsupported prefix “asset:”; only “icon:” is supported",
+        "statusCode": 400,
+      }
+    `);
+  });
+
   it('should throw 404 if no app is found', async () => {
     authorizeStudio();
     const response = await request.post('/api/apps/99999/secrets/oauth2', {

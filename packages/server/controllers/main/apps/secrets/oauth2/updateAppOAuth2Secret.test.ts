@@ -212,6 +212,75 @@ describe('updateAppOAuth2Secret', () => {
     expect(secret.roleMappings).toBeNull();
   });
 
+  it('should reject a custom icon reference which is missing from the app icon registry', async () => {
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    const secret = await AppOAuth2Secret.create({
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+    await app.update({
+      definition: { ...app.definition, icons: { google: { asset: 'google-logo' } } },
+    });
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'icon:microsoft',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "The icon field references the unknown icon key “microsoft”",
+        "statusCode": 400,
+      }
+    `);
+    await secret.reload();
+    expect(secret.icon).toBe('example');
+  });
+
+  it('should accept a custom icon reference which exists in the app icon registry', async () => {
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    const secret = await AppOAuth2Secret.create({
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+    await app.update({
+      definition: { ...app.definition, icons: { google: { asset: 'google-logo' } } },
+    });
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'icon:google',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    expect(response.status).toBe(200);
+    await secret.reload();
+    expect(secret.icon).toBe('icon:google');
+  });
+
   it('should handle if the app id is invalid', async () => {
     authorizeStudio();
     const response = await request.put('/api/apps/123/secrets/oauth2/1', {

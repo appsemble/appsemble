@@ -1,8 +1,13 @@
 import { useBlock } from '@appsemble/preact';
-import { FormComponent } from '@appsemble/preact-components';
+import { FormComponent, Icon } from '@appsemble/preact-components';
 import { Crepe } from '@milkdown/crepe';
 import { linkTooltipAPI } from '@milkdown/kit/component/link-tooltip';
-import { commandsCtx, editorViewCtx, editorViewOptionsCtx } from '@milkdown/kit/core';
+import {
+  commandsCtx,
+  editorViewCtx,
+  editorViewOptionsCtx,
+  serializerCtx,
+} from '@milkdown/kit/core';
 import { type Ctx } from '@milkdown/kit/ctx';
 import {
   linkSchema,
@@ -11,7 +16,8 @@ import {
 } from '@milkdown/kit/preset/commonmark';
 import { gfm, toggleStrikethroughCommand } from '@milkdown/kit/preset/gfm';
 import { type MarkType } from '@milkdown/kit/prose/model';
-import { listenerCtx, listener as listenerPlugin } from '@milkdown/plugin-listener';
+import { Plugin, PluginKey } from '@milkdown/kit/prose/state';
+import { $prose } from '@milkdown/kit/utils';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { useCallback, useEffect, useMemo, useRef } from 'preact/hooks';
@@ -26,6 +32,8 @@ import { getValueByNameSequence } from '../../utils/getNested.js';
 import { isRequired } from '../../utils/requirements.js';
 
 type MarkdownInputProps = InputProps<string, MarkdownField>;
+
+const valueSyncKey = new PluginKey('APPSEMBLE_FORM_VALUE_SYNC');
 
 function isActive(ctx: Ctx, mark: MarkType): boolean {
   if (!ctx) {
@@ -82,21 +90,30 @@ export function MarkdownInput({
 
   useEffect(() => {
     async function configure(crepe: NonNullable<typeof crepeRef.current>): Promise<void> {
-      // https://milkdown.dev/docs/api/plugin-listener
+      // Report every document change as it happens, like the other inputs do: the form validates
+      // against its current values on submit, so a value that arrives later than the submit is
+      // lost.
+      const valueSync = $prose(
+        (ctx) =>
+          new Plugin({
+            key: valueSyncKey,
+            view: () => ({
+              update(view, prevState): void {
+                if (view.state.doc.eq(prevState.doc)) {
+                  return;
+                }
+                onChange(name, stripImages(ctx.get(serializerCtx)(view.state.doc)));
+              },
+            }),
+          }),
+      );
       crepe.editor
         .config((ctx) => {
           ctx.set(editorViewOptionsCtx, { editable: () => true });
-          const listener = ctx.get(listenerCtx);
-          listener.markdownUpdated((...[, markdown, prevMarkdown]) => {
-            if (markdown !== prevMarkdown) {
-              const markdownWithoutImages = stripImages(markdown);
-              onChange(name, markdownWithoutImages);
-            }
-          });
         })
         // Github-flavored Markdown
         .use(gfm)
-        .use(listenerPlugin);
+        .use(valueSync);
       await crepe.create();
     }
 
@@ -183,21 +200,22 @@ export function MarkdownInput({
       help={help}
       icon={icon}
       label={remappedLabel as string}
+      optionalLabel={utils.formatMessage('optionalLabel')}
       required={isRequired(field, utils, formValues)}
       tag={tag}
     >
       <div className={classNames('is-flex is-flex-direction-row', styles.gap)}>
         <button className="button" onClick={toggleBold} title="Bold" type="button">
-          <i className="fas fa-bold" />
+          <Icon icon="bold" />
         </button>
         <button className="button" onClick={toggleItalic} title="Italic" type="button">
-          <i className="fas fa-italic" />
+          <Icon icon="italic" />
         </button>
         <button className="button" onClick={toggleStrikethrough} title="Strike out" type="button">
-          <i className="fas fa-strikethrough" />
+          <Icon icon="strikethrough" />
         </button>
         <button className="button" onClick={toggleLink} title="Add link" type="button">
-          <i className="fas fa-link" />
+          <Icon icon="link" />
         </button>
       </div>
       <div id="root-crepe" ref={crepeRootRef} />

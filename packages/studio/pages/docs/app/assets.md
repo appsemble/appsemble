@@ -72,22 +72,29 @@ assets with the ones currently in the assets directory of the app.
 Assets can be referenced in custom CSS using the `asset()` function. This function can be used
 wherever a URL is expected, such as in `background-image` or `font-face`.
 
-The `asset()` function can be used in two ways:
+The `asset()` function takes a single quoted string, which is either:
 
-- `asset('asset-name')`: This will be resolved to `url('/api/apps/{appId}/assets/{asset-name}')`.
-  **This is the preferred way.**
-- `url(asset('asset-name'))`: This is also supported and resolves to the same URL.
-
-Example:
+- An asset name or id, such as `asset('hero-bg')`, resolving to
+  `url('/api/apps/{appId}/assets/hero-bg')`.
+- An app asset path, such as `asset('/api/apps/123/assets/hero-bg')`, resolving to the same asset on
+  the app the stylesheet belongs to. The app id in the path is replaced, so stylesheets copied
+  between apps keep working. A query string and fragment are preserved.
 
 ```css copy
 .my-class {
   background-image: asset('hero-bg');
+  border-image: asset('/api/apps/123/assets/border?width=10');
 }
 ```
 
-This is particularly useful because it automatically handles the app ID and base URL of the
-Appsemble instance.
+App asset paths written as a plain URL are rewritten the same way, so
+`url('/api/apps/123/assets/hero-bg')` also resolves to an asset of the app the stylesheet belongs
+to.
+
+Anything else is rejected: the stylesheet is refused when it is uploaded, rather than resolving to a
+broken URL. This includes references containing a path separator or an escaped one, absolute URLs,
+and data URIs. To reference an image hosted elsewhere, use `url()` with the absolute URL instead,
+which is left untouched.
 
 ## Clonable assets
 

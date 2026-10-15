@@ -3,6 +3,8 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import jwt from 'jsonwebtoken';
+import { type default as Koa } from 'koa';
+import { ValidationError } from 'sequelize';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -27,11 +29,12 @@ let user: User;
 
 describe('verifyAppOAuth2SecretCode', () => {
   let secret: AppOAuth2Secret;
+  let server: Koa;
 
   beforeAll(async () => {
     vi.useFakeTimers();
     setArgv({ host: 'http://localhost', secret: 'test' });
-    const server = await createServer();
+    server = await createServer();
     await setTestApp(server);
   });
 
@@ -230,6 +233,81 @@ describe('verifyAppOAuth2SecretCode', () => {
       scope: 'resources:manage',
     });
   });
+
+  it('should report the original account creation error when OAuth2 provides no email', async () => {
+    await secret.update({ userInfoUrl: null });
+    // Test secret for mocking OAuth2 token
+    // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
+    const accessToken = jwt.sign({ sub: 'missing-email' }, 'random');
+    mock.onPost('https://example.com/oauth/token').reply(200, {
+      access_token: accessToken,
+      token_type: 'bearer',
+    });
+    const serverError = new Promise<Error>((resolve) => {
+      server.once('error', resolve);
+    });
+
+    const response = await request.post(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://test-app.testorganization.localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
+      { headers: { referer: 'http://localhost' } },
+    );
+
+    expect(response.status).toBe(500);
+    const error = await serverError;
+    expect(error).toBeInstanceOf(ValidationError);
+    expect(error.message).toContain('AppMember.email cannot be null');
+  });
+
+  it.each([
+    { emailVerified: false, status: 403 },
+    { emailVerified: true, status: 409 },
+  ])(
+    'should require account linking for an existing email ($emailVerified)',
+    async ({ emailVerified, status }) => {
+      await secret.update({ userInfoUrl: null });
+      const { AppMember } = await getAppDB(app.id);
+      await AppMember.create({
+        email: 'existing@example.com',
+        emailVerified: true,
+        role: 'Test',
+      });
+      const accessToken = jwt.sign(
+        { email: 'existing@example.com', email_verified: emailVerified, sub: 'new-identity' },
+        // Test secret for mocking OAuth2 token
+        // nosemgrep: nodejs_scan.javascript-jwt-rule-hardcoded_jwt_secret
+        'random',
+      );
+      mock.onPost('https://example.com/oauth/token').reply(200, {
+        access_token: accessToken,
+        token_type: 'bearer',
+      });
+
+      const response = await request.post(
+        `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+        {
+          code: 'authorization_code',
+          redirectUri: 'http://test-app.testorganization.localhost',
+          scope: 'resources:manage',
+          timezone: 'Europe/Amsterdam',
+        },
+        { headers: { referer: 'http://localhost' } },
+      );
+
+      expect(response.status).toBe(status);
+      expect(response.data.message).toBe(
+        emailVerified
+          ? 'Account already exists for this email.'
+          : 'Account linking requires an email address verified by the external login provider.',
+      );
+      expect(await AppMember.count()).toBe(1);
+    },
+  );
 
   it('should find Appsemble user with authorization if not already logged in', async () => {
     const oauth2User = {

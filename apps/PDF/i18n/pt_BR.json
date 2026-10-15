@@ -1,0 +1,14 @@
+{
+  "app": {
+    "app.roles.User": "",
+    "app.roles.User.description": "",
+    "description": "",
+    "name": "",
+    "pages.create-report": ""
+  },
+  "messageIds": {
+    "author": "",
+    "content": "",
+    "reportTitle": ""
+  }
+}

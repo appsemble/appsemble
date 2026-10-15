@@ -1,0 +1,26 @@
+{
+  "app": {
+    "description": "",
+    "name": "",
+    "pages.finished": "",
+    "pages.survey": "",
+    "pages.survey.steps.0": "",
+    "pages.survey.steps.1": "",
+    "pages.survey.steps.2": "",
+    "pages.survey.steps.3": "",
+    "pages.survey.steps.4": ""
+  },
+  "messageIds": {
+    "anythingElse": "",
+    "appsembleRating": "",
+    "backToHome": "",
+    "betterExperience": "",
+    "finished": "",
+    "introText": "",
+    "no": "",
+    "notTriedReason": "",
+    "start": "",
+    "triedAppsemble": "",
+    "yes": ""
+  }
+}

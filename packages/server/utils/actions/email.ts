@@ -1,5 +1,10 @@
 import { defaultLocale, type EmailActionDefinition, remap } from '@appsemble/lang-sdk';
-import { getRemapperContext, getS3FileBuffer, throwKoaError } from '@appsemble/node-utils';
+import {
+  getAppAssetLocation,
+  getRemapperContext,
+  getS3FileBuffer,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import { extension } from 'mime-types';
 import { type SendMailOptions } from 'nodemailer';
 import { Op } from 'sequelize';
@@ -120,8 +125,9 @@ export async function email({
       const ext = extension(attachment?.accept || asset.mime);
       const filename =
         attachment?.filename || asset.filename || (ext ? `${asset.id}.${ext}` : asset.id);
+      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
       attachments.push({
-        content: await getS3FileBuffer(`app-${app.id}`, asset.id),
+        content: await getS3FileBuffer(bucket, key),
         filename,
       });
     }

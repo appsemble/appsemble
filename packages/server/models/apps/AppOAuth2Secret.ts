@@ -1,6 +1,5 @@
-import { type Remapper } from '@appsemble/lang-sdk';
+import { type IconReference, type Remapper } from '@appsemble/lang-sdk';
 import { type AppLoginRoleMapping } from '@appsemble/types';
-import { type IconName } from '@fortawesome/fontawesome-common-types';
 import {
   AllowNull,
   AutoIncrement,
@@ -34,7 +33,7 @@ export class AppOAuth2SecretGlobal extends Model {
 
   declare clientSecret: string;
 
-  declare icon: IconName;
+  declare icon: IconReference;
 
   declare name: string;
 
@@ -99,7 +98,7 @@ export function createAppOAuth2SecretModel(sequelize: Sequelize): typeof AppOAut
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    declare icon: IconName;
+    declare icon: IconReference;
 
     @AllowNull(false)
     @Column(DataType.STRING)

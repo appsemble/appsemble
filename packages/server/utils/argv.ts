@@ -105,6 +105,26 @@ export interface Argv {
    */
   clusterIssuer?: string;
 
+  /**
+   * The provider which serves the DNS zone of the deployment.
+   */
+  dnsProvider?: string;
+
+  /**
+   * The name of the DNS zone which contains the organization host names.
+   */
+  dnsZone?: string;
+
+  /**
+   * The token used to authenticate with the API of the DNS provider.
+   */
+  dnsToken?: string;
+
+  /**
+   * The IP addresses the organization host names resolve to, comma separated.
+   */
+  dnsTargets?: string;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Database                                                                                     //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -491,6 +511,30 @@ export interface Argv {
   s3SecretKey: string;
 
   /**
+   * The single, pre-provisioned bucket that holds all app and block assets.
+   *
+   * When unset, every app gets its own bucket and block assets live in the `appsemble-block-assets`
+   * bucket.
+   *
+   * default undefined
+   */
+  s3Bucket: string;
+
+  /**
+   * The region to sign requests to the Amazon S3 compatible object storage server for
+   *
+   * default us-east-1
+   */
+  s3Region: string;
+
+  /**
+   * Whether to address buckets in the URL path instead of as a subdomain of the endpoint
+   *
+   * default true
+   */
+  s3PathStyle: boolean;
+
+  /**
    * The base URL for block assets stored in S3 compatible object storage.
    *
    * default undefined
@@ -560,6 +604,22 @@ export interface Argv {
    * default undefined
    */
   backupsSecretKey: string;
+
+  /**
+   * The region to sign requests to the Amazon S3 compatible object storage server for the backups
+   * for
+   *
+   * default us-east-1
+   */
+  backupsRegion?: string;
+
+  /**
+   * Whether to address the backups bucket in the URL path instead of as a subdomain of the
+   * endpoint
+   *
+   * default true
+   */
+  backupsPathStyle?: boolean;
 
   /**
    * The appsemble backup file to restore data from, e.g., appsemble_prod_backup_20250101.sql.gz
@@ -733,6 +793,10 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   s3SecretKey: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  s3Bucket: undefined,
+  s3Region: 'us-east-1',
+  s3PathStyle: true,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   blockAssetsBaseUrl: undefined,
   dryRun: true,
   skipCustomDomains: false,
@@ -746,6 +810,8 @@ const defaults: Argv = {
   backupsAccessKey: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   backupsSecretKey: undefined,
+  backupsRegion: 'us-east-1',
+  backupsPathStyle: true,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   restoreBackupFilename: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)

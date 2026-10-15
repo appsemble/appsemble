@@ -152,6 +152,70 @@ describe('updateAppSamlSecret', () => {
     expect(secret.roleMappings).toBeNull();
   });
 
+  it('should reject a custom icon reference which is missing from the app icon registry', async () => {
+    authorizeStudio();
+    const { AppSamlSecret } = await getAppDB(app.id);
+    const secret = await AppSamlSecret.create({
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: 'user',
+      name: 'Okta',
+      spCertificate: '-----BEGIN CERTIFICATE-----\nSP\n-----END CERTIFICATE-----',
+      spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
+      spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
+    });
+    const response = await request.put(`/api/apps/${app.id}/secrets/saml/${secret.id}`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: 'icon:okta',
+      name: 'Okta',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "The icon field references the unknown icon key “okta”",
+        "statusCode": 400,
+      }
+    `);
+    await secret.reload();
+    expect(secret.icon).toBe('user');
+  });
+
+  it('should accept a custom icon reference which exists in the app icon registry', async () => {
+    authorizeStudio();
+    const { AppSamlSecret } = await getAppDB(app.id);
+    const secret = await AppSamlSecret.create({
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: 'user',
+      name: 'Okta',
+      spCertificate: '-----BEGIN CERTIFICATE-----\nSP\n-----END CERTIFICATE-----',
+      spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
+      spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
+    });
+    await app.update({
+      definition: { ...app.definition, icons: { okta: { asset: 'okta-logo' } } },
+    });
+    const response = await request.put(`/api/apps/${app.id}/secrets/saml/${secret.id}`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: 'icon:okta',
+      name: 'Okta',
+    });
+
+    expect(response.status).toBe(200);
+    await secret.reload();
+    expect(secret.icon).toBe('icon:okta');
+  });
+
   it('should not throw status 404 for unknown apps', async () => {
     authorizeStudio();
     const response = await request.put(`/api/apps/${app.id}/secrets/saml/1`, {

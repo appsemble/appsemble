@@ -1,4 +1,4 @@
-import { normalize, remap, type RemapperContext } from '@appsemble/lang-sdk';
+import { getPagePathSegment, remap, type RemapperContext } from '@appsemble/lang-sdk';
 import { Portal, SideMenuButton } from '@appsemble/react-components';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -16,7 +16,7 @@ import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { GroupDropdown } from '../GroupDropdown/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
-import { DEFAULT_BREAKPOINTS, useGridCss } from '../PageGridProvider/index.js';
+import { useGridBreakpoints, useGridCss, useIsDesktop } from '../PageGridProvider/index.js';
 import { TopNavigation } from '../TopNavigation/index.js';
 
 // Breakpoints the author leaves undefined fall back to a single-row navbar layout so every rendered
@@ -51,8 +51,10 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { lang: locale } = useParams();
   const { pathname } = useLocation();
   const logoInNavbar = (definition.layout?.logo?.position || 'hidden') === 'navbar';
+  const BREAKPOINTS = useGridBreakpoints(definition.layout?.breakpoints);
+  const isDesktop = useIsDesktop(definition.layout?.breakpoints);
   const navbarGridClassName = useGridCss({
-    BREAKPOINTS: { ...DEFAULT_BREAKPOINTS, ...definition.layout?.breakpoints },
+    BREAKPOINTS,
     classNamePrefix: 'navbar-grid',
     defaultLayout: logoInNavbar
       ? NAVBAR_DEFAULT_LAYOUT_WITH_LOGO
@@ -101,14 +103,20 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
     return null;
   }
 
-  const showMenu = shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname);
+  const showMenu = shouldShowMenu(
+    definition,
+    appMemberRoles,
+    appMemberSelectedGroup,
+    pathname,
+    getAppMessage,
+  );
   const topNavigation = navigation === 'top' && showMenu;
 
   // `layout.stackedHeader` gives the logo its own centered row above the top navigation.
   const stackedTopHeader = topNavigation && definition.layout?.stackedHeader === true;
 
   const logoNode = logoInNavbar ? (
-    <Link to={`/${locale}/${normalize(defaultPageName)}`}>
+    <Link to={`/${locale}/${getPagePathSegment({ name: defaultPageName }, getAppMessage)}`}>
       <img
         alt="app-logo"
         className={styles.logo}
@@ -117,10 +125,11 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
     </Link>
   ) : null;
 
-  const nameNode = (
-    <h2 className="navbar-item title is-4 mb-0">
-      {displayAppName ? appName : !hideName && (children || appName)}
-    </h2>
+  // The app name repeats on every page, so it isn't a heading that precedes each page's own H1.
+  const nameNode = displayAppName ? (
+    <p className="navbar-item title is-4 mb-0">{appName}</p>
+  ) : (
+    <h2 className="navbar-item title is-4 mb-0">{!hideName && (children || appName)}</h2>
   );
 
   const headerTagNode =
@@ -142,7 +151,12 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
         </div>
       ) : null}
       {definition.layout?.login == null || definition.layout?.login === 'navbar' ? (
-        <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
+        // Below the desktop breakpoint the top navigation menu lists the profile items instead.
+        <div
+          className={`navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto ${
+            topNavigation && !isDesktop ? 'is-hidden' : ''
+          }`}
+        >
           <ProfileDropdown />
         </div>
       ) : null}

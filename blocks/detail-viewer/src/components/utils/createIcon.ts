@@ -36,35 +36,58 @@ function getIconSize(url: string): Promise<[number, number]> {
 }
 
 /**
+ * Create a leaflet icon from an image.
+ *
+ * @param iconUrl The URL of the image.
+ * @param size The height of the icon in pixels.
+ * @param anchor The anchor offset to use instead of the default.
+ * @param pin Whether the image represents a pin, which is anchored at its bottom center.
+ * @returns The leaflet icon.
+ */
+async function createImageIcon(
+  iconUrl: string,
+  size: number,
+  anchor: [number, number] | undefined,
+  pin: boolean,
+): Promise<Icon> {
+  const [naturalWidth, naturalHeight] = await getIconSize(iconUrl);
+  const width = (size * naturalWidth) / naturalHeight;
+  return new Icon({
+    iconUrl,
+    iconAnchor: anchor || [width / 2, pin ? size : size / 2],
+    iconSize: [width, size],
+  });
+}
+
+/**
  * Create a leaflet icon based on an asset id or a font awesome icon.
  *
  * @param blockParams The block parameters.
  * @returns The leaflet icon.
  */
-export async function createIcon({
+export function createIcon({
   parameters: { icons = {} },
   utils,
 }: BootstrapParams): Promise<DivIcon | Icon> {
   const { anchor, size = 28 } = icons;
   if ('asset' in icons) {
-    const iconUrl = utils.asset(icons.asset);
-    const [naturalWidth, naturalHeight] = await getIconSize(iconUrl);
-    const width = (size * naturalWidth) / naturalHeight;
-    return new Icon({
-      iconUrl,
-      iconAnchor: anchor || [width / 2, size / 2],
-      iconSize: [width, size],
-    });
+    return createImageIcon(utils.asset(icons.asset), size, anchor, false);
   }
 
   const { icon = 'map-marker-alt' } = icons;
+  const resolved = utils.resolveIcon(icon);
+  if (resolved.type === 'asset') {
+    return createImageIcon(resolved.url, size, anchor, KNOWN_MARKER_ICONS.has(icon));
+  }
   const html = document.createElement('i');
   html.className = `${utils.fa(icon)} has-text-${icons.color || 'primary'}`;
   html.style.fontSize = `${size}px`;
-  return new DivIcon({
-    className: styles.fontawesomeMarker,
-    html,
-    iconAnchor: anchor || [size / 2, KNOWN_MARKER_ICONS.has(icon) ? size : size / 2],
-    iconSize: [size, size],
-  });
+  return Promise.resolve(
+    new DivIcon({
+      className: styles.fontawesomeMarker,
+      html,
+      iconAnchor: anchor || [size / 2, KNOWN_MARKER_ICONS.has(icon) ? size : size / 2],
+      iconSize: [size, size],
+    }),
+  );
 }

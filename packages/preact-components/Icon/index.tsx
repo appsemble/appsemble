@@ -1,24 +1,34 @@
+import { type IconReference } from '@appsemble/lang-sdk';
 import { useBlock } from '@appsemble/preact';
 import { type BulmaSize } from '@appsemble/types';
-import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { getIconSizeModifier, type IconSizeModifier } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
+import { type ComponentPropsWithoutRef } from 'preact/compat';
+import { useState } from 'preact/hooks';
 
-interface IconProps {
+import styles from './index.module.css';
+
+interface IconProps extends Omit<ComponentPropsWithoutRef<'button'>, 'icon' | 'size'> {
   /**
    * The CSS class to apply to the icon.
    */
   readonly className?: string;
 
   /**
-   * The name of the FontAwesome icon.
+   * The element to render as the `.icon` wrapper.
    */
-  readonly icon: IconName;
+  readonly component?: 'button' | 'span';
+
+  /**
+   * The name of the Font Awesome icon, or an `icon:<key>` reference to the app’s icon registry.
+   */
+  readonly icon: IconReference;
 
   /**
    * The size modifier for the icon.
    */
-  readonly iconSize?: '2x' | '3x' | 'lg';
+  readonly iconSize?: IconSizeModifier;
 
   /**
    * The size modifier for the container of the icon.
@@ -26,23 +36,43 @@ interface IconProps {
   readonly size?: BulmaSize;
 }
 
-const iconSizeMap: { medium: 'lg'; large: '2x' } = { medium: 'lg', large: '2x' };
-
 /**
- * Display a FontAwesome icon.
+ * Display a Font Awesome icon or a custom icon from the app’s icon registry.
  */
 export function Icon({
   className,
+  component: Component = 'span',
   icon,
   size,
-  iconSize = iconSizeMap[size as 'large' | 'medium'],
+  iconSize = getIconSizeModifier(size),
+  ...props
 }: IconProps): VNode {
   const {
-    utils: { fa },
+    utils: { fa, resolveIcon },
   } = useBlock();
+  const [failedUrl, setFailedUrl] = useState<string>();
+  const resolved = resolveIcon(icon);
+
   return (
-    <span className={classNames('icon', size && `is-${size}`, className)}>
-      <i className={classNames(fa(icon), iconSize && `fa-${iconSize}`)} />
-    </span>
+    <Component
+      className={classNames('icon', size && `is-${size}`, className, {
+        [styles.asset]: resolved.type === 'asset',
+      })}
+      {...props}
+    >
+      {resolved.type === 'fontawesome' ? (
+        <i className={classNames(fa(resolved.name), iconSize && `fa-${iconSize}`)} />
+      ) : null}
+      {resolved.type === 'asset' && resolved.url !== failedUrl ? (
+        // The error handler only tracks loading failures, it doesn’t make the image interactive.
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+        <img
+          alt=""
+          className={styles.image}
+          onError={() => setFailedUrl(resolved.url)}
+          src={resolved.url}
+        />
+      ) : null}
+    </Component>
   );
 }

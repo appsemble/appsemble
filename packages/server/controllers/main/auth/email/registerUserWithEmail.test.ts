@@ -1,12 +1,21 @@
-import { jwtPattern } from '@appsemble/utils';
+import { createServer as createTcpServer, type AddressInfo } from 'node:net';
+
+import { jwtPattern, noop } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
+import { Redis } from 'ioredis';
 import type Koa from 'koa';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { EmailAuthorization, User } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
+import { getValkeyClient } from '../../../../utils/valkey.js';
+
+vi.mock('../../../../utils/valkey.js', async (importOriginal) => {
+  const mod = await importOriginal<typeof import('../../../../utils/valkey.js')>();
+  return { ...mod, getValkeyClient: vi.fn(mod.getValkeyClient) };
+});
 
 let server: Koa;
 
@@ -180,5 +189,34 @@ describe('registerUserWithEmail', () => {
         "statusCode": 409,
       }
     `);
+  });
+
+  it('should not rate limit while Valkey is unavailable', async () => {
+    // Reserve a port nothing listens on, then point a client at it.
+    const tcpServer = createTcpServer();
+    await new Promise<void>((resolve) => {
+      tcpServer.listen(0, '127.0.0.1', resolve);
+    });
+    const { port } = tcpServer.address() as AddressInfo;
+    await new Promise<void>((resolve) => {
+      tcpServer.close(() => resolve());
+    });
+    const client = new Redis({
+      enableOfflineQueue: false,
+      host: '127.0.0.1',
+      lazyConnect: true,
+      port,
+      retryStrategy: () => 5000,
+    });
+    client.on('error', noop);
+    await expect(client.connect()).rejects.toThrow('Connection is closed.');
+    vi.mocked(getValkeyClient).mockReturnValue(client);
+
+    const data = { email: 'test@example.com', password: 'password', timezone: 'Europe/Amsterdam' };
+    expect((await request.post('/api/auth/email/register', data)).status).toBe(201);
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      expect((await request.post('/api/auth/email/register', data)).status).toBe(409);
+    }
+    client.disconnect();
   });
 });

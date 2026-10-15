@@ -5,7 +5,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   post: {
     tags: ['app', 'auth', 'totp'],
     description:
-      'Initialize TOTP setup for the current app member. Returns a secret and otpauth URL for QR code generation. When TOTP is required for the app, unauthenticated setup is allowed by providing a memberId.',
+      'Initialize TOTP setup for the current app member. Returns a secret and otpauth URL for QR code generation. App members who still have to enroll to complete their login identify themselves with the pending TOTP token from the first login step instead of an access token.',
     operationId: 'setupAppMemberTotp',
     requestBody: {
       content: {
@@ -13,11 +13,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
           schema: {
             type: 'object',
             properties: {
-              memberId: {
+              totpToken: {
                 type: 'string',
-                format: 'uuid',
                 description:
-                  'The app member ID. Only used for unauthenticated setup when TOTP is required.',
+                  'The pending TOTP token from the first login step. Only used when no access token is available yet.',
               },
             },
           },
@@ -50,9 +49,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
       },
       401: {
         description: 'User is not authenticated.',
-      },
-      403: {
-        description: 'Unauthenticated TOTP setup is only allowed when TOTP is required.',
       },
     },
     security: [{ app: [] }, {}],

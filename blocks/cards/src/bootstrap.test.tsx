@@ -95,10 +95,12 @@ function setup({ hideOnNoData = false }: SetupOptions = {}): Setup {
     ready,
     utils: {
       asset: (value: string) => value,
+      fa: (name: string) => `fas fa-${name}`,
       formatMessage: (id: string) => id,
       remap(remapper: string | { prop: string } | undefined, data: Item) {
         return typeof remapper === 'object' ? data[remapper.prop as keyof Item] : remapper;
       },
+      resolveIcon: (name: string) => ({ type: 'fontawesome', name }),
     },
   } as unknown as BlockProps;
 

@@ -1,5 +1,8 @@
 {
   "clearLabel": "Jasno",
-  "modalTitle": "Filtriraj",
-  "submitLabel": "Filtriraj"
+  "closeLabel": "",
+  "modalTitle": "Filtar",
+  "sliderMaximum": "",
+  "sliderMinimum": "",
+  "submitLabel": "Filtar"
 }

@@ -1,6 +1,7 @@
 import {
   getPageDisplayName,
   getPagePathSegment,
+  getRouteSegment,
   type PageDefinition,
   remap,
 } from '@appsemble/lang-sdk';
@@ -18,8 +19,9 @@ import { usePWAInstall } from 'react-use-pwa-install';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { checkPagePermissions } from '../../utils/authorization.js';
+import { shouldShowPage } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
+import { useActiveNavigation } from '../../utils/useActiveNavigation.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -48,9 +50,10 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
   const { formatMessage } = useIntl();
   const { appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn, logout } =
     useAppMember();
-  const checkPagePermissionsCallback = useCallback(
+  const getCurrent = useActiveNavigation(pages, true);
+  const shouldShowPageCallback = useCallback(
     (page: PageDefinition): boolean =>
-      checkPagePermissions(page, definition, appMemberRoles, appMemberSelectedGroup),
+      shouldShowPage(definition, page, appMemberRoles, appMemberSelectedGroup),
     [appMemberRoles, appMemberSelectedGroup, definition],
   );
 
@@ -84,14 +87,18 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
   const renderMenu = useCallback(
     (internalPages: PageDefinition[]): ReactNode =>
       internalPages
-        .filter((page) => !page.hideNavTitle)
-        .filter((page) => checkPagePermissionsCallback(page))
+        .filter((page) => shouldShowPageCallback(page))
         .map((page) => {
           if (page?.type === 'container') {
             const [, navName] = generateNameAndNavName(page);
             return (
               <CollapsibleMenuSection key={page.name}>
-                <MenuItem icon={page?.icon} key={page?.name} title={navName}>
+                <MenuItem
+                  aria-current={getCurrent(page)}
+                  icon={page?.icon}
+                  key={page?.name}
+                  title={navName}
+                >
                   {navName}
                 </MenuItem>
                 <MenuSection>{renderMenu(page.pages)}</MenuSection>
@@ -101,6 +108,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
           const [name, navName] = generateNameAndNavName(page);
           return (
             <MenuItem
+              aria-current={getCurrent(page)}
               count={
                 page.badgeCount
                   ? (remap(page.badgeCount, null, createRemapperContext(name)) as number)
@@ -109,13 +117,20 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
               icon={page.icon}
               key={page.name}
               title={navName}
-              to={`${url}/${getPagePathSegment(page)}`}
+              to={`${url}/${getPagePathSegment(page, getAppMessage)}`}
             >
               {navName}
             </MenuItem>
           );
         }),
-    [generateNameAndNavName, checkPagePermissionsCallback, createRemapperContext, url],
+    [
+      generateNameAndNavName,
+      shouldShowPageCallback,
+      createRemapperContext,
+      getCurrent,
+      getAppMessage,
+      url,
+    ],
   );
 
   return (
@@ -123,12 +138,20 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
       <MenuSection>
         {renderMenu(pages)}
         {layout?.settings === 'navigation' && (
-          <MenuItem icon="wrench" title={formatMessage(messages.settings)} to={`${url}/Settings`}>
+          <MenuItem
+            icon="wrench"
+            title={formatMessage(messages.settings)}
+            to={`${url}/${getRouteSegment('Settings', getAppMessage)}`}
+          >
             <FormattedMessage {...messages.settings} />
           </MenuItem>
         )}
         {layout?.feedback === 'navigation' && sentryDsn ? (
-          <MenuItem icon="comment" title={formatMessage(messages.feedback)} to={`${url}/Feedback`}>
+          <MenuItem
+            icon="comment"
+            title={formatMessage(messages.feedback)}
+            to={`${url}/${getRouteSegment('Feedback', getAppMessage)}`}
+          >
             <FormattedMessage {...messages.feedback} />
           </MenuItem>
         ) : null}
@@ -144,7 +167,11 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
               <FormattedMessage {...messages.logout} />
             </Button>
           ) : (
-            <MenuItem icon="sign-in-alt" title={formatMessage(messages.login)} to={`${url}/Login`}>
+            <MenuItem
+              icon="sign-in-alt"
+              title={formatMessage(messages.login)}
+              to={`${url}/${getRouteSegment('Login', getAppMessage)}`}
+            >
               <FormattedMessage {...messages.login} />
             </MenuItem>
           )

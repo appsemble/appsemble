@@ -1,4 +1,5 @@
 import {
+  getBlockAssetLocation,
   initS3Client,
   isValidBlockAssetFilename,
   logger,
@@ -12,7 +13,6 @@ import { BlockAsset, BlockVersion, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import {
   ensureBlockAssetsBucketPublicRead,
-  getBlockAssetsBucketName,
   getBlockAssetStorageKey,
 } from '../utils/blockAssets.js';
 import { handleDBError } from '../utils/sqlUtils.js';
@@ -107,7 +107,8 @@ export async function migrateBlockAssetsToS3({
       });
 
       try {
-        await uploadS3File(getBlockAssetsBucketName(), storageKey, content, content.byteLength, {
+        const { bucket, key } = getBlockAssetLocation(storageKey);
+        await uploadS3File(bucket, key, content, content.byteLength, {
           'Cache-Control': 'public,max-age=31536000,immutable',
           'Content-Type': mime ?? 'application/octet-stream',
         });
@@ -158,6 +159,9 @@ export async function handler(options: AdditionalArguments = {}): Promise<void> 
       port: argv.s3Port,
       secretKey: argv.s3SecretKey,
       useSSL: argv.s3Secure,
+      region: argv.s3Region,
+      pathStyle: argv.s3PathStyle,
+      bucket: argv.s3Bucket,
     });
   } catch (error: unknown) {
     s3Available = false;

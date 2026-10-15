@@ -1,10 +1,8 @@
-import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
-import { authenticator } from 'otplib';
 
 import { App, getAppDB } from '../../../../models/index.js';
-import { argv } from '../../../../utils/argv.js';
-import { decrypt } from '../../../../utils/crypto.js';
+import { assertTotpToken } from '../../../../utils/totp.js';
 
 export async function disableAppMemberTotp(ctx: Context): Promise<void> {
   const {
@@ -38,14 +36,9 @@ export async function disableAppMemberTotp(ctx: Context): Promise<void> {
     'TOTP is not enabled',
   );
 
-  const secret = decrypt(member.totpSecret, argv.aesSecret);
-  const isValid = authenticator.verify({ token, secret });
+  await assertTotpToken(ctx, member, token, 400);
 
-  if (!isValid) {
-    throwKoaError(ctx, 400, 'Invalid TOTP token');
-  }
-
-  await member.update({ totpSecret: null, totpEnabled: false });
+  await member.update({ totpSecret: null, totpEnabled: false, totpLastCounter: null });
 
   ctx.status = 204;
 }

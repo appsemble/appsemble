@@ -13,7 +13,7 @@
     "pages.objects": "Objekti",
     "pages.other": "Ostalo",
     "pages.randomness": "Nasumičnost",
-    "pages.strings": "Nizovi"
+    "pages.strings": "Znakovni nizovi"
   },
   "messageIds": {
     "weatherBody": "Sunčano 28 °C",

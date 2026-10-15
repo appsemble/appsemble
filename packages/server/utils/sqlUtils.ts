@@ -5,9 +5,23 @@ import {
   ConnectionError,
   ConnectionRefusedError,
   HostNotFoundError,
+  type Sequelize,
 } from 'sequelize';
 
 import { argv } from './argv.js';
+
+export function withDatabaseMaintenanceLock<T>(
+  db: Sequelize,
+  callback: () => Promise<T>,
+): Promise<T> {
+  return db.transaction(async (transaction) => {
+    await db.query(
+      "SELECT pg_advisory_xact_lock(hashtext('appsemble'), hashtext('database-maintenance'))",
+      { transaction },
+    );
+    return callback();
+  });
+}
 
 /**
  * Log an SQL statement using syntax highlighting.

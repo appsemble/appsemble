@@ -1,5 +1,5 @@
 import { PredefinedAppRole } from '@appsemble/lang-sdk';
-import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
+import { createFormData, getAppAssetLocation, getS3FileBuffer } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole, type Resource as ResourceType } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
@@ -870,7 +870,10 @@ describe('updateAppResource', () => {
       }),
     ]);
     const assetsData = await Promise.all(
-      assets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
+      assets.map((asset) => {
+        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        return getS3FileBuffer(bucket, key);
+      }),
     );
     expect(Buffer.from('Test resource a').equals(assetsData[0])).toBe(true);
   });

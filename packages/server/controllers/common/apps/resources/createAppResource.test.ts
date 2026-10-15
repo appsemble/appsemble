@@ -1,5 +1,5 @@
 import { PredefinedAppRole } from '@appsemble/lang-sdk';
-import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
+import { createFormData, getAppAssetLocation, getS3FileBuffer } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole, type Resource as ResourceType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
@@ -587,7 +587,8 @@ describe('createAppResource', () => {
         seed: false,
       }),
     ]);
-    expect(await getS3FileBuffer(`app-${app.id}`, assets[0].id)).toStrictEqual(assetContent);
+    const { bucket, key } = getAppAssetLocation(app.id, assets[0].id);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(assetContent);
   });
 
   it('should accept valid video uploads by content', async () => {
@@ -621,7 +622,8 @@ describe('createAppResource', () => {
       filename: 'clip.mp4',
       mime: 'video/mp4',
     });
-    expect(await getS3FileBuffer(`app-${app.id}`, assetId)).toStrictEqual(videoContent);
+    const { bucket, key } = getAppAssetLocation(app.id, assetId);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(videoContent);
   });
 
   it('should reject invalid video uploads by content', async () => {
@@ -820,8 +822,14 @@ describe('createAppResource', () => {
       }),
     ]);
 
-    expect(await getS3FileBuffer(`app-${app.id}`, assetAId)).toStrictEqual(assetAContent);
-    expect(await getS3FileBuffer(`app-${app.id}`, assetBId)).toStrictEqual(assetBContent);
+    const assetALocation = getAppAssetLocation(app.id, assetAId);
+    expect(await getS3FileBuffer(assetALocation.bucket, assetALocation.key)).toStrictEqual(
+      assetAContent,
+    );
+    const assetBLocation = getAppAssetLocation(app.id, assetBId);
+    expect(await getS3FileBuffer(assetBLocation.bucket, assetBLocation.key)).toStrictEqual(
+      assetBContent,
+    );
   });
 
   it('should allow existing assets to be referenced by new resources', async () => {
@@ -1192,7 +1200,10 @@ describe('createAppResource', () => {
       }),
     ]);
     const ephemeraAssetsData = await Promise.all(
-      ephemeralAssets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
+      ephemeralAssets.map((asset) => {
+        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        return getS3FileBuffer(bucket, key);
+      }),
     );
     expect(Buffer.from('Test resource a').equals(ephemeraAssetsData[0])).toBe(true);
   });
@@ -1347,7 +1358,10 @@ describe('createAppResource', () => {
       }),
     ]);
     const seedAssetsData = await Promise.all(
-      seedAssets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
+      seedAssets.map((asset) => {
+        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        return getS3FileBuffer(bucket, key);
+      }),
     );
     expect(Buffer.from('Test resource a').equals(seedAssetsData[0])).toBe(true);
   });
@@ -1516,7 +1530,10 @@ describe('createAppResource', () => {
       }),
     ]);
     const seedAssetsData = await Promise.all(
-      seedAssets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
+      seedAssets.map((asset) => {
+        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        return getS3FileBuffer(bucket, key);
+      }),
     );
     expect(Buffer.from('Test asset').equals(seedAssetsData[0])).toBe(true);
 
@@ -1548,7 +1565,10 @@ describe('createAppResource', () => {
       }),
     ]);
     const ephemeralAssetsData = await Promise.all(
-      ephemeralAssets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
+      ephemeralAssets.map((asset) => {
+        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        return getS3FileBuffer(bucket, key);
+      }),
     );
     expect(Buffer.from('Test asset').equals(ephemeralAssetsData[0])).toBe(true);
   });

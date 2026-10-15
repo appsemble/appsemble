@@ -37,7 +37,8 @@ graph TD
 
 - **name**: The name of the page. This shows in the navbar, the URL and can be used by other actions
   to link to this page. The name of the page in the navbar can be changed with the `navTitle`
-  property, however.
+  property, however. When the page name is [translated](translating.md#translated-urls), the URL
+  uses the translated name.
 - **blocks**: Each page requires an array of blocks to be defined, with a minimum of 1 block. The
   order of the blocks defined in the page definition determine in which order the blocks get
   rendered on the page.
@@ -64,6 +65,9 @@ These are more defined [here](../guides/page-types.md).
 There are a couple of options available to change how the page is shown in the navigation menus:
 
 - **hideName**: Whether or not the page name should be displayed in the **app bar**.
+- **icon**: A [Font Awesome icon](https://fontawesome.com/icons?m=free) name displayed next to the
+  page name in the navigation menus, or an `icon:<key>` reference to a
+  [custom icon](../guides/custom-icons.md) of the app.
 - **navTitle**: The name of the page in the navigation menu
 - **hideNavTitle**: Whether or not the page should be displayed in navigational menus. False by
   default

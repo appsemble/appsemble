@@ -1,12 +1,13 @@
-import { type IconName } from '@appsemble/sdk';
+import { type IconReference } from '@appsemble/sdk';
 
 export interface Button {
   /**
-   * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.
+   * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button, or an
+   * `icon:<key>` reference to an icon from the app’s `icons` registry.
    *
    * By default a cared pointing left or right respectively will be rendered.
    */
-  icon?: IconName;
+  icon?: IconReference;
 }
 
 declare module '@appsemble/sdk' {

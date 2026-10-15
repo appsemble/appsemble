@@ -36,4 +36,5 @@ spec:
               value: {{ .Values.service.port | quote }}
             - name: HOST
               value: {{ include "appsemble.host" . }}
+{{ include "appsemble.dns" . | indent 12 }}
 {{ end }}

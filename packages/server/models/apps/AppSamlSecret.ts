@@ -1,5 +1,5 @@
+import { type IconReference } from '@appsemble/lang-sdk';
 import { type AppLoginRoleMapping } from '@appsemble/types';
-import { type IconName } from '@fortawesome/fontawesome-common-types';
 import {
   AllowNull,
   AutoIncrement,
@@ -31,7 +31,7 @@ export class AppSamlSecretGlobal extends Model {
 
   declare name: string;
 
-  declare icon: IconName;
+  declare icon: IconReference;
 
   declare spPrivateKey: string;
 
@@ -103,7 +103,7 @@ export function createAppSamlSecretModel(sequelize: Sequelize): typeof AppSamlSe
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    declare icon: IconName;
+    declare icon: IconReference;
 
     @AllowNull(false)
     @Column(DataType.TEXT)

@@ -142,7 +142,7 @@ export function Table({
   }, [actions, selectedData]);
 
   if (loading) {
-    return <Loader />;
+    return <Loader label={utils.formatMessage('loading')} />;
   }
 
   if (error) {

@@ -51,4 +51,5 @@ spec:
             - name: CLUSTER_ISSUER
               value: {{ . | quote }}
             {{- end }}
+{{ include "appsemble.dns" . | indent 12 }}
 {{ end }}

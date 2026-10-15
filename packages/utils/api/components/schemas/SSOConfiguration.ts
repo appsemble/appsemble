@@ -16,7 +16,8 @@ export const SSOConfiguration: OpenAPIV3.NonArraySchemaObject = {
     },
     icon: {
       type: 'string',
-      description: 'A Font Awesome icon.',
+      format: 'icon',
+      description: 'A Font Awesome icon or an `icon:<key>` reference to the app’s icon registry.',
     },
   },
 };

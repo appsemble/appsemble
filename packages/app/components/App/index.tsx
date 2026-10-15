@@ -3,6 +3,7 @@ import { type ReactNode } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AppDefinitionProvider } from '../AppDefinitionProvider/index.js';
+import { AppIconProvider } from '../AppIconProvider/index.js';
 import { AppMemberProvider } from '../AppMemberProvider/index.js';
 import { AppMessagesProvider } from '../AppMessagesProvider/index.js';
 import { AppRoutes } from '../AppRoutes/index.js';
@@ -29,29 +30,31 @@ interface AppProps {
 export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactNode {
   const appContent = (
     <AppDefinitionProvider>
-      <AppVariablesProvider>
-        <AppMessagesProvider>
-          <MessagesProvider>
-            <ErrorHandler fallback={ErrorFallback}>
-              <ServiceWorkerRegistrationProvider
-                serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
-              >
-                <AppMemberProvider>
-                  <DemoAppMembersProvider>
-                    <MenuProvider>
-                      <LanguageUnsupportedBanner />
-                      <VerifyBanner />
-                      <InstallationTracker />
-                      <PermissionRequest />
-                      <AppRoutes />
-                    </MenuProvider>
-                  </DemoAppMembersProvider>
-                </AppMemberProvider>
-              </ServiceWorkerRegistrationProvider>
-            </ErrorHandler>
-          </MessagesProvider>
-        </AppMessagesProvider>
-      </AppVariablesProvider>
+      <AppIconProvider>
+        <AppVariablesProvider>
+          <AppMessagesProvider>
+            <MessagesProvider>
+              <ErrorHandler fallback={ErrorFallback}>
+                <ServiceWorkerRegistrationProvider
+                  serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
+                >
+                  <AppMemberProvider>
+                    <DemoAppMembersProvider>
+                      <MenuProvider>
+                        <LanguageUnsupportedBanner />
+                        <VerifyBanner />
+                        <InstallationTracker />
+                        <PermissionRequest />
+                        <AppRoutes />
+                      </MenuProvider>
+                    </DemoAppMembersProvider>
+                  </AppMemberProvider>
+                </ServiceWorkerRegistrationProvider>
+              </ErrorHandler>
+            </MessagesProvider>
+          </AppMessagesProvider>
+        </AppVariablesProvider>
+      </AppIconProvider>
     </AppDefinitionProvider>
   );
 

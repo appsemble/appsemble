@@ -8,6 +8,7 @@ import { App, getAppDB } from '../../../../../models/index.js';
 import { touchApp } from '../../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
+import { getSsoIconError } from '../../../../../utils/icons.js';
 import {
   normalizeLoginRoleMappings,
   validateLoginRoleMappings,
@@ -33,6 +34,9 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
   });
 
   assertKoaCondition(appSamlSecret != null, ctx, 404, 'SAML secret not found');
+
+  const iconError = getSsoIconError(body.icon, app.definition);
+  assertKoaCondition(iconError == null, ctx, 400, iconError ?? 'Invalid icon');
 
   const roleMappingsError = validateLoginRoleMappings(
     body.roleMappings,

@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { ensureDir } from 'fs-extra';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { applyAppVariant } from './app.js';
+import { applyAppVariant, patchDefinition } from './app.js';
 
 describe('applyAppVariant', () => {
   let dir: string;
@@ -57,5 +57,41 @@ describe('applyAppVariant', () => {
     expect(css).toBe(
       '.flagged{color:rgb(1 2 3)!important}.plain{color:rgb(4 5 6)!important}.kept{color:rgb(7 8 9)!important}.commented{color:rgb(10 11 12)!important}.escaped{--value:foo\\;}',
     );
+  });
+});
+
+describe('patchDefinition', () => {
+  let dir: string;
+
+  beforeEach(async () => {
+    dir = await mkdtemp(join(tmpdir(), 'appsemble-patch-'));
+  });
+
+  afterEach(async () => {
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  it('should patch the definition without a Prettier config in the directory ancestry', async () => {
+    await writeFile(
+      join(dir, 'app-definition.yaml'),
+      `name: Test App
+defaultPage: Home
+pages:
+  - name: Home
+    blocks: []
+`,
+    );
+
+    await patchDefinition(dir, [
+      [['name'], 'Patched App'],
+      [['defaultPage'], undefined],
+    ]);
+
+    const yaml = await readFile(join(dir, 'app-definition.yaml'), 'utf8');
+    expect(yaml).toBe(`name: Patched App
+pages:
+  - name: Home
+    blocks: []
+`);
   });
 });

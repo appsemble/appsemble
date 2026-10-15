@@ -86,6 +86,18 @@ describe('getAppServiceSecrets', () => {
       identifier: 'john_doe',
       secret: 'Strong_Password-123',
     });
+    await AppServiceSecret.create({
+      name: 'Graph',
+      urlPatterns: 'https://graph.microsoft.com',
+      authenticationMethod: 'client-credentials',
+      identifier: 'client-id',
+      secret: 'expired',
+      tokenUrl: 'https://login.microsoftonline.com/tenant/oauth2/v2.0/token',
+      scope: 'https://graph.microsoft.com/.default',
+      lastTokenError: 'AADSTS7000215: Invalid client secret provided.',
+      lastTokenErrorAt: new Date('2026-09-15T08:00:00.000Z'),
+      lastTokenErrorNotifiedAt: new Date('2026-09-15T08:00:00.000Z'),
+    });
 
     const response = await request.get(`/api/apps/${app.id}/secrets/service`);
 
@@ -99,6 +111,8 @@ describe('getAppServiceSecrets', () => {
           "ca": null,
           "id": 1,
           "identifier": "key",
+          "lastTokenError": null,
+          "lastTokenErrorAt": null,
           "name": "Test service",
           "scope": null,
           "tokenUrl": null,
@@ -109,10 +123,24 @@ describe('getAppServiceSecrets', () => {
           "ca": null,
           "id": 2,
           "identifier": "john_doe",
+          "lastTokenError": null,
+          "lastTokenErrorAt": null,
           "name": "Test service",
           "scope": null,
           "tokenUrl": null,
           "urlPatterns": "example.com",
+        },
+        {
+          "authenticationMethod": "client-credentials",
+          "ca": null,
+          "id": 3,
+          "identifier": "client-id",
+          "lastTokenError": "AADSTS7000215: Invalid client secret provided.",
+          "lastTokenErrorAt": "2026-09-15T08:00:00.000Z",
+          "name": "Graph",
+          "scope": "https://graph.microsoft.com/.default",
+          "tokenUrl": "https://login.microsoftonline.com/tenant/oauth2/v2.0/token",
+          "urlPatterns": "https://graph.microsoft.com",
         },
       ]
     `);

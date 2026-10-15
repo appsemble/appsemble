@@ -1,4 +1,4 @@
-import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconReference, type Remapper } from '@appsemble/sdk';
 
 /**
  * An object representing how a data field should be displayed.
@@ -22,8 +22,11 @@ export interface Field {
    * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
    *
    * Will not render if undefined.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 }
 
 /**
@@ -66,8 +69,11 @@ export interface Button {
    * An FontAwesome icon to display inside of the button.
    *
    * This is the only thing visible on mobile so it's required
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon: IconName;
+  icon: IconReference;
 
   /**
    * When set to true, the ‘light’ set of Bulma colors are used.
@@ -111,6 +117,70 @@ export interface Button {
   title?: Remapper;
 }
 
+/**
+ * The styling and icons of the button that expands and collapses a collapsible list.
+ */
+export interface CollapseButton extends Pick<Button, 'color' | 'inverted' | 'light' | 'outlined'> {
+  /**
+   * The size of the button.
+   *
+   * If not set, the button is normal sized on desktop and small on mobile.
+   */
+  size?: BulmaSize;
+
+  /**
+   * Whether the button should be rounded.
+   *
+   * @default true
+   */
+  rounded?: boolean;
+
+  /**
+   * The icon to show while the list is collapsed.
+   *
+   * If not set, the button shows a `chevron-down` icon, unless it shows a label.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
+   */
+  expandIcon?: IconReference;
+
+  /**
+   * The icon to show while the list is expanded.
+   *
+   * If not set, the button shows a `chevron-up` icon, unless it shows a label.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
+   */
+  collapseIcon?: IconReference;
+
+  /**
+   * The label to show next to the icon while the list is collapsed.
+   *
+   * The label is only shown on desktop; on mobile the button only shows the icon. The remapper
+   * receives the items of the list.
+   */
+  expandLabel?: Remapper;
+
+  /**
+   * The label to show next to the icon while the list is expanded.
+   *
+   * The label is only shown on desktop; on mobile the button only shows the icon. The remapper
+   * receives the items of the list.
+   */
+  collapseLabel?: Remapper;
+
+  /**
+   * Whether the icon is shown on the left or the right of the label.
+   *
+   * Only applies when the button shows both an icon and a label.
+   *
+   * @default "left"
+   */
+  iconPosition?: 'left' | 'right';
+}
+
 export interface ToggleButton {
   /**
    * Value should be true or false.
@@ -136,8 +206,11 @@ export interface Dropdown {
 
   /**
    * The icon to show in the dropdown button.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The list of options to display. Must have at least 1 option.
@@ -155,8 +228,11 @@ export interface DropdownOption {
 
   /**
    * The icon to show in the option.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The action that will be called when selecting this option.
@@ -243,8 +319,11 @@ interface HeaderWithIcon {
    * The icon that is shown in the header before the titles.
    *
    * Cannot be set in combination with image.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon: IconName;
+  icon: IconReference;
 }
 
 interface HeaderWithAssetIcon {
@@ -402,6 +481,31 @@ declare module '@appsemble/sdk' {
      * The text that is shown when something went wrong with fetching the data.
      */
     error: never;
+
+    /**
+     * The accessible name of the button that expands and collapses a list without a title.
+     */
+    toggleList: never;
+
+    /**
+     * The accessible label for closing an enlarged image.
+     */
+    closeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
+
+    /**
+     * The accessible label of the loader shown while data loads.
+     */
+    loading: never;
+
+    /**
+     * The accessible name of a dropdown without a label.
+     */
+    moreOptions: never;
   }
 
   interface Parameters {
@@ -423,6 +527,13 @@ declare module '@appsemble/sdk' {
      * Will only apply to the first list in grouped lists.
      */
     startCollapsed?: boolean;
+
+    /**
+     * The styling and icons of the button that expands and collapses the list.
+     *
+     * Only applies if `collapsible` is true.
+     */
+    collapseButton?: CollapseButton;
 
     /**
      * The property based on which the list should be split into multiple lists.

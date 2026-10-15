@@ -176,6 +176,7 @@ async function getAllChanges(directories: string[]): Promise<Changes> {
   for (const change of changesByPackage) {
     result.added.push(...change.added);
     result.changed.push(...change.changed);
+    result.deprecated.push(...change.deprecated);
     result.removed.push(...change.removed);
     result.fixed.push(...change.fixed);
     result.security.push(...change.security);

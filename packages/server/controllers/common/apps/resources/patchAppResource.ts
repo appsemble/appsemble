@@ -1,6 +1,6 @@
 import {
   assertKoaCondition,
-  deleteS3Files,
+  deleteAppAssetObjects,
   getCompressedFileMeta,
   getResourceDefinition,
   getSingleGroupId,
@@ -19,7 +19,7 @@ import { checkAppPermissions } from '../../../../utils/authorization.js';
 import { lockResourceWithIfMatch } from '../../../../utils/optimisticResourceLock.js';
 
 export async function deleteAppAssets(appId: number, assetIds: string[]): Promise<void> {
-  await deleteS3Files(`app-${appId}`, assetIds);
+  await deleteAppAssetObjects(appId, assetIds);
 }
 
 export async function deleteAppAssetsWithLogging(appId: number, assetIds: string[]): Promise<void> {

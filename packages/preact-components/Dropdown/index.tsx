@@ -1,4 +1,4 @@
-import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconReference } from '@appsemble/lang-sdk';
 import classNames from 'classnames';
 import { type ComponentChild, type ComponentChildren, type VNode } from 'preact';
 import { type MutableRef, useCallback, useRef } from 'preact/hooks';
@@ -32,7 +32,7 @@ interface DropdownProps {
   /**
    * The icon to display next to the label.
    */
-  readonly icon?: IconName;
+  readonly icon?: IconReference;
 
   /**
    * Whether to render the dropdown trigger as a button.
@@ -84,21 +84,28 @@ export function Dropdown({
     >
       <div className="dropdown-trigger">
         {asButton ? (
-          <Button aria-haspopup icon={icon} onClick={handleClick} onKeyDown={onKeyDown}>
+          <Button
+            aria-expanded={enabled}
+            aria-haspopup
+            icon={icon}
+            onClick={handleClick}
+            onKeyDown={onKeyDown}
+          >
             {label}
           </Button>
         ) : (
-          // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
-          <div
+          <button
+            aria-expanded={enabled}
             aria-haspopup
+            className={styles.trigger}
             onClick={handleClick}
             onKeyDown={onKeyDown}
-            role="button"
-            tabIndex={-1}
+            type="button"
           >
             {/* @ts-expect-error strictNullChecks not assignable to type */}
             <Icon className={iconClassName} icon={icon} />
-          </div>
+            <span className="is-sr-only">{label}</span>
+          </button>
         )}
       </div>
       <div

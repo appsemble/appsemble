@@ -1,6 +1,10 @@
 import { type BulmaColor } from '@appsemble/types';
+import { getMessageIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
+
+import styles from './index.module.css';
+import { Icon } from '../index.js';
 
 interface MessageProps {
   /**
@@ -22,16 +26,39 @@ interface MessageProps {
    * An optional header for the message.
    */
   readonly header?: VNode;
+
+  /**
+   * The live region role, so assistive technology announces the message.
+   *
+   * `alert` interrupts the user and is announced when the message is inserted. `status` is
+   * announced politely when the content of an already rendered message changes.
+   */
+  readonly role?: 'alert' | 'status';
 }
 
-export function Message({ children, className, color, header }: MessageProps): VNode {
+export function Message({ children, className, color, header, role }: MessageProps): VNode {
+  const icon = getMessageIcon(color);
+
   return (
     <div
       className={classNames('message', className, { [`is-${color}`]: color })}
       data-testid="message-comp"
+      role={role}
     >
       {header ? <h6 className="message-header">{header}</h6> : null}
-      <div className="message-body">{children}</div>
+      <div className={classNames('message-body', { [styles.body]: icon })}>
+        {icon ? (
+          <>
+            <Icon
+              className={classNames(styles.icon, { 'has-text-danger': color === 'danger' })}
+              icon={icon}
+            />
+            <div className={styles.content}>{children}</div>
+          </>
+        ) : (
+          children
+        )}
+      </div>
     </div>
   );
 }
