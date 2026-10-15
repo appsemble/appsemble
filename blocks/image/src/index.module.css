@@ -3,18 +3,58 @@
   position: relative;
 }
 
+.alignLeft {
+  justify-content: flex-start;
+}
+
+.alignCenter {
+  justify-content: center;
+}
+
+.alignRight {
+  justify-content: flex-end;
+}
+
 .hiddenInput {
   display: none;
 }
 
-button {
+.imageButton {
   background: transparent;
   border: none;
   cursor: pointer;
+  padding: 0;
 }
 
 .img {
   object-fit: cover;
+}
+
+.placeholder {
+  background-color: hsl(218deg 100% 66%);
+}
+
+.rounded {
+  border-radius: 50%;
+}
+
+.fill {
+  display: block;
+  width: 100%;
+}
+
+.fill .imageButton {
+  display: block;
+  width: 100%;
+}
+
+.fill img {
+  display: block;
+  width: 100%;
+}
+
+.fill .rounded {
+  aspect-ratio: 1 / 1;
 }
 
 .fileLabel {
@@ -34,4 +74,17 @@ button {
 
 .fileLabel:hover {
   filter: brightness(0.7);
+}
+
+.fill .fileLabel {
+  bottom: 0.75rem;
+  right: 0.75rem;
+}
+
+/* Theme rules written for the inline image (radius, position, ratio) must not reach the modal. */
+.fullscreenImage {
+  aspect-ratio: auto;
+  border-radius: 0;
+  object-fit: contain;
+  object-position: center;
 }

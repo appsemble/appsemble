@@ -23,6 +23,8 @@ interface FieldsetEntryProps extends InputProps<Values, Fieldset> {
 
   readonly fieldSpan?: boolean;
 
+  readonly hasTriedToSubmit: boolean;
+
   readonly setFieldErrorLink?: (
     fieldName: string,
     params: { ref: MutableRef<any>; error: string; label: string },
@@ -47,6 +49,7 @@ export function FieldsetEntry({
   fieldSpan,
   formDataLoading,
   formValues,
+  hasTriedToSubmit,
   index,
   name,
   onChange,
@@ -71,6 +74,7 @@ export function FieldsetEntry({
       fieldSpan={fieldSpan}
       formDataLoading={formDataLoading}
       formValues={formValues}
+      hasTriedToSubmit={hasTriedToSubmit}
       name={name}
       onChange={index == null ? onChange : onChangeIndex}
       removeThumbnail={removeThumbnail}

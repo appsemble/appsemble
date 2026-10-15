@@ -78,6 +78,7 @@ export const JSONSchemaString = extendJSONSchema(BaseJSONSchema, {
         'event-emitter',
         'event-listener',
         'fontawesome',
+        'icon',
       ],
       description: 'The format values should adhere to.',
     },

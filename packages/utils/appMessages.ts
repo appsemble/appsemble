@@ -1,8 +1,10 @@
 import {
   type AppDefinition,
   type BlockDefinition,
+  getRouteMessageId,
   iterApp,
   type Prefix,
+  translatableRoutes,
 } from '@appsemble/lang-sdk';
 import { type AppsembleMessages } from '@appsemble/types';
 
@@ -57,6 +59,7 @@ export function extractAppMessages(
           [`app.roles.${role}.description`, roleDefinition.description],
         ]),
       ),
+      ...Object.fromEntries(translatableRoutes.map((name) => [getRouteMessageId(name), name])),
     },
     messageIds: {},
   };

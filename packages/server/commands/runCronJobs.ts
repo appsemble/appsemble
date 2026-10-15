@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils';
+import { initS3Client, logger } from '@appsemble/node-utils';
 import cron from 'cron-parser';
 import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
@@ -72,6 +72,22 @@ export async function handler(): Promise<void> {
     handleDBError(error as Error);
   }
 
+  try {
+    initS3Client({
+      endPoint: argv.s3Host,
+      port: argv.s3Port,
+      useSSL: argv.s3Secure,
+      accessKey: argv.s3AccessKey,
+      secretKey: argv.s3SecretKey,
+      region: argv.s3Region,
+      pathStyle: argv.s3PathStyle,
+      bucket: argv.s3Bucket,
+    });
+  } catch (error: unknown) {
+    logger.warn(`S3Error: ${error}`);
+    logger.warn('Features related to file uploads will not work correctly!');
+  }
+
   const mailer = new Mailer(argv);
 
   // The time of argv.interval minutes ago
@@ -117,7 +133,7 @@ export async function handler(): Promise<void> {
           mailer,
           data: null,
           options,
-          context: {} as any,
+          context: { mailer } as any,
         });
       }
     } catch (error: unknown) {

@@ -39,18 +39,6 @@ declare module 'koa' {
   }
 
   interface DefaultContext {
-    appPath: string;
-    appHost: string;
-    appsembleApp: App;
-    appBlocks: BlockManifest[];
-    appMessages: AppMessages[];
-    appVariables: AppConfigEntry[];
-    appMembers: AppMemberInfo[];
-    appMemberInfo: AppMemberInfo;
-    appGroups: ExtendedGroup[];
-    appAssets: AppAsset[];
-    appReadmes: AppReadme[];
-    blockConfigs: ContextBlockConfig[];
     params?: Record<string, string>;
   }
 }

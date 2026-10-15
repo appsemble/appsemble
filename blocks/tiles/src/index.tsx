@@ -1,4 +1,4 @@
-import { bootstrap, type IconName } from '@appsemble/sdk';
+import { bootstrap, type IconReference } from '@appsemble/sdk';
 
 import styles from './index.module.css';
 
@@ -27,7 +27,12 @@ const bulmaColors = new Set([
 ]);
 
 bootstrap(
-  ({ actions: { onClick }, events, parameters, utils: { asset, fa, formatMessage, remap } }) => {
+  ({
+    actions: { onClick },
+    events,
+    parameters,
+    utils: { asset, formatMessage, icon: createIcon, remap },
+  }) => {
     const wrapper = (
       <div className={styles.wrapper}>
         <div className={styles.loader} />
@@ -51,7 +56,7 @@ bootstrap(
           const image = remap(parameters.image, result) as string;
           const color = remap(parameters.color, result) as string;
           const text = remap(parameters.text, result) as string;
-          const icon = remap(parameters.icon, result) as IconName;
+          const icon = remap(parameters.icon, result) as IconReference;
           const isUrl = isValidUrl(image);
 
           const className = `${styles.tile} px-3 py-3 ${
@@ -62,7 +67,7 @@ bootstrap(
             image ? (
               <img alt={text} src={isUrl ? image : asset(image)} />
             ) : icon ? (
-              <i className={`${fa(icon)} ${styles.icon}`} />
+              createIcon(icon, { className: styles.icon })
             ) : undefined,
             text && (
               <p className="has-text-centered" style={style}>

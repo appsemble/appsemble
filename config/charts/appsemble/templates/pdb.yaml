@@ -1,10 +1,12 @@
 {{- if gt (int .Values.replicaCount) 1 }}
 # Keeps a node drain or other voluntary disruption from evicting every replica at once. Only
 # rendered for a multi-replica install, where a single-replica one would block drains entirely.
+# CloudNativePG names its own PodDisruptionBudget after the Cluster, which is often named after the
+# release, so this one carries a suffix.
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "appsemble.fullname" . }}
+  name: {{ include "appsemble.fullname" . }}-server
   labels:
     {{ include "appsemble.labels" . }}
 spec:

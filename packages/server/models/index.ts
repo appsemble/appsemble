@@ -106,7 +106,6 @@ import { OrganizationMember } from './main/OrganizationMember.js';
 import { OrganizationSubscription } from './main/OrganizationSubscription.js';
 import { ResetPasswordToken } from './main/ResetPasswordToken.js';
 import { Theme } from './main/Theme.js';
-import { Training } from './main/Training.js';
 import { TrainingCompleted } from './main/TrainingCompleted.js';
 import { User } from './main/User.js';
 import { migrations } from '../migrations/apps/index.js';
@@ -180,7 +179,6 @@ export {
   Theme,
   type SamlLoginRequest,
   User,
-  Training,
   TrainingCompleted,
   type Resource,
 };
@@ -235,7 +233,6 @@ export function initDB({
       ResetPasswordToken,
       Theme,
       User,
-      Training,
       TrainingCompleted,
     ],
     ...(schema
@@ -431,9 +428,11 @@ export async function initAppDB(
     closeWhenIdle(appId, replaced.sequelize);
   }
 
+  // Soft-deleted apps keep their database, so it can be migrated and the app restored.
   const app = (await mainDB.models.App.findOne({
     attributes: ['id', 'dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword', 'definition'],
     where: { id: appId },
+    paranoid: false,
     transaction,
   })) as App;
 

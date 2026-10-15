@@ -16,10 +16,10 @@ import tags from 'language-tags';
 import {
   createTransport,
   type SendMailOptions as MailerSendMailOptions,
+  type SMTPTransportOptions,
   type Transporter,
 } from 'nodemailer';
 import MailComposer from 'nodemailer/lib/mail-composer/index.js';
-import { type Options } from 'nodemailer/lib/smtp-transport/index.js';
 import { Op } from 'sequelize';
 
 import { renderEmail } from './renderEmail.js';
@@ -208,7 +208,7 @@ export class Mailer {
           secure: smtpSecure,
           auth,
           ...(logger.isVerboseEnabled() ? { debug: true, logger: true } : {}),
-        } as Options,
+        } as SMTPTransportOptions,
         { from: smtpFrom },
       );
     }

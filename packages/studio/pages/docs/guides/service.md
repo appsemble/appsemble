@@ -187,6 +187,11 @@ ID as username and client secret as password from the token URL. The same reques
 the same token until 10 minutes before it expires, which by then the next request will retrieve a
 new token.
 
+If the token URL refuses to issue a token, for example because the client secret has expired or was
+rotated, the request is sent without an `Authorization` header. The error reported by the token URL
+is shown on the secret in the app’s secrets page, and the organization owners receive an email about
+it at most once per day per secret until a token request succeeds or the secret is updated.
+
 For more please refer to: <https://www.rfc-editor.org/rfc/rfc6749.html>
 
 ### Cookie authentication

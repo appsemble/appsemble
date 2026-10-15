@@ -231,6 +231,9 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
             compilerOptions: {
               module: 'esnext',
               moduleResolution: 'bundler',
+              // The bundle includes sources from other workspaces, which lie outside the
+              // project's own rootDir.
+              rootDir: fileURLToPath(rootDir),
             },
           },
         },

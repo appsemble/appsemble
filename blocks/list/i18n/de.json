@@ -1,4 +1,9 @@
 {
+  "closeImage": "",
+  "downloadImage": "",
   "error": "Beim Abrufen der Daten ist ein Fehler aufgetreten.",
-  "noData": "Es liegen keine Daten vor."
+  "loading": "",
+  "moreOptions": "",
+  "noData": "Es liegen keine Daten vor.",
+  "toggleList": ""
 }

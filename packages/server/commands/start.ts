@@ -9,15 +9,12 @@ import { type Configuration } from 'webpack';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { migrations } from '../migrations/main/index.js';
-import { getDB, initDB } from '../models/index.js';
+import { initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { configureDNS } from '../utils/dns/index.js';
-import { migrate } from '../utils/migrate.js';
 import { shutdown } from '../utils/shutdown.js';
 import { handleDBError } from '../utils/sqlUtils.js';
-import { syncTrainings } from '../utils/syncTrainings.js';
 import { initValkeyClient } from '../utils/valkey.js';
 
 interface AdditionalArguments {
@@ -125,6 +122,20 @@ export function builder(yargs: Argv): Argv {
       desc: 'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
       implies: ['service-name'],
     })
+    .option('dns-provider', {
+      desc: 'The provider which serves the DNS zone of the deployment.',
+      choices: ['desec'],
+      implies: ['dns-zone', 'dns-token', 'dns-targets'],
+    })
+    .option('dns-zone', {
+      desc: 'The name of the DNS zone which contains the organization host names.',
+    })
+    .option('dns-token', {
+      desc: 'The token used to authenticate with the API of the DNS provider.',
+    })
+    .option('dns-targets', {
+      desc: 'The IP addresses the organization host names resolve to, comma separated.',
+    })
     .option('host', {
       desc: 'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
       required: true,
@@ -204,18 +215,6 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
     password: argv.valkeyPassword,
     tls: argv.valkeyTls,
   });
-
-  if (argv.migrateTo) {
-    const db = getDB();
-    await migrate(db, argv.migrateTo, migrations);
-  }
-
-  try {
-    await syncTrainings('trainings');
-  } catch (error: unknown) {
-    logger.warn('Trainings failed to sync');
-    logger.warn(error);
-  }
 
   await configureDNS();
 

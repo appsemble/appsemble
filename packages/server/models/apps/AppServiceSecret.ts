@@ -66,6 +66,21 @@ export class AppServiceSecretGlobal extends Model {
    */
   declare expiresAt?: Date;
 
+  /**
+   * The provider's message for the most recent failed client-credentials token request.
+   */
+  declare lastTokenError?: string;
+
+  /**
+   * When the most recent client-credentials token request failed.
+   */
+  declare lastTokenErrorAt?: Date;
+
+  /**
+   * When organization owners were last emailed about a failed token request.
+   */
+  declare lastTokenErrorNotifiedAt?: Date;
+
   declare created: Date;
 
   declare updated: Date;
@@ -121,6 +136,15 @@ export function createAppServiceSecretModel(sequelize: Sequelize): typeof AppSer
 
     @Column(DataType.DATE)
     declare expiresAt?: Date;
+
+    @Column(DataType.TEXT)
+    declare lastTokenError?: string;
+
+    @Column(DataType.DATE)
+    declare lastTokenErrorAt?: Date;
+
+    @Column(DataType.DATE)
+    declare lastTokenErrorNotifiedAt?: Date;
 
     @CreatedAt
     declare created: Date;

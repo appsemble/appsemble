@@ -7,10 +7,10 @@
     "pages.notes": "Bilješke"
   },
   "messageIds": {
-    "body": "Tijelo",
+    "body": "Sadržaj",
     "cancel": "Otkaži",
     "configDelete": "Izbriši",
-    "confirmDelete": "Jeste li sigurni da želite izbrisati sljedeću bilješku?",
+    "confirmDelete": "Stvarno želiš izbrisati sljedeću bilješku?",
     "title": "Naslov"
   }
 }

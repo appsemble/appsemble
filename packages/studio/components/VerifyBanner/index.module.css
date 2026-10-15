@@ -1,0 +1,3 @@
+.root > :global(.message-body) {
+  align-items: center;
+}

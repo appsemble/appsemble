@@ -1,4 +1,5 @@
 {
   "error": "An error occurred when fetching the data.",
+  "loading": "Loading",
   "noData": "There is no data available."
 }

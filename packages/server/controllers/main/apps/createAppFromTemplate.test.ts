@@ -1,4 +1,4 @@
-import { getS3FileBuffer, uploadS3File } from '@appsemble/node-utils';
+import { getAppAssetLocation, getS3FileBuffer, uploadS3File } from '@appsemble/node-utils';
 import {
   type AppConfigEntry,
   type AppMessages as AppMessagesType,
@@ -106,10 +106,12 @@ describe('createAppFromTemplate', () => {
       name: 'test-clonable',
       clonable: true,
     });
-    vi.useRealTimers();
-    await uploadS3File(`app-${t2.id}`, asset1.id, Buffer.from('test'));
     const asset2 = await Asset.create({ name: 'test' });
-    await uploadS3File(`app-${t2.id}`, asset2.id, Buffer.from('test'));
+    vi.useRealTimers();
+    for (const asset of [asset1, asset2]) {
+      const { bucket, key } = getAppAssetLocation(t2.id, asset.id);
+      await uploadS3File(bucket, key, Buffer.from('test'));
+    }
     await AppMessages.create({
       AppId: t2.id,
       language: 'nl-nl',
@@ -458,7 +460,8 @@ describe('createAppFromTemplate', () => {
 
     for (const asset of assets) {
       expect(asset.name).toBe('test-clonable');
-      expect(await getS3FileBuffer(`app-${id}`, asset.id)).toStrictEqual(Buffer.from('test'));
+      const { bucket, key } = getAppAssetLocation(id!, asset.id);
+      expect(await getS3FileBuffer(bucket, key)).toStrictEqual(Buffer.from('test'));
     }
     expect(assets.map((a) => a.name)).toStrictEqual(['test-clonable']);
   });

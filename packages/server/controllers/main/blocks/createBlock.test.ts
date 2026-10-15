@@ -102,45 +102,51 @@ describe('createBlock', () => {
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(content);
   });
 
-  it('should serve published bytes directly from the configured object storage URL', async () => {
-    const blockAssetsBaseUrl = `http://${process.env.S3_HOST || 'localhost'}:${
-      Number(process.env.S3_PORT) || 9009
-    }`;
-    setArgv({
-      blockAssetsBaseUrl,
-      host: 'http://localhost',
-      secret: 'test',
-    });
-    await ensureBlockAssetsBucketPublicRead();
-    const formData = new FormData();
-    formData.append('name', '@xkcd/standing');
-    formData.append('version', '1.32.9');
-    formData.append('files', createFixtureStream('standing.png'), {
-      filename: encodeURIComponent('build/standing.png'),
-    });
+  // The bucket-per-app layout makes the block assets bucket public so browsers fetch published
+  // bytes straight from object storage. The single-bucket layout keeps the bucket private and
+  // serves block assets through the server.
+  it.skipIf(process.env.S3_BUCKET)(
+    'should serve published bytes directly from the configured object storage URL',
+    async () => {
+      const blockAssetsBaseUrl = `http://${process.env.S3_HOST || 'localhost'}:${
+        Number(process.env.S3_PORT) || 9009
+      }`;
+      setArgv({
+        blockAssetsBaseUrl,
+        host: 'http://localhost',
+        secret: 'test',
+      });
+      await ensureBlockAssetsBucketPublicRead();
+      const formData = new FormData();
+      formData.append('name', '@xkcd/standing');
+      formData.append('version', '1.32.9');
+      formData.append('files', createFixtureStream('standing.png'), {
+        filename: encodeURIComponent('build/standing.png'),
+      });
 
-    await authorizeClientCredentials('blocks:write');
-    const { data } = await request.post('/api/blocks', formData);
+      await authorizeClientCredentials('blocks:write');
+      const { data } = await request.post('/api/blocks', formData);
 
-    const blockAsset = await BlockAsset.findOne({
-      where: { filename: 'build/standing.png' },
-    });
+      const blockAsset = await BlockAsset.findOne({
+        where: { filename: 'build/standing.png' },
+      });
 
-    const expectedUrl = `${blockAssetsBaseUrl}/appsemble-block-assets/${blockAsset!.storageKey}`;
-    expect(data).toMatchObject({
-      files: ['build/standing.png'],
-      fileUrls: {
-        'build/standing.png': expectedUrl,
-      },
-    });
-    expect(blockAsset?.content).toStrictEqual(await readFixture('standing.png'));
+      const expectedUrl = `${blockAssetsBaseUrl}/appsemble-block-assets/${blockAsset!.storageKey}`;
+      expect(data).toMatchObject({
+        files: ['build/standing.png'],
+        fileUrls: {
+          'build/standing.png': expectedUrl,
+        },
+      });
+      expect(blockAsset?.content).toStrictEqual(await readFixture('standing.png'));
 
-    const { data: downloadedContent, status } = await axios.get(expectedUrl, {
-      responseType: 'arraybuffer',
-    });
-    expect(status).toBe(200);
-    expect(Buffer.from(downloadedContent)).toStrictEqual(await readFixture('standing.png'));
-  });
+      const { data: downloadedContent, status } = await axios.get(expectedUrl, {
+        responseType: 'arraybuffer',
+      });
+      expect(status).toBe(200);
+      expect(Buffer.from(downloadedContent)).toStrictEqual(await readFixture('standing.png'));
+    },
+  );
 
   it('should publish a valid 220-character filename', async () => {
     const filename = `${'a'.repeat(220)}.js`;
@@ -421,6 +427,46 @@ English (\`en\`) messages are required.
       error: 'Conflict',
       message:
         'Version 1.32.9 is equal to or lower than the already existing @xkcd/standing@1.32.9.',
+      statusCode: 409,
+    });
+  });
+
+  it('should not be possible to register a lower block version than the existing one', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('description', 'This block has been uploaded for the purpose of unit testing.');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'standing.png',
+    });
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'testblock.js',
+    });
+
+    await authorizeClientCredentials('blocks:write');
+    await request.post('/api/blocks', formData);
+
+    const formData2 = new FormData();
+    formData2.append('name', '@xkcd/standing');
+    formData2.append(
+      'description',
+      'This block has been uploaded for the purpose of unit testing.',
+    );
+    formData2.append('version', '1.32.8');
+    formData2.append('files', createFixtureStream('standing.png'), {
+      filepath: 'standing.png',
+    });
+    formData2.append('files', createFixtureStream('standing.png'), {
+      filepath: 'testblock.js',
+    });
+
+    await authorizeClientCredentials('blocks:write');
+    const { data } = await request.post('/api/blocks', formData2);
+
+    expect(data).toStrictEqual({
+      error: 'Conflict',
+      message:
+        'Version 1.32.8 is equal to or lower than the already existing @xkcd/standing@1.32.9.',
       statusCode: 409,
     });
   });

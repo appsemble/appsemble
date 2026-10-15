@@ -21,6 +21,7 @@ import { createAppMemberRefreshSession } from '../../../../utils/appMemberRefres
 import { checkAppSecurityPolicy } from '../../../../utils/auth.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 import { assertSlidingWindowRateLimit } from '../../../../utils/ratelimit/assertSlidingWindowRateLimit.js';
+import { requireTotp, throwTotpRequired } from '../../../../utils/totp.js';
 
 const MAX_REGISTRATION_ATTEMPTS = 5;
 // 1 hour
@@ -58,6 +59,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       'path',
       'enableSelfRegistration',
       'demoMode',
+      'totp',
     ],
     include: {
       model: AppMessages,
@@ -199,6 +201,15 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     });
 
   const aud = `app:${appId}`;
+
+  // A freshly registered app member still has to enroll in TOTP before they get a session on apps
+  // where TOTP is required. The account was created, but this response carries no tokens, so it’s
+  // the same challenge every other non OAuth2 endpoint responds with.
+  const challenge = requireTotp(app, appMember, { aud, scope: appOAuth2Scope });
+  if (challenge) {
+    throwTotpRequired(ctx, challenge);
+  }
+
   const refreshToken = await createAppMemberRefreshSession(ctx, {
     appId,
     aud,

@@ -22,6 +22,7 @@ HTMLCollection [
       class="control control has-icons-left"
     >
       <input
+        aria-describedby=":r0:"
         class="input"
         id="name"
         name="name"
@@ -38,6 +39,7 @@ HTMLCollection [
     </div>
     <span
       class="help help"
+      id=":r0:"
     >
       This is the name that displays for other users.
     </span>
@@ -114,6 +116,7 @@ HTMLCollection [
     </div>
     <span
       class="help help"
+      id=":r1:"
     />
   </div>,
   <div
@@ -153,6 +156,7 @@ HTMLCollection [
     </div>
     <span
       class="help help"
+      id=":r3:"
     />
   </div>,
   <div
@@ -178,6 +182,7 @@ HTMLCollection [
         class="select is-fullwidth"
       >
         <select
+          aria-describedby=":r4:"
           class="is-fullwidth"
           id="locale"
           name="locale"
@@ -205,6 +210,7 @@ HTMLCollection [
     </div>
     <span
       class="help help"
+      id=":r4:"
     >
       Preferred language for this app
     </span>
@@ -234,6 +240,7 @@ HTMLCollection [
       class="control control has-icons-left"
     >
       <input
+        aria-describedby=":r5:"
         class="input"
         id="name"
         name="name"
@@ -250,6 +257,7 @@ HTMLCollection [
     </div>
     <span
       class="help help"
+      id=":r5:"
     >
       This is the name that displays for other users.
     </span>
@@ -290,6 +298,7 @@ HTMLCollection [
     </div>
     <span
       class="help help"
+      id=":r6:"
     />
   </div>,
   <div
@@ -364,6 +373,7 @@ HTMLCollection [
     </div>
     <span
       class="help help"
+      id=":r7:"
     />
   </div>,
   <div
@@ -403,6 +413,7 @@ HTMLCollection [
     </div>
     <span
       class="help help"
+      id=":r9:"
     />
   </div>,
   <div
@@ -428,6 +439,7 @@ HTMLCollection [
         class="select is-fullwidth"
       >
         <select
+          aria-describedby=":ra:"
           class="is-fullwidth"
           id="locale"
           name="locale"
@@ -455,6 +467,7 @@ HTMLCollection [
     </div>
     <span
       class="help help"
+      id=":ra:"
     >
       Preferred language for this app
     </span>

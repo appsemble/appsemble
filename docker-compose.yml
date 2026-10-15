@@ -11,7 +11,7 @@ services:
       - '5432:5432'
 
   pgbouncer:
-    image: edoburu/pgbouncer:v1.25.2-p0
+    image: edoburu/pgbouncer:v1.26.0-p0
     container_name: pgbouncer
     restart: always
     depends_on:

@@ -162,6 +162,24 @@ describe('Mailer', () => {
           appName: 'Test App',
         },
       ],
+      serviceSecretTokenError: [
+        {
+          name: 'null',
+          link: (text: string) => `[${text}](https://example.com)`,
+          appName: 'Test App',
+          secretName: 'Graph',
+          tokenUrl: 'https://login.microsoftonline.com/tenant/oauth2/v2.0/token',
+          error: 'AADSTS7000215: Invalid client secret provided.',
+        },
+        {
+          name: 'John Doe',
+          link: (text: string) => `[${text}](https://example.com)`,
+          appName: 'Test App',
+          secretName: 'Graph',
+          tokenUrl: 'https://login.microsoftonline.com/tenant/oauth2/v2.0/token',
+          error: 'AADSTS7000215: Invalid client secret provided.',
+        },
+      ],
     };
 
     beforeEach(() => {

@@ -12,18 +12,22 @@ kubectl create secret generic appsemble \
   --from-literal "aes-secret=$(openssl rand -base64 32)"
 ```
 
-It is recommended to create a PostgreSQL secret beforehand.
+Appsemble needs a PostgreSQL 17 or 18 server, which the chart does not bundle. Run it with
+[CloudNativePG](https://cloudnative-pg.io) as described in the
+[PostgreSQL documentation](https://appsemble.app/docs/deployment/postgresql). A `Cluster` named
+`appsemble-postgresql` with an application database and owner named `appsemble` matches the chart
+defaults: Appsemble connects to its `appsemble-postgresql-rw` service and reads the password from
+the `appsemble-postgresql-app` secret the operator creates. Any other PostgreSQL server works with
+the `postgresql.host`, `postgresql.port` and `postgresql.auth` values, given a secret holding the
+password of a role which owns the `appsemble` database and may create databases:
 
 ```sh
-kubectl create secret generic postgresql-secret \
-  --from-literal 'password=my-password' \
-  --from-literal 'postgres-password=my-admin-password' \
-  --from-literal 'replication-password=my-replication-password'
+kubectl create secret generic appsemble-postgresql-app \
+  --from-literal 'password=my-password'
 ```
 
-> **Caution**: Make sure not to lose the PostgreSQL passwords!
-
-Appsemble requires Valkey for runtime caching and rate limiting. Create a Valkey password secret:
+The chart uses Valkey for runtime caching and rate limiting. For the bundled Valkey, create a
+password secret:
 
 ```sh
 kubectl create secret generic valkey \
@@ -89,28 +93,61 @@ Now the chart can be installed.
 ```sh
 helm repo add appsemble https://charts.appsemble.com
 helm repo update
-helm install my-appsemble appsemble/appsemble --set 'global.postgresql.auth.existingSecret=postgresql-secret' --set 'ingress.host=my-appsemble.example.com'
+helm install my-appsemble appsemble/appsemble --set 'ingress.host=my-appsemble.example.com'
 ```
 
 ### Upgrading
 
 ```sh
 helm repo update
-helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.auth.existingSecret=postgresql-secret' --set 'ingress.host=my-appsemble.example.com'
+helm upgrade my-appsemble appsemble/appsemble --set 'ingress.host=my-appsemble.example.com'
 ```
 
 Make sure `ingress.host` resolves to the ingress controller with both `A` and `AAAA` records. Point
 `*.ingress.host` to the same place, preferably with a wildcard `CNAME` to the apex host.
 
+Appsemble creates an ingress per organization which serves `<organization>.ingress.host` and
+`*.<organization>.ingress.host`. Both host names need a DNS record of their own. The certificate of
+that ingress covers a wildcard host, so cert-manager validates it with a DNS01 challenge, and the
+challenge record makes `<organization>.ingress.host` exist in the zone, after which the wildcard
+record on `ingress.host` no longer resolves anything below it. Set the `dns` values to let Appsemble
+create an `A` and `AAAA` record for both host names of every organization:
+
+```sh
+helm install my-appsemble appsemble/appsemble \
+--set "dns.provider=desec" \
+--set "dns.zone=example.com" \
+--set "dns.secret=appsemble-dns" \
+--set "dns.targets={203.0.113.10,2001:db8::10}"
+# ...
+```
+
+`dns.zone` is the zone which contains `ingress.host`, `dns.targets` are the addresses of the ingress
+controller, and `dns.secret` names a secret which holds the API token of the provider under the key
+`dns-token`. Appsemble writes the records when an organization is created, removes them when it is
+deleted, and writes the records of all organizations in the `reconcile-dns` job.
+
+Restrict the token to the records Appsemble manages. For deSEC, give it token policies which allow
+writing `A` and `AAAA` record sets in `dns.zone` and nothing else, so it cannot touch the
+`_acme-challenge` records of cert-manager or the records of custom domains in the same zone.
+
 ## Migrations
 
-The chart runs database migrations automatically using the `migrate` Job hook after each install and
-upgrade.
+The chart runs database migrations in the `migrate` Job. Server replicas do not run migrations at
+startup.
 
-If the migration job fails, the Appsemble pod can still start but requests may fail with database
-errors such as `relation "AppCollection" does not exist`.
+On an upgrade the Job runs before the Deployment is updated, so new replicas start on the migrated
+schema. If it fails, the upgrade fails and the previous replicas keep serving. The Job connects to
+`postgresql.host` directly, not through PgBouncer, so it does not depend on resources the same
+upgrade creates. On a new installation it runs after the other resources are created, so requests
+may fail with database errors until it completes.
 
-Check migration status and logs after install/upgrade:
+When the chart is deployed with ArgoCD, which cannot tell an install from an upgrade, the Job runs
+as a `Sync` hook in sync wave `0` and the Deployment in wave `1`. Resources the Job needs that are
+deployed alongside the chart, such as the database and its secrets, then belong in an earlier wave,
+for example `argocd.argoproj.io/sync-wave: "-1"`.
+
+Check Job status and logs after install/upgrade:
 
 ```sh
 kubectl get jobs
@@ -129,10 +166,27 @@ To force migration to the latest known version during upgrade:
 
 ```sh
 helm upgrade my-appsemble appsemble/appsemble \
-  --set 'global.postgresql.auth.existingSecret=postgresql-secret' \
   --set 'ingress.host=my-appsemble.example.com' \
   --set 'migrateTo=next'
 ```
+
+### Rolling back
+
+Only the image which introduced a migration can revert it, so do not use `helm rollback`: the
+previous release's image does not know the newer migrations and leaves the schema as it is. Roll
+back with an upgrade of the current chart instead. It runs the current image's migrations down to
+the previous version, then rolls out the previous server image:
+
+```sh
+helm upgrade my-appsemble appsemble/appsemble --version <current> \
+  --set 'ingress.host=my-appsemble.example.com' \
+  --set 'image.tag=<previous>' \
+  --set 'migrateImage.tag=<current>' \
+  --set 'migrateTo=<previous>'
+```
+
+`<current>` is the version being rolled back from and `<previous>` the version to return to. Unset
+`image.tag`, `migrateImage.tag` and `migrateTo` again on the next upgrade.
 
 ### Updating Secrets
 
@@ -165,10 +219,17 @@ The secret must exist before enabling PgBouncer, otherwise the PgBouncer pod can
 database becomes unreachable.
 
 Transaction pooling is the default when PgBouncer is enabled. `pgbouncer.maxUserConnections` limits
-server connections per database user across all database pools. The default of `80` is sized for the
-bundled PostgreSQL `max_connections=100`. Override it below the non-reserved connection budget
+server connections per database user across all database pools. The default of `80` is sized for
+PostgreSQL's default `max_connections=100`. Override it below the non-reserved connection budget
 remaining after direct and other clients when PostgreSQL uses a different limit or is shared with
 other services.
+
+`pgbouncer.replicaCount` runs more than one pooler, spread across nodes and guarded by a
+PodDisruptionBudget of `minAvailable: 1`, so a node drain or a PgBouncer rollout does not interrupt
+database access. The replicas share `pgbouncer.maxUserConnections` in equal parts, since they all
+authenticate as the same user, so the total number of PostgreSQL backends stays within the budget
+whatever the replica count. The per-database pool sizes (`pgbouncer.mainPoolSize`,
+`pgbouncer.defaultPoolSize`, `pgbouncer.maxDbConnections`) apply per replica.
 
 Enabling PgBouncer repoints the stored hosts of server-managed app databases (`App.dbHost`) at the
 pooler through a one-time migration. Disabling PgBouncer afterwards does not repoint them back:
@@ -178,14 +239,13 @@ external. Before disabling, restore the direct endpoint, for example with
 
 ## PostgreSQL and PgBouncer TLS (encrypted transport)
 
-If you use the bundled Bitnami PostgreSQL chart, enable TLS on both sides:
+`postgresSSL: true` (the default) makes Appsemble connect over TLS. CloudNativePG serves TLS with an
+operator-managed certificate out of the box, so nothing needs to be configured on the PostgreSQL
+side. When PgBouncer is enabled, Appsemble connects to PgBouncer over TLS and PgBouncer connects to
+PostgreSQL over TLS:
 
 ```yaml
 postgresSSL: true
-postgresql:
-  tls:
-    enabled: true
-    autoGenerated: true
 pgbouncer:
   tls:
     autoGenerated: true
@@ -197,12 +257,12 @@ pgbouncer:
       protocols: secure
 ```
 
-This enables encrypted transport on the database path. When PgBouncer is enabled, Appsemble connects
-to PgBouncer over TLS and PgBouncer connects to PostgreSQL over TLS. The `secure` protocol shortcut
-allows TLS 1.2 and TLS 1.3.
+With `autoGenerated: true` each PgBouncer pod generates a self-signed certificate when it starts,
+using the Appsemble image. Set `pgbouncer.tls.existingSecret` to a `kubernetes.io/tls` secret to
+serve a certificate of your own instead.
 
-> **Important**: `postgresSSL` and `postgresql.tls.enabled` must match. If Appsemble uses TLS while
-> PostgreSQL TLS is disabled, startup fails with a TLS-not-supported error.
+The `secure` protocol shortcut allows TLS 1.2 and TLS 1.3. Set `postgresSSL: false` for a PostgreSQL
+server without TLS, otherwise startup fails with a TLS-not-supported error.
 
 ## Health checks
 
@@ -217,6 +277,44 @@ The server serves three operational endpoints on every hostname, following the
 
 Valkey is a soft dependency: the server keeps serving apps without it, so it is not part of
 readiness. `/api/health` is a deprecated alias of `/health/ready`.
+
+## Valkey
+
+The chart deploys one Valkey pod by default. Valkey holds only the app-serving cache (with a default
+`appServingCacheTtl` of 300 seconds) and the sliding-window counters for e-mail registration rate
+limits. It holds no sessions or queues. If Valkey restarts, the cache and counters reset; the server
+keeps serving requests and reconnects when Valkey returns. Cache operations fail fast during the
+outage, and registration requests proceed without the rate limit.
+
+The bundled Valkey has no persistent volume because its data is disposable. It has no replicas: the
+dependency chart does not promote a replica when the primary fails, so replicas would not keep the
+server's single-writer endpoint available. The bundled setup uses the `valkey` secret created above.
+`valkey.auth.usersExistingSecret` names that secret, and `valkey.auth.aclUsers.default.passwordKey`
+selects its `password` key.
+
+To use a platform-managed Valkey or Redis service, create a password secret and set
+`valkey.enabled=false` with `externalValkey` connection settings:
+
+```sh
+kubectl create secret generic external-valkey \
+  --from-literal 'password=my-password'
+```
+
+```yaml
+valkey:
+  enabled: false
+externalValkey:
+  host: valkey.example.com
+  port: 6379
+  username: default
+  tls: true
+  existingSecret: external-valkey
+  passwordKey: password
+```
+
+The chart reads `externalValkey.passwordKey` from `externalValkey.existingSecret` in the release
+namespace. Set `host`, `port`, `username` and `tls` to match the external service. The chart does
+not deploy a bundled Valkey pod when `valkey.enabled=false`.
 
 ## Object storage
 
@@ -388,6 +486,10 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `ingress.tls`                               | `false`                        | Whether TLS should be configured for the top-level and wildcard hosts.                                                                    |
 | `ingress.tlsSecretName`                     | `''`                           | The secret name to use to configure TLS for the top level host.                                                                           |
 | `ingress.tlsWildcardSecretName`             | `''`                           | The secret name to use to configure TLS for the direct wildcard host.                                                                     |
+| `dns.provider`                              | `''`                           | The provider which serves the DNS zone of the organization host names. The only supported value is `desec`.                               |
+| `dns.zone`                                  | `''`                           | The name of the DNS zone which contains the organization host names.                                                                      |
+| `dns.secret`                                | `''`                           | The name of the secret which holds the API token of the DNS provider under the key `dns-token`.                                           |
+| `dns.targets`                               | `[]`                           | The IP addresses the organization host names resolve to.                                                                                  |
 | `route.enabled`                             | `false`                        | Whether or not the service should be exposed through an OpenShift Route.                                                                  |
 | `route.host`                                | `''`                           | The host name on which the route will expose the service.                                                                                 |
 | `route.annotations`                         | `{}`                           | Annotations for the OpenShift Route.                                                                                                      |
@@ -423,16 +525,15 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `cronjob.enabled`                           | true                           | Deploy the app cron runner and generic maintenance CronJobs (independent of ingress/route).                                               |
 | `cronjob.platform.enabled`                  | true                           | Deploy the SaaS-only CronJobs: subscription billing, production backup, container scaling.                                                |
 | `migrateTo`                                 | `nil`                          | If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`.                   |
+| `migrateImage.tag`                          | `nil`                          | The image tag of the `migrate` Job. Defaults to the server image tag. See [Rolling back](#rolling-back).                                  |
 | `proxy`                                     | `false`                        | If `true`, The proxy is trusted for logging purposes.                                                                                     |
-| `global`                                    |                                | Any `global` variables are shared between the Appsemble chart and its `postgresql` dependency chart.                                      |
-| `global.postgresql.auth.existingSecret`     | `appsemble-postgresql-secret`  | The secret from which to read the PostgreSQL password.                                                                                    |
-| `global.postgresql.auth.username`           | `appsemble`                    | The name of the PostgreSQL user.                                                                                                          |
-| `global.postgresql.auth.database`           | `appsemble`                    | The name of the PostgreSQL user.                                                                                                          |
-| `postgresql`                                |                                | Any `postgresql` variables are passed into the `postgresql` dependency chart.                                                             |
-| `postgresql.fullnameOverride`               | `appsemble-postgresql`         | The name used for the PostgreSQL database.                                                                                                |
-| `postgresql.enabled`                        | `true`                         | Set this to false explicitly to not include a PostgreSQL installation. This is useful if the database is managed by another service.      |
-| `postgresql.persistence.enabled`            | `false`                        | Enable to create a persistent volume for the data.                                                                                        |
+| `postgresql.host`                           | `appsemble-postgresql-rw`      | The PostgreSQL host, such as the `-rw` service of a CloudNativePG `Cluster`.                                                              |
+| `postgresql.port`                           | `5432`                         | The PostgreSQL port.                                                                                                                      |
+| `postgresql.auth.existingSecret`            | `appsemble-postgresql-app`     | The secret from which to read the PostgreSQL password, under the key `postgresql.auth.secretKeys.userPasswordKey` (`password`).           |
+| `postgresql.auth.username`                  | `appsemble`                    | The name of the PostgreSQL user.                                                                                                          |
+| `postgresql.auth.database`                  | `appsemble`                    | The name of the PostgreSQL database.                                                                                                      |
 | `pgbouncer.enabled`                         | `false`                        | Whether to deploy PgBouncer between Appsemble and PostgreSQL. Requires the `pgbouncer.auth.existingSecret` userlist secret to exist.      |
+| `pgbouncer.replicaCount`                    | `1`                            | The number of PgBouncer replicas. Above 1, a PodDisruptionBudget keeps one available.                                                     |
 | `pgbouncer.image.tag`                       | `v1.25.2-p0`                   | PgBouncer image tag.                                                                                                                      |
 | `pgbouncer.auth.existingSecret`             | `pgbouncer-userlist`           | The secret from which to read the PgBouncer userlist file.                                                                                |
 | `pgbouncer.auth.type`                       | `scram-sha-256`                | The PgBouncer client authentication method.                                                                                               |
@@ -447,7 +548,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `pgbouncer.mainPoolSize`                    | 10                             | Number of server connections for the main Appsemble database pool.                                                                        |
 | `pgbouncer.defaultPoolSize`                 | 3                              | Number of server connections per app database pool.                                                                                       |
 | `pgbouncer.maxDbConnections`                | 10                             | Maximum number of server connections PgBouncer opens per database.                                                                        |
-| `pgbouncer.maxUserConnections`              | 80                             | Maximum number of server connections PgBouncer opens per database user across all database pools.                                         |
+| `pgbouncer.maxUserConnections`              | 80                             | Maximum number of server connections PgBouncer opens per database user across all pools, shared by the replicas.                          |
 | `valkey`                                    |                                | Values passed into the bundled Valkey dependency chart.                                                                                   |
 | `valkey.enabled`                            | `true`                         | Set this to false explicitly to use `externalValkey` instead of bundled Valkey.                                                           |
 | `valkey.fullnameOverride`                   | `appsemble-valkey`             | The name used for the bundled Valkey service.                                                                                             |
@@ -492,6 +593,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `backups.region`                            | `us-east-1`                    | The region to sign backup object storage requests for.                                                                                    |
 | `backups.pathStyle`                         | `true`                         | Whether to address the backups bucket in the URL path instead of as a subdomain of the endpoint.                                          |
 | `backups.existingSecret`                    | `backups-secret`               | The secret that holds the `access-key` and `secret-key` of the backups object storage.                                                    |
+| `backups.tmpSizeLimit`                      | `8Gi`                          | The scratch space each database is dumped to before it is uploaded. Must exceed the gzipped dump of the largest database.                 |
 | `assetsBackups.enabled`                     | `false`                        | Deploy the CronJob that syncs app assets to the backups object storage with rclone.                                                       |
 | `assetsBackups.schedule`                    | `20 2 * * *`                   | The cron schedule of the asset backup job.                                                                                                |
 | `assetsBackups.sourceEndpoint`              | `null`                         | The endpoint of the object storage to back up. Derived from the SeaweedFS values when unset.                                              |
@@ -526,14 +628,12 @@ For production environments with significant asset storage in the bundled object
   one volume per bucket under the chart's `master.volume_growth` setting. Volumes are created on
   demand and stay sparse, so the ceiling costs nothing until it is used, but reaching it fails
   writes for new apps.
-- set `postgresql.primary.persistence.storageClass` to the same retained class.
-- set the PostgreSQL PVC annotation `helm.sh/resource-policy: keep`.
-- keep `backup-production-data` enabled for database backups.
+- give the CloudNativePG `Cluster` two or more instances on the same retained class, with a WAL
+  archive and scheduled base backups, as described in the
+  [PostgreSQL documentation](https://appsemble.app/docs/deployment/postgresql).
+- keep `backup-production-data` enabled for logical database backups.
 - enable `assetsBackups.enabled=true` for app-asset backups (incremental daily + monthly full
   snapshots).
-
-Valkey persistence is disabled by default because Appsemble uses it for disposable runtime data.
-Only enable Valkey persistence when it is used for durable queues or state.
 
 Example:
 
@@ -548,12 +648,6 @@ seaweedfs:
     resources:
       limits:
         memory: 3Gi
-postgresql:
-  primary:
-    persistence:
-      storageClass: hetzner-volumes-retain
-      annotations:
-        helm.sh/resource-policy: keep
 assetsBackups:
   enabled: true
   prefix: assets/app-buckets
@@ -572,6 +666,14 @@ Recommended backup object layout within each environment backup bucket:
   - `assets/app-buckets/current/app-<id>/...`
   - `assets/app-buckets/archive/<run-id>/app-<id>/...`
   - `assets/app-buckets/snapshots/<yyyy-mm-01>/app-<id>/...`
+
+The backup jobs upload large objects in parts and abort an upload that fails. While the object
+storage is unreachable the abort fails too, and the parts stay behind as an incomplete multipart
+upload: invisible to listings, billed as storage. Set a lifecycle rule on the backups bucket with
+`AbortIncompleteMultipartUpload` and `DaysAfterInitiation: 1`, which Hetzner Object Storage accepts,
+so such parts are removed without manual action. The SQL dumps are never deleted by the job either:
+add an `Expiration` rule on the `sql/` prefix with the number of days to keep them (appsemble.app
+keeps 30).
 
 To restore app asset backups, run `sh scripts/s3-assets-restore.sh` with `BACKUP_S3_*` pointing at
 the backup object storage and `RESTORE_S3_*` pointing at the object storage to restore into. The

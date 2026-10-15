@@ -1,5 +1,8 @@
 {
   "clearLabel": "Ryd",
+  "closeLabel": "",
   "modalTitle": "Filter",
+  "sliderMaximum": "",
+  "sliderMinimum": "",
   "submitLabel": "Filter"
 }

@@ -1,5 +1,5 @@
+import { type IconReference } from '@appsemble/lang-sdk';
 import { type BulmaColor } from '@appsemble/types';
-import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type ComponentProps, type VNode } from 'preact';
 import { type MutableRef } from 'preact/hooks';
@@ -19,9 +19,9 @@ interface ButtonProps extends Omit<ComponentProps<'button'>, 'loading'> {
   readonly color?: BulmaColor;
 
   /**
-   * A Font Awesome icon name to render left of the button text.
+   * A Font Awesome icon name or an `icon:<key>` reference to render left of the button text.
    */
-  readonly icon?: IconName;
+  readonly icon?: IconReference;
 
   /**
    * Whether to set the icon's position right.

@@ -120,6 +120,54 @@
         }
       }
     },
+    "dns": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "type": "string",
+          "description": "The provider which serves the DNS zone of the organization host names.",
+          "enum": ["", "desec"]
+        },
+        "zone": {
+          "type": "string",
+          "description": "The name of the DNS zone which contains the organization host names."
+        },
+        "secret": {
+          "type": "string",
+          "description": "The name of the secret which holds the API token of the DNS provider under the key dns-token."
+        },
+        "targets": {
+          "type": "array",
+          "description": "The IP addresses the organization host names resolve to.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "provider": {
+            "minLength": 1
+          }
+        },
+        "required": ["provider"]
+      },
+      "then": {
+        "properties": {
+          "zone": {
+            "minLength": 1
+          },
+          "secret": {
+            "minLength": 1
+          },
+          "targets": {
+            "minItems": 1
+          }
+        },
+        "required": ["zone", "secret", "targets"]
+      }
+    },
     "blockAssets": {
       "type": "object",
       "additionalProperties": false,
@@ -379,6 +427,16 @@
       "type": ["string", "null"],
       "description": "If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`"
     },
+    "migrateImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": {
+          "type": ["string", "null"],
+          "description": "The Docker image tag of the migrate Job. Defaults to the server image tag. Set it to the newer tag when migrating down, because only the image which introduced a migration can revert it."
+        }
+      }
+    },
     "skipCustomDomains": {
       "type": "boolean",
       "description": "If specified, certificates for ingresses for custom domains of apps and app collections will not be issued"
@@ -413,7 +471,49 @@
       "type": "object"
     },
     "postgresql": {
-      "type": "object"
+      "type": "object",
+      "description": "The PostgreSQL server Appsemble connects to.",
+      "additionalProperties": false,
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "The PostgreSQL host, such as the -rw service of a CloudNativePG Cluster."
+        },
+        "port": {
+          "type": "integer",
+          "description": "The PostgreSQL port.",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "auth": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "existingSecret": {
+              "type": "string",
+              "description": "The secret from which to read the PostgreSQL password."
+            },
+            "username": {
+              "type": "string",
+              "description": "The name of the PostgreSQL user."
+            },
+            "database": {
+              "type": "string",
+              "description": "The name of the PostgreSQL database."
+            },
+            "secretKeys": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "userPasswordKey": {
+                  "type": "string",
+                  "description": "The key in postgresql.auth.existingSecret containing the password."
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "valkey": {
       "type": "object",
@@ -460,6 +560,11 @@
         "enabled": {
           "type": "boolean",
           "description": "Whether to deploy PgBouncer between Appsemble and PostgreSQL."
+        },
+        "replicaCount": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of PgBouncer replicas. Above 1, a PodDisruptionBudget keeps one available and pgbouncer.maxUserConnections is shared between them."
         },
         "image": {
           "type": "object",
@@ -594,7 +699,7 @@
         "maxUserConnections": {
           "type": "integer",
           "minimum": 1,
-          "description": "Maximum number of server connections PgBouncer opens per database user across all database pools. Keep this below PostgreSQL's non-reserved connection budget after direct and other clients."
+          "description": "Maximum number of server connections PgBouncer opens per database user across all pools and replicas. Keep this below PostgreSQL's non-reserved connection budget after direct and other clients."
         }
       }
     },
@@ -758,6 +863,10 @@
         "existingSecret": {
           "type": "string",
           "description": "The name of the existing kubernetes secret to get the access key and secret key from. Must contain access-key and secret-key"
+        },
+        "tmpSizeLimit": {
+          "type": "string",
+          "description": "The scratch space each database is dumped to before it is uploaded. Must exceed the gzipped dump of the largest database."
         }
       }
     },

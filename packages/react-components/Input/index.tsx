@@ -1,5 +1,13 @@
 import classNames from 'classnames';
-import { type ChangeEvent, type ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
+import {
+  type ChangeEvent,
+  type ComponentPropsWithoutRef,
+  forwardRef,
+  useCallback,
+  useContext,
+} from 'react';
+
+import { FormComponentContext } from '../index.js';
 
 export interface InputProps extends Omit<
   ComponentPropsWithoutRef<'input'>,
@@ -70,6 +78,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref,
   ) => {
+    const aria = useContext(FormComponentContext);
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
@@ -81,6 +90,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <>
         <input
+          {...aria}
           {...props}
           className={classNames('input', className, {
             'has-background-white-bis': readOnly,

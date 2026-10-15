@@ -1,5 +1,8 @@
 {
+  "closeImage": "",
+  "downloadImage": "",
   "emptyMessage": "Brak dostępnych danych.",
   "error": "Wystąpił błąd podczas pobierania danych",
+  "loading": "",
   "submitChecked": "Prześlij"
 }
