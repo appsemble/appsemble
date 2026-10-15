@@ -8,13 +8,18 @@ import { pipeline } from 'node:stream/promises';
 import { AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
   assertKoaCondition,
+  getAppAssetLocation,
   getSupportedLanguages,
   handleValidatorResult,
   replaceAssetFunctions,
   type TempFile,
   uploadS3File,
 } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/types';
+import {
+  APP_VALIDATION_FAILED,
+  type AppsembleMessages,
+  OrganizationPermission,
+} from '@appsemble/types';
 import { normalize, normalizeLocale, validateStyle } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
@@ -37,6 +42,7 @@ import {
   handleAppValidationError,
   setAppPath,
 } from '../../../../utils/app.js';
+import { assertMessageSlugs } from '../../../../utils/appMessageSlugs.js';
 import { argv } from '../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { getBlockVersions } from '../../../../utils/block.js';
@@ -73,12 +79,28 @@ export async function importApp(ctx: Context): Promise<void> {
     const definition = parse(yaml, { maxAliasCount: 10_000 });
 
     const appValidator = new AppValidator();
-    handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
+    handleValidatorResult(
+      ctx,
+      appValidator.validateApp(definition),
+      'App validation failed',
+      APP_VALIDATION_FAILED,
+    );
     handleValidatorResult(
       ctx,
       await validateAppDefinition(definition, getBlockVersions),
       'App validation failed',
+      APP_VALIDATION_FAILED,
     );
+
+    const i18nFolder = zip.folder('i18n')?.filter((filename) => filename.endsWith('json')) ?? [];
+    const messagesByLanguage = new Map<string, AppsembleMessages>();
+    for (const json of i18nFolder) {
+      messagesByLanguage.set(
+        normalizeLocale(basename(json.name, '.json')),
+        JSON.parse(await json.async('text')),
+      );
+    }
+    assertMessageSlugs(ctx, definition, messagesByLanguage, messagesByLanguage.keys());
 
     const path = normalize(definition.name);
     const icon = await zip.file('icon.png')?.async('nodebuffer');
@@ -147,15 +169,9 @@ export async function importApp(ctx: Context): Promise<void> {
           await AppSnapshot.create({ AppId: record.id, yaml }, { transaction }),
         ];
 
-        const i18Folder = zip.folder('i18n')?.filter((filename) => filename.endsWith('json')) ?? [];
-        for (const json of i18Folder) {
-          const language = normalizeLocale(basename(json.name, '.json'));
-          const messages = await json.async('text');
+        for (const [language, messages] of messagesByLanguage) {
           record.AppMessages = [
-            await AppMessages.create(
-              { AppId: record.id, language, messages: JSON.parse(messages) },
-              { transaction },
-            ),
+            await AppMessages.create({ AppId: record.id, language, messages }, { transaction }),
           ];
         }
 
@@ -232,7 +248,8 @@ export async function importApp(ctx: Context): Promise<void> {
                 { transaction: appTransaction },
               );
 
-              await uploadS3File(`app-${appId}`, asset.id, createReadStream(tempPath), stats.size);
+              const { bucket, key } = getAppAssetLocation(appId, asset.id);
+              await uploadS3File(bucket, key, createReadStream(tempPath), stats.size);
             }
           }
 

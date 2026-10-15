@@ -48,6 +48,7 @@ return 1
  * Implements a sliding window rate limiter using Redis sorted sets.
  * Each request is recorded with a timestamp, and old requests are removed based on the specified window.
  * If the number of requests in the current window exceeds the maximum allowed, the function will assert a 429 error.
+ * The check is skipped while the Valkey client is not connected, so an outage never blocks the request.
  *
  * @param ctx Koa context object, used to extract the identifier (e.g., IP address) and to assert conditions.
  * @param key A unique key to identify the rate limit (e.g., 'login', 'register').
@@ -63,8 +64,10 @@ export async function assertSlidingWindowRateLimit(
   options: SlidingWindowRateLimitOptions = {},
 ): Promise<void> {
   const client = getValkeyClient();
-  if (!client) {
-    logger.warn('Valkey client not initialized, skipping rate limit check');
+  if (client?.status !== 'ready') {
+    logger.warn(
+      `Valkey client ${client ? client.status : 'not initialized'}, skipping rate limit check`,
+    );
     return;
   }
   const idFunction = options.identifierFunction ?? ((context) => context.ip);

@@ -1,4 +1,4 @@
-import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconReference, type Remapper } from '@appsemble/sdk';
 import { type MutableRef } from 'preact/hooks';
 
 export enum Requirement {
@@ -369,8 +369,11 @@ export interface Choice {
 
   /**
    * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed in the option.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The value to use when selecting the option.
@@ -440,8 +443,11 @@ export interface SelectionChoiceField {
    * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
    *
    * Will not render if undefined.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 }
 
 /**
@@ -464,8 +470,11 @@ export interface SelectionChoice {
    * The icon that displays in front of the header.
    *
    * Will not render if undefined.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * A list of fields to display.
@@ -503,8 +512,11 @@ interface AbstractField {
   /**
    * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
    * the label.
+   *
+   * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
+   * registry.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * The label displayed next to the field.
@@ -1225,6 +1237,19 @@ export interface NumberField extends AbstractField, InlineField {
   defaultValue?: number;
 
   /**
+   * The HTML `autocomplete` attribute of the input, which tells browsers and assistive technology
+   * what data the field asks for, so they can fill it in.
+   *
+   * This is ignored if `display` is `slider`.
+   *
+   * See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens)
+   * for the supported values.
+   *
+   * @example 'bday-year'
+   */
+  autocomplete?: string;
+
+  /**
    * The type of the field.
    */
   type: 'integer' | 'number';
@@ -1258,7 +1283,7 @@ export interface NumberField extends AbstractField, InlineField {
   topLabels?: Remapper[];
 }
 
-export interface RangeField extends Omit<NumberField, 'display' | 'type'> {
+export interface RangeField extends Omit<NumberField, 'autocomplete' | 'display' | 'type'> {
   type: 'range';
   from?: Remapper;
   to?: Remapper;
@@ -1319,9 +1344,22 @@ export interface StringField extends AbstractField, InlineField {
   defaultValue?: string;
 
   /**
-   * The format to use for validation.
+   * The HTML `autocomplete` attribute of the input, which tells browsers and assistive technology
+   * what data the field asks for, so they can fill it in.
+   *
+   * See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens)
+   * for the supported values.
+   *
+   * @example 'email'
    */
-  format?: 'email' | 'password' | 'url';
+  autocomplete?: string;
+
+  /**
+   * The native input format to use for validation.
+   *
+   * The `time` format represents local time as an `HH:mm` string.
+   */
+  format?: 'email' | 'password' | 'time' | 'url';
 
   /**
    * Whether the string field should be multiline or not.
@@ -1598,7 +1636,8 @@ declare module '@appsemble/sdk' {
     /**
      * This event is emitted every time a change is made to the form.
      *
-     * The data received in the entire form data.
+     * The payload contains `values` with the entire form data and `lastChanged` with the name of
+     * the field edited by the user. External data and field updates set `lastChanged` to `null`.
      */
     change: never;
   }
@@ -1610,13 +1649,27 @@ declare module '@appsemble/sdk' {
     optionalLabel: never;
     fieldErrorLabel: never;
     formRequirementError: never;
+    hidePassword: never;
     invalidLabel: never;
     previousLabel: never;
     search: never;
+    showPassword: never;
+    selectionAdd: { option: number | string };
+    selectionClose: never;
     selectionNoOptions: never;
     selectionOptionsError: never;
+    selectionRemove: { option: number | string };
+    selectionSelected: { option: number | string };
     fixErrors: never;
     longSubmissionWarning: never;
+    removeFile: never;
+    resetLocation: never;
+    closeImage: never;
+    closeVideo: never;
+    downloadImage: never;
+    loading: never;
+    sliderMaximum: never;
+    sliderMinimum: never;
   }
 
   interface Parameters {
@@ -1689,6 +1742,38 @@ declare module '@appsemble/sdk' {
      * @default false
      */
     hideSubmitButton?: Remapper;
+
+    /**
+     * Whether the summary of invalid fields should not be visible.
+     *
+     * Each field still shows its own error message.
+     *
+     * @default false
+     */
+    hideErrorSummary?: Remapper;
+
+    /**
+     * Where the summary of invalid fields is shown after a submit fails validation.
+     *
+     * With `bottom`, the summary is shown above the submit button and links to the first invalid
+     * field. With `top`, the summary is shown at the top of the form and links to every invalid
+     * field in the order of the fields. It is scrolled into view and focused when a submit fails
+     * validation.
+     *
+     * @default 'bottom'
+     */
+    errorSummaryPosition?: 'bottom' | 'top';
+
+    /**
+     * Where the help text and the error message of each field are shown.
+     *
+     * With `below`, they are shown below the input, and the error message replaces the help text.
+     * With `above`, they are shown between the label and the input, with the error message below
+     * the help text.
+     *
+     * @default 'below'
+     */
+    helpPosition?: 'above' | 'below';
 
     /**
      * Whether or not space should be reserved for the help text.

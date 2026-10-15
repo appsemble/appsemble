@@ -1,4 +1,4 @@
-import { uploadS3File } from '@appsemble/node-utils';
+import { getAppAssetLocation, uploadS3File } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import sharp from 'sharp';
@@ -81,7 +81,8 @@ describe('getOriginalAppAsset', () => {
       .png()
       .toBuffer();
 
-    await uploadS3File(`app-${app.id}`, asset.id, image);
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, image);
 
     authorizeStudio(user);
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}/download`, {
@@ -116,7 +117,8 @@ describe('getOriginalAppAsset', () => {
       .png()
       .toBuffer();
 
-    await uploadS3File(`app-${app.id}`, asset.id, image);
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, image);
 
     const appMember = await createTestAppMember(app.id, user.primaryEmail);
     authorizeAppMember(app, appMember);
@@ -145,7 +147,8 @@ describe('getOriginalAppAsset', () => {
     const svg = Buffer.from(
       '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>',
     );
-    await uploadS3File(`app-${app.id}`, asset.id, svg);
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, svg);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}/download`, {
       responseType: 'arraybuffer',
@@ -180,7 +183,8 @@ describe('getOriginalAppAsset', () => {
       .png()
       .toBuffer();
 
-    await uploadS3File(`app-${app.id}`, asset.id, image);
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, image);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}/download`, {
       responseType: 'arraybuffer',

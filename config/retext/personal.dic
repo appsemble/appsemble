@@ -44,6 +44,7 @@ RABO
 sepa
 predesigned
 codebase
+Pagina
 
 # Technical slang and libraries
 .editorconfig
@@ -106,6 +107,7 @@ OpenID
 OpenStreetMap
 PEM
 Preact
+prosemirror
 prerelease/release
 PWA
 pooler
@@ -239,3 +241,9 @@ exampleenv
 subsampling
 ORM
 Sequelize
+EHLO
+BITMIME
+pids
+urandom
+renderable
+networkidle

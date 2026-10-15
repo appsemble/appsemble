@@ -70,6 +70,18 @@ export function databaseBuilder(yargs: Argv): Argv {
     .option('s3-secret-key', {
       desc: 'The secret key of the Amazon S3 compatible object storage server',
     })
+    .option('s3-bucket', {
+      desc: 'The single, pre-provisioned bucket that holds all app and block assets. App assets are stored under apps/<appId>/ and block assets under blocks/. When unset, every app gets its own bucket and block assets live in the appsemble-block-assets bucket, both created on demand.',
+    })
+    .option('s3-region', {
+      desc: 'The region to sign requests to the Amazon S3 compatible object storage server for',
+      default: 'us-east-1',
+    })
+    .option('s3-path-style', {
+      desc: 'Whether to address buckets in the URL path instead of as a subdomain of the endpoint',
+      type: 'boolean',
+      default: true,
+    })
     .option('block-assets-base-url', {
       desc: 'The base URL for block assets stored in S3 compatible object storage',
     })

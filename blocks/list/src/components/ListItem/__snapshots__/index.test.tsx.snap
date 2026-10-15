@@ -55,17 +55,21 @@ exports[`should render a list item component 1`] = `
       <div
         class="dropdown-trigger"
       >
-        <div
+        <button
+          aria-expanded="false"
           aria-haspopup="true"
-          role="button"
-          tabindex="-1"
+          class="trigger"
+          type="button"
         >
           <span
             class="icon is-align-items-center p-4 box"
+          />
+          <span
+            class="is-sr-only"
           >
-            <i />
+            moreOptions
           </span>
-        </div>
+        </button>
       </div>
       <div
         class="dropdown-menu dropdown-menu"

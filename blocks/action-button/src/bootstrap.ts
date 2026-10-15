@@ -4,11 +4,10 @@ export function ActionButton({
   actions,
   data,
   parameters: { icon, title },
-  utils: { fa, remap },
+  utils: { icon: createIcon, remap },
 }: BootstrapParams): HTMLAnchorElement | HTMLButtonElement {
   let node;
-  const iconNode = document.createElement('i');
-  iconNode.className = fa(icon);
+  const iconNode = createIcon(icon);
   if (actions.onClick.type === 'link') {
     node = document.createElement('a');
     node.href = actions.onClick.href(data);

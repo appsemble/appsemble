@@ -67,6 +67,24 @@ describe('migrate', () => {
     expect(meta).toStrictEqual([{ version: '1.0.0' }]);
   });
 
+  it('should apply concurrent migration requests only once', async () => {
+    const db = getDB();
+    m001.up = (transaction, database) =>
+      database
+        .getQueryInterface()
+        .createTable(
+          'TestMigrationLock',
+          { id: { type: DataTypes.INTEGER, primaryKey: true } },
+          { transaction },
+        );
+
+    await Promise.all([migrate(db, '0.0.1', migrations), migrate(db, '0.0.1', migrations)]);
+
+    expect(await db.models.Meta.findAll({ raw: true })).toStrictEqual([{ version: '0.0.1' }]);
+    expect((await db.query('SELECT * FROM "TestMigrationLock"'))[0]).toStrictEqual([]);
+    await db.query('DROP TABLE "TestMigrationLock"');
+  });
+
   it('should downgrade if the given version is lower than the database meta version', async () => {
     const { Meta } = getDB().models;
     vi.spyOn(Meta, 'update');

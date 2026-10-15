@@ -29,7 +29,7 @@ interface ImageFieldProps {
 
 export function ImageField({ field, index, item, repeatedIndex }: ImageFieldProps): VNode {
   const {
-    utils: { asset, remap },
+    utils: { asset, formatMessage, remap },
   } = useBlock();
 
   const img = remap(field.image.file, item, { index, repeatedIndex }) as string;
@@ -54,8 +54,12 @@ export function ImageField({ field, index, item, repeatedIndex }: ImageFieldProp
               <img alt="list icon" className={styles.img} src={src} width={width} />
             </figure>
           </button>
-          <Modal isActive={modal.enabled} onClose={modal.disable}>
-            <AppAssetDownloadButton src={src} />
+          <Modal
+            closeButtonLabel={formatMessage('closeImage')}
+            isActive={modal.enabled}
+            onClose={modal.disable}
+          >
+            <AppAssetDownloadButton label={formatMessage('downloadImage')} src={src} />
             <figure className="image">
               <img alt="list icon" src={src} />
             </figure>

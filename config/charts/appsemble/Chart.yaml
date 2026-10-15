@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.38.2-test.0
-appVersion: 0.38.2-test.0
+version: 0.40.4
+appVersion: 0.40.4
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -18,26 +18,37 @@ sources:
   - https://gitlab.com/appsemble/appsemble
   - https://gitlab.com/appsemble/charts
 dependencies:
-  - name: postgresql
-    version: 16.7.27
-    repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
   - name: mailpit
-    version: 0.36.0
+    version: 0.37.0
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
-  - name: minio
-    version: 14.10.5
-    repository: https://charts.bitnami.com/bitnami
-    condition: minio.enabled
+  - name: seaweedfs
+    version: 4.48.0
+    repository: https://seaweedfs.github.io/seaweedfs/helm
+    condition: seaweedfs.enabled
   - name: valkey
     version: 0.12.0
     repository: https://valkey.io/valkey-helm
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "Block(list): Add collapseButton parameter to configure the
+        collapsible list toggle button."
+    - kind: added
+      description: "Server: Support $top and $skip in server-side resource.query actions."
+    - kind: changed
+      description: "App: List the profile dropdown items in the collapsed top navigation menu."
+    - kind: removed
+      description: "Cli: Remove the appsemble serve development server."
     - kind: fixed
-      description: "Server: Start app exports before reading assets from storage."
+      description: "App: Wrap the email verification banner on narrow screens."
+    - kind: fixed
+      description: "Preact-components: Show keyboard focus rings and support
+        --input-radius and --appsemble-placeholder-color."
+    - kind: security
+      description: "Block(form): Update prosemirror-view to fix XSS in clipboard paste
+        handling."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -27,7 +27,9 @@ export const AppSamlSecret: OpenAPIV3.NonArraySchemaObject = {
     },
     icon: {
       type: 'string',
-      description: 'A Font Awesome icon which represents the SAML provider.',
+      format: 'icon',
+      description:
+        'A Font Awesome icon or an `icon:<key>` reference to the app’s icon registry which represents the SAML provider.',
     },
     name: {
       type: 'string',

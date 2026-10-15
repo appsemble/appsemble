@@ -1,6 +1,11 @@
 {
   "anonymousLabel": "Anonyme",
+  "closeImage": "",
+  "downloadImage": "",
   "emptyLabel": "Aucune donnée à afficher",
+  "loading": "",
+  "map": "",
+  "moreOptions": "",
   "permissionDeniedLabel": "Contactez votre administrateur pour faire évoluer votre rôle si vous vous attendiez à voir des données ici.",
   "replyErrorMessage": "Une erreur s'est produite lors de l'envoi de ce message.",
   "replyLabel": "Laissez un message…"

@@ -1,3 +1,4 @@
+import { useBlock } from '@appsemble/preact';
 import { Button } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
 import { type MutableRef, useEffect, useRef, useState } from 'preact/hooks';
@@ -23,6 +24,7 @@ export function SelectionOption({
   option,
   selected = false,
 }: SelectionOptionProps): VNode {
+  const { utils } = useBlock();
   const { id, image, imageInline } = option;
   const alignment = image?.alignment || 'default';
 
@@ -89,6 +91,10 @@ export function SelectionOption({
       </div>
       <div className="is-flex is-flex-direction-column is-justify-content-end">
         <Button
+          aria-label={utils.formatMessage(
+            selected ? (mayRemove ? 'selectionRemove' : 'selectionSelected') : 'selectionAdd',
+            { option: (utils.remap(option.header, option) as string | undefined) ?? id },
+          )}
           disabled={selected ? !mayRemove : undefined}
           icon={selected ? (mayRemove ? 'xmark' : 'check') : 'plus'}
           onClick={onClick}

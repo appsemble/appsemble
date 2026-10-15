@@ -1,8 +1,9 @@
 import {
-  AssetUploadValidationError,
   type AppAsset,
+  AssetUploadValidationError,
   type CreateAppAssetParams,
-  deleteS3Files,
+  deleteAppAssetObjects,
+  getAppAssetLocation,
   getCompressedFileMeta,
   getS3File,
   throwKoaError,
@@ -54,13 +55,14 @@ export async function createAppAsset({
       ),
     );
   } catch (error: unknown) {
-    await deleteS3Files(`app-${app.id}`, [assetId]);
+    await deleteAppAssetObjects(app.id!, [assetId]);
     if (error instanceof UniqueConstraintError) {
       throwKoaError(context, 409, `An asset named ${name} already exists`);
     }
     throw error;
   }
 
+  const { bucket, key } = getAppAssetLocation(app.id!, asset.id);
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-  return { ...asset, stream: await getS3File(`app-${app.id}`, asset.id) };
+  return { ...asset, stream: await getS3File(bucket, key) };
 }

@@ -7,7 +7,11 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Organization, OrganizationMember, type User } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
+import {
+  authorizeClientCredentials,
+  authorizeStudio,
+  createTestUser,
+} from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
 let server: Koa;
@@ -47,6 +51,23 @@ describe('getOrganizationMembers', () => {
       data: [
         {
           id: expect.any(String),
+          name: 'Test User',
+          primaryEmail: 'test@example.com',
+          role: PredefinedOrganizationRole.Owner,
+        },
+      ],
+    });
+  });
+
+  it('should fetch organization members with a client credentials token', async () => {
+    await authorizeClientCredentials('organizations:write');
+    const response = await request.get('/api/organizations/testorganization/members');
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: user.id,
           name: 'Test User',
           primaryEmail: 'test@example.com',
           role: PredefinedOrganizationRole.Owner,

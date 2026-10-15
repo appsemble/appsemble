@@ -34,7 +34,7 @@ import {
   trackBackgroundTask,
 } from '../models/index.js';
 
-export function renameOData(name: string): string {
+function renameOData(name: string): string {
   switch (name) {
     case '__created__':
       return 'created';

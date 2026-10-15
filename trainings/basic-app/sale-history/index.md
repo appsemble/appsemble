@@ -1,6 +1,6 @@
 # Sale history
 
-To finish the app off we need a way to view the history of bicycle purchases made. Esentially, this
+To finish the app off we need a way to view the history of bicycle purchases made. Essentially, this
 will be a display for the `saleHistory` resource.
 
 One way to display this is by using the [feed block](/blocks/@appsemble/feed). This block displays
