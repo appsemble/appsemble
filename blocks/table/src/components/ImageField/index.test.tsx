@@ -60,7 +60,7 @@ it('should render a clickable image', () => {
         class="mr-3 root"
       >
         <img
-          alt="list icon"
+          alt="enlargeImage"
           class="img"
           src="https://appsemble.app/api/apps/70/assets/test-asset"
         />

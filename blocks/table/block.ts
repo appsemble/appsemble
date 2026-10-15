@@ -286,6 +286,11 @@ declare module '@appsemble/sdk' {
     submitChecked: never;
 
     /**
+     * The accessible label of an image that opens an enlarged view.
+     */
+    enlargeImage: never;
+
+    /**
      * The accessible label for closing an enlarged image.
      */
     closeImage: never;

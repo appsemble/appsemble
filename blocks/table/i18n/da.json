@@ -2,6 +2,7 @@
   "closeImage": "",
   "downloadImage": "",
   "emptyMessage": "Der foreligger ingen data.",
+  "enlargeImage": "",
   "error": "Der opstod en fejl under hentning af dataene",
   "loading": "",
   "submitChecked": "Indsend"

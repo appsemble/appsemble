@@ -1,3 +1,28 @@
-.pointer {
+.sortable {
+  position: relative;
+}
+
+.sort {
+  background: none;
+  border: none;
+  color: inherit;
   cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-align: inherit;
+
+  &::after {
+    content: '';
+    inset: 0;
+    position: absolute;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible::after {
+    outline: 2px solid currentcolor;
+    outline-offset: -2px;
+  }
 }

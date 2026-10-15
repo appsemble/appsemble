@@ -1,6 +1,7 @@
 import { Context } from '@appsemble/preact';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { act, render, screen } from '@testing-library/preact';
+import { userEvent } from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
 
 import { Cards } from './bootstrap.js';
@@ -14,9 +15,19 @@ interface Item {
 
 interface SetupOptions {
   /**
+   * The card parameters.
+   */
+  card?: BlockProps['parameters']['card'];
+
+  /**
    * Whether to hide the block when it has no data.
    */
   hideOnNoData?: boolean;
+
+  /**
+   * The action triggered when a card is clicked.
+   */
+  onClick?: BlockProps['actions']['onClick'];
 }
 
 interface Setup {
@@ -61,7 +72,13 @@ interface Setup {
   unmount: () => void;
 }
 
-function setup({ hideOnNoData = false }: SetupOptions = {}): Setup {
+function setup({
+  card = { content: 'Content', title: { prop: 'title' } },
+  hideOnNoData = false,
+  onClick = Object.assign(() => Promise.resolve(), {
+    type: 'noop',
+  }) as BlockProps['actions']['onClick'],
+}: SetupOptions = {}): Setup {
   const offData = vi.fn();
   const offReset = vi.fn();
   const ready = vi.fn();
@@ -69,9 +86,7 @@ function setup({ hideOnNoData = false }: SetupOptions = {}): Setup {
   let resetCallback: (() => void) | undefined;
 
   const props = {
-    actions: {
-      onClick: Object.assign(() => Promise.resolve(), { type: 'noop' as const }),
-    },
+    actions: { onClick },
     data: undefined,
     events: {
       emit: {},
@@ -88,7 +103,7 @@ function setup({ hideOnNoData = false }: SetupOptions = {}): Setup {
       off: { data: offData, reset: offReset },
     } as unknown as BlockProps['events'],
     parameters: {
-      card: { content: { prop: 'title' } },
+      card,
       defaultImage: '',
       hideOnNoData,
     },
@@ -207,4 +222,54 @@ it('should stop listening for data and reset when unmounted', () => {
 
   expect(offData).toHaveBeenCalledExactlyOnceWith(dataCallback);
   expect(offReset).toHaveBeenCalledExactlyOnceWith(resetCallback);
+});
+
+it('should open a card with a button that is reachable by keyboard', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'click',
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({ onClick });
+  const item = { id: 1, title: 'First' };
+
+  await emitData([item]);
+  await userEvent.tab();
+  await userEvent.keyboard('{Enter}');
+
+  expect(document.activeElement).toBe(screen.getByRole('button', { name: 'First' }));
+  expect(onClick).toHaveBeenCalledExactlyOnceWith(item);
+});
+
+it('should name the button of a card without text by its image alt', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'click',
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({
+    card: { content: { prop: 'content' }, image: { alt: 'A red bike', file: '' } },
+    onClick,
+  });
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.getByRole('button', { name: 'A red bike' })).toBeDefined();
+});
+
+it('should link a card to the page of a link action', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'link',
+    href: (data: Item) => `/items/${data.id}`,
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({ onClick });
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.getByRole('link', { name: 'First' }).getAttribute('href')).toBe('/items/1');
+});
+
+it('should not render a control for a card without a click action', async () => {
+  const { emitData } = setup();
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.queryByRole('button')).toBeNull();
+  expect(screen.queryByRole('link')).toBeNull();
 });

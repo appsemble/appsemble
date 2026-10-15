@@ -33,6 +33,7 @@ export function ImageField({ field, index, item, repeatedIndex }: ImageFieldProp
   } = useBlock();
 
   const img = remap(field.image.file, item, { index, repeatedIndex }) as string;
+  const label = remap(field.label, {}) as string;
   const src = /^(https?:)?\/\//.test(img) ? img : asset(img);
 
   const modal = useToggle();
@@ -51,7 +52,12 @@ export function ImageField({ field, index, item, repeatedIndex }: ImageFieldProp
             type="button"
           >
             <figure className={`mr-3 ${styles.root}`}>
-              <img alt="list icon" className={styles.img} src={src} width={width} />
+              <img
+                alt={formatMessage('enlargeImage')}
+                className={styles.img}
+                src={src}
+                width={width}
+              />
             </figure>
           </button>
           <Modal
@@ -61,7 +67,7 @@ export function ImageField({ field, index, item, repeatedIndex }: ImageFieldProp
           >
             <AppAssetDownloadButton label={formatMessage('downloadImage')} src={src} />
             <figure className="image">
-              <img alt="list icon" src={src} />
+              <img alt={label ?? ''} src={src} />
             </figure>
           </Modal>
         </>

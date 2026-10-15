@@ -146,3 +146,33 @@ it('should trigger onClick when the image is clicked and openPreview is false', 
 
   expect(onClickMock.mock.calls).toHaveLength(1);
 });
+
+it('should trigger the click action only when its button is activated from the keyboard', async () => {
+  const onClickMock = vi.fn();
+  const onClick = Object.assign(
+    // eslint-disable-next-line func-names,prefer-arrow-callback
+    function <R>(data?: any, context?: Record<string, any>): Promise<R> {
+      return onClickMock(data, context) as Promise<R>;
+    },
+    { type: 'dialog' as const },
+  );
+
+  render(
+    <Context.Provider
+      value={{
+        ...defaultBootstrapParams,
+        parameters: { item: { header: { title: 'Item title' } } },
+        actions: { onClick, onDrop: { type: 'noop' } as Action },
+      }}
+    >
+      <ListItem index={0} item={{ id: 2 }} />
+    </Context.Provider>,
+  );
+
+  await userEvent.tab();
+  expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Item title' }));
+  await userEvent.keyboard('a');
+  expect(onClickMock).not.toHaveBeenCalled();
+  await userEvent.keyboard('{Enter}');
+  expect(onClickMock).toHaveBeenCalledExactlyOnceWith({ id: 2 }, { index: 0 });
+});

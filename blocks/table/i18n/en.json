@@ -2,6 +2,7 @@
   "closeImage": "Close enlarged image",
   "downloadImage": "Download in HD",
   "emptyMessage": "No data available.",
+  "enlargeImage": "Enlarge image",
   "error": "An error occurred when fetching the data",
   "loading": "Loading",
   "submitChecked": "Submit"

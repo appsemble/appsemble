@@ -79,13 +79,17 @@ export function ItemCell({
     !('checkbox' in field) &&
     actions[field.onClick ?? 'onClick'];
 
-  const onCellClick = useCallback(() => {
-    if (!onClickAction || onClickAction.type === 'noop') {
-      return;
-    }
+  const onCellClick = useCallback(
+    (event: MouseEvent) => {
+      event.preventDefault();
+      if (!onClickAction || onClickAction.type === 'noop') {
+        return;
+      }
 
-    onClickAction(record, { index, repeatedIndex });
-  }, [onClickAction, record, index, repeatedIndex]);
+      onClickAction(record, { index, repeatedIndex });
+    },
+    [onClickAction, record, index, repeatedIndex],
+  );
 
   const alignment = field.alignment || 'left';
   let content: VNode | string;
@@ -115,17 +119,24 @@ export function ItemCell({
       />
     );
   } else {
-    content = renderValue(remap(field.value, item, { index, repeatedIndex }));
+    const value = renderValue(remap(field.value, item, { index, repeatedIndex }));
+    // The control stretches over the cell, so the whole cell is clickable
+    content =
+      !value || !onClickAction || onClickAction.type === 'noop' ? (
+        value
+      ) : onClickAction.type === 'link' ? (
+        <a className={styles.clickable} href={onClickAction.href(record)} onClick={onCellClick}>
+          {value}
+        </a>
+      ) : (
+        <button className={styles.clickable} onClick={onCellClick} type="button">
+          {value}
+        </button>
+      );
   }
 
   return (
-    <td
-      {...props}
-      // @ts-expect-error strict-null-checks type not assignable
-      className={onClickAction?.type !== 'noop' && !('checkbox' in field) && styles.clickable}
-      onClick={onCellClick}
-      role="gridcell"
-    >
+    <td {...props} className={styles.cell}>
       <div
         className={classNames(
           `is-flex is-justify-content-${alignment}`,

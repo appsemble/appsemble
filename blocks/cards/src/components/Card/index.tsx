@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { type VNode } from 'preact';
+import { type ComponentChild, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
@@ -20,35 +20,55 @@ export function CardContent({ index, item }: CardContentProps): VNode {
   const image = remap(card.image?.file, item) as string;
   const imageSrc = image ? asset(image) : asset(defaultImage);
   const handleClick = useCallback(
-    (event: MouseEvent, data: Item) => {
+    (event: MouseEvent) => {
       event.preventDefault();
-      actions.onClick(data);
+      actions.onClick(item);
     },
-    [actions],
+    [actions, item],
   );
   const alt = remap(card.image?.alt, item) as string;
   const title = remap(card.title, item) as string;
   const subtitle = remap(card.subtitle, item) as string;
   const content = remap(card.content, item) as string;
+
+  // The control stretches over the image and the content, so the whole area is clickable.
+  // Without text, the image alt names it.
+  const control = (children: ComponentChild): ComponentChild =>
+    actions.onClick.type === 'noop' ? (
+      children
+    ) : actions.onClick.type === 'link' ? (
+      <a
+        aria-label={children ? undefined : alt}
+        className={styles.control}
+        href={actions.onClick.href(item)}
+        onClick={handleClick}
+      >
+        {children}
+      </a>
+    ) : (
+      <button
+        aria-label={children ? undefined : alt}
+        className={styles.control}
+        onClick={handleClick}
+        type="button"
+      >
+        {children}
+      </button>
+    );
+
   return (
     <div className="card">
-      <div
-        class={`card-image ${styles.cursor}`}
-        onClick={(event) => handleClick(event, item)}
-        role="none"
-      >
-        <figure className="image">
-          <img alt={alt} className={styles['image-size']} src={imageSrc} />
-        </figure>
-      </div>
-      <div
-        class={`card-content ${styles.cursor}`}
-        onClick={(event) => handleClick(event, item)}
-        role="none"
-      >
-        <p className={`is-5 title ${styles.hiddenOverflow}`}>{title}</p>
-        <p className={`is-6 title ${styles.hiddenOverflow}`}>{subtitle}</p>
-        <div className="content">{content}</div>
+      <div className={styles.main}>
+        <div class="card-image">
+          <figure className="image">
+            <img alt={alt} className={styles['image-size']} src={imageSrc} />
+          </figure>
+        </div>
+        <div class="card-content">
+          <p className={`is-5 title ${styles.hiddenOverflow}`}>{title ? control(title) : null}</p>
+          <p className={`is-6 title ${styles.hiddenOverflow}`}>{subtitle}</p>
+          <div className="content">{title ? content : control(content)}</div>
+        </div>
       </div>
       <footer className="card-footer">
         {card.footer?.map((button) => (

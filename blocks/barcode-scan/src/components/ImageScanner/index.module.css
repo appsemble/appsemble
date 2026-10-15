@@ -9,6 +9,11 @@
   cursor: pointer;
   display: inline-block;
   position: relative;
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+  }
 }
 
 .barcode {
@@ -23,10 +28,6 @@
 .barcode:hover {
   color: hsl(210deg 100% 56%);
   font-size: 105px;
-}
-
-.hiddenInput {
-  display: none;
 }
 
 .imageContainer {

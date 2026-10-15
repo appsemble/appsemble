@@ -81,14 +81,11 @@ export function ImageScanner({
 
   return (
     <div className={styles.imageScannerWrapper}>
-      <label
-        aria-label={utils.formatMessage('selectImage')}
-        className={styles.fileLabel}
-        for="fileInput"
-      >
+      <label className={styles.fileLabel} for="fileInput">
         <Icon className={styles.barcode} icon="barcode" />
         <input
-          className={styles.hiddenInput}
+          aria-label={utils.formatMessage('selectImage')}
+          className="is-sr-only"
           id="fileInput"
           onChange={handleFileChange}
           ref={inputRef}

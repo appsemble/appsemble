@@ -7906,6 +7906,9 @@ This does not trigger if the field has a different action specified.",
     "emptyMessage": {
       "description": "The message to display when the data to display is empty.",
     },
+    "enlargeImage": {
+      "description": "The accessible label of an image that opens an enlarged view.",
+    },
     "error": {
       "description": "The message to display when data could not be loaded.",
     },
