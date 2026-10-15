@@ -1,5 +1,5 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { getS3FileBuffer, readFixture } from '@appsemble/node-utils';
+import { getAppAssetLocation, getS3FileBuffer, readFixture } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import JSZip from 'jszip';
@@ -188,9 +188,8 @@ describe('importApp', () => {
 
     const asset = (await Asset.findOne())!;
 
-    expect(await getS3FileBuffer(`app-${1}`, asset.id)).toStrictEqual(
-      await readFixture('10x50.png'),
-    );
+    const { bucket, key } = getAppAssetLocation(1, asset.id);
+    expect(await getS3FileBuffer(bucket, key)).toStrictEqual(await readFixture('10x50.png'));
     expect(indexes.map(({ name }) => name)).toContain(
       getResourceUniqueIndexName(
         'testResource',
@@ -695,5 +694,40 @@ describe('importApp', () => {
     expect(importedApp).toBeNull();
 
     vi.useFakeTimers();
+  });
+
+  it('should reject translations that give two pages the same URL segment', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Home',
+      pages: [
+        { name: 'Home', blocks: [{ type: 'test', version: '0.0.0' }] },
+        { name: 'Tasks', blocks: [{ type: 'test', version: '0.0.0' }] },
+      ],
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    zip.file('i18n/nl.json', JSON.stringify({ app: { 'pages.home': 'Tasks' } }));
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
+    authorizeStudio();
+
+    const response = await request.post(
+      `/api/organizations/${organization.id}/apps/import`,
+      content,
+      { headers: { 'Content-Type': 'application/zip' } },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Language “nl”: pages “Tasks” and “Home” share the URL segment “tasks”",
+        "statusCode": 400,
+      }
+    `);
+    expect(await App.count()).toBe(0);
   });
 });

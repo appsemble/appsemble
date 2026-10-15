@@ -12,8 +12,8 @@ import {
 import { BlockAsset, BlockVersion, Organization } from '../models/index.js';
 
 const s3Config = {
-  accessKey: 'admin',
-  secretKey: 'password',
+  accessKey: process.env.S3_ACCESS_KEY || 'admin',
+  secretKey: process.env.S3_SECRET_KEY || 'password',
   endPoint: process.env.S3_HOST || 'localhost',
   port: Number(process.env.S3_PORT) || 9009,
   useSSL: false,
@@ -49,6 +49,16 @@ describe('getBlockAssetFileUrls', () => {
         { filename: 'chunk.js', storageKey: null },
       ]),
     ).toStrictEqual({});
+  });
+});
+
+describe('bucket-per-app layout', () => {
+  beforeEach(() => {
+    initS3Client(s3Config);
+  });
+
+  afterEach(() => {
+    initS3Client({ ...s3Config, bucket: process.env.S3_BUCKET });
   });
 
   it('should expose every asset after the block version is fully migrated', () => {

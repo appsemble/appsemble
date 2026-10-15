@@ -42,6 +42,7 @@ function renderDetails(data: unknown, listen: boolean): EventEmitter {
     shadowRoot: document.createElement('div').attachShadow({ mode: 'open' }),
     theme: {} as BlockProps['theme'],
     utils: {
+      formatMessage: (message: string) => message,
       remap: (mapper, input) => remap(mapper as Remapper, input, {} as never),
     } as BlockProps['utils'],
   };

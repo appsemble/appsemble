@@ -76,6 +76,7 @@ export function RangeInput({
       {...commonProps}
       bottomLabels={bottomLabels?.map((bottomLabel) => utils.remap(bottomLabel, value) as string)}
       errorLinkRef={(errorLinkRef as MutableRef<HTMLElement>) || undefined}
+      handleLabels={[utils.formatMessage('sliderMinimum'), utils.formatMessage('sliderMaximum')]}
       topLabels={customTopLabels?.map((topLabel) => utils.remap(topLabel, value) as string)}
     />
   );

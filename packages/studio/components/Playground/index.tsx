@@ -26,6 +26,7 @@ import { parse, stringify, YAMLError } from 'yaml';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import '../MonacoEditor/contributions.js';
 import { useUser } from '../UserProvider/index.js';
 
 // Required for syntax highlighting in the Playground input and output editors

@@ -5,6 +5,8 @@ metadata:
   labels:
     {{ include "appsemble.labels" . }}
   annotations:
+    # Rolls out after the migrate Job under ArgoCD.
+    argocd.argoproj.io/sync-wave: '1'
     {{ include "appsemble.gitlab" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}

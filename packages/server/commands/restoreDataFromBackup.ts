@@ -224,6 +224,7 @@ export async function restoreDataFromBackup({
   // Restore app databases
   const apps = await App.findAll({
     attributes: ['id', 'dbName', 'dbUser', 'dbPassword', 'dbHost', 'dbPort'],
+    paranoid: false,
   });
   const dbPassword = databasePassword;
 

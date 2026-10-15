@@ -15,7 +15,7 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { type App } from '@appsemble/types';
+import { APP_VALIDATION_FAILED, type App } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import equal from 'fast-deep-equal';
@@ -199,14 +199,34 @@ export default function EditPage(): ReactNode {
     } catch (error) {
       setIsPublishing(false);
       setPristine(false);
-      const data = axios.isAxiosError<{ data?: ResourceUniqueConstraintErrorData }>(error)
-        ? error.response?.data?.data
+      const response = axios.isAxiosError<{
+        data?: ResourceUniqueConstraintErrorData & {
+          errors?: { message: string; path: (number | string)[] }[];
+        };
+        message?: string;
+      }>(error)
+        ? error.response?.data
         : undefined;
-      const uniqueConstraintError = formatResourceUniqueConstraintAppError(formatMessage, data);
+      const uniqueConstraintError = formatResourceUniqueConstraintAppError(
+        formatMessage,
+        response?.data,
+      );
 
       if (uniqueConstraintError) {
         push({
           body: uniqueConstraintError,
+          color: 'danger',
+        });
+        return;
+      }
+
+      if (response?.data?.code === APP_VALIDATION_FAILED && response.data.errors?.length) {
+        push({
+          body: formatMessage(messages.validationErrors, {
+            errors: response.data.errors
+              .map(({ message, path }) => `${path.join('.') || 'app'} ${message}`)
+              .join('\n'),
+          }),
           color: 'danger',
         });
         return;

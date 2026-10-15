@@ -9,15 +9,12 @@ import { type Configuration } from 'webpack';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { migrations } from '../migrations/main/index.js';
-import { getDB, initDB } from '../models/index.js';
+import { initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { configureDNS } from '../utils/dns/index.js';
-import { migrate } from '../utils/migrate.js';
 import { shutdown } from '../utils/shutdown.js';
 import { handleDBError } from '../utils/sqlUtils.js';
-import { syncTrainings } from '../utils/syncTrainings.js';
 import { initValkeyClient } from '../utils/valkey.js';
 
 interface AdditionalArguments {
@@ -218,18 +215,6 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
     password: argv.valkeyPassword,
     tls: argv.valkeyTls,
   });
-
-  if (argv.migrateTo) {
-    const db = getDB();
-    await migrate(db, argv.migrateTo, migrations);
-  }
-
-  try {
-    await syncTrainings('trainings');
-  } catch (error: unknown) {
-    logger.warn('Trainings failed to sync');
-    logger.warn(error);
-  }
 
   await configureDNS();
 

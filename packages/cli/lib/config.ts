@@ -330,6 +330,11 @@ function processParameters(
       getChildren: () => [],
     });
     fmt.addTypeFormatter({
+      supportsType: (type) => type.getName() === 'IconReference',
+      getDefinition: () => ({ type: 'string', format: 'icon' }),
+      getChildren: () => [],
+    });
+    fmt.addTypeFormatter({
       supportsType: (type) => type.getName() === 'Remapper',
       getDefinition: () => ({ format: 'remapper' }),
       getChildren: () => [],

@@ -17,6 +17,7 @@ import { useLocation } from 'react-router-dom';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useToggle } from '../index.js';
+import { NavbarBurger } from '../NavbarBurger/index.js';
 import { useEventListener } from '../useEventListener.js';
 
 interface SideMenuContext {
@@ -140,23 +141,12 @@ export function SideMenuButton(): ReactNode {
   const { formatMessage } = useIntl();
 
   return (
-    <button
+    <NavbarBurger
+      active={isOpen}
       aria-label={formatMessage(isOpen ? messages.close : messages.open)}
-      className={classNames(
-        'navbar-burger',
-        {
-          'is-active': isOpen,
-          [styles.toggleable]: isClosableOnDesktop,
-        },
-        styles.button,
-      )}
+      className={classNames({ [styles.toggleable]: isClosableOnDesktop }, styles.button)}
       onClick={toggle}
-      type="button"
-    >
-      <span aria-hidden />
-      <span aria-hidden />
-      <span aria-hidden />
-    </button>
+    />
   );
 }
 

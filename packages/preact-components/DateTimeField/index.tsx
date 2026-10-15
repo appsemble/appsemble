@@ -309,7 +309,6 @@ export function DateTimeField({
     altFormat,
     altInput,
     confirmLabel,
-    disable,
     disableMobile,
     disabled,
     enableTime,
@@ -361,6 +360,23 @@ export function DateTimeField({
       pickerRef.current?.setDate(new Date(value));
     }
   }, [picker, value]);
+
+  // The alternative input replaces the original input on screen, so it needs its description and
+  // validity for assistive technology.
+  useEffect(() => {
+    const { current } = pickerRef;
+    if (!current?.altInput) {
+      return;
+    }
+    for (const attribute of ['aria-describedby', 'aria-invalid']) {
+      const attributeValue = current.input.getAttribute(attribute);
+      if (attributeValue == null) {
+        current.altInput.removeAttribute(attribute);
+      } else {
+        current.altInput.setAttribute(attribute, attributeValue);
+      }
+    }
+  }, [picker, error, help]);
 
   return (
     <div

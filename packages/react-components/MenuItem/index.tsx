@@ -1,4 +1,4 @@
-import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconReference } from '@appsemble/lang-sdk';
 import classNames from 'classnames';
 import { type MouseEvent, type ReactNode, useCallback, useContext } from 'react';
 import { Link } from 'react-router-dom';
@@ -30,7 +30,7 @@ interface SideNavLinkProps {
   /**
    * The icon to render.
    */
-  readonly icon?: IconName;
+  readonly icon?: IconReference;
 
   /**
    * Where to navigate to.

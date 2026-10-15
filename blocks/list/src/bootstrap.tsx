@@ -321,7 +321,7 @@ export function List({
   }, [events]);
 
   if (loading) {
-    return <Loader />;
+    return <Loader label={utils.formatMessage('loading')} />;
   }
 
   if (hideOnNoData && !data?.length) {

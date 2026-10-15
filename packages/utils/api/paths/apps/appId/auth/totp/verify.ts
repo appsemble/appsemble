@@ -5,22 +5,17 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   post: {
     tags: ['app', 'auth', 'totp'],
     description:
-      'Verify a TOTP token during login to complete the two-factor authentication process.',
+      'Verify a TOTP token during login to complete the two-factor authentication process. The app member is identified by the pending TOTP token issued by the first login step, which is what binds both login steps together.',
     operationId: 'verifyAppMemberTotp',
     requestBody: {
-      description: 'The member ID and TOTP token to verify.',
+      description: 'The pending TOTP token and the TOTP token to verify.',
       required: true,
       content: {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['memberId', 'token'],
+            required: ['token', 'totpToken'],
             properties: {
-              memberId: {
-                type: 'string',
-                format: 'uuid',
-                description: 'The ID of the app member attempting to login.',
-              },
               token: {
                 type: 'string',
                 minLength: 6,
@@ -28,9 +23,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 pattern: '^[0-9]{6}$',
                 description: 'The 6-digit TOTP token from the authenticator app.',
               },
-              scope: {
+              totpToken: {
                 type: 'string',
-                description: 'The OAuth2 scope to include in the token.',
+                description: 'The pending TOTP token from the first login step.',
               },
             },
           },
@@ -70,10 +65,13 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'TOTP is not enabled for this member.',
       },
       401: {
-        description: 'Invalid TOTP token.',
+        description: 'Invalid TOTP token, or a pending TOTP token which is invalid or spent.',
       },
       404: {
         description: 'App member not found.',
+      },
+      429: {
+        description: 'Too many failed TOTP attempts.',
       },
     },
   },

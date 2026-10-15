@@ -8,7 +8,7 @@ set -eu
 #   ${BACKUP_S3_BUCKET}/${BACKUP_PREFIX}/current/app-<id>/...
 #   ${BACKUP_S3_BUCKET}/${BACKUP_PREFIX}/snapshots/<yyyy-mm-01>/app-<id>/...
 #
-# RESTORE_S3_* points at the MinIO/S3 account where app-<id> buckets should be restored. With
+# RESTORE_S3_* points at the object storage account where app-<id> buckets should be restored. With
 # S3_BUCKET set, each backup is restored into the apps/<id>/ prefix of that bucket instead.
 #
 # For convenience, the backup script's original variable names are also accepted:
@@ -16,7 +16,7 @@ set -eu
 #   SRC_S3_* is used as the restore target fallback.
 
 BACKUP_REMOTE_NAME="${BACKUP_REMOTE_NAME:-appsemble-assets-backup}"
-RESTORE_REMOTE_NAME="${RESTORE_REMOTE_NAME:-appsemble-minio-restore}"
+RESTORE_REMOTE_NAME="${RESTORE_REMOTE_NAME:-appsemble-assets-restore}"
 
 BACKUP_S3_ENDPOINT="${BACKUP_S3_ENDPOINT:-${DST_S3_ENDPOINT:-}}"
 BACKUP_S3_BUCKET="${BACKUP_S3_BUCKET:-${DST_S3_BUCKET:-}}"

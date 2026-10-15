@@ -15,6 +15,7 @@ import {
   writeData,
 } from '@appsemble/node-utils';
 import {
+  APP_VALIDATION_FAILED,
   type App,
   type AppConfigEntryDefinition,
   type AppLock,
@@ -565,7 +566,7 @@ function parseValueFromDefinition(value: ValueFromDefinition): ValueFromProcess 
   return parsed;
 }
 
-export function parseValues(
+function parseValues(
   type: string,
   name: string,
   valuesToParse: Record<string, ValueFromDefinition>[],
@@ -936,7 +937,8 @@ export async function writeAppMessages(
           return [key, extractedMessages.app[key]];
         }
 
-        if (verify.includes(parse(filepath).name)) {
+        // Route segments are translated by choice, so a verified language may leave them empty.
+        if (verify.includes(parse(filepath).name) && !key.startsWith('routes.')) {
           throw new AppsembleError(`Missing translation: app.${key}`);
         }
 
@@ -1418,7 +1420,9 @@ export async function publishApp({
     if (!axios.isAxiosError(error)) {
       throw error;
     }
-    if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
+    if (
+      (error.response?.data as { data?: { code?: string } })?.data?.code !== APP_VALIDATION_FAILED
+    ) {
       throw error;
     }
     throw new AppsembleError(
@@ -1854,7 +1858,9 @@ export async function updateApp({
     if (!axios.isAxiosError(error)) {
       throw error;
     }
-    if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
+    if (
+      (error.response?.data as { data?: { code?: string } })?.data?.code !== APP_VALIDATION_FAILED
+    ) {
       throw error;
     }
     throw new AppsembleError(

@@ -7,10 +7,10 @@ import {
   type PageDefinition,
   type Remapper,
 } from '@appsemble/lang-sdk';
-import { Title, useMessages } from '@appsemble/react-components';
+import { Title, useIsInModalDialog, useMessages } from '@appsemble/react-components';
 import { type BlockUtils } from '@appsemble/sdk';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
-import { fa } from '@appsemble/web-utils';
+import { createIconElement, fa, resolveIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -126,6 +126,7 @@ export function Block({
   }
   const [initialized, setInitialized] = useState(false);
   const pushNotifications = useServiceWorkerRegistration();
+  const isInModalDialog = useIsInModalDialog();
 
   const blockName = normalizeBlockName(block.type);
   const manifest = blockManifests.find((m) => m.name === blockName && m.version === block.version);
@@ -138,6 +139,7 @@ export function Block({
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
     mql.addEventListener('change', onChange);
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     return () => mql.removeEventListener('change', onChange);
   }, []);
 
@@ -235,6 +237,12 @@ export function Block({
         ) as string;
       },
       fa,
+      resolveIcon(reference) {
+        return resolveIcon(reference, appDefinition.icons, utils.asset);
+      },
+      icon(reference, options) {
+        return createIconElement(utils.resolveIcon(reference), options);
+      },
       isActionError(input): input is ActionError {
         return input instanceof ActionError;
       },
@@ -244,7 +252,7 @@ export function Block({
       menu(items, header) {
         setBlockMenu({ items, header, path: prefix });
       },
-      isMobile,
+      isMobile: Boolean(isMobile),
     };
 
     (async () => {
@@ -349,7 +357,7 @@ export function Block({
       const { position = 'bottom right' } = block;
       const { navigation = 'left-menu' } = appDefinition.layout || {};
 
-      return createPortal(
+      const float = (
         <div
           className={classNames(`is-flex ${styles.root} ${styles.float}`, {
             [styles.top]: position.includes('top'),
@@ -366,9 +374,12 @@ export function Block({
           {header}
           {/* @ts-expect-error 2322 null is not assignable to type (strictNullChecks) */}
           <div className={styles.host} ref={ref} />
-        </div>,
-        document.body,
+        </div>
       );
+
+      // A float block in a dialog stays inside it, so it is shown above the dialog and isn't blocked
+      // like the page behind it.
+      return isInModalDialog ? float : createPortal(float, document.body);
     }
 
     return (

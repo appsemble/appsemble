@@ -1,5 +1,8 @@
 {
   "empty": "There is no data to display",
   "error": "There was a problem loading the data.",
-  "loading": "Loading…"
+  "loading": "Loading…",
+  "removeImage": "Remove image",
+  "selectImage": "Select an image to scan",
+  "stopScanning": "Stop scanning"
 }

@@ -4,6 +4,7 @@ import {
   JSONField,
   ModalCard,
   SimpleForm,
+  SimpleFormError,
   SimpleFormField,
   SimpleModalFooter,
   TextAreaField,
@@ -102,6 +103,17 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
       onSubmit={onSubmit}
       title={<FormattedMessage {...messages.modalTitle} />}
     >
+      <SimpleFormError>
+        {({ error }) =>
+          axios.isAxiosError<{ message?: string }>(error) &&
+          error.response?.status === 400 &&
+          error.response.data?.message ? (
+            error.response.data.message
+          ) : (
+            <FormattedMessage {...messages.submitError} />
+          )
+        }
+      </SimpleFormError>
       <SimpleFormField
         disabled={app.locked !== 'unlocked'}
         help={<FormattedMessage {...messages.nameHelp} />}

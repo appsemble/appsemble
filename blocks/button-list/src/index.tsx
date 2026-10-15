@@ -18,6 +18,7 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
         light,
         onClick = 'onClick',
         outlined,
+        pressed,
         rounded,
         size = 'normal',
         title,
@@ -37,11 +38,7 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
         });
         node.title = (utils.remap(title, data) as string) ?? '';
         if (!iconSide && icon) {
-          node.append(
-            <span className="icon">
-              <i className={utils.fa(icon)} />
-            </span>,
-          );
+          node.append(utils.icon(icon));
         }
 
         const createNode = (newData: unknown): ChildNode => {
@@ -55,10 +52,16 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
             document.createTextNode('')
           );
         };
+        const updatePressed = (newData: unknown): void => {
+          if (pressed !== undefined) {
+            node.setAttribute('aria-pressed', String(Boolean(utils.remap(pressed, newData))));
+          }
+        };
         let currentText = createNode(data);
         let currentData = data;
         node.append(currentText);
         const updateData = (newData: unknown): void => {
+          updatePressed(newData);
           const newText = createNode(newData);
           const hidden = utils.remap(hide, newData);
           if (hidden) {
@@ -86,11 +89,7 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
         });
 
         if (iconSide && icon) {
-          node.append(
-            <span className="icon">
-              <i className={utils.fa(icon)} />
-            </span>,
-          );
+          node.append(utils.icon(icon));
         }
         return node;
       },

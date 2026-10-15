@@ -48,8 +48,8 @@ beforeAll(async () => {
   [testDB] = await setupTestDatabase(randomUUID());
   await testDB.sync();
   initS3Client({
-    accessKey: 'admin',
-    secretKey: 'password',
+    accessKey: process.env.S3_ACCESS_KEY || 'admin',
+    secretKey: process.env.S3_SECRET_KEY || 'password',
     endPoint: process.env.S3_HOST || 'localhost',
     port: Number(process.env.S3_PORT) || 9009,
     useSSL: false,

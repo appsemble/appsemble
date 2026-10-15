@@ -1,16 +1,16 @@
 import {
+  breadcrumbsGridArea,
   normalize,
   type PageDefinition,
-  pageHasBreadcrumbsGridArea,
+  pageHasGridArea,
   type Remapper,
   type RemapperContext,
   type SubPageDefinition,
   type TabsPageDefinition,
 } from '@appsemble/lang-sdk';
-import { applyRefs, MetaSwitch, Tab, Tabs } from '@appsemble/react-components';
+import { MetaSwitch, Tab, Tabs } from '@appsemble/react-components';
 import {
   type ComponentPropsWithoutRef,
-  type MutableRefObject,
   type ReactNode,
   useCallback,
   useEffect,
@@ -33,7 +33,6 @@ import { Breadcrumbs } from '../Breadcrumbs/index.js';
 
 interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
   readonly pageDefinition: TabsPageDefinition;
-  readonly tabRef: MutableRefObject<unknown>;
 }
 
 export function TabsPage({
@@ -45,7 +44,6 @@ export function TabsPage({
   remap,
   showDialog,
   showShareDialog,
-  tabRef,
   ...blockListProps
 }: TabsPageProps): ReactNode {
   const { definition: appDefinition, pageManifests } = useAppDefinition();
@@ -172,7 +170,6 @@ export function TabsPage({
       }
       const result = createTabs();
       setCreatedTabs(result);
-      applyRefs(d[0], tabRef);
       setData(d);
     };
 
@@ -220,7 +217,7 @@ export function TabsPage({
   if (tabsWithPermissions.length) {
     return (
       <>
-        {pageHasBreadcrumbsGridArea(pageDefinition) ? null : (
+        {pageHasGridArea(pageDefinition, breadcrumbsGridArea) ? null : (
           <Breadcrumbs
             data={data}
             pageDefinition={pageDefinition}
@@ -273,7 +270,6 @@ export function TabsPage({
                       remap={remap}
                       showDialog={showDialog}
                       showShareDialog={showShareDialog}
-                      tabRef={tabRef}
                     />
                   ) : null
                 }

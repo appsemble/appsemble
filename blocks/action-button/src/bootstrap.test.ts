@@ -58,7 +58,17 @@ function setup({ data = { id: 1 }, href, title }: SetupOptions = {}): Setup {
     data,
     parameters: { icon: 'plus', title },
     actions: { onClick: onClick as unknown as Action },
-    utils: { fa: (icon: string) => `fas fa-${icon}`, remap },
+    utils: {
+      icon(icon: string) {
+        const wrapper = document.createElement('span');
+        wrapper.className = 'icon';
+        const glyph = document.createElement('i');
+        glyph.className = `fas fa-${icon}`;
+        wrapper.append(glyph);
+        return wrapper;
+      },
+      remap,
+    },
   } as unknown as BootstrapParams);
 
   return { dispatched, node, remap };
@@ -75,7 +85,7 @@ it('should render a button carrying the configured icon', () => {
 
   expect(node.tagName).toBe('BUTTON');
   expect((node as HTMLButtonElement).type).toBe('button');
-  expect(node.querySelector('i')?.className).toBe('fas fa-plus');
+  expect(node.querySelector('.icon > i')?.className).toBe('fas fa-plus');
 });
 
 it('should dispatch the click action with the block data', () => {

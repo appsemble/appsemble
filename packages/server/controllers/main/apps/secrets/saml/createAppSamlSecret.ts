@@ -11,6 +11,7 @@ import { touchApp } from '../../../../../utils/app.js';
 import { argv } from '../../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
+import { getSsoIconError } from '../../../../../utils/icons.js';
 import {
   normalizeLoginRoleMappings,
   validateLoginRoleMappings,
@@ -31,6 +32,29 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
     organizationId: app.OrganizationId,
     requiredPermissions: [OrganizationPermission.CreateAppSecrets],
   });
+
+  const iconError = getSsoIconError(body.icon, app.definition);
+  assertKoaCondition(iconError == null, ctx, 400, iconError ?? 'Invalid icon');
+
+  const roleMappingsError = validateLoginRoleMappings(
+    body.roleMappings,
+    getAppRoles(app.definition.security),
+  );
+  const roleMappings = normalizeLoginRoleMappings(body.roleMappings);
+  const groupAttribute = body.groupAttribute?.trim() || undefined;
+
+  assertKoaCondition(
+    roleMappingsError == null,
+    ctx,
+    400,
+    roleMappingsError || 'Invalid role mappings',
+  );
+  assertKoaCondition(
+    !roleMappings || Boolean(groupAttribute),
+    ctx,
+    400,
+    'Group attribute is required when role mappings are configured',
+  );
 
   const { privateKey, publicKey } = await new Promise<forge.pki.rsa.KeyPair>((resolve, reject) => {
     forge.pki.rsa.generateKeyPair({ bits: 2048 }, (error, result) =>
@@ -53,26 +77,6 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
   cert.setSubject(attrs);
   cert.setIssuer(attrs);
   cert.sign(privateKey);
-
-  const roleMappingsError = validateLoginRoleMappings(
-    body.roleMappings,
-    getAppRoles(app.definition.security),
-  );
-  const roleMappings = normalizeLoginRoleMappings(body.roleMappings);
-  const groupAttribute = body.groupAttribute?.trim() || undefined;
-
-  assertKoaCondition(
-    roleMappingsError == null,
-    ctx,
-    400,
-    roleMappingsError || 'Invalid role mappings',
-  );
-  assertKoaCondition(
-    !roleMappings || Boolean(groupAttribute),
-    ctx,
-    400,
-    'Group attribute is required when role mappings are configured',
-  );
 
   const { AppSamlSecret } = await getAppDB(appId);
   const secret = {

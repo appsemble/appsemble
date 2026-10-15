@@ -3,10 +3,14 @@ import { type EventEmitter } from 'events';
 import {
   ActionError,
   type BlockDefinition,
-  hasBreadcrumbsGridArea,
+  bottomNavigationGridArea,
+  breadcrumbsGridArea,
+  getRouteSegment,
+  hasGridArea,
   type PageDefinition,
   type PageLayoutDefinition,
   type Remapper,
+  resendBannerGridArea,
 } from '@appsemble/lang-sdk';
 import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
 import { type ProjectImplementations } from '@appsemble/types';
@@ -23,11 +27,14 @@ import { appControllerCode, appControllerImplementations, appId } from '../../ut
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { Block } from '../Block/index.js';
+import { BottomNavigation } from '../BottomNavigation/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
-import usePageGridCss, { DEFAULT_BREAKPOINTS } from '../PageGridProvider/index.js';
+import usePageGridCss, { useGridBreakpoints } from '../PageGridProvider/index.js';
+import { VerifyBanner } from '../VerifyBanner/index.js';
 
 interface BlockListProps {
   readonly blocks: BlockDefinition[];
@@ -85,6 +92,7 @@ export function BlockList({
     setAppMemberSelectedGroup,
     setAppMemberInfo,
   } = useAppMember();
+  const { getAppMessage } = useAppMessages();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const redirect = useLocationString();
 
@@ -158,6 +166,7 @@ export function BlockList({
           appDefinition,
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           context: appDefinition.controller,
+          getAppMessage,
           pushNotifications,
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           pageReady,
@@ -217,6 +226,7 @@ export function BlockList({
     controllerInitialized,
     appDefinition,
     ee,
+    getAppMessage,
     location.state,
     logout,
     pageReady,
@@ -235,10 +245,8 @@ export function BlockList({
     appMemberInfoRef,
     appMemberSelectedGroup,
   ]);
-  const gridClassName = usePageGridCss({
-    pageLayout,
-    BREAKPOINTS: { ...DEFAULT_BREAKPOINTS, ...appDefinition.layout?.breakpoints },
-  });
+  const BREAKPOINTS = useGridBreakpoints(appDefinition.layout?.breakpoints);
+  const gridClassName = usePageGridCss({ pageLayout, BREAKPOINTS });
 
   // The empty context is what the two-argument call in the default breadcrumbs position resolves to,
   // so the trail reads the same page context wherever it is placed.
@@ -253,7 +261,11 @@ export function BlockList({
 
   if (!blockList.length) {
     if (!isLoggedIn) {
-      return <Navigate to={`/Login?${new URLSearchParams({ redirect })}`} />;
+      return (
+        <Navigate
+          to={`/${params.lang}/${getRouteSegment('Login', getAppMessage)}?${new URLSearchParams({ redirect })}`}
+        />
+      );
     }
 
     return <Navigate to="/" />;
@@ -263,7 +275,10 @@ export function BlockList({
 
   return (
     <Wrapper {...wrapperProps}>
-      {gridClassName && hasBreadcrumbsGridArea(pageLayout) ? (
+      {gridClassName && hasGridArea(pageLayout, resendBannerGridArea) ? (
+        <VerifyBanner inGrid />
+      ) : null}
+      {gridClassName && hasGridArea(pageLayout, breadcrumbsGridArea) ? (
         <Breadcrumbs
           data={data}
           inGrid
@@ -297,6 +312,9 @@ export function BlockList({
           />
         ) : null,
       )}
+      {gridClassName && hasGridArea(pageLayout, bottomNavigationGridArea) ? (
+        <BottomNavigation inGrid />
+      ) : null}
     </Wrapper>
   );
 }

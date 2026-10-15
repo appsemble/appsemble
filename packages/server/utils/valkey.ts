@@ -62,7 +62,7 @@ export async function initValkeyClient(opts: InitValkeyClientOptions): Promise<R
     password: opts.password,
     port: opts.port,
     // Keep reconnecting; with the offline queue disabled, commands fail fast in between attempts.
-    retryStrategy: (times) => Math.min(times * 200, 5000),
+    retryStrategy: (times) => Math.min(200 * 2 ** (times - 1), 5000),
     tls: opts.tls ? {} : undefined,
     username: opts.password ? opts.username : undefined,
   });

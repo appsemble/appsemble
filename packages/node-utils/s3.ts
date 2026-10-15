@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { Readable } from 'node:stream';
@@ -65,6 +66,14 @@ export interface InitS3ClientParams {
    * on demand.
    */
   bucket?: string;
+
+  /**
+   * The time in milliseconds a request may go without socket activity before it fails with a
+   * `TimeoutError`, which the client retries.
+   *
+   * When unset, a stalled connection lasts until the operating system gives up on it.
+   */
+  socketTimeout?: number;
 }
 
 export function initS3Client({
@@ -75,6 +84,7 @@ export function initS3Client({
   port = 9000,
   region = 'us-east-1',
   secretKey,
+  socketTimeout,
   useSSL = true,
 }: InitS3ClientParams): void {
   try {
@@ -87,7 +97,20 @@ export function initS3Client({
       // S3-compatible stores that do not implement flexible checksums.
       requestChecksumCalculation: 'WHEN_REQUIRED',
       responseChecksumValidation: 'WHEN_REQUIRED',
+      ...(socketTimeout && { requestHandler: { socketTimeout } }),
     });
+    // S3 requires a checksum on DeleteObjects. The SDK sends CRC32, which object stores from
+    // before the flexible checksums reject in favour of Content-MD5.
+    s3Client.middlewareStack.add(
+      (next, context) => (args) => {
+        const request = args.request as { body?: string; headers: Record<string, string> };
+        if (context.commandName === 'DeleteObjectsCommand' && request.body) {
+          request.headers['content-md5'] = createHash('md5').update(request.body).digest('base64');
+        }
+        return next(args);
+      },
+      { step: 'finalizeRequest', name: 'deleteObjectsContentMd5' },
+    );
     s3Bucket = bucket || undefined;
     s3Region = region;
   } catch (error) {

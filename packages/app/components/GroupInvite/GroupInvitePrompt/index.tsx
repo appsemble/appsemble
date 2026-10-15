@@ -1,11 +1,4 @@
-import {
-  AsyncButton,
-  Content,
-  Loader,
-  Message,
-  useData,
-  useQuery,
-} from '@appsemble/react-components';
+import { AsyncButton, Message, useData, useQuery } from '@appsemble/react-components';
 import { type GroupInvite as GroupInviteType } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
@@ -15,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../../utils/settings.js';
 import { useAppMember } from '../../AppMemberProvider/index.js';
-import { AppBar } from '../../TitleBar/index.js';
+import { BuiltinPage, BuiltinPageLoader } from '../../BuiltinPage/index.js';
 
 export function GroupInvitePrompt(): ReactNode {
   const query = useQuery();
@@ -83,17 +76,15 @@ export function GroupInvitePrompt(): ReactNode {
 
   if (loading) {
     return (
-      <>
-        <AppBar />
-        <Loader />
-      </>
+      <BuiltinPage page="group-invite" state="loading" title={messages.title}>
+        <BuiltinPageLoader />
+      </BuiltinPage>
     );
   }
 
   if (inviteError) {
     return (
-      <Content padding>
-        <AppBar />
+      <BuiltinPage narrow page="group-invite" state="error" title={messages.title}>
         <Message color="danger">
           {inviteError.response?.status === 404 ? (
             <FormattedMessage {...messages.notFound} />
@@ -101,14 +92,13 @@ export function GroupInvitePrompt(): ReactNode {
             <FormattedMessage {...messages.inviteLoadingError} />
           )}
         </Message>
-      </Content>
+      </BuiltinPage>
     );
   }
 
   if (accepted) {
     return (
-      <Content padding>
-        <AppBar />
+      <BuiltinPage narrow page="group-invite" state="accepted" title={messages.title}>
         <Message color="success">
           <FormattedMessage
             {...messages.accepted}
@@ -116,14 +106,13 @@ export function GroupInvitePrompt(): ReactNode {
             values={{ groupName: <strong>{invite.groupName}</strong> }}
           />
         </Message>
-      </Content>
+      </BuiltinPage>
     );
   }
 
   if (declined) {
     return (
-      <Content padding>
-        <AppBar />
+      <BuiltinPage narrow page="group-invite" state="declined" title={messages.title}>
         <Message color="success">
           <FormattedMessage
             {...messages.declined}
@@ -131,13 +120,12 @@ export function GroupInvitePrompt(): ReactNode {
             values={{ groupName: <strong>{invite.groupName}</strong> }}
           />
         </Message>
-      </Content>
+      </BuiltinPage>
     );
   }
 
   return (
-    <Content padding>
-      <AppBar />
+    <BuiltinPage narrow page="group-invite" state="form" title={messages.title}>
       <p className="content has-text-centered">
         {appMemberInfo.name == null ? (
           <FormattedMessage
@@ -175,6 +163,6 @@ export function GroupInvitePrompt(): ReactNode {
           )}
         </div>
       ) : null}
-    </Content>
+    </BuiltinPage>
   );
 }

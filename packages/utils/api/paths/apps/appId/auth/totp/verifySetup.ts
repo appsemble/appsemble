@@ -5,7 +5,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   post: {
     tags: ['app', 'auth', 'totp'],
     description:
-      'Verify a TOTP token to complete the TOTP setup process and enable two-factor authentication. When TOTP is required for the app, unauthenticated verification is allowed by providing a memberId.',
+      'Verify a TOTP token to complete the TOTP setup process and enable two-factor authentication. App members who still have to enroll to complete their login identify themselves with the pending TOTP token from the first login step instead of an access token, in which case the login is completed and JWT tokens are returned.',
     operationId: 'verifyAppMemberTotpSetup',
     requestBody: {
       description: 'The TOTP token to verify.',
@@ -23,11 +23,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 pattern: '^[0-9]{6}$',
                 description: 'The 6-digit TOTP token from the authenticator app.',
               },
-              memberId: {
+              totpToken: {
                 type: 'string',
-                format: 'uuid',
                 description:
-                  'The app member ID. Only used for unauthenticated verification when TOTP is required.',
+                  'The pending TOTP token from the first login step. Only used when no access token is available yet.',
               },
             },
           },
@@ -35,17 +34,44 @@ export const pathItems: OpenAPIV3.PathItemObject = {
       },
     },
     responses: {
-      204: {
-        description: 'TOTP has been successfully enabled.',
+      200: {
+        description:
+          'TOTP has been successfully enabled. When enrollment completed a pending login, JWT tokens are returned. Otherwise the response is empty with status 204.',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                access_token: {
+                  type: 'string',
+                  description: 'The access token.',
+                },
+                expires_in: {
+                  type: 'number',
+                  description: 'Token expiration time in seconds.',
+                },
+                refresh_token: {
+                  type: 'string',
+                  description: 'The refresh token.',
+                },
+                token_type: {
+                  type: 'string',
+                  description: 'The token type (bearer).',
+                },
+              },
+            },
+          },
+        },
       },
       400: {
         description: 'Invalid TOTP token or TOTP setup not initiated.',
       },
       401: {
-        description: 'User is not authenticated.',
+        description:
+          'User is not authenticated, or the pending TOTP token is invalid or already spent.',
       },
-      403: {
-        description: 'Unauthenticated TOTP verification is only allowed when TOTP is required.',
+      429: {
+        description: 'Too many failed TOTP attempts.',
       },
     },
     security: [{ app: [] }, {}],

@@ -8,7 +8,13 @@ import { Field } from './components/Field/index.js';
 import { FieldGroup } from './components/FieldGroup/index.js';
 import styles from './index.module.css';
 
-export function DetailViewer({ data: blockData, events, parameters, ready }: BlockProps): VNode {
+export function DetailViewer({
+  data: blockData,
+  events,
+  parameters,
+  ready,
+  utils,
+}: BlockProps): VNode {
   const [data, setData] = useState(blockData);
   const [loading, setLoading] = useState(blockData == null);
 
@@ -24,7 +30,7 @@ export function DetailViewer({ data: blockData, events, parameters, ready }: Blo
   }, [events, ready]);
 
   if (loading) {
-    return <Loader />;
+    return <Loader label={utils.formatMessage('loading')} />;
   }
 
   return (

@@ -1,13 +1,13 @@
 {
   "app": {
-    "app.roles.employee": "",
-    "app.roles.employee.description": "",
-    "app.roles.manager": "",
-    "app.roles.manager.description": "",
-    "description": "",
-    "name": "",
-    "pages.inventory": "",
-    "pages.sale-history": "",
-    "pages.sell-bicycle": ""
+    "app.roles.employee": "zaposlenik",
+    "app.roles.employee.description": "Redovni zaposlenici trgovine. Oni mogu prodavati bicikle.",
+    "app.roles.manager": "upravitelj",
+    "app.roles.manager.description": "Upravitelji trgovine. Oni nadziru trgovinu i mogu dodavati/uklanjati vrste bicikala iz inventara.",
+    "description": "Web stranica za zaposlenike za upravljanje i prodaju bicikala",
+    "name": "Trgovina biciklima",
+    "pages.inventory": "Inventar",
+    "pages.sale-history": "Povijest prodaje",
+    "pages.sell-bicycle": "Prodaj bicikl"
   }
 }
