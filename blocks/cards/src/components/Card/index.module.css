@@ -1,5 +1,37 @@
-.cursor {
+.main {
+  position: relative;
+}
+
+.control {
+  background: none;
+  border: none;
+  color: inherit;
   cursor: pointer;
+  font: inherit;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 0;
+  text-align: inherit;
+  text-overflow: ellipsis;
+
+  &:hover {
+    color: inherit;
+  }
+
+  &::after {
+    content: '';
+    inset: 0;
+    position: absolute;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible::after {
+    outline: 2px solid currentcolor;
+    outline-offset: -2px;
+  }
 }
 
 .hiddenOverflow {

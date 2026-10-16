@@ -5,6 +5,6 @@ pages:
   - name: PDF Viewer
     blocks:
       - type: pdf-viewer
-        version: 0.40.4
+        version: 0.40.5
         parameters:
           url: my-pdf

@@ -840,8 +840,20 @@ export interface BooleanField extends AbstractField, InlineField {
 
   /**
    * The text to display next to the checkbox.
+   *
+   * If `labelTextFormat` is `markdown`, the text is rendered as Markdown, for example to include a
+   * link such as `I accept the [terms](/terms)`. Links open in a new tab and clicking them does not
+   * toggle the checkbox.
    */
   labelText?: Remapper;
+
+  /**
+   * The format in which `labelText` is rendered.
+   *
+   * By default `labelText` is rendered as plain text. `markdown` renders it as Markdown. This is the
+   * only supported format, other formats may be added.
+   */
+  labelTextFormat?: 'markdown';
 
   /**
    * The type of the field.

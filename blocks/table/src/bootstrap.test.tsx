@@ -153,7 +153,7 @@ it('should show a loader and signal readiness until data arrives', () => {
   const { ready } = setup();
 
   expect(screen.getByTestId('loader-comp')).toBeDefined();
-  expect(screen.queryByRole('grid')).toBeNull();
+  expect(screen.queryByRole('table')).toBeNull();
   expect(ready).toHaveBeenCalledWith();
 });
 
@@ -163,7 +163,7 @@ it('should show the error message when the data event reports an error', async (
   await emitData([], 'Something broke');
 
   expect(screen.getByText('error')).toBeDefined();
-  expect(screen.queryByRole('grid')).toBeNull();
+  expect(screen.queryByRole('table')).toBeNull();
 });
 
 it('should recover from an error when later data arrives', async () => {
@@ -173,7 +173,7 @@ it('should recover from an error when later data arrives', async () => {
   await emitData([{ id: 1, title: 'Recovered' }]);
 
   expect(screen.queryByText('error')).toBeNull();
-  expect(screen.getByRole('grid')).toBeDefined();
+  expect(screen.getByRole('table')).toBeDefined();
 });
 
 it('should show the empty message when there is nothing to display', async () => {
@@ -214,16 +214,34 @@ it('should cycle the sort order of a column between ascending and descending', a
   const { emitData, sorted } = setup();
 
   await emitData([{ id: 1, title: 'Sortable' }]);
-  const header = screen.getByRole('columnheader', { name: /Title/ });
+  const sort = screen.getByRole('button', { name: /Title/ });
 
-  await click(header);
-  await click(header);
+  await click(sort);
+  await click(sort);
 
   expect(sorted).toStrictEqual([
     { field: '', order: 'asc' },
     { field: 'title', order: 'asc' },
     { field: 'title', order: 'desc' },
   ]);
+});
+
+it('should announce the sort order of the sorted column', async () => {
+  const { emitData } = setup({
+    fields: [
+      { label: 'Title', name: 'title', value: { prop: 'title' } },
+      { label: 'Body', name: 'body', value: { prop: 'body' } },
+    ],
+  });
+
+  await emitData([{ id: 1, title: 'a', body: 'b' }]);
+  await click(screen.getByRole('button', { name: /Title/ }));
+  await click(screen.getByRole('button', { name: /Title/ }));
+
+  expect(screen.getByRole('columnheader', { name: /Title/ }).getAttribute('aria-sort')).toBe(
+    'descending',
+  );
+  expect(screen.getByRole('columnheader', { name: /Body/ }).hasAttribute('aria-sort')).toBe(false);
 });
 
 it('should restart at ascending when a different column is sorted', async () => {
@@ -236,9 +254,9 @@ it('should restart at ascending when a different column is sorted', async () => 
 
   await emitData([{ id: 1, title: 'a', body: 'b' }]);
 
-  await click(screen.getByRole('columnheader', { name: /Title/ }));
-  await click(screen.getByRole('columnheader', { name: /Title/ }));
-  await click(screen.getByRole('columnheader', { name: /Body/ }));
+  await click(screen.getByRole('button', { name: /Title/ }));
+  await click(screen.getByRole('button', { name: /Title/ }));
+  await click(screen.getByRole('button', { name: /Body/ }));
 
   expect(sorted.at(-1)).toStrictEqual({ field: 'body', order: 'asc' });
 });
@@ -251,6 +269,7 @@ it('should not make a column without a name sortable', async () => {
   await emitData([{ id: 1, title: 'Not sortable' }]);
   await click(screen.getByRole('columnheader', { name: /Title/ }));
 
+  expect(screen.queryByRole('button', { name: /Title/ })).toBeNull();
   expect(sorted).toStrictEqual([{ field: '', order: 'asc' }]);
 });
 
