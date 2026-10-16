@@ -125,6 +125,7 @@ export function Block({
     abortController.current = new AbortController();
   }
   const [initialized, setInitialized] = useState(false);
+  const [error, setError] = useState<Error>();
   const pushNotifications = useServiceWorkerRegistration();
   const isInModalDialog = useIsInModalDialog();
 
@@ -290,7 +291,7 @@ export function Block({
       });
 
       ready(block);
-    })();
+    })().catch(setError);
   }, [
     block,
     blockName,
@@ -341,6 +342,10 @@ export function Block({
       ready(block);
     }
   });
+
+  if (error) {
+    throw error;
+  }
 
   if (layout === 'hidden') {
     return null;
