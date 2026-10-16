@@ -1,6 +1,11 @@
 {
   "anonymousLabel": "Anonim",
+  "closeImage": "",
+  "downloadImage": "",
   "emptyLabel": "Tidak ada data yang ditampilkan",
+  "loading": "",
+  "map": "",
+  "moreOptions": "",
   "permissionDeniedLabel": "Hubungi administrator Anda untuk meningkatkan peran Anda jika Anda mengharapkan melihat data di sini",
   "replyErrorMessage": "Terjadi kesalahan saat mencoba mengirim pesan ini.",
   "replyLabel": "Tinggalkan pesan…"

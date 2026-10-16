@@ -1,6 +1,8 @@
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { type ReactNode, useEffect, useRef } from 'react';
 
+import '../MonacoEditor/contributions.js';
+
 interface CodeBlockProps {
   /**
    * A class name to add to the `div` element.

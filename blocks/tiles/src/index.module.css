@@ -8,12 +8,18 @@
 
 .tile {
   align-items: center;
+  background: none;
+  border: none;
   color: hsl(0deg 0% 100% / 85%);
-  cursor: pointer;
   display: flex;
   flex-flow: column;
+  font: inherit;
   justify-content: space-around;
   min-height: 6rem;
+
+  &:is(a, button) {
+    cursor: pointer;
+  }
 
   &:hover {
     color: hsl(0deg 0% 100% / 85%);

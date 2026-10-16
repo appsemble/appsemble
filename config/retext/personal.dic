@@ -44,6 +44,7 @@ RABO
 sepa
 predesigned
 codebase
+Pagina
 
 # Technical slang and libraries
 .editorconfig
@@ -245,3 +246,4 @@ BITMIME
 pids
 urandom
 renderable
+networkidle

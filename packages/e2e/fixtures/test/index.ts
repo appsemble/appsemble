@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 
 import { expect, mergeTests, request } from '@playwright/test';
 
+import { test as accessibilityFixtures } from './accessibility/index.js';
 import { test as appFixtures } from './app/index.js';
 import { test as appCollectionFixtures } from './app-collection/index.js';
 import { test as demoAppFixtures } from './demo-app/index.js';
@@ -19,6 +20,7 @@ import { test as trainingFixtures } from './training/index.js';
  * Base test object with all utility fixtures
  */
 export const baseTest = mergeTests(
+  accessibilityFixtures,
   appFixtures,
   appCollectionFixtures,
   demoAppFixtures,

@@ -1,5 +1,10 @@
 {
+  "closeImage": "",
+  "downloadImage": "",
   "emptyMessage": "",
+  "enlargeImage": "",
+  "enlargeNamedImage": "",
   "error": "",
+  "loading": "",
   "submitChecked": ""
 }

@@ -34,7 +34,7 @@ export function ImageComponent({ field }: { field: Image }): VNode {
         isActive={modal.enabled}
         onClose={modal.disable}
       >
-        <AppAssetDownloadButton src={src} />
+        <AppAssetDownloadButton label={formatMessage('downloadImage')} src={src} />
         <figure className="image">
           <img alt={alt} className={styles.img} src={src} />
         </figure>

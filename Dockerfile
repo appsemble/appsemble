@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.27-labs
+# syntax=docker/dockerfile:1.28-labs
 # Build the image libraries with HEVC decoding support.
 FROM node:24-trixie-slim AS image-libraries
 
@@ -126,7 +126,7 @@ ENTRYPOINT ["appsemble-server"]
 CMD ["start"]
 HEALTHCHECK CMD ["appsemble-server", "health"]
 EXPOSE 9999
-ARG version=0.40.4
+ARG version=0.40.5
 ARG date
 ARG commit
 # Reported by `/version`.

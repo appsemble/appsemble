@@ -23,7 +23,7 @@ interface DropdownComponentProps {
 
 export function DropdownComponent({ content, dropdown }: DropdownComponentProps): VNode {
   const {
-    utils: { remap },
+    utils: { formatMessage, remap },
   } = useBlock();
 
   return (
@@ -31,7 +31,7 @@ export function DropdownComponent({ content, dropdown }: DropdownComponentProps)
       asButton={false}
       icon={dropdown?.icon}
       iconClassName="p-4 box is-align-items-center"
-      label={remap(dropdown?.label, content, content) as string}
+      label={(remap(dropdown?.label, content, content) as string) || formatMessage('moreOptions')}
     >
       {dropdown?.options.map((option, i) => {
         const label = remap(option.label, content, content);

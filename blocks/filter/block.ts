@@ -254,6 +254,21 @@ declare module '@appsemble/sdk' {
      * The label of the clear button.
      */
     clearLabel: never;
+
+    /**
+     * The accessible label for closing the filter modal.
+     */
+    closeLabel: never;
+
+    /**
+     * The accessible label of the upper handle of a range slider.
+     */
+    sliderMaximum: never;
+
+    /**
+     * The accessible label of the lower handle of a range slider.
+     */
+    sliderMinimum: never;
   }
 
   interface Actions {

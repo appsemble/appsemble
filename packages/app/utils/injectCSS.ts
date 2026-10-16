@@ -5,7 +5,7 @@
  * @param url The URL of the stylesheet to insert.
  */
 export async function injectCSS(parent: DocumentFragment, url?: string): Promise<void> {
-  await new Promise<void>((resolve) => {
+  await new Promise<void>((resolve, reject) => {
     if (!url) {
       resolve();
       return;
@@ -16,6 +16,9 @@ export async function injectCSS(parent: DocumentFragment, url?: string): Promise
       capture: true,
       once: true,
       passive: true,
+    });
+    link.addEventListener('error', () => reject(new Error(`Failed to load stylesheet: ${url}`)), {
+      once: true,
     });
     link.href = url;
     link.rel = 'stylesheet';

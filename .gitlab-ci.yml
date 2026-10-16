@@ -222,7 +222,10 @@ build docker image:
   stage: build
   script:
     - CACHE_IMAGE="$CI_REGISTRY_IMAGE/cache:$CI_COMMIT_REF_SLUG"
-    - docker buildx create --use
+    # Buildx refuses to create a builder from the TLS environment the docker image sets for dind,
+    # so the builder runs on a context created from it.
+    - docker context create ci
+    - docker buildx create --use ci
     - docker buildx build
       -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
       --cache-from "type=registry,ref=$CACHE_IMAGE"
@@ -870,7 +873,8 @@ e2e node:
     paths:
       - packages/e2e/test-results/
     reports:
-      junit: packages/e2e/results.xml
+      junit: junit.xml
+      metrics: packages/e2e/test-results/accessibility-metrics.txt
 
 e2e keycloak:
   stage: end 2 end
@@ -889,6 +893,7 @@ e2e keycloak:
     matrix:
       - KEYCLOAK_PROTOCOL: oidc
       - KEYCLOAK_PROTOCOL: saml
+      - KEYCLOAK_PROTOCOL: entra-broker
   variables:
     FF_NETWORK_PER_BUILD: 'true'
     DATABASE_HOST: database
@@ -979,7 +984,7 @@ e2e keycloak:
     paths:
       - packages/e2e/test-results/
     reports:
-      junit: packages/e2e/results.xml
+      junit: junit.xml
 
 # Apps under SLA are supported through Appsemble core changes
 e2e SLA apps:

@@ -151,9 +151,7 @@ interface InternalContext extends RemapperContext {
     current: Record<string, any>;
   };
 
-  tabRef?: {
-    current: Record<string, any>;
-  };
+  tabName?: string;
 }
 
 type MapperImplementations = {
@@ -193,6 +191,23 @@ function isEqualObject(a: Record<string, any>, b: Record<string, any>): boolean 
 
 function isNumber(a: unknown): boolean {
   return a !== undefined && a != null && a !== '' && !Number.isNaN(Number(a));
+}
+
+/**
+ * Tag and attribute names fast-xml-parser refuses to parse, because they could pollute object
+ * prototypes.
+ */
+const prototypeNames = new Set(['__proto__', 'constructor', 'prototype']);
+
+/**
+ * Prefix tag and attribute names that fast-xml-parser refuses with `#`, so the rest of the
+ * document still parses.
+ *
+ * @param name The XML tag or attribute name.
+ * @returns The name to use as the object key.
+ */
+function escapePrototypeName(name: string): string {
+  return prototypeNames.has(name) ? `#${name}` : name;
 }
 
 export function remap(
@@ -366,9 +381,7 @@ const mapperImplementations: MapperImplementations = {
   },
 
   'tab.name'(mapper, input, context) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore 18048 variable is possibly undefined (strictNullChecks)
-    return context.tabRef.current.name;
+    return context.tabName;
   },
 
   gt: ([left, right], input: any, context) =>
@@ -1203,6 +1216,8 @@ const mapperImplementations: MapperImplementations = {
     const parser = new XMLParser({
       ignoreAttributes: false,
       attributeNamePrefix: '',
+      transformAttributeName: escapePrototypeName,
+      transformTagName: escapePrototypeName,
     });
 
     try {

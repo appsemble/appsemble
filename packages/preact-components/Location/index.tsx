@@ -16,6 +16,12 @@ import { Component, createRef, type VNode } from 'preact';
 
 export interface LocationProps {
   className?: string;
+
+  /**
+   * The accessible name of the map.
+   */
+  label: string;
+
   latitude: number;
   longitude: number;
   radius: number;
@@ -28,7 +34,7 @@ export interface LocationProps {
  * Render a location based marker based on leaflet.
  */
 class LocationComponent extends Component<BlockProps & LocationProps> {
-  ref = createRef<HTMLDivElement>();
+  ref = createRef<HTMLElement>();
 
   componentDidMount(): void {
     const {
@@ -46,7 +52,7 @@ class LocationComponent extends Component<BlockProps & LocationProps> {
       radius,
     });
 
-    const map = new Map(this.ref.current as HTMLDivElement, {
+    const map = new Map(this.ref.current as HTMLElement, {
       attributionControl: false,
       zoom: 16,
       center: [latitude, longitude],
@@ -65,8 +71,8 @@ class LocationComponent extends Component<BlockProps & LocationProps> {
   }
 
   render(): VNode {
-    const { className } = this.props;
-    return <div className={className} ref={this.ref} />;
+    const { className, label } = this.props;
+    return <section aria-label={label} className={className} ref={this.ref} />;
   }
 }
 

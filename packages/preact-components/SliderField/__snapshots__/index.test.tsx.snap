@@ -11,6 +11,7 @@ exports[`should render a slider field 1`] = `
     >
       <input
         class="slider is-fullwidth"
+        style="--slider-progress: 50%;"
         type="range"
       />
     </div>

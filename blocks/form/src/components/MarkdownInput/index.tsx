@@ -200,6 +200,7 @@ export function MarkdownInput({
       help={help}
       icon={icon}
       label={remappedLabel as string}
+      optionalLabel={utils.formatMessage('optionalLabel')}
       required={isRequired(field, utils, formValues)}
       tag={tag}
     >

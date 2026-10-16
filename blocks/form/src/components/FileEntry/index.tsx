@@ -333,10 +333,14 @@ export function FileEntry({
       ref={errorLinkRef as unknown as Ref<HTMLDivElement>}
     >
       {value && url && previewAvailable ? (
-        <Modal isActive={modal.enabled} onClose={modal.disable}>
+        <Modal
+          closeButtonLabel={utils.formatMessage(fileType === 'image' ? 'closeImage' : 'closeVideo')}
+          isActive={modal.enabled}
+          onClose={modal.disable}
+        >
           {fileType === 'image' ? (
             <>
-              <AppAssetDownloadButton src={url} />
+              <AppAssetDownloadButton label={utils.formatMessage('downloadImage')} src={url} />
               <figure className="image">
                 <img
                   alt={(utils.remap(field.label, value) as string) ?? field.name}
