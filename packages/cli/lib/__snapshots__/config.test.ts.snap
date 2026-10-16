@@ -2744,8 +2744,17 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "labelText": {
-            "description": "The text to display next to the checkbox.",
+            "description": "The text to display next to the checkbox.
+
+If \`labelTextFormat\` is \`markdown\`, the text is rendered as Markdown, for example to include a link such as \`I accept the [terms](/terms)\`. Links open in a new tab and clicking them does not toggle the checkbox.",
             "format": "remapper",
+          },
+          "labelTextFormat": {
+            "const": "markdown",
+            "description": "The format in which \`labelText\` is rendered.
+
+By default \`labelText\` is rendered as plain text. \`markdown\` renders it as Markdown. This is the only supported format, other formats may be added.",
+            "type": "string",
           },
           "name": {
             "description": "The name used when storing this field.",
