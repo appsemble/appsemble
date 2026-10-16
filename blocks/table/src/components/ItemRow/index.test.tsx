@@ -52,11 +52,11 @@ it('should render the text', () => {
     </Context.Provider>,
   );
 
-  const table = screen.getAllByRole('gridcell');
+  const table = screen.getAllByRole('cell');
   expect(table).toMatchInlineSnapshot(`
     [
       <td
-        role="gridcell"
+        class="cell"
       >
         <div
           class="is-flex is-justify-content-left"
@@ -65,7 +65,7 @@ it('should render the text', () => {
         </div>
       </td>,
       <td
-        role="gridcell"
+        class="cell"
       >
         <div
           class="is-flex is-justify-content-left"
@@ -74,7 +74,7 @@ it('should render the text', () => {
         </div>
       </td>,
       <td
-        role="gridcell"
+        class="cell"
       >
         <div
           class="is-flex is-justify-content-left"

@@ -101,14 +101,12 @@ export function HeaderComponent({
   }, [asset, item, titleValue, fetched, isVisible, header]);
 
   return (
-    // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
+    // Keyboard users activate the item through the button or link around the title
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
       className={`${styles.headerWrapper} is-flex`}
       data-testid={dataTestId}
       onClick={onItemClick}
-      onKeyDown={onItemClick}
-      role="button"
-      tabIndex={-1}
     >
       <div className={`is-flex ${styles.image}`}>
         <div>
