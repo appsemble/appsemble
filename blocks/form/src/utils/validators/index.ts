@@ -1,6 +1,7 @@
 import { type BlockUtils, type Remapper } from '@appsemble/sdk';
 import { has } from '@appsemble/utils';
 
+import { validateBoolean } from './validateBoolean.js';
 import { validateDateTime } from './validateDateTime.js';
 import { validateEnum } from './validateEnum.js';
 import { validateFile } from './validateFile.js';
@@ -15,6 +16,7 @@ import { isRequired } from '../requirements.js';
 import { validateMarkdown } from './validateMarkdown.js';
 
 export const validators: Record<string, Validator> = {
+  boolean: validateBoolean,
   date: validateDateTime,
   'date-time': validateDateTime,
   enum: validateEnum,
