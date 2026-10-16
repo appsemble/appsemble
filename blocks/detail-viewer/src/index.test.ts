@@ -28,12 +28,7 @@ function renderDetails(data: unknown, listen: boolean): EventEmitter {
           return listen;
         },
       },
-      off: {
-        data(callback) {
-          ee.off('details', callback);
-          return listen;
-        },
-      },
+      off: { data: () => true },
     },
     parameters: { fields: [{ label: 'Reading', value: { prop: 'value' } }] },
     path: '',

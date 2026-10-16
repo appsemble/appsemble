@@ -28,7 +28,7 @@ function renderButtons(): EventTarget {
         saved.textContent = value.name;
       },
     },
-    data: { name: 'Nursery' },
+    data: { name: 'Nursery', locked: true },
     events: {
       on: {
         data(callback: (value: unknown) => void) {
@@ -42,6 +42,7 @@ function renderButtons(): EventTarget {
         { label: 'Nursery', pressed: { equals: [{ prop: 'name' }, 'Nursery'] } },
         { label: 'Bedroom', pressed: { equals: [{ prop: 'name' }, 'Bedroom'] } },
         { label: 'Save' },
+        { label: 'Apply', disable: { prop: 'locked' } },
       ],
     },
     utils: { remap: (mapper: Remapper, value: unknown) => remap(mapper, value, {} as never) },
@@ -65,4 +66,12 @@ it('exposes the initial and updated pressed choices while retaining current acti
 it('keeps ordinary action buttons outside toggle-button semantics', () => {
   renderButtons();
   expect(screen.getByRole('button', { name: 'Save' }).hasAttribute('aria-pressed')).toBe(false);
+});
+
+it('disables an action that its initial data disables', () => {
+  renderButtons();
+  const button = screen.getByRole<HTMLButtonElement>('button', { name: 'Apply' });
+  expect(button.disabled).toBe(true);
+  button.click();
+  expect(screen.getByRole('status', { name: 'Selected room' }).textContent).toBe('');
 });

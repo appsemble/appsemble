@@ -1,7 +1,6 @@
 import { type AppDefinition, type PageDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
-import { type BlockManifest } from '@appsemble/types';
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { type ReactNode } from 'react';
@@ -55,6 +54,7 @@ function mockApp(definition: AppDefinition): void {
     demoMode: false,
     revision: 1,
     blockManifests,
+    pageManifests: { events: { listen: { data: {} } } },
   } as never);
 }
 
@@ -390,111 +390,40 @@ describe('reserved grid areas', () => {
 
 describe('page initial data', () => {
   let mock: MockAdapter;
-  let blockRoots: HTMLElement[];
-  let blockVersion = 0;
+  let blocks: BootstrapParams[];
 
-  function loadBlock({ data, shadowRoot }: BootstrapParams): void {
-    const output = document.createElement('output');
-    output.textContent = (data as { person?: { name: string } })?.person?.name ?? 'No page data';
-    shadowRoot.append(output);
-    blockRoots.push(shadowRoot as unknown as HTMLElement);
-  }
-
-  function renderPage(pageDefinition?: Partial<PageDefinition>): void {
-    blockVersion += 1;
-    const dataBlock = { type: '@test/page-data', version: `1.0.${blockVersion}` };
-    const definition = {
+  function mockPages(home?: Partial<PageDefinition>): void {
+    mockApp({
       name: 'Test App',
       defaultPage: 'Home',
-      layout: { hideTitleBar: true, navigation: 'hidden' },
+      layout: { navigation: 'bottom' },
       pages: [
         {
           name: 'Home',
           actions: { onLoad: { type: 'request', url: 'https://example.com/home', proxy: false } },
-          blocks: [dataBlock],
-          ...pageDefinition,
+          blocks: [block],
+          ...home,
         },
         {
           name: 'Other',
           actions: { onLoad: { type: 'request', url: 'https://example.com/other', proxy: false } },
-          blocks: [dataBlock],
+          blocks: [block],
         },
       ],
-    } as AppDefinition;
-    if (definition.pages[0].type === 'tabs') {
-      definition.pages[0].tabs = [{ name: 'Details', blocks: [dataBlock] }];
-    }
-    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
-      definition,
-      demoMode: false,
-      revision: 1,
-      blockManifests: [
-        { name: dataBlock.type, version: dataBlock.version, files: ['page-data.js'] },
-      ] as BlockManifest[],
-      pageManifests: { events: { listen: { data: {} } } },
-    });
-    render(
-      <IntlProvider locale="en">
-        <MemoryRouter initialEntries={['/en/home']}>
-          <Link to="/en/other">Other page</Link>
-          <Routes>
-            <Route element={<Page />} path="/:lang/:pageId/*" />
-          </Routes>
-        </MemoryRouter>
-      </IntlProvider>,
-    );
-  }
-
-  function queryPageData(name: string): HTMLElement | undefined {
-    return blockRoots
-      .map((root) => within(root).queryByText(name))
-      .find((element) => element != null);
+    } as AppDefinition);
   }
 
   beforeEach(() => {
-    blockRoots = [];
+    blocks = [];
     mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
-    vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
-      appMessageIds: [],
-      getAppMessage: ({ defaultMessage }: { defaultMessage?: string }) => ({
-        format: () => defaultMessage,
-      }),
-      getBlockMessage: () => ({ format: () => '' }),
-      getMessage: () => ({ format: () => '' }),
-    } as never);
-
-    const appendHead = document.head.append.bind(document.head);
-    vi.spyOn(document.head, 'append').mockImplementation((...nodes: (string | Node)[]) => {
-      appendHead(...nodes);
-      for (const node of nodes) {
-        if (node instanceof HTMLScriptElement) {
-          queueMicrotask(() => {
-            Object.defineProperty(document, 'currentScript', { configurable: true, value: node });
-            node.dispatchEvent(
-              new CustomEvent('AppsembleBootstrap', { detail: { document, fn: loadBlock } }),
-            );
-          });
-        }
-      }
-    });
-    const appendFragment = DocumentFragment.prototype.append;
-    // eslint-disable-next-line prefer-arrow-callback
-    vi.spyOn(DocumentFragment.prototype, 'append').mockImplementation(function append(
-      this: DocumentFragment,
-      ...nodes: (string | Node)[]
-    ): void {
-      appendFragment.apply(this, nodes);
-      for (const node of nodes) {
-        if (node instanceof HTMLLinkElement) {
-          queueMicrotask(() => node.dispatchEvent(new Event('load')));
-        }
-      }
+    vi.spyOn(bootstrapper, 'callBootstrap').mockImplementation((manifest, params) => {
+      blocks.push(params);
+      return Promise.resolve();
     });
   });
 
   afterEach(() => {
     mock.restore();
-    document.head.innerHTML = '';
   });
 
   it('should initialize blocks with the completed asynchronous onLoad result', async () => {
@@ -502,19 +431,21 @@ describe('page initial data', () => {
     mock.onGet('https://example.com/home').reply(
       () =>
         new Promise((resolve) => {
-          respond = () => resolve([200, { person: { name: 'Ada' } }]);
+          respond = () => resolve([200, { name: 'Ada' }]);
         }),
     );
-    renderPage();
+    mockPages();
+    renderApp();
     await waitFor(() => expect(respond).toBeDefined());
     respond();
-    await waitFor(() => expect(queryPageData('Ada')).toBeDefined());
+    await waitFor(() => expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Ada' }]));
   });
 
   it('should pass the page onLoad result to a static tab', async () => {
-    mock.onGet('https://example.com/home').reply(200, { person: { name: 'Grace' } });
-    renderPage({ type: 'tabs', tabs: [] });
-    await waitFor(() => expect(queryPageData('Grace')).toBeDefined());
+    mock.onGet('https://example.com/home').reply(200, { name: 'Grace' });
+    mockPages({ type: 'tabs', tabs: [{ name: 'Details', blocks: [block] }] });
+    renderApp();
+    await waitFor(() => expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Grace' }]));
   });
 
   it('should initialize the next page with its own result when a previous request finishes late', async () => {
@@ -522,24 +453,25 @@ describe('page initial data', () => {
     mock.onGet('https://example.com/home').reply(
       () =>
         new Promise((resolve) => {
-          respondHome = () => resolve([200, { person: { name: 'Ada' } }]);
+          respondHome = () => resolve([200, { name: 'Ada' }]);
         }),
     );
-    mock.onGet('https://example.com/other').reply(200, { person: { name: 'Grace' } });
-    renderPage();
+    mock.onGet('https://example.com/other').reply(200, { name: 'Grace' });
+    mockPages();
+    renderApp();
     await waitFor(() => expect(respondHome).toBeDefined());
-    fireEvent.click(screen.getByRole('link', { name: 'Other page' }));
-    await waitFor(() => expect(queryPageData('Grace')).toBeDefined());
+    fireEvent.click(screen.getByRole('link', { name: 'Other' }));
+    await waitFor(() => expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Grace' }]));
     await act(async () => {
       respondHome();
       await Promise.resolve();
     });
-    expect(queryPageData('Grace')).toBeDefined();
-    expect(blockRoots.some((root) => within(root).queryByText('Ada'))).toBe(false);
+    expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Grace' }]);
   });
 
   it('should initialize blocks on a page without an onLoad action', async () => {
-    renderPage({ actions: undefined });
-    await waitFor(() => expect(queryPageData('No page data')).toBeDefined());
+    mockPages({ actions: undefined });
+    renderApp();
+    await waitFor(() => expect(blocks).toHaveLength(1));
   });
 });
