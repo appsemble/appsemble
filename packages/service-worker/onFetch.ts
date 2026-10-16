@@ -52,9 +52,12 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
-  // Declared block assets may be cached from a separate CDN origin.
+  // Cached scripts, stylesheets, fonts and images may come from another origin, such as a CDN.
+  // Other requests to an external service or the Appsemble API are left to the browser.
   if (origin !== globalThis.location.origin) {
-    event.respondWith(tryCached(request, () => fetch(request)));
+    if (['font', 'image', 'script', 'style'].includes(request.destination)) {
+      event.respondWith(tryCached(request, () => fetch(request)));
+    }
     return;
   }
 

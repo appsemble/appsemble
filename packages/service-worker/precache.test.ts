@@ -5,8 +5,19 @@ let online: boolean;
 let body: string;
 let finishEvents: () => Promise<unknown>;
 
+// The destination a browser gives to stylesheet, script, image and font requests.
+const destinations: Record<string, RequestDestination> = {
+  css: 'style',
+  js: 'script',
+  png: 'image',
+  woff2: 'font',
+};
+
 async function browserFetch(url: string): Promise<Response> {
   const request = new Request(url);
+  Object.defineProperty(request, 'destination', {
+    value: destinations[new URL(url).pathname.split('.').pop()!] ?? '',
+  });
   const response = await trigger('fetch', request);
   return response ?? fetch(request);
 }
@@ -68,13 +79,13 @@ it('refreshes the app document and retains styles from its new revision', async 
   expect(await style.text()).toBe('New app revision');
 });
 
-it('does not cache undeclared external requests', async () => {
-  const request = new Request('https://external.example/data');
-  const response = await browserFetch(request.url);
-  expect(await response.text()).toBe('Current app asset');
-  await finishEvents();
+it('leaves external API requests to the browser', async () => {
+  const url = 'https://api.example/api/apps/2/members/current/groups';
+  const cache = await caches.open('appsemble');
+  await cache.put(new Request(url), new Response('Cached groups'));
+  expect(await (await browserFetch(url)).text()).toBe('Current app asset');
   online = false;
-  await expect(trigger('fetch', request)).rejects.toThrow('Network unavailable');
+  await expect(browserFetch(url)).rejects.toThrow('Network unavailable');
 });
 
 it('loads stylesheet imports, glyph fonts and background images on an unvisited page offline', async () => {

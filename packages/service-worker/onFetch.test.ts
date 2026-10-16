@@ -21,13 +21,6 @@ describe('onFetch', () => {
     expect(utils.requestFirst).not.toHaveBeenCalled();
   });
 
-  it('should pass through external requests', async () => {
-    const request = new Request('https://example.com');
-    await trigger('fetch', request);
-    expect(utils.cacheFirst).not.toHaveBeenCalled();
-    expect(utils.requestFirst).not.toHaveBeenCalled();
-  });
-
   it('should pass through hot-update requests', async () => {
     const request = new Request('/app/app.hot-update.json');
     await trigger('fetch', request);
