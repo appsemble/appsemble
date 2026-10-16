@@ -23,7 +23,6 @@ window.settings = {
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   definition: null,
   demoMode: false,
-  development: false,
   id: 42,
   languages: ['en', 'nl'],
   logins: [],
@@ -39,4 +38,20 @@ window.settings = {
   showDemoLogin: false,
   supportedLanguages: ['en'],
   totp: 'disabled',
+};
+
+// Jsdom implements no media queries. Evaluate `min-width` queries against `window.innerWidth`, so
+// tests pick a viewport by mocking it.
+window.matchMedia = (query) => {
+  const minWidth = /\(min-width: (\d+)px\)/.exec(query);
+  return {
+    matches: minWidth ? window.innerWidth >= Number(minWidth[1]) : false,
+    media: query,
+    onchange: null,
+    addEventListener: noop,
+    removeEventListener: noop,
+    addListener: noop,
+    removeListener: noop,
+    dispatchEvent: () => false,
+  };
 };

@@ -15,8 +15,8 @@ export async function handler(): Promise<void> {
     const interval = setInterval(async () => {
       const url = `https://${domain}`;
       try {
-        logger.info(`Checking if server is healthy on ${url}/api/health`);
-        const { status } = await axios.get(`${url}/api/health`, { validateStatus: () => true });
+        logger.info(`Checking if server is ready on ${url}/health/ready`);
+        const { status } = await axios.get(`${url}/health/ready`, { validateStatus: () => true });
 
         if (status !== 200) {
           logger.warn(`API returned ${status}. Checking again in 10 seconds…`);

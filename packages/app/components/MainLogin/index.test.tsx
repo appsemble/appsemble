@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MainLogin } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
+import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 
 const passwordLogin = vi.fn();
 
@@ -74,6 +75,12 @@ beforeEach(() => {
     passwordLogin,
     totpLogin: vi.fn(),
     totpPending: null,
+  } as never);
+  vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
+    getAppMessage: ({ defaultMessage }: { defaultMessage: string }) => ({
+      format: () => defaultMessage,
+    }),
+    getMessage: () => ({ format: () => '' }),
   } as never);
 });
 

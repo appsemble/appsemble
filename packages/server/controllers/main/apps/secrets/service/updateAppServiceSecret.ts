@@ -36,6 +36,9 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
   await appServiceSecret.update({
     ...body,
     secret: encrypt(body.secret, argv.aesSecret),
+    lastTokenError: null,
+    lastTokenErrorAt: null,
+    lastTokenErrorNotifiedAt: null,
   });
 
   const { authenticationMethod, ca, id, identifier, name, scope, tokenUrl, urlPatterns } =

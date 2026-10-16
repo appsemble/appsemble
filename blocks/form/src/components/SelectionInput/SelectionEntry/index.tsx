@@ -1,3 +1,4 @@
+import { useBlock } from '@appsemble/preact';
 import { type VNode } from 'preact';
 import { type MutableRef, useEffect, useRef, useState } from 'preact/hooks';
 
@@ -14,6 +15,7 @@ interface SelectionOptionProps {
 }
 
 export function SelectionEntry({ onRemove, option, showRemove }: SelectionOptionProps): VNode {
+  const { utils } = useBlock();
   const { id, image, imageInline } = option;
   const alignment = image?.alignment || 'default';
 
@@ -76,7 +78,15 @@ export function SelectionEntry({ onRemove, option, showRemove }: SelectionOption
       </div>
       <div className="mb-2">
         {showRemove ? (
-          <button className="delete" name={`remove-${id}`} onClick={onRemoveClick} type="button" />
+          <button
+            aria-label={utils.formatMessage('selectionRemove', {
+              option: (utils.remap(option.header, option) as string | undefined) ?? id,
+            })}
+            className="delete"
+            name={`remove-${id}`}
+            onClick={onRemoveClick}
+            type="button"
+          />
         ) : (
           <button className="delete is-invisible" type="button" />
         )}

@@ -1,8 +1,13 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { appendFile, cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { getS3FileBuffer, readFixture, resolveFixture } from '@appsemble/node-utils';
+import {
+  getAppAssetLocation,
+  getS3FileBuffer,
+  readFixture,
+  resolveFixture,
+} from '@appsemble/node-utils';
 import {
   createServer,
   createTestDBWithUser,
@@ -15,7 +20,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { ISODateTimePattern } from '@appsemble/utils';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   deleteApp,
@@ -25,6 +30,7 @@ import {
   resolveAppIdAndRemote,
   traverseAppDirectory,
   updateApp,
+  uploadMessages,
   writeAppMessages,
 } from './app.js';
 import { initAxios } from './initAxios.js';
@@ -643,7 +649,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData]);
     });
 
@@ -840,7 +851,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData, tuxData]);
       const appCollectionApp = (await AppCollectionApp.findOne())!;
       expect(appCollectionApp.AppId).toBe(1);
@@ -1008,8 +1024,118 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/variants/tux/assets/small-tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData]);
+    });
+
+    describe('app variant message patches', () => {
+      let appPath: string;
+
+      beforeEach(async () => {
+        appPath = join(await mkdtemp(join(tmpdir(), 'appsemble-variant-')), 'test');
+        await cp(resolveFixture('apps/test'), appPath, { recursive: true });
+      });
+
+      afterEach(async () => {
+        await rm(join(appPath, '..'), { recursive: true, force: true });
+      });
+
+      async function publishTuxVariant(messagesPatch: unknown): Promise<Record<string, unknown>> {
+        await writeFile(
+          join(appPath, 'variants/tux/patches/messages.json'),
+          JSON.stringify(messagesPatch),
+        );
+        vi.useRealTimers();
+        try {
+          const clientCredentials = await authorizeCLI('apps:write', testApp);
+          await publishApp({
+            path: appPath,
+            organization: organization.id,
+            remote: testApp.defaults.baseURL!,
+            clientCredentials,
+            // Required defaults
+            visibility: 'unlisted',
+            iconBackground: '#ffffff',
+            variant: 'tux',
+          });
+        } finally {
+          vi.useFakeTimers();
+        }
+        const appMessages = await AppMessages.findAll();
+        return Object.fromEntries(
+          appMessages.map(({ language, messages }) => [language, messages]),
+        );
+      }
+
+      it('should delete message keys patched to null', async () => {
+        // The base app has a login page which the variant removes, along with its translations.
+        await appendFile(
+          join(appPath, 'app-definition.yaml'),
+          '  - name: Login\n    blocks:\n      - type: test\n        version: 0.0.0\n',
+        );
+        await writeFile(
+          join(appPath, 'i18n/nl.json'),
+          JSON.stringify({
+            app: { name: 'Test App', 'pages.test-page': 'Test Pagina', 'pages.login': 'Inloggen' },
+          }),
+        );
+        await writeFile(
+          join(appPath, 'i18n/en.json'),
+          JSON.stringify({
+            app: { name: 'Test App', 'pages.test-page': 'Test Page', 'pages.login': 'Login' },
+          }),
+        );
+        await writeFile(
+          join(appPath, 'variants/tux/patches/app-definition.json'),
+          JSON.stringify([[['pages', 1]]]),
+        );
+
+        const messages = await publishTuxVariant({
+          nl: { app: { 'pages.login': null } },
+          en: { app: { 'pages.login': null } },
+        });
+
+        expect(messages).toStrictEqual({
+          nl: { app: { name: 'Test App', 'pages.test-page': 'Test Pagina' } },
+          en: { app: { name: 'Test App', 'pages.test-page': 'Test Page' } },
+        });
+      });
+
+      it('should deep merge message patches into the original messages', async () => {
+        const messages = await publishTuxVariant({
+          nl: { app: { name: 'Tux App' } },
+        });
+
+        expect(messages).toStrictEqual({
+          nl: { app: { name: 'Tux App', 'pages.test-page': 'Test Pagina' } },
+          en: { app: { name: 'Test App', 'pages.test-page': 'Test Page' } },
+        });
+      });
+
+      it('should patch the remaining languages after a language without messages', async () => {
+        const messages = await publishTuxVariant({
+          fr: { app: { name: 'Tux App' } },
+          nl: { app: { name: 'Tux App' } },
+        });
+
+        expect(messages).toStrictEqual({
+          nl: { app: { name: 'Tux App', 'pages.test-page': 'Test Pagina' } },
+          en: { app: { name: 'Test App', 'pages.test-page': 'Test Page' } },
+        });
+      });
+
+      it('should delete the messages of a language patched to null', async () => {
+        const messages = await publishTuxVariant({ nl: null });
+
+        expect(messages).toStrictEqual({
+          en: { app: { name: 'Test App', 'pages.test-page': 'Test Page' } },
+        });
+      });
     });
 
     it('should publish app variables and secrets', async () => {
@@ -1557,7 +1683,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData]);
     });
 
@@ -1743,7 +1874,12 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(
-        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+        await Promise.all(
+          assets.map((a) => {
+            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            return getS3FileBuffer(bucket, key);
+          }),
+        ),
       ).toStrictEqual([tuxData, tuxData]);
       // TODO: not yet implemented
       // const appCollectionApp = await AppCollectionApp.findOne();
@@ -2747,6 +2883,39 @@ describe('app', () => {
     });
   });
 
+  describe('uploadMessages', () => {
+    it('uploads translations whose catalogs are named with a POSIX locale', async () => {
+      const app = await App.create(
+        {
+          path: 'test-app',
+          definition: { name: 'Test App', defaultPage: 'Test Page' },
+          vapidPublicKey: 'a',
+          vapidPrivateKey: 'b',
+          visibility: 'public',
+          OrganizationId: organization.id,
+        },
+        { raw: true },
+      );
+      const directory = await mkdtemp(join(tmpdir(), 'appsemble-messages'));
+      await mkdir(join(directory, 'i18n'));
+      await writeFile(
+        join(directory, 'i18n', 'zh_Hans.json'),
+        JSON.stringify({ app: { name: '测试应用' } }),
+      );
+      await writeFile(
+        join(directory, 'i18n', 'pt_BR.json'),
+        JSON.stringify({ app: { name: 'Test App' } }),
+      );
+      await authorizeCLI('apps:write', testApp);
+
+      await uploadMessages(directory, app.id, testApp.defaults.baseURL!, false);
+
+      const messages = await AppMessages.findAll({ where: { AppId: app.id } });
+      expect(messages.map(({ language }) => language).sort()).toStrictEqual(['pt-br', 'zh-hans']);
+      await rm(directory, { force: true, recursive: true });
+    });
+  });
+
   describe('writeAppMessages', () => {
     it('should extract messages from app-definition and write to file in i18n directory', async () => {
       const initialMessages = JSON.parse(
@@ -2814,6 +2983,33 @@ describe('app', () => {
       await expect(() =>
         writeAppMessages(resolveFixture('apps/test-messages'), ['nl'], ['nl'], 'json'),
       ).rejects.toThrow('Missing translation');
+    });
+
+    it('should not require route segments in a verified file', async () => {
+      const initialMessages = JSON.parse(
+        String(await readFixture('apps/test-messages/i18n/nl.json')),
+      );
+      await writeFile(
+        resolveFixture('apps/test-messages/i18n/nl.json'),
+        JSON.stringify({
+          app: {
+            description: 'Dutch description',
+            'emails.appInvite.body': 'Dutch invite',
+            name: 'Test App',
+            'pages.test-page': 'Testpagina',
+          },
+        }),
+      );
+      try {
+        await writeAppMessages(resolveFixture('apps/test-messages'), ['nl'], ['nl'], 'json');
+        const messages = JSON.parse(String(await readFixture('apps/test-messages/i18n/nl.json')));
+        expect(messages).toMatchObject({ app: { 'routes.Login': '' } });
+      } finally {
+        await writeFile(
+          resolveFixture('apps/test-messages/i18n/nl.json'),
+          JSON.stringify(initialMessages, null, '\t'),
+        );
+      }
     });
 
     it('should throw if app definition does not exist in the app folder', async () => {

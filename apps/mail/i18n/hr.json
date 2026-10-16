@@ -1,9 +1,9 @@
 {
   "app": {
-    "app.roles.User": "",
-    "app.roles.User.description": "",
-    "description": "",
-    "name": "",
-    "pages.send-mail": ""
+    "app.roles.User": "Korisnik",
+    "app.roles.User.description": "Korisnik.",
+    "description": "Aplikacija koja demonstrira radnju e-pošte u demo modusu.",
+    "name": "Mail",
+    "pages.send-mail": "Pošalji e-mail"
   }
 }

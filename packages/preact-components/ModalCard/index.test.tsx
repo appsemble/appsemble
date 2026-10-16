@@ -4,12 +4,20 @@ import { expect, it, vi } from 'vitest';
 import { ModalCard } from './index.js';
 
 it('should not render a bulma modal when it is inactive', () => {
-  const { container } = render(<ModalCard isActive={false}>test</ModalCard>);
+  const { container } = render(
+    <ModalCard closeButtonLabel="Close" isActive={false}>
+      test
+    </ModalCard>,
+  );
   expect(container).toMatchSnapshot();
 });
 
 it('should render a bulma modal when it is active', () => {
-  const { container } = render(<ModalCard isActive>test</ModalCard>);
+  const { container } = render(
+    <ModalCard closeButtonLabel="Close" isActive>
+      test
+    </ModalCard>,
+  );
   expect(container).toMatchSnapshot();
 });
 
@@ -27,7 +35,7 @@ it('should close the modal when the close button is clicked', () => {
 it('should close the modal when the background is clicked', () => {
   const onClose = vi.fn();
   const { getByRole } = render(
-    <ModalCard isActive onClose={() => onClose()}>
+    <ModalCard closeButtonLabel="Close" isActive onClose={() => onClose()}>
       test
     </ModalCard>,
   );
@@ -38,7 +46,7 @@ it('should close the modal when the background is clicked', () => {
 it('should close the modal escape is pressed on the background', () => {
   const onClose = vi.fn();
   const { getByRole } = render(
-    <ModalCard isActive onClose={() => onClose()}>
+    <ModalCard closeButtonLabel="Close" isActive onClose={() => onClose()}>
       test
     </ModalCard>,
   );
@@ -49,7 +57,7 @@ it('should close the modal escape is pressed on the background', () => {
 it('should not close the modal another key is pressed on the background', () => {
   const onClose = vi.fn();
   const { getByRole } = render(
-    <ModalCard isActive onClose={() => onClose()}>
+    <ModalCard closeButtonLabel="Close" isActive onClose={() => onClose()}>
       test
     </ModalCard>,
   );

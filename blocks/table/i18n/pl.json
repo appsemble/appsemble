@@ -1,5 +1,10 @@
 {
+  "closeImage": "",
+  "downloadImage": "",
   "emptyMessage": "Brak dostępnych danych.",
+  "enlargeImage": "",
+  "enlargeNamedImage": "",
   "error": "Wystąpił błąd podczas pobierania danych",
+  "loading": "",
   "submitChecked": "Prześlij"
 }

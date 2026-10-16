@@ -18,13 +18,9 @@ exports[`should render a list with data from a data-loader 1`] = `
           <div
             class="item has-text-left is-flex is-flex-direction-column my-1 py-2 pl-3 pr-2"
             id=".item.1"
-            role="button"
-            tabindex="-1"
           >
             <div
               class="headerWrapper is-flex"
-              role="button"
-              tabindex="-1"
             >
               <div
                 class="is-flex image"
@@ -62,13 +58,9 @@ exports[`should render a list with data from a data-loader 1`] = `
           <div
             class="item has-text-left is-flex is-flex-direction-column my-1 py-2 pl-3 pr-2"
             id=".item.2"
-            role="button"
-            tabindex="-1"
           >
             <div
               class="headerWrapper is-flex"
-              role="button"
-              tabindex="-1"
             >
               <div
                 class="is-flex image"

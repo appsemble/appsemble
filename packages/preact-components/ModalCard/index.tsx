@@ -19,7 +19,7 @@ interface ModalCardProps<T extends ElementType> {
   /**
    * The aria label to apply on the close button.
    */
-  readonly closeButtonLabel?: string;
+  readonly closeButtonLabel: string;
 
   /**
    * The Preact component to render as the root for the modal.

@@ -5,11 +5,12 @@ import {
   forwardRef,
   type ReactNode,
   useCallback,
+  useContext,
   useEffect,
   useRef,
 } from 'react';
 
-import { useCombinedRefs } from '../index.js';
+import { FormComponentContext, useCombinedRefs } from '../index.js';
 
 type CheckboxProps = Omit<
   ComponentPropsWithoutRef<'input'>,
@@ -73,6 +74,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     },
     ref,
   ) => {
+    const aria = useContext(FormComponentContext);
     const innerRef = useRef<HTMLInputElement>();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 2345 argument of type is not assignable to parameter of type
@@ -95,6 +97,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     return (
       <span className={className}>
         <input
+          {...aria}
           {...props}
           checked={value}
           className={classNames(isSwitch ? 'switch' : 'is-checkradio', { 'is-rtl': rtl })}

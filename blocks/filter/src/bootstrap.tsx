@@ -206,6 +206,7 @@ export function FilterBlock({
               onClick={modal.enable}
             />
             <ModalCard
+              closeButtonLabel={utils.formatMessage('closeLabel')}
               footer={
                 <>
                   <CardFooterButton onClick={resetFilter}>

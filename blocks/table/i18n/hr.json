@@ -1,5 +1,10 @@
 {
+  "closeImage": "",
+  "downloadImage": "",
   "emptyMessage": "Nema dostupnih podataka.",
+  "enlargeImage": "",
+  "enlargeNamedImage": "",
   "error": "Došlo je do pogreške pri dohvaćanju podataka",
+  "loading": "",
   "submitChecked": "Pošalji"
 }

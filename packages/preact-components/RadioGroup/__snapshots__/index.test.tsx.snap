@@ -12,30 +12,35 @@ exports[`should render a RadioGroup 1`] = `
       class="control control"
     >
       <span />
-      <div>
-        <input
-          class="is-checkradio"
-          type="radio"
-          value=""hmm""
-        />
-        <label>
-          Hmm
-        </label>
-      </div>
-      <div>
-        <input
-          class="is-checkradio"
-          type="radio"
-          value=""hmm2""
-        />
-        <label>
-          Hmm2
-        </label>
+      <div
+        role="radiogroup"
+      >
+        <div>
+          <input
+            class="is-checkradio"
+            type="radio"
+            value=""hmm""
+          />
+          <label>
+            Hmm
+          </label>
+        </div>
+        <div>
+          <input
+            class="is-checkradio"
+            type="radio"
+            value=""hmm2""
+          />
+          <label>
+            Hmm2
+          </label>
+        </div>
       </div>
     </div>
     <span
       class="help help"
       data-testid="help-formcomp"
+      id="P0-1"
     />
   </div>
   ,

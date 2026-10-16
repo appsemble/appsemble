@@ -1,7 +1,7 @@
 {
   "app": {
-    "description": "",
-    "name": "",
-    "pages.pdf-viewer": ""
+    "description": "Aplikacija za prikaz PDF datoteka",
+    "name": "Prikazivač PDF datoteka",
+    "pages.pdf-viewer": "Prikazivač PDF datoteka"
   }
 }

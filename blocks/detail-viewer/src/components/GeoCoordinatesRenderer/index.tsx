@@ -41,6 +41,7 @@ export function GeoCoordinatesRenderer({
       {marker ? (
         <Location
           className={styles.map}
+          label={utils.formatMessage('map')}
           // @ts-expect-error strictNullChecks undefined is not assignable
           latitude={lat}
           // @ts-expect-error strictNullChecks undefined is not assignable

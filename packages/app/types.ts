@@ -5,6 +5,7 @@ import {
   type AppConfigEntryGetter,
   type AppDefinition,
   type BlockDefinition,
+  type IconReference,
   type MessageGetter,
   type Remapper,
 } from '@appsemble/lang-sdk';
@@ -18,7 +19,6 @@ import {
   type ResourceSubscribableAction,
   type UserInfo,
 } from '@appsemble/types';
-import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Dispatch } from 'react';
 import { type NavigateFunction, type Params } from 'react-router-dom';
 import { type JsonValue } from 'type-fest';
@@ -58,7 +58,7 @@ export interface User extends UserInfo {
 }
 
 export interface Login {
-  icon: IconName;
+  icon: IconReference;
   id: number;
   name: string;
   type: 'oauth2' | 'saml';
@@ -93,7 +93,6 @@ declare global {
       enableSelfRegistration: boolean;
       showDemoLogin: boolean;
       appUpdated: string;
-      development: boolean;
       snapshotId?: number;
       displayAppMemberName?: boolean;
       displayInstallationPrompt?: boolean;
@@ -134,7 +133,7 @@ export interface FlowActions {
 
 export interface MakeActionParameters<D extends ActionDefinition> {
   appDefinition: AppDefinition;
-  getAppMessage?: MessageGetter;
+  getAppMessage: MessageGetter;
   getAppVariable?: AppConfigEntryGetter;
   appStorage: AppStorage;
   definition: D;

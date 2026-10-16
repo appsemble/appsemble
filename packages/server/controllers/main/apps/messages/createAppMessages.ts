@@ -8,6 +8,7 @@ import tags from 'language-tags';
 import { App, AppMessages } from '../../../../models/index.js';
 import { touchApp } from '../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
+import { assertMessageSlugs, getAffectedLanguages } from '../../../../utils/appMessageSlugs.js';
 import { checkAppLock } from '../../../../utils/checkAppLock.js';
 
 async function validateAndCreateMessages(
@@ -53,25 +54,38 @@ export async function createAppMessages(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.UpdateAppMessages],
   });
 
-  if (Array.isArray(ctx.request.body)) {
-    ctx.request.body.map((message) => {
-      if (!tags.check(message.language)) {
-        throwKoaError(ctx, 400, `Language “${message.language}” is invalid`);
-      }
-      validateMessageBodies(ctx, app.definition, message.messages);
-    });
-    await Promise.all(
-      ctx.request.body.map((message) =>
-        validateAndCreateMessages(message.language, appId, message.messages),
-      ),
-    );
-  } else {
-    if (!tags.check(ctx.request.body.language)) {
-      throwKoaError(ctx, 400, `Language “${ctx.request.body.language}” is invalid`);
+  const body: { language: string; messages: AppsembleMessages }[] = Array.isArray(ctx.request.body)
+    ? ctx.request.body
+    : [ctx.request.body];
+
+  for (const message of body) {
+    if (!tags.check(message.language)) {
+      throwKoaError(ctx, 400, `Language “${message.language}” is invalid`);
     }
-    validateMessageBodies(ctx, app.definition, ctx.request.body.messages);
-    await validateAndCreateMessages(ctx.request.body.language, appId, ctx.request.body.messages);
+    validateMessageBodies(ctx, app.definition, message.messages);
   }
+
+  const stored = await AppMessages.findAll({
+    attributes: ['language', 'messages'],
+    where: { AppId: appId },
+  });
+  const messagesByLanguage = new Map(stored.map((row) => [row.language, row.messages]));
+  for (const message of body) {
+    messagesByLanguage.set(message.language.toLowerCase(), message.messages);
+  }
+  assertMessageSlugs(
+    ctx,
+    app.definition,
+    messagesByLanguage,
+    getAffectedLanguages(
+      body.map((message) => message.language.toLowerCase()),
+      stored.map((row) => row.language),
+    ),
+  );
+
+  await Promise.all(
+    body.map((message) => validateAndCreateMessages(message.language, appId, message.messages)),
+  );
 
   await touchApp(appId);
 

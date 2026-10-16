@@ -38,13 +38,14 @@ export function ButtonOption({
     [multiple, onChange, value, values],
   );
 
+  const active = multiple ? values.includes(value) : value === currentValue;
+
   return (
     <Button
+      aria-pressed={active}
       name={name}
       {...props}
-      className={classNames(className, {
-        [activeClassName]: multiple ? values.includes(value) : value === currentValue,
-      })}
+      className={classNames(className, { [activeClassName]: active })}
       onClick={onClick}
     />
   );

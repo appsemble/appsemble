@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import { type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { type MutableRef, useCallback } from 'preact/hooks';
+import { type MutableRef, useCallback, useContext } from 'preact/hooks';
 
+import { FormComponentContext } from '../FormComponent/index.js';
 import { useCombinedRefs } from '../useCombinedRefs.js';
 
 export interface InputProps extends Omit<
@@ -43,7 +44,8 @@ export interface InputProps extends Omit<
    *
    */
   // XXX 'date' should be removed.
-  type?: 'color' | 'date' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url';
+  type?:
+    'color' | 'date' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'time' | 'url';
 
   /**
    * The ref to use for the error link
@@ -84,9 +86,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       errorLinkRef as MutableRef<HTMLDivElement>,
     );
 
+    const aria = useContext(FormComponentContext);
+
     return (
       <>
         <input
+          {...aria}
           {...props}
           className={classNames('input', {
             'has-background-white-bis': readOnly,

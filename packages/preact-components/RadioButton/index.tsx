@@ -1,9 +1,9 @@
-import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconReference } from '@appsemble/lang-sdk';
 import { type ComponentChild, type JSX, type VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { useCallback, useContext } from 'preact/hooks';
 
 import styles from './index.module.css';
-import { Icon, useValuePicker } from '../index.js';
+import { FormComponentContext, Icon, useValuePicker } from '../index.js';
 
 interface RadioButtonProps<T> extends Omit<
   JSX.HTMLAttributes<HTMLInputElement>,
@@ -32,7 +32,7 @@ interface RadioButtonProps<T> extends Omit<
   /**
    * The icon to render.
    */
-  readonly icon?: IconName;
+  readonly icon?: IconReference;
 
   /**
    * Whether or not the radio button is disabled.
@@ -63,6 +63,7 @@ export function RadioButton<T>({
   ...props
 }: RadioButtonProps<T>): VNode {
   const { name, onChange, value: currentValue } = useValuePicker();
+  const aria = useContext(FormComponentContext);
 
   const handleChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>) => onChange(event, value),
@@ -78,6 +79,7 @@ export function RadioButton<T>({
   return (
     <div className={wrapperClassName}>
       <input
+        {...aria}
         {...props}
         checked={value === currentValue}
         className={icon ? styles.iconradio : 'is-checkradio'}
@@ -89,7 +91,7 @@ export function RadioButton<T>({
         value={valueToString(value)}
       />
       <label htmlFor={id}>
-        {icon ? <Icon className={styles.icon} icon={icon as IconName} /> : null}
+        {icon ? <Icon className={styles.icon} icon={icon} /> : null}
         {children}
       </label>
     </div>

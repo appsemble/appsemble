@@ -1,3 +1,5 @@
+import { useBlock } from '@appsemble/preact';
+import { Icon } from '@appsemble/preact-components';
 import Quagga, { type QuaggaJSResultCallbackFunction } from '@ericblade/quagga2';
 import { type VNode } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
@@ -17,6 +19,7 @@ export function ImageScanner({
   resolution,
   setBarcode,
 }: ImageScannerProps): VNode {
+  const { utils } = useBlock();
   const [selectedImage, setSelectedImage] = useState<ArrayBuffer | string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -78,11 +81,11 @@ export function ImageScanner({
 
   return (
     <div className={styles.imageScannerWrapper}>
-      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label className={styles.fileLabel} for="fileInput">
-        <i class="fas fa-barcode" />
+        <Icon className={styles.barcode} icon="barcode" />
         <input
-          className={styles.hiddenInput}
+          aria-label={utils.formatMessage('selectImage')}
+          className="is-sr-only"
           id="fileInput"
           onChange={handleFileChange}
           ref={inputRef}
@@ -94,8 +97,13 @@ export function ImageScanner({
       {selectedImage ? (
         <div className={styles.imageContainer}>
           <img alt="Selected" src={selectedImage as string} />
-          <button className={styles.close} onClick={handleRemove} type="button">
-            <i class="fas fa-times" />
+          <button
+            aria-label={utils.formatMessage('removeImage')}
+            className={styles.close}
+            onClick={handleRemove}
+            type="button"
+          >
+            <Icon icon="xmark" />
           </button>
         </div>
       ) : (

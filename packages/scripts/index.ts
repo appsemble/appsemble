@@ -13,6 +13,7 @@ import * as gitlabRelease from './commands/gitlab-release.js';
 import * as release from './commands/release.js';
 import * as renderMermaid from './commands/render-mermaid.js';
 import * as rewriteMessages from './commands/rewrite-messages.js';
+import * as stripTsSourceExports from './commands/strip-ts-source-exports.js';
 import * as syncObjectStorageBucket from './commands/sync-object-storage-bucket.js';
 import * as updateSubscription from './commands/update-subscription.js';
 import * as validateDocs from './commands/validate-docs.js';
@@ -43,6 +44,7 @@ yargs()
   .command(release as unknown as CommandModule)
   .command(renderMermaid)
   .command(rewriteMessages)
+  .command(stripTsSourceExports as unknown as CommandModule)
   .command(syncObjectStorageBucket as unknown as CommandModule)
   .command(createUser as unknown as CommandModule)
   .command(deleteUser as unknown as CommandModule)

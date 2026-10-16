@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://appsemble.app/api.json#/components/schemas/AppDefinition
+name: Test App
+defaultPage: Test Page
+
+icons:
+  dossier: dossier-icon
+
+pages:
+  - name: Test Page
+    blocks: []

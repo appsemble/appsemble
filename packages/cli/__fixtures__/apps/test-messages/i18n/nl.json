@@ -3,6 +3,15 @@
     "description": "",
     "emails.appInvite.body": "",
     "name": "",
-    "pages.test-page": ""
+    "pages.test-page": "",
+    "routes.App-Invite": "",
+    "routes.Edit-Password": "",
+    "routes.Feedback": "",
+    "routes.Group-Invite": "",
+    "routes.Login": "",
+    "routes.Register": "",
+    "routes.Reset-Password": "",
+    "routes.Settings": "",
+    "routes.Verify": ""
   }
 }

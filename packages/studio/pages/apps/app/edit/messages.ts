@@ -9,6 +9,10 @@ export const messages = defineMessages({
     id: 'studio.Hm155y',
     defaultMessage: 'Something went wrong trying to update the app definition',
   },
+  validationErrors: {
+    id: 'studio.dvSaSh',
+    defaultMessage: 'The app definition is invalid:\n{errors}',
+  },
   uniqueConstraintConflict: {
     id: 'studio.AxezJm',
     defaultMessage:

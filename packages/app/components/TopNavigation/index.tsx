@@ -1,30 +1,36 @@
 import {
   getPageDisplayName,
   getPagePathSegment,
+  getRouteSegment,
   type PageDefinition,
   remap,
   type RemapperContext,
 } from '@appsemble/lang-sdk';
-import { Button, Icon } from '@appsemble/react-components';
+import { Button, Icon, NavbarBurger, useToggle } from '@appsemble/react-components';
 import { type ReactNode, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { NavLink, useParams } from 'react-router-dom';
+import { Link, NavLink, useParams } from 'react-router-dom';
 import { usePWAInstall } from 'react-use-pwa-install';
 
 import styles from './index.module.css';
 import { getNavPages, shouldShowPage } from '../../utils/layout.js';
-import { appId, sentryDsn } from '../../utils/settings.js';
+import { appId, sentryDsn, showDemoLogin } from '../../utils/settings.js';
+import { useActiveNavigation } from '../../utils/useActiveNavigation.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { messages } from '../BottomNavigation/messages.js';
+import { DemoLogin } from '../DemoLogin/index.js';
+import { useIsDesktop } from '../PageGridProvider/index.js';
+import { ProfileMenuItems, useProfileMenu } from '../ProfileMenu/index.js';
 
 /**
  * The app navigation that is displayed as a horizontal bar in the title bar.
  *
  * On small screens the links collapse behind a hamburger menu, reusing Bulma's
- * native navbar behavior.
+ * native navbar behavior. Below the desktop breakpoint the menu also lists the
+ * profile dropdown items, which the title bar hides there.
  */
 export function TopNavigation(): ReactNode {
   const { lang } = useParams<{ lang: string }>();
@@ -39,11 +45,17 @@ export function TopNavigation(): ReactNode {
   const { getVariable } = useAppVariables();
   const { formatMessage } = useIntl();
   const install = usePWAInstall();
+  const isDesktop = useIsDesktop(definition.layout?.breakpoints);
+  const profileMenu = useProfileMenu();
+  const showProfileMenu = profileMenu && !isDesktop;
+  const demoLoginToggle = useToggle();
 
   const pages = useMemo(
     () => getNavPages(definition, appMemberRoles, appMemberSelectedGroup),
     [definition, appMemberRoles, appMemberSelectedGroup],
   );
+
+  const getCurrent = useActiveNavigation(pages, true);
 
   const createRemapperContext = (name: string): RemapperContext =>
     ({
@@ -75,19 +87,21 @@ export function TopNavigation(): ReactNode {
     const count = page.badgeCount
       ? (remap(page.badgeCount, null, createRemapperContext(navName as string)) as number)
       : undefined;
+    const current = getCurrent(page);
 
     return (
-      <NavLink
-        className={({ isActive }) => `navbar-item ${isActive ? styles.active : ''}`}
+      <Link
+        aria-current={current}
+        className={`navbar-item ${current ? styles.active : ''}`}
         key={page.name}
         onClick={closeMenu}
         title={navName as string}
-        to={`${url}/${getPagePathSegment(page)}`}
+        to={`${url}/${getPagePathSegment(page, getAppMessage)}`}
       >
         {page.icon ? <Icon icon={page.icon} /> : null}
         <span>{navName}</span>
         {count ? <span className="tag is-rounded ml-1 is-success">{count}</span> : null}
-      </NavLink>
+      </Link>
     );
   };
 
@@ -101,6 +115,7 @@ export function TopNavigation(): ReactNode {
         return null;
       }
       const isOpen = openDropdown === page.name;
+      const current = getCurrent(page);
 
       return (
         <div
@@ -108,34 +123,44 @@ export function TopNavigation(): ReactNode {
           key={page.name}
         >
           <button
+            aria-current={current}
             aria-expanded={isOpen}
-            className={`navbar-link ${styles.dropdownButton}`}
+            className={`navbar-link ${styles.dropdownButton} ${current ? styles.active : ''}`}
             onClick={() => setOpenDropdown((open) => (open === page.name ? undefined : page.name))}
             type="button"
           >
             {page.icon ? <Icon icon={page.icon} /> : null}
             <span>{navName}</span>
           </button>
-          <div className="navbar-dropdown">{children.map((child) => renderLink(child))}</div>
+          <div className="navbar-dropdown">{children.map((child) => renderItem(child))}</div>
         </div>
       );
     }
     return renderLink(page);
   };
 
+  const loginLink = (
+    <NavLink
+      className="navbar-item"
+      onClick={closeMenu}
+      title={formatMessage(messages.login)}
+      to={`${url}/${getRouteSegment('Login', getAppMessage)}`}
+    >
+      <Icon icon="sign-in-alt" />
+      <span>
+        <FormattedMessage {...messages.login} />
+      </span>
+    </NavLink>
+  );
+
   return (
     <>
-      <button
+      <NavbarBurger
+        active={active}
         aria-expanded={active}
         aria-label="menu"
-        className={`navbar-burger ${active ? 'is-active' : ''}`}
         onClick={() => setActive((open) => !open)}
-        type="button"
-      >
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
-      </button>
+      />
       <div className={`navbar-menu ${styles.menu} ${active ? 'is-active' : ''}`}>
         <div className="navbar-start">
           {pages.map((page) => renderItem(page))}
@@ -145,7 +170,7 @@ export function TopNavigation(): ReactNode {
               className="navbar-item"
               onClick={closeMenu}
               title={formatMessage(messages.settings)}
-              to={`${url}/Settings`}
+              to={`${url}/${getRouteSegment('Settings', getAppMessage)}`}
             >
               <Icon icon="wrench" />
               <span>
@@ -158,7 +183,7 @@ export function TopNavigation(): ReactNode {
               className="navbar-item"
               onClick={closeMenu}
               title={formatMessage(messages.feedback)}
-              to={`${url}/Feedback`}
+              to={`${url}/${getRouteSegment('Feedback', getAppMessage)}`}
             >
               <Icon icon="comment" />
               <span>
@@ -200,21 +225,27 @@ export function TopNavigation(): ReactNode {
                 <FormattedMessage {...messages.logout} />
               </Button>
             ) : (
-              <NavLink
-                className="navbar-item"
-                onClick={closeMenu}
-                title={formatMessage(messages.login)}
-                to={`${url}/Login`}
-              >
-                <Icon icon="sign-in-alt" />
-                <span>
-                  <FormattedMessage {...messages.login} />
-                </span>
-              </NavLink>
+              loginLink
             )
           ) : null}
         </div>
+        {showProfileMenu ? (
+          <div className={`navbar-end ${styles.profileMenu}`}>
+            <hr className="navbar-divider" />
+            {profileMenu.isLoggedIn ? (
+              <>
+                {profileMenu.memberName ? (
+                  <span className="navbar-item">{profileMenu.memberName}</span>
+                ) : null}
+                <ProfileMenuItems onDemoLogin={demoLoginToggle.enable} onNavigate={closeMenu} />
+              </>
+            ) : (
+              loginLink
+            )}
+          </div>
+        ) : null}
       </div>
+      {showProfileMenu && showDemoLogin ? <DemoLogin modal={demoLoginToggle} /> : null}
     </>
   );
 }
