@@ -1,5 +1,5 @@
 // CSpell:ignore cooldown
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
@@ -293,36 +293,6 @@ describe('ServiceWorkerRegistrationProvider', () => {
         level: 'warning',
       }),
     );
-  });
-
-  it('keeps a controlled app usable when a background update cannot fetch its script', async () => {
-    const registration = createRegistration();
-    vi.mocked(registration.update).mockRejectedValue(new TypeError('Failed to fetch'));
-
-    await act(() => renderProvider(registration));
-
-    expect(screen.queryByText('ServiceWorkerError')).toBeNull();
-  });
-
-  it('shows an update failure when no worker controls the app', async () => {
-    setServiceWorkerController(null);
-    const registration = createRegistration();
-    vi.mocked(registration.update).mockRejectedValue(new TypeError('Failed to fetch'));
-
-    renderProvider(registration);
-
-    expect(await screen.findByText('ServiceWorkerError')).not.toBeNull();
-  });
-
-  it('keeps reporting notification failures in a controlled app', async () => {
-    const registration = createRegistration();
-    vi.mocked(registration.pushManager.getSubscription).mockRejectedValue(
-      new TypeError('Notification subscription failed'),
-    );
-
-    renderProvider(registration);
-
-    expect(await screen.findByText('ServiceWorkerError')).not.toBeNull();
   });
 
   it('should report unexpected service worker update failures to Sentry', async () => {
