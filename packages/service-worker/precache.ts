@@ -1,5 +1,6 @@
 // CSpell:ignore Atrule
-import { parse, walk } from 'css-tree';
+import parse from 'css-tree/parser';
+import walk from 'css-tree/walker';
 
 import { cacheFirst, requestFirst } from './utils.js';
 
