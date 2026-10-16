@@ -1,6 +1,6 @@
 import { onFetch } from './onFetch.js';
 import { precache } from './precache.js';
-import { requestFirst } from './utils.js';
+import { finishCacheWrites, requestFirst } from './utils.js';
 
 declare const self: ServiceWorkerGlobalScope;
 declare const appAssets: { url: string }[];
@@ -71,7 +71,10 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'appsemble.precache') {
     event.waitUntil(
-      Promise.all([requestFirst(new Request(event.data.documentUrl)), precache(event.data.urls)]),
+      Promise.all([
+        requestFirst(new Request(event.data.documentUrl)),
+        precache(event.data.urls),
+      ]).then(finishCacheWrites),
     );
   }
   if (event.data?.type === 'SKIP_WAITING') {

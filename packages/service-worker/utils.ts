@@ -1,5 +1,7 @@
 import { type Promisable } from 'type-fest';
 
+const cacheWrites = new Set<Promise<unknown>>();
+
 async function put(
   request: Request,
   response: Response,
@@ -8,11 +10,21 @@ async function put(
   // Cache successful responses and opaque image responses.
   if (response.ok || (response.type === 'opaque' && request.destination === 'image')) {
     const cache = await caches.open('appsemble');
-    // A failed write, for example when the storage quota is exceeded, keeps the response usable.
-    await cache.put(request, response.clone()).catch((): null => null);
+    // The response streams to the page while it is stored. A failed write, for example when the
+    // storage quota is exceeded, keeps the response usable.
+    const write = cache.put(request, response.clone()).catch((): null => null);
+    cacheWrites.add(write);
+    write.finally(() => cacheWrites.delete(write));
     return response;
   }
   return fallback();
+}
+
+/**
+ * Wait until the cache writes that have started are finished.
+ */
+export async function finishCacheWrites(): Promise<void> {
+  await Promise.all(cacheWrites);
 }
 
 export async function tryCached(

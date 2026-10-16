@@ -61,6 +61,24 @@ it('serves unvisited block styles and CDN files offline after caching app assets
   }
 });
 
+it('finishes caching app assets before the precache completes', async () => {
+  const documentUrl = 'https://www.test.com/en';
+  const styleUrl = 'https://www.test.com/@appsemble/detail-viewer.css?updated=current';
+  const cache = await caches.open('appsemble');
+  const store = cache.put.bind(cache);
+  vi.spyOn(cache, 'put').mockImplementation(async (request, response) => {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 20);
+    });
+    return store(request, response);
+  });
+  await trigger('message', { data: { type: 'appsemble.precache', documentUrl, urls: [styleUrl] } });
+  await finishEvents();
+  online = false;
+
+  expect(await (await browserFetch(styleUrl)).text()).toBe('Current app asset');
+});
+
 it('refreshes the app document and retains styles from its new revision', async () => {
   const documentUrl = 'https://www.test.com/en';
   const cache = await caches.open('appsemble');

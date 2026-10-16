@@ -1,3 +1,4 @@
+import { noop } from '@appsemble/utils';
 import makeServiceWorkerEnv from 'service-worker-mock';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
@@ -55,6 +56,16 @@ it('serves a successful response that the cache cannot store', async () => {
   vi.spyOn(cache, 'put').mockRejectedValue(
     new DOMException('Quota exceeded', 'QuotaExceededError'),
   );
+  networkResponse = new Response(JSON.stringify({ messages: { title: 'Routine' } }));
+  expect(await (await browserFetch(request)).json()).toStrictEqual({
+    messages: { title: 'Routine' },
+  });
+});
+
+it('responds while the response is still being stored', async () => {
+  const request = new Request('https://studio.example/api/apps/2/messages/en');
+  const cache = await caches.open('appsemble');
+  vi.spyOn(cache, 'put').mockReturnValue(new Promise(noop));
   networkResponse = new Response(JSON.stringify({ messages: { title: 'Routine' } }));
   expect(await (await browserFetch(request)).json()).toStrictEqual({
     messages: { title: 'Routine' },
