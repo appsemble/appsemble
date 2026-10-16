@@ -94,9 +94,11 @@ export function Page(): ReactNode {
   const navigate = useNavigate();
 
   const [data, setData] = useState<unknown>({});
+  const [loadedPage, setLoadedPage] = useState<PageDefinition | null>();
 
   useEffect(() => {
     setData({});
+    setLoadedPage(undefined);
   }, [pageId]);
 
   const [dialog, setDialog] = useState<ShowDialogParams | undefined>();
@@ -311,8 +313,9 @@ export function Page(): ReactNode {
     ],
   );
 
-  const [loadedActions, setLoadedActions] = useState<typeof actions>();
-  const dataReady = actions.onLoad.type === 'noop' || loadedActions === actions;
+  // Blocks read the page data once, when they are initialized, so they wait until the onLoad
+  // action of the page has settled. Later runs of the action leave them mounted.
+  const dataReady = actions.onLoad.type === 'noop' || loadedPage === pageDefinition;
 
   useEffect(() => {
     if (!pageDefinition) {
@@ -344,7 +347,7 @@ export function Page(): ReactNode {
         })
         .finally(() => {
           if (active) {
-            setLoadedActions(actions);
+            setLoadedPage(pageDefinition);
           }
         })
         .catch((error: unknown) => {
@@ -356,7 +359,7 @@ export function Page(): ReactNode {
     return () => {
       active = false;
     };
-  }, [setData, actions]);
+  }, [setData, actions, pageDefinition]);
 
   const checkPagePermissionsCallback = useCallback(
     (pd: PageDefinition): boolean =>
