@@ -365,6 +365,9 @@ Commonly used with a filter.",
     "noData": {
       "description": "This message is displayed if no data was to be found.",
     },
+    "openCard": {
+      "description": "The accessible label of a clickable card that has no text and no image alt.",
+    },
   },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -7915,6 +7918,12 @@ This does not trigger if the field has a different action specified.",
     "emptyMessage": {
       "description": "The message to display when the data to display is empty.",
     },
+    "enlargeImage": {
+      "description": "The accessible label of an image that opens an enlarged view.",
+    },
+    "enlargeNamedImage": {
+      "description": "The accessible label of an image that opens an enlarged view, including the image name.",
+    },
     "error": {
       "description": "The message to display when data could not be loaded.",
     },
@@ -8241,6 +8250,12 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
           "image": {
             "additionalProperties": false,
             "properties": {
+              "alt": {
+                "description": "The alternative text of the image.
+
+It also names the button that enlarges the image. If it isn't specified, the field label is used.",
+                "format": "remapper",
+              },
               "file": {
                 "description": "The image to show in the cell.
 

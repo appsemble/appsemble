@@ -243,6 +243,14 @@ export interface Image extends BaseField {
     file: Remapper;
 
     /**
+     * The alternative text of the image.
+     *
+     * It also names the button that enlarges the image. If it isn't specified, the field label is
+     * used.
+     */
+    alt?: Remapper;
+
+    /**
      * The image is scaled to the specified width in pixels.
      */
     width?: number;
@@ -284,6 +292,16 @@ declare module '@appsemble/sdk' {
      * The text on the button that is used to submit the checked data.
      */
     submitChecked: never;
+
+    /**
+     * The accessible label of an image that opens an enlarged view.
+     */
+    enlargeImage: never;
+
+    /**
+     * The accessible label of an image that opens an enlarged view, including the image name.
+     */
+    enlargeNamedImage: { name: string };
 
     /**
      * The accessible label for closing an enlarged image.

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import { ItemRow } from './components/ItemRow/index.js';
 import styles from './index.module.css';
+import stretchedStyles from './stretchedControl.module.css';
 
 interface Item {
   id?: number;
@@ -82,17 +83,40 @@ export function Table({
         <tr>
           {heads.map((header) =>
             header ? (
+              // The sort button stretches over the header, so the whole header is clickable
               <th
-                className={`${header?.name ? styles.pointer : ''} ${header?.name && header.name === order.field ? 'has-background-warning' : ''}`}
-                key={header?.label}
-                {...(header?.name ? { onClick: () => onTableHeaderClick(header.name!) } : {})}
+                aria-sort={
+                  header.name && header.name === order.field
+                    ? order.order === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : undefined
+                }
+                className={classNames(
+                  header.name && styles.sortable,
+                  header.name && header.name === order.field && 'has-background-warning',
+                )}
+                key={header.label}
               >
-                {header.label as string}
-                <span className="ml-1">
-                  {header.name && header.name === order.field ? (
-                    <Icon icon={order.order === 'asc' ? 'arrow-up' : 'arrow-down'} size="small" />
-                  ) : null}
-                </span>
+                {header.name ? (
+                  <button
+                    className={stretchedStyles.control}
+                    onClick={() => onTableHeaderClick(header.name!)}
+                    type="button"
+                  >
+                    {header.label as string}
+                    <span className="ml-1">
+                      {header.name === order.field ? (
+                        <Icon
+                          icon={order.order === 'asc' ? 'arrow-up' : 'arrow-down'}
+                          size="small"
+                        />
+                      ) : null}
+                    </span>
+                  </button>
+                ) : (
+                  (header.label as string)
+                )}
               </th>
             ) : (
               ''
@@ -160,7 +184,6 @@ export function Table({
           'table is-hoverable is-striped is-fullwidth',
           borders && 'is-bordered',
         )}
-        role="grid"
       >
         {remappedCaption ? (
           <caption className="is-size-5 mb-2 p-1">{remappedCaption}</caption>

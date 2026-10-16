@@ -1,5 +1,6 @@
 {
   "error": "Er is een fout opgetreden bij het ophalen van de gegevens.",
   "loading": "Laden",
-  "noData": "Er zijn geen gegevens beschikbaar."
+  "noData": "Er zijn geen gegevens beschikbaar.",
+  "openCard": "Kaart openen"
 }

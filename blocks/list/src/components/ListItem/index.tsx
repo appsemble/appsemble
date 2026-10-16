@@ -119,16 +119,14 @@ export function ListItem({ dataTestId, index, item }: ListItemProps): VNode {
   }, [itemHash]);
 
   return (
-    // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
+    // Keyboard users activate the item through the button or link in the header or content
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
       className={`${styles.item} has-text-left is-flex is-flex-direction-column my-1 py-2 pl-3 pr-2`}
       data-testid={dataTestId}
       id={itemHash}
       onClick={onItemClick}
-      onKeyDown={onItemClick}
       ref={(ref as MutableRef<HTMLDivElement>) || undefined}
-      role="button"
-      tabIndex={-1}
     >
       {header ? (
         <HeaderComponent

@@ -252,5 +252,10 @@ declare module '@appsemble/sdk' {
      * The accessible label of the loader shown while data loads.
      */
     loading: never;
+
+    /**
+     * The accessible label of a clickable card that has no text and no image alt.
+     */
+    openCard: never;
   }
 }
