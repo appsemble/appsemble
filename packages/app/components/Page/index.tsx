@@ -340,6 +340,10 @@ export function Page(): ReactNode {
         .then((results) => {
           if (active) {
             setData(results);
+          }
+        })
+        .finally(() => {
+          if (active) {
             setLoadedActions(actions);
           }
         })

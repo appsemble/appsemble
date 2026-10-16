@@ -6,7 +6,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { Page } from './index.js';
 import * as bootstrapper from '../../utils/bootstrapper.js';
@@ -473,5 +473,22 @@ describe('page initial data', () => {
     mockPages({ actions: undefined });
     renderApp();
     await waitFor(() => expect(blocks).toHaveLength(1));
+  });
+
+  it('should initialize blocks when the onLoad action fails', async () => {
+    const errors: unknown[] = [];
+    const onUnhandledRejection = (error: unknown): void => {
+      errors.push(error);
+    };
+    // Vitest reports an unhandled rejection unless the test listens for it.
+    process.on('unhandledRejection', onUnhandledRejection);
+    onTestFinished(() => {
+      process.off('unhandledRejection', onUnhandledRejection);
+    });
+    mock.onGet('https://example.com/home').reply(500);
+    mockPages();
+    renderApp();
+    await waitFor(() => expect(blocks).toHaveLength(1));
+    await waitFor(() => expect(errors).toHaveLength(1));
   });
 });
