@@ -2,6 +2,8 @@
   "closeImage": "",
   "downloadImage": "",
   "emptyMessage": "Aucune donnée disponible.",
+  "enlargeImage": "",
+  "enlargeNamedImage": "",
   "error": "Une erreur s'est produite lors de la récupération des données",
   "loading": "",
   "submitChecked": "Envoyer"
