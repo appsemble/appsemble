@@ -60,8 +60,8 @@ it('shows a zero value received from a device', async () => {
   expect(await screen.findByText('0')).not.toBeNull();
 });
 
-it('waits for a data event when initial data is absent', async () => {
-  const ee = renderDetails(undefined, true);
+it.each([null, {}])('waits for a data event when the initial data is %j', async (data) => {
+  const ee = renderDetails(data, true);
   expect(screen.queryByText('Reading')).toBeNull();
   act(() => {
     ee.emit('details', { value: 'First reading' });

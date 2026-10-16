@@ -16,7 +16,9 @@ export function DetailViewer({
   utils,
 }: BlockProps): VNode {
   const [data, setData] = useState(blockData);
-  const [loading, setLoading] = useState(blockData == null);
+  // A page without data passes an empty object, so only initial data with fields is shown before
+  // the first data event.
+  const [loading, setLoading] = useState(!Object.keys(blockData ?? {}).length);
 
   useEffect(() => {
     const hasListener = events.on.data((d) => {
