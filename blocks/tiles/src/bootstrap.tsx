@@ -75,6 +75,14 @@ export function Tiles({
           ),
         ];
 
+        if (onClick.type === 'noop') {
+          return (
+            <div className={className} style={style}>
+              {children}
+            </div>
+          );
+        }
+
         const element =
           onClick.type === 'link' ? (
             <a className={className} href={onClick.href(result)} style={style}>

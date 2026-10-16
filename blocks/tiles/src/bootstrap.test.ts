@@ -13,6 +13,11 @@ interface SetupOptions {
    * When set, `onClick` is a link action resolving to this URL.
    */
   href?: string;
+
+  /**
+   * Whether `onClick` is a noop action, as when the app defines no click action.
+   */
+  noop?: boolean;
 }
 
 interface Setup {
@@ -32,14 +37,15 @@ interface Setup {
   node: HTMLElement;
 }
 
-function setup({ href }: SetupOptions = {}): Setup {
+function setup({ href, noop = false }: SetupOptions = {}): Setup {
   const dispatched: unknown[] = [];
   const dispatch = (clickData: unknown): Promise<unknown> => {
     dispatched.push(clickData);
     return Promise.resolve(clickData);
   };
-  const onClick =
-    href == null
+  const onClick = noop
+    ? Object.assign(dispatch, { type: 'noop' as const })
+    : href == null
       ? Object.assign(dispatch, { type: 'dialog' as const })
       : Object.assign(dispatch, { type: 'link' as const, href: () => href });
   let dataCallback: ((data: Tile[]) => void) | undefined;
@@ -99,4 +105,13 @@ it('should hide the image from screen readers since the text names the tile', ()
   emitData([{ image: 'speaker.png', text: 'Sounds' }]);
 
   expect(node.querySelector('img')?.getAttribute('alt')).toBe('');
+});
+
+it('should not render a control for a tile without a click action', () => {
+  const { emitData, node } = setup({ noop: true });
+
+  emitData([{ text: 'Sounds' }]);
+
+  expect(node.textContent).toBe('Sounds');
+  expect(node.querySelector('button, a')).toBeNull();
 });
