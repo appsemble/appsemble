@@ -69,8 +69,8 @@ it('should render the text', () => {
   `);
 });
 
-function renderCell(onClick: Action, value: string): Record<string, unknown> {
-  const field = { value };
+function renderCell(onClick: Action, value: string, label?: string): Record<string, unknown> {
+  const field = { label, value };
   const record = { id: 1 };
 
   render(
@@ -119,10 +119,9 @@ it('should render a link for a cell with a link action', () => {
   expect(screen.getByRole('link', { name: 'Open' }).getAttribute('href')).toBe('/items/1');
 });
 
-it('should not render a control for an empty cell', () => {
+it('should name the control of an empty cell by its column label', () => {
   const onClick = Object.assign(vi.fn(), { type: 'dialog' as const }) as unknown as Action;
-  renderCell(onClick, '');
+  renderCell(onClick, '', 'Status');
 
-  expect(screen.queryByRole('button')).toBeNull();
-  expect(screen.queryByRole('link')).toBeNull();
+  expect(screen.getByRole('button', { name: 'Status' })).toBeDefined();
 });

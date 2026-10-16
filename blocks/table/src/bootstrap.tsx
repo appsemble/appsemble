@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import { ItemRow } from './components/ItemRow/index.js';
 import styles from './index.module.css';
+import stretchedStyles from './stretchedControl.module.css';
 
 interface Item {
   id?: number;
@@ -99,7 +100,7 @@ export function Table({
               >
                 {header.name ? (
                   <button
-                    className={styles.sort}
+                    className={stretchedStyles.control}
                     onClick={() => onTableHeaderClick(header.name!)}
                     type="button"
                   >

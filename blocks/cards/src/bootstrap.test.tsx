@@ -273,3 +273,28 @@ it('should not render a control for a card without a click action', async () => 
   expect(screen.queryByRole('button')).toBeNull();
   expect(screen.queryByRole('link')).toBeNull();
 });
+
+it('should open a card through its subtitle when it has no title', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'click',
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({
+    card: { content: { prop: 'content' }, subtitle: { prop: 'title' } },
+    onClick,
+  });
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.getByRole('button', { name: 'First' })).toBeDefined();
+});
+
+it('should give a card without text or image alt a generic name', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'click',
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({ card: { content: { prop: 'content' } }, onClick });
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.getByRole('button', { name: 'openCard' })).toBeDefined();
+});

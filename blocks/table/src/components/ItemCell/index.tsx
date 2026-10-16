@@ -4,6 +4,7 @@ import { type ComponentProps, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
+import stretchedStyles from '../../stretchedControl.module.css';
 import {
   type Button,
   type CheckBox,
@@ -120,16 +121,28 @@ export function ItemCell({
     );
   } else {
     const value = renderValue(remap(field.value, item, { index, repeatedIndex }));
-    // The control stretches over the cell, so the whole cell is clickable
+    // The control stretches over the cell, so the whole cell is clickable.
+    // An empty cell is named by its column label, as the header shows it.
+    const label = value ? undefined : (remap(field.label, {}) as string) || undefined;
     content =
-      !value || !onClickAction || onClickAction.type === 'noop' ? (
+      !onClickAction || onClickAction.type === 'noop' ? (
         value
       ) : onClickAction.type === 'link' ? (
-        <a className={styles.clickable} href={onClickAction.href(record)} onClick={onCellClick}>
+        <a
+          aria-label={label}
+          className={stretchedStyles.control}
+          href={onClickAction.href(record)}
+          onClick={onCellClick}
+        >
           {value}
         </a>
       ) : (
-        <button className={styles.clickable} onClick={onCellClick} type="button">
+        <button
+          aria-label={label}
+          className={stretchedStyles.control}
+          onClick={onCellClick}
+          type="button"
+        >
           {value}
         </button>
       );

@@ -1,5 +1,6 @@
 {
   "error": "An error occurred when fetching the data.",
   "loading": "Loading",
-  "noData": "There is no data available."
+  "noData": "There is no data available.",
+  "openCard": "Open card"
 }

@@ -14,7 +14,7 @@ export function CardContent({ index, item }: CardContentProps): VNode {
   const {
     actions,
     parameters: { card, defaultImage },
-    utils: { asset, remap },
+    utils: { asset, formatMessage, remap },
   } = useBlock();
 
   const image = remap(card.image?.file, item) as string;
@@ -32,13 +32,14 @@ export function CardContent({ index, item }: CardContentProps): VNode {
   const content = remap(card.content, item) as string;
 
   // The control stretches over the image and the content, so the whole area is clickable.
-  // Without text, the image alt names it.
-  const control = (children: ComponentChild): ComponentChild =>
+  // It wraps the first text of the card. Without text, the image alt or a generic label names it.
+  const textHost = title ? 'title' : subtitle ? 'subtitle' : content ? 'content' : undefined;
+  const control = (children?: ComponentChild): ComponentChild =>
     actions.onClick.type === 'noop' ? (
       children
     ) : actions.onClick.type === 'link' ? (
       <a
-        aria-label={children ? undefined : alt}
+        aria-label={children ? undefined : alt || formatMessage('openCard')}
         className={styles.control}
         href={actions.onClick.href(item)}
         onClick={handleClick}
@@ -47,7 +48,7 @@ export function CardContent({ index, item }: CardContentProps): VNode {
       </a>
     ) : (
       <button
-        aria-label={children ? undefined : alt}
+        aria-label={children ? undefined : alt || formatMessage('openCard')}
         className={styles.control}
         onClick={handleClick}
         type="button"
@@ -65,9 +66,14 @@ export function CardContent({ index, item }: CardContentProps): VNode {
           </figure>
         </div>
         <div class="card-content">
-          <p className={`is-5 title ${styles.hiddenOverflow}`}>{title ? control(title) : null}</p>
-          <p className={`is-6 title ${styles.hiddenOverflow}`}>{subtitle}</p>
-          <div className="content">{title ? content : control(content)}</div>
+          <p className={`is-5 title ${styles.hiddenOverflow}`}>
+            {textHost === 'title' ? control(title) : title}
+          </p>
+          <p className={`is-6 title ${styles.hiddenOverflow}`}>
+            {textHost === 'subtitle' ? control(subtitle) : subtitle}
+          </p>
+          <div className="content">{textHost === 'content' ? control(content) : content}</div>
+          {textHost ? null : control()}
         </div>
       </div>
       <footer className="card-footer">

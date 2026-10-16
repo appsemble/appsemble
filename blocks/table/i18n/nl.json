@@ -3,6 +3,7 @@
   "downloadImage": "Downloaden in HD",
   "emptyMessage": "Er zijn geen gegevens beschikbaar.",
   "enlargeImage": "Vergroot afbeelding",
+  "enlargeNamedImage": "Vergroot afbeelding: {name}",
   "error": "Er is een fout opgetreden bij het ophalen van de gegevens",
   "loading": "Laden",
   "submitChecked": "Verzenden"

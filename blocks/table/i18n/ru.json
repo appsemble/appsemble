@@ -3,6 +3,7 @@
   "downloadImage": "",
   "emptyMessage": "Данных нет.",
   "enlargeImage": "",
+  "enlargeNamedImage": "",
   "error": "При получении данных произошла ошибка",
   "loading": "",
   "submitChecked": "Отправить"
