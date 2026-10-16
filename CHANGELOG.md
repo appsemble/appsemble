@@ -2,6 +2,63 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.5](https://gitlab.com/appsemble/appsemble/-/releases/0.40.5)] - 2026-10-16
+
+### Added
+
+- Block(`button-list`): Add data-driven pressed state for toggle buttons.
+- Block(`footer`): Render the copyright as a link when its remapper returns a `label` and `link`.
+- Block(`form`): Add `autocomplete` to string and number fields to set the HTML `autocomplete`
+  attribute.
+- Block(`form`): Add `errorSummaryPosition` to list every invalid field at the top of the form.
+- Block(`form`): Add `helpPosition` to show help and errors between the label and the input.
+- Block(`form`): Add `labelTextFormat: markdown` to render boolean field label text as Markdown.
+- Block(`table`): Add `alt` to image fields.
+- Cli: Delete app variant message keys patched to `null`.
+- E2e: Add `scanAppAccessibility` fixture to score app accessibility with axe-core.
+- Preact-components: Add `FormComponentHelpPositionContext` to render help above form controls.
+
+### Changed
+
+- App: Leave app definition validation out of the app bundle, which makes it a third smaller.
+- App: Preload the font stylesheet and the app messages from the HTML.
+- Lang-sdk: Prefix prototype property names with `#` in the `xml.parse` remapper.
+
+### Fixed
+
+- Block(`cards`): Open cards with the keyboard.
+- Block(`form`): Disable the fields until the `onLoad` action has finished, so the loaded data does
+  not overwrite user input.
+- Block(`form`): Give the password visibility toggle an accessible name.
+- Block(`form`): Label form selection dialogs and their choice controls.
+- Block(`form`): Show and hide password fields that have a datalist.
+- Block(`form`): Validate required and prohibited requirements of boolean fields.
+- Block(`list`): Expose button titles as accessible names for list actions.
+- Block(`table`): Sort columns and open clickable cells with the keyboard.
+- App: Initialize blocks with the current viewport mode.
+- App: Make the dialog action keyboard and screen reader accessible.
+- App: Open `mailto:`, `tel:` and `sms:` links without leaving a blank tab behind.
+- App: Render the repeated app name in the title bar as text, not a heading.
+- App: Resolve `tab.name` to the opened tab, not the first tab, when the tab list loads as it opens.
+- App: Show float blocks in a dialog on top of the dialog.
+- Cli: Keep patching variant messages after a language without messages.
+- Preact-components: Add accessible names and states to loaders, dropdowns, radio groups and
+  sliders.
+- Preact-components: Keep an open date picker open when its disabled dates are recalculated.
+- React-components: Announce `Loader` to screen readers as a loading status.
+- React-components: Make `Modal` and `ModalCard` accessible modal dialogs with focus management.
+
+### Security
+
+- Block(`form`): Update the markdown editor and KaTeX to patch a KaTeX trust bypass.
+- Cli: Update postcss-preset-env to v10.
+- Lang-sdk: Update fast-xml-parser to patch entity expansion vulnerabilities.
+- Node-utils: Update webpack-dev-middleware to patch a path traversal vulnerability.
+- Server: Escape HTML in the inline settings script of apps and the studio.
+- Server: Update dependencies to patch known vulnerabilities.
+- Webpack-config: Update css-minimizer-webpack-plugin to v8 to fix serialize-javascript advisories.
+- Webpack-core: Update css-minimizer-webpack-plugin to v8 to fix serialize-javascript advisories.
+
 ## \[[0.40.4](https://gitlab.com/appsemble/appsemble/-/releases/0.40.4)] - 2026-10-07
 
 ### Added
