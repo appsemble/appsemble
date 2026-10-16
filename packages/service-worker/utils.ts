@@ -8,7 +8,8 @@ async function put(
   // Cache successful responses and opaque image responses.
   if (response.ok || (response.type === 'opaque' && request.destination === 'image')) {
     const cache = await caches.open('appsemble');
-    await cache.put(request, response.clone());
+    // A failed write, for example when the storage quota is exceeded, keeps the response usable.
+    await cache.put(request, response.clone()).catch((): null => null);
     return response;
   }
   return fallback();

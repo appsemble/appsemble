@@ -49,6 +49,18 @@ it('serves a previously loaded opaque app image offline', async () => {
   expect((await browserFetch(request)).type).toBe('opaque');
 });
 
+it('serves a successful response that the cache cannot store', async () => {
+  const request = new Request('https://studio.example/api/apps/2/messages/en');
+  const cache = await caches.open('appsemble');
+  vi.spyOn(cache, 'put').mockRejectedValue(
+    new DOMException('Quota exceeded', 'QuotaExceededError'),
+  );
+  networkResponse = new Response(JSON.stringify({ messages: { title: 'Routine' } }));
+  expect(await (await browserFetch(request)).json()).toStrictEqual({
+    messages: { title: 'Routine' },
+  });
+});
+
 it('does not retain an unsuccessful image response for offline use', async () => {
   const request = new Request('https://studio.example/api/apps/2/assets/missing');
   Object.defineProperty(request, 'destination', { value: 'image' });
