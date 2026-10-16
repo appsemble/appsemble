@@ -1,1 +1,1 @@
-Expose slider progress as a CSS custom property for range track themes
+Expose slider progress to themes as the `--slider-progress` CSS custom property

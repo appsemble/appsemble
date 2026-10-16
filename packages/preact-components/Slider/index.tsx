@@ -49,7 +49,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
     const inputRef = useRef<HTMLInputElement>(null);
     useLayoutEffect(() => {
       updateProgress(inputRef.current!);
-    }, [props.value, props.min, props.max]);
+    });
 
     const handleChange = useCallback(
       (event: JSX.TargetedEvent<HTMLInputElement>) => {

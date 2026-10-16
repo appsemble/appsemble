@@ -13,6 +13,9 @@ it('exposes range progress to themes after value, bounds, and user input changes
 
   fireEvent.input(slider, { target: { value: 80 } });
   expect(slider.style.getPropertyValue('--slider-progress')).toBe('75%');
+
+  rerender(<Slider aria-label="Brightness" max={100} min={20} value={60} />);
+  expect(slider.style.getPropertyValue('--slider-progress')).toBe('50%');
 });
 
 it('should render an input element', () => {
