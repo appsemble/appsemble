@@ -20,8 +20,8 @@ import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
 
-let failStylesheet: boolean;
-let blockRoot: HTMLElement;
+let failingFile: string | undefined;
+let blockRoot: HTMLElement | undefined;
 let blockVersion = 0;
 
 function loadBlock({ shadowRoot }: BootstrapParams): void {
@@ -32,7 +32,7 @@ function loadBlock({ shadowRoot }: BootstrapParams): void {
 }
 
 beforeEach(() => {
-  failStylesheet = true;
+  blockRoot = undefined;
   vi.spyOn(console, 'error').mockImplementation(noop);
   const stylesheet = document.createElement('link');
   stylesheet.id = 'bulma-style-app';
@@ -64,11 +64,13 @@ beforeEach(() => {
     appendHead(...nodes);
     for (const node of nodes) {
       if (node instanceof HTMLScriptElement) {
+        const event =
+          failingFile && node.src.includes(failingFile)
+            ? new Event('error')
+            : new CustomEvent('AppsembleBootstrap', { detail: { document, fn: loadBlock } });
         queueMicrotask(() => {
           Object.defineProperty(document, 'currentScript', { configurable: true, value: node });
-          node.dispatchEvent(
-            new CustomEvent('AppsembleBootstrap', { detail: { document, fn: loadBlock } }),
-          );
+          node.dispatchEvent(event);
         });
       }
     }
@@ -82,7 +84,7 @@ beforeEach(() => {
     appendFragment.apply(this, nodes);
     for (const node of nodes) {
       if (node instanceof HTMLLinkElement) {
-        const event = failStylesheet && node.href.includes('shared.css') ? 'error' : 'load';
+        const event = failingFile && node.href.includes(failingFile) ? 'error' : 'load';
         queueMicrotask(() => node.dispatchEvent(new Event(event)));
       }
     }
@@ -95,65 +97,69 @@ afterEach(() => {
   document.head.innerHTML = '';
 });
 
-describe('block stylesheet failure', () => {
-  it('should show native page recovery and allow a retry after stylesheets load', async () => {
-    blockVersion += 1;
-    const block: BlockDefinition = {
-      type: '@test/stylesheet-recovery',
-      version: `1.0.${blockVersion}`,
-    };
-    const pageDefinition = { name: 'Home', blocks: [block] };
-    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Home',
-        pages: [pageDefinition],
-      } as AppDefinition,
-      demoMode: false,
-      revision: 1,
-      blockManifests: [
-        { name: block.type, version: block.version, files: ['stylesheet-recovery.js'] },
-      ] as BlockManifest[],
-    });
-    render(
-      <IntlProvider locale="en">
-        <MemoryRouter initialEntries={['/page']}>
-          <ErrorHandler fallback={ErrorFallback}>
-            <Routes>
-              <Route element={<Link to="/page">Open page</Link>} path="/" />
-              <Route
-                element={
-                  <Block
-                    appStorage={{} as AppStorage}
-                    block={block}
-                    // eslint-disable-next-line unicorn/prefer-event-target
-                    ee={new EventEmitter()}
-                    flowActions={{}}
-                    pageDefinition={pageDefinition}
-                    pageReady={Promise.resolve()}
-                    prefix="pages.home.blocks.0"
-                    prefixIndex="pages.0.blocks.0"
-                    ready={noop}
-                    remap={noop}
-                    showDialog={() => noop}
-                    showShareDialog={() => Promise.resolve()}
-                  />
-                }
-                path="/page"
-              />
-            </Routes>
-          </ErrorHandler>
-        </MemoryRouter>
-      </IntlProvider>,
-    );
-    await waitFor(() =>
-      expect(screen.getByText('An unexpected error has occurred.')).toBeDefined(),
-    );
-    fireEvent.click(screen.getByRole('link', { name: 'Back to home' }));
-    failStylesheet = false;
-    fireEvent.click(await screen.findByRole('link', { name: 'Open page' }));
-    await waitFor(() =>
-      expect(within(blockRoot).getByRole('button', { name: 'Loaded block' })).toBeDefined(),
-    );
-  });
+describe('block load failure', () => {
+  it.each(['/shared.css', '/load-recovery.js'])(
+    'should show native page recovery and allow a retry after %s loads',
+    async (file) => {
+      failingFile = file;
+      blockVersion += 1;
+      const block: BlockDefinition = {
+        type: '@test/load-recovery',
+        version: `1.0.${blockVersion}`,
+      };
+      const pageDefinition = { name: 'Home', blocks: [block] };
+      vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Home',
+          pages: [pageDefinition],
+        } as AppDefinition,
+        demoMode: false,
+        revision: 1,
+        blockManifests: [
+          { name: block.type, version: block.version, files: ['load-recovery.js'] },
+        ] as BlockManifest[],
+      });
+      render(
+        <IntlProvider locale="en">
+          <MemoryRouter initialEntries={['/page']}>
+            <ErrorHandler fallback={ErrorFallback}>
+              <Routes>
+                <Route element={<Link to="/page">Open page</Link>} path="/" />
+                <Route
+                  element={
+                    <Block
+                      appStorage={{} as AppStorage}
+                      block={block}
+                      // eslint-disable-next-line unicorn/prefer-event-target
+                      ee={new EventEmitter()}
+                      flowActions={{}}
+                      pageDefinition={pageDefinition}
+                      pageReady={Promise.resolve()}
+                      prefix="pages.home.blocks.0"
+                      prefixIndex="pages.0.blocks.0"
+                      ready={noop}
+                      remap={noop}
+                      showDialog={() => noop}
+                      showShareDialog={() => Promise.resolve()}
+                    />
+                  }
+                  path="/page"
+                />
+              </Routes>
+            </ErrorHandler>
+          </MemoryRouter>
+        </IntlProvider>,
+      );
+      await waitFor(() =>
+        expect(screen.getByText('An unexpected error has occurred.')).toBeDefined(),
+      );
+      fireEvent.click(screen.getByRole('link', { name: 'Back to home' }));
+      failingFile = undefined;
+      fireEvent.click(await screen.findByRole('link', { name: 'Open page' }));
+      await waitFor(() =>
+        expect(within(blockRoot!).getByRole('button', { name: 'Loaded block' })).toBeDefined(),
+      );
+    },
+  );
 });

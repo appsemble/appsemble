@@ -17,7 +17,10 @@ const bootstrapFunctions = new Map<string, BootstrapFunction>();
 const controllerFunctions = new Map<string, ControllerFunction>();
 const handlerFunctions = new Map<string, HandlerFunction>();
 
-const bootstrapResolvers = new Map<string, ((fn: BootstrapFunction) => void)[]>();
+const bootstrapResolvers = new Map<
+  string,
+  { resolve: (fn: BootstrapFunction) => void; reject: (error: Error) => void }[]
+>();
 const controllerResolvers = new Map<string, ((fn: ControllerFunction) => void)[]>();
 
 const loadedBlocks = new Set<string>();
@@ -58,7 +61,7 @@ export function registerBlock(
   if (!callbacks) {
     throw new Error('This block shouldn’t have been loaded. What’s going on?');
   }
-  for (const resolve of callbacks) {
+  for (const { resolve } of callbacks) {
     resolve(fn);
   }
 }
@@ -99,8 +102,8 @@ function getBootstrapFunction(blockDefId: string): Promisable<BootstrapFunction>
     bootstrapResolvers.set(blockDefId, []);
   }
   const waiting = bootstrapResolvers.get(blockDefId)!;
-  return new Promise((resolve) => {
-    waiting.push(resolve);
+  return new Promise((resolve, reject) => {
+    waiting.push({ resolve, reject });
   });
 }
 
@@ -171,6 +174,14 @@ export async function callBootstrap(
       event.stopImmediatePropagation();
       event.preventDefault();
       registerBlock(script, event, blockNameVersion);
+    });
+    script.addEventListener('error', () => {
+      const callbacks = bootstrapResolvers.get(blockNameVersion)!;
+      bootstrapResolvers.delete(blockNameVersion);
+      loadedBlocks.delete(blockNameVersion);
+      for (const { reject } of callbacks) {
+        reject(new Error(`Failed to load block script: ${script.src}`));
+      }
     });
 
     document.head.append(script);
