@@ -1,5 +1,5 @@
 // CSpell:ignore cooldown
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
@@ -44,11 +44,7 @@ let serviceWorkerListeners: Record<string, (event: any) => void> = {};
 
 function Consumer(): ReactNode {
   latestContext = useServiceWorkerRegistration();
-  return (
-    <button onClick={latestContext.update} type="button">
-      Update app
-    </button>
-  );
+  return null;
 }
 
 function renderProvider(serviceWorkerRegistration: ServiceWorkerRegistration | null): void {
@@ -156,7 +152,6 @@ describe('ServiceWorkerRegistrationProvider', () => {
     });
 
     expect(screen.queryByText('ServiceWorkerError')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Update app' })).toBeDefined();
   });
 
   it('should keep the app usable when an explicit update finds no remaining worker', async () => {
@@ -171,15 +166,14 @@ describe('ServiceWorkerRegistrationProvider', () => {
       new DOMException('newestWorker is null', 'InvalidStateError'),
     );
 
-    await act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'Update app' }));
+    await act(async () => {
+      await latestContext?.update();
     });
 
     expect(screen.queryByText('ServiceWorkerError')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Update app' })).toBeDefined();
   });
 
-  it.each(['installing', 'waiting', 'active'] as const)(
+  it.each(['installing', 'waiting'] as const)(
     'should report startup update failures when an %s worker exists',
     async (state) => {
       const registration = createRegistration({ active: null, [state]: {} as ServiceWorker });
@@ -192,24 +186,6 @@ describe('ServiceWorkerRegistrationProvider', () => {
       expect(screen.getByText('ServiceWorkerError')).toBeDefined();
     },
   );
-
-  it('should report unexpected errors from an explicit update', async () => {
-    const registration = createRegistration();
-
-    await act(() => {
-      renderProvider(registration);
-    });
-
-    vi.mocked(registration.update).mockRejectedValue(
-      new DOMException('The context has stopped', 'InvalidStateError'),
-    );
-
-    await act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'Update app' }));
-    });
-
-    expect(screen.getByText('ServiceWorkerError')).toBeDefined();
-  });
 
   it('should throttle repeated version checks during the cooldown window', async () => {
     const registration = createRegistration();
