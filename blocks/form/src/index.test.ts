@@ -920,7 +920,7 @@ async function mountExternalSubmit(disabled = false): Promise<{
   const params = {
     ...getDefaultBootstrapParams(),
     actions: {
-      onLoad: Object.assign(noop, { type: 'noop' }),
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
       onSubmit(data: { name: string }) {
         saved.textContent = `Saved ${data.name}`;
       },
