@@ -17,4 +17,7 @@
 
 .closing {
   opacity: 0;
+
+  /* The page behind the dialog can be used while it transitions out. */
+  pointer-events: none;
 }
