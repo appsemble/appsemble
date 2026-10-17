@@ -66,6 +66,7 @@ describe('bulmaHandler', () => {
     );
     expect(response.data).toContain("--font-family: 'Open Sans', sans-serif");
     expect(response.data).toContain("--font-family-display: 'Baloo 2', sans-serif");
+    expect(response.data).toMatch(/\.title\{[^}]*font-family:"Baloo 2",sans-serif/);
 
     const theme = await vi.waitFor(async () => {
       const persisted = await Theme.findOne();
