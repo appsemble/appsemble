@@ -310,7 +310,9 @@ export function useModalDialog({
         return;
       }
 
-      // The dialog is closed by the parent component, not by the browser.
+      // The dialog is closed by the parent component, not by the browser. Escape is handled before
+      // it becomes a close request, because the browser doesn't let the cancel event of a close
+      // request be canceled if it follows another one without user activation in between.
       event.preventDefault();
       if (closable) {
         onClose?.(event);
